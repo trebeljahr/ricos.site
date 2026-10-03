@@ -31,6 +31,8 @@ export type Node = {
   type: GateType;
   x: number;
   y: number;
+  inputSide?: "left" | "top" | "right" | "bottom";
+  outputSide?: "left" | "top" | "right" | "bottom";
   label?: string;
   value?: boolean;
   numberValue?: number;
@@ -957,7 +959,9 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
         n.id.length < 100 &&
         types.includes(n.type) &&
         Number.isFinite(n.x) &&
-        Number.isFinite(n.y),
+        Number.isFinite(n.y) &&
+        (n.inputSide === undefined || ["left", "top", "right", "bottom"].includes(n.inputSide)) &&
+        (n.outputSide === undefined || ["left", "top", "right", "bottom"].includes(n.outputSide)),
     )
   )
     return null;
@@ -1029,8 +1033,11 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
       type: n.type,
       x: n.x,
       y: n.y,
+      inputSide: n.inputSide,
+      outputSide: n.outputSide,
       label: typeof n.label === "string" ? n.label.slice(0, 30) : undefined,
       value: Boolean(n.value),
+      numberValue: n.numberValue,
       module: validatedModules.get(n.id),
     })),
     wires: item.wires.map((w) => ({

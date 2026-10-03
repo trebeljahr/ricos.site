@@ -24,8 +24,8 @@
 .circuitGroup{position:absolute;box-sizing:border-box;border:1px dashed #b7a1ff9c;border-radius:12px;background:#b7a1ff0b;pointer-events:none;z-index:0}.circuitGroup span{position:absolute;top:-10px;left:14px;max-width:calc(100% - 28px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 7px;border:1px solid #8e7acc;border-radius:4px;background:#232f51;color:#e4d9ff;font-size:10px;font-weight:700;letter-spacing:.02em}
 .resolutionChoices{display:grid;gap:5px;border-top:1px solid #485a7a;padding-top:10px}.resolutionChoices span{font-size:10px;font-weight:700;color:#cfc2ff;text-transform:uppercase}.selectedPart .resolutionChoices button,.selectedPart .modulePorts button{color:#dbe8ff;border-color:#607b9f;text-align:left}.selectedPart .resolutionChoices button:hover,.selectedPart .modulePorts button:hover{border-color:#b7a1ff;background:#35476c}
 .powerView{display:flex;gap:10px;align-items:center;color:#b9c9d2;font-size:11px}.powerView label{display:flex;gap:4px;align-items:center;white-space:nowrap;cursor:pointer}.powerView input{accent-color:#72e3d5}
-.numberBits{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%}
-.numberBit{width:40px;height:21px;border:1px solid #64789b;border-radius:3px;background:#15223c;color:#8091b4;font:700 13px ui-monospace,monospace;cursor:pointer}
+.numberBits{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3px;width:100%}
+.numberBit{width:20px;height:21px;border:1px solid #64789b;border-radius:3px;background:#15223c;color:#8091b4;font:700 13px ui-monospace,monospace;cursor:pointer}
 .numberBit:hover,.numberBit:focus-visible{border-color:#ffc76a;color:#fff}
 .numberBitOn{background:#785125;border-color:#ffc76a;color:#fff3cc;box-shadow:0 0 8px #ffc76a77}
 .digitalScreen{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;padding:6px 3px;border:2px solid #0a1323;border-radius:5px;background:#090f1b;box-shadow:inset 0 2px 8px #000b,0 1px #60708a}
@@ -52,6 +52,9 @@
 .busCrossing{fill:#111b2e;pointer-events:none}
 .portRow{position:absolute;left:0;right:0;height:0;z-index:3;pointer-events:none}
 .portRow .input,.portRow .output{top:0;pointer-events:auto}
+.portRow{right:auto;width:0}
+.portRow .input,.portRow .output{left:0}
+.selectedPart select{background:#101b23;border:1px solid #4a626e;border-radius:4px;color:#fff;padding:7px;width:100%;text-transform:capitalize}
 .inputPortLabel,.outputPortLabel{position:absolute;top:0;transform:translateY(-50%);max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f2d49b;font:700 10px ui-monospace,SFMono-Regular,monospace;line-height:16px;pointer-events:none}
 .inputPortLabel{left:15px;text-align:left}
 .outputPortLabel{right:15px;text-align:right}

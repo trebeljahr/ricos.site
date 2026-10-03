@@ -38,7 +38,10 @@ const WIDTH = 900;
 const HEIGHT = 520;
 const NODE_WIDTH = 132;
 const MODULE_WIDTH = 236;
-const nodeWidth = (node: Node) => (node.type === "module" ? MODULE_WIDTH : NODE_WIDTH);
+const nodeWidth = (node: Node) =>
+  node.type === "module" ? MODULE_WIDTH :
+  ["input8", "display8"].includes(node.type) ? 212 :
+  ["input4", "display4"].includes(node.type) ? 156 : NODE_WIDTH;
 const circuitHints: Record<string, string> = {
   ...MEMORY_HINTS,
   "8-bit half adder": "Adds A and B bit by bit. Each bit has SUM and CARRY outputs.",
@@ -138,20 +141,50 @@ const nodeHeight = (node: Node) =>
   node.type === "module"
     ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
-      ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
+      ? NODE_HEIGHT
       : node.type === "switch" && node.label
         ? 96
       : NODE_HEIGHT;
-const portY = (node: Node, input: number) =>
-  node.y +
-  (inputCount(node) === 1
-    ? nodeHeight(node) / 2
-    : 16 + input * ((nodeHeight(node) - 32) / Math.max(1, inputCount(node) - 1)));
-const outY = (node: Node, output: number) =>
-  node.y +
-  (outputCount(node) === 1
-    ? nodeHeight(node) / 2
-    : 16 + output * ((nodeHeight(node) - 32) / Math.max(1, outputCount(node) - 1)));
+type PortSide = NonNullable<Node["inputSide"]>;
+const inputSide = (node: Node): PortSide => node.inputSide ??
+  (["display4", "display8"].includes(node.type) ? "top" : "left");
+const outputSide = (node: Node): PortSide => node.outputSide ??
+  (["switch", "pulse", "clock", "high", "ground", "input4", "input8"].includes(node.type)
+    ? "bottom" : "right");
+const sideVector = (side: PortSide) => ({
+  left: { x: -1, y: 0 }, top: { x: 0, y: -1 },
+  right: { x: 1, y: 0 }, bottom: { x: 0, y: 1 },
+})[side];
+const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: number },
+  fromSide: PortSide, toSide: PortSide) => {
+  if (fromSide === "right" && toSide === "left")
+    return end.x > start.x ? simpleWirePath(start, end) : wirePath(start, end);
+  const from = sideVector(fromSide);
+  const to = sideVector(toSide);
+  const exit = { x: start.x + from.x * 24, y: start.y + from.y * 24 };
+  const entry = { x: end.x + to.x * 24, y: end.y + to.y * 24 };
+  return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
+};
+const portPoint = (node: Node, index: number, kind: "input" | "output") => {
+  const side = kind === "input" ? inputSide(node) : outputSide(node);
+  const count = kind === "input" ? inputCount(node) : outputCount(node);
+  const horizontal = side === "top" || side === "bottom";
+  const length = horizontal ? nodeWidth(node) : nodeHeight(node);
+  const bitRow = ["input4", "input8", "display4", "display8"].includes(node.type);
+  const orderedIndex = horizontal && bitRow ? count - index - 1 : index;
+  const offset = count === 1 ? length / 2 : 16 + orderedIndex * ((length - 32) / (count - 1));
+  return {
+    x: node.x + (horizontal ? offset : side === "left" ? 0 : nodeWidth(node)),
+    y: node.y + (horizontal ? side === "top" ? 0 : nodeHeight(node) : offset),
+  };
+};
+const portStyle = (node: Node, index: number, kind: "input" | "output") => {
+  const point = portPoint(node, index, kind);
+  return {
+    left: `${((point.x - node.x) / nodeWidth(node)) * 100}%`,
+    top: `${((point.y - node.y) / nodeHeight(node)) * 100}%`,
+  };
+};
 
 export function LogicBuilder() {
   const [circuit, setCircuit] = useState<Circuit>(() => clone(PRESETS["Half adder"]));
@@ -216,8 +249,8 @@ export function LogicBuilder() {
                   from: wire.from,
                   to: wire.to,
                   output: wire.output ?? 0,
-                  start: { x: from.x + nodeWidth(from), y: outY(from, wire.output ?? 0) },
-                  end: { x: to.x, y: portY(to, wire.input) },
+                  start: portPoint(from, wire.output ?? 0, "output"),
+                  end: portPoint(to, wire.input, "input"),
                 },
               ]
             : [];
@@ -229,7 +262,11 @@ export function LogicBuilder() {
           width: nodeWidth(node),
           height: nodeHeight(node),
         })),
-        busWiring,
+        busWiring && circuit.wires.every((wire) => {
+          const from = circuit.nodes.find((node) => node.id === wire.from);
+          const to = circuit.nodes.find((node) => node.id === wire.to);
+          return from && to && outputSide(from) === "right" && inputSide(to) === "left";
+        }),
       ),
     [circuit.nodes, circuit.wires, busWiring],
   );
@@ -687,17 +724,16 @@ export function LogicBuilder() {
     for (const node of circuitRef.current.nodes) {
       if (draft.from && node.id !== draft.from) {
         for (let input = 0; input < inputCount(node); input++) {
-          const distance = Math.hypot(point.x - node.x, point.y - portY(node, input));
+          const port = portPoint(node, input, "input");
+          const distance = Math.hypot(point.x - port.x, point.y - port.y);
           if (distance < 20 && (!best || distance < best.distance))
             best = { id: node.id, input, distance };
         }
       }
       if (draft.to && node.id !== draft.to) {
         for (let output = 0; output < outputCount(node); output++) {
-          const distance = Math.hypot(
-            point.x - node.x - nodeWidth(node),
-            point.y - outY(node, output),
-          );
+          const port = portPoint(node, output, "output");
+          const distance = Math.hypot(point.x - port.x, point.y - port.y);
           if (distance < 20 && (!best || distance < best.distance))
             best = { id: node.id, output, distance };
         }
@@ -1035,31 +1071,17 @@ export function LogicBuilder() {
     ? circuit.nodes.find((node) => node.id === wireDraft.from)
     : null;
   const draftEnd = wireDraft?.to ? circuit.nodes.find((node) => node.id === wireDraft.to) : null;
+  const targetNode = draftTarget ? circuit.nodes.find((node) => node.id === draftTarget.id) : null;
   const previewStart = draftStart
-    ? { x: draftStart.x + nodeWidth(draftStart), y: outY(draftStart, wireDraft!.output ?? 0) }
-    : draftTarget && wireDraft?.to
-      ? {
-          x:
-            circuit.nodes.find((node) => node.id === draftTarget.id)!.x +
-            nodeWidth(circuit.nodes.find((node) => node.id === draftTarget.id)!),
-          y: outY(
-            circuit.nodes.find((node) => node.id === draftTarget.id)!,
-            draftTarget.output ?? 0,
-          ),
-        }
-      : wireDraft
-        ? { x: wireDraft.x, y: wireDraft.y }
-        : null;
+    ? portPoint(draftStart, wireDraft!.output ?? 0, "output")
+    : targetNode && draftTarget?.output !== undefined
+      ? portPoint(targetNode, draftTarget.output, "output")
+      : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
   const previewEnd = draftEnd
-    ? { x: draftEnd.x, y: portY(draftEnd, wireDraft!.input!) }
-    : draftTarget && wireDraft?.from
-      ? {
-          x: circuit.nodes.find((node) => node.id === draftTarget.id)!.x,
-          y: portY(circuit.nodes.find((node) => node.id === draftTarget.id)!, draftTarget.input!),
-        }
-      : wireDraft
-        ? { x: wireDraft.x, y: wireDraft.y }
-        : null;
+    ? portPoint(draftEnd, wireDraft!.input!, "input")
+    : targetNode && draftTarget?.input !== undefined
+      ? portPoint(targetNode, draftTarget.input, "input")
+      : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
   if (implementationMode)
     return (
       <ImplementationView
@@ -1456,14 +1478,14 @@ export function LogicBuilder() {
                     const to = circuit.nodes.find((node) => node.id === wire.to);
                     if (!from || !to) return null;
                     if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
-                    const x1 = from.x + nodeWidth(from),
-                      y1 = outY(from, wire.output ?? 0),
-                      x2 = to.x,
-                      y2 = portY(to, wire.input);
-                    const d =
-                      tidyWiring || busWiring || x2 <= x1
+                    const { x: x1, y: y1 } = portPoint(from, wire.output ?? 0, "output");
+                    const { x: x2, y: y2 } = portPoint(to, wire.input, "input");
+                    const standardPorts = outputSide(from) === "right" && inputSide(to) === "left";
+                    const d = standardPorts
+                      ? tidyWiring || busWiring || x2 <= x1
                         ? routes.paths[wire.id]
-                        : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 });
+                        : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 })
+                      : orientedWirePath({ x: x1, y: y1 }, { x: x2, y: y2 }, outputSide(from), inputSide(to));
                     const color =
                       WIRE_COLORS[wire.color ?? defaultWireColor(wire.from, circuit.nodes)];
                     return (
@@ -1526,7 +1548,13 @@ export function LogicBuilder() {
                   {previewStart && previewEnd && wireDraft && (
                     <path
                       d={
-                        tidyWiring || previewEnd.x <= previewStart.x
+                        (draftStart || targetNode) && (draftEnd || targetNode) &&
+                        (draftStart ? outputSide(draftStart) : targetNode ? outputSide(targetNode) : "right") !== "right" ||
+                        (draftEnd ? inputSide(draftEnd) : targetNode ? inputSide(targetNode) : "left") !== "left"
+                          ? orientedWirePath(previewStart, previewEnd,
+                              draftStart ? outputSide(draftStart) : targetNode ? outputSide(targetNode) : "right",
+                              draftEnd ? inputSide(draftEnd) : targetNode ? inputSide(targetNode) : "left")
+                          : tidyWiring || previewEnd.x <= previewStart.x
                           ? wirePath(previewStart, previewEnd)
                           : simpleWirePath(previewStart, previewEnd)
                       }
@@ -1618,7 +1646,7 @@ export function LogicBuilder() {
                           key={`${node.id}-input-${input}`}
                           className={styles.portRow}
                           style={{
-                            top: `${((portY(node, input) - node.y) / nodeHeight(node)) * 100}%`,
+                            ...portStyle(node, input, "input"),
                           }}
                         >
                           <button
@@ -1631,10 +1659,9 @@ export function LogicBuilder() {
                               startWire(event, {
                                 to: node.id,
                                 input,
-                                x: node.x,
-                                y: portY(node, input),
-                                originX: node.x,
-                                originY: portY(node, input),
+                                ...portPoint(node, input, "input"),
+                                originX: portPoint(node, input, "input").x,
+                                originY: portPoint(node, input, "input").y,
                               })
                             }
                             onClick={(event) => {
@@ -1834,7 +1861,7 @@ export function LogicBuilder() {
                           key={`${node.id}-output-${output}`}
                           className={styles.portRow}
                           style={{
-                            top: `${((outY(node, output) - node.y) / nodeHeight(node)) * 100}%`,
+                            ...portStyle(node, output, "output"),
                           }}
                         >
                           {node.type === "module" && (
@@ -1858,10 +1885,9 @@ export function LogicBuilder() {
                               startWire(event, {
                                 from: node.id,
                                 output,
-                                x: node.x + nodeWidth(node),
-                                y: outY(node, output),
-                                originX: node.x + nodeWidth(node),
-                                originY: outY(node, output),
+                                ...portPoint(node, output, "output"),
+                                originX: portPoint(node, output, "output").x,
+                                originY: portPoint(node, output, "output").y,
                               })
                             }
                             onClick={(event) => {
@@ -2143,6 +2169,36 @@ export function LogicBuilder() {
                   }
                 />
               </label>
+              {inputCount(selectedNode) > 0 && <label>
+                Input side
+                <select
+                  aria-label="Input side"
+                  value={inputSide(selectedNode)}
+                  onChange={(event) => setCircuit((current) => ({
+                    ...current,
+                    nodes: current.nodes.map((node) => node.id === selectedNode.id
+                      ? { ...node, inputSide: event.target.value as PortSide } : node),
+                  }))}
+                >
+                  {(["left", "top", "right", "bottom"] as const).map((side) =>
+                    <option key={side} value={side}>{side}</option>)}
+                </select>
+              </label>}
+              {outputCount(selectedNode) > 0 && <label>
+                Output side
+                <select
+                  aria-label="Output side"
+                  value={outputSide(selectedNode)}
+                  onChange={(event) => setCircuit((current) => ({
+                    ...current,
+                    nodes: current.nodes.map((node) => node.id === selectedNode.id
+                      ? { ...node, outputSide: event.target.value as PortSide } : node),
+                  }))}
+                >
+                  {(["left", "top", "right", "bottom"] as const).map((side) =>
+                    <option key={side} value={side}>{side}</option>)}
+                </select>
+              </label>}
               {selectedNode.type === "module" && (
                 <div className={styles.modulePorts}>
                   {circuitHints[selectedNode.module!.name] && (

@@ -6,12 +6,23 @@ import {
   type Circuit,
   GATE_NAMES,
   initialSnapshot,
+  type Node,
   PRESETS,
   step,
   validateCircuit,
 } from "./logic";
 
 describe("logic circuit engine", () => {
+  it("preserves port sides and input bits in imported circuits", () => {
+    const circuit: Circuit = {
+      name: "Rotated input",
+      nodes: [{ id: "bits", type: "input4", x: 0, y: 0, numberValue: 5, outputSide: "top" }],
+      wires: [],
+    };
+    expect(validateCircuit(circuit)?.nodes[0]).toMatchObject({ numberValue: 5, outputSide: "top" });
+    circuit.nodes[0].outputSide = "diagonal" as Node["outputSide"];
+    expect(validateCircuit(circuit)).toBeNull();
+  });
   it("propagates numbered input bits into decimal and binary displays", () => {
     const circuit: Circuit = {
       name: "Number display",

@@ -10,6 +10,29 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("places input and display ports on wide defaults and lets parts change sides", () => {
+    render(<LogicBuilder />);
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "8-BIT INPUT" }));
+    const input = screen.getByRole("group", { name: "8-BIT INPUT — 8-BIT INPUT part" });
+    const bits = within(input).getAllByRole("button", { name: /Toggle bit/ });
+    expect(bits.map((bit) => bit.getAttribute("aria-label"))).toEqual(
+      Array.from({ length: 8 }, (_, index) => `Toggle bit ${7 - index} of 8-BIT INPUT`),
+    );
+    expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
+      .parentElement?.style.top).toBe("100%");
+    expect(parseFloat(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 7" })
+      .parentElement!.style.left)).toBeLessThan(parseFloat(within(input)
+      .getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" }).parentElement!.style.left));
+    fireEvent.change(screen.getByLabelText("Output side"), { target: { value: "right" } });
+    expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
+      .parentElement?.style.left).toBe("100%");
+
+    fireEvent.click(within(parts).getByRole("button", { name: "8-BIT DISPLAY" }));
+    const display = screen.getByRole("group", { name: "8-BIT DISPLAY — 8-BIT DISPLAY part" });
+    expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
+      .parentElement?.style.top).toBe("0%");
+  });
   it("starts new parts unnamed and edits or clears a name inline", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");

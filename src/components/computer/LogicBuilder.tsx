@@ -619,6 +619,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   </button>;
   const selectedNode = circuit.nodes.find((node) => node.id === selectedPart);
   const hasExpandedChildren = layout.parts.some((part) => part.child);
+  const heading = host.label && host.label !== circuit.name
+    ? `${host.label} — ${circuit.name}` : circuit.name;
   return (
     <div ref={root} className={clsx(styles.inlineCircuit, activePath === path && styles.activeInlineCircuit)}
       data-inline-path={path} aria-label={`${circuit.name} expanded circuit`} tabIndex={0}
@@ -640,7 +642,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         if (event.key === "F2" && selectedNode) { event.preventDefault(); event.stopPropagation(); beginLabel(selectedNode); }
       }}>
       <div className={styles.inlineCircuitHeader}>
-        <strong title={host.label || circuit.name}>{host.label || circuit.name}</strong>
+        <strong title={heading}>{heading}</strong>
         <button type="button" disabled={!layout.canExpand} onClick={() => onExpandLevel(path, circuit)}>
           <ActionIcon name="unfold" /> Unfold one level deeper
         </button>

@@ -62,6 +62,7 @@ function memoryArray(kind: MemoryKind): Circuit {
     builder.add("write", "switch", 30, 380, "WRITE ENABLE");
     if (kind === "dram") builder.add("refresh", "switch", 30, 470, "REFRESH ROW");
   }
+  const outputOffset = kind === "flash" ? 330 : 0;
   builder.add("not-a0", "not", 190, 20, "NOT A0");
   builder.add("not-a1", "not", 190, 110, "NOT A1");
   builder.connect("a0", "not-a0");
@@ -95,7 +96,7 @@ function memoryArray(kind: MemoryKind): Circuit {
     for (let bit = 0; bit < 4; bit++) {
       const cy = y + 150 + bit * 145;
       const cell = builder.add(`cell-${row}-${bit}`,
-        kind === "dram" ? "dramcell" : kind === "sram" ? "dlatch" : "dff", 1200, cy,
+        kind === "dram" ? "dramcell" : kind === "sram" ? "dlatch" : "dff", 1200 + outputOffset, cy,
         kind === "dram" ? `CAPACITOR ${row}:${bit}` : kind === "flash" ? `FLOATING GATE ${row}:${bit}` : `SRAM LATCH ${row}:${bit}`);
       const data = `d${bit}`;
       let next = data;
@@ -104,14 +105,18 @@ function memoryArray(kind: MemoryKind): Circuit {
         const refreshData = builder.gate(`refresh-data-${row}-${bit}`, "and", 920, cy + 65, cell, `not-write-${row}`);
         next = builder.gate(`next-${row}-${bit}`, "or", 1070, cy, inputData, refreshData);
       } else if (kind === "flash") {
-        // A zero charge means erased (logic 1). Programming stores charge (logic 0).
-        next = builder.gate(`program-data-${row}-${bit}`, "and", 1070, cy, write, "not-erase");
+        // Charge can only be added by programming; block erase clears the charge.
+        const zero = builder.add(`zero-${row}-${bit}`, "not", 920, cy + 65, "PROGRAM ZERO");
+        builder.connect(data, zero);
+        const addCharge = builder.gate(`charge-${row}-${bit}`, "and", 1070, cy + 65, write, zero);
+        const charged = builder.gate(`charged-${row}-${bit}`, "or", 1220, cy + 65, cell, addCharge);
+        next = builder.gate(`next-${row}-${bit}`, "and", 1370, cy + 65, charged, "not-erase");
       }
       builder.connect(next, cell);
       builder.connect(edge, cell, 1);
-      const source = kind === "flash" ? builder.add(`sense-${row}-${bit}`, "not", 1370, cy, "SENSE CHARGE") : cell;
+      const source = kind === "flash" ? builder.add(`sense-${row}-${bit}`, "not", 1370 + outputOffset, cy, "SENSE CHARGE") : cell;
       if (kind === "flash") builder.connect(cell, source);
-      builder.gate(`read-${row}-${bit}`, "and", 1540, cy, source, select);
+      builder.gate(`read-${row}-${bit}`, "and", 1540 + outputOffset, cy, source, select);
     }
   }
   if (kind === "flash") {
@@ -119,14 +124,15 @@ function memoryArray(kind: MemoryKind): Circuit {
     builder.connect("erase", "not-erase");
   }
   for (let bit = 0; bit < 4; bit++) {
-    if (kind !== "flash") builder.add(`d${bit}`, "switch", 30, 700 + bit * 145, `DATA IN ${bit}`);
-    const pair0 = builder.gate(`pair0-${bit}`, "or", 1720, 720 + bit * 145,
+    builder.add(`d${bit}`, "switch", 30, 700 + bit * 145,
+      kind === "flash" ? `PROGRAM BIT ${bit}` : `DATA IN ${bit}`);
+    const pair0 = builder.gate(`pair0-${bit}`, "or", 1720 + outputOffset, 720 + bit * 145,
       `read-0-${bit}`, `read-1-${bit}`);
-    const pair1 = builder.gate(`pair1-${bit}`, "or", 1720, 2300 + bit * 145,
+    const pair1 = builder.gate(`pair1-${bit}`, "or", 1720 + outputOffset, 2300 + bit * 145,
       `read-2-${bit}`, `read-3-${bit}`);
-    const selected = builder.gate(`selected-${bit}`, "or", 1890, 720 + bit * 145, pair0, pair1);
-    const enabled = builder.gate(`enabled-${bit}`, "and", 2060, 720 + bit * 145, selected, "read");
-    const output = builder.add(`q${bit}`, "lamp", 2240, 720 + bit * 145, `DATA OUT ${bit}`);
+    const selected = builder.gate(`selected-${bit}`, "or", 1890 + outputOffset, 720 + bit * 145, pair0, pair1);
+    const enabled = builder.gate(`enabled-${bit}`, "and", 2060 + outputOffset, 720 + bit * 145, selected, "read");
+    const output = builder.add(`q${bit}`, "lamp", 2240 + outputOffset, 720 + bit * 145, `DATA OUT ${bit}`);
     builder.connect(enabled, output);
   }
   return builder.circuit(name);
@@ -143,5 +149,5 @@ export const MEMORY_HINTS: Record<string, string> = {
   "8-bit parallel register": "Set LOAD and data bits, then pulse CLOCK. Clear LOAD to hold the word.",
   "4 × 4 SRAM": "Choose a row with ADDRESS, set DATA bits, and turn on WRITE. The selected row stores data while WRITE is on.",
   "4 × 4 DRAM": "WRITE on a clock edge. REFRESH the selected row before four clock cycles pass or charged bits fade to 0.",
-  "4 × 4 flash memory": "PROGRAM sets the selected word to 0. ERASE resets every word to 1. Both act on a clock edge.",
+  "4 × 4 flash memory": "Set PROGRAM BIT to 0 to clear that bit. PROGRAM acts on the selected row; only ERASE ALL restores 1. Pulse CLOCK for either action.",
 };

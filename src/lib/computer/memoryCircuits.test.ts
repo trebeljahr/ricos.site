@@ -68,10 +68,16 @@ describe("expandable memory circuits", () => {
 
   it("programs zero and erases flash back to one", () => {
     const circuit = structuredClone(PRESETS["4 × 4 flash memory"]);
-    setInputs(circuit, { read: true });
+    setInputs(circuit, { read: true, d0: true });
     let state = step(circuit, initialSnapshot(), false);
     expect(bits(circuit, state, 4)).toEqual([true, true, true, true]);
     setInputs(circuit, { program: true });
+    state = pulse(circuit, state);
+    expect(bits(circuit, state, 4)).toEqual([true, false, false, false]);
+    setInputs(circuit, { d0: false });
+    state = pulse(circuit, state);
+    expect(bits(circuit, state, 4)).toEqual([false, false, false, false]);
+    setInputs(circuit, { d0: true });
     state = pulse(circuit, state);
     expect(bits(circuit, state, 4)).toEqual([false, false, false, false]);
     setInputs(circuit, { program: false, erase: true });

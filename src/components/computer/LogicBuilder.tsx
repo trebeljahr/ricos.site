@@ -42,6 +42,10 @@ const partColors: Record<GateType, string> = {
   pulse: "#ff8f87",
   clock: "#b7a1ff",
   lamp: "#b9e976",
+  input4: "#ffc76a",
+  input8: "#ffc76a",
+  display4: "#ff6b67",
+  display8: "#ff6b67",
   high: "#ffc76a",
   ground: "#7cb8ff",
   nmos: "#69e2e0",
@@ -76,6 +80,10 @@ const palette: GateType[] = [
   "pulse",
   "clock",
   "lamp",
+  "input4",
+  "input8",
+  "display4",
+  "display8",
   "high",
   "ground",
   "nmos",
@@ -101,6 +109,8 @@ const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): C
 const nodeHeight = (node: Node) =>
   node.type === "module"
     ? Math.max(NODE_HEIGHT, 30 + Math.max(inputCount(node), outputCount(node)) * 25)
+    : ["input4", "input8", "display4", "display8"].includes(node.type)
+      ? Math.max(NODE_HEIGHT, 54 + Math.max(inputCount(node), outputCount(node)) * 24)
     : NODE_HEIGHT;
 const portY = (node: Node, input: number) =>
   node.y +
@@ -149,7 +159,7 @@ export function LogicBuilder() {
   );
   const [ready, setReady] = useState(false);
   const canvasWidth = Math.max(WIDTH, ...circuit.nodes.map((item) => item.x + NODE_WIDTH + 50));
-  const canvasHeight = Math.max(HEIGHT, ...circuit.nodes.map((item) => item.y + NODE_HEIGHT + 50));
+  const canvasHeight = Math.max(HEIGHT, ...circuit.nodes.map((item) => item.y + nodeHeight(item) + 50));
   const [drag, setDrag] = useState<{
     x: number;
     y: number;
@@ -313,6 +323,7 @@ export function LogicBuilder() {
       ),
       label: LABELS[type],
       value: false,
+      ...(type === "input4" || type === "input8" ? { numberValue: 0 } : {}),
     };
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
@@ -321,10 +332,10 @@ export function LogicBuilder() {
   const addModule = (source: Circuit, position?: { x: number; y: number }) => {
     if (
       !moduleOutputs(source).length ||
-      moduleInputs(source).length > 8 ||
-      moduleOutputs(source).length > 8
+      moduleInputs(source).length > 24 ||
+      moduleOutputs(source).length > 24
     ) {
-      setMessage("This circuit needs 1–8 outputs and at most 8 inputs to become a black box.");
+      setMessage("This circuit needs 1–24 outputs and at most 24 inputs to become a black box.");
       return;
     }
     const index = circuit.nodes.length;
@@ -618,6 +629,9 @@ export function LogicBuilder() {
   const visibleParts = palette.filter((type) =>
     `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
+  const visibleExamples = Object.values(PRESETS).filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase().trim()),
+  );
   const library =
     circuitFamily === "examples"
       ? PRESETS
@@ -759,7 +773,24 @@ export function LogicBuilder() {
           />
           <div className={styles.parts}>
             {renderParts()}
-            {visibleParts.length === 0 && <p>No matching parts</p>}
+            {visibleExamples.map((example) => (
+              <button
+                type="button"
+                key={example.name}
+                draggable
+                onDragStart={(event) => {
+                  event.dataTransfer.setData("application/x-logic-module", example.name);
+                  event.dataTransfer.effectAllowed = "copy";
+                }}
+                onClick={() => addModule(example)}
+                title={`Drag ${example.name} black box onto canvas or click to add`}
+                style={{ "--part-accent": partColors.module } as React.CSSProperties}
+              >
+                <span className={styles.partIcon}><GateSymbol type="module" /></span>
+                <span>{example.name}</span>
+              </button>
+            ))}
+            {visibleParts.length === 0 && visibleExamples.length === 0 && <p>No matching parts</p>}
           </div>
           <div className={styles.sidebarFoot}>
             Wire output → input
@@ -1082,11 +1113,44 @@ export function LogicBuilder() {
                     />
                   ))}
                   <div className={styles.nodeBody}>
-                    <span className={styles.nodeSymbol}>
-                      <GateSymbol type={node.type} />
-                    </span>
+                    {!["input4", "input8", "display4", "display8", "lamp"].includes(node.type) && (
+                      <span className={styles.nodeSymbol}><GateSymbol type={node.type} /></span>
+                    )}
                     <strong>{node.label || LABELS[node.type]}</strong>
-                    {node.type === "switch" ? (
+                    {(node.type === "input4" || node.type === "input8") ? (
+                      <div className={styles.numberBits} aria-label={`${node.label || LABELS[node.type]} binary input`}>
+                        {Array.from({ length: node.type === "input4" ? 4 : 8 }, (_, index) => {
+                          const bit = (node.type === "input4" ? 4 : 8) - index - 1;
+                          const on = Boolean(((node.numberValue ?? 0) >> bit) & 1);
+                          return <button
+                            type="button"
+                            key={bit}
+                            aria-label={`Toggle bit ${bit} of ${node.label || LABELS[node.type]}`}
+                            aria-pressed={on}
+                            className={clsx(styles.numberBit, on && styles.numberBitOn)}
+                            onClick={() => setCircuit((current) => ({
+                              ...current,
+                              nodes: current.nodes.map((item) => item.id === node.id
+                                ? { ...item, numberValue: (item.numberValue ?? 0) ^ (1 << bit) }
+                                : item),
+                            }))}
+                          >{on ? "1" : "0"}</button>;
+                        })}
+                      </div>
+                    ) : (node.type === "display4" || node.type === "display8") ? (
+                      <div className={styles.digitalScreen} aria-label={`${node.label || LABELS[node.type]} value`}>
+                        <span className={styles.decimalValue}>
+                          {(snapshot.outputs[node.id] ?? []).reduce((value, bit, index) => value + (bit ? 2 ** index : 0), 0)}
+                        </span>
+                        <span className={styles.binaryValue}>
+                          {Array.from({ length: node.type === "display4" ? 4 : 8 }, (_, index) =>
+                            snapshot.outputs[node.id]?.[(node.type === "display4" ? 4 : 8) - index - 1] ? "1" : "0"
+                          ).join("")}
+                        </span>
+                      </div>
+                    ) : node.type === "lamp" ? (
+                      <span className={clsx(styles.led, snapshot.values[node.id] && styles.ledOn)} role="img" aria-label={snapshot.values[node.id] ? "LED on" : "LED off"} />
+                    ) : node.type === "switch" ? (
                       <button
                         type="button"
                         className={styles.toggle}

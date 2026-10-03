@@ -3,6 +3,10 @@ export type GateType =
   | "clock"
   | "pulse"
   | "lamp"
+  | "input4"
+  | "input8"
+  | "display4"
+  | "display8"
   | "high"
   | "ground"
   | "nmos"
@@ -24,6 +28,7 @@ export type Node = {
   y: number;
   label?: string;
   value?: boolean;
+  numberValue?: number;
   module?: Circuit;
 };
 export const WIRE_COLORS = {
@@ -59,6 +64,10 @@ export const INPUTS: Record<GateType, number> = {
   clock: 0,
   pulse: 0,
   lamp: 1,
+  input4: 0,
+  input8: 0,
+  display4: 4,
+  display8: 8,
   high: 0,
   ground: 0,
   nmos: 2,
@@ -79,6 +88,10 @@ export const LABELS: Record<GateType, string> = {
   clock: "CLOCK",
   pulse: "PULSE",
   lamp: "LAMP",
+  input4: "4-BIT INPUT",
+  input8: "8-BIT INPUT",
+  display4: "4-BIT DISPLAY",
+  display8: "8-BIT DISPLAY",
   high: "HIGH (1)",
   ground: "GROUND (0)",
   nmos: "NMOS",
@@ -101,15 +114,18 @@ export const moduleOutputs = (circuit: Circuit) =>
 export const inputCount = (node: Node) =>
   node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
 export const outputCount = (node: Node) =>
-  node.type === "module" ? moduleOutputs(node.module!).length : node.type === "lamp" ? 0 : 1;
+  node.type === "module" ? moduleOutputs(node.module!).length :
+  node.type === "lamp" || node.type === "display4" || node.type === "display8" ? 0 :
+  node.type === "input4" ? 4 : node.type === "input8" ? 8 : 1;
 export const inputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
+    : node.type === "display4" || node.type === "display8" ? `Bit ${index}`
     : `Input ${index + 1}`;
 export const outputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-    : "Output";
+    : node.type === "input4" || node.type === "input8" ? `Bit ${index}` : "Output";
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
@@ -144,6 +160,10 @@ export function step(
     if (node.type === "pulse") values[node.id] = overrides[node.id] ?? Boolean(pulses[node.id]);
     if (node.type === "high") values[node.id] = true;
     if (node.type === "ground") values[node.id] = false;
+    if (node.type === "input4" || node.type === "input8") {
+      const bits = node.type === "input4" ? 4 : 8;
+      outputs[node.id] = Array.from({ length: bits }, (_, bit) => Boolean(((node.numberValue ?? 0) >> bit) & 1));
+    }
     if (node.type === "dff") values[node.id] = Boolean(previous.memory[node.id]);
   }
   let unstable = false;
@@ -182,6 +202,11 @@ export function step(
           }
           case "lamp":
             next = a;
+            break;
+          case "display4":
+          case "display8":
+            outputs[node.id] = signals;
+            next = signals.some(Boolean);
             break;
           case "nmos":
             next = a && b;
@@ -808,14 +833,19 @@ export function validateCircuit(value: unknown, depth = 0): Circuit | null {
   )
     return null;
   const validatedModules = new Map<string, Circuit>();
+  if (!item.nodes.every((n) =>
+    n.numberValue === undefined ||
+    (Number.isInteger(n.numberValue) && n.numberValue >= 0 &&
+      n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : 1))
+  )) return null;
   for (const n of item.nodes) {
     if (n.type !== "module") continue;
     const inner = validateCircuit(n.module, depth + 1);
     if (
       !inner ||
-      moduleInputs(inner).length > 8 ||
+      moduleInputs(inner).length > 24 ||
       moduleOutputs(inner).length < 1 ||
-      moduleOutputs(inner).length > 8
+      moduleOutputs(inner).length > 24
     )
       return null;
     validatedModules.set(n.id, inner);

@@ -45,8 +45,20 @@ export function GateSymbol({ type }: { type: GateType }) {
       )}
       {type === "lamp" && (
         <>
-          <circle cx="32" cy="21" r="16" />
-          <path d="M21 10 L43 32 M43 10 L21 32" />
+          <circle cx="32" cy="21" r="14" fill="#ad242c" stroke="#ff817b" />
+          <circle cx="27" cy="15" r="5" fill="#ffd3c4" stroke="none" opacity=".85" />
+        </>
+      )}
+      {(type === "input4" || type === "input8") && (
+        <>
+          <rect x="4" y="7" width="56" height="28" rx="4" />
+          <text x="32" y="26" textAnchor="middle" stroke="none" fill="currentColor" fontSize="14" fontFamily="monospace">{type === "input4" ? "0101" : "10101010"}</text>
+        </>
+      )}
+      {(type === "display4" || type === "display8") && (
+        <>
+          <rect x="4" y="5" width="56" height="32" rx="4" />
+          <text x="32" y="27" textAnchor="middle" stroke="none" fill="currentColor" fontSize="19" fontFamily="monospace">{type === "display4" ? "15" : "255"}</text>
         </>
       )}
       {type === "dff" && (

@@ -12,6 +12,31 @@ import {
 } from "./logic";
 
 describe("logic circuit engine", () => {
+  it("propagates numbered input bits into decimal and binary displays", () => {
+    const circuit: Circuit = {
+      name: "Number display",
+      nodes: [
+        { id: "number", type: "input8", x: 0, y: 0, numberValue: 0xa5 },
+        { id: "display", type: "display8", x: 200, y: 0 },
+      ],
+      wires: Array.from({ length: 8 }, (_, bit) => ({
+        id: `bit-${bit}`, from: "number", output: bit, to: "display", input: bit,
+      })),
+    };
+    expect(validateCircuit(circuit)).not.toBeNull();
+    const state = step(circuit, initialSnapshot(), false);
+    expect(state.outputs.number).toEqual([true, false, true, false, false, true, false, true]);
+    expect(state.outputs.display).toEqual(state.outputs.number);
+  });
+
+  it("allows every bundled example to be placed as a black box", () => {
+    for (const example of Object.values(PRESETS)) {
+      const circuit: Circuit = {
+        name: "Host", nodes: [{ id: "example", type: "module", x: 0, y: 0, module: example }], wires: [],
+      };
+      expect(validateCircuit(circuit), example.name).not.toBeNull();
+    }
+  });
   it("compares two 8-bit values", () => {
     const circuit = PRESETS["8-bit magnitude comparator"];
     expect(validateCircuit(circuit)).not.toBeNull();

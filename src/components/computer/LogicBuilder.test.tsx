@@ -10,6 +10,23 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("adds example black boxes from Parts and toggles number input bits", () => {
+    render(<LogicBuilder />);
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "Half adder" }));
+    expect(screen.getByRole("group", { name: "Half adder part" })).toBeTruthy();
+
+    fireEvent.click(within(parts).getByRole("button", { name: "4-BIT INPUT" }));
+    const input = screen.getByRole("group", { name: "4-BIT INPUT part" });
+    const bit = within(input).getByRole("button", { name: "Toggle bit 2 of 4-BIT INPUT" });
+    fireEvent.click(bit);
+    expect(bit.getAttribute("aria-pressed")).toBe("true");
+    expect(bit.textContent).toBe("1");
+
+    fireEvent.click(within(parts).getByRole("button", { name: "8-BIT DISPLAY" }));
+    const display = screen.getByRole("group", { name: "8-BIT DISPLAY part" });
+    expect(within(display).getByLabelText("8-BIT DISPLAY value").textContent).toContain("00000000");
+  });
   it("shows construction labels as boundaries and drills through gate implementations", () => {
     render(<LogicBuilder />);
     fireEvent.click(screen.getByRole("button", { name: "NOR only" }));

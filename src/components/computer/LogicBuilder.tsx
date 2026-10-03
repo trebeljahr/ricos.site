@@ -424,6 +424,18 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   }, [layout, host.displayWidth, host.displayHeight, host.expanded, host.type, host.module, host.inputSide, host.outputSide]);
   const endpointMap = useMemo(() => new Map(endpoints.map((port) =>
     [`${port.kind}:${port.id}:${port.port}`, port])), [endpoints]);
+  const signalColors = useMemo(() => {
+    let index = 0;
+    const colors = new Map(circuit.nodes.flatMap((node) =>
+      Array.from({ length: outputCount(node) }, (_, output) =>
+        [`${node.id}:${output}`, wireColorNames[index++ % wireColorNames.length]] as const)));
+    for (const wire of circuit.wires) {
+      if (wire.color) colors.set(`${wire.from}:${wire.output ?? 0}`, wire.color);
+    }
+    return colors;
+  }, [circuit.nodes, circuit.wires]);
+  const sourceColor = (from: string, output = 0): WireColor =>
+    signalColors.get(`${from}:${output}`) ?? "cyan";
   const [portMessage, setPortMessage] = useState("");
   const inlinePorts = useMemo(() => {
     const boundaryPorts = (kind: InlineEndpoint["kind"]) => endpoints
@@ -443,7 +455,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       activate(); cancelInteraction(); setSelectedPart(null); setSelectedWire(null); setPendingPort(null);
     },
     onConnect: (connections) => onEdit(path, (inner) => ({ ...inner, wires: [
-      ...inner.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(), color: "cyan" as const })),
+      ...inner.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(),
+        color: sourceColor(connection.from, connection.output) })),
     ] })),
     onMessage: setPortMessage,
   });
@@ -470,7 +483,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       return { ...inner, wires: [
         ...inner.wires.filter((wire) => wire.to !== to.id || wire.input !== to.port),
         { id: existing?.id ?? crypto.randomUUID(), from: from.id, output: from.port, to: to.id, input: to.port,
-          color: existing?.color ?? inner.wires.find((wire) => wire.from === from.id)?.color ?? "cyan" },
+          color: existing?.color ?? sourceColor(from.id, from.port) },
       ] };
     });
     setPendingPort(null);
@@ -657,7 +670,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             const d = drag && (drag.id === from.id || drag.id === to.id)
               ? orientedWirePath(movedPoint(from, true), movedPoint(to, true), from.side, to.side)
               : routes.paths[wire.id] ?? orientedWirePath(from.wirePoint, to.wirePoint, from.side, to.side);
-            return <g key={wire.id} style={{ "--wire-color": WIRE_COLORS[wire.color ?? "cyan"] } as React.CSSProperties}>
+            return <g key={wire.id} style={{ "--wire-color": WIRE_COLORS[wire.color ?? sourceColor(wire.from, wire.output)] } as React.CSSProperties}>
               <path d={d} className={styles.wireHit} role="button" tabIndex={0}
                 aria-label={`Select internal wire from ${from.label} to ${to.label}`}
                 onPointerDown={(event) => event.stopPropagation()}
@@ -668,7 +681,9 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
                 className={clsx(styles.wire, selectedWire === wire.id && styles.wireSelected)} />
             </g>;
           })}
-          {preview && <path className={styles.wirePreview} style={{ "--wire-color": WIRE_COLORS.cyan } as React.CSSProperties}
+          {preview && <path className={styles.wirePreview} style={{ "--wire-color": WIRE_COLORS[
+            preview.port.kind === "output" ? sourceColor(preview.port.id, preview.port.port) : "cyan"
+          ] } as React.CSSProperties}
             d={preview.port.kind === "output" ? simpleWirePath(preview.port.point, preview.point) :
               simpleWirePath(preview.point, preview.port.point)} />}
         </svg>

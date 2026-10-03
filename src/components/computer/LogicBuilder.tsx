@@ -823,26 +823,22 @@ export function LogicBuilder() {
       top: (next.top / next.zoom - framed.top) * next.zoom,
     };
     zoomRef.current = next.zoom;
+    boundsRef.current = framed;
     queuedScroll.current = target;
     setZoom(next.zoom);
     setBounds(framed);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (viewport) {
-        viewport.scrollLeft = target.left;
-        viewport.scrollTop = target.top;
-        syncGrid(viewport, next.zoom, framed);
-      }
-      queuedScroll.current = null;
-    }));
   };
   useLayoutEffect(() => {
     const previous = previousBounds.current;
     const viewport = boardViewport.current;
-    if (viewport && previous !== bounds) {
+    if (viewport) {
+      // Apply the camera only after React has rendered its new bounds and scale.
+      // An animation frame can run before that commit and compensate twice.
       if (queuedScroll.current) {
         viewport.scrollLeft = queuedScroll.current.left;
         viewport.scrollTop = queuedScroll.current.top;
-      } else {
+        queuedScroll.current = null;
+      } else if (previous !== bounds) {
         viewport.scrollLeft += (previous.left - bounds.left) * zoomRef.current;
         viewport.scrollTop += (previous.top - bounds.top) * zoomRef.current;
       }
@@ -852,7 +848,7 @@ export function LogicBuilder() {
   }, [bounds, zoom]);
   const recenterCanvas = () => {
     const viewport = boardViewport.current;
-    if (!viewport) return;
+    if (!viewport || queuedScroll.current) return;
     syncGrid(viewport, zoomRef.current, bounds);
     const margin = Math.min(500, viewport.clientWidth / 2, viewport.clientHeight / 2);
     const stepX = (2 * viewport.clientWidth) / zoomRef.current;
@@ -871,7 +867,6 @@ export function LogicBuilder() {
     });
   };
   const queuedScroll = useRef<{ left: number; top: number } | null>(null);
-  const zoomFrame = useRef<number | null>(null);
   const spaceHeld = useRef(false);
   const activePan = useRef<{ id: number; x: number; y: number } | null>(null);
   const touchPointers = useRef(new Map<number, { x: number; y: number }>());
@@ -922,16 +917,8 @@ export function LogicBuilder() {
       queuedScroll.current = target;
       setZoom(next);
       setBounds(framed);
-      if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
-      zoomFrame.current = requestAnimationFrame(() => {
-        viewport.scrollLeft = target.left;
-        viewport.scrollTop = target.top;
-        syncGrid(viewport, next, framed);
-        queuedScroll.current = null;
-        zoomFrame.current = null;
-      });
     },
-    [bounds],
+    [],
   );
   const zoomFromCenter = (next: number) => {
     const rect = boardViewport.current?.getBoundingClientRect();
@@ -957,17 +944,10 @@ export function LogicBuilder() {
       top: (visibleTop - framed.top) * next,
     };
     zoomRef.current = next;
+    boundsRef.current = framed;
     queuedScroll.current = target;
     setZoom(next);
     setBounds(framed);
-    if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
-    zoomFrame.current = requestAnimationFrame(() => {
-      viewport.scrollLeft = target.left;
-      viewport.scrollTop = target.top;
-      syncGrid(viewport, next, framed);
-      queuedScroll.current = null;
-      zoomFrame.current = null;
-    });
   };
   useEffect(() => {
     const viewport = boardViewport.current;
@@ -1042,7 +1022,6 @@ export function LogicBuilder() {
       viewport.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
-      if (zoomFrame.current !== null) cancelAnimationFrame(zoomFrame.current);
     };
   }, [zoomAt]);
 

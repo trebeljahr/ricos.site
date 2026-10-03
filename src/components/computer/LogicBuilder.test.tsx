@@ -371,7 +371,7 @@ describe("circuit depth", () => {
     fireEvent.pointerUp(board, { pointerId: 5, pointerType: "mouse", button: 0, clientX: 50, clientY: 50 });
   });
 
-  it("keeps the point under the cursor fixed across batched wheel zooms", () => {
+  it.each(["before", "after"])("keeps the cursor anchor when animation frames run %s the zoom commit", (timing) => {
     render(<LogicBuilder />);
     const board = screen.getByRole("application", { name: "Circuit canvas" });
     const viewport = board.parentElement!.parentElement!;
@@ -401,8 +401,9 @@ describe("circuit depth", () => {
           deltaY: -Math.log(2) * 100, ctrlKey: true,
         }));
       }
+      if (timing === "before") frames.forEach((frame) => frame(0));
     });
-    act(() => { frames.forEach((frame) => frame(0)); });
+    if (timing === "after") act(() => { frames.forEach((frame) => frame(0)); });
     expect(screen.getByText("400%")).toBeTruthy();
     expect(pointAt(anchor.x, anchor.y, 4).x).toBeCloseTo(before.x);
     expect(pointAt(anchor.x, anchor.y, 4).y).toBeCloseTo(before.y);
@@ -435,6 +436,11 @@ describe("circuit depth", () => {
     expect(change.defaultPrevented).toBe(true);
     expect(screen.getByText("168%")).toBeTruthy();
 
+    const nextChange = new Event("gesturechange", { bubbles: true, cancelable: true });
+    Object.defineProperty(nextChange, "scale", { value: 1.6 });
+    act(() => viewport.dispatchEvent(nextChange));
+    expect(screen.getByText("192%")).toBeTruthy();
+
     const outside = new WheelEvent("wheel", { bubbles: true, cancelable: true, ctrlKey: true });
     container.parentElement!.dispatchEvent(outside);
     expect(outside.defaultPrevented).toBe(false);
@@ -442,7 +448,7 @@ describe("circuit depth", () => {
       deltaY: -120 });
     screen.getByRole("toolbar", { name: "Canvas view controls" }).dispatchEvent(toolbarWheel);
     expect(toolbarWheel.defaultPrevented).toBe(false);
-    expect(screen.getByText("168%")).toBeTruthy();
+    expect(screen.getByText("192%")).toBeTruthy();
   });
 
   it("keeps dots readable while zooming beyond the old limits", () => {

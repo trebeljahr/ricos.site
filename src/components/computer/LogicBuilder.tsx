@@ -185,11 +185,8 @@ type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
 const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
   portSides[(portSides.indexOf(side) + direction + portSides.length) % portSides.length];
-const inputSide = (node: Node): PortSide => node.inputSide ??
-  (["display4", "display8"].includes(node.type) ? "top" : "left");
-const outputSide = (node: Node): PortSide => node.outputSide ??
-  (["switch", "pulse", "clock", "high", "ground", "input4", "input8"].includes(node.type)
-    ? "bottom" : "right");
+const inputSide = (node: Node): PortSide => node.inputSide ?? "left";
+const outputSide = (node: Node): PortSide => node.outputSide ?? "right";
 const sideVector = (side: PortSide) => ({
   left: { x: -1, y: 0 }, top: { x: 0, y: -1 },
   right: { x: 1, y: 0 }, bottom: { x: 0, y: 1 },

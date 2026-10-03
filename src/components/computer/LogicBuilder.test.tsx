@@ -70,7 +70,7 @@ describe("circuit depth", () => {
     fireEvent.click(within(screen.getByRole("dialog", { name: "Clear canvas?" })).getByRole("button", { name: "Clear canvas" }));
     expect(screen.getByText("0 parts · 0 wires")).toBeTruthy();
   });
-  it("places input and display ports on wide defaults and lets parts change sides", () => {
+  it("defaults part ports to left and right and lets parts change sides", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT INPUT" }));
@@ -80,18 +80,24 @@ describe("circuit depth", () => {
       Array.from({ length: 8 }, (_, index) => `Toggle bit ${7 - index} of 8-BIT INPUT`),
     );
     expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
-      .parentElement?.style.top).toBe("100%");
-    expect(parseFloat(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 7" })
-      .parentElement!.style.left)).toBeLessThan(parseFloat(within(input)
-      .getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" }).parentElement!.style.left));
-    fireEvent.change(screen.getByLabelText("Output side"), { target: { value: "right" } });
-    expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
       .parentElement?.style.left).toBe("100%");
+    fireEvent.change(screen.getByLabelText("Output side"), { target: { value: "bottom" } });
+    expect(within(input).getByRole("button", { name: "Wire from 8-BIT INPUT Bit 0" })
+      .parentElement?.style.top).toBe("100%");
 
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT DISPLAY" }));
     const display = screen.getByRole("group", { name: "8-BIT DISPLAY — 8-BIT DISPLAY part" });
     expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
+      .parentElement?.style.left).toBe("0%");
+    fireEvent.change(screen.getByLabelText("Input side"), { target: { value: "top" } });
+    expect(within(display).getByRole("button", { name: "Connect to 8-BIT DISPLAY Bit 0" })
       .parentElement?.style.top).toBe("0%");
+
+    fireEvent.click(within(parts).getByRole("button", { name: "SWITCH" }));
+    const switches = screen.getAllByRole("group", { name: "SWITCH — SWITCH part" });
+    const switchPart = switches[switches.length - 1];
+    expect(within(switchPart).getByRole("button", { name: "Wire from SWITCH Output" })
+      .parentElement?.style.left).toBe("100%");
   });
   it("starts new parts unnamed and edits or clears a name inline", () => {
     render(<LogicBuilder />);

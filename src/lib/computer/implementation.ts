@@ -143,7 +143,7 @@ function dLatchCircuit(): Circuit {
   return { name: "Gated D latch", nodes, wires };
 }
 
-const storageCircuit = (type: "dff" | "srlatch" | "dlatch") =>
+export const storageCircuit = (type: "dff" | "srlatch" | "dlatch") =>
   type === "dff" ? dffCircuit() : type === "srlatch" ? srLatchCircuit() : dLatchCircuit();
 
 export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {

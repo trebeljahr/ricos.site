@@ -7,7 +7,9 @@ import {
   Cross1Icon,
   CursorArrowIcon,
   EnterFullScreenIcon,
+  ExitFullScreenIcon,
   Link2Icon,
+  LoopIcon,
   LayersIcon,
   PauseIcon,
   PlayIcon,
@@ -19,13 +21,14 @@ import type { ComponentType } from "react";
 import { FaTrash } from "../Icons";
 
 type ActionIconName =
-  | "unfold" | "play" | "pause" | "step" | "reset" | "save"
+  | "unfold" | "fold" | "play" | "pause" | "step" | "reset" | "save"
   | "export" | "import" | "clear" | "undo" | "redo" | "wiring"
   | "bus" | "delete" | "rotateLeft" | "rotateRight" | "cut"
   | "selectAll" | "close";
 
 const icons = {
-  unfold: EnterFullScreenIcon,
+  unfold: LoopIcon,
+  fold: ExitFullScreenIcon,
   play: PlayIcon,
   pause: PauseIcon,
   step: TrackNextIcon,

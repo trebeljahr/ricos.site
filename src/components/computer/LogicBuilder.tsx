@@ -29,7 +29,7 @@ import {
   WIRE_COLORS,
   type WireColor,
 } from "../../lib/computer/logic";
-import { collectUnfoldableIds } from "../../lib/computer/implementation";
+import { buildImplementation, collectUnfoldableIds, storageCircuit } from "../../lib/computer/implementation";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
@@ -42,10 +42,11 @@ const WIDTH = 900;
 const HEIGHT = 520;
 const NODE_WIDTH = 132;
 const MODULE_WIDTH = 236;
-const nodeWidth = (node: Node) =>
+type DisplayNode = Node & { displayWidth?: number; displayHeight?: number };
+const nodeWidth = (node: DisplayNode) => node.displayWidth ?? (
   node.type === "module" ? MODULE_WIDTH :
   ["input8", "display8"].includes(node.type) ? 212 :
-  ["input4", "display4"].includes(node.type) ? 156 : NODE_WIDTH;
+  ["input4", "display4"].includes(node.type) ? 156 : NODE_WIDTH);
 const circuitHints: Record<string, string> = {
   ...MEMORY_HINTS,
   "8-bit half adder": "Adds A and B bit by bit. Each bit has SUM and CARRY outputs.",
@@ -136,21 +137,21 @@ const palette: GateType[] = [
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 type ViewportState = { zoom: number; left: number; top: number };
 type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[]; viewport?: ViewportState; unfoldedViewport?: ViewportState };
-type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[] };
+type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[]; unfolded: string[] };
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
   nodes: parent.nodes.map((item) =>
     item.id === moduleId ? { ...item, module: clone(inner) } : item,
   ),
 });
-const nodeHeight = (node: Node) =>
+const nodeHeight = (node: DisplayNode) => node.displayHeight ?? (
   node.type === "module"
     ? Math.max(NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 25)
     : ["input4", "input8", "display4", "display8"].includes(node.type)
       ? Math.max(node.type.startsWith("display") ? 142 : NODE_HEIGHT, 92 + Math.max(inputCount(node), outputCount(node)) * 24)
       : ["lamp", "switch", "pulse"].includes(node.type)
         ? 126
-      : NODE_HEIGHT;
+      : NODE_HEIGHT);
 type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
 const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
@@ -201,8 +202,10 @@ export function LogicBuilder() {
     circuit: clone(PRESETS["Half adder"]),
     saved: {},
     viewPath: [],
+    unfolded: [],
   }));
   const { circuit, saved, viewPath } = history.state;
+  const unfolded = useMemo(() => new Set(history.state.unfolded ?? []), [history.state.unfolded]);
   const [snapshot, setSnapshot] = useState<Snapshot>(initialSnapshot);
   const [clockHigh, setClockHigh] = useState(false);
   const [running, setRunning] = useState(false);
@@ -220,8 +223,10 @@ export function LogicBuilder() {
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily>("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
-  const [unfolded, setUnfolded] = useState<ReadonlySet<string>>(() => new Set());
   const [unfoldedRestore, setUnfoldedRestore] = useState<ViewportState | undefined>();
+  const setUnfolded = (change: ReadonlySet<string> | ((current: ReadonlySet<string>) => ReadonlySet<string>)) =>
+    history.update((current) => ({ ...current, unfolded: [...(typeof change === "function"
+      ? change(new Set(current.unfolded ?? [])) : change)] }));
   const [menu, setMenu] = useState<{
     x: number;
     y: number;
@@ -291,17 +296,51 @@ export function LogicBuilder() {
   );
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const expandedDetails = useMemo(() => new Map(circuit.nodes.flatMap((node) => {
+    if (!unfolded.has(node.id)) return [];
+    const inner = node.type === "module" ? node.module
+      : GATE_NAMES.includes(node.type as LogicGate) ? gateBlueprint(node.type as LogicGate, "transistor")
+      : node.type === "dff" && node.label?.startsWith("FLOATING GATE")
+        ? { name: "Floating gate", nodes: [{ ...node, x: 0, y: 0 }], wires: [] }
+      : node.type === "dff" || node.type === "srlatch" || node.type === "dlatch"
+        ? storageCircuit(node.type)
+      : node.type === "dramcell" ? { name: "DRAM cell", nodes: [{ ...node, x: 0, y: 0 }], wires: [] }
+      : undefined;
+    if (!inner) return [];
+    const nested = new Set([...unfolded].filter((id) => id.startsWith(`${node.id}/`))
+      .map((id) => id.slice(node.id.length + 1)));
+    const forced = node.type === "dramcell" || (node.type === "dff" && node.label?.startsWith("FLOATING GATE"))
+      ? [node.id] : [];
+    const diagram = buildImplementation(inner, new Set([...nested, ...forced]));
+    return [[node.id, { inner, forced, diagram, width: Math.max(nodeWidth(node), diagram.width + 24),
+      height: Math.max(nodeHeight(node), diagram.height + 112) }]] as const;
+  })), [circuit.nodes, unfolded]);
+  const displayNodes = useMemo<DisplayNode[]>(() => circuit.nodes.map((node) => {
+    let x = node.x;
+    let y = node.y;
+    for (const source of circuit.nodes) {
+      if (source.id === node.id) continue;
+      const detail = expandedDetails.get(source.id);
+      if (!detail) continue;
+      if (node.x >= source.x + nodeWidth(source) && node.y + nodeHeight(node) > source.y && node.y < source.y + detail.height)
+        x += detail.width - nodeWidth(source) + 36;
+      else if (node.y >= source.y + nodeHeight(source) && node.x + nodeWidth(node) > source.x && node.x < source.x + detail.width)
+        y += detail.height - nodeHeight(source) + 36;
+    }
+    const detail = expandedDetails.get(node.id);
+    return { ...node, x, y, displayWidth: detail?.width, displayHeight: detail?.height };
+  }), [circuit.nodes, expandedDetails]);
   const [selectMode, setSelectMode] = useState(false);
   const [bounds, setBounds] = useState({ left: -2000, top: -2000, right: 3000, bottom: 2500 });
   const canvasWidth = bounds.right - bounds.left;
   const canvasHeight = bounds.bottom - bounds.top;
   const previousBounds = useRef(bounds);
   useEffect(() => {
-    if (!circuit.nodes.length) return;
-    const left = Math.min(...circuit.nodes.map((node) => node.x)) - 300;
-    const top = Math.min(...circuit.nodes.map((node) => node.y)) - 300;
-    const right = Math.max(...circuit.nodes.map((node) => node.x + nodeWidth(node))) + 300;
-    const bottom = Math.max(...circuit.nodes.map((node) => node.y + nodeHeight(node))) + 300;
+    if (!displayNodes.length) return;
+    const left = Math.min(...displayNodes.map((node) => node.x)) - 300;
+    const top = Math.min(...displayNodes.map((node) => node.y)) - 300;
+    const right = Math.max(...displayNodes.map((node) => node.x + nodeWidth(node))) + 300;
+    const bottom = Math.max(...displayNodes.map((node) => node.y + nodeHeight(node))) + 300;
     setBounds((current) => left >= current.left && top >= current.top &&
       right <= current.right && bottom <= current.bottom ? current : {
         left: Math.min(current.left, left),
@@ -309,13 +348,14 @@ export function LogicBuilder() {
         right: Math.max(current.right, right),
         bottom: Math.max(current.bottom, bottom),
       });
-  }, [circuit.nodes]);
+  }, [displayNodes]);
+
   const routes = useMemo(
     () =>
       routeCircuitWires(
         circuit.wires.flatMap((wire) => {
-          const from = circuit.nodes.find((node) => node.id === wire.from);
-          const to = circuit.nodes.find((node) => node.id === wire.to);
+          const from = displayNodes.find((node) => node.id === wire.from);
+          const to = displayNodes.find((node) => node.id === wire.to);
           return from && to
             ? [
                 {
@@ -329,7 +369,7 @@ export function LogicBuilder() {
               ]
             : [];
         }),
-        circuit.nodes.map((node) => ({
+        displayNodes.map((node) => ({
           id: node.id,
           x: node.x,
           y: node.y,
@@ -337,12 +377,12 @@ export function LogicBuilder() {
           height: nodeHeight(node),
         })),
         busWiring && circuit.wires.every((wire) => {
-          const from = circuit.nodes.find((node) => node.id === wire.from);
-          const to = circuit.nodes.find((node) => node.id === wire.to);
+          const from = displayNodes.find((node) => node.id === wire.from);
+          const to = displayNodes.find((node) => node.id === wire.to);
           return from && to && outputSide(from) === "right" && inputSide(to) === "left";
         }),
       ),
-    [circuit.nodes, circuit.wires, busWiring],
+    [displayNodes, circuit.wires, busWiring],
   );
   const [drag, setDrag] = useState<{
     x: number;
@@ -380,7 +420,7 @@ export function LogicBuilder() {
   }, [bounds]);
   const growCanvas = () => {
     const viewport = boardViewport.current;
-    if (!viewport || unfolded.size) return;
+    if (!viewport) return;
     const margin = 500;
     const step = 2000;
     setBounds((current) => ({
@@ -453,10 +493,10 @@ export function LogicBuilder() {
   const fitCanvas = () => {
     const viewport = boardViewport.current;
     if (!viewport) return;
-    const left = Math.min(0, ...circuit.nodes.map((node) => node.x)) - 40;
-    const top = Math.min(0, ...circuit.nodes.map((node) => node.y)) - 40;
-    const right = Math.max(WIDTH, ...circuit.nodes.map((node) => node.x + nodeWidth(node))) + 40;
-    const bottom = Math.max(HEIGHT, ...circuit.nodes.map((node) => node.y + nodeHeight(node))) + 40;
+    const left = Math.min(0, ...displayNodes.map((node) => node.x)) - 40;
+    const top = Math.min(0, ...displayNodes.map((node) => node.y)) - 40;
+    const right = Math.max(WIDTH, ...displayNodes.map((node) => node.x + nodeWidth(node))) + 40;
+    const bottom = Math.max(HEIGHT, ...displayNodes.map((node) => node.y + nodeHeight(node))) + 40;
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
       (viewport.clientWidth - 24) / (right - left),
       (viewport.clientHeight - 24) / (bottom - top)));
@@ -634,9 +674,8 @@ export function LogicBuilder() {
   };
   const load = (next: Circuit) => {
     const copy = clone(next);
-    setUnfolded(new Set());
     circuitRef.current = copy;
-    publish({ ...history.current(), circuit: copy, viewPath: [] });
+    publish({ ...history.current(), circuit: copy, viewPath: [], unfolded: [] });
     setPending(null);
     setWireDraft(null);
     wireDraftRef.current = null;
@@ -651,7 +690,6 @@ export function LogicBuilder() {
       ...viewPath,
       { parent: clone(circuit), snapshot: parentSnapshot, via, moduleId, unfolded: [...unfolded], viewport: captureViewport() },
     ];
-    setUnfolded(new Set());
     setUnfoldedRestore(undefined);
     restoreViewport();
     const copy = clone(next);
@@ -667,7 +705,7 @@ export function LogicBuilder() {
       });
     }
     circuitRef.current = copy;
-    publish({ ...history.current(), circuit: copy, viewPath: nextPath }, false);
+    publish({ ...history.current(), circuit: copy, viewPath: nextPath, unfolded: [] }, false);
     setRunning(false);
     setSelected([]);
     setSelectedWires([]);
@@ -701,11 +739,10 @@ export function LogicBuilder() {
         : level.snapshot;
     }
     const level = viewPath[depth];
-    setUnfolded(childUnfolded);
     setUnfoldedRestore(level.unfoldedViewport);
     restoreViewport(level.viewport);
     circuitRef.current = parent;
-    publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, depth) }, false);
+    publish({ ...history.current(), circuit: parent, viewPath: viewPath.slice(0, depth), unfolded: [...childUnfolded] }, false);
     setRunning(false);
     setSelected(level.moduleId ? [level.moduleId] : []);
     setSelectedWires([]);
@@ -734,14 +771,14 @@ export function LogicBuilder() {
       source = part.module;
       innerSnapshot = innerSnapshot.modules[id] ?? initialSnapshot();
     }
-    setUnfolded(new Set([...unfolded].filter((entry) => entry.startsWith(`${path}/`))
-      .map((entry) => entry.slice(path.length + 1))));
     setUnfoldedRestore(undefined);
     restoreViewport();
     const copy = clone(source);
     moduleInputs(copy).forEach((input) => { input.value = Boolean(innerSnapshot.values[input.id]); });
     circuitRef.current = copy;
-    publish({ ...history.current(), circuit: copy, viewPath: [...viewPath, ...levels] }, false);
+    publish({ ...history.current(), circuit: copy, viewPath: [...viewPath, ...levels],
+      unfolded: [...unfolded].filter((entry) => entry.startsWith(`${path}/`))
+        .map((entry) => entry.slice(path.length + 1)) }, false);
     setRunning(false);
     setSelected([]);
     setSelectedWires([]);
@@ -753,8 +790,10 @@ export function LogicBuilder() {
   };
   const toggleUnfolded = (id: string) => setUnfolded((current) => {
     const next = new Set(current);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
+    if (next.has(id)) {
+      for (const entry of next)
+        if (entry === id || entry.startsWith(`${id}/`)) next.delete(entry);
+    } else next.add(id);
     return next;
   });
   const viewGate = (gate: LogicGate, family: BlueprintFamily, source?: Node) => {
@@ -1279,6 +1318,7 @@ export function LogicBuilder() {
           <strong>{circuit.name}</strong>
         </div>
         <div className={styles.transport}>
+
           <details className={styles.learningMenu} ref={learningMenu}>
             <summary>Learning <svg aria-hidden="true" viewBox="0 0 12 12"><path d="m2 4 4 4 4-4" /></svg></summary>
             <div className={styles.learningPanel}>
@@ -1301,8 +1341,14 @@ export function LogicBuilder() {
                   </div>
                 ))}
               </div>
+
             </div>
           </details>
+          <button type="button" onClick={() => setUnfolded(new Set(circuit.nodes
+            .filter((node) => node.type === "module" || GATE_NAMES.includes(node.type as LogicGate))
+            .map((node) => node.id)))}>
+            <ActionIcon name="unfold" /> Unfold one level
+          </button>
           <div className={styles.toolGroup} role="group" aria-label="Edit circuit">
             <span className={styles.toolGroupLabel}>Edit</span>
           <button
@@ -1547,7 +1593,7 @@ export function LogicBuilder() {
         </aside>
         <div ref={workspace} className={styles.workspace}>
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
-            style={{ display: unfolded.size ? "none" : undefined }}>
+            >
             <button
               type="button"
               onClick={() => zoomFromCenter(zoomRef.current / 1.25)}
@@ -1583,11 +1629,11 @@ export function LogicBuilder() {
           <div
             ref={boardViewport}
             onScroll={growCanvas}
-            className={clsx(styles.boardScroll, !selectMode && !unfolded.size && styles.panMode)}
-            onPointerDownCapture={unfolded.size ? undefined : gestureDown}
-            onPointerMoveCapture={unfolded.size ? undefined : gestureMove}
-            onPointerUpCapture={unfolded.size ? undefined : gestureUp}
-            onPointerCancelCapture={unfolded.size ? undefined : gestureUp}
+            className={clsx(styles.boardScroll, !selectMode && styles.panMode)}
+            onPointerDownCapture={gestureDown}
+            onPointerMoveCapture={gestureMove}
+            onPointerUpCapture={gestureUp}
+            onPointerCancelCapture={gestureUp}
             onClickCapture={(event) => {
               if (touchMoved.current) {
                 event.preventDefault();
@@ -1596,27 +1642,12 @@ export function LogicBuilder() {
               }
             }}
           >
-            {unfolded.size > 0 && (
-              <UnfoldedCanvas circuit={circuit} unfolded={unfolded}
-                restoreView={unfoldedRestore}
-                onToggle={toggleUnfolded}
-                onUnfoldAll={(ids) => setUnfolded(new Set(ids))}
-                onFoldAll={() => setUnfolded(new Set())}
-                onEnter={enterModulePath}
-                snapshot={snapshot}
-                onToggleSwitch={(id) => setCircuit((current) => ({ ...current,
-                  nodes: current.nodes.map((item) => item.id === id ? { ...item, value: !item.value } : item),
-                }))}
-                showVdd={showVdd} showGround={showGround}
-                onVddChange={setShowVdd} onGroundChange={setShowGround} />
-            )}
             <div
               style={{
                 width: canvasWidth * zoom,
                 height: canvasHeight * zoom,
                 position: "relative",
                 overflow: "hidden",
-                display: unfolded.size ? "none" : undefined,
               }}
             >
               <div
@@ -1787,8 +1818,8 @@ export function LogicBuilder() {
                       );
                     })}
                   {circuit.wires.map((wire) => {
-                    const from = circuit.nodes.find((node) => node.id === wire.from);
-                    const to = circuit.nodes.find((node) => node.id === wire.to);
+                    const from = displayNodes.find((node) => node.id === wire.from);
+                    const to = displayNodes.find((node) => node.id === wire.to);
                     if (!from || !to) return null;
                     if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
                     const { x: x1, y: y1 } = portPoint(from, wire.output ?? 0, "output");
@@ -1897,7 +1928,7 @@ export function LogicBuilder() {
                     />
                   )}
                 </svg>
-                {circuit.nodes
+                {displayNodes
                   .filter((node) => !hasTransistors || powerVisible(node))
                   .map((node) => (
                     <div
@@ -1912,6 +1943,7 @@ export function LogicBuilder() {
                       }}
                       className={clsx(
                         styles.node,
+                        expandedDetails.has(node.id) && styles.expandedNode,
                         selected.includes(node.id) && styles.selected,
                         snapshot.values[node.id] && styles.active,
                         node.type === "lamp" && snapshot.values[node.id] && styles.lampLit,
@@ -2024,6 +2056,7 @@ export function LogicBuilder() {
                           styles.nodeBody,
                           node.type === "module" && styles.moduleBody,
                         )}
+                        style={expandedDetails.has(node.id) ? { display: "none" } : undefined}
                       >
                         <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
                           {editingLabel?.id === node.id ? (
@@ -2194,15 +2227,57 @@ export function LogicBuilder() {
                       </div>
                       {(node.type === "module" || ["dff", "srlatch", "dlatch", "dramcell"].includes(node.type) || GATE_NAMES.includes(node.type as LogicGate)) && (
                         <div className={styles.nodeActions}>
-                          <button type="button" title={`Unfold ${node.label || LABELS[node.type]} in place`}
-                            aria-label={`Unfold ${node.label || LABELS[node.type]} in place`}
-                            onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}>▣</button>
+                          <button type="button" title={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
+                            aria-label={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
+                            onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}><ActionIcon name={unfolded.has(node.id) ? "fold" : "unfold"} /></button>
                           {node.type === "module" && node.module && (
                             <button type="button" title={`Enter ${node.label || node.module.name}`}
                               aria-label={`Enter ${node.label || node.module.name}`}
                               onClick={(event) => { event.stopPropagation(); enterCircuit(node.module!, node.label || node.module!.name, node.id); }}>↗</button>
                           )}
                         </div>
+                      )}
+                      {expandedDetails.get(node.id) && (
+                        <div className={styles.inlineCircuit} onPointerDown={(event) => event.stopPropagation()}>
+                          <div className={styles.inlineCircuitHeader}>
+                            <strong>{node.label || node.module?.name || LABELS[node.type]}</strong>
+                            <button type="button" disabled={!collectUnfoldableIds(expandedDetails.get(node.id)!.inner, `${node.id}/`)
+                              .some((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))))}
+                              onClick={() => {
+                              const inner = expandedDetails.get(node.id)!.inner;
+                              const candidates = collectUnfoldableIds(inner, `${node.id}/`)
+                                .filter((id) => !unfolded.has(id) && unfolded.has(id.slice(0, id.lastIndexOf("/"))));
+                              const depth = Math.min(...candidates.map((id) => id.split("/").length));
+                              if (Number.isFinite(depth)) setUnfolded((current) =>
+                                new Set([...current, ...candidates.filter((id) => id.split("/").length === depth)]));
+                            }}>Unfold one level deeper</button>
+                          </div>
+                          <UnfoldedCanvas circuit={expandedDetails.get(node.id)!.inner}
+                            embedded pathPrefix={`${node.id}/`} unfolded={unfolded}
+                            forcedExpanded={expandedDetails.get(node.id)!.forced}
+                            onToggle={toggleUnfolded} onUnfoldAll={() => {}} onFoldAll={() => {}}
+                            onEnter={enterModulePath} snapshot={snapshot}
+                            onToggleSwitch={() => {}} showVdd={showVdd} showGround={showGround}
+                            onVddChange={setShowVdd} onGroundChange={setShowGround} />
+                        </div>
+                      )}
+                      {node.type === "module" && expandedDetails.get(node.id) && (
+                        <svg className={styles.inlinePortLinks} width={nodeWidth(node)} height={nodeHeight(node)} aria-hidden="true">
+                          {moduleInputs(node.module!).map((port, index) => {
+                            const target = expandedDetails.get(node.id)!.diagram.nodes.find((part) => part.id === port.id);
+                            if (!target) return null;
+                            const start = portPoint(node, index, "input");
+                            const end = { x: target.x + 80, y: target.y + 104 };
+                            return <path key={`in-${port.id}`} d={wirePath({ x: start.x - node.x, y: start.y - node.y }, end)} />;
+                          })}
+                          {moduleOutputs(node.module!).map((port, index) => {
+                            const source = expandedDetails.get(node.id)!.diagram.nodes.find((part) => part.id === port.id);
+                            if (!source) return null;
+                            const end = portPoint(node, index, "output");
+                            return <path key={`out-${port.id}`} d={wirePath({ x: source.x + 150, y: source.y + 104 },
+                              { x: end.x - node.x, y: end.y - node.y })} />;
+                          })}
+                        </svg>
                       )}
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div

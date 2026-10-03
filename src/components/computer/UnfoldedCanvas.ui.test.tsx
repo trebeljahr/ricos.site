@@ -1,34 +1,37 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { LogicBuilder } from "./LogicBuilder";
 
 afterEach(cleanup);
 
 describe("inline circuit unfolding", () => {
-  it("unfolds and folds a gate without leaving the builder", () => {
+  it("keeps the board and records fold and unfold in history", () => {
     render(<LogicBuilder />);
-    expect(screen.getByRole("button", { name: "Run clock" })).toBeTruthy();
+    const board = screen.getByRole("application", { name: "Circuit canvas" });
     fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
-    expect(screen.getByRole("button", { name: "Run clock" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Fold SUM" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Fold SUM" }));
+    expect(screen.getByRole("application", { name: "Circuit canvas" })).toBe(board);
+    expect(screen.getByRole("button", { name: "Fold SUM in place" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(screen.getByRole("button", { name: "Unfold SUM in place" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Redo" }));
+    expect(screen.getByRole("button", { name: "Fold SUM in place" })).toBeTruthy();
   });
-  it("lets a black box enter its own detail view or unfold recursively", () => {
+
+  it("expands a whole adder box one level at a time", () => {
     render(<LogicBuilder />);
-    fireEvent.click(screen.getByRole("button", { name: "Examples" }));
-    fireEvent.click(screen.getByTitle("Open 8-bit ALU blueprint"));
-    fireEvent.click(screen.getByRole("button", { name: "Unfold ALU SLICE 0 in place" }));
-    expect(screen.getByRole("button", { name: "Unfold FULL ADDER" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Unfold FULL ADDER" }));
-    expect(screen.getByRole("button", { name: "Unfold HALF ADDER 1" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Enter FULL ADDER" }));
-    expect(screen.getByRole("navigation", { name: "Circuit depth" }).querySelector('[aria-current="page"]')?.textContent).toBe("1-bit full adder");
-    fireEvent.click(screen.getByRole("button", { name: /Back/ }));
-    expect(screen.getByRole("button", { name: "Fold FULL ADDER" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Enter FULL ADDER" }));
-    fireEvent.click(screen.getByRole("button", { name: "Return to 8-bit ALU" }));
-    expect(screen.getByRole("button", { name: "Fold FULL ADDER" })).toBeTruthy();
+    const parts = screen.getByLabelText("Gate palette");
+    fireEvent.click(within(parts).getByRole("button", { name: "8-bit full adder" }));
+    const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
+    fireEvent.click(within(adder).getByRole("button", { name: /Unfold .* in place/i }));
+    expect(screen.getByRole("application", { name: "Circuit canvas" })).toBeTruthy();
+    const expanded = screen.getByLabelText("8-bit full adder expanded circuit");
+    expect(within(expanded).getByRole("button", { name: "Unfold FULL ADDER 0" })).toBeTruthy();
+    fireEvent.click(within(adder).getByRole("button", { name: "Unfold one level deeper" }));
+    expect(within(expanded).getAllByRole("button", { name: "Unfold HALF ADDER 1" }).length).toBeGreaterThan(0);
+    fireEvent.click(within(adder).getByRole("button", { name: "Unfold one level deeper" }));
+    expect(within(expanded).getAllByRole("button", { name: "Unfold SUM XOR" }).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(within(expanded).getAllByRole("button", { name: "Unfold HALF ADDER 1" }).length).toBeGreaterThan(0);
   });
 });

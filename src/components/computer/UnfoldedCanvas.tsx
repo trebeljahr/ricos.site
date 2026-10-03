@@ -5,6 +5,7 @@ import styles from "./UnfoldedCanvas.module.css";
 
 const NODE_WIDTH = 140;
 const NODE_HEIGHT = 64;
+const EMPTY_IDS: string[] = [];
 type ViewportState = { zoom: number; left: number; top: number };
 
 type Props = {
@@ -21,6 +22,9 @@ type Props = {
   showGround: boolean;
   onVddChange: (visible: boolean) => void;
   onGroundChange: (visible: boolean) => void;
+  embedded?: boolean;
+  pathPrefix?: string;
+  forcedExpanded?: string[];
 };
 
 export function UnfoldedCanvas({
@@ -37,12 +41,19 @@ export function UnfoldedCanvas({
   showGround,
   onVddChange,
   onGroundChange,
+  embedded = false,
+  pathPrefix = "",
+  forcedExpanded = EMPTY_IDS,
 }: Props) {
-  const diagram = useMemo(() => buildImplementation(circuit, unfolded), [circuit, unfolded]);
+  const localUnfolded = useMemo(() => new Set([...unfolded]
+    .filter((id) => id.startsWith(pathPrefix))
+    .map((id) => id.slice(pathPrefix.length))), [unfolded, pathPrefix]);
+  const diagram = useMemo(() => buildImplementation(circuit,
+    new Set([...localUnfolded, ...forcedExpanded])), [circuit, localUnfolded, forcedExpanded]);
   const [zoom, setZoom] = useState(0.45);
   const [selected, setSelected] = useState<string | null>(null);
   const scroll = useRef<HTMLDivElement>(null);
-  const enter = (path: string) => onEnter(path, {
+  const enter = (path: string) => onEnter(`${pathPrefix}${path}`, {
     zoom,
     left: scroll.current?.scrollLeft ?? 0,
     top: scroll.current?.scrollTop ?? 0,
@@ -91,8 +102,8 @@ export function UnfoldedCanvas({
   );
 
   return (
-    <section className={styles.view} aria-label="Unfolded circuit canvas">
-      <div className={styles.toolbar}>
+    <section className={embedded ? styles.embedded : styles.view} aria-label={embedded ? `${circuit.name} expanded circuit` : "Unfolded circuit canvas"}>
+      {!embedded && <div className={styles.toolbar}>
         <strong>{circuit.name}</strong>
         <button type="button" onClick={() => onUnfoldAll(collectUnfoldableIds(circuit))}>
           Unfold all
@@ -157,14 +168,14 @@ export function UnfoldedCanvas({
           />{" "}
           GND
         </label>
-      </div>
+      </div>}
       <div className={styles.scroll} ref={scroll}>
         <svg
-          width={diagram.width * zoom}
-          height={diagram.height * zoom}
+          width={embedded ? diagram.width : diagram.width * zoom}
+          height={embedded ? diagram.height : diagram.height * zoom}
           viewBox={`0 0 ${diagram.width} ${diagram.height}`}
           role="img"
-          aria-label={`Circuit with ${unfolded.size} unfolded boxes`}
+          aria-label={`Circuit with ${localUnfolded.size} unfolded boxes`}
         >
           <g className={styles.groups}>
             {groups.map((group) => {
@@ -183,11 +194,11 @@ export function UnfoldedCanvas({
                       role="button"
                       tabIndex={0}
                       aria-label={`Fold ${boxes.get(id)!.label}`}
-                      onClick={() => onToggle(id)}
+                      onClick={() => onToggle(`${pathPrefix}${id}`)}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                           event.preventDefault();
-                          onToggle(id);
+                          onToggle(`${pathPrefix}${id}`);
                         }
                       }}
                     >
@@ -310,11 +321,11 @@ export function UnfoldedCanvas({
                           role="button"
                           tabIndex={0}
                           aria-label={`Unfold ${box.label}`}
-                          onClick={() => onToggle(box.id)}
+                          onClick={() => onToggle(`${pathPrefix}${box.id}`)}
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
                               event.preventDefault();
-                              onToggle(box.id);
+                              onToggle(`${pathPrefix}${box.id}`);
                             }
                           }}
                         >

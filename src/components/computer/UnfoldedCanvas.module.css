@@ -1,4 +1,5 @@
 .view{display:flex;flex-direction:column;min-height:520px;height:100%;background:#101820;color:#e7edf3;overflow:hidden;font-family:ui-sans-serif,system-ui,sans-serif}
+.embedded{height:calc(100% - 42px);overflow:auto;background:#17243a;color:#e7edf3;font-family:ui-sans-serif,system-ui,sans-serif}.embedded .scroll{overflow:visible;background:transparent}.embedded svg{display:block}
 .toolbar{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding:14px 20px;background:#17232d;border-bottom:1px solid #344250}
 .toolbar button{background:#263743;color:#d7e4eb;border:1px solid #46606a;border-radius:6px;padding:8px 11px;cursor:pointer}
 .toolbar div{display:flex;flex-direction:column;gap:3px}.toolbar strong{font-size:16px}.toolbar span{color:#a9b8c2;font-size:11px}

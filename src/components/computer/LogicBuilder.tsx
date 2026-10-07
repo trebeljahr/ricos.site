@@ -63,6 +63,7 @@ import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
 import { nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
+import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
 import { GateSymbol } from "./GateSymbol";
@@ -74,12 +75,13 @@ const HEIGHT = 520;
 const NODE_WIDTH = 132;
 const NODE_HEIGHT = 116;
 const MODULE_WIDTH = 300;
-const PRESETS = Object.fromEntries(Object.entries(sourcePresets).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
+const PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...CPU_PRESETS }).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
 const BLUEPRINTS = Object.fromEntries(Object.entries(sourceBlueprints).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
 const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(sourceGateBlueprint(gate, family));
 type DisplayNode = GeometryNode & { expanded?: boolean };
 const circuitHints: Record<string, string> = {
   ...MEMORY_HINTS,
+  ...CPU_HINTS,
   "8-bit half adder": "Adds A and B bit by bit. Each bit has SUM and CARRY outputs.",
   "8-bit full adder":
     "Adds A, B, and CARRY IN. OUT0–OUT7 form the sum; CARRY OUT is the final carry.",

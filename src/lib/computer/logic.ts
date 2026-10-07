@@ -108,7 +108,7 @@ export const INPUTS: Record<GateType, number> = {
   splitter: 1,
   merger: 8,
   busdriver: 2,
-  bus: 4,
+  bus: 8,
   module: 0,
 };
 export const LABELS: Record<GateType, string> = {

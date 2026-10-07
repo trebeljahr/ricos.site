@@ -1,0 +1,9 @@
+{
+  "id": "ricos-site-components",
+  "name": "ricos.site components",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Commands that insert ricos.site MDX components (newsletter form, donation box) at the cursor.",
+  "author": "Rico Trebeljahr",
+  "isDesktopOnly": false
+}

@@ -2,6 +2,7 @@ import type { MDXComponents } from "mdx/types";
 import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo } from "react";
 import type { MDXResult } from "src/@types";
+import type { MdxDemoComponent } from "src/lib/mdxDemoComponents";
 import { ByteExplorer } from "./computer/ByteExplorer";
 import { FourByteExplorer } from "./computer/FourByteExplorer";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
@@ -21,7 +22,9 @@ import { Triangulation } from "./Demos/collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
 import { CompleteShaderEditor } from "./Demos/FullscreenShader";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
+import { DonationCard, DonationStrip } from "./DonationCard";
 import { MarkdownRenderers } from "./MarkdownRenderers";
+import { NewsletterForm } from "./NewsletterForm";
 
 const allComponents = {
   ByteExplorer,
@@ -43,7 +46,11 @@ const allComponents = {
   Triangulation,
   ThreeFiberDemo,
   ShaderEditor: CompleteShaderEditor,
-};
+  // Inserted from Obsidian by the ricos-site-components plugin (src/scripts/obsidian).
+  NewsletterForm,
+  DonationStrip,
+  DonationCard,
+} satisfies Record<MdxDemoComponent, unknown>;
 
 interface MDXProps {
   source: MDXResult;

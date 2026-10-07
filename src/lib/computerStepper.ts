@@ -60,6 +60,9 @@ export type Snapshot = {
   frame: number[];
   bank: number;
   frameWrite: FrameWrite | null;
+  /** The big screen's port: ADDR and whether DA moves it down a row. */
+  portAddr: number;
+  portDown: boolean;
   stack: number[];
   output: number[];
   activeAddress: number | null;
@@ -135,10 +138,18 @@ export const BLITTER_BASE = 0xe0;
  * the tile (BANK, low 4 bits): bits 0–1 its column, bits 2–3 its row of tiles.
  * The frame address is then just wires: BANK0, BANK1, A0, A1, A2, BANK2,
  * BANK3. Reading D8 gives BANK.
+ *
+ * D9–DB are an auto-increment port, as on the NES picture chip (PPUADDR and
+ * PPUDATA): STM D9 sets ADDR (a frame byte, 0–127), and every read or write
+ * of DA reaches the byte at ADDR and then moves ADDR on by 1 (across a row)
+ * or, with DB bit 0 set, by 4 (down one pixel row). One store per byte, no
+ * address arithmetic in the program. Reading D9 gives ADDR, DB the step bit.
  */
 export const BIG_SCREEN = SCREEN_SIZES["32×32"];
 export const BIG_FRAME_BYTES = frameBytes(BIG_SCREEN);
-export const BIG_PORT = { window: 0xd0, bank: 0xd8 } as const;
+export const BIG_PORT = { window: 0xd0, bank: 0xd8, addr: 0xd9, data: 0xda, step: 0xdb } as const;
+/** How far ADDR moves after a DA access: one byte across, or one row (4 bytes) down. */
+export const portStep = (down: boolean) => (down ? rowBytes(BIG_SCREEN) : 1);
 export const BIG_TILES = 16;
 export const isBigScreenAddress = (address: number) => (address & 0xf0) === 0xd0;
 export const isWindowAddress = (address: number) => (address & 0xf8) === BIG_PORT.window;
@@ -521,6 +532,18 @@ export function describeOperand(
       short: `[${hex(operand)}] window ${operand & 7}`,
       long: `big-screen window row ${operand & 7} (${hex(operand)})`,
     };
+  if (kind === "RAM address" && operand === BIG_PORT.addr)
+    return {
+      short: `[${hex(operand)}] addr`,
+      long: `the big screen's port ADDR (${hex(operand)})`,
+    };
+  if (kind === "RAM address" && operand === BIG_PORT.data)
+    return {
+      short: `[${hex(operand)}] data`,
+      long: `the byte at the port's ADDR (${hex(operand)})`,
+    };
+  if (kind === "RAM address" && operand === BIG_PORT.step)
+    return { short: `[${hex(operand)}] step`, long: `the port's step (${hex(operand)})` };
   if (kind === "RAM address" && operand === BIG_PORT.bank)
     return {
       short: `[${hex(operand)}] bank`,
@@ -798,7 +821,7 @@ function parseProgram(source: string): {
       if (header[1] === "bank") fail(line, "bank is reserved for the big screen.");
       if (header[1] === "blit" || header[1] === "sprite")
         fail(line, `${header[1]} is reserved for the blitter.`);
-      if (BUILTINS.has(header[1]) || header[1] === WAIT_VBLANK)
+      if (BUILTINS.has(header[1]) || header[1] === WAIT_VBLANK || PORT_CALLS.has(header[1]))
         fail(line, `${header[1]} is built in.`);
       if (functions.some((item) => item.name === header[1]))
         fail(line, `Function “${header[1]}” is already defined.`);
@@ -846,6 +869,12 @@ const BLIT_SPECS: Record<BlitCommand | "wait", BlitArg[]> = {
 
 /** The key handler: a function with this name runs when a key is pressed. */
 export const KEY_HANDLER = "on_key";
+/**
+ * The big screen's port as calls: vram_at(byte); sets ADDR, vram_step(1); or
+ * vram_step(4); goes across or down, vram(value); writes the byte at ADDR and
+ * vram_read() reads it; both then move ADDR on.
+ */
+const PORT_CALLS = new Set(["vram_at", "vram_step", "vram", "vram_read"]);
 /**
  * wait_vblank(); returns at the start of the next vertical blank: it waits
  * while the beam is still in a blank, then until the next one begins. The CPU
@@ -900,6 +929,8 @@ export function compileProgram(
   const mainCalls = new Set<{ name: string; line: number }>();
   /** Functions (and "main") whose own code plots a pixel. */
   const plotters = new Set<string>();
+  /** Functions (and "main") whose own code sets BANK or uses the big screen's port. */
+  const bigUsers = new Set<string>();
   /** Functions (and "main") whose own code drives the blitter. */
   const blitters = new Set<string>();
   /** Sprites: 8 row bytes each, stored in code ROM after the code. */
@@ -997,6 +1028,31 @@ export function compileProgram(
     line: number,
     caller: string,
   ) => {
+    if (PORT_CALLS.has(name)) {
+      bigUsers.add(caller);
+      const needs = name !== "vram_read";
+      if (Boolean(argument) !== needs)
+        fail(line, needs ? `Use ${name}(value);` : `${name}() takes no arguments.`);
+      if (name === "vram_read") {
+        emit(OPCODES.LDM, BIG_PORT.data, "READ BYTE AT ADDR, ADDR MOVES ON", line);
+        return;
+      }
+      const value = argument!;
+      const literal = /^\d+$/.test(value) ? Number(value) : null;
+      if (name === "vram_step") {
+        if (literal !== 1 && literal !== 4)
+          fail(line, "Use vram_step(1); to go across a row or vram_step(4); to go down.");
+        emit(OPCODES.LDI, Number(literal === 4), `STEP ${literal}`, line);
+        emit(OPCODES.STM, BIG_PORT.step, "SET STEP", line);
+        return;
+      }
+      if (name === "vram_at" && literal !== null && literal >= BIG_FRAME_BYTES)
+        fail(line, `Big-screen bytes are 0 to ${BIG_FRAME_BYTES - 1}.`);
+      load(value, scope, line);
+      if (name === "vram_at") emit(OPCODES.STM, BIG_PORT.addr, `ADDR ← ${value}`, line);
+      else emit(OPCODES.STM, BIG_PORT.data, `BYTE AT ADDR ← ${value}, ADDR MOVES ON`, line);
+      return;
+    }
     if (name === WAIT_VBLANK) {
       if (argument) fail(line, `${name}() takes no arguments.`);
       const during = instructions.length * 2;
@@ -1149,6 +1205,7 @@ export function compileProgram(
       } else if (statement.kind === "call") {
         call(statement.name, statement.argument, scope, line, caller);
       } else if (statement.kind === "bank") {
+        bigUsers.add(caller);
         // One store: BANK picks which 8×8 tile of the big screen window[0]–window[7] show.
         if (/^\d+$/.test(statement.tile) && Number(statement.tile) >= BIG_TILES)
           fail(line, `Big-screen tiles are 0 to ${BIG_TILES - 1}.`);
@@ -1335,6 +1392,12 @@ export function compileProgram(
         handler.line,
         `${KEY_HANDLER} and the main program both use the blitter. A key press between setting its registers would mix two commands, so blit in only one of them.`,
       );
+    const handlerBig = [...reach([KEY_HANDLER])].some((name) => bigUsers.has(name));
+    if (handlerBig && (bigUsers.has("main") || [...fromMain].some((name) => bigUsers.has(name))))
+      fail(
+        handler.line,
+        `${KEY_HANDLER} and the main program both use the big screen's BANK or port. A key press between setting ADDR and writing would move the main program's address, so use them in only one of them.`,
+      );
     if (handlerPlots && (plotters.has("main") || [...fromMain].some((name) => plotters.has(name))))
       fail(
         handler.line,
@@ -1405,6 +1468,9 @@ export const SAMPLE_PROGRAMS = {
   // through the 4 × 4 tiles is the diagonal, so four smileys run corner to corner.
   BANKS:
     "for (let t = 0; t < 16; t = t + 5) {\n  bank(t);\n  window[0] = 60;\n  window[1] = 66;\n  window[2] = 165;\n  window[3] = 129;\n  window[4] = 165;\n  window[5] = 153;\n  window[6] = 66;\n  window[7] = 60;\n}",
+  // The port writes one byte per store: ADDR moves on by itself. A band across
+  // the top row, then a line down column 8 with the step set to a whole row.
+  PORT: "vram_at(0);\nfor (let i = 0; i < 4; i++) {\n  vram(255);\n}\nvram_step(4);\nvram_at(5);\nfor (let j = 0; j < 12; j++) {\n  vram(1);\n}",
   BLIT: "sprite heart = [102, 255, 255, 255, 126, 60, 24, 0];\nblit(sprite, heart, 0);\nlet count = 0;\nfor (let i = 0; i < 3; i++) {\n  count = count + 1;\n  print(count);\n}\nblit(wait);\nscreen[7] = 255;",
 } as const;
 
@@ -1803,6 +1869,9 @@ export type Registers = {
   pixelY: number;
   /** The big screen's bank register: which 8×8 tile D0–D7 show (0–15). */
   bank: number;
+  /** The big screen's port: ADDR (0–127) and whether DA moves it down a row. */
+  portAddr: number;
+  portDown: boolean;
 };
 
 export type TickPhase = "fetch" | "decode" | "execute";
@@ -1902,7 +1971,13 @@ export function traceTicks(
         ? frame[windowByte(registers.bank, address)]
         : address === BIG_PORT.bank
           ? registers.bank
-          : 0
+          : address === BIG_PORT.addr
+            ? registers.portAddr
+            : address === BIG_PORT.data
+              ? frame[registers.portAddr]
+              : address === BIG_PORT.step
+                ? Number(registers.portDown)
+                : 0
       : isBlitterAddress(address)
         ? Number(blitter.busy)
         : isVideoStatus(address)
@@ -1939,6 +2014,8 @@ export function traceTicks(
     pixelX: 0,
     pixelY: 0,
     bank: 0,
+    portAddr: 0,
+    portDown: false,
   };
   let t = 0;
   let instruction = 0;
@@ -2015,7 +2092,13 @@ export function traceTicks(
           frame[byte] = bus;
           frameWrite = { byte, value: bus };
         } else if (address === BIG_PORT.bank) next.bank = bus & (BIG_TILES - 1);
-        else if (blitter.busy && isScreenAddress(address)) screenBlocked = true;
+        else if (address === BIG_PORT.addr) next.portAddr = bus & (BIG_FRAME_BYTES - 1);
+        else if (address === BIG_PORT.step) next.portDown = Boolean(bus & 1);
+        else if (address === BIG_PORT.data) {
+          const byte = registers.portAddr;
+          frame[byte] = bus;
+          frameWrite = { byte, value: bus };
+        } else if (blitter.busy && isScreenAddress(address)) screenBlocked = true;
         else if (role === "pixel") {
           const { pixelX: x, pixelY: y } = registers;
           screen[y] = plotRow(screen[y], x, bus);
@@ -2032,6 +2115,14 @@ export function traceTicks(
         output.push(bus);
       }
     }
+    // A DA access, read or write, moves the port's ADDR on at the clock edge.
+    if (
+      !fault &&
+      bus !== null &&
+      registers.dmar === BIG_PORT.data &&
+      (on.has("RAM_IN") || on.has("RAM_OUT"))
+    )
+      next.portAddr = (registers.portAddr + portStep(registers.portDown)) & (BIG_FRAME_BYTES - 1);
     // The blitter runs on GCLK too: no edge on a HALT or fault tick.
     if (!fault && !on.has("HALT")) {
       if (blitter.busy) {
@@ -2099,6 +2190,18 @@ function explainExecute(
   blitterWasBusy = false,
 ): string {
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
+  if (operand === BIG_PORT.data && (mnemonic === "STM" || mnemonic === "LDM")) {
+    const moved = (after.portAddr - portStep(before.portDown)) & (BIG_FRAME_BYTES - 1);
+    const what =
+      mnemonic === "STM" ? `Write ACC (${after.acc}) to` : `Read the ${after.acc} stored in`;
+    return `${what} big-screen byte ${moved} (row ${moved >> 2}, pixels ${(moved & 3) * 8}–${(moved & 3) * 8 + 7}); ADDR moves on by ${portStep(before.portDown)} to ${after.portAddr}.`;
+  }
+  if (mnemonic === "STM" && operand === BIG_PORT.addr)
+    return `ADDR becomes ${after.portAddr}: the next DA access reaches big-screen byte ${after.portAddr}, row ${after.portAddr >> 2}.`;
+  if (mnemonic === "STM" && operand === BIG_PORT.step)
+    return after.portDown
+      ? "STEP is now 4: after each DA access ADDR moves down one pixel row."
+      : "STEP is now 1: after each DA access ADDR moves to the next byte across.";
   if (mnemonic === "STM" && operand === BIG_PORT.bank)
     return `BANK becomes ${after.bank}: window[0]–window[7] now show tile ${after.bank}, column ${after.bank & 3} and row ${after.bank >> 2} of the big screen's 4 × 4 tiles.`;
   if (mnemonic === "STM" && isWindowAddress(operand)) {
@@ -2263,6 +2366,8 @@ export function traceProgram(
     frame: Array(BIG_FRAME_BYTES).fill(0),
     bank: 0,
     frameWrite: null,
+    portAddr: 0,
+    portDown: false,
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
@@ -2298,6 +2403,8 @@ export function traceProgram(
       screen: [...last.screen],
       frame: last.frame,
       bank: last.registers.bank,
+      portAddr: last.registers.portAddr,
+      portDown: last.registers.portDown,
       frameWrite: ticks.findLast((tick) => tick.frameWrite)?.frameWrite ?? null,
     };
   };

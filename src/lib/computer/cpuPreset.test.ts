@@ -2,6 +2,7 @@
 // every program, every tick, the control word and bus the tick acts on (read
 // before its rising edge) and every probe, RAM byte and stack entry after the
 // tick must match. This is what keeps the two demos connected.
+
 import { describe, expect, it } from "vitest";
 import {
   type CompiledProgram,
@@ -23,6 +24,7 @@ import {
   type Tick,
   traceTicks,
 } from "../computerStepper";
+import type { BigScreenCard } from "./bigScreenBlocks";
 import { CPU_PARTS, CPU_PRESETS, cpuCircuit, cpuFromSource, keyPressOverrides } from "./cpuPreset";
 import {
   expectedProbes,
@@ -90,9 +92,12 @@ function lockstep(
     expect(bytesOf(state, CPU_PARTS.ram), `${where}: data RAM`).toEqual(tick.ram);
     expect(bytesOf(state, CPU_PARTS.screen), `${where}: screen`).toEqual(tick.screen);
     expect(bytesOf(state, CPU_PARTS.bigScreen), `${where}: big screen`).toEqual(tick.frame);
-    expect((state.blocks?.[CPU_PARTS.bank] as { q: number }).q, `${where}: bank`).toBe(
+    const card = state.blocks?.[CPU_PARTS.bigScreen] as BigScreenCard;
+    expect([card.bank, card.portAddr, card.portDown], `${where}: BANK, ADDR, STEP`).toEqual([
       tick.registers.bank,
-    );
+      tick.registers.portAddr,
+      tick.registers.portDown,
+    ]);
     expect(cursorOf(state), `${where}: pixel cursor`).toEqual([
       tick.registers.pixelX,
       tick.registers.pixelY,

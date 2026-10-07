@@ -18,7 +18,8 @@
 // The blitter reads sprites through a second read port on the code ROM: a
 // copy of the ROM addressed by the blitter, so it never waits for a fetch. D0–D8
 // reach a 32×32 big screen: D0–D7 are a window onto one 8×8 tile of it, and
-// D8 is the BANK register that picks the tile. Every
+// D8 is the BANK register that picks the tile. D9–DB are an auto-increment
+// port onto the same frame: ADDR, the byte at ADDR, and STEP. Every
 // clocked part runs on the control unit's GCLK, so HALT
 // freezes the whole machine, except the video: a scanout reads the screen
 // through its second port one pixel per tick of the raw clock, a monitor
@@ -80,7 +81,6 @@ export const CPU_PARTS = {
   blitter: "blitter",
   blitterRom: "blitter-rom",
   bigScreen: "big-screen",
-  bank: "bank",
   acc: "acc",
   alu: "alu",
   flags: "flags",
@@ -244,8 +244,8 @@ export function cpuCircuit(
       bytes,
     },
     big: {
-      frame: { id: CPU_PARTS.bigScreen, x: X.part, y: 6200, label: "32×32 SCREEN (D0–D7)" },
-      bank: { id: CPU_PARTS.bank, x: X.port, y: 6700, label: "BANK (D8)" },
+      card: { id: CPU_PARTS.bigScreen, x: X.part, y: 6200, label: "BIG SCREEN CARD (D0–DB)" },
+      re: line("RAM_OUT"),
     },
     x: X.helper,
     y: 2320,
@@ -257,8 +257,6 @@ export function cpuCircuit(
     b.add(`${part}-display`, "display4", X.portProbe, y, label);
     wireBits(bits(part, 3), `${part}-display`);
   }
-  b.add("bank-display", "display4", X.portProbe, 6700, "BANK");
-  wireBits(bits(CPU_PARTS.bank, 4), "bank-display");
   b.gate(
     "blitter-busy",
     "lamp",
@@ -507,8 +505,8 @@ export function cpuCircuit(
       },
       {
         id: "big-screen",
-        label: "Big screen: BANK (D8) picks which 8×8 tile of the 32×32 screen D0–D7 show",
-        nodeIds: [CPU_PARTS.bigScreen, CPU_PARTS.bank, "bank-display"],
+        label: "Big screen: D0–D7 show the tile BANK (D8) picks; DA reads and writes at ADDR",
+        nodeIds: [CPU_PARTS.bigScreen],
       },
       {
         id: "blitter",

@@ -43,8 +43,8 @@ const deepCalls = Array.from(
     `fn f${index}() {\n  ${index < 16 ? `f${index + 1}();` : "print(1);"}\n  return;\n}`,
 ).join("\n");
 
-// The old interpreter predates the blitter and the big screen: BLIT and BANKS have their own tests in computerStepper.test.ts.
-const { BLIT: _blit, BANKS: _banks, ...LEGACY_SAMPLES } = SAMPLE_PROGRAMS;
+// The old interpreter predates the blitter and the big screen: BLIT, BANKS and PORT have their own tests in computerStepper.test.ts.
+const { BLIT: _blit, BANKS: _banks, PORT: _port, ...LEGACY_SAMPLES } = SAMPLE_PROGRAMS;
 
 const SOURCES: Record<string, string> = {
   ...LEGACY_SAMPLES,
@@ -160,6 +160,8 @@ describe("per-tick trace", () => {
           frame: _f,
           bank: _bank,
           frameWrite: _fw,
+          portAddr: _pa,
+          portDown: _pd,
           ...rest
         }) => rest,
       );

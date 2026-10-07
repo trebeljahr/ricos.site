@@ -231,6 +231,38 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     [OUT, 0],
     [HALT, 0],
   ),
+  "big screen port": raw(
+    [LDI, 126],
+    [STM, 0xd9], // ADDR 126
+    [LDI, 0xaa],
+    [STM, 0xda], // byte 126, ADDR 127
+    [STM, 0xda], // byte 127, ADDR wraps to 0
+    [LDM, 0xd9], // ADDR reads back: 0
+    [OUT, 0],
+    [LDI, 1],
+    [STM, 0xdb], // STEP: down a row (+4)
+    [LDI, 0x0f],
+    [STM, 0xda], // byte 0, ADDR 4
+    [STM, 0xda], // byte 4, ADDR 8
+    [LDI, 4],
+    [STM, 0xd9],
+    [LDM, 0xda], // reads byte 4 (0F) and moves ADDR to 8
+    [OUT, 0],
+    [ADDM, 0xda], // reads byte 8 (0) and moves ADDR to 12
+    [LDM, 0xd9],
+    [OUT, 0],
+    [LDM, 0xdb], // STEP reads 1
+    [OUT, 0],
+    [LDI, 2],
+    [STM, 0xd8], // BANK 2: window row 0 is byte 2
+    [LDI, 2],
+    [STM, 0xd9],
+    [LDI, 0x33],
+    [STM, 0xda], // the port writes byte 2 ...
+    [LDM, 0xd0], // ... and the window sees it
+    [OUT, 0],
+    [HALT, 0],
+  ),
   "every blitter command": compileProgram(
     "sprite face = [60, 66, 165, 129, 165, 153, 66, 60];\nblit(clear, 170);\nblit(fill, 2, 15);\nblit(hline, 6, 3, 5);\nlet c = 0;\nblit(vline, 1, 5, 6, c);\nlet x = 0;\nblit(pixel, x, 4);\nblit(wait);\nprint(screen[3]);\nblit(sprite, face, 6);",
   ),

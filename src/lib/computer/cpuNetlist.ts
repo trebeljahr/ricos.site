@@ -72,8 +72,8 @@ export function cpuNetlist(circuit: Circuit): CpuNetlist {
     stack: rows(CPU_PARTS.stack),
     screen: rows(CPU_PARTS.screen),
     frame: sequence((bank) =>
-      netlist.nodes.has(`${CPU_PARTS.bigScreen}/bank${bank}/row0/cell0`)
-        ? rows(`${CPU_PARTS.bigScreen}/bank${bank}`)
+      netlist.nodes.has(`${CPU_PARTS.bigScreen}/frame/bank${bank}/row0/cell0`)
+        ? rows(`${CPU_PARTS.bigScreen}/frame/bank${bank}`)
         : undefined,
     ).flat(),
   };

@@ -12,6 +12,15 @@
 // decoders. The 32×32 one would pass the builder's 2,000-node limit for one
 // level, so it is four 32-byte banks (each a nested 16×16 framebuffer) and a
 // bank decoder: the same trick as splitting a big RAM into chips.
+import {
+  BIG_FRAME_BYTES,
+  BIG_PORT,
+  BIG_TILES,
+  isBigScreenAddress,
+  isWindowAddress,
+  portStep,
+  windowByte,
+} from "../computerStepper";
 import { Builder, busPorts, ports, type Ref, range, toBits, toNumber } from "./blockBuilder";
 import {
   activeBlock,
@@ -33,7 +42,9 @@ import {
 } from "./video";
 
 /** Gate forms of the parts the big screens nest, passed in by datapathBlocks. */
-export type BigScreenParts = (kind: "register8" | "counter8" | "plot8" | BigScreenKind) => Circuit;
+export type BigScreenParts = (
+  kind: "register8" | "counter8" | "plot8" | "alu8" | BigScreenKind,
+) => Circuit;
 
 const SIZES = {
   "16x16": { width: 16, height: 16 },
@@ -431,6 +442,246 @@ for (const name of SIZE_NAMES) {
   });
 }
 
+// ---------------------------------------------------------------- big screen card
+
+const CARD_INPUTS: [string, string][] = [
+  ...busPorts("a", "A"),
+  ...busPorts("d", "D"),
+  ["we", "WE"],
+  ["re", "RE"],
+  ["clock", "CLK"],
+];
+
+/**
+ * The CPU's 32×32 big screen as one card on the data bus: the D_ decode, the
+ * bank window, BANK, the auto-increment port and the framebuffer. Inputs are
+ * the CPU's data address A, data D, RAM_IN as WE, RAM_OUT as RE and the
+ * clock; Q is the byte a read of a D_ address gets, 0 for any other address.
+ *
+ * A window row's frame address is BANK0, BANK1, A0, A1, A2, BANK2, BANK3: no
+ * adder, only wires, because the screen's sides are powers of two. A DA
+ * access uses ADDR instead, and on the same clock edge an adder (an alu8)
+ * loads ADDR + 1, or ADDR + 4 with STEP set. Folded, the card is one block,
+ * so the CPU does not evaluate its decode and mux gates on every tick.
+ */
+function cardCircuit(parts: BigScreenParts): Circuit {
+  const b = new Builder();
+  ports(b, CARD_INPUTS);
+  const address = range(8).map((bit) => `a${bit}`);
+  const data = range(8).map((bit) => `d${bit}`);
+  b.add("zero", "ground", 200, 2000, "0");
+  // D_ = 1101: A7, A6 and A4 on, A5 off.
+  const select = b.gate(
+    "select",
+    "and",
+    480,
+    30,
+    b.gate("a67", "and", 340, 30, "a6", "a7"),
+    b.gate(
+      "a4-a5",
+      "and",
+      340,
+      90,
+      "a4",
+      b.gate("a5-low", "not", 200, 90, "a5", undefined, "NOT A5"),
+    ),
+    "D_",
+  );
+  const windowSel = b.gate(
+    "window-sel",
+    "and",
+    620,
+    120,
+    select,
+    b.gate("a3-low", "not", 480, 120, "a3", undefined, "NOT A3"),
+    "WINDOW (D0–D7)",
+  );
+  // D8–DB: A3 on, then A0–A2 pick BANK, ADDR, DATA or STEP.
+  const high = b.gate("d8", "and", 620, 200, select, "a3", "D8–DF");
+  const inverted = range(3).map((bit) =>
+    b.gate(`not-a${bit}`, "not", 200, 260 + bit * 60, address[bit]),
+  );
+  const pick = (n: number, bit: number) => ((n >> bit) & 1 ? address[bit] : inverted[bit]);
+  const [bankSel, addrSel, dataSel, stepSel] = (
+    [
+      [0, "BANK (D8)"],
+      [1, "ADDR (D9)"],
+      [2, "DATA (DA)"],
+      [3, "STEP (DB)"],
+    ] as const
+  ).map(([n, label]) => {
+    const at = 460 + n * 80;
+    const low = b.gate(`p${n}`, "and", 340, at, pick(n, 0), pick(n, 1));
+    const any = b.gate(`l${n}`, "and", 480, at, low, pick(n, 2));
+    return b.gate(`sel${n}`, "and", 620, at, high, any, label);
+  });
+  const register = (id: string, label: string, bits: Ref[], load: Ref, y: number) => {
+    b.add(id, "module", 1200, y, label, { module: parts("register8"), behaviour: "register8" });
+    for (let bit = 0; bit < 8; bit++) b.connect(bits[bit] ?? "zero", id, bit);
+    b.connect(load, id, 8);
+    b.connect("clock", id, 9);
+    return range(8).map((bit): Ref => [id, bit]);
+  };
+  const bank = register(
+    "bank",
+    "BANK (D8)",
+    data.slice(0, 4),
+    b.gate("bank-we", "and", 760, 460, "we", bankSel, "SET BANK"),
+    30,
+  );
+  const step = register(
+    "port-step",
+    "STEP (DB)",
+    data.slice(0, 1),
+    b.gate("step-we", "and", 760, 700, "we", stepSel, "SET STEP"),
+    1400,
+  );
+  // ADDR: loads D on STM D9, or ADDR + 1 / + 4 after any DA access.
+  const setAddr = b.gate("addr-we", "and", 760, 540, "we", addrSel, "SET ADDR");
+  const access = b.gate(
+    "data-access",
+    "and",
+    900,
+    620,
+    b.gate("data-rw", "or", 760, 620, "we", "re", "WE OR RE"),
+    dataSel,
+    "DA ACCESS",
+  );
+  b.add("port-adder", "module", 1200, 2000, "ADDR + STEP", {
+    module: parts("alu8"),
+    behaviour: "alu8",
+  });
+  const portAddr: Ref[] = range(8).map((bit): Ref => ["port-addr", bit]);
+  const across = b.gate("step-across", "not", 900, 700, step[0], undefined, "+1");
+  [...portAddr, across, "zero", step[0], ...range(5).map(() => "zero"), "zero", "zero"].forEach(
+    (source, input) => {
+      b.connect(source, "port-adder", input);
+    },
+  );
+  const keep = b.gate("addr-not-set", "not", 900, 540, setAddr);
+  const nextAddr = range(7).map((bit) => {
+    const at = 800 + bit * 80;
+    const fresh = b.gate(`addr-d${bit}`, "and", 1000, at, data[bit], setAddr);
+    const moved = b.gate(`addr-m${bit}`, "and", 1000, at + 40, ["port-adder", bit], keep);
+    return b.gate(`addr-n${bit}`, "or", 1100, at, fresh, moved);
+  });
+  register(
+    "port-addr",
+    "ADDR (D9)",
+    nextAddr,
+    b.gate("addr-load", "or", 1000, 580, setAddr, access, "LOAD ADDR"),
+    700,
+  );
+
+  b.add("frame", "module", 1700, 30, "32×32 SCREEN", {
+    module: parts("vram32x32"),
+    behaviour: "vram32x32",
+  });
+  // The frame's address: the window wiring, or ADDR on a DA access.
+  const windowAddress = [bank[0], bank[1], address[0], address[1], address[2], bank[2], bank[3]];
+  const notData = b.gate("not-data", "not", 1300, 2400, dataSel);
+  const frameAddress = windowAddress.map((source, bit) => {
+    const at = 2400 + bit * 80;
+    return b.gate(
+      `frame-a${bit}`,
+      "or",
+      1560,
+      at,
+      b.gate(`frame-aw${bit}`, "and", 1440, at, source, notData),
+      b.gate(`frame-ap${bit}`, "and", 1440, at + 40, portAddr[bit], dataSel),
+    );
+  });
+  const frameWe = b.gate(
+    "frame-we",
+    "and",
+    900,
+    120,
+    "we",
+    b.gate("frame-sel", "or", 760, 120, windowSel, dataSel, "WINDOW OR DA"),
+    "FRAME WE",
+  );
+  [...frameAddress, ...data, frameWe, ...range(7).map(() => "zero"), "clock"].forEach(
+    (source, input) => {
+      b.connect(source, "frame", input);
+    },
+  );
+  const frameRead = b.gate("frame-read", "or", 1900, 1000, windowSel, dataSel);
+  range(8).forEach((bit) => {
+    const at = 1100 + bit * 160;
+    const sources: Ref[] = [b.gate(`window-q${bit}`, "and", 2000, at, ["frame", bit], frameRead)];
+    if (bit < 4) sources.push(b.gate(`bank-q${bit}`, "and", 2000, at + 40, bank[bit], bankSel));
+    if (bit < 7) sources.push(b.gate(`addr-q${bit}`, "and", 2000, at + 80, portAddr[bit], addrSel));
+    if (bit === 0) sources.push(b.gate("step-q", "and", 2000, at + 120, step[0], stepSel));
+    b.gate(
+      `q${bit}`,
+      "lamp",
+      2400,
+      at,
+      b.orTree(`read${bit}`, sources, 2140, at),
+      undefined,
+      `Q${bit}`,
+    );
+  });
+  return b.circuit("Big screen card");
+}
+
+/** The card's registers and framebuffer. */
+export type BigScreenCard = {
+  bytes: number[];
+  bank: number;
+  portAddr: number;
+  portDown: boolean;
+  clock: boolean;
+};
+
+registerBlock<BigScreenCard>({
+  name: "bigScreenCard",
+  inputs: CARD_INPUTS.map(([, label]) => label),
+  outputs: range(8).map((bit) => `Q${bit}`),
+  initialState: () => ({
+    bytes: Array(BIG_FRAME_BYTES).fill(0),
+    bank: 0,
+    portAddr: 0,
+    portDown: false,
+    clock: false,
+  }),
+  evaluate: (inputs, state) => {
+    const address = toNumber(inputs.slice(0, 8));
+    const data = toNumber(inputs.slice(8, 16));
+    const [we, re, clock] = inputs.slice(16);
+    const read = !isBigScreenAddress(address)
+      ? 0
+      : isWindowAddress(address)
+        ? state.bytes[windowByte(state.bank, address)]
+        : address === BIG_PORT.bank
+          ? state.bank
+          : address === BIG_PORT.addr
+            ? state.portAddr
+            : address === BIG_PORT.data
+              ? state.bytes[state.portAddr]
+              : address === BIG_PORT.step
+                ? Number(state.portDown)
+                : 0;
+    const outputs = toBits(read, 8);
+    if (clock === state.clock) return { outputs, nextState: state };
+    if (!clock || !isBigScreenAddress(address)) return { outputs, nextState: { ...state, clock } };
+    let { bytes, bank, portAddr, portDown } = state;
+    if (we && isWindowAddress(address)) {
+      bytes = [...bytes];
+      bytes[windowByte(bank, address)] = data;
+    } else if (we && address === BIG_PORT.bank) bank = data & (BIG_TILES - 1);
+    else if (we && address === BIG_PORT.addr) portAddr = data & (BIG_FRAME_BYTES - 1);
+    else if (we && address === BIG_PORT.step) portDown = Boolean(data & 1);
+    else if (we && address === BIG_PORT.data) {
+      bytes = [...bytes];
+      bytes[portAddr] = data;
+    }
+    if ((we || re) && address === BIG_PORT.data)
+      portAddr = (state.portAddr + portStep(state.portDown)) & (BIG_FRAME_BYTES - 1);
+    return { outputs, nextState: { bytes, bank, portAddr, portDown, clock } };
+  },
+});
+
 // ---------------------------------------------------------------- public API
 
 const sizeLabel = (name: SizeName) => name.replace("x", "×");
@@ -463,15 +714,23 @@ export const BIG_SCREEN_BLOCKS = Object.fromEntries(
     ];
   }),
 ) as Record<BigScreenKind, { label: string; hint: string }>;
-export type BigScreenKind = `${"vram" | "scanout" | "crt"}${SizeName}`;
+BIG_SCREEN_BLOCKS.bigScreenCard = {
+  label: "BIG SCREEN CARD",
+  hint: "The CPU's 32×32 screen on the data bus. D0–D7 are a window onto the 8×8 tile BANK (D8) picks; DA reads or writes the byte at ADDR (D9) and moves ADDR on by 1, or by 4 with STEP (DB) set. WE is RAM_IN and RE RAM_OUT. Q is 0 for addresses outside D0–DF.",
+};
+type SizedKind = `${"vram" | "scanout" | "crt"}${SizeName}`;
+export type BigScreenKind = SizedKind | "bigScreenCard";
 export const isBigScreenKind = (kind: string | undefined): kind is BigScreenKind =>
   kind !== undefined && kind in BIG_SCREEN_BLOCKS;
 
 /** The screen size a big-screen block draws. */
 export const bigScreenSize = (kind: BigScreenKind): ScreenSize =>
-  SIZES[kind.replace(/^(vram|scanout|crt)/, "") as SizeName];
+  kind === "bigScreenCard"
+    ? SIZES["32x32"]
+    : SIZES[kind.replace(/^(vram|scanout|crt)/, "") as SizeName];
 
 export function bigScreenBlockCircuit(kind: BigScreenKind, parts: BigScreenParts): Circuit {
+  if (kind === "bigScreenCard") return cardCircuit(parts);
   const name = kind.replace(/^(vram|scanout|crt)/, "") as SizeName;
   const size = SIZES[name];
   if (kind.startsWith("vram")) return vramCircuit(size, name, parts);
@@ -487,7 +746,14 @@ export function unfoldBigScreenState(kind: BigScreenKind, state: unknown): Snaps
   const snapshot = initialSnapshot();
   snapshot.blocks = {};
   if (state == null) return snapshot;
-  if (kind.startsWith("vram")) {
+  if (kind === "bigScreenCard") {
+    const { bytes, bank, portAddr, portDown, clock } = state as BigScreenCard;
+    snapshot.blocks.bank = byteState(bank, clock);
+    snapshot.blocks["port-addr"] = byteState(portAddr, clock);
+    snapshot.blocks["port-step"] = byteState(Number(portDown), clock);
+    snapshot.blocks.frame = { bytes: [...bytes], clock } satisfies Frame;
+    snapshot.blocks["port-adder"] = null;
+  } else if (kind.startsWith("vram")) {
     const { bytes, clock } = state as Frame;
     if (bytes.length <= BANK_BYTES)
       bytes.forEach((q, r) => {
@@ -529,6 +795,18 @@ export function foldBigScreenState(
     return fold(part ?? { id, type: "module", x: 0, y: 0 }, inner.modules[id]);
   };
   const size = bigScreenSize(kind);
+  if (kind === "bigScreenCard") {
+    const byte = (id: string) => (nested(id) as ClockedByte | undefined) ?? byteState(0, false);
+    const frame = nested("frame") as Frame | undefined;
+    const bank = byte("bank");
+    return {
+      bytes: frame?.bytes ?? Array(BIG_FRAME_BYTES).fill(0),
+      bank: bank.q,
+      portAddr: byte("port-addr").q,
+      portDown: Boolean(byte("port-step").q & 1),
+      clock: bank.clock,
+    } satisfies BigScreenCard;
+  }
   if (kind.startsWith("vram")) {
     const bytes = frameBytes(size);
     if (bytes <= BANK_BYTES) {

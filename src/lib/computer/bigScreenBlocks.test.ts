@@ -299,3 +299,26 @@ describe("big scanout benches", () => {
       expect(monitor).toEqual(expected);
     });
 });
+
+describe("big screen card", () => {
+  it("equals its gates over random D_ reads and writes, and ignores other addresses", {
+    timeout: 60_000,
+  }, () => {
+    const node = datapathNode("bigScreenCard", "dut", 0, 0);
+    expect(moduleInputs(node.module!)).toHaveLength(19);
+    const bench = new Bench([node, { ...node, behaviour: undefined }]);
+    const next = random(11);
+    for (let i = 0; i < 400; i++) {
+      // Mostly D0–DB, sometimes another address the card must leave alone.
+      const address = next() < 0.85 ? 0xd0 + Math.floor(next() * 12) : Math.floor(next() * 256);
+      const data = Math.floor(next() * 256);
+      const we = next() < 0.6;
+      const re = !we && next() < 0.5;
+      bench.tick([...toBits(address, 8), ...toBits(data, 8), we, re], `step ${i}`);
+    }
+    const state = bench.states[0].blocks?.dut as { bytes: number[]; portAddr: number };
+    expect(state.bytes.some(Boolean)).toBe(true);
+    expect(foldBlockState(node, bench.states[1].modules.dut)).toEqual(state);
+    expect(foldBlockState(node, unfoldBlockState(node, state))).toEqual(state);
+  });
+});

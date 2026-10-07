@@ -535,3 +535,90 @@ describe("big screen bank window", () => {
     expect(describeOperand(OPCODES.STM, 0xd5, []).long).toBe("big-screen window row 5 (D5)");
   });
 });
+
+describe("big screen port", () => {
+  it("draws the PORT sample: a band across row 0 and a line down column 8", () => {
+    const end = traceTicks(compileProgram(SAMPLE_PROGRAMS.PORT)).at(-1)!;
+    const expected = Array(BIG_FRAME_BYTES).fill(0);
+    for (let c = 0; c < 4; c++) expected[c] = 255;
+    for (let j = 0; j < 12; j++) expected[5 + 4 * j] = 1; // rows 1–12, byte 1, bit 0: x = 8
+    expect(end.frame).toEqual(expected);
+    expect(end.registers).toMatchObject({ portAddr: 5 + 4 * 12, portDown: true });
+  });
+
+  it("moves ADDR after every DA read or write, by 1 or by 4, and wraps at 128", () => {
+    const { LDI, LDM, STM, ADDM, OUT, HALT } = OPCODES;
+    const pairs: [number, number][] = [
+      [LDI, 126],
+      [STM, BIG_PORT.addr],
+      [LDI, 0xaa],
+      [STM, BIG_PORT.data],
+      [STM, BIG_PORT.data],
+      [LDM, BIG_PORT.addr],
+      [OUT, 0],
+      [LDI, 1],
+      [STM, BIG_PORT.step],
+      [LDI, 0x0f],
+      [STM, BIG_PORT.data],
+      [STM, BIG_PORT.data],
+      [LDI, 4],
+      [STM, BIG_PORT.addr],
+      [LDM, BIG_PORT.data],
+      [OUT, 0],
+      [ADDM, BIG_PORT.data],
+      [LDM, BIG_PORT.addr],
+      [OUT, 0],
+      [HALT, 0],
+    ];
+    const program = {
+      instructions: pairs.map(([opcode, operand], index) => ({
+        address: index * 2,
+        opcode,
+        operand,
+        label: "",
+        line: index + 1,
+      })),
+      bytes: pairs.flat(),
+      variables: [],
+    };
+    const end = traceTicks(program).at(-1)!;
+    expect(end.output).toEqual([0, 0x0f, 12]);
+    expect([end.frame[126], end.frame[127], end.frame[0], end.frame[4]]).toEqual([
+      0xaa, 0xaa, 0x0f, 0x0f,
+    ]);
+    const explained = traceProgram(program).map(({ explanation }) => explanation);
+    expect(explained.some((text) => /byte 127 .*ADDR moves on by 1 to 0/.test(text))).toBe(true);
+    expect(
+      explained.some((text) => /Read the 15 stored in big-screen byte 4.*by 4 to 8/.test(text)),
+    ).toBe(true);
+  });
+
+  it("compiles the port calls and rejects bad ones", () => {
+    const program = compileProgram(
+      "vram_at(9);\nvram_step(4);\nlet v = 3;\nvram(v);\nlet r = vram_read();",
+    );
+    const { LDI, LDM, STM } = OPCODES;
+    expect(program.bytes.slice(0, 12)).toEqual([
+      LDI,
+      9,
+      STM,
+      BIG_PORT.addr,
+      LDI,
+      1,
+      STM,
+      BIG_PORT.step,
+      LDI,
+      3,
+      STM,
+      0,
+    ]);
+    expect(program.bytes.slice(12, 18)).toEqual([LDM, 0, STM, BIG_PORT.data, LDM, BIG_PORT.data]);
+    expect(() => compileProgram("vram_at(128);")).toThrow("Big-screen bytes are 0 to 127.");
+    expect(() => compileProgram("vram_step(2);")).toThrow("vram_step(1);");
+    expect(() => compileProgram("vram();")).toThrow("Use vram(value);");
+    expect(() => compileProgram("fn vram(n) {\n  return n;\n}")).toThrow("built in");
+    expect(() => compileProgram("fn on_key(k) {\n  vram(k);\n}\nloop {\n  bank(1);\n}")).toThrow(
+      "BANK or port",
+    );
+  });
+});

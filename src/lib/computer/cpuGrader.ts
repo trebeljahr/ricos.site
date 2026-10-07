@@ -23,7 +23,7 @@ import {
   traceTicks,
 } from "../computerStepper";
 import type { BusValue } from "./bus";
-import { CPU_PROBES, type CpuProbe } from "./cpuPreset";
+import { CPU_PARTS, CPU_PROBES, type CpuProbe } from "./cpuPreset";
 import type { DatapathKind } from "./datapathBlocks";
 import { type Circuit, initialSnapshot, type Node, type Snapshot, step } from "./logic";
 import { duplicateProbes, listProbes, readProbes } from "./probes";
@@ -261,6 +261,14 @@ export function findParts(circuit: Circuit): CpuParts {
 
 // ---------------------------------------------------------------- structure
 
+/**
+ * Pre-wired screen parts the levels place for the reader: the pixel cursor
+ * and the blitter's ROM port. They are register8 and rom256 blocks too, but
+ * never count towards a level's blocks, so removing a block the reader needs
+ * is still reported.
+ */
+const SCREEN_PLUMBING = new Set<string>([CPU_PARTS.pixelX, CPU_PARTS.pixelY, CPU_PARTS.blitterRom]);
+
 const KIND_NAMES: Partial<Record<DatapathKind, string>> = {
   control: "control unit",
   counter8: "program counter block",
@@ -282,7 +290,9 @@ export function checkStructure(circuit: Circuit, level: CpuLevel = FULL_CPU_LEVE
       errors.push(`More than one probe is named ${name}. Keep one.`);
 
   for (const [kind, least] of Object.entries(level.blocks) as [DatapathKind, number][]) {
-    const count = circuit.nodes.filter((node) => kindOf(node) === kind).length;
+    const count = circuit.nodes.filter(
+      (node) => kindOf(node) === kind && !SCREEN_PLUMBING.has(node.id),
+    ).length;
     if (count < least)
       errors.push(
         `This level needs ${least === 1 ? "a" : least} ${KIND_NAMES[kind] ?? kind}${least === 1 ? "" : "s"}; found ${count}.`,

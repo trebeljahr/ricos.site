@@ -31,6 +31,7 @@ import {
   type KeySchedule,
   type MicrocodeTable,
   microcodeIsa,
+  portStep,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
   type Snapshot,
@@ -43,7 +44,7 @@ import { MicrocodeEditor } from "./MicrocodeEditor";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT, BANKS } = SAMPLE_PROGRAMS;
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT, BANKS, PORT } = SAMPLE_PROGRAMS;
 const { RECURSION } = RAM_STACK_SAMPLES;
 const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
@@ -572,8 +573,8 @@ export function ProgramStepper() {
                         className={styles.pixelScreen}
                       />
                       <div className={styles.flags} role="status" aria-label="Bank">
-                        BANK {state.bank} <span>·</span> TILE COLUMN {state.bank & 3}, ROW{" "}
-                        {state.bank >> 2}
+                        BANK {state.bank} <span>·</span> ADDR {state.portAddr} <span>·</span> STEP{" "}
+                        {portStep(state.portDown)}
                       </div>
                     </>
                   )}
@@ -862,6 +863,9 @@ export function ProgramSource({
         </button>
         <button type="button" onClick={() => preset(BANKS)} className={styles.button}>
           BANKS
+        </button>
+        <button type="button" onClick={() => preset(PORT)} className={styles.button}>
+          PORT
         </button>
         <button
           type="button"

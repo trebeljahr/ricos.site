@@ -51,8 +51,6 @@ const screenPorts = [
   CPU_PARTS.blitterRom,
   "blitter-busy",
   CPU_PARTS.bigScreen,
-  CPU_PARTS.bank,
-  "bank-display",
 ];
 const isPortPlumbing = (wire: Wire) =>
   screenPorts.includes(wire.to) || wire.to.startsWith(`${CPU_PARTS.ram}-row-d-direct`);

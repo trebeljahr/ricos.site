@@ -68,4 +68,15 @@ describe("sized screen grids", () => {
     expect(big()).toBe("Big screen 32×32, 104 of 1024 pixels lit");
     expect(screen.getByLabelText("Bank").textContent).toContain("BANK 15");
   }, 20000);
+
+  it("shows the PORT program's ADDR and STEP as it draws", () => {
+    render(<ProgramStepper />);
+    fireEvent.click(screen.getByRole("button", { name: "PORT" }));
+    const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
+    fireEvent.change(slider, { target: { value: slider.max } });
+    expect(screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label")).toBe(
+      "Big screen 32×32, 44 of 1024 pixels lit",
+    );
+    expect(screen.getByLabelText("Bank").textContent).toMatch(/ADDR 53\s*·\s*STEP 4/);
+  }, 20000);
 });

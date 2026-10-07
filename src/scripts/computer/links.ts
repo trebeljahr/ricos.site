@@ -1,8 +1,8 @@
-// pnpm computer:links — writes prev/next/up wikilinks into the frontmatter of
-// every chapter and aside in src/content/Notes/computer/, in `order`.
-// Obsidian shows them as clickable properties at the top of each note. Only
-// those three frontmatter lines change; the body is left byte for byte.
-// Rerun after adding, removing or reordering a chapter.
+// pnpm computer:links — writes a "← prev · ↑ index · next →" line at the top
+// and bottom of every chapter and aside in src/content/Notes/computer/, in
+// `order`, so the series can be clicked through in Obsidian. Only the text
+// between the nav comments changes. Rerun after adding, removing or
+// reordering a chapter.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -30,7 +30,7 @@ files.forEach((file, i) => {
   const next = setNavLinks(file.source, {
     prev: link(files[i - 1]),
     next: link(files[i + 1]),
-    up: "[[index]]",
+    up: "[[index|Index]]",
   });
   if (next !== file.source) {
     fs.writeFileSync(file.full, next);

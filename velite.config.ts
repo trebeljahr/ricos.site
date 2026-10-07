@@ -28,6 +28,7 @@ import type { Node } from "unist";
 import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, type ZodMeta } from "velite";
 import seoMetadata from "./src/content/seo-metadata.json";
+import { stripNav } from "./src/lib/computerSeriesLinks";
 
 declare module "mdast" {
   interface RootContentMap {
@@ -438,6 +439,8 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
   { meta }: { meta: ZodMeta },
+  /** Rewrites the Markdown before it is compiled, for one collection's own syntax. */
+  prepare: (markdown: string) => string = (markdown) => markdown,
 ): Promise<
   T & {
     content: MDXResult;
@@ -518,7 +521,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
 
   const recmaPlugins: Pluggable[] = [];
 
-  const rawContent = meta.content || "";
+  const rawContent = prepare(meta.content || "");
   const { code: mdxCode } = await bundleMDX({
     source: rawContent,
     cwd: path.resolve("src/content/Notes"),
@@ -808,7 +811,9 @@ export default defineConfig({
           const slug = slugify((meta.stem ?? "").replace(/^\d+\.\d+[a-z]?-/, ""));
           return { ...data, slug, contentType: "ComputerChapter", link: `/computer/${slug}` };
         })
-        .transform(addBundledMDXContent),
+        // The prev/next line is for clicking through in Obsidian; the site will
+        // build its own. Its HTML comments would not compile as MDX either.
+        .transform((data, ctx) => addBundledMDXContent(data, ctx, stripNav)),
     },
   },
 });

@@ -2,6 +2,8 @@
 // chapter or aside in src/content/Notes/computer/, one idea per heading. Pure
 // functions only; the dev page at /dev/writing does the file reading.
 
+import { stripNav } from "./computerSeriesLinks";
+
 /** The goal: every section of every chapter drafted by the deadline. */
 export const SERIES_START = "2026-10-08";
 export const SERIES_DEADLINE = "2026-12-31";
@@ -50,7 +52,8 @@ export function countWords(markdown: string): number {
  * Splits a chapter body into sections at its headings. Text before the first
  * heading is the chapter's own introduction and counts as a section too.
  */
-export function splitSections(body: string, title: string): Section[] {
+export function splitSections(markdown: string, title: string): Section[] {
+  const body = stripNav(markdown);
   const sections: Section[] = [];
   let current = { heading: title, depth: 1, lines: [] as string[] };
   let inFence = false;

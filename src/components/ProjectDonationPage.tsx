@@ -70,18 +70,6 @@ export function ProjectDonationPage({
         <a href="#project-donation" className={styles.skip}>
           Skip to donation options
         </a>
-        <header className={styles.header}>
-          <a
-            href={backTo.href}
-            className={styles.back}
-            aria-label={`Go back to ${source.name}`}
-            title={`Return to ${source.name}`}
-          >
-            <span aria-hidden="true">←</span> Go back
-          </a>
-          <span className={styles.maker}>{source.name} · Support</span>
-        </header>
-
         <main className={styles.main}>
           <div className={styles.story}>
             <div className={styles.intro}>

@@ -34,6 +34,10 @@ export const navGroups: NavGroup[] = [
       { label: "3D playground", href: "/r3f" },
       { label: "midjourney", href: "/midjourney" },
       { label: "1-month projects", href: "/1-month-projects" },
+      // /computer 404s in production until the demos are ready to publish.
+      ...(process.env.NODE_ENV === "development"
+        ? [{ label: "computer demos", href: "/computer" }]
+        : []),
     ],
   },
   {

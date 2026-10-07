@@ -1,5 +1,5 @@
 // Datapath blocks for the toy CPU: register8, sp8, counter8, alu8, rom256, ram16,
-// ram32, stack16, the screen8x8 framebuffer and the plot8 pixel plotter. Each is a module node whose gate form is the inner circuit and whose
+// ram32, stack16, the screen8x8 framebuffer, its dual-port vram8x8 twin and the plot8 pixel plotter. Each is a module node whose gate form is the inner circuit and whose
 // folded form runs as a registered behavioural block (see `registerBlock`).
 //
 // Outputs always come from the state before the clock commit, as a D flip-flop's
@@ -35,6 +35,13 @@ import {
   shaderBlockCircuit,
   unfoldShaderState,
 } from "./shaderBlocks";
+import {
+  foldVideoState,
+  unfoldVideoState,
+  VIDEO_BLOCKS,
+  type VideoKind,
+  videoBlockCircuit,
+} from "./videoBlocks";
 
 export { toBits, toNumber } from "./blockBuilder";
 
@@ -362,10 +369,131 @@ function screen8x8Circuit(): Circuit {
 }
 registerMemory("screen8x8", 3);
 
+// ---------------------------------------------------------------- vram8x8
+
+/**
+ * The 8×8 screen with a second, read-only port for video: A, D, WE and Q are
+ * the CPU's port, as on screen8x8; RA picks the row V reads. Both ports reach
+ * the same register rows through their own select gates, so a scanout reads
+ * on every tick and never waits for, or blocks, a CPU write.
+ */
+function vram8x8Circuit(): Circuit {
+  const b = new Builder();
+  ports(b, [
+    ...busPorts("a", "A", 3),
+    ...busPorts("d", "D"),
+    ["we", "WE"],
+    ...busPorts("ra", "RA", 3),
+    ["clock", "CLK"],
+  ]);
+  const decode = (prefix: string, port: string, top: number, label: string) => {
+    const address = range(3).map((bit) => `${port}${bit}`);
+    const inverted = address.map((bit, i) =>
+      b.gate(
+        `${prefix}-not${i}`,
+        "not",
+        200,
+        top + i * 80,
+        bit,
+        undefined,
+        `NOT ${port.toUpperCase()}${i}`,
+      ),
+    );
+    const pick = (row: number, bit: number) => ((row >> bit) & 1 ? address[bit] : inverted[bit]);
+    return range(SCREEN_ROWS).map((row) => {
+      const y = top + row * 90;
+      const low = b.gate(`${prefix}-p${row}`, "and", 350, y, pick(row, 0), pick(row, 1));
+      return b.gate(`${prefix}-sel${row}`, "and", 500, y, low, pick(row, 2), `${label} ${row}`);
+    });
+  };
+  const select = decode("addr", "a", 30, "ROW");
+  const video = decode("video", "ra", 1800, "VIDEO ROW");
+  const write = select.map((sel, r) =>
+    b.gate(`write${r}`, "and", 680, 30 + r * 90, sel, "we", `WRITE ${r}`),
+  );
+  const out = memoryRows(
+    b,
+    range(8).map((bit) => `d${bit}`),
+    write,
+    select,
+    900,
+  );
+  out.forEach((bit, i) => b.gate(`q${i}`, "lamp", 2000, 30 + i * 220, bit, undefined, `Q${i}`));
+  range(8).forEach((bit) => {
+    const picked = b.orTree(
+      `video-read${bit}`,
+      range(SCREEN_ROWS).map((r) =>
+        b.gate(
+          `video-pick${r}-${bit}`,
+          "and",
+          1600,
+          1800 + r * 220 + bit * 24,
+          [`row${r}`, bit],
+          video[r],
+        ),
+      ),
+      1760,
+      1800 + bit * 220,
+      `VIDEO BIT ${bit}`,
+    );
+    b.gate(`v${bit}`, "lamp", 2000, 1800 + bit * 220, picked, undefined, `V${bit}`);
+  });
+  return b.circuit("Dual-port 8×8 screen");
+}
+
+registerBlock<Ram>({
+  name: "vram8x8",
+  inputs: [
+    ...busPorts("a", "A", 3),
+    ...busPorts("d", "D"),
+    ["we", "WE"],
+    ...busPorts("ra", "RA", 3),
+    ["clock", "CLK"],
+  ].map(([, l]) => l),
+  outputs: [...range(8).map((bit) => `Q${bit}`), ...range(8).map((bit) => `V${bit}`)],
+  initialState: () => ({ bytes: Array(SCREEN_ROWS).fill(0), clock: false }),
+  evaluate: (inputs, state) => {
+    const address = toNumber(inputs.slice(0, 3));
+    const we = inputs[11];
+    const clock = inputs[15];
+    let bytes = state.bytes;
+    if (clock && !state.clock && we) {
+      bytes = [...bytes];
+      bytes[address] = toNumber(inputs.slice(3, 11));
+    }
+    return {
+      outputs: [
+        ...toBits(state.bytes[address], 8),
+        ...toBits(state.bytes[toNumber(inputs.slice(12, 15))], 8),
+      ],
+      nextState: bytes === state.bytes && clock === state.clock ? state : { bytes, clock },
+    };
+  },
+});
+
 /** The screen's 8 row bytes (row index = y, bit i = pixel x = i); blank for no state. */
 export function screenRows(state: unknown): number[] {
   const bytes = (state as Partial<Ram> | null | undefined)?.bytes;
   return range(SCREEN_ROWS).map((r) => (bytes?.[r] ?? 0) & 255);
+}
+
+/** Blocks a folded node draws as an 8×8 grid. */
+const SCREEN_KINDS = new Set(["screen8x8", "vram8x8", "crt8x8"]);
+export const isScreenBlock = (behaviour: string | undefined) =>
+  behaviour !== undefined && SCREEN_KINDS.has(behaviour);
+
+/**
+ * What a folded screen block shows: its rows, plus the beam for a monitor
+ * (null while the beam is below the screen, in vertical blank).
+ */
+export function screenView(
+  behaviour: string | undefined,
+  state: unknown,
+): { rows: number[]; beam: { x: number; y: number } | null } {
+  const rows = screenRows(state);
+  if (behaviour !== "crt8x8") return { rows, beam: null };
+  const { x = 0, y = 0 } = (state as { x?: number; y?: number } | null | undefined) ?? {};
+  return { rows, beam: y < SCREEN_ROWS ? { x: x & 7, y } : null };
 }
 
 // ---------------------------------------------------------------- plot8
@@ -425,6 +553,12 @@ type DataMemoryWiring = {
   screen: Place;
   /** The pixel port: cursor x and y registers and the plotter. */
   pixel: { x: Place; y: Place; plotter: Place };
+  /**
+   * A scanout and monitor on the screen. The screen becomes a vram8x8 whose
+   * video port the scanout reads, and data address FB reads VBLANK. `clock`
+   * runs the beam; it may keep running when the CPU's clock stops.
+   */
+  video?: { scanout: Place; crt: Place; clock: Ref };
   /** Top left of the decode and read-select gates. */
   x: number;
   y: number;
@@ -436,7 +570,8 @@ type DataMemoryWiring = {
  * pixel port (A1 = 0: cursor x or y by A0; A1 = 1: plot), anything else the
  * RAM (row = A0–A3, or A0–A4 for ram32). On a port address the screen sees the
  * cursor's y as its row and the plotter's output as its data, so one clock edge
- * rewrites a single pixel. Returns the 8 read bits of the selected byte.
+ * rewrites a single pixel. With `video`, reading FB (or FF) gives VBLANK in
+ * bit 0. Returns the 8 read bits of the selected byte.
  */
 export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
   const { address, data, we, clock, x, y, pixel } = wiring;
@@ -471,7 +606,7 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
 
   const block = (
     place: Place,
-    kind: "ram16" | "ram32" | "screen8x8",
+    kind: "ram16" | "ram32" | "screen8x8" | "vram8x8",
     addressBits: number,
     write: Ref,
     rowAddress: Ref[] = address,
@@ -484,7 +619,8 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
     for (let bit = 0; bit < addressBits; bit++) b.connect(rowAddress[bit], place.id, bit);
     for (const [bit, source] of rowData.entries()) b.connect(source, place.id, addressBits + bit);
     b.connect(write, place.id, addressBits + 8);
-    b.connect(clock, place.id, addressBits + 9);
+    // vram8x8's video address RA sits between WE and CLK.
+    b.connect(clock, place.id, addressBits + (kind === "vram8x8" ? 12 : 9));
   };
   /** A 2-way mux per bit: `port` on a pixel port address, else `direct`. */
   const viaPort = (name: string, direct: Ref[], port: Ref[], top: number) =>
@@ -529,7 +665,51 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
 
   const ramKind = wiring.ramKind ?? "ram16";
   block(wiring.ram, ramKind, RAM_ADDRESS_BITS[ramKind], ramWe);
-  block(wiring.screen, "screen8x8", 3, screenWe, screenRow, screenData);
+  const { video } = wiring;
+  if (!video) block(wiring.screen, "screen8x8", 3, screenWe, screenRow, screenData);
+  else {
+    // Dual port: the CPU writes through A/D/WE while the scanout reads row Y through RA.
+    block(wiring.screen, "vram8x8", 3, screenWe, screenRow, screenData);
+    const screen = wiring.screen.id;
+    const scanout = video.scanout.id;
+    b.add(scanout, "module", video.scanout.x, video.scanout.y, video.scanout.label, {
+      module: datapathCircuit("scanout"),
+      behaviour: "scanout",
+    });
+    for (let bit = 0; bit < 8; bit++) b.connect([screen, 8 + bit], scanout, bit);
+    b.connect(video.clock, scanout, 8);
+    for (let bit = 0; bit < 3; bit++) b.connect([scanout, 4 + bit], screen, 12 + bit);
+    const crt = video.crt.id;
+    b.add(crt, "module", video.crt.x, video.crt.y, video.crt.label, {
+      module: datapathCircuit("crt8x8"),
+      behaviour: "crt8x8",
+    });
+    for (const [input, output] of [0, 7, 8].entries()) b.connect([scanout, output], crt, input);
+    b.connect(video.clock, crt, 3);
+  }
+  // FB and FF (port, A1 and A0 on) read the scanout's VBLANK instead of a screen row.
+  const status = video
+    ? b.gate(
+        id("status-sel"),
+        "and",
+        x + 280,
+        y - 400,
+        portSel,
+        b.gate(id("a01"), "and", x + 140, y - 400, address[0], address[1]),
+        "VIDEO STATUS (FB)",
+      )
+    : null;
+  const screenRead = status
+    ? b.gate(
+        id("screen-read"),
+        "and",
+        x + 420,
+        y - 400,
+        screenSel,
+        b.gate(id("not-status"), "not", x + 420, y - 480, status),
+        "SCREEN READ",
+      )
+    : screenSel;
   return range(8).map((bit) => {
     const row = y + 300 + bit * 140;
     const fromRam = b.gate(id(`ram-q${bit}`), "and", x + 560, row, [wiring.ram.id, bit], ramSel);
@@ -539,9 +719,28 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
       x + 560,
       row + 60,
       [wiring.screen.id, bit],
-      screenSel,
+      screenRead,
     );
-    return b.gate(id(`read${bit}`), "or", x + 700, row, fromRam, fromScreen, `READ BIT ${bit}`);
+    const read = b.gate(
+      id(`read${bit}`),
+      "or",
+      x + 700,
+      row,
+      fromRam,
+      fromScreen,
+      `READ BIT ${bit}`,
+    );
+    if (!video || bit > 0 || !status) return read;
+    const fromStatus = b.gate(
+      id("vblank-q"),
+      "and",
+      x + 560,
+      row - 60,
+      [video.scanout.id, 9],
+      status,
+      "VBLANK",
+    );
+    return b.gate(id("read0-status"), "or", x + 840, row, read, fromStatus, "READ BIT 0");
   });
 }
 
@@ -779,6 +978,10 @@ export const DATAPATH_BLOCKS = {
     label: "8×8 SCREEN",
     hint: "A picks a row (y); with WE on, a rising CLK stores D there. Bit i lights pixel x = i.",
   },
+  vram8x8: {
+    label: "DUAL-PORT SCREEN",
+    hint: "An 8×8 screen with two ports, so the CPU and a scanout never queue for it. A, D and WE write a row as on the 8×8 screen, and Q reads row A; RA picks the row V reads for the beam. The cost is a second set of select and read gates, as real video RAM paid for its second port.",
+  },
   plot8: {
     label: "PIXEL PLOTTER",
     hint: "OUT is ROW with bit X set to C: one pixel changes, the other seven pass through.",
@@ -793,9 +996,11 @@ export const DATAPATH_BLOCKS = {
   },
   ...CONTROL_BLOCKS,
   ...SHADER_BLOCKS,
+  ...VIDEO_BLOCKS,
 } as const;
 const isControlKind = (kind: DatapathKind): kind is ControlKind => kind in CONTROL_BLOCKS;
 const isShaderKind = (kind: DatapathKind): kind is ShaderKind => kind in SHADER_BLOCKS;
+const isVideoKind = (kind: DatapathKind): kind is VideoKind => kind in VIDEO_BLOCKS;
 export type DatapathKind = keyof typeof DATAPATH_BLOCKS;
 export const DATAPATH_KINDS = Object.keys(DATAPATH_BLOCKS) as DatapathKind[];
 export const isDatapathKind = (name: string | undefined): name is DatapathKind =>
@@ -808,6 +1013,7 @@ export const isDatapathKind = (name: string | undefined): name is DatapathKind =
 export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = []): Circuit {
   if (isControlKind(kind)) return controlBlockCircuit(kind);
   if (isShaderKind(kind)) return shaderBlockCircuit(kind, bytes);
+  if (isVideoKind(kind)) return videoBlockCircuit(kind, (part) => datapathCircuit(part));
   switch (kind) {
     case "register8":
       return register8Circuit();
@@ -823,6 +1029,8 @@ export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = [
       return ramCircuit(5);
     case "screen8x8":
       return screen8x8Circuit();
+    case "vram8x8":
+      return vram8x8Circuit();
     case "plot8":
       return plot8Circuit();
     case "stack16":
@@ -860,6 +1068,7 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
   if (state == null || !isDatapathKind(node.behaviour)) return snapshot;
   if (isControlKind(node.behaviour)) return unfoldControlState(node.behaviour, state);
   if (isShaderKind(node.behaviour)) return unfoldShaderState(node.behaviour, state);
+  if (isVideoKind(node.behaviour)) return unfoldVideoState(node.behaviour, state);
   switch (node.behaviour) {
     case "register8":
     case "counter8": {
@@ -874,7 +1083,8 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
     }
     case "ram16":
     case "ram32":
-    case "screen8x8": {
+    case "screen8x8":
+    case "vram8x8": {
       const { bytes, clock } = state as Ram;
       for (const [r, q] of bytes.entries()) snapshot.blocks![`row${r}`] = rowState(q, clock);
       break;
@@ -899,6 +1109,8 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
   const inner = snapshot ?? initialSnapshot();
   if (isControlKind(node.behaviour)) return foldControlState(node, node.behaviour, inner);
   if (isShaderKind(node.behaviour)) return foldShaderState(node, node.behaviour, inner);
+  if (isVideoKind(node.behaviour))
+    return foldVideoState(node, node.behaviour, inner, foldBlockState);
   // A nested row may run as gates (unfolded) or as a block; prefer the gates.
   const row = (r: number): ClockedByte => {
     const gates = inner.modules[`row${r}`];
@@ -917,9 +1129,12 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
       };
     case "ram16":
     case "ram32":
-    case "screen8x8": {
+    case "screen8x8":
+    case "vram8x8": {
       const rows = range(
-        node.behaviour === "screen8x8" ? SCREEN_ROWS : 1 << RAM_ADDRESS_BITS[node.behaviour],
+        node.behaviour === "ram16" || node.behaviour === "ram32"
+          ? 1 << RAM_ADDRESS_BITS[node.behaviour]
+          : SCREEN_ROWS,
       ).map(row);
       return { bytes: rows.map((r) => r.q), clock: rows[0].clock };
     }

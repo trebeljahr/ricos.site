@@ -24,6 +24,10 @@ export const computerDemos = [
     title: "Run a program on the CPU circuit",
   },
   {
+    slug: "scanout",
+    title: "Read the screen out like a display",
+  },
+  {
     slug: "build-a-cpu",
     title: "Build your own CPU",
   },

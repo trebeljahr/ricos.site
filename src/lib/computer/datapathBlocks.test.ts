@@ -9,6 +9,7 @@ import {
   foldBlockState,
   romBytes,
   screenRows,
+  screenView,
   toBits,
   toNumber,
   unfoldBlockState,
@@ -24,6 +25,7 @@ import {
   step,
   validateCircuit,
 } from "./logic";
+import { beamAt, FRAME_TICKS, paint } from "./video";
 
 /** Seeded PRNG (mulberry32), so failures reproduce. */
 function random(seed: number) {
@@ -35,6 +37,7 @@ function random(seed: number) {
   };
 }
 const EDGES = [0, 1, 127, 128, 254, 255];
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
 
 /** The same circuit with every nested block running as gates. */
 const strip = (circuit: Circuit): Circuit => ({
@@ -292,6 +295,18 @@ describe("carrying state across fold and unfold", () => {
       (p) => [3, 17, 31].forEach((a) => p.tick([...toBits(a, 5), ...toBits(a * 7, 8), true])),
     ],
     ["sp8", (p) => p.tick([...toBits(0x1d, 8), true])],
+    [
+      "vram8x8",
+      (p) =>
+        [1, 6].forEach((y) =>
+          p.tick([...toBits(y, 3), ...toBits(0x18 << (y % 3), 8), true, ...toBits(y, 3)]),
+        ),
+    ],
+    ["scanout", (p) => range(77).forEach(() => p.tick(toBits(0xa5, 8)))],
+    [
+      "crt8x8",
+      (p) => range(21).forEach((i) => p.tick([i % 3 === 0, beamAt(i).hsync, beamAt(i).vsync])),
+    ],
   ];
   for (const [kind, fill] of cases)
     it(`${kind}: unfolding seeds the gates and folding reads them back`, () => {
@@ -413,4 +428,67 @@ describe("memory-mapped data memory", () => {
         expect(ram).toEqual(end.ram);
         expect(screen).toEqual(end.screen);
       });
+});
+
+describe("video blocks", () => {
+  it("vram8x8: both ports equal gates over random writes and reads", () => {
+    const pair = new Pair("vram8x8");
+    const model = Array(8).fill(0);
+    const next = random(9);
+    for (let i = 0; i < 300; i++) {
+      const row = Math.floor(next() * 8);
+      const video = Math.floor(next() * 8);
+      const data = Math.floor(next() * 256);
+      const write = next() < 0.4;
+      const out = pair.tick([...toBits(row, 3), ...toBits(data, 8), write, ...toBits(video, 3)]);
+      if (write) model[row] = data;
+      expect(toNumber(out.slice(0, 8)), `step ${i}: Q`).toBe(model[row]);
+      expect(toNumber(out.slice(8)), `step ${i}: V`).toBe(model[video]);
+      expect(screenRows(pair.states[0].blocks?.dut)).toEqual(model);
+    }
+  });
+
+  it("scanout: gates and block follow the beam timing for two frames", () => {
+    const pair = new Pair("scanout");
+    const next = random(11);
+    for (let tick = 0; tick < 2 * FRAME_TICKS + 5; tick++) {
+      const row = Math.floor(next() * 256);
+      const beam = beamAt(tick);
+      // Outputs before the edge: the beam position this tick reads.
+      const out = pair.apply([...toBits(row, 8), false]);
+      expect(out[0], `tick ${tick}: PIXEL`).toBe(!beam.vblank && Boolean((row >> beam.x) & 1));
+      expect(toNumber(out.slice(1, 4)), `tick ${tick}: X`).toBe(beam.x);
+      expect(toNumber(out.slice(4, 7)), `tick ${tick}: Y`).toBe(beam.y & 7);
+      expect(out.slice(7), `tick ${tick}: syncs`).toEqual([beam.hsync, beam.vsync, beam.vblank]);
+      pair.apply([...toBits(row, 8), true]);
+    }
+  });
+
+  it("crt8x8: gates and block paint where the beam is and lock to the syncs", () => {
+    const pair = new Pair("crt8x8");
+    let image = Array(8).fill(0);
+    const next = random(12);
+    // Start out of step: three free-running ticks with no sync, then a VSYNC.
+    const syncs = [
+      ...range(3).map(() => ({ hsync: false, vsync: false })),
+      { hsync: true, vsync: true },
+      ...range(FRAME_TICKS + 9).map((tick) => beamAt(tick)),
+    ];
+    let x = 0;
+    let y = 0;
+    for (const [i, { hsync, vsync }] of syncs.entries()) {
+      const pixel = next() < 0.5;
+      const out = pair.tick([pixel, hsync, vsync]);
+      image = paint(image, x & 7, y, pixel);
+      x = hsync ? 0 : x + 1;
+      y = vsync ? 0 : hsync ? y + 1 : y;
+      expect(toNumber(out.slice(0, 3)), `tick ${i}: X`).toBe(x & 7);
+      expect(toNumber(out.slice(3)), `tick ${i}: Y`).toBe(y & 15);
+      const view = screenView("crt8x8", pair.states[0].blocks?.dut);
+      expect(view.rows, `tick ${i}: phosphor`).toEqual(image);
+      expect(view.beam, `tick ${i}: beam`).toEqual(y < 8 ? { x: x & 7, y } : null);
+    }
+    // After the VSYNC the monitor's beam is the scanout's, one tick on.
+    expect([x, y]).toEqual([beamAt(FRAME_TICKS + 9).x, beamAt(FRAME_TICKS + 9).y]);
+  });
 });

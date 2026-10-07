@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { datapathNode } from "../../lib/computer/datapathBlocks";
 import type { Circuit } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
@@ -56,6 +57,9 @@ describe("datapath blocks in the builder", () => {
       "16-BYTE RAM",
       "16-ENTRY STACK",
       "8×8 SCREEN",
+      "DUAL-PORT SCREEN",
+      "SCANOUT",
+      "8×8 MONITOR",
     ])
       expect(within(parts).getByRole("button", { name: label })).toBeTruthy();
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT ALU" }));
@@ -164,4 +168,32 @@ describe("datapath blocks in the builder", () => {
     fireEvent.click(button("Refold box"));
     expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 25 00 00 00 00");
   }, 20000);
+
+  it("draws the monitor's beam and paints a written row only as the beam passes it", () => {
+    localStorage.setItem(
+      "ricos-computer-circuits-v1",
+      JSON.stringify({ current: CPU_PRESETS["Scanout and monitor"], saved: {} }),
+    );
+    render(<LogicBuilder />);
+    const label = (name: string) =>
+      screen.getByRole("img", { name: new RegExp(`^${name} rows `) }).getAttribute("aria-label");
+    const blank = "00 00 00 00 00 00 00 00";
+    expect(label("8×8 MONITOR")).toBe(`8×8 MONITOR rows ${blank}, beam at 0, 0`);
+
+    // One cycle with WE on stores DATA (3C) in row 3 of the framebuffer at once.
+    fireEvent.click(button("OFF"));
+    cycle();
+    fireEvent.click(button("ON"));
+    expect(label("DUAL-PORT SCREEN")).toBe("DUAL-PORT SCREEN rows 00 00 00 3C 00 00 00 00");
+    expect(label("8×8 MONITOR")).toBe(`8×8 MONITOR rows ${blank}, beam at 1, 0`);
+
+    // The monitor only shows it once its beam has crossed row 3, pixel by pixel.
+    for (let tick = 1; tick < 27; tick++) cycle();
+    expect(label("8×8 MONITOR")).toBe("8×8 MONITOR rows 00 00 00 04 00 00 00 00, beam at 3, 3");
+    const monitor = screen.getByRole("img", { name: /^8×8 MONITOR rows / });
+    const beam = monitor.querySelector("[data-beam=true]");
+    expect([beam?.getAttribute("data-x"), beam?.getAttribute("data-y")]).toEqual(["3", "3"]);
+    for (let tick = 27; tick < 32; tick++) cycle();
+    expect(label("8×8 MONITOR")).toBe("8×8 MONITOR rows 00 00 00 3C 00 00 00 00, beam at 0, 4");
+  }, 60000);
 });

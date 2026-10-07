@@ -100,6 +100,10 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
   ...Object.fromEntries(
     Object.entries(SAMPLE_PROGRAMS).map(([name, source]) => [name, compileProgram(source)]),
   ),
+  // Two waits for VBLANK, so the gates' scanout must match the trace's frame timing.
+  "wait for vblank": compileProgram(
+    "screen[0] = 1;\nwait_vblank();\nscreen[1] = 2;\nwait_vblank();\nscreen[7] = 3;",
+  ),
   "every opcode": raw(
     [LDI, 200],
     [STM, 3],

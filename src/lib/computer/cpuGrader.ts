@@ -216,7 +216,9 @@ export function findParts(circuit: Circuit): CpuParts {
     if (part && kindOf(part)) parts[role] = part;
   }
   parts.ROM = ofKind("rom256")[0];
-  parts.SCREEN = circuit.nodes.find((node) => node.behaviour === "screen8x8");
+  parts.SCREEN = circuit.nodes.find(
+    (node) => node.behaviour === "screen8x8" || node.behaviour === "vram8x8",
+  );
   for (const ram of ofKind("ram16")) {
     const address = wiring.source(ram.id, 0)?.from;
     const role = parts.SP && address === parts.SP.id ? "STACK" : "RAM";

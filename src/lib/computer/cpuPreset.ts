@@ -16,7 +16,9 @@
 // the RAM, F8–FA its pixel port (cursor x, cursor y, plot one pixel), and
 // RAM_OUT drives whichever the address selects. Every
 // clocked part runs on the control unit's GCLK, so HALT
-// freezes the whole machine.
+// freezes the whole machine, except the video: a scanout reads the screen
+// through its second port one pixel per tick of the raw clock, a monitor
+// paints what it reads, and LDM FB reads the scanout's VBLANK.
 //
 // The stack-in-RAM variant drops the return stack. Data RAM grows to 32 bytes
 // (5 address bits), SP is a register that resets to 32, and two more parts drive
@@ -47,6 +49,7 @@ import {
   SIGNALS,
   type Signal,
   type StackModel,
+  VIDEO_SAMPLES,
 } from "../computerStepper";
 import { Builder, ports, type Ref, range } from "./blockBuilder";
 import { controlBlockCircuit } from "./controlUnit";
@@ -67,6 +70,8 @@ export const CPU_PARTS = {
   pixelX: "pixel-x",
   pixelY: "pixel-y",
   plotter: "plotter",
+  scanout: "scanout",
+  crt: "crt",
   acc: "acc",
   alu: "alu",
   flags: "flags",
@@ -217,6 +222,12 @@ export function cpuCircuit(
       x: { id: CPU_PARTS.pixelX, x: X.port, y: 3700, label: "PIXEL X (F8)" },
       y: { id: CPU_PARTS.pixelY, x: X.port, y: 4150, label: "PIXEL Y (F9)" },
       plotter: { id: CPU_PARTS.plotter, x: X.port, y: 4600, label: "PIXEL PLOTTER (FA)" },
+    },
+    // The beam runs on the raw clock, so the picture stays up after HALT.
+    video: {
+      scanout: { id: CPU_PARTS.scanout, x: X.port, y: 5150, label: "SCANOUT (FB = VBLANK)" },
+      crt: { id: CPU_PARTS.crt, x: X.part, y: 5150, label: "8×8 MONITOR" },
+      clock: "clock",
     },
     x: X.helper,
     y: 2320,
@@ -461,6 +472,8 @@ export function cpuCircuit(
           CPU_PARTS.pixelY,
           `${CPU_PARTS.pixelY}-display`,
           CPU_PARTS.plotter,
+          CPU_PARTS.scanout,
+          CPU_PARTS.crt,
         ],
       },
       {
@@ -486,6 +499,51 @@ const LOOP_PRESET = "Toy CPU (LOOP program)";
 const RECURSION_PRESET = "Toy CPU, stack in RAM (RECURSION program)";
 const KEYBOARD_PRESET = "Toy CPU (KEYBOARD program)";
 const CROSS_PRESET = "Toy CPU (CROSS program)";
+const TEARING_PRESET = "Toy CPU (TEARING program)";
+const VSYNC_PRESET = "Toy CPU (VSYNC program)";
+const SCANOUT_PRESET = "Scanout and monitor";
+
+/**
+ * A dual-port screen read by a scanout, which drives a monitor: the reader
+ * writes rows with ROW, DATA and WE while the beam reads them out.
+ */
+function scanoutBench(): Circuit {
+  const b = new Builder();
+  b.add("row", "input4", 0, 40, "ROW", { numberValue: 3 });
+  b.add("data", "input8", 0, 240, "DATA", { numberValue: 0x3c });
+  b.add("we", "switch", 0, 520, "WE");
+  b.add("clk", "clock", 0, 640, "CLOCK");
+  b.nodes.push({ ...datapathNode("vram8x8", "vram", 400, 40), label: "DUAL-PORT SCREEN" });
+  b.nodes.push(datapathNode("scanout", "scanout", 800, 40));
+  b.nodes.push(datapathNode("crt8x8", "monitor", 1200, 40));
+  for (let bit = 0; bit < 3; bit++) b.connect(["row", bit], "vram", bit);
+  for (let bit = 0; bit < 8; bit++) b.connect(["data", bit], "vram", 3 + bit);
+  b.connect("we", "vram", 11);
+  for (let bit = 0; bit < 3; bit++) b.connect(["scanout", 4 + bit], "vram", 12 + bit);
+  b.connect("clk", "vram", 15);
+  for (let bit = 0; bit < 8; bit++) b.connect(["vram", 8 + bit], "scanout", bit);
+  b.connect("clk", "scanout", 8);
+  for (const [input, output] of [0, 7, 8].entries())
+    b.connect(["scanout", output], "monitor", input);
+  b.connect("clk", "monitor", 3);
+  for (const [i, [output, label]] of (
+    [
+      [7, "HSYNC"],
+      [8, "VSYNC"],
+      [9, "VBLANK"],
+    ] as const
+  ).entries())
+    b.gate(
+      `lamp-${label.toLowerCase()}`,
+      "lamp",
+      1200,
+      520 + i * 100,
+      ["scanout", output],
+      undefined,
+      label,
+    );
+  return b.circuit(SCANOUT_PRESET);
+}
 
 /** Builder examples: the CPU running one of the stepper's sample programs. */
 export const CPU_PRESETS: Record<string, Circuit> = {
@@ -493,6 +551,9 @@ export const CPU_PRESETS: Record<string, Circuit> = {
   [RECURSION_PRESET]: cpuFromSource(RAM_STACK_SAMPLES.RECURSION, RECURSION_PRESET, "ram"),
   [KEYBOARD_PRESET]: cpuFromSource(INTERRUPT_SAMPLES.KEYBOARD, KEYBOARD_PRESET),
   [CROSS_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.CROSS, CROSS_PRESET),
+  [SCANOUT_PRESET]: scanoutBench(),
+  [TEARING_PRESET]: cpuFromSource(VIDEO_SAMPLES.TEARING, TEARING_PRESET),
+  [VSYNC_PRESET]: cpuFromSource(VIDEO_SAMPLES.VSYNC, VSYNC_PRESET),
 };
 
 export const CPU_HINTS: Record<string, string> = {
@@ -502,6 +563,12 @@ export const CPU_HINTS: Record<string, string> = {
     "The same CPU with its stack in data RAM: SP starts at 32 and counts down, CALL stores the return address at RAM[SP], and each call of sum gets its own stack frame at SP + 0, SP + 1, … That is what lets sum call itself. Run the clock until HALTED lights; OUT then shows 10.",
   [KEYBOARD_PRESET]:
     "The CPU waiting in a loop for keys. Set a key code on KEY BIT 0–7, switch KEY PRESS on for one clock cycle, then off. KEY READY and IRQ light; when the current instruction ends, INT comes on and the interrupt box glows: the control unit pushes PC, turns interrupts off and drives the vector 02 into PC. The handler draws the key code on screen row 3 and counts the presses on OUT.",
+  [SCANOUT_PRESET]:
+    "A real display is read out, not looked at: the SCANOUT reads one pixel per clock tick, left to right and top to bottom, and the MONITOR paints it where its own beam is. HSYNC ends each line and VSYNC each frame, so the monitor's beam stays in step; lines 8–15 are vertical blank, when the beam is off the screen. The CPU and the beam share one framebuffer. This one is dual-ported: the beam reads through RA and V while writes go through A, D and WE, so neither ever waits. The other way is arbitration on one port, where the beam wins and the CPU stalls. Set ROW and DATA, switch WE on for one clock cycle, and watch the row appear only when the beam reaches it.",
+  [TEARING_PRESET]:
+    "The CPU redraws the whole screen in a loop, left half lit, then right half, while the scanout reads it out one pixel per tick. Nothing ties a redraw to the beam, so it starts anywhere in a frame and the MONITOR shows the top of one picture over the bottom of the other: tearing. Run the clock and watch the split move.",
+  [VSYNC_PRESET]:
+    "The TEARING program with wait_vblank() before each redraw: LDM FB reads the scanout's VBLANK, and ADDI 255 turns a 1 into a carry for JNC, so the loop runs until the beam reaches the blank lines. The redraw then starts while the beam is off the screen and stays ahead of it, so every frame on the MONITOR is one whole picture.",
   [CROSS_PRESET]:
     "The CPU drawing an X with plot(x, y). Each plot is three stores: STM F8 loads PIXEL X, STM F9 loads PIXEL Y, and STM FA sends the colour through the PIXEL PLOTTER. On that tick the screen's row address comes from PIXEL Y, and the plotter hands back the row with one bit changed. Run the clock and watch the screen fill in, one pixel per plot, until HALTED lights.",
 };

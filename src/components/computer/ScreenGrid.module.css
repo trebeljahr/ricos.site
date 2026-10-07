@@ -27,3 +27,8 @@
   outline: 1px solid var(--pixel-written, #ffd84d);
   outline-offset: -1px;
 }
+.beam {
+  outline: 2px solid var(--pixel-beam, #7fe3ff);
+  outline-offset: -1px;
+  box-shadow: 0 0 6px var(--pixel-beam, #7fe3ff);
+}

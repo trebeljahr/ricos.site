@@ -1,3 +1,5 @@
+import { beamAt } from "./computer/video";
+
 export type Instruction = {
   address: number;
   opcode: number;
@@ -84,11 +86,16 @@ export const isScreenAddress = (address: number) => (address & 0xf0) === SCREEN_
  * The pixel port draws one pixel without touching the rest of its row. STM F8
  * sets the cursor's x and STM F9 its y (low 3 bits each); STM FA writes ACC
  * bit 0 into the pixel at the cursor. The port decodes A0–A1 only, so FB–FF
- * repeat F8–FA. Reading any port address gives the cursor's row, screen[y].
+ * repeat F8–FA. Reading a port address gives the cursor's row, screen[y],
+ * except FB (and FF), which reads the video status: 1 while the scanout is in
+ * vertical blank, else 0.
  */
 export const PIXEL_PORT = { x: 0xf8, y: 0xf9, pixel: 0xfa } as const;
 export const isPixelPort = (address: number) => (address & 0xf8) === 0xf8;
 export type PixelPortRole = "x" | "y" | "pixel";
+/** LDM FB reads 1 during vertical blank, 0 while the beam draws. Writes to FB still plot. */
+export const VIDEO_STATUS = 0xfb;
+export const isVideoStatus = (address: number) => isPixelPort(address) && (address & 3) === 3;
 export const pixelPortRole = (address: number): PixelPortRole =>
   (address & 2) !== 0 ? "pixel" : (address & 1) !== 0 ? "y" : "x";
 
@@ -339,6 +346,8 @@ export function describeOperand(
 ): OperandMeaning {
   const kind = isa.find((item) => item.opcode === opcode)?.operand;
   if (kind === "literal") return { short: `#${operand}`, long: `number ${operand}` };
+  if (kind === "RAM address" && opcode !== OPCODES.STM && isVideoStatus(operand))
+    return { short: `[${hex(operand)}] vblank`, long: `the video status (${hex(operand)})` };
   if (kind === "RAM address" && isPixelPort(operand)) {
     const role = pixelPortRole(operand);
     return role === "pixel"
@@ -566,7 +575,8 @@ function parseProgram(source: string): {
       position++;
       if (header[1] === "print") fail(line, "print is reserved for output.");
       if (header[1] === "plot") fail(line, "plot is reserved for the screen.");
-      if (BUILTINS.has(header[1])) fail(line, `${header[1]} is built in.`);
+      if (BUILTINS.has(header[1]) || header[1] === WAIT_VBLANK)
+        fail(line, `${header[1]} is built in.`);
       if (functions.some((item) => item.name === header[1]))
         fail(line, `Function “${header[1]}” is already defined.`);
       functions.push({
@@ -590,6 +600,13 @@ function parseProgram(source: string): {
 
 /** The key handler: a function with this name runs when a key is pressed. */
 export const KEY_HANDLER = "on_key";
+/**
+ * wait_vblank(); returns at the start of the next vertical blank: it waits
+ * while the beam is still in a blank, then until the next one begins. The CPU
+ * has no branch on zero, so each poll adds 255 to the status: 1 + 255
+ * carries, 0 + 255 does not, and JNC tests the carry.
+ */
+export const WAIT_VBLANK = "wait_vblank";
 /** Built-in calls: key() reads the key port; the other two switch interrupts on and off. */
 const BUILTINS = new Map<string, { opcode: number; label: string }>([
   ["key", { opcode: OPCODES.IN, label: "READ KEY" }],
@@ -718,6 +735,20 @@ export function compileProgram(
     line: number,
     caller: string,
   ) => {
+    if (name === WAIT_VBLANK) {
+      if (argument) fail(line, `${name}() takes no arguments.`);
+      const during = instructions.length * 2;
+      emit(OPCODES.LDM, VIDEO_STATUS, "READ VBLANK", line);
+      emit(OPCODES.ADDI, 255, "CARRY IF VBLANK", line);
+      const over = emit(OPCODES.JNC, 0, "BLANK OVER", line);
+      emit(OPCODES.JMP, during, "STILL IN BLANK", line);
+      patch(over, instructions.length * 2);
+      const until = instructions.length * 2;
+      emit(OPCODES.LDM, VIDEO_STATUS, "READ VBLANK", line);
+      emit(OPCODES.ADDI, 255, "CARRY IF VBLANK", line);
+      emit(OPCODES.JNC, until, "WAIT FOR VBLANK", line);
+      return;
+    }
     const builtin = BUILTINS.get(name);
     if (builtin) {
       if (argument) fail(line, `${name}() takes no arguments.`);
@@ -748,6 +779,8 @@ export function compileProgram(
     if (expression.kind === "value") {
       load(expression.value, scope, line);
     } else if (expression.kind === "call") {
+      if (expression.name === WAIT_VBLANK)
+        fail(line, `${WAIT_VBLANK}() gives no value: write it as a statement.`);
       call(expression.name, expression.argument, scope, line, caller);
     } else {
       load(expression.left, scope, line);
@@ -1031,6 +1064,19 @@ export const INTERRUPT_SAMPLES = {
   // Each key press draws its code as a row of pixels and counts the presses.
   KEYBOARD:
     "let presses = 0;\nfn on_key(k) {\n  screen[3] = k;\n  presses = presses + 1;\n  print(presses);\n}\nloop {\n}",
+} as const;
+
+const fillRows = (value: number) =>
+  Array.from({ length: SCREEN_ROWS }, (_, y) => `  screen[${y}] = ${value};`).join("\n");
+/**
+ * Programs that redraw the screen forever while the scanout reads it. Each
+ * frame they swap the left and right halves. TEARING writes whenever it gets
+ * there, so the beam shows the top of one picture over the bottom of the
+ * other; VSYNC starts each redraw in vertical blank and stays ahead of the beam.
+ */
+export const VIDEO_SAMPLES = {
+  TEARING: `loop {\n${fillRows(15)}\n${fillRows(240)}\n}`,
+  VSYNC: `loop {\n  ${WAIT_VBLANK}();\n${fillRows(15)}\n  ${WAIT_VBLANK}();\n${fillRows(240)}\n}`,
 } as const;
 
 /** Programs for the stack-in-RAM CPU: they recurse, so the other CPU rejects them. */
@@ -1483,12 +1529,15 @@ export function traceTicks(
   const ram = Array<number>(STACK_MODELS[stack].ramBytes).fill(0);
   const screen = Array<number>(SCREEN_ROWS).fill(0);
   // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM, a screen row or the pixel port.
+  // The scanout runs from reset alongside the CPU: on tick i its beam is at beamAt(i).
   const readData = (address: number, cursorY: number) =>
-    isPixelPort(address)
-      ? screen[cursorY]
-      : isScreenAddress(address)
-        ? screen[address & (SCREEN_ROWS - 1)]
-        : ram[address & (ram.length - 1)];
+    isVideoStatus(address)
+      ? Number(beamAt(ticks.length).vblank)
+      : isPixelPort(address)
+        ? screen[cursorY]
+        : isScreenAddress(address)
+          ? screen[address & (SCREEN_ROWS - 1)]
+          : ram[address & (ram.length - 1)];
   const stackMemory = Array<number>(16).fill(0);
   /** With the stack in RAM, SP may not move below the last fixed variable. */
   const floor = inRam ? program.variables.length : 0;
@@ -1657,6 +1706,10 @@ function explainExecute(
     case "LDI":
       return `Load the number ${operand} itself into ACC.`;
     case "LDM":
+      if (isVideoStatus(operand))
+        return after.acc
+          ? "The video status reads 1: the beam is in vertical blank, off the bottom of the screen."
+          : "The video status reads 0: the beam is drawing the screen.";
       return `Go to ${meaning}, read the ${after.acc} stored there, and load it into ACC.`;
     case "STM":
       return `Write ACC (${after.acc}) to ${meaning}.`;

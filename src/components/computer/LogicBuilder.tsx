@@ -56,7 +56,7 @@ import {
   simulationCircuit,
   syncBlockStates,
 } from "../../lib/computer/blockFolding";
-import { DATAPATH_BLOCKS, DATAPATH_KINDS, type DatapathKind, datapathCircuit, screenRows } from "../../lib/computer/datapathBlocks";
+import { DATAPATH_BLOCKS, DATAPATH_KINDS, type DatapathKind, datapathCircuit, isScreenBlock } from "../../lib/computer/datapathBlocks";
 import { compileProgram, SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
@@ -70,7 +70,7 @@ import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { GateSymbol } from "./GateSymbol";
-import { ScreenGrid } from "./ScreenGrid";
+import { BlockScreen } from "./BlockScreen";
 import styles from "./LogicBuilder.module.css";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -818,11 +818,11 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
                   <span className={styles.nodeLabel} title="Double-click to edit label"
                     onDoubleClick={() => beginLabel(part)}>{part.label}</span>}
               </div>
-              {part.behaviour === "screen8x8"
-                ? <ScreenGrid rows={screenRows(snapshot.blocks?.[part.id])} label={part.label || DATAPATH_BLOCKS.screen8x8.label} />
+              {isScreenBlock(part.behaviour)
+                ? <BlockScreen behaviour={part.behaviour} state={snapshot.blocks?.[part.id]} label={part.label} />
                 : <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuitName={part.module?.name} /></span>}
               <strong className={styles.nodePartName}>{part.type === "module" ? part.module?.name : LABELS[part.type]}</strong>
-              {part.behaviour === "screen8x8" ? null : part.type === "module" ? <span className={styles.moduleBits}>
+              {isScreenBlock(part.behaviour) ? null : part.type === "module" ? <span className={styles.moduleBits}>
                 {inputCount(part)} IN · {outputCount(part)} OUT
               </span> : <span className={styles.bit}>{snapshot.values[part.id] ? "1" : "0"}</span>}
             </div>}
@@ -3426,7 +3426,7 @@ export function LogicBuilder({
                         className={clsx(
                           styles.nodeBody,
                           node.type === "module" && styles.moduleBody,
-                          node.behaviour === "screen8x8" && styles.screenBody,
+                          isScreenBlock(node.behaviour) && styles.screenBody,
                         )}
                         style={expandedDetails.has(node.id) ? { display: "none" } : undefined}
                       >
@@ -3487,11 +3487,12 @@ export function LogicBuilder({
                             </>
                           )}
                         </div>
-                        {node.behaviour === "screen8x8" ? (
+                        {isScreenBlock(node.behaviour) ? (
                           // A folded screen draws its pixels; unfolded, its register rows show instead.
-                          <ScreenGrid
-                            rows={screenRows(boardSnapshot.blocks?.[node.id])}
-                            label={node.label || DATAPATH_BLOCKS.screen8x8.label}
+                          <BlockScreen
+                            behaviour={node.behaviour}
+                            state={boardSnapshot.blocks?.[node.id]}
+                            label={node.label}
                           />
                         ) : !["input4", "input8", "display4", "display8"].includes(
                           node.type,
@@ -3607,7 +3608,7 @@ export function LogicBuilder({
                             }
                           />
                         ) : node.type === "module" ? (
-                          node.behaviour !== "screen8x8" && (
+                          !isScreenBlock(node.behaviour) && (
                             <span className={styles.moduleBits}>
                               {moduleInputs(node.module!).length} IN ·{" "}
                               {moduleOutputs(node.module!).length} OUT

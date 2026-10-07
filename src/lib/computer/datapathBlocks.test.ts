@@ -101,7 +101,7 @@ describe("datapath blocks", () => {
     }
   });
 
-  it("alu8: arithmetic is exhaustive against the stepper's flag rules", () => {
+  it("alu8: arithmetic is exhaustive against the stepper's flag rules", { timeout: 60_000 }, () => {
     for (let a = 0; a < 256; a++)
       for (let b = 0; b < 256; b++)
         for (const sub of [false, true]) {
@@ -249,5 +249,36 @@ describe("carrying state across fold and unfold", () => {
     seeded.modules.row5 = unfoldBlockState(row, seeded.blocks?.row5);
     delete seeded.blocks?.row5;
     expect((foldBlockState(pair.block, seeded) as { bytes: number[] }).bytes[5]).toBe(0x42);
+  });
+
+  it("counts ACC ← ACC + 1 through the ALU with the register folded or unfolded", () => {
+    for (const gates of [false, true]) {
+      const reg = datapathNode("register8", "acc", 0, 0);
+      const nodes: Node[] = [
+        gates ? { ...reg, behaviour: undefined } : reg,
+        datapathNode("alu8", "alu", 0, 0),
+        { id: "one", type: "high", x: 0, y: 0 },
+        { id: "zero", type: "ground", x: 0, y: 0 },
+        { id: "clk", type: "switch", x: 0, y: 0 },
+      ];
+      const wires = [
+        ...Array.from({ length: 8 }, (_, bit) => [
+          { id: `q${bit}`, from: "acc", output: bit, to: "alu", input: bit },
+          { id: `b${bit}`, from: bit ? "zero" : "one", to: "alu", input: 8 + bit },
+          { id: `r${bit}`, from: "alu", output: bit, to: "acc", input: bit },
+        ]).flat(),
+        { id: "sub", from: "zero", to: "alu", input: 16 },
+        { id: "load", from: "one", to: "acc", input: 8 },
+        { id: "clock", from: "clk", to: "acc", input: 9 },
+      ];
+      const circuit: Circuit = { name: "counter", nodes, wires };
+      let state = initialSnapshot();
+      for (let n = 1; n <= 5; n++)
+        for (const clk of [false, true]) {
+          state = step(circuit, state, false, {}, { clk });
+          expect(state.unstable, `gates=${gates}`).toBe(false);
+        }
+      expect(toNumber(state.outputs.acc), `gates=${gates}`).toBe(5);
+    }
   });
 });

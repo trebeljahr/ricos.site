@@ -1,4 +1,4 @@
-import { bitsFromBus, busFromBits, type BusValue, resolveBus } from "./bus";
+import { type BusValue, bitsFromBus, busFromBits, resolveBus } from "./bus";
 import { MEMORY_PRESETS } from "./memoryCircuits";
 
 export type GateType =
@@ -438,6 +438,13 @@ export function step(
   depth = 0,
   /** When given, filled with the delay step of every node that changed; see stepWithDelays. */
   delays?: Record<string, number>,
+  /**
+   * "settle" only settles against the stored state and commits nothing. A
+   * nested module runs that way inside its parent's settles and commits once,
+   * at its parent's commit, so (like a flip-flop) it samples its inputs at the
+   * edge and cannot react to its own new outputs within the same tick.
+   */
+  mode: "full" | "settle" = "full",
 ): Snapshot {
   const compiled = compile(circuit);
   const { nodes, sourceId, sourcePort, sourceMulti } = compiled;
@@ -508,16 +515,18 @@ export function step(
     buses[node.id] = next;
     return true;
   };
-  // A module is a pure function of its previous inner snapshot, the clock level
-  // and its inputs, so within one step each input pattern runs at most once.
-  const moduleRuns = new Map<string, Map<string, Snapshot>>();
-  const runModule = (node: Node, signals: boolean[]) => {
+  // A module is a pure function of its inner snapshot, the clock level and its
+  // inputs, so within one phase each input pattern runs at most once. Settles
+  // only settle it, against its state before the commit and then after it.
+  let moduleRuns = new Map<string, Map<string, Snapshot>>();
+  let moduleBase = previous.modules;
+  const runModule = (node: Node, signals: boolean[], innerMode: "full" | "settle" = "settle") => {
     const key = bitKey(signals);
     let runs = moduleRuns.get(node.id);
     if (!runs) moduleRuns.set(node.id, (runs = new Map()));
     const known = runs.get(key);
-    if (known) return known;
-    const before = previous.modules[node.id];
+    if (known && innerMode === "settle") return known;
+    const before = moduleBase[node.id];
     const settledAs = before && settledSnapshots.get(before);
     const inner =
       settledAs &&
@@ -533,8 +542,10 @@ export function step(
               compile(node.module!).inputIds.map((id, index) => [id, signals[index]]),
             ),
             depth + 1,
+            undefined,
+            innerMode,
           );
-    runs.set(key, inner);
+    if (innerMode === "settle") runs.set(key, inner);
     return inner;
   };
   // A behavioural block is evaluated once per input pattern per phase: against
@@ -668,6 +679,16 @@ export function step(
     });
   };
   settle();
+  if (mode === "settle")
+    return {
+      ...previous,
+      values,
+      outputs,
+      modules,
+      unstable,
+      ...(previous.blocks || compiled.blocks.some(Boolean) ? { blocks: blockState } : {}),
+      ...(previous.buses || compiled.hasBuses ? { buses } : {}),
+    };
   const memory = { ...previous.memory };
   const age = { ...previous.age };
   const lastClock = { ...previous.lastClock };
@@ -708,6 +729,16 @@ export function step(
     blockState[node.id] = nextState;
   });
   blockRuns = new Map();
+  // Gate modules commit with the inputs they saw in the first settle.
+  const committed: Record<string, Snapshot> = { ...previous.modules };
+  nodes.forEach((node, i) => {
+    if (node.type !== "module" || !node.module || compiled.blocks[i] || depth >= 6) return;
+    const inner = runModule(node, inputs(i), "full");
+    committed[node.id] = modules[node.id] = inner;
+    if (inner.unstable) unstable = true;
+  });
+  moduleRuns = new Map();
+  moduleBase = committed;
   lastClock.__dramTick = clockHigh;
   // Stored bits and block states change together, one step after the first settle.
   let commitAt = 1;
@@ -1140,9 +1171,24 @@ function sharedBusCircuit(): Circuit {
       {
         id: "tri-state",
         label: "Tri-state bus: one enable per source",
-        nodeIds: ["enable-a", "enable-b", "merge-a", "merge-b", "drive-a", "drive-b", "bus", "split", "bus-display", "lane0"],
+        nodeIds: [
+          "enable-a",
+          "enable-b",
+          "merge-a",
+          "merge-b",
+          "drive-a",
+          "drive-b",
+          "bus",
+          "split",
+          "bus-display",
+          "lane0",
+        ],
       },
-      { id: "multiplexer", label: "Multiplexer: one select picks a source", nodeIds: ["select", "mux", "mux-display"] },
+      {
+        id: "multiplexer",
+        label: "Multiplexer: one select picks a source",
+        nodeIds: ["select", "mux", "mux-display"],
+      },
     ],
   };
   const link = (from: string, to: string, input = 0, output = 0) =>

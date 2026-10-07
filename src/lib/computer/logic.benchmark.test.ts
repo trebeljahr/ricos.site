@@ -11,6 +11,7 @@ import {
 } from "./benchmark/syntheticCircuits";
 import {
   BUS_TYPES,
+  type Circuit,
   type GateType,
   initialSnapshot,
   MAX_CIRCUIT_NODES,
@@ -71,6 +72,59 @@ function comparable(snapshot: Snapshot) {
     outputs: snapshot.outputs,
     unstable: snapshot.unstable,
   };
+}
+
+/** Top-level node values, the part of a snapshot that inlining keeps. */
+function topLevel(snapshot: Snapshot) {
+  return {
+    lamps: Object.fromEntries(
+      Object.entries(snapshot.values).filter(([id]) => id.startsWith("lamp")),
+    ),
+    unstable: snapshot.unstable,
+  };
+}
+
+/**
+ * The same circuit with each gate module replaced by its gates: an input port
+ * becomes a junction fed twice by the port's source, and a wire from an output
+ * port comes from whatever drives that output's lamp.
+ */
+function inlineModules(circuit: Circuit, prefix = ""): Circuit {
+  const nodes: Node[] = [];
+  const wires: Wire[] = [];
+  const outputSource = new Map<string, [string, number | undefined]>();
+  const inputNode = new Map<string, string>();
+  for (const node of circuit.nodes) {
+    if (node.type !== "module" || !node.module) {
+      nodes.push({ ...node, id: prefix + node.id });
+      continue;
+    }
+    const inner = inlineModules(node.module, `${prefix}${node.id}/`);
+    const ins = node.module.nodes.filter((n) => ["switch", "clock", "pulse"].includes(n.type));
+    const outs = node.module.nodes.filter((n) => n.type === "lamp");
+    const ids = new Set(ins.map((n) => `${prefix}${node.id}/${n.id}`));
+    for (const n of inner.nodes)
+      nodes.push(ids.has(n.id) ? { id: n.id, type: "junction", x: 0, y: 0 } : n);
+    wires.push(...inner.wires);
+    ins.forEach((n, i) => inputNode.set(`${node.id}:${i}`, `${prefix}${node.id}/${n.id}`));
+    outs.forEach((lamp, i) => {
+      const feed = inner.wires.find((w) => w.to === `${prefix}${node.id}/${lamp.id}`);
+      if (feed) outputSource.set(`${node.id}:${i}`, [feed.from, feed.output]);
+    });
+  }
+  for (const wire of circuit.wires) {
+    const source = outputSource.get(`${wire.from}:${wire.output ?? 0}`);
+    const [from, output] = source ?? [prefix + wire.from, wire.output];
+    const port = inputNode.get(`${wire.to}:${wire.input}`);
+    const base = { from, ...(output === undefined ? {} : { output }) };
+    if (port)
+      wires.push(
+        { ...base, id: `${prefix}${wire.id}#a`, to: port, input: 0 },
+        { ...base, id: `${prefix}${wire.id}#b`, to: port, input: 1 },
+      );
+    else wires.push({ ...base, id: prefix + wire.id, to: prefix + wire.to, input: wire.input });
+  }
+  return { name: circuit.name, nodes, wires };
 }
 
 /** A random circuit with gates, feedback wires, flip-flops and folded modules. */
@@ -168,26 +222,70 @@ describe("engine equivalence with the previous step()", () => {
       expect(after, synthetic.circuit.name).toEqual(before);
     }
   });
+  // The previous engine let a gate module's flip-flops commit a second time
+  // within one tick, when an input changed after the parent's commit. A flat
+  // flip-flop never did, so the oracle for random circuits with modules is the
+  // same circuit with every module's gates inlined into its parent.
   it("matches on random acyclic circuits with memory and modules", () => {
     for (let seed = 1; seed <= 40; seed++) {
       const synthetic = randomCircuit(seed, 60, false);
-      expect(run(step, synthetic, 20, seed).map(comparable), `seed ${seed}`).toEqual(
-        run(legacyStep, synthetic, 20, seed).map(comparable),
+      const flat = { ...synthetic, circuit: inlineModules(synthetic.circuit) };
+      expect(run(step, flat, 20, seed).map(comparable), "flat circuits agree").toEqual(
+        run(legacyStep, flat, 20, seed).map(comparable),
+      );
+      expect(run(step, synthetic, 20, seed).map(topLevel), `seed ${seed}`).toEqual(
+        run(step, flat, 20, seed).map(topLevel),
       );
     }
   });
   it("settles random feedback circuits to the same stable values", () => {
     for (let seed = 1; seed <= 40; seed++) {
       const synthetic = randomCircuit(seed, 40, true);
-      const before = run(legacyStep, synthetic, 20, seed);
+      const before = run(
+        step,
+        { ...synthetic, circuit: inlineModules(synthetic.circuit) },
+        20,
+        seed,
+      );
       const after = run(step, synthetic, 20, seed);
       // Loops that oscillate may stop on a different phase; stable ticks must agree.
       after.forEach((snapshot, tick) => {
         if (before[tick].unstable) return;
         if (before.slice(0, tick).some((state) => state.unstable)) return;
-        expect(comparable(snapshot), `seed ${seed} tick ${tick}`).toEqual(comparable(before[tick]));
+        expect(topLevel(snapshot), `seed ${seed} tick ${tick}`).toEqual(topLevel(before[tick]));
       });
     }
+  });
+  it("runs a clocked gate module in a feedback loop as its inlined gates", () => {
+    // A T flip-flop module whose output feeds its own T input through a NOT.
+    const tff = PRESETS["T flip-flop"];
+    const ports = tff.nodes.filter((n) => ["switch", "clock", "pulse"].includes(n.type));
+    const synthetic: Synthetic = {
+      circuit: {
+        name: "module feedback",
+        nodes: [
+          { id: "clk", type: "clock", x: 0, y: 0 },
+          { id: "m", type: "module", x: 0, y: 0, module: tff },
+          { id: "inv", type: "not", x: 0, y: 0 },
+          { id: "lamp", type: "lamp", x: 0, y: 0 },
+        ],
+        wires: [
+          ...ports.map((port, i) => ({
+            id: `in${i}`,
+            from: port.type === "clock" ? "clk" : "inv",
+            to: "m",
+            input: i,
+          })),
+          { id: "fb", from: "m", output: 0, to: "inv", input: 0 },
+          { id: "out", from: "m", output: 0, to: "lamp", input: 0 },
+        ],
+      },
+      switches: [],
+    };
+    const nested = run(step, synthetic, 24);
+    const flat = run(step, { ...synthetic, circuit: inlineModules(synthetic.circuit) }, 24);
+    expect(nested.map(topLevel)).toEqual(flat.map(topLevel));
+    expect(nested.some((state) => state.unstable)).toBe(false);
   });
 });
 

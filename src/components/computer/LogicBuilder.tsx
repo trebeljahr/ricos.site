@@ -48,6 +48,15 @@ import {
 } from "../../lib/computer/logic";
 import { type BusValue, formatBus } from "../../lib/computer/bus";
 import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
+import {
+  enteredSnapshot,
+  gateStructure,
+  returnedSnapshot,
+  simulationCircuit,
+  syncBlockStates,
+} from "../../lib/computer/blockFolding";
+import { DATAPATH_BLOCKS, DATAPATH_KINDS, type DatapathKind, datapathCircuit } from "../../lib/computer/datapathBlocks";
+import { compileProgram, SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
@@ -216,12 +225,30 @@ const palette: GateType[] = [
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[]; viewport?: ViewportState };
 type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewPath: ViewLevel[]; unfolded: string[] };
+// An edited gate form no longer matches its block's behaviour, so it runs as gates.
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
   nodes: parent.nodes.map((item) =>
-    item.id === moduleId ? { ...item, module: clone(inner) } : item,
+    item.id === moduleId
+      ? { ...item, module: clone(inner),
+          ...(item.behaviour && item.module && gateStructure(item.module) !== gateStructure(inner)
+            ? { behaviour: undefined } : {}) }
+      : item,
   ),
 });
+/** Steps the view: blocks unfolded in place run as gates, carrying their stored state. */
+const runStep = (circuit: Circuit, snapshot: Snapshot, high: boolean, open: ReadonlySet<string>,
+  pulses: Record<string, boolean> = {}) =>
+  step(simulationCircuit(circuit, open), syncBlockStates(circuit, snapshot, open), high, pulses);
+const NO_UNFOLDED: ReadonlySet<string> = new Set();
+/** The ROM in the parts menu holds the stepper's example program. */
+const datapathSources = new Map<DatapathKind, Circuit>();
+const datapathSource = (kind: DatapathKind) => {
+  if (!datapathSources.has(kind))
+    datapathSources.set(kind,
+      datapathCircuit(kind, kind === "rom256" ? compileProgram(SAMPLE_PROGRAMS.EXAMPLE).bytes : []));
+  return datapathSources.get(kind)!;
+};
 type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
 const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
@@ -353,6 +380,7 @@ const editInlineCircuit = (root: Circuit, path: string, edit: (inner: Circuit) =
       modified = index === segments.length - 1 ? structure(source) !== structure(changed) : result.modified;
       const name = !modified || changed.name.startsWith("Modified ") ? changed.name : `Modified ${changed.name}`;
       return { ...node, type: "module" as const, module: { ...changed, name },
+        ...(modified && node.behaviour ? { behaviour: undefined } : {}),
         label: !modified || node.label?.startsWith("Modified ") ? node.label : `Modified ${node.label || source.name}` };
     });
     return { circuit: nodes.every((node, i) => node === circuit.nodes[i]) ? circuit : { ...circuit, nodes }, modified };
@@ -1160,6 +1188,7 @@ export function LogicBuilder() {
   const inputFile = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
+  const unfoldedRef = useRef(unfolded);
   const snapshotRef = useRef(snapshot);
   const timelineRef = useRef(timeline);
   const clockRef = useRef(clockHigh);
@@ -1168,6 +1197,7 @@ export function LogicBuilder() {
   const wireDraftRef = useRef<WireDraft | null>(null);
   const suppressBoardClick = useRef(false);
   circuitRef.current = circuit;
+  unfoldedRef.current = unfolded;
   snapshotRef.current = snapshot;
   timelineRef.current = timeline;
   clockRef.current = clockHigh;
@@ -1370,7 +1400,10 @@ export function LogicBuilder() {
   }, []);
   /** One tick from `from`. With ripple on, the result is the same and is replayed in delay order. */
   const settleTick = useCallback(
-    (target: Circuit, from: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {}) => {
+    (source: Circuit, previous: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {}) => {
+      // Blocks unfolded in place run as gates, carrying their stored state.
+      const target = simulationCircuit(source, unfoldedRef.current);
+      const from = syncBlockStates(source, previous, unfoldedRef.current);
       if (!rippleRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
         return { next: step(target, from, high, pulseIds), replay: null };
       const ripple = stepWithDelays(target, from, high, pulseIds);
@@ -1425,11 +1458,26 @@ export function LogicBuilder() {
     () => (replay ? rippleFrame(replay.from, replay.ripple, replay.at) : snapshot),
     [replay, snapshot],
   );
+  const previousUnfolded = useRef(unfolded);
+  useEffect(() => {
+    // Folding is a view change, not an edit: move each block's state into or out
+    // of its gates in every recorded tick, and settle the ticks that changed.
+    if (previousUnfolded.current === unfolded) return;
+    previousUnfolded.current = unfolded;
+    const current = timelineRef.current;
+    const source = circuitRef.current;
+    const frames = current.frames.map((frame) => {
+      const synced = syncBlockStates(source, frame.snapshot, unfolded);
+      return synced === frame.snapshot ? frame
+        : { ...frame, snapshot: step(simulationCircuit(source, unfolded), synced, frame.clockHigh, frame.pulses) };
+    });
+    if (frames.some((frame, index) => frame !== current.frames[index])) setTimeline({ ...current, frames });
+  }, [unfolded, setTimeline]);
 
   const resetRuntime = () => {
     setRunning(false);
     setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
-      snapshot: step(circuitRef.current, initialSnapshot(), false) }));
+      snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) }));
   };
   const clearCanvas = () => {
     portWiring.clear();
@@ -1490,10 +1538,12 @@ export function LogicBuilder() {
     setSelected([]);
     setSelectedWires([]);
     setPending(null);
-    const inner = step(
+    const host = moduleId ? circuit.nodes.find((item) => item.id === moduleId) : undefined;
+    const inner = runStep(
       copy,
-      moduleId ? (parentSnapshot.modules[moduleId] ?? initialSnapshot()) : initialSnapshot(),
+      (host && enteredSnapshot(host, parentSnapshot)) ?? initialSnapshot(),
       clockRef.current,
+      NO_UNFOLDED,
     );
     restartTimeline(inner);
     setMessage(`Inside ${via}. Use Back to return.`);
@@ -1514,7 +1564,7 @@ export function LogicBuilder() {
       }
       childUnfolded = restored;
       childSnapshot = level.moduleId
-        ? { ...level.snapshot, modules: { ...level.snapshot.modules, [level.moduleId]: childSnapshot } }
+        ? returnedSnapshot(level.moduleId, level.snapshot, childSnapshot)
         : level.snapshot;
     }
     const level = viewPath[depth];
@@ -1525,7 +1575,7 @@ export function LogicBuilder() {
     setSelected(level.moduleId ? [level.moduleId] : []);
     setSelectedWires([]);
     setPending(null);
-    const restored = step(parent, childSnapshot, clockRef.current);
+    const restored = runStep(parent, childSnapshot, clockRef.current, childUnfolded);
     restartTimeline(restored);
     setMessage(`Back to ${parent.name}.`);
   };
@@ -1545,7 +1595,7 @@ export function LogicBuilder() {
           .map((entry) => entry.slice(parentPrefix.length)),
         viewport: index === 0 ? captureViewport() : undefined });
       source = part.module;
-      innerSnapshot = innerSnapshot.modules[id] ?? initialSnapshot();
+      innerSnapshot = enteredSnapshot(part, innerSnapshot) ?? initialSnapshot();
     }
     restoreViewport();
     const copy = clone(source);
@@ -1559,7 +1609,9 @@ export function LogicBuilder() {
     setSelected([]);
     setSelectedWires([]);
     setPending(null);
-    restartTimeline(step(copy, innerSnapshot, clockRef.current));
+    const innerUnfolded = new Set([...unfolded].filter((entry) => entry.startsWith(`${path}/`))
+      .map((entry) => entry.slice(path.length + 1)));
+    restartTimeline(runStep(copy, innerSnapshot, clockRef.current, innerUnfolded));
     setMessage(`Inside ${copy.name}. Use Back to return.`);
   };
   const toggleUnfolded = (id: string) => {
@@ -1677,7 +1729,8 @@ export function LogicBuilder() {
     addModule(source, { x: center.x - MODULE_WIDTH / 2,
       y: center.y - nodeHeight({ id: "", type: "module", module: source, x: 0, y: 0 }) / 2 }, inlineTarget);
   };
-  const addModule = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+  const addModule = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null,
+    extra: Partial<Node> = {}) => {
     if (
       !moduleOutputs(source).length ||
       moduleInputs(source).length > 24 ||
@@ -1691,7 +1744,7 @@ export function LogicBuilder() {
       updateInline(inlinePath, (inner) => inner.nodes.length >= 300 ? inner : ({ ...inner, nodes: [...inner.nodes, {
         id: crypto.randomUUID(), type: "module", module: clone(source),
         x: position?.x ?? Math.max(100, ...inner.nodes.map((node) => node.x)) + 240,
-        y: position?.y ?? 80 + (inner.nodes.length % 5) * 105,
+        y: position?.y ?? 80 + (inner.nodes.length % 5) * 105, ...extra,
       }] }));
       return;
     }
@@ -1702,6 +1755,7 @@ export function LogicBuilder() {
       module: clone(source),
       x: position?.x ?? 70 + (index % 3) * 270,
       y: 0,
+      ...extra,
     };
     next.y = position?.y ?? 90 + (Math.floor(index / 3) % 5) * 90;
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
@@ -2171,6 +2225,16 @@ export function LogicBuilder() {
   const visibleParts = palette.filter((type) =>
     `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
+  const visibleBlocks = DATAPATH_KINDS.filter((kind) =>
+    `${kind} ${DATAPATH_BLOCKS[kind].label}`.toLowerCase().includes(search.toLowerCase().trim()),
+  );
+  const addBlock = (kind: DatapathKind, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+    const source = datapathSource(kind);
+    addModule(source, position && {
+      x: position.x - MODULE_WIDTH / 2,
+      y: position.y - nodeHeight({ id: "drop", type: "module", module: source, x: 0, y: 0 }) / 2,
+    }, inlineTarget, { behaviour: kind, label: DATAPATH_BLOCKS[kind].label });
+  };
   const visibleExamples = Object.values(PRESETS).filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase().trim()),
   );
@@ -2589,6 +2653,26 @@ export function LogicBuilder() {
             ))}
             <h3 className={styles.partsSection}>Parts</h3>
             {renderParts()}
+            {visibleBlocks.length > 0 && <h3 className={styles.partsSection}>CPU blocks</h3>}
+            {visibleBlocks.map((kind) => (
+              <button
+                type="button"
+                key={kind}
+                draggable
+                onDragStart={(event) => {
+                  event.dataTransfer.setData("application/x-logic-block", kind);
+                  event.dataTransfer.effectAllowed = "copy";
+                }}
+                onClick={() => addBlock(kind)}
+                title={DATAPATH_BLOCKS[kind].hint}
+                style={{ "--part-accent": partColors.module } as React.CSSProperties}
+              >
+                <span className={styles.partIcon}>
+                  <GateSymbol type="module" circuitName={datapathSource(kind).name} />
+                </span>
+                <span>{DATAPATH_BLOCKS[kind].label}</span>
+              </button>
+            ))}
             <h3 className={styles.partsSection}>Examples and storage</h3>
             {visibleExamples.map((example) => (
               <div className={styles.savedPart} key={example.name}>
@@ -2614,7 +2698,7 @@ export function LogicBuilder() {
                 <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
               </div>
             ))}
-            {visibleParts.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && <p>No matching parts</p>}
+            {visibleParts.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && <p>No matching parts</p>}
           </div>
         </aside>
         <div ref={workspace} className={styles.workspace}>
@@ -2676,6 +2760,11 @@ export function LogicBuilder() {
                   point,
                   inlinePath,
                 );
+                return;
+              }
+              const block = event.dataTransfer.getData("application/x-logic-block");
+              if ((DATAPATH_KINDS as string[]).includes(block)) {
+                addBlock(block as DatapathKind, point, inlinePath);
                 return;
               }
               const moduleName = event.dataTransfer.getData("application/x-logic-module");

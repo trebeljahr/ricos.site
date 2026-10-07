@@ -1,6 +1,12 @@
 import type { GateType } from "../../lib/computer/logic";
 
 const moduleMarks: Record<string, string> = {
+  "8-bit register": "REG",
+  "Program counter": "PC",
+  "ALU with flags": "ALU",
+  "256-byte ROM": "ROM",
+  "16-byte RAM": "RAM",
+  "16-entry stack": "STK",
   "Half adder": "HA",
   "Full adder": "FA",
   "Clocked memory": "MEM",

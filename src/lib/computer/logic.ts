@@ -232,7 +232,8 @@ export type BlockDefinition<State = unknown> = {
   name: string;
   inputs: string[];
   outputs: string[];
-  initialState: () => State;
+  /** Called with the block's gate form, so contents (e.g. ROM bytes) can live in it. */
+  initialState: (module: Circuit) => State;
   evaluate: (inputs: boolean[], state: State) => { outputs: boolean[]; nextState: State };
 };
 const BLOCKS = new Map<string, BlockDefinition>();
@@ -545,7 +546,7 @@ export function step(
     if (!runs) blockRuns.set(node.id, (runs = new Map()));
     let result = runs.get(key);
     if (!result) {
-      if (!(node.id in blockState)) blockState[node.id] = block.initialState();
+      if (!(node.id in blockState)) blockState[node.id] = block.initialState(node.module!);
       result = block.evaluate(signals, blockState[node.id]);
       runs.set(key, result);
     }

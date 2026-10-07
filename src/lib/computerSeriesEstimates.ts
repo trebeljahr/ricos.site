@@ -1,0 +1,271 @@
+// Estimated words per section of the "how computers work" series, keyed by chapter
+// number, then by heading (the chapter's own title stands for the text before its first
+// heading). Calibrated on 2026-10-08 against throwaway drafts of seven sections, from a
+// one-paragraph leaf (~110 words) to the full adder (~560), scaled up for Rico's looser
+// voice: framing headings ~150-250, explainers ~450-500, core concepts ~600-700,
+// constructions and deep mechanisms ~900-1,100, journeys ~1,200-1,500.
+// A heading not listed here (renamed or new) falls back to a default in computerSeries.ts.
+
+export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
+  "1.0": {
+    "Whirlwind Tour": 1500,
+  },
+  "1.1": {
+    "Bits and Encodings": 150,
+    "How can we use an on/off switch to encode things, like wtf?": 650,
+    "Eight Bits, One Byte, Many Meanings OR The importance of Standards and Agreeing on How to Read Something.": 650,
+    "Even when the standard is clear... we can still disagree on the data held by a bit sequence.": 300,
+    "Little and Big Endian": 500,
+    'Bit Endian-Ness OR "Reading Order, Matters"': 400,
+  },
+  "1.1a": {
+    "Text Encodings and the Magic that is UTF-8": 800,
+  },
+  "1.1b": {
+    'Number Encodings and what "floats" mean': 1000,
+  },
+  "1.1c": {
+    "Compression and How Data Compression Works and What it does": 900,
+  },
+  "1.1d": {
+    "Shannon's Theory of Information and How This All Hangs Together": 900,
+  },
+  "1.2": {
+    "Transistors into Gates": 150,
+    "How does a physical switch become logic?": 900,
+    'What are "Logic Gates"?': 200,
+    "Introduction to Boolean Algebra and Logical Operations with Electricity.": 650,
+    "Truth Tables for each logic gate + demos.": 500,
+    "Showing how *once you have these things* you can combine them in very clever ways to climb the mountain of complexity and do everything.": 600,
+  },
+  "1.2a": {
+    "The universalness of some logic gates": 700,
+  },
+  "1.3": {
+    "Gates to arithmetic": 150,
+    "How do we calculate with this?": 250,
+    'How can we have numbers, in binary "add up"?': 150,
+    "Introduction to the Logics of Binary Addition and how it's similar to something we already know from high school": 500,
+    "Construction of a Half Bit Adder": 600,
+    "Construction of a Full Bit Adder and the Concept of the Carry Bit": 900,
+    "Construction of an 8-Bit Full Bit Adder (or one byte adder)": 650,
+    "The ALU.": 400,
+    "How do we get to the other operations?": 150,
+    Subtraction: 250,
+    "Signed Integers": 500,
+    "Two's Complement": 700,
+    Multiplication: 650,
+    Division: 600,
+    "Floating Point Numbers and how Arithmetic works on them *in hardware* should link to the floating point representations from the encoding schemes from part I": 700,
+    "What about square roots and more complex stuff?": 450,
+  },
+  "1.4": {
+    "The Clock": 150,
+    "Why we need a time-keeper.": 600,
+    'How it wires into everything else so that stuff can "click" at a set frequency.': 600,
+  },
+  "1.5": {
+    Memory: 150,
+    'How do we "store a bit"?': 600,
+    "Differences between long term memory and short term memory/volatile memory.": 400,
+    "Reading and writing into memory, different architectures and how they work, their trade-offs and so on.": 250,
+    "SR-Latch": 800,
+    "D-Latch": 650,
+    "Flip Flop": 800,
+    "Read and write enable signals.": 400,
+    "How RAM works.": 200,
+    'Combining memory cells for one bytes into a "single 8-bit register"': 500,
+    "Combining those 8-bit registers into RAM.": 200,
+    "Why RAM is so fast and easily accessible.": 450,
+    "Addressing schemes for RAM.": 600,
+    'A multiplexer to select memory locations and how you could have a set of output wires and something that "selects" from the set of stored memory locations (this would be a super cool demo for the circuit board) and decoders': 700,
+  },
+  "1.5a": {
+    "How does an SSD work?": 800,
+  },
+  "1.5b": {
+    "How does an HDD work?": 600,
+    "Follow one address of long term storage request through the toy RAM and into the magnetic disk": 600,
+  },
+  "2.0": {
+    "Tying it together": 300,
+    "The basic idea:": 200,
+    "The components that need to be there to hang together:": 150,
+    RAM: 200,
+    ALU: 200,
+    Register: 250,
+    "Program Counter": 300,
+    "Buses and Tri State logic": 700,
+    "Multiplexers (link to earlier section) and Decoders": 350,
+    "How do these hang together?": 150,
+    "What is the fetch decode execute cycle?": 1000,
+    "Assuming you have this set of 0s and 1s that correspond to instructions of a program, how do you get to the next level": 500,
+  },
+  "2.0a": {
+    'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
+  },
+  "2.1": {
+    "How does a program get turned into these instructions for the CPU?": 200,
+    "Instruction Set Architectures (or Why Every CPU is *slightly* different, again the importance of protocols)": 700,
+    Compilers: 200,
+    "What even is a Programming Language?": 600,
+    "The Rough Shape of a Compiler": 250,
+    "Reading In Some Stuff": 200,
+    "Lexing It": 450,
+    "Parsing It": 700,
+    "Output Generation (i.e. Assemblers + Byte Code Translation)": 650,
+    "Frontend vs. Backend": 400,
+    "Our Toy Language + It's Very Simple Compiler": 1100,
+  },
+  "2.2": {
+    "Putting it All Together": 150,
+    "From Transistors to a Simple Program.": 1200,
+  },
+  "2.3a": {
+    "Predictive Branching": 800,
+  },
+  "2.3b": {
+    "Compiler Optimizations => leaving out stuff that is unnecessary": 800,
+  },
+  "2.3c": {
+    "Crazy Compilers (how they are Hardware Agnostic)": 700,
+  },
+  "2.3d": {
+    "SIMD stuff": 700,
+  },
+  "2.3e": {
+    "Turing Machines, and Turing Completeness": 1000,
+  },
+  "3.1": {
+    "How a device talks to the CPU": 200,
+    "framebuffers and memory-mapped I/O": 800,
+  },
+  "3.1a": {
+    "Operating Systems: Polling vs. Interrupts": 700,
+  },
+  "3.2": {
+    "Getting Pixels onto a screen": 150,
+    "How does a screen work?": 400,
+    "Problems of why this is slow for traditional CPU writing.": 500,
+    "Refresh Rates/Different Scanning Schemes and so on.": 600,
+    'How quickly "blinking" lights are still perceived as one continuous "light" because human brains are slow': 450,
+    "Color. How three LEDs with values of 0-255 can do *all sorts of stuff*": 500,
+    "The Art of Mixing Light, Mixing Light vs. Mixing Paint, Random Stuff about Human Eyes": 700,
+  },
+  "3.2a": {
+    "Color Encodings and the Vagaries of it and how color is *really bloody difficult* to get right": 1100,
+  },
+  "3.3": {
+    "What is a GPU?": 200,
+    "How is it different from a CPU?": 300,
+    "Why parallel hardware? Same vector task on sequential and many-lane timelines. Showing performance differences... visually.": 700,
+    "Edit a tiny shader and trace data upload, draw call, execution": 700,
+    "How is *it* wired?": 650,
+  },
+  "3.3a": {
+    "Exploration of the 3D Pipeline": 200,
+    "Affine Matrix Transformations": 900,
+    "What is a Mesh?": 400,
+    "What is a Shader?": 500,
+    "How does a set of coordinates get turned into an image on the screen?": 200,
+    "Expose model/view/projection spaces,": 700,
+    Clipping: 450,
+    Rasterization: 600,
+    Depth: 500,
+    "Fragment shading": 600,
+  },
+  "3.4": {
+    "How does a mouse work?": 900,
+  },
+  "3.5": {
+    "How does a keyboard work?": 900,
+  },
+  "3.6": {
+    Sound: 200,
+    "Different audio encodings.": 900,
+    "Different speaker architectures.": 500,
+    'How the signal get\'s "written to" the speaker.': 600,
+    "What is a microphone even, or... the inverted speaker.": 450,
+  },
+  "4.1": {
+    "Operating Systems": 250,
+    "What problem do we even try to solve here?": 300,
+    "The diversity of physical systems": 250,
+    "What is a driver?": 600,
+    "Who runs programs and handles devices? | Scheduler timeline with user/kernel mode, interrupt, context switch": 1000,
+    "What is virtual memroy? What is physical memory?": 600,
+    "Why isn't all memory one big array? Page table/TLB translation and fault": 900,
+    "How can we run multiple programs at the same time?": 600,
+    "How do we communicate with the screen?": 450,
+    "How does a key press reach software? Flashback to polling + interrupts and how the operating system handles the orchestration of this stuff via drivers": 700,
+  },
+  "4.2": {
+    "Saving and loading programs": 150,
+    "How are stored bytes different from a running process?": 500,
+    "Following it: Save a compiled executable to storage, load it into RAM, then run it": 700,
+    "Handoff with the operating system. Compare stored artifact and live CPU/process state": 500,
+  },
+  "4.3": {
+    "But how does the Operating System Get Loaded?": 150,
+    "Boot Loaders and Operating Systems from a USB Stick": 700,
+    "How *physically* does it work to go from one to the other?": 650,
+  },
+  "4.4": {
+    "Syscalls OR How programs ask the operating system to do stuff for them": 800,
+  },
+  "4.5": {
+    "The Kernel": 800,
+  },
+  "4.6": {
+    "Differences Between Operating Systems": 150,
+    "Unix and it's flavors, I guess": 400,
+    MacOs: 250,
+    Linux: 150,
+    'Why "Linux" is not one operating system but an ecosystem. What Linux actually is... a kernel.': 450,
+    "Common Linux Distributions.": 350,
+    OpenBSD: 250,
+    Windows: 400,
+  },
+  "4.7": {
+    "Putting it All Together: What happens from the point when you power on your machine to you playing Minecraft or whatever": 1500,
+  },
+  "5.1": {
+    "What even is networking?": 300,
+    "Different Protocols / The Networking Stack:": 450,
+    "physical (copper, fiber, radio)": 400,
+    "What is a fiber optic cable and how does that work?": 500,
+    "link (Ethernet/WiFi)": 300,
+    "What even is WiFi???": 650,
+    "IP and routing": 200,
+    "What even is a packet?": 450,
+    'How does one computer know where the other one *is*, without being "directly" connected to it?': 700,
+    "IPv4 vs IPv6": 450,
+    "UDP/TCP": 900,
+    DNS: 500,
+    "HTTP/HTTPS and TLS": 1000,
+    "What is a socket?": 400,
+    "What is a server?": 400,
+    "Putting it all together:": 100,
+    "What is a WLAN router? What does it do? How does it traverse the layers of the stack. A journey from our MacBook or whatever to Google.com, end to end.": 1200,
+  },
+  "5.1a": {
+    "What is a Database?": 700,
+  },
+  "5.1b": {
+    "What is a VPN?": 500,
+  },
+  "5.1c": {
+    "What is an ISP and what does it do?": 500,
+  },
+  "5.1d": {
+    "Error Correcting Codes (Especially Hamming)": 900,
+  },
+  "6.1": {
+    "How chips are made?": 200,
+    "How does sand become transistors?": 800,
+    "How does silicon and transistors become circuits? How do they get arranged and manufactured at these ultra small scales?": 900,
+    "How does a CPU clock work?": 150,
+    "Or in other words how quartz crystals can pulse with electricity.": 500,
+    "Layer-by-layer mask/etch/deposition/doping schematic": 700,
+  },
+};

@@ -1,22 +1,26 @@
 import { describe, expect, it } from "vitest";
 import {
+  bestStreak,
   type ChapterMeta,
+  calendar,
   chapterProgress,
   countWords,
+  DEFAULT_LEAF_WORDS,
+  DEFAULT_PARENT_WORDS,
   dailyWords,
   nextUp,
   pace,
+  progressColor,
   recordDay,
   splitSections,
   streak,
-  WORDS_PER_SECTION,
 } from "./computerSeries";
 
 const meta = (overrides: Partial<ChapterMeta> = {}): ChapterMeta => ({
   title: "Bits",
   part: 1,
   partTitle: "The Basics",
-  number: "1.1",
+  number: "test",
   kind: "chapter",
   order: 1,
   status: "idea",
@@ -58,11 +62,12 @@ describe("splitSections", () => {
 
 describe("chapterProgress", () => {
   it("credits each section only up to its own target", () => {
-    const body = `${words(WORDS_PER_SECTION * 3)}\n\n## Empty\n`;
+    const body = `${words(DEFAULT_PARENT_WORDS * 3)}\n\n## Empty\n\n### Leaf\n`;
     const progress = chapterProgress(meta(), body, "x.md");
-    expect(progress.target).toBe(WORDS_PER_SECTION * 2);
-    expect(progress.credited).toBe(WORDS_PER_SECTION);
-    expect(progress.words).toBe(WORDS_PER_SECTION * 3);
+    // The intro and "Empty" each have a deeper heading after them; "Leaf" has none.
+    expect(progress.target).toBe(DEFAULT_PARENT_WORDS * 2 + DEFAULT_LEAF_WORDS);
+    expect(progress.credited).toBe(DEFAULT_PARENT_WORDS);
+    expect(progress.words).toBe(DEFAULT_PARENT_WORDS * 3);
   });
 
   it("credits the whole target once a chapter is marked done", () => {
@@ -71,12 +76,25 @@ describe("chapterProgress", () => {
   });
 });
 
+describe("estimates", () => {
+  it("uses a heading's estimate and falls back to defaults for unknown headings", () => {
+    const body = "## Known\n\n## Unknown leaf\n";
+    const progress = chapterProgress(meta(), body, "x.md", { Bits: 120, Known: 900 });
+    expect(progress.sections.map((s) => s.target)).toEqual([120, 900, DEFAULT_LEAF_WORDS]);
+  });
+
+  it("looks the chapter up by number in the shared estimates", () => {
+    const tour = chapterProgress(meta({ number: "1.0", title: "Whirlwind Tour" }), "", "x.md");
+    expect(tour.target).toBe(1500);
+  });
+});
+
 describe("pace", () => {
   const chapter = chapterProgress(meta(), `${words(100)}\n## A\n## B\n## C\n`, "x.md");
 
   it("expects a straight line from start to deadline, up to the start of today", () => {
     const p = pace([chapter], "2026-01-05", "2026-01-01", "2026-01-10");
-    expect(p.target).toBe(4 * WORDS_PER_SECTION);
+    expect(p.target).toBe(DEFAULT_PARENT_WORDS + 3 * DEFAULT_LEAF_WORDS);
     expect(p.expected).toBe(Math.round((p.target * 4) / 10));
     expect(p.lead).toBe(100 - p.expected);
     expect(p.daysLeft).toBe(6);
@@ -96,7 +114,7 @@ describe("nextUp", () => {
     const done = chapterProgress(meta({ order: 0, status: "done" }), "", "a.md");
     const first = chapterProgress(
       meta({ order: 1 }),
-      `${words(WORDS_PER_SECTION)}\n## Next\n`,
+      `${words(DEFAULT_PARENT_WORDS)}\n## Next\n`,
       "c.md",
     );
     const next = nextUp([later, done, first]);
@@ -127,5 +145,50 @@ describe("history", () => {
     expect(streak(history, "2026-10-08")).toBe(1);
     expect(streak({ ...history, "2026-10-07": 400 }, "2026-10-08")).toBe(3);
     expect(streak({ ...history, "2026-10-09": 500 }, "2026-10-09")).toBe(1);
+  });
+});
+
+describe("progressColor", () => {
+  it("gets greener and more saturated towards completion, clamped at both ends", () => {
+    expect(progressColor(0)).toBe("hsl(70 35% 55%)");
+    expect(progressColor(1)).toBe("hsl(145 72% 42%)");
+    expect(progressColor(2)).toBe(progressColor(1));
+    expect(progressColor(-1)).toBe(progressColor(0));
+  });
+});
+
+describe("calendar", () => {
+  it("fills whole Monday-to-Sunday weeks and marks days outside the range and in the future", () => {
+    // 2026-10-08 is a Thursday, 2026-10-14 a Wednesday.
+    const days = calendar(
+      [{ day: "2026-10-09", words: 300 }],
+      "2026-10-10",
+      "2026-10-08",
+      "2026-10-14",
+    );
+    expect(days[0].day).toBe("2026-10-05");
+    expect(days.at(-1)?.day).toBe("2026-10-18");
+    expect(days).toHaveLength(14);
+    const byDay = Object.fromEntries(days.map((d) => [d.day, d]));
+    expect(byDay["2026-10-05"]).toMatchObject({ inRange: false, words: null });
+    expect(byDay["2026-10-08"]).toMatchObject({ inRange: true, words: 0 });
+    expect(byDay["2026-10-09"].words).toBe(300);
+    expect(byDay["2026-10-11"]).toMatchObject({ future: true, words: null });
+  });
+});
+
+describe("bestStreak", () => {
+  it("finds the longest run of consecutive days with words, broken by gaps or empty days", () => {
+    expect(
+      bestStreak([
+        { day: "2026-10-01", words: 10 },
+        { day: "2026-10-02", words: 10 },
+        { day: "2026-10-03", words: 0 },
+        { day: "2026-10-04", words: 10 },
+        { day: "2026-10-05", words: 10 },
+        { day: "2026-10-06", words: 10 },
+        { day: "2026-10-08", words: 10 },
+      ]),
+    ).toBe(3);
   });
 });

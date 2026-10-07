@@ -1,0 +1,8 @@
+div.registers { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.sync { margin-top: 10px; color: #2f5a35; font-size: 10px; letter-spacing: .06em; }
+.sync[data-match="false"] { color: #8a2a1f; }
+.signals { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.signal { padding: 3px 6px; border: 1px solid #6b806b; border-radius: 3px; background: #8d9b8b; color: #4a5f4d; font-size: 9.5px; letter-spacing: .04em; }
+.signalOn { border-color: #b8860b; background: #ffd166; color: #3b2a00; box-shadow: 0 0 8px #ffd166aa; }
+.board { height: 72svh; min-height: 520px; margin-top: 8px; border: 6px solid #3c5042; border-radius: 7px; overflow: hidden; }
+@media (max-width: 640px) { div.registers { grid-template-columns: repeat(2, minmax(0, 1fr)); } .board { height: 80svh; min-height: 420px; } }

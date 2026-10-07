@@ -20,6 +20,10 @@ export const computerDemos = [
     title: "From source code to CPU steps",
   },
   {
+    slug: "cpu-circuit",
+    title: "Run a program on the CPU circuit",
+  },
+  {
     slug: "build-a-cpu",
     title: "Build your own CPU",
   },

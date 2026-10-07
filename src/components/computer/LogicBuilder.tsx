@@ -1,6 +1,6 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type MutableRefObject, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ViewportContextMenu } from "./ViewportContextMenu";
 import { CircuitToolbar } from "./CircuitToolbar";
 import { ToolbarMenu } from "./ToolbarMenu";
@@ -8,7 +8,7 @@ import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
-import { type Timeline, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
+import { type Timeline, type TimelineFrame, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
@@ -42,6 +42,7 @@ import {
   step,
   stepWithDelays,
   validateCircuit,
+  type Wire,
   WIRE_COLORS,
   type WireColor,
   wireFits,
@@ -179,6 +180,9 @@ function BusReadout({ value }: { value: BusValue }) {
       {formatBus(value)}
     </span>
   );
+}
+function NodeNote({ text }: { text?: string | null }) {
+  return text ? <span className={styles.nodeNote}>{text}</span> : null;
 }
 function PortWirePreview({ wiring }: { wiring: ReturnType<typeof usePortWiring> }) {
   return <g data-port-preview={wiring.previews.length || undefined}>
@@ -876,9 +880,51 @@ export type LogicBuilderChallenge = {
   handleRef?: React.MutableRefObject<LogicBuilderHandle | null>;
 };
 
-export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge } = {}) {
+/** Clock controls of a locked builder, for the page that embeds it. */
+export type LockedClock = {
+  /** One full clock cycle: high, then low. Records two frames. */
+  cycle: () => void;
+  /** Shows recorded frame `index`; frames after it stay recorded. */
+  seek: (index: number) => void;
+  reset: () => void;
+};
+
+/** What a locked builder shows, reported after every tick, seek or fold. */
+export type LockedView = {
+  frame: TimelineFrame;
+  index: number;
+  frames: number;
+  unfolded: ReadonlySet<string>;
+};
+
+export type LogicBuilderProps = {
+  /**
+   * Constrained mode for a demo page: shows `circuit` with no toolbar, palette,
+   * storage or editing. The page drives the clock through `clockRef`. Clicking a
+   * block unfolds it to gates in place, carrying its state. A new `circuit`
+   * object reloads the board.
+   */
+  locked?: {
+    circuit: Circuit;
+    clockRef: MutableRefObject<LockedClock | null>;
+    onFrame?: (view: LockedView) => void;
+    ripple?: boolean;
+    rippleSpeed?: number;
+    /** Wires to draw glowing, e.g. the control lines that are on this tick. */
+    glowWire?: (wire: Wire, snapshot: Snapshot) => boolean;
+    /** A line of text under a part, e.g. which part drives a bus. */
+    note?: (node: Node, snapshot: Snapshot) => string | null;
+  };
+};
+
+export function LogicBuilder({
+  challenge,
+  locked,
+}: { challenge?: LogicBuilderChallenge } & LogicBuilderProps = {}) {
+  const lockedRef = useRef(locked);
+  lockedRef.current = locked;
   const history = useHistoryState<BuilderDocument>(() => ({
-    circuit: clone(challenge?.circuit ?? PRESETS["Half adder"]),
+    circuit: clone(locked?.circuit ?? challenge?.circuit ?? PRESETS["Half adder"]),
     saved: {},
     viewPath: [],
     unfolded: [],
@@ -964,12 +1010,14 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
     else history.replace(() => next);
   };
   const setCircuit = (change: Circuit | ((current: Circuit) => Circuit)) => {
+    if (lockedRef.current) return;
     history.update((current) => ({
       ...current,
       circuit: typeof change === "function" ? change(current.circuit) : change,
     }));
   };
   const updateInline = (path: string, edit: (inner: Circuit) => Circuit) => {
+    if (lockedRef.current) return;
     setCircuit((current) => editInlineCircuit(current, path, edit));
     setSelected([]);
     setMessage("Expanded circuit updated.");
@@ -1390,6 +1438,10 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
       return;
     }
     requestAnimationFrame(() => restoreViewport());
+    if (lockedRef.current) {
+      setReady(true);
+      return;
+    }
     try {
       const raw = localStorage.getItem(STORAGE);
       if (raw) {
@@ -1412,7 +1464,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
     setReady(true);
   }, []);
   useEffect(() => {
-    if (!ready || challenge) return;
+    if (!ready || challenge || lockedRef.current) return;
     try {
       const root = viewPath.reduceRight(
         (inner, level) =>
@@ -1467,6 +1519,15 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
     else advance();
   }, [advance, setTimeline]);
   const stepBack = () => setTimeline(seek(timelineRef.current, timelineRef.current.index - 1));
+  /** One full clock cycle as two recorded frames; ripple replays the rising edge. */
+  const cycle = useCallback(() => {
+    const from = currentFrame(timelineRef.current);
+    const rise = settleTick(circuitRef.current, from.snapshot, true);
+    const fall = settleTick(circuitRef.current, rise.next, false);
+    const risen = push(timelineRef.current, { tick: from.tick + 1, clockHigh: true, pulses: {}, snapshot: rise.next });
+    setTimeline(push(risen, { tick: from.tick + 2, clockHigh: false, pulses: {}, snapshot: fall.next }));
+    setReplay(rise.replay);
+  }, [setTimeline, settleTick]);
   useEffect(() => {
     if (!running) return;
     const timer = window.setInterval(stepForward, 1000 / (rate * 2));
@@ -1592,7 +1653,41 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
     resetRuntime();
     setMessage(`${copy.name} loaded.`);
   };
+  // Locked mode: the page owns the circuit, the clock and the ripple setting.
+  const lockedCircuit = locked?.circuit;
+  const loadRef = useRef(load);
+  loadRef.current = load;
+  useEffect(() => {
+    if (lockedCircuit) loadRef.current(lockedCircuit);
+  }, [lockedCircuit]);
+  useEffect(() => {
+    if (!locked) return;
+    setRippleOn(Boolean(locked.ripple));
+    if (locked.rippleSpeed) setRippleSpeed(locked.rippleSpeed);
+  }, [locked?.ripple, locked?.rippleSpeed]);
+  useEffect(() => {
+    const clockRef = locked?.clockRef;
+    if (!clockRef) return;
+    clockRef.current = {
+      cycle,
+      seek: (index) => setTimeline(seek(timelineRef.current, index)),
+      reset: () => setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
+        snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) })),
+    };
+    return () => {
+      clockRef.current = null;
+    };
+  }, [locked?.clockRef, cycle, setTimeline]);
+  useEffect(() => {
+    lockedRef.current?.onFrame?.({
+      frame: currentFrame(timeline),
+      index: timeline.index,
+      frames: timeline.frames.length,
+      unfolded,
+    });
+  }, [timeline, unfolded]);
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
+    if (lockedRef.current) return;
     portWiring.clear();
     pendingFit.current = true;
     const parentSnapshot = snapshotRef.current;
@@ -1662,6 +1757,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
   };
   const goBack = () => returnToDepth(viewPath.length - 1);
   const enterModulePath = (path: string) => {
+    if (lockedRef.current) return;
     let source = circuit;
     let innerSnapshot = snapshotRef.current;
     const levels: ViewLevel[] = [];
@@ -1980,6 +2076,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
   const clearPortSelection = portWiring.clear;
   useEffect(() => { if (activeInlinePath) clearPortSelection(); }, [activeInlinePath, clearPortSelection]);
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
+    if (lockedRef.current) return;
     if (portWiring.pointerDown(event, draftPort(draft))) return;
     if (event.button !== 0 || event.pointerType === "touch") return;
     event.stopPropagation();
@@ -2030,6 +2127,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
   };
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (lockedRef.current) return;
       const editingText =
         event.target instanceof HTMLElement &&
         Boolean(event.target.closest("input, textarea, [contenteditable='true']"));
@@ -2370,8 +2468,8 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
       ? portPoint(targetNode, draftTarget.input, "input")
       : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
   return (
-    <div className={styles.shell}>
-      <CircuitToolbar
+    <div className={clsx(styles.shell, locked && styles.locked)}>
+      {!locked && <CircuitToolbar
         hasClock={hasClock}
         identity={
           <>
@@ -2669,8 +2767,8 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
             </div>
           </>
         }
-      />
-      {viewPath.length > 0 && (
+      />}
+      {!locked && viewPath.length > 0 && (
         <nav className={styles.viewPath} aria-label="Circuit depth">
           <button type="button" onClick={goBack}>
             ← Back
@@ -2688,8 +2786,8 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
-      <div className={styles.layout}>
-        <aside className={styles.sidebar} aria-label="Gate palette">
+      <div className={clsx(styles.layout, locked && styles.lockedLayout)}>
+        {!locked && <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
           <input
@@ -2783,7 +2881,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
             ))}
             {visibleParts.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && <p>No matching parts</p>}
           </div>
-        </aside>
+        </aside>}
         <div ref={workspace} className={styles.workspace}>
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
             >
@@ -2808,18 +2906,24 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
             <button type="button" onClick={() => zoomFromCenter(1)}>
               100%
             </button>
-            <button
-              type="button"
-              aria-pressed={selectMode}
-              onClick={() => setSelectMode((value) => !value)}
-            >
-              Select
-            </button>
-            <small>
-              Shift-click or Shift-drag ports to select · Drag selected ports to wire · Scroll to zoom
-            </small>
+            {locked ? (
+              <small>Click a block to unfold it to gates · Scroll to zoom · Drag to pan</small>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  aria-pressed={selectMode}
+                  onClick={() => setSelectMode((value) => !value)}
+                >
+                  Select
+                </button>
+                <small>
+                  Shift-click or Shift-drag ports to select · Drag selected ports to wire · Scroll to zoom
+                </small>
+              </>
+            )}
           </div>
-          {!challenge && isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
+          {!challenge && !locked && isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
           <div
             ref={boardViewport}
             onDragOver={(event) => {
@@ -3125,6 +3229,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
                                   boardSnapshot.values[wire.from]) &&
                                   styles.live,
                             selectedWires.includes(wire.id) && styles.wireSelected,
+                            locked?.glowWire?.(wire, boardSnapshot) && styles.glow,
                           )}
                         />
                         {isBus && (
@@ -3207,6 +3312,7 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
                       }
                       onPointerDown={(event) => {
                         if (
+                          locked ||
                           event.pointerType === "touch" ||
                           event.button !== 0 ||
                           (event.target as HTMLElement).closest("button, input")
@@ -3232,11 +3338,16 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
                       onContextMenu={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
+                        if (locked) return;
                         if (!selected.includes(node.id)) setSelected([node.id]);
                         setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
                       }}
                       onClick={(event) => {
                         event.stopPropagation();
+                        if (locked) {
+                          if (!expandedDetails.has(node.id) && isUnfoldable(node)) toggleUnfolded(node.id);
+                          return;
+                        }
                         if ((event.nativeEvent as PointerEvent).pointerType === "touch")
                           setSelected([node.id]);
                       }}
@@ -3499,12 +3610,13 @@ export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge 
                           <span className={styles.bit}>{boardSnapshot.values[node.id] ? "1" : "0"}</span>
                         )}
                       </div>
+                      <NodeNote text={locked?.note?.(node, boardSnapshot)} />
                       {!expandedDetails.has(node.id) && isUnfoldable(node) && (
                         <div className={styles.nodeActions}>
                           <button type="button" title={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
                             aria-label={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
                             onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}><ActionIcon name={unfolded.has(node.id) ? "fold" : "unfold"} /></button>
-                          {node.type === "module" && node.module && (
+                          {!locked && node.type === "module" && node.module && (
                             <button type="button" title={`Enter ${node.label || node.module.name}`}
                               aria-label={`Enter ${node.label || node.module.name}`}
                               onClick={(event) => { event.stopPropagation(); enterCircuit(node.module!, node.label || node.module!.name, node.id); }}>↗</button>

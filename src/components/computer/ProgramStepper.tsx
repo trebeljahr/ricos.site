@@ -3,6 +3,7 @@ import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   byteBits,
+  type CompiledProgram,
   compileProgram,
   describeOperand,
   hex,
@@ -33,18 +34,8 @@ export function ProgramStepper() {
   const [stack, setStack] = useState<StackModel>("hardware");
   const inRam = stack === "ram";
   const isa = isaFor(stack);
-  const [hoveredLine, setHoveredLine] = useState<number | null>(null);
-  const instructionListRef = useRef<HTMLOListElement>(null);
-  const sourceMirrorRef = useRef<HTMLDivElement>(null);
-  const sourceLines = source.split("\n");
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
-  const compilation = useMemo(() => {
-    try {
-      return { program: compileProgram(loaded, { stack }), error: null };
-    } catch (error) {
-      return { program: null, error: (error as Error).message };
-    }
-  }, [loaded, stack]);
+  const compilation = useMemo(() => compileSource(loaded, stack), [loaded, stack]);
   const trace = useMemo(
     () => (compilation.program ? traceProgram(compilation.program) : []),
     [compilation.program],
@@ -55,7 +46,6 @@ export function ProgramStepper() {
       ? null
       : (compilation.program?.instructions[Math.floor(state.activeAddress / 2)] ?? null);
   const changed = source !== loaded;
-  const highlightedLine = changed ? null : (hoveredLine ?? active?.line ?? null);
   const variables = compilation.program?.variables ?? [];
   const usesScreen = Boolean(
     compilation.program?.instructions.some(
@@ -74,21 +64,9 @@ export function ProgramStepper() {
       ? null
       : describeOperand(state.ir, state.operand, variables);
 
-  useEffect(() => {
-    if (active?.address === undefined) return;
-    const list = instructionListRef.current;
-    const row = list?.querySelector<HTMLElement>(`[data-address="${active.address}"]`);
-    if (!list || !row) return;
-    const top = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
-    if (top < list.scrollTop || top + row.offsetHeight > list.scrollTop + list.clientHeight) {
-      list.scrollTop = Math.max(0, top - list.clientHeight / 3);
-    }
-  }, [active?.address]);
-
   function compile() {
     setLoaded(source);
     setStep(0);
-    setHoveredLine(null);
     playSwitch();
   }
 
@@ -97,7 +75,6 @@ export function ProgramStepper() {
     setSource(value);
     setLoaded(value);
     setStep(0);
-    setHoveredLine(null);
     playButton();
   }
 
@@ -110,20 +87,6 @@ export function ProgramStepper() {
   function moveStep(next: number) {
     setStep(next);
     playButton();
-  }
-
-  function hoverEditorLine(event: MouseEvent<HTMLTextAreaElement>) {
-    if (changed) return;
-    const editor = event.currentTarget;
-    const style = window.getComputedStyle(editor);
-    const y =
-      event.clientY -
-      editor.getBoundingClientRect().top -
-      Number.parseFloat(style.borderTopWidth) -
-      Number.parseFloat(style.paddingTop) +
-      editor.scrollTop;
-    const line = Math.floor(y / Number.parseFloat(style.lineHeight)) + 1;
-    setHoveredLine(line >= 1 && line <= sourceLines.length ? line : null);
   }
 
   return (
@@ -150,177 +113,17 @@ export function ProgramStepper() {
       </div>
 
       <div className={styles.workbench}>
-        <div className={styles.inputSide}>
-          <div className={panel.sectionHead}>
-            <span>01 / SOURCE CODE</span>
-          </div>
-          <fieldset className={styles.stackChoice}>
-            <legend>CPU</legend>
-            {(Object.keys(STACK_MODELS) as StackModel[]).map((model) => (
-              <button
-                key={model}
-                type="button"
-                aria-pressed={stack === model}
-                onClick={() => chooseStack(model)}
-                className={stack === model ? styles.primaryButton : styles.button}
-              >
-                {STACK_MODELS[model].label} · {STACK_MODELS[model].ramBytes}-BYTE RAM
-              </button>
-            ))}
-          </fieldset>
-          <label className={styles.label} htmlFor="program-source">
-            WRITE A PROGRAM
-          </label>
-          <div className={styles.sourceFrame}>
-            <div ref={sourceMirrorRef} className={styles.sourceMirror} aria-hidden="true">
-              {sourceLines.map((_, index) => (
-                <span
-                  // biome-ignore lint/suspicious/noArrayIndexKey: mirror rows have no state and represent line positions.
-                  key={index}
-                  className={clsx(
-                    styles.sourceMirrorLine,
-                    highlightedLine === index + 1 && styles.highlightedSourceLine,
-                  )}
-                >
-                  &nbsp;
-                </span>
-              ))}
-            </div>
-            <textarea
-              id="program-source"
-              spellCheck={false}
-              wrap="off"
-              value={source}
-              rows={Math.max(4, Math.min(12, sourceLines.length))}
-              onChange={(event) => {
-                setSource(event.target.value);
-                setHoveredLine(null);
-              }}
-              onMouseMove={hoverEditorLine}
-              onMouseLeave={() => setHoveredLine(null)}
-              onScroll={(event) => {
-                if (sourceMirrorRef.current) {
-                  sourceMirrorRef.current.scrollTop = event.currentTarget.scrollTop;
-                }
-              }}
-              className={styles.sourceScreen}
-              aria-describedby={changed ? "program-syntax" : undefined}
-            />
-          </div>
-          <div className={styles.controls}>
-            <button type="button" onClick={compile} className={styles.primaryButton}>
-              COMPILE + RESET
-            </button>
-            <button type="button" onClick={() => preset(EXAMPLE)} className={styles.button}>
-              2 + 3
-            </button>
-            <button type="button" onClick={() => preset(OVERFLOW)} className={styles.button}>
-              OVERFLOW
-            </button>
-            <button type="button" onClick={() => preset(LOOP)} className={styles.button}>
-              FOR LOOP
-            </button>
-            <button type="button" onClick={() => preset(FUNCTION)} className={styles.button}>
-              FUNCTION
-            </button>
-            <button type="button" onClick={() => preset(SMILEY)} className={styles.button}>
-              SCREEN
-            </button>
-            <button
-              type="button"
-              onClick={() => preset(RECURSION, "ram")}
-              className={styles.button}
-              title="Needs the stack-in-RAM CPU; switches to it"
-            >
-              RECURSION
-            </button>
-          </div>
-          {changed && (
-            <p id="program-syntax" className={styles.hint}>
-              <strong>EDIT NOT COMPILED</strong>
-            </p>
-          )}
-          {compilation.error && (
-            <p role="alert" className={styles.error}>
-              {compilation.error}
-            </p>
-          )}
-
-          {compilation.program && (
-            <div className={styles.instructions}>
-              <div className={panel.sectionHead}>
-                <span>02 / INSTRUCTION TAPE</span>
-                <span>{compilation.program.bytes.length} BYTES</span>
-              </div>
-              <div className={styles.columnLabels} aria-hidden="true">
-                <span>ADDR</span>
-                <span>HEX</span>
-                <span>BINARY / TWO BYTES</span>
-                <span>DECODED</span>
-                <span>LINE</span>
-              </div>
-              <ol
-                ref={instructionListRef}
-                className={styles.instructionList}
-                aria-label="Compiled instructions"
-              >
-                {compilation.program.instructions.map((instruction) => (
-                  <li
-                    key={instruction.address}
-                    data-address={instruction.address}
-                    className={clsx(
-                      styles.instruction,
-                      active?.address === instruction.address && styles.activeInstruction,
-                      highlightedLine !== null &&
-                        highlightedLine > 0 &&
-                        instruction.line === highlightedLine &&
-                        styles.mappedInstruction,
-                    )}
-                  >
-                    <span>{hex(instruction.address)}</span>
-                    <strong>
-                      {hex(instruction.opcode)} {hex(instruction.operand)}
-                    </strong>
-                    <span className={styles.binary}>
-                      {byteBits(instruction.opcode)} {byteBits(instruction.operand)}
-                    </span>
-                    <span className={styles.mnemonic} title={instruction.label}>
-                      <b>{isa.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic}</b>{" "}
-                      {describeOperand(instruction.opcode, instruction.operand, variables).short}
-                    </span>
-                    <span>{instruction.line ? `L${instruction.line}` : "GEN"}</span>
-                  </li>
-                ))}
-              </ol>
-              <p className={styles.hint}>
-                Each instruction is two bytes: opcode, then operand. <b>#5</b> is the number 5
-                itself. <b>[00]</b> is RAM address 00, so the CPU uses the value stored there.{" "}
-                <b>→0A</b> is a code address to jump to.
-                {inRam && (
-                  <>
-                    {" "}
-                    <b>[SP+1]</b> is the byte at RAM address SP + 1, inside the current function's
-                    stack frame.
-                  </>
-                )}{" "}
-                GEN is code the compiler adds.
-              </p>
-              <details className={styles.isaDetails}>
-                <summary>INSTRUCTION SET / VIEW KEY</summary>
-                <div className={styles.isaList}>
-                  {isa.map((item) => (
-                    <div key={item.opcode}>
-                      <b>{hex(item.opcode)}</b>
-                      <b>{item.mnemonic}</b>
-                      <span>{item.operand}</span>
-                      <span>{item.effect}</span>
-                    </div>
-                  ))}
-                </div>
-              </details>
-            </div>
-          )}
-        </div>
+        <ProgramSource
+          source={source}
+          onSourceChange={setSource}
+          onCompile={compile}
+          onPreset={preset}
+          stack={stack}
+          onStackChange={chooseStack}
+          compilation={compilation}
+          changed={changed}
+          activeAddress={active?.address ?? null}
+        />
 
         <div className={styles.outputSide}>
           <div className={panel.sectionHead}>
@@ -548,5 +351,268 @@ export function ProgramStepper() {
         </div>
       </div>
     </section>
+  );
+}
+
+type Compilation = { program: CompiledProgram | null; error: string | null };
+
+/** Compiles source for one CPU, turning a compile error into a message. */
+export function compileSource(source: string, stack: StackModel = "hardware"): Compilation {
+  try {
+    return { program: compileProgram(source, { stack }), error: null };
+  } catch (error) {
+    return { program: null, error: (error as Error).message };
+  }
+}
+
+type ProgramSourceProps = {
+  source: string;
+  onSourceChange: (value: string) => void;
+  /** Compile the edited source and reset the machine. */
+  onCompile: () => void;
+  /** Load and compile a sample program, for the given CPU. */
+  onPreset: (value: string, stack?: StackModel) => void;
+  stack: StackModel;
+  onStackChange: (stack: StackModel) => void;
+  compilation: Compilation;
+  /** The source differs from the compiled program. */
+  changed: boolean;
+  /** Code address of the instruction the CPU is running, if any. */
+  activeAddress: number | null;
+};
+
+/** The CPU choice, source editor and instruction tape: write, compile, and see which line runs. */
+export function ProgramSource({
+  source,
+  onSourceChange,
+  onCompile,
+  onPreset,
+  stack,
+  onStackChange,
+  compilation,
+  changed,
+  activeAddress,
+}: ProgramSourceProps) {
+  const [hoveredLine, setHoveredLine] = useState<number | null>(null);
+  const instructionListRef = useRef<HTMLOListElement>(null);
+  const sourceMirrorRef = useRef<HTMLDivElement>(null);
+  const sourceLines = source.split("\n");
+  const inRam = stack === "ram";
+  const isa = isaFor(stack);
+  const active =
+    activeAddress === null
+      ? null
+      : (compilation.program?.instructions.find(({ address }) => address === activeAddress) ??
+        null);
+  const highlightedLine = changed ? null : (hoveredLine ?? active?.line ?? null);
+  const variables = compilation.program?.variables ?? [];
+
+  useEffect(() => {
+    if (active?.address === undefined) return;
+    const list = instructionListRef.current;
+    const row = list?.querySelector<HTMLElement>(`[data-address="${active.address}"]`);
+    if (!list || !row) return;
+    const top = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+    if (top < list.scrollTop || top + row.offsetHeight > list.scrollTop + list.clientHeight) {
+      list.scrollTop = Math.max(0, top - list.clientHeight / 3);
+    }
+  }, [active?.address]);
+
+  function compile() {
+    setHoveredLine(null);
+    onCompile();
+  }
+
+  function preset(value: string, model?: StackModel) {
+    setHoveredLine(null);
+    onPreset(value, model);
+  }
+
+  function hoverEditorLine(event: MouseEvent<HTMLTextAreaElement>) {
+    if (changed) return;
+    const editor = event.currentTarget;
+    const style = window.getComputedStyle(editor);
+    const y =
+      event.clientY -
+      editor.getBoundingClientRect().top -
+      Number.parseFloat(style.borderTopWidth) -
+      Number.parseFloat(style.paddingTop) +
+      editor.scrollTop;
+    const line = Math.floor(y / Number.parseFloat(style.lineHeight)) + 1;
+    setHoveredLine(line >= 1 && line <= sourceLines.length ? line : null);
+  }
+
+  return (
+    <div className={styles.inputSide}>
+      <div className={panel.sectionHead}>
+        <span>01 / SOURCE CODE</span>
+      </div>
+      <fieldset className={styles.stackChoice}>
+        <legend>CPU</legend>
+        {(Object.keys(STACK_MODELS) as StackModel[]).map((model) => (
+          <button
+            key={model}
+            type="button"
+            aria-pressed={stack === model}
+            onClick={() => onStackChange(model)}
+            className={stack === model ? styles.primaryButton : styles.button}
+          >
+            {STACK_MODELS[model].label} · {STACK_MODELS[model].ramBytes}-BYTE RAM
+          </button>
+        ))}
+      </fieldset>
+      <label className={styles.label} htmlFor="program-source">
+        WRITE A PROGRAM
+      </label>
+      <div className={styles.sourceFrame}>
+        <div ref={sourceMirrorRef} className={styles.sourceMirror} aria-hidden="true">
+          {sourceLines.map((_, index) => (
+            <span
+              // biome-ignore lint/suspicious/noArrayIndexKey: mirror rows have no state and represent line positions.
+              key={index}
+              className={clsx(
+                styles.sourceMirrorLine,
+                highlightedLine === index + 1 && styles.highlightedSourceLine,
+              )}
+            >
+              &nbsp;
+            </span>
+          ))}
+        </div>
+        <textarea
+          id="program-source"
+          spellCheck={false}
+          wrap="off"
+          value={source}
+          rows={Math.max(4, Math.min(12, sourceLines.length))}
+          onChange={(event) => {
+            onSourceChange(event.target.value);
+            setHoveredLine(null);
+          }}
+          onMouseMove={hoverEditorLine}
+          onMouseLeave={() => setHoveredLine(null)}
+          onScroll={(event) => {
+            if (sourceMirrorRef.current) {
+              sourceMirrorRef.current.scrollTop = event.currentTarget.scrollTop;
+            }
+          }}
+          className={styles.sourceScreen}
+          aria-describedby={changed ? "program-syntax" : undefined}
+        />
+      </div>
+      <div className={styles.controls}>
+        <button type="button" onClick={compile} className={styles.primaryButton}>
+          COMPILE + RESET
+        </button>
+        <button type="button" onClick={() => preset(EXAMPLE)} className={styles.button}>
+          2 + 3
+        </button>
+        <button type="button" onClick={() => preset(OVERFLOW)} className={styles.button}>
+          OVERFLOW
+        </button>
+        <button type="button" onClick={() => preset(LOOP)} className={styles.button}>
+          FOR LOOP
+        </button>
+        <button type="button" onClick={() => preset(FUNCTION)} className={styles.button}>
+          FUNCTION
+        </button>
+        <button type="button" onClick={() => preset(SMILEY)} className={styles.button}>
+          SCREEN
+        </button>
+        <button
+          type="button"
+          onClick={() => preset(RECURSION, "ram")}
+          className={styles.button}
+          title="Needs the stack-in-RAM CPU; switches to it"
+        >
+          RECURSION
+        </button>
+      </div>
+      {changed && (
+        <p id="program-syntax" className={styles.hint}>
+          <strong>EDIT NOT COMPILED</strong>
+        </p>
+      )}
+      {compilation.error && (
+        <p role="alert" className={styles.error}>
+          {compilation.error}
+        </p>
+      )}
+
+      {compilation.program && (
+        <div className={styles.instructions}>
+          <div className={panel.sectionHead}>
+            <span>02 / INSTRUCTION TAPE</span>
+            <span>{compilation.program.bytes.length} BYTES</span>
+          </div>
+          <div className={styles.columnLabels} aria-hidden="true">
+            <span>ADDR</span>
+            <span>HEX</span>
+            <span>BINARY / TWO BYTES</span>
+            <span>DECODED</span>
+            <span>LINE</span>
+          </div>
+          <ol
+            ref={instructionListRef}
+            className={styles.instructionList}
+            aria-label="Compiled instructions"
+          >
+            {compilation.program.instructions.map((instruction) => (
+              <li
+                key={instruction.address}
+                data-address={instruction.address}
+                className={clsx(
+                  styles.instruction,
+                  active?.address === instruction.address && styles.activeInstruction,
+                  highlightedLine !== null &&
+                    highlightedLine > 0 &&
+                    instruction.line === highlightedLine &&
+                    styles.mappedInstruction,
+                )}
+              >
+                <span>{hex(instruction.address)}</span>
+                <strong>
+                  {hex(instruction.opcode)} {hex(instruction.operand)}
+                </strong>
+                <span className={styles.binary}>
+                  {byteBits(instruction.opcode)} {byteBits(instruction.operand)}
+                </span>
+                <span className={styles.mnemonic} title={instruction.label}>
+                  <b>{isa.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic}</b>{" "}
+                  {describeOperand(instruction.opcode, instruction.operand, variables).short}
+                </span>
+                <span>{instruction.line ? `L${instruction.line}` : "GEN"}</span>
+              </li>
+            ))}
+          </ol>
+          <p className={styles.hint}>
+            Each instruction is two bytes: opcode, then operand. <b>#5</b> is the number 5 itself.{" "}
+            <b>[00]</b> is RAM address 00, so the CPU uses the value stored there. <b>→0A</b> is a
+            code address to jump to.
+            {inRam && (
+              <>
+                {" "}
+                <b>[SP+1]</b> is the byte at RAM address SP + 1, inside the current function's stack
+                frame.
+              </>
+            )}{" "}
+            GEN is code the compiler adds.
+          </p>
+          <details className={styles.isaDetails}>
+            <summary>INSTRUCTION SET / VIEW KEY</summary>
+            <div className={styles.isaList}>
+              {isa.map((item) => (
+                <div key={item.opcode}>
+                  <b>{hex(item.opcode)}</b>
+                  <b>{item.mnemonic}</b>
+                  <span>{item.operand}</span>
+                  <span>{item.effect}</span>
+                </div>
+              ))}
+            </div>
+          </details>
+        </div>
+      )}
+    </div>
   );
 }

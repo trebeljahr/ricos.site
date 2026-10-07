@@ -245,3 +245,10 @@
 .busReadout{font:700 15px ui-monospace,SFMono-Regular,monospace;color:#7fe6d6}
 /* Challenge mode: the part the grader names as the likely cause */
 .node.challengeHighlight{outline:3px solid #ff8f87;outline-offset:4px;box-shadow:0 0 0 8px #ff8f8733,0 8px 18px #0005}
+/* Locked mode: an embedded, read-only board driven by its page. */
+.layout.lockedLayout{grid-template-columns:minmax(0,1fr)}
+.locked .input,.locked .output,.locked .wireHit,.locked .busHit,.locked .toggle,.locked .inlineBoundaryButton{pointer-events:none}
+.locked .node{cursor:default}
+.locked .node:has(> .nodeActions){cursor:pointer}
+.wire.glow{stroke:#ffd166;stroke-width:5;opacity:1;filter:drop-shadow(0 0 7px #ffd166) drop-shadow(0 0 3px #ffd166)}
+.nodeNote{position:absolute;left:0;right:0;top:100%;margin-top:4px;text-align:center;font:700 11px ui-monospace,SFMono-Regular,monospace;color:#ffd166;white-space:nowrap;pointer-events:none}

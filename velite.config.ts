@@ -784,5 +784,31 @@ export default defineConfig({
         })
         .transform(addBundledMDXContent),
     },
+    // The "how computers work" series: one file per chapter or aside, in part
+    // folders. Not rendered anywhere public yet; `published` gates that later.
+    // The files are compiled as MDX, so demos go straight into the text.
+    computerChapters: {
+      name: "ComputerChapter",
+      pattern: "computer/part-*/*.md",
+      schema: s
+        .object({
+          title: s.string(),
+          part: s.number(),
+          partTitle: s.string(),
+          number: s.string(),
+          kind: s.enum(["chapter", "aside"]),
+          parent: s.string().optional(),
+          summary: s.string().optional(),
+          order: s.number(),
+          status: s.enum(["idea", "drafting", "revising", "done"]).default("idea"),
+          published: s.boolean().default(false),
+        })
+        .transform((data, { meta }) => {
+          // "1.1a-text-encodings.md" -> "text-encodings"
+          const slug = slugify((meta.stem ?? "").replace(/^\d+\.\d+[a-z]?-/, ""));
+          return { ...data, slug, contentType: "ComputerChapter", link: `/computer/${slug}` };
+        })
+        .transform(addBundledMDXContent),
+    },
   },
 });

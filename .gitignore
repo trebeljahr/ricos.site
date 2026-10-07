@@ -92,3 +92,6 @@ venv/
 
 # needlestack classification prompts, answered by agents and thrown away
 .needles-batches/
+
+# Daily word totals for /dev/writing
+.writing-progress.json

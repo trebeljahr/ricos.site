@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { BigScreenCard } from "./bigScreenBlocks";
+import {
+  type BigScreenCard,
+  type BigScreenParts,
+  type ReadStyle,
+  SIZES,
+  vramCircuit,
+} from "./bigScreenBlocks";
 import { CPU_PRESETS } from "./cpuPreset";
 import {
   datapathNode,
@@ -346,5 +352,65 @@ describe("big screen card", () => {
     expect(frame.slice(64, 72)).toEqual([1, 2, 3, 4, 0, 0, 0, 0]);
     idle();
     expect(foldBlockState(node, bench.states[1].modules.dut)).toEqual(bench.states[0].blocks?.dut);
+  });
+});
+
+describe("framebuffer read ports: bit lines against AND/OR trees", () => {
+  /** Logic gates, flip-flops and tri-state drivers in a circuit, every module opened. */
+  function count(circuit: Circuit, total = { gates: 0, flipFlops: 0, drivers: 0 }) {
+    for (const node of circuit.nodes) {
+      if (node.type === "dff") total.flipFlops++;
+      else if (node.type === "busdriver") total.drivers++;
+      else if (["and", "or", "xor", "not"].includes(node.type)) total.gates++;
+      else if (node.module) count(node.module, total);
+    }
+    return total;
+  }
+  const forms = (style: ReadStyle) => {
+    const parts: BigScreenParts = (kind) =>
+      kind === "vram16x16"
+        ? vramCircuit(SIZES["16x16"], "16x16", parts, style)
+        : datapathNode(kind, "part", 0, 0).module!;
+    return {
+      "16×16": count(vramCircuit(SIZES["16x16"], "16x16", parts, style)),
+      "32×32": count(vramCircuit(SIZES["32x32"], "32x32", parts, style)),
+    };
+  };
+
+  it("needs no read gates per row, and reads the same bytes", () => {
+    const trees = forms("trees");
+    const lines = forms("bit lines");
+    console.info("framebuffer gates (trees → bit lines):", JSON.stringify({ trees, lines }));
+    for (const size of ["16×16", "32×32"] as const) {
+      expect(lines[size].flipFlops).toBe(trees[size].flipFlops);
+      expect(lines[size].gates).toBeLessThan(trees[size].gates / 2);
+    }
+    // One driver per row and port: 32 bytes × 2 ports, and 4 banks × 64 + 4 × 2 for the bank buses.
+    expect(lines["16×16"].drivers).toBe(64);
+    expect(lines["32×32"].drivers).toBe(4 * 64 + 8);
+    // The tree form still reads correctly.
+    const parts: BigScreenParts = (kind) => datapathNode(kind, "part", 0, 0).module!;
+    const tree: Node = {
+      id: "dut",
+      type: "module",
+      x: 0,
+      y: 0,
+      module: vramCircuit(SIZES["16x16"], "16x16", parts, "trees"),
+    };
+    const bench = new Bench([datapathNode("vram16x16", "dut", 0, 0), tree]);
+    const next = random(21);
+    for (let i = 0; i < 60; i++) {
+      const at = Math.floor(next() * 32);
+      const video = Math.floor(next() * 32);
+      bench.tick(
+        [
+          ...toBits(at, 5),
+          ...toBits(Math.floor(next() * 256), 8),
+          next() < 0.5,
+          ...toBits(video, 5),
+        ],
+        `step ${i}`,
+      );
+    }
   });
 });

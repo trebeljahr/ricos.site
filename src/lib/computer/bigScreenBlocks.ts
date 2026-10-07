@@ -62,11 +62,11 @@ export type BigScreenParts = (
   kind: "register8" | "counter8" | "plot8" | "alu8" | BigScreenKind,
 ) => Circuit;
 
-const SIZES = {
+export const SIZES = {
   "16x16": { width: 16, height: 16 },
   "32x32": { width: 32, height: 32 },
 } as const satisfies Record<string, ScreenSize>;
-type SizeName = keyof typeof SIZES;
+export type SizeName = keyof typeof SIZES;
 const SIZE_NAMES = Object.keys(SIZES) as SizeName[];
 /** Bytes in one bank of the banked framebuffer: a whole 16×16 frame. */
 const BANK_BYTES = frameBytes(SIZES["16x16"]);
@@ -137,15 +137,70 @@ function readPort(
   );
 }
 
+/**
+ * A read port built the way memory chips build it: every row puts its byte
+ * on a shared bit line (here an 8-lane bus) through a tri-state driver that
+ * its word line (`select[r]`) enables, so only the selected row drives it.
+ * A bus takes 8 drivers, so groups of 8 rows share a bus and the group buses
+ * feed one more. No AND or OR gate per row: the wiring grows with the rows,
+ * the logic does not.
+ */
+function bitLinePort(
+  b: Builder,
+  prefix: string,
+  sources: (bit: number, r: number) => Ref,
+  select: Ref[],
+  x: number,
+  y: number,
+): Ref[] {
+  const groups = range(Math.ceil(select.length / 8)).map((g) => {
+    const id = `${prefix}-line${g}`;
+    b.add(id, "bus", x + 300, y + g * 700, `${prefix.toUpperCase()} BIT LINE ${g}`);
+    return id;
+  });
+  select.forEach((sel, r) => {
+    const at = y + r * 90;
+    b.add(`${prefix}-lanes${r}`, "merger", x, at);
+    range(8).forEach((bit) => {
+      b.connect(sources(bit, r), `${prefix}-lanes${r}`, bit);
+    });
+    b.add(`${prefix}-drive${r}`, "busdriver", x + 150, at, `ROW ${r}`);
+    b.connect(`${prefix}-lanes${r}`, `${prefix}-drive${r}`);
+    b.connect(sel, `${prefix}-drive${r}`, 1);
+    b.connect(`${prefix}-drive${r}`, groups[r >> 3], r & 7);
+  });
+  let line = groups[0];
+  if (groups.length > 1) {
+    line = `${prefix}-lines`;
+    b.add(line, "bus", x + 450, y, `${prefix.toUpperCase()} BIT LINES`);
+    groups.forEach((group, g) => {
+      b.connect(group, line, g);
+    });
+  }
+  b.add(`${prefix}-bits`, "splitter", x + 600, y, `${prefix.toUpperCase()} BITS`);
+  b.connect(line, `${prefix}-bits`);
+  return range(8).map((bit): Ref => [`${prefix}-bits`, bit]);
+}
+
+/** How a framebuffer's gate form reads its rows out: bit lines (the default) or AND/OR trees. */
+export type ReadStyle = "bit lines" | "trees";
+
 // ---------------------------------------------------------------- framebuffer
 
 /**
  * A dual-port framebuffer of `size`: A, D, WE and Q are the CPU port, RA
  * picks the byte V reads for the beam. Up to 32 bytes it is register8 rows;
- * above, banks of 32 bytes.
+ * above, banks of 32 bytes. Both ports read through bit lines; `style`
+ * "trees" builds the older AND/OR read trees instead, for comparison.
  */
-function vramCircuit(size: ScreenSize, name: SizeName, parts: BigScreenParts): Circuit {
+export function vramCircuit(
+  size: ScreenSize,
+  name: SizeName,
+  parts: BigScreenParts,
+  style: ReadStyle = "bit lines",
+): Circuit {
   const b = new Builder();
+  const port = style === "bit lines" ? bitLinePort : readPort;
   const { address } = shape(size);
   ports(b, vramInputs(address));
   const a = range(address).map((bit) => `a${bit}`);
@@ -169,8 +224,8 @@ function vramCircuit(size: ScreenSize, name: SizeName, parts: BigScreenParts): C
       b.connect(b.gate(`write${r}`, "and", 760, 30 + r * 160, sel, "we", `WRITE ${r}`), id, 8);
       b.connect("clock", id, 9);
     });
-    q = readPort(b, "read", (bit, r) => [`row${r}`, bit], select, 1100, 30);
-    v = readPort(b, "video", (bit, r) => [`row${r}`, bit], video, 1100, 30 + bytes * 60 + 200);
+    q = port(b, "read", (bit, r) => [`row${r}`, bit], select, 1100, 30);
+    v = port(b, "video", (bit, r) => [`row${r}`, bit], video, 1100, 30 + bytes * 100 + 200);
   } else {
     // High address bits pick a bank; the low 5 go to every bank.
     const inner = bitsFor(BANK_BYTES);
@@ -198,8 +253,8 @@ function vramCircuit(size: ScreenSize, name: SizeName, parts: BigScreenParts): C
         },
       );
     });
-    q = readPort(b, "read", (bit, k) => [`bank${k}`, bit], select, 1000, 30);
-    v = readPort(b, "video", (bit, k) => [`bank${k}`, 8 + bit], video, 1000, 1000);
+    q = port(b, "read", (bit, k) => [`bank${k}`, bit], select, 1000, 30);
+    v = port(b, "video", (bit, k) => [`bank${k}`, 8 + bit], video, 1000, 1000);
   }
   q.forEach((bit, i) => {
     b.gate(`q${i}`, "lamp", 1800, 30 + i * 120, bit, undefined, `Q${i}`);

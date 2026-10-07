@@ -312,45 +312,76 @@ export function screenRows(state: unknown): number[] {
 
 // ---------------------------------------------------------------- data memory
 
+type Place = { id: string; x: number; y: number; label?: string };
+type DataMemoryWiring = {
+  /** Eight address bits, A0 first. */
+  address: Ref[];
+  data: Ref[];
+  we: Ref;
+  clock: Ref;
+  ram: Place;
+  screen: Place;
+  /** Top left of the decode and read-select gates. */
+  x: number;
+  y: number;
+};
+
 /**
- * Data memory as the CPU's DMAR sees it: an 8-bit address whose high nibble F
- * selects the screen (row = A0–A2), and anything else the RAM (row = A0–A3), as
- * `traceTicks` does. Inputs A0–A7, D0–D7, WE, CLK; Q reads the selected byte.
+ * Adds a ram16 and a screen8x8 behind one 8-bit data address, decoded as
+ * `traceTicks` does: high nibble F selects the screen (row = A0–A2), anything
+ * else the RAM (row = A0–A3). Returns the 8 read bits of the selected byte.
  */
-export function dataMemoryCircuit(): Circuit {
-  const b = new Builder();
-  ports(b, [...busPorts("a", "A"), ...busPorts("d", "D"), ["we", "WE"], ["clock", "CLK"]]);
-  const upper = b.gate("high-lo", "and", 200, 1500, "a4", "a5");
-  const lower = b.gate("high-hi", "and", 200, 1580, "a6", "a7");
-  b.gate("screen-sel", "and", 340, 1540, upper, lower, "SCREEN (F_)");
-  b.gate("ram-sel", "not", 480, 1620, "screen-sel", undefined, "RAM");
-  b.gate("ram-we", "and", 620, 1540, "we", "ram-sel", "RAM WE");
-  b.gate("screen-we", "and", 620, 1700, "we", "screen-sel", "SCREEN WE");
-  const block = (
-    id: string,
-    kind: "ram16" | "screen8x8",
-    y: number,
-    addressBits: number,
-    we: string,
-  ) => {
-    b.add(id, "module", 800, y, DATAPATH_BLOCKS[kind].label, {
+export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
+  const { address, data, we, clock, x, y } = wiring;
+  const id = (name: string) => `${wiring.ram.id}-${name}`;
+  const upper = b.gate(id("high-lo"), "and", x, y, address[4], address[5]);
+  const lower = b.gate(id("high-hi"), "and", x, y + 80, address[6], address[7]);
+  const screenSel = b.gate(id("screen-sel"), "and", x + 140, y + 40, upper, lower, "SCREEN (F_)");
+  const ramSel = b.gate(id("ram-sel"), "not", x + 280, y + 120, screenSel, undefined, "RAM");
+  const ramWe = b.gate(id("ram-we"), "and", x + 420, y + 40, we, ramSel, "RAM WE");
+  const screenWe = b.gate(id("screen-we"), "and", x + 420, y + 200, we, screenSel, "SCREEN WE");
+  const block = (place: Place, kind: "ram16" | "screen8x8", addressBits: number, write: Ref) => {
+    b.add(place.id, "module", place.x, place.y, place.label ?? DATAPATH_BLOCKS[kind].label, {
       module: datapathCircuit(kind),
       behaviour: kind,
     });
-    range(addressBits).forEach((bit) => b.connect(`a${bit}`, id, bit));
-    range(8).forEach((bit) => b.connect(`d${bit}`, id, addressBits + bit));
-    b.connect(we, id, addressBits + 8);
-    b.connect("clock", id, addressBits + 9);
+    for (let bit = 0; bit < addressBits; bit++) b.connect(address[bit], place.id, bit);
+    for (const [bit, source] of data.entries()) b.connect(source, place.id, addressBits + bit);
+    b.connect(write, place.id, addressBits + 8);
+    b.connect(clock, place.id, addressBits + 9);
   };
-  block("ram", "ram16", 30, 4, "ram-we");
-  block("screen", "screen8x8", 800, 3, "screen-we");
-  range(8).forEach((bit) => {
-    const y = 30 + bit * 200;
-    const fromRam = b.gate(`ram-q${bit}`, "and", 1100, y, ["ram", bit], "ram-sel");
-    const fromScreen = b.gate(`screen-q${bit}`, "and", 1100, y + 70, ["screen", bit], "screen-sel");
-    const read = b.gate(`read${bit}`, "or", 1250, y, fromRam, fromScreen, `READ BIT ${bit}`);
-    b.gate(`q${bit}`, "lamp", 1400, y, read, undefined, `Q${bit}`);
+  block(wiring.ram, "ram16", 4, ramWe);
+  block(wiring.screen, "screen8x8", 3, screenWe);
+  return range(8).map((bit) => {
+    const row = y + 300 + bit * 140;
+    const fromRam = b.gate(id(`ram-q${bit}`), "and", x + 560, row, [wiring.ram.id, bit], ramSel);
+    const fromScreen = b.gate(
+      id(`screen-q${bit}`),
+      "and",
+      x + 560,
+      row + 60,
+      [wiring.screen.id, bit],
+      screenSel,
+    );
+    return b.gate(id(`read${bit}`), "or", x + 700, row, fromRam, fromScreen, `READ BIT ${bit}`);
   });
+}
+
+/** Data memory as the CPU's DMAR sees it. Inputs A0–A7, D0–D7, WE, CLK; Q reads the selected byte. */
+export function dataMemoryCircuit(): Circuit {
+  const b = new Builder();
+  ports(b, [...busPorts("a", "A"), ...busPorts("d", "D"), ["we", "WE"], ["clock", "CLK"]]);
+  const read = addDataMemory(b, {
+    address: range(8).map((bit) => `a${bit}`),
+    data: range(8).map((bit) => `d${bit}`),
+    we: "we",
+    clock: "clock",
+    ram: { id: "ram", x: 1000, y: 30 },
+    screen: { id: "screen", x: 1000, y: 800 },
+    x: 200,
+    y: 1500,
+  });
+  read.forEach((bit, i) => b.gate(`q${i}`, "lamp", 1400, 30 + i * 200, bit, undefined, `Q${i}`));
   return b.circuit("Data memory");
 }
 

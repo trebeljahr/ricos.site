@@ -50,7 +50,7 @@ function random(seed: number) {
 /**
  * A random straight-line program over every non-stack opcode, with forward-only
  * JMP/JNC so it always reaches HALT. Operands are any byte, so RAM addresses
- * above 15 wrap, and adds and subtracts carry and borrow.
+ * above 15 wrap, F0–FF reach the screen, and adds and subtracts carry and borrow.
  */
 function randomProgram(seed: number, length = 40): CompiledProgram {
   const next = random(seed);
@@ -161,6 +161,7 @@ function lockstep(program: CompiledProgram, circuit: Circuit = cpuCircuit(progra
     const { BUS: _bus, ...probes } = readProbes(circuit, state);
     expect(probes, `${where}: probes`).toEqual(expected(tick));
     expect(bytesOf(state, CPU_PARTS.ram), `${where}: data RAM`).toEqual(tick.ram);
+    expect(bytesOf(state, CPU_PARTS.screen), `${where}: screen`).toEqual(tick.screen);
     expect(bytesOf(state, CPU_PARTS.stack).slice(0, tick.registers.sp), `${where}: stack`).toEqual(
       tick.stack,
     );
@@ -209,6 +210,13 @@ describe("CPU preset", () => {
       traceTicks(p).filter((t) => t.registers.ir === JNC && t.t === 4),
     );
     expect(new Set(jnc.map((t) => t.control.includes("PC_IN")))).toEqual(new Set([true, false]));
+    // Screen writes and reads through DMAR F0–F7, beyond the SMILEY sample's writes.
+    const screenTicks = Object.values(PROGRAMS).flatMap((p) =>
+      traceTicks(p).filter(
+        (t, i, all) => i > 0 && t.control.includes("RAM_OUT") && all[i - 1].registers.dmar >= 0xf0,
+      ),
+    );
+    expect(screenTicks.length).toBeGreaterThan(0);
   });
 });
 

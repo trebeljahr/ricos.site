@@ -12,11 +12,13 @@
 // The stepper's return stack is "write at SP, then SP + 1" (CALL) and "SP − 1,
 // then read at SP" (RET), one micro-step each, so the stack here is a 16-byte
 // RAM addressed by SP, and SP is a register with its own ALU as an
-// incrementer. Every clocked part runs on the control unit's GCLK, so HALT
+// incrementer. DMAR holds a full byte: F0–F7 reach the 8×8 screen instead of
+// the RAM, and RAM_OUT drives whichever of the two the address selects. Every
+// clocked part runs on the control unit's GCLK, so HALT
 // freezes the whole machine.
 import { compileProgram, SAMPLE_PROGRAMS, SIGNALS, type Signal } from "../computerStepper";
 import { Builder, ports, type Ref, range } from "./blockBuilder";
-import { type DatapathKind, datapathNode } from "./datapathBlocks";
+import { addDataMemory, type DatapathKind, datapathNode } from "./datapathBlocks";
 import type { Circuit } from "./logic";
 
 /** Node ids of the parts a caller (tests, the joined UI) reads state from. */
@@ -29,6 +31,7 @@ export const CPU_PARTS = {
   opr: "opr",
   dmar: "dmar",
   ram: "ram",
+  screen: "screen",
   acc: "acc",
   alu: "alu",
   flags: "flags",
@@ -119,6 +122,18 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
     b.add(id, from.length > 4 ? "display8" : "display4", x, y, name, { probe: name });
     wireBits(from, id);
   };
+  // Data RAM and screen behind DMAR; RAM_OUT drives the selected byte.
+  const dataRead = addDataMemory(b, {
+    address: bits(CPU_PARTS.dmar),
+    data: range(8).map(lane),
+    we: line("RAM_IN"),
+    clock: gclk,
+    ram: { id: CPU_PARTS.ram, x: X.part, y: 2740, label: "DATA RAM" },
+    screen: { id: CPU_PARTS.screen, x: X.part, y: 4550, label: "8×8 SCREEN" },
+    x: X.helper,
+    y: 2320,
+  });
+  const driverBits = (part: string) => (part === CPU_PARTS.ram ? dataRead : bits(part));
   /** A register8 that loads the bus on `load`, clocked by GCLK. */
   const busRegister = (id: string, y: number, label: string, load: Ref) => {
     block("register8", id, X.part, y, label);
@@ -155,7 +170,7 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
   DRIVERS.forEach(([signal, part, label], index) => {
     const y = 30 + index * 420;
     b.add(`${part}-lanes`, "merger", X.merge, y, `${label} LANES`);
-    wireBits(bits(part), `${part}-lanes`);
+    wireBits(driverBits(part), `${part}-lanes`);
     b.add(`${part}-drive`, "busdriver", X.drive, y, signal);
     b.connect(`${part}-lanes`, `${part}-drive`);
     b.connect(line(signal), `${part}-drive`, 1);
@@ -201,13 +216,7 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
   ]);
 
   busRegister(CPU_PARTS.dmar, 2320, "DATA ADDRESS (DMAR)", line("DMAR_IN"));
-  probe("dmar-probe", "DMAR", X.partProbe, 2320, bits(CPU_PARTS.dmar, 4));
-
-  block("ram16", CPU_PARTS.ram, X.part, 2740, "DATA RAM");
-  wireBits(bits(CPU_PARTS.dmar, 4), CPU_PARTS.ram);
-  wireBits(range(8).map(lane), CPU_PARTS.ram, 4);
-  b.connect(line("RAM_IN"), CPU_PARTS.ram, 12);
-  b.connect(gclk, CPU_PARTS.ram, 13);
+  probe("dmar-probe", "DMAR", X.partProbe, 2320, bits(CPU_PARTS.dmar));
 
   // SP ← SP ± 1 through its own ALU; the stack RAM is addressed by SP.
   block("register8", CPU_PARTS.sp, X.part, 3200, "STACK POINTER (SP)");

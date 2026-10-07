@@ -36,6 +36,8 @@ export type Node = {
   label?: string;
   value?: boolean;
   numberValue?: number;
+  /** Probe name on a display4/display8, read by `readProbes` (e.g. ACC, PC). */
+  probe?: string;
   module?: Circuit;
 };
 export const WIRE_COLORS = {
@@ -121,6 +123,20 @@ export const LABELS: Record<GateType, string> = {
   dramcell: "DRAM CAPACITOR",
   module: "CIRCUIT",
 };
+export const PROBE_NAMES = ["ACC", "PC", "IR", "OPERAND", "SP", "FLAGS", "BUS"] as const;
+export const isProbeDisplay = (type: GateType) => type === "display4" || type === "display8";
+/** Upper-case letters, digits and underscores, starting with a letter, at most 12 long. */
+export const normalizeProbeName = (value: string) =>
+  value
+    .toUpperCase()
+    .replace(/[^A-Z0-9_]/g, "")
+    .replace(/^[^A-Z]+/, "")
+    .slice(0, 12);
+const validProbe = (n: Partial<Node>) =>
+  n.probe === undefined ||
+  (typeof n.probe === "string" &&
+    isProbeDisplay(n.type as GateType) &&
+    (n.probe === "" || normalizeProbeName(n.probe) === n.probe));
 export const moduleInputs = (circuit: Circuit) =>
   circuit.nodes.filter((node) => ["switch", "clock", "pulse"].includes(node.type));
 export const moduleOutputs = (circuit: Circuit) =>
@@ -1140,7 +1156,8 @@ export function validateCircuit(
         Number.isFinite(n.x) &&
         Number.isFinite(n.y) &&
         (n.inputSide === undefined || ["left", "top", "right", "bottom"].includes(n.inputSide)) &&
-        (n.outputSide === undefined || ["left", "top", "right", "bottom"].includes(n.outputSide)),
+        (n.outputSide === undefined || ["left", "top", "right", "bottom"].includes(n.outputSide)) &&
+        validProbe(n),
     )
   )
     return null;
@@ -1222,6 +1239,7 @@ export function validateCircuit(
       label: typeof n.label === "string" ? n.label.slice(0, 30) : undefined,
       value: Boolean(n.value),
       numberValue: n.numberValue,
+      ...(n.probe ? { probe: n.probe } : {}),
       module: validatedModules.get(n.id),
     })),
     wires: item.wires.map((w) => ({

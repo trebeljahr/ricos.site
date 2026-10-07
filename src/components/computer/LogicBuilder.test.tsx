@@ -283,6 +283,19 @@ describe("circuit depth", () => {
     expect(within(switchPart).getByRole("button", { name: "Wire from SWITCH Output" })
       .parentElement?.style.left).toBe("100%");
   });
+  it("names a display as a probe and keeps the name after a reload", () => {
+    const { unmount } = render(<LogicBuilder />);
+    fireEvent.click(within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "8-BIT DISPLAY" }));
+    const display = screen.getByRole("group", { name: "8-BIT DISPLAY — 8-BIT DISPLAY part" });
+    fireEvent.contextMenu(display, { clientX: 100, clientY: 100 });
+    fireEvent.change(screen.getByLabelText("Probe name"), { target: { value: "acc!" } });
+    expect(within(display).getByLabelText("ACC probe value")).toBeTruthy();
+    const stored = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current;
+    expect(stored.nodes.find((node: { type: string }) => node.type === "display8").probe).toBe("ACC");
+    unmount();
+    render(<LogicBuilder />);
+    expect(screen.getByLabelText("ACC probe value")).toBeTruthy();
+  });
   it("edits a part from its context menu and closes on an outside pointer down", () => {
     render(<LogicBuilder />);
     const part = screen.getByRole("group", { name: "SUM — XOR part" });

@@ -20,15 +20,18 @@ import {
   gateBlueprint as sourceGateBlueprint,
   initialSnapshot,
   inputCount,
+  isProbeDisplay,
   inputLabel,
   LABELS,
   type LogicGate,
   moduleInputs,
   moduleOutputs,
   type Node,
+  normalizeProbeName,
   outputCount,
   outputLabel,
   PRESETS as sourcePresets,
+  PROBE_NAMES,
   type Snapshot,
   step,
   validateCircuit,
@@ -36,6 +39,7 @@ import {
   type WireColor,
 } from "../../lib/computer/logic";
 import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
+import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
@@ -3064,9 +3068,10 @@ export function LogicBuilder() {
                           </div>
                         ) : node.type === "display4" || node.type === "display8" ? (
                           <div
-                            className={styles.digitalScreen}
-                            aria-label={`${node.label || LABELS[node.type]} value`}
+                            className={clsx(styles.digitalScreen, node.probe && styles.probeScreen)}
+                            aria-label={`${node.probe ? `${node.probe} probe` : node.label || LABELS[node.type]} value`}
                           >
+                            {node.probe && <span className={styles.probeName}>{node.probe}</span>}
                             <span className={styles.decimalValue}>
                               {(snapshot.outputs[node.id] ?? []).reduce(
                                 (value, bit, index) => value + (bit ? 2 ** index : 0),
@@ -3322,6 +3327,36 @@ export function LogicBuilder() {
                   />
                 </span>
               </label>
+              {isProbeDisplay(menuNode.type) && (
+                <label>
+                  Probe name
+                  <input
+                    value={menuNode.probe || ""}
+                    maxLength={12}
+                    list="probe-names"
+                    placeholder="e.g. ACC, PC"
+                    onFocus={beginTransaction}
+                    onBlur={endTransaction}
+                    onChange={(event) => {
+                      const probe = normalizeProbeName(event.target.value);
+                      setCircuit((current) => ({
+                        ...current,
+                        nodes: current.nodes.map((node) =>
+                          node.id === menuNode.id ? { ...node, probe: probe || undefined } : node,
+                        ),
+                      }));
+                    }}
+                  />
+                  <datalist id="probe-names">
+                    {PROBE_NAMES.map((name) => <option key={name} value={name} />)}
+                  </datalist>
+                  {menuNode.probe && duplicateProbes(circuit).includes(menuNode.probe) && (
+                    <small className={styles.probeWarning}>
+                      Another display uses {menuNode.probe}. The outermost one is read.
+                    </small>
+                  )}
+                </label>
+              )}
               {menuNode.type === "module" && (
                 <div className={styles.modulePorts}>
                   {circuitHints[menuNode.module!.name] && (

@@ -990,3 +990,28 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     });
   return snapshots;
 }
+
+/** Stepper fields a circuit probe can fill; the rest stay undefined. */
+export type ProbeSnapshot = Partial<Snapshot> & { bus?: number; sp?: number };
+
+/**
+ * Maps circuit probe values (from `readProbes`) onto the stepper's `Snapshot` fields, so one
+ * register panel can show either source. FLAGS bit 0 is carry, bit 1 is zero. SP and BUS have
+ * no stepper field yet and come back as `sp` and `bus`.
+ */
+export function probesToSnapshot(probes: Record<string, number>): ProbeSnapshot {
+  const read = (name: string) => (Object.hasOwn(probes, name) ? probes[name] : undefined);
+  const flags = read("FLAGS");
+  const snapshot: ProbeSnapshot = {};
+  if (read("ACC") !== undefined) snapshot.accumulator = read("ACC");
+  if (read("PC") !== undefined) snapshot.pc = read("PC");
+  if (read("IR") !== undefined) snapshot.ir = read("IR");
+  if (read("OPERAND") !== undefined) snapshot.operand = read("OPERAND");
+  if (flags !== undefined) {
+    snapshot.carry = Boolean(flags & 1);
+    snapshot.zero = Boolean(flags & 2);
+  }
+  if (read("SP") !== undefined) snapshot.sp = read("SP");
+  if (read("BUS") !== undefined) snapshot.bus = read("BUS");
+  return snapshot;
+}

@@ -1,3 +1,5 @@
+import { audioSilenced } from "src/lib/silentAudio";
+
 /**
  * "Owl Hooting" by Lazy Chill Zone, from Pixabay (sound effect 223549),
  * credited on /imprint. Downmixed to mono at 64 kbps. All four hoots stay in
@@ -111,6 +113,7 @@ function play(ctx: AudioContext, buffer: AudioBuffer, clip: Clip, rate: number) 
  * Safari keeps it silent.
  */
 export function hoot(rate = 1, kind: HootKind = "call") {
+  if (audioSilenced()) return;
   const AudioContextClass =
     window.AudioContext ??
     (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;

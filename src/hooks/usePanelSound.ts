@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { audioSilenced } from "src/lib/silentAudio";
 
 type PanelSound = "switch" | "button";
 
@@ -17,7 +18,7 @@ export function usePanelSound() {
 
   const play = useCallback(
     (kind: PanelSound) => {
-      if (!enabled || typeof window === "undefined") return;
+      if (!enabled || typeof window === "undefined" || audioSilenced()) return;
       try {
         const audio = context.current ?? new AudioContext();
         context.current = audio;

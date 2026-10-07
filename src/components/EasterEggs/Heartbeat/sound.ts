@@ -1,3 +1,5 @@
+import { audioSilenced } from "src/lib/silentAudio";
+
 /**
  * One recorded heartbeat, "Heartbeat Single" by Universfield on Pixabay,
  * trimmed to the beat itself: the lub from the start of the file, the dub
@@ -63,6 +65,7 @@ const decode = (ctx: AudioContext) => {
  * AudioContext start there, and the beats come later, from the monitor.
  */
 export function wake() {
+  if (audioSilenced()) return;
   const AudioContextClass =
     window.AudioContext ??
     (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;

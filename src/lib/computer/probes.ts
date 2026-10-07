@@ -46,10 +46,15 @@ export function duplicateProbes(circuit: Circuit): string[] {
 /**
  * Reads every named probe display as a number, also inside folded modules.
  * Duplicate names: the shallowest probe wins, ties go to the earlier node (see `listProbes`).
+ * Pass `probes` when reading the same circuit many times: listing walks every nested module.
  */
-export function readProbes(circuit: Circuit, snapshot: Snapshot): Record<string, number> {
+export function readProbes(
+  circuit: Circuit,
+  snapshot: Snapshot,
+  probes: ProbeEntry[] = listProbes(circuit),
+): Record<string, number> {
   const values: Record<string, number> = {};
-  for (const probe of listProbes(circuit)) {
+  for (const probe of probes) {
     if (Object.hasOwn(values, probe.name)) continue;
     let state: Snapshot | undefined = snapshot;
     for (const id of probe.path.slice(0, -1)) state = state?.modules[id];

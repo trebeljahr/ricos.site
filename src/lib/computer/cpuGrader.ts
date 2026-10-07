@@ -420,6 +420,7 @@ export function gradeCpu(
   if (structure.length) return { pass: false, structure };
   const found = findParts(circuit);
   const wiring = new Wiring(circuit);
+  const probes = listProbes(circuit);
   const ticks = traceTicks(program, options.maxInstructions);
 
   const busReading = (state: Snapshot): BusReading => ({
@@ -429,7 +430,7 @@ export function gradeCpu(
       .map((driver) => driver.role ?? driver.part?.label ?? driver.id),
   });
   const after = (state: Snapshot, level: CpuLevel): Omit<TickSide, "control" | "bus"> => {
-    const read = readProbes(circuit, state);
+    const read = readProbes(circuit, state, probes);
     return {
       probes: Object.fromEntries(level.probes.map((probe) => [probe, read[probe]])),
       ...(level.memory.includes("RAM") && { ram: bytesOf(state, found.parts.RAM) }),

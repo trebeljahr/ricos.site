@@ -8,6 +8,14 @@
 
 import { plotRow, SCREEN_ROWS } from "../computerStepper";
 import {
+  BIG_SCREEN_BLOCKS,
+  bigScreenBlockCircuit,
+  bigScreenSize,
+  foldBigScreenState,
+  isBigScreenKind,
+  unfoldBigScreenState,
+} from "./bigScreenBlocks";
+import {
   BLITTER_BLOCKS,
   BLITTER_OUTPUTS,
   type BlitterKind,
@@ -43,6 +51,7 @@ import {
   shaderBlockCircuit,
   unfoldShaderState,
 } from "./shaderBlocks";
+import { frameBytes, SCREEN_8X8, type ScreenSize } from "./video";
 import {
   foldVideoState,
   unfoldVideoState,
@@ -485,23 +494,27 @@ export function screenRows(state: unknown): number[] {
   return range(SCREEN_ROWS).map((r) => (bytes?.[r] ?? 0) & 255);
 }
 
-/** Blocks a folded node draws as an 8×8 grid. */
+/** Blocks a folded node draws as a pixel grid. */
 const SCREEN_KINDS = new Set(["screen8x8", "vram8x8", "crt8x8"]);
 export const isScreenBlock = (behaviour: string | undefined) =>
-  behaviour !== undefined && SCREEN_KINDS.has(behaviour);
+  behaviour !== undefined &&
+  (SCREEN_KINDS.has(behaviour) || (isBigScreenKind(behaviour) && !behaviour.startsWith("scanout")));
 
 /**
- * What a folded screen block shows: its rows, plus the beam for a monitor
- * (null while the beam is below the screen, in vertical blank).
+ * What a folded screen block shows: its frame bytes (row y's byte c at
+ * y * width / 8 + c), its size, and the beam for a monitor (null while the
+ * beam is below the screen, in vertical blank).
  */
 export function screenView(
   behaviour: string | undefined,
   state: unknown,
-): { rows: number[]; beam: { x: number; y: number } | null } {
-  const rows = screenRows(state);
-  if (behaviour !== "crt8x8") return { rows, beam: null };
+): { rows: number[]; size: ScreenSize; beam: { x: number; y: number } | null } {
+  const size = isBigScreenKind(behaviour) ? bigScreenSize(behaviour) : SCREEN_8X8;
+  const bytes = (state as Partial<Ram> | null | undefined)?.bytes;
+  const rows = range(frameBytes(size)).map((r) => (bytes?.[r] ?? 0) & 255);
+  if (behaviour !== "crt8x8" && !behaviour?.startsWith("crt")) return { rows, size, beam: null };
   const { x = 0, y = 0 } = (state as { x?: number; y?: number } | null | undefined) ?? {};
-  return { rows, beam: y < SCREEN_ROWS ? { x: x & 7, y } : null };
+  return { rows, size, beam: y < size.height ? { x: x & (size.width - 1), y } : null };
 }
 
 // ---------------------------------------------------------------- plot8
@@ -1147,6 +1160,7 @@ export const DATAPATH_BLOCKS = {
   ...SHADER_BLOCKS,
   ...VIDEO_BLOCKS,
   ...BLITTER_BLOCKS,
+  ...BIG_SCREEN_BLOCKS,
 } as const;
 const isControlKind = (kind: DatapathKind): kind is ControlKind => kind in CONTROL_BLOCKS;
 const isBlitterKind = (kind: DatapathKind): kind is BlitterKind => kind in BLITTER_BLOCKS;
@@ -1166,6 +1180,7 @@ export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = [
   if (isShaderKind(kind)) return shaderBlockCircuit(kind, bytes);
   if (isVideoKind(kind)) return videoBlockCircuit(kind, (part) => datapathCircuit(part));
   if (isBlitterKind(kind)) return blitterBlockCircuit(kind);
+  if (isBigScreenKind(kind)) return bigScreenBlockCircuit(kind, (part) => datapathCircuit(part));
   switch (kind) {
     case "register8":
       return register8Circuit();
@@ -1222,6 +1237,7 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
   if (isShaderKind(node.behaviour)) return unfoldShaderState(node.behaviour, state);
   if (isVideoKind(node.behaviour)) return unfoldVideoState(node.behaviour, state);
   if (isBlitterKind(node.behaviour)) return unfoldBlitterState(state);
+  if (isBigScreenKind(node.behaviour)) return unfoldBigScreenState(node.behaviour, state);
   switch (node.behaviour) {
     case "register8":
     case "counter8": {
@@ -1265,6 +1281,8 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
   if (isVideoKind(node.behaviour))
     return foldVideoState(node, node.behaviour, inner, foldBlockState);
   if (isBlitterKind(node.behaviour)) return foldBlitterState(inner);
+  if (isBigScreenKind(node.behaviour))
+    return foldBigScreenState(node, node.behaviour, inner, foldBlockState);
   // A nested row may run as gates (unfolded) or as a block; prefer the gates.
   const row = (r: number): ClockedByte => {
     const gates = inner.modules[`row${r}`];

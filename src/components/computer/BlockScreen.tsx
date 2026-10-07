@@ -11,11 +11,12 @@ export function BlockScreen({
   state: unknown;
   label?: string;
 }) {
-  const { rows, beam } = screenView(behaviour, state);
+  const { rows, beam, size } = screenView(behaviour, state);
   return (
     <ScreenGrid
       rows={rows}
-      beam={behaviour === "crt8x8" ? beam : undefined}
+      size={size}
+      beam={behaviour?.startsWith("crt") ? beam : undefined}
       label={label || (isDatapathKind(behaviour) ? DATAPATH_BLOCKS[behaviour].label : "SCREEN")}
     />
   );

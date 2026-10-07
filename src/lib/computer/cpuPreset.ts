@@ -571,6 +571,59 @@ function scanoutBench(): Circuit {
   return b.circuit(SCANOUT_PRESET);
 }
 
+/**
+ * The scanout bench at 16×16 or 32×32. A row is now width / 8 bytes, so ADDR
+ * picks a byte, not a row: byte c of row y is at y * width / 8 + c. The
+ * scanout's video address is its X / 8 bits, then its Y bits.
+ */
+function bigScanoutBench(width: 16 | 32, name: string): Circuit {
+  const size = width === 16 ? "16x16" : "32x32";
+  const columnBits = Math.log2(width / 8);
+  const yBits = Math.log2(width);
+  const address = columnBits + yBits;
+  const b = new Builder();
+  b.add("addr", "input8", 0, 40, "ADDR", { numberValue: width / 8 + 1 });
+  b.add("data", "input8", 0, 240, "DATA", { numberValue: 0x3c });
+  b.add("we", "switch", 0, 520, "WE");
+  b.add("clk", "clock", 0, 640, "CLOCK");
+  b.nodes.push(datapathNode(`vram${size}`, "vram", 400, 40));
+  b.nodes.push(datapathNode(`scanout${size}`, "scanout", 800, 40));
+  b.nodes.push(datapathNode(`crt${size}`, "monitor", 1200, 40));
+  for (let bit = 0; bit < address; bit++) b.connect(["addr", bit], "vram", bit);
+  for (let bit = 0; bit < 8; bit++) b.connect(["data", bit], "vram", address + bit);
+  b.connect("we", "vram", address + 8);
+  // Scanout outputs: PIXEL, X0…, Y0…, HSYNC, VSYNC, VBLANK.
+  const x = (bit: number) => 1 + bit;
+  const y = (bit: number) => 1 + yBits + bit;
+  const video = [
+    ...Array.from({ length: columnBits }, (_, bit) => x(3 + bit)),
+    ...Array.from({ length: yBits }, (_, bit) => y(bit)),
+  ];
+  video.forEach((output, bit) => {
+    b.connect(["scanout", output], "vram", address + 9 + bit);
+  });
+  b.connect("clk", "vram", 2 * address + 9);
+  for (let bit = 0; bit < 8; bit++) b.connect(["vram", 8 + bit], "scanout", bit);
+  b.connect("clk", "scanout", 8);
+  const sync = 1 + 2 * yBits;
+  for (const [input, output] of [0, sync, sync + 1].entries())
+    b.connect(["scanout", output], "monitor", input);
+  b.connect("clk", "monitor", 3);
+  for (const [i, label] of ["HSYNC", "VSYNC", "VBLANK"].entries())
+    b.gate(
+      `lamp-${label.toLowerCase()}`,
+      "lamp",
+      1200,
+      520 + i * 100,
+      ["scanout", sync + i],
+      undefined,
+      label,
+    );
+  return b.circuit(name);
+}
+const SCANOUT_16_PRESET = "Scanout and monitor, 16×16";
+const SCANOUT_32_PRESET = "Scanout and monitor, 32×32";
+
 /** Builder examples: the CPU running one of the stepper's sample programs. */
 export const CPU_PRESETS: Record<string, Circuit> = {
   [LOOP_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.LOOP, LOOP_PRESET),
@@ -578,6 +631,8 @@ export const CPU_PRESETS: Record<string, Circuit> = {
   [KEYBOARD_PRESET]: cpuFromSource(INTERRUPT_SAMPLES.KEYBOARD, KEYBOARD_PRESET),
   [CROSS_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.CROSS, CROSS_PRESET),
   [SCANOUT_PRESET]: scanoutBench(),
+  [SCANOUT_16_PRESET]: bigScanoutBench(16, SCANOUT_16_PRESET),
+  [SCANOUT_32_PRESET]: bigScanoutBench(32, SCANOUT_32_PRESET),
   [TEARING_PRESET]: cpuFromSource(VIDEO_SAMPLES.TEARING, TEARING_PRESET),
   [VSYNC_PRESET]: cpuFromSource(VIDEO_SAMPLES.VSYNC, VSYNC_PRESET),
   [BLIT_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.BLIT, BLIT_PRESET),
@@ -590,6 +645,10 @@ export const CPU_HINTS: Record<string, string> = {
     "The same CPU with its stack in data RAM: SP starts at 32 and counts down, CALL stores the return address at RAM[SP], and each call of sum gets its own stack frame at SP + 0, SP + 1, … That is what lets sum call itself. Run the clock until HALTED lights; OUT then shows 10.",
   [KEYBOARD_PRESET]:
     "The CPU waiting in a loop for keys. Set a key code on KEY BIT 0–7, switch KEY PRESS on for one clock cycle, then off. KEY READY and IRQ light; when the current instruction ends, INT comes on and the interrupt box glows: the control unit pushes PC, turns interrupts off and drives the vector 02 into PC. The handler draws the key code on screen row 3 and counts the presses on OUT.",
+  [SCANOUT_16_PRESET]:
+    "The scanout bench at 16×16. A row is now two bytes, so ADDR picks a byte: byte c of row y sits at y × 2 + c, the x / 8 bit low and the y bits high. The beam needs 16 ticks a line and 512 a frame, four times the 8×8 frame, and the framebuffer has four times the rows to select from. Set ADDR and DATA, switch WE on for one clock cycle, and watch that byte appear when the beam reaches it.",
+  [SCANOUT_32_PRESET]:
+    "The scanout bench at 32×32: four bytes a row, 128 bytes a frame, 2,048 ticks a frame. Unfold the screen: it is four 32-byte banks and a bank decoder, because one level with every row's select and read gates would pass the builder's 2,000-part limit. Real framebuffers are split up the same way, into chips and banks, and then into rows and columns inside each chip.",
   [SCANOUT_PRESET]:
     "A real display is read out, not looked at: the SCANOUT reads one pixel per clock tick, left to right and top to bottom, and the MONITOR paints it where its own beam is. HSYNC ends each line and VSYNC each frame, so the monitor's beam stays in step; lines 8–15 are vertical blank, when the beam is off the screen. The CPU and the beam share one framebuffer. This one is dual-ported: the beam reads through RA and V while writes go through A, D and WE, so neither ever waits. The other way is arbitration on one port, where the beam wins and the CPU stalls. Set ROW and DATA, switch WE on for one clock cycle, and watch the row appear only when the beam reaches it.",
   [TEARING_PRESET]:

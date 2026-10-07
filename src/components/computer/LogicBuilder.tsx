@@ -66,6 +66,7 @@ import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
+import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { GateSymbol } from "./GateSymbol";
 import { ScreenGrid } from "./ScreenGrid";
 import styles from "./LogicBuilder.module.css";
@@ -2741,6 +2742,7 @@ export function LogicBuilder() {
               Shift-click or Shift-drag ports to select · Drag selected ports to wire · Scroll to zoom
             </small>
           </div>
+          {isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
           <div
             ref={boardViewport}
             onDragOver={(event) => {

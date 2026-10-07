@@ -1,5 +1,6 @@
 // Markdown format for curating quotes.json in Obsidian. See quoteReview.ts.
 
+import os from "node:os";
 import path from "node:path";
 
 export type QuoteSource = { title: string; url: string };
@@ -12,8 +13,10 @@ export type Quote = {
 };
 
 export const QUOTES_JSON = "src/content/Notes/pages/quotes.json";
+// Review files are AI-written, so they live in the ai-work-notes vault, not in Notes.
 export const REVIEW_DIR =
-  "src/content/Notes/texts/misc/claude-chat-gpt-generated/projects/ricos.site";
+  process.env.QUOTES_REVIEW_DIR ??
+  path.join(os.homedir(), "projects/ai-work-notes/projects/ricos.site/quotes");
 export const DEFAULT_REVIEW = path.join(REVIEW_DIR, "quotes-review.md");
 
 const HEADER = `# Quotes review

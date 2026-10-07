@@ -103,6 +103,28 @@ export function byteBits(value: number): string {
   return value.toString(2).padStart(8, "0");
 }
 
+export type OperandMeaning = { short: string; long: string };
+
+/** Says whether an operand byte is a number, a RAM address, or a code address. */
+export function describeOperand(
+  opcode: number,
+  operand: number,
+  variables: CompiledProgram["variables"],
+): OperandMeaning {
+  const kind = ISA.find((item) => item.opcode === opcode)?.operand;
+  if (kind === "literal") return { short: `#${operand}`, long: `number ${operand}` };
+  if (kind === "RAM address") {
+    const name = variables.find(({ address }) => address === operand)?.name;
+    return {
+      short: `[${hex(operand)}]${name ? ` ${name}` : ""}`,
+      long: `RAM address ${hex(operand)}${name ? ` (${name})` : ""}`,
+    };
+  }
+  if (kind === "code address")
+    return { short: `→${hex(operand)}`, long: `code address ${hex(operand)}` };
+  return { short: "", long: "not used" };
+}
+
 function fail(line: number, message: string): never {
   throw new Error(`Line ${line}: ${message}`);
 }
@@ -498,24 +520,26 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       record({
         phase: "execute",
         halted: true,
-        explanation: `No instruction at code address ${address}. Execution stopped.`,
+        explanation: `No instruction at code address ${hex(address)}. Execution stopped.`,
       });
       break;
     }
     const { opcode, operand, label } = instruction;
+    const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic ?? hex(opcode);
+    const meaning = describeOperand(opcode, operand, program.variables).long;
     record({
       phase: "fetch",
       ir: opcode,
       operand: null,
       activeAddress: address,
       touchedAddress: null,
-      explanation: `PC points to code address ${address}. Fetch opcode ${hex(opcode)} into the instruction register.`,
+      explanation: `PC points to code address ${hex(address)}. Fetch opcode ${hex(opcode)} into the instruction register.`,
     });
     record({
       phase: "decode",
       operand,
       activeAddress: address + 1,
-      explanation: `Decode ${hex(opcode)} as ${label}; the next byte, ${hex(operand)}, is its operand.`,
+      explanation: `Decode ${hex(opcode)} as ${mnemonic} (${label}); the next byte, ${hex(operand)}, is its operand: ${meaning}.`,
     });
     let accumulator = state.accumulator;
     let ram = state.ram;
@@ -532,13 +556,13 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       if (opcode === OPCODES.LDM) touchedAddress = operand;
       effect =
         opcode === OPCODES.LDI
-          ? `Load literal ${operand} into ACC.`
-          : `Read RAM[${operand}] into ACC.`;
+          ? `Load the number ${operand} itself into ACC.`
+          : `Go to ${meaning}, read the ${accumulator} stored there, and load it into ACC.`;
     } else if (opcode === OPCODES.STM) {
       ram = [...ram];
       ram[operand] = accumulator;
       touchedAddress = operand;
-      effect = `Write ACC (${accumulator}) to RAM[${operand}].`;
+      effect = `Write ACC (${accumulator}) to ${meaning}.`;
     } else if (
       opcode === OPCODES.ADDI ||
       opcode === OPCODES.ADDM ||
@@ -559,12 +583,12 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       effect = `Copy ACC (${accumulator}) to the output device.`;
     } else if (opcode === OPCODES.JMP) {
       pc = operand;
-      effect = `Jump to code address ${operand}.`;
+      effect = `Jump to code address ${hex(operand)}.`;
     } else if (opcode === OPCODES.JNC) {
       if (!carry) pc = operand;
       effect = carry
-        ? `Borrow is set: enter the loop body at ${pc}.`
-        : `No borrow: leave the loop at ${operand}.`;
+        ? `Borrow is set: enter the loop body at ${hex(pc)}.`
+        : `No borrow: leave the loop at ${hex(operand)}.`;
     } else if (opcode === OPCODES.CALL) {
       if (stack.length >= 16) {
         record({
@@ -576,7 +600,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       }
       stack = [...stack, pc];
       pc = operand;
-      effect = `Push return address ${stack.at(-1)}; jump to function at ${operand}.`;
+      effect = `Push return address ${hex(stack.at(-1)!)}; jump to function at ${hex(operand)}.`;
     } else if (opcode === OPCODES.RET) {
       if (stack.length === 0) {
         record({
@@ -588,7 +612,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       }
       pc = stack.at(-1)!;
       stack = stack.slice(0, -1);
-      effect = `Pop return address ${pc}; resume caller with ACC = ${accumulator}.`;
+      effect = `Pop return address ${hex(pc)}; resume caller with ACC = ${accumulator}.`;
     } else if (opcode === OPCODES.HALT) {
       effect = "HALT stops the CPU clock in this toy model.";
     } else {
@@ -606,7 +630,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       output,
       touchedAddress,
       activeAddress: address,
-      explanation: `${effect} PC is now ${pc}.`,
+      explanation: `${effect} PC is now ${hex(pc)}.`,
       halted,
     });
     if (halted) break;

@@ -1,7 +1,14 @@
 import clsx from "clsx";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { byteBits, compileProgram, hex, ISA, OPCODES, traceProgram } from "src/lib/computerStepper";
+import {
+  byteBits,
+  compileProgram,
+  describeOperand,
+  hex,
+  ISA,
+  traceProgram,
+} from "src/lib/computerStepper";
 import panel from "./ByteExplorer.module.css";
 import styles from "./ProgramStepper.module.css";
 
@@ -39,10 +46,18 @@ export function ProgramStepper() {
       : (compilation.program?.instructions[Math.floor(state.activeAddress / 2)] ?? null);
   const changed = source !== loaded;
   const highlightedLine = changed ? null : (hoveredLine ?? active?.line ?? null);
-  const hasCalls = compilation.program?.instructions.some(({ opcode }) => opcode === OPCODES.CALL);
+  const variables = compilation.program?.variables ?? [];
   const setBitWeights = state
     ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
     : [];
+  const decodedOpcode =
+    state?.ir === null || state?.ir === undefined
+      ? null
+      : (ISA.find(({ opcode }) => opcode === state.ir) ?? null);
+  const operandMeaning =
+    state?.ir === null || state?.ir === undefined || state.operand === null
+      ? null
+      : describeOperand(state.ir, state.operand, variables);
 
   useEffect(() => {
     if (active?.address === undefined) return;
@@ -116,7 +131,6 @@ export function ProgramStepper() {
         <div className={styles.inputSide}>
           <div className={panel.sectionHead}>
             <span>01 / SOURCE CODE</span>
-            <span>C-LIKE · TOY LANGUAGE</span>
           </div>
           <label className={styles.label} htmlFor="program-source">
             WRITE A PROGRAM
@@ -154,7 +168,7 @@ export function ProgramStepper() {
                 }
               }}
               className={styles.sourceScreen}
-              aria-describedby="program-syntax"
+              aria-describedby={changed ? "program-syntax" : undefined}
             />
           </div>
           <div className={styles.controls}>
@@ -174,11 +188,11 @@ export function ProgramStepper() {
               FUNCTION
             </button>
           </div>
-          <p id="program-syntax" className={styles.hint}>
-            {changed ? <strong>EDIT NOT COMPILED · </strong> : null}
-            Hover source to trace its bytes. Use let, +, −, print(), for loops, and fn/return. One
-            statement per line; one function argument at most. No recursion.
-          </p>
+          {changed && (
+            <p id="program-syntax" className={styles.hint}>
+              <strong>EDIT NOT COMPILED</strong>
+            </p>
+          )}
           {compilation.error && (
             <p role="alert" className={styles.error}>
               {compilation.error}
@@ -223,14 +237,18 @@ export function ProgramStepper() {
                     <span className={styles.binary}>
                       {byteBits(instruction.opcode)} {byteBits(instruction.operand)}
                     </span>
-                    <span className={styles.mnemonic}>{instruction.label}</span>
+                    <span className={styles.mnemonic} title={instruction.label}>
+                      <b>{ISA.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic}</b>{" "}
+                      {describeOperand(instruction.opcode, instruction.operand, variables).short}
+                    </span>
                     <span>{instruction.line ? `L${instruction.line}` : "GEN"}</span>
                   </li>
                 ))}
               </ol>
               <p className={styles.hint}>
-                Each instruction is two bytes: opcode, then operand. Hover a line in the editor to
-                see its instructions. GEN is the compiler-added halt.
+                Each instruction is two bytes: opcode, then operand. <b>#5</b> is the number 5
+                itself. <b>[00]</b> is RAM address 00, so the CPU uses the value stored there.{" "}
+                <b>→0A</b> is a code address to jump to. GEN is the compiler-added halt.
               </p>
               <details className={styles.isaDetails}>
                 <summary>INSTRUCTION SET / VIEW KEY</summary>
@@ -239,6 +257,7 @@ export function ProgramStepper() {
                     <div key={item.opcode}>
                       <b>{hex(item.opcode)}</b>
                       <b>{item.mnemonic}</b>
+                      <span>{item.operand}</span>
                       <span>{item.effect}</span>
                     </div>
                   ))}
@@ -297,29 +316,67 @@ export function ProgramStepper() {
               </div>
               <div className={styles.registers}>
                 {[
-                  ["PC", hex(state.pc)],
-                  ["IR", state.ir === null ? "—" : hex(state.ir)],
-                  ["OPERAND", state.operand === null ? "—" : hex(state.operand)],
-                  ["ACC", `${state.accumulator} / ${hex(state.accumulator)}`],
-                ].map(([label, value]) => (
-                  <div key={label} className={styles.register}>
-                    <span>{label}</span>
+                  {
+                    code: "PC",
+                    name: "PROGRAM COUNTER",
+                    value: hex(state.pc),
+                    meaning: "next code address",
+                  },
+                  {
+                    code: "IR",
+                    name: "INSTRUCTION REG.",
+                    value: state.ir === null ? "—" : hex(state.ir),
+                    meaning: decodedOpcode ? `opcode = ${decodedOpcode.mnemonic}` : "no opcode yet",
+                  },
+                  {
+                    code: "OPERAND",
+                    name: "SECOND BYTE",
+                    value: state.operand === null ? "—" : hex(state.operand),
+                    meaning: operandMeaning?.long ?? "not decoded yet",
+                  },
+                  {
+                    code: "ACC",
+                    name: "ACCUMULATOR",
+                    value: String(state.accumulator),
+                    meaning: `working value · hex ${hex(state.accumulator)}`,
+                  },
+                ].map(({ code, name, value, meaning }) => (
+                  <div key={code} className={styles.register}>
+                    <span>
+                      <b>{code}</b>
+                      {name}
+                    </span>
                     <strong>{value}</strong>
+                    <small>{meaning}</small>
                   </div>
                 ))}
               </div>
-              {hasCalls && (
-                <div className={styles.stackReadout}>
-                  <span>RETURN STACK / TOP AT RIGHT</span>
-                  <strong>{state.stack.length ? state.stack.map(hex).join(" → ") : "EMPTY"}</strong>
+              <div className={styles.stackReadout}>
+                <div>
+                  <span>CALL STACK / TOP AT RIGHT</span>
+                  <strong>
+                    {state.stack.length
+                      ? state.stack.map((address) => `→${hex(address)}`).join("  ")
+                      : "EMPTY"}
+                  </strong>
                 </div>
-              )}
+                <small>
+                  CALL pushes the code address to come back to; RET pops it. The stack holds only
+                  return addresses. Variables, parameters and loop counters each get one fixed RAM
+                  address, which is why a function cannot call itself.
+                </small>
+              </div>
               <div className={styles.lowerReadouts}>
                 <div>
                   <div className={panel.sectionHead}>
                     <span>DATA MEMORY / RAM</span>
                   </div>
                   <div className={styles.ramList}>
+                    <div className={clsx(styles.ramRow, styles.ramHead)} aria-hidden="true">
+                      <span>ADDR</span>
+                      <span>VARIABLE</span>
+                      <span>VALUE</span>
+                    </div>
                     {compilation.program?.variables.map(({ name, address }) => (
                       <div
                         key={address}
@@ -328,9 +385,8 @@ export function ProgramStepper() {
                           state.touchedAddress === address && styles.activeRam,
                         )}
                       >
-                        <span>
-                          [{hex(address)}] {name}
-                        </span>
+                        <span>[{hex(address)}]</span>
+                        <span>{name}</span>
                         <strong>{state.ram[address]}</strong>
                       </div>
                     ))}
@@ -351,34 +407,27 @@ export function ProgramStepper() {
               </div>
               <div className={styles.bitSection}>
                 <div className={panel.sectionHead}>
-                  <span>ACC REGISTER / BITS TO VALUE</span>
+                  <span>CPU REGISTER</span>
                 </div>
-                <div className={styles.bitBank}>
-                  {BIT_WEIGHTS.map((weight) => (
-                    <div key={weight} className={styles.bitUnit}>
-                      <span>{weight}</span>
-                      <b className={clsx(styles.bit, state.accumulator & weight && styles.bitOn)}>
-                        {state.accumulator & weight ? "1" : "0"}
-                      </b>
-                    </div>
-                  ))}
+                <div className={styles.bitScreen}>
+                  <div className={styles.bitBank}>
+                    {BIT_WEIGHTS.map((weight) => (
+                      <div key={weight} className={styles.bitUnit}>
+                        <span>{weight}</span>
+                        <b className={clsx(styles.bit, state.accumulator & weight && styles.bitOn)}>
+                          {state.accumulator & weight ? "1" : "0"}
+                        </b>
+                      </div>
+                    ))}
+                  </div>
+                  <div className={styles.bitEquation}>
+                    <strong>{byteBits(state.accumulator)}</strong>
+                    <span>
+                      = {setBitWeights.length > 0 ? `${setBitWeights.join(" + ")} = ` : ""}
+                      {state.accumulator}
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.bitEquation}>
-                  <strong>{byteBits(state.accumulator)}</strong>
-                  <span>
-                    = {setBitWeights.length > 0 ? `${setBitWeights.join(" + ")} = ` : ""}
-                    {state.accumulator}
-                  </span>
-                </div>
-                <p className={styles.bitExplanation}>
-                  ACC is this CPU&apos;s eight-bit working register. Each box shows one stored bit:
-                  a 1 adds the number above it, while a 0 adds nothing. The total is the ACC value
-                  shown above.
-                </p>
-                <p className={styles.bitPhysical}>
-                  On a real chip, circuits represent these 0s and 1s with voltage ranges. This is a
-                  diagram of the stored value, not an electrical measurement.
-                </p>
               </div>
             </>
           )}

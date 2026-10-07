@@ -26,6 +26,13 @@ import {
   unfoldControlState,
 } from "./controlUnit";
 import { type Circuit, initialSnapshot, type Node, registerBlock, type Snapshot } from "./logic";
+import {
+  foldShaderState,
+  SHADER_BLOCKS,
+  type ShaderKind,
+  shaderBlockCircuit,
+  unfoldShaderState,
+} from "./shaderBlocks";
 
 export { toBits, toNumber } from "./blockBuilder";
 
@@ -461,16 +468,22 @@ export const DATAPATH_BLOCKS = {
     hint: "PUSH stores D at SP and adds 1; POP subtracts 1. TOP is the last entry.",
   },
   ...CONTROL_BLOCKS,
+  ...SHADER_BLOCKS,
 } as const;
 const isControlKind = (kind: DatapathKind): kind is ControlKind => kind in CONTROL_BLOCKS;
+const isShaderKind = (kind: DatapathKind): kind is ShaderKind => kind in SHADER_BLOCKS;
 export type DatapathKind = keyof typeof DATAPATH_BLOCKS;
 export const DATAPATH_KINDS = Object.keys(DATAPATH_BLOCKS) as DatapathKind[];
 export const isDatapathKind = (name: string | undefined): name is DatapathKind =>
   name !== undefined && name in DATAPATH_BLOCKS;
 
-/** The gate form of a datapath block. `bytes` fills a ROM, e.g. `compileProgram(...).bytes`. */
+/**
+ * The gate form of a datapath block. `bytes` fills a ROM, e.g. `compileProgram(...).bytes`,
+ * or a shader's program, e.g. `compileShader(...).bytes`.
+ */
 export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = []): Circuit {
   if (isControlKind(kind)) return controlBlockCircuit(kind);
+  if (isShaderKind(kind)) return shaderBlockCircuit(kind, bytes);
   switch (kind) {
     case "register8":
       return register8Circuit();
@@ -514,6 +527,7 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
   snapshot.blocks = {};
   if (state == null || !isDatapathKind(node.behaviour)) return snapshot;
   if (isControlKind(node.behaviour)) return unfoldControlState(node.behaviour, state);
+  if (isShaderKind(node.behaviour)) return unfoldShaderState(node.behaviour, state);
   switch (node.behaviour) {
     case "register8":
     case "counter8": {
@@ -544,6 +558,7 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
   if (!isDatapathKind(node.behaviour) || !node.module) return undefined;
   const inner = snapshot ?? initialSnapshot();
   if (isControlKind(node.behaviour)) return foldControlState(node, node.behaviour, inner);
+  if (isShaderKind(node.behaviour)) return foldShaderState(node, node.behaviour, inner);
   // A nested row may run as gates (unfolded) or as a block; prefer the gates.
   const row = (r: number): ClockedByte => {
     const gates = inner.modules[`row${r}`];

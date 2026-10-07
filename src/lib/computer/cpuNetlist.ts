@@ -23,6 +23,8 @@ export type CpuNetlist = {
   stack: number[][];
   /** Screen rows (y), bit i = pixel x = i; empty when the preset has no screen. */
   screen: number[][];
+  /** The big screen's frame bytes, bank after bank; empty when the preset has none. */
+  frame: number[][];
 };
 
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);
@@ -69,6 +71,11 @@ export function cpuNetlist(circuit: Circuit): CpuNetlist {
     ram: rows(CPU_PARTS.ram),
     stack: rows(CPU_PARTS.stack),
     screen: rows(CPU_PARTS.screen),
+    frame: sequence((bank) =>
+      netlist.nodes.has(`${CPU_PARTS.bigScreen}/bank${bank}/row0/cell0`)
+        ? rows(`${CPU_PARTS.bigScreen}/bank${bank}`)
+        : undefined,
+    ).flat(),
   };
 }
 
@@ -90,6 +97,7 @@ export type CpuState = {
   ram: number[];
   stack: number[];
   screen: number[];
+  frame: number[];
   halted: boolean;
 };
 
@@ -102,6 +110,7 @@ export function readCpu(sim: NetlistSim, cpu: CpuNetlist, copy = 0): CpuState {
     ram: cpu.ram.map((row) => sim.number(row, copy)),
     stack: cpu.stack.map((row) => sim.number(row, copy)),
     screen: cpu.screen.map((row) => sim.number(row, copy)),
+    frame: cpu.frame.map((row) => sim.number(row, copy)),
     halted: sim.bit(cpu.halt, copy),
   };
 }

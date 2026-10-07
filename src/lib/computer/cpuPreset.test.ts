@@ -89,6 +89,10 @@ function lockstep(
     expect(probes, `${where}: probes`).toEqual(expectedProbes(tick));
     expect(bytesOf(state, CPU_PARTS.ram), `${where}: data RAM`).toEqual(tick.ram);
     expect(bytesOf(state, CPU_PARTS.screen), `${where}: screen`).toEqual(tick.screen);
+    expect(bytesOf(state, CPU_PARTS.bigScreen), `${where}: big screen`).toEqual(tick.frame);
+    expect((state.blocks?.[CPU_PARTS.bank] as { q: number }).q, `${where}: bank`).toBe(
+      tick.registers.bank,
+    );
     expect(cursorOf(state), `${where}: pixel cursor`).toEqual([
       tick.registers.pixelX,
       tick.registers.pixelY,

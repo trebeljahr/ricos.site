@@ -209,6 +209,28 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     [OUT, 0],
     [HALT, 0],
   ),
+  "big screen window": raw(
+    [LDI, 0x81],
+    [STM, 0xd0], // tile 0, row 0
+    [LDI, 6],
+    [STM, 0xd8], // BANK 6: tile column 2, tile row 1
+    [LDI, 0x42],
+    [STM, 0xd7], // tile 6, row 7: frame byte (8 + 7) * 4 + 2 = 62
+    [ADDM, 0xd8], // BANK reads back: 0x42 + 6
+    [OUT, 0],
+    [LDI, 0x1f],
+    [STM, 0xd8], // only the low 4 bits: BANK 15
+    [STM, 0xdc], // DC: nothing there, and not RAM either
+    [LDM, 0x0c], // RAM 0C is still 0
+    [OUT, 0],
+    [LDI, 0],
+    [STM, 0xd8],
+    [LDM, 0xd0], // back to tile 0: row 0 is 0x81
+    [OUT, 0],
+    [LDM, 0xdc], // reads 0
+    [OUT, 0],
+    [HALT, 0],
+  ),
   "every blitter command": compileProgram(
     "sprite face = [60, 66, 165, 129, 165, 153, 66, 60];\nblit(clear, 170);\nblit(fill, 2, 15);\nblit(hline, 6, 3, 5);\nlet c = 0;\nblit(vline, 1, 5, 6, c);\nlet x = 0;\nblit(pixel, x, 4);\nblit(wait);\nprint(screen[3]);\nblit(sprite, face, 6);",
   ),

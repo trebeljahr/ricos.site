@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  BIG_FRAME_BYTES,
+  BIG_PORT,
+  BIG_TILES,
   BLITTER_PORT,
   byteBits,
   compileProgram,
@@ -13,6 +16,7 @@ import {
   SCREEN_ROWS,
   traceProgram,
   traceTicks,
+  windowByte,
 } from "./computerStepper";
 
 describe("toy compiler and CPU trace", () => {
@@ -427,5 +431,107 @@ describe("blitter", () => {
       "HALT",
     ]);
     expect(traceTicks(program).at(-1)!.blitter.busy).toBe(false);
+  });
+});
+
+describe("big screen bank window", () => {
+  const SMILEY = [60, 66, 165, 129, 165, 153, 66, 60];
+
+  it("maps window row r of tile t onto the 32×32 frame by wiring alone", () => {
+    // BANK bits 0–1 pick the byte column, bits 2–3 the group of 8 rows.
+    expect(windowByte(0, 0)).toBe(0);
+    expect(windowByte(1, 0)).toBe(1);
+    expect(windowByte(4, 0)).toBe(32);
+    expect(windowByte(6, 7)).toBe(62);
+    expect(windowByte(15, 7)).toBe(127);
+    for (let bank = 0; bank < BIG_TILES; bank++)
+      for (let r = 0; r < 8; r++) {
+        const wired = (bank & 3) | ((r & 7) << 2) | ((bank >> 2) << 5);
+        expect(windowByte(bank, r)).toBe(wired);
+      }
+  });
+
+  it("draws the BANKS sample: four smileys on the diagonal tiles", () => {
+    const end = traceTicks(compileProgram(SAMPLE_PROGRAMS.BANKS)).at(-1)!;
+    const expected = Array(BIG_FRAME_BYTES).fill(0);
+    for (const tile of [0, 5, 10, 15])
+      SMILEY.forEach((row, r) => {
+        expected[windowByte(tile, r)] = row;
+      });
+    expect(end.frame).toEqual(expected);
+    expect(end.registers.bank).toBe(15);
+    expect(end.screen).toEqual(Array(SCREEN_ROWS).fill(0));
+    expect(end.ram.slice(1)).toEqual(Array(15).fill(0));
+  });
+
+  it("reads the window and BANK back, and keeps D9–DF away from RAM", () => {
+    const { LDI, LDM, STM, ADDM, OUT, HALT } = OPCODES;
+    const pairs: [number, number][] = [
+      [LDI, 0x81],
+      [STM, BIG_PORT.window],
+      [LDI, 6],
+      [STM, BIG_PORT.bank],
+      [LDI, 0x42],
+      [STM, BIG_PORT.window + 7],
+      [ADDM, BIG_PORT.bank],
+      [OUT, 0],
+      [LDI, 0x1f],
+      [STM, BIG_PORT.bank],
+      [STM, 0xdc],
+      [LDM, 0x0c],
+      [OUT, 0],
+      [LDI, 0],
+      [STM, BIG_PORT.bank],
+      [LDM, BIG_PORT.window],
+      [OUT, 0],
+      [HALT, 0],
+    ];
+    const ticks = traceTicks({
+      instructions: pairs.map(([opcode, operand], index) => ({
+        address: index * 2,
+        opcode,
+        operand,
+        label: "",
+        line: index + 1,
+      })),
+      bytes: pairs.flat(),
+      variables: [],
+    });
+    const end = ticks.at(-1)!;
+    expect(end.output).toEqual([0x48, 0, 0x81]);
+    expect(end.frame[0]).toBe(0x81);
+    expect(end.frame[62]).toBe(0x42);
+    expect(end.ram).toEqual(Array(16).fill(0));
+    expect(
+      ticks.filter(({ frameWrite }) => frameWrite).map(({ frameWrite }) => frameWrite),
+    ).toEqual([
+      { byte: 0, value: 0x81 },
+      { byte: 62, value: 0x42 },
+    ]);
+  });
+
+  it("compiles bank() and window[], and rejects what does not fit", () => {
+    const program = compileProgram("let t = 9;\nbank(t);\nwindow[3] = 7;\nprint(window[3]);");
+    expect(program.bytes.slice(4, 12)).toEqual([
+      OPCODES.LDM,
+      0,
+      OPCODES.STM,
+      BIG_PORT.bank,
+      OPCODES.LDI,
+      7,
+      OPCODES.STM,
+      BIG_PORT.window + 3,
+    ]);
+    expect(traceProgram(program).at(-1)?.output).toEqual([7]);
+    expect(
+      traceProgram(program).some(({ explanation }) =>
+        /tile 9, column 1 and row 2/.test(explanation),
+      ),
+    ).toBe(true);
+    expect(() => compileProgram("bank(16);")).toThrow("tiles are 0 to 15");
+    expect(() => compileProgram("window[8] = 1;")).toThrow("Window rows are 0 to 7.");
+    expect(() => compileProgram("let window[0] = 1;")).toThrow("not a variable");
+    expect(() => compileProgram("fn bank(n) {\n  return n;\n}")).toThrow("reserved");
+    expect(describeOperand(OPCODES.STM, 0xd5, []).long).toBe("big-screen window row 5 (D5)");
   });
 });

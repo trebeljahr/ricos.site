@@ -1,4 +1,4 @@
-import { beamAt } from "./computer/video";
+import { beamAt, frameBytes, rowBytes, SCREEN_SIZES } from "./computer/video";
 
 export type Instruction = {
   address: number;
@@ -56,6 +56,10 @@ export type Snapshot = {
   screenWrite: ScreenWrite | null;
   /** The blitter's registers after this snapshot's ticks. */
   blitter: BlitterState;
+  /** The big screen's frame bytes, its bank register, and the last write in this snapshot's ticks. */
+  frame: number[];
+  bank: number;
+  frameWrite: FrameWrite | null;
   stack: number[];
   output: number[];
   activeAddress: number | null;
@@ -122,6 +126,27 @@ export const plotRow = (row: number, x: number, colour: number) =>
  * are lost.
  */
 export const BLITTER_BASE = 0xe0;
+
+/**
+ * The big screen: a 32×32 framebuffer beside the 8×8 one, 128 bytes, row y's
+ * byte c at y * 4 + c. Data addresses D0–DF reach it instead of RAM. D0–D7
+ * are a bank window: 8 bytes that show one 8×8 tile of the big screen, row r
+ * at D0 + r, so code that draws the 8×8 screen draws any tile. STM D8 picks
+ * the tile (BANK, low 4 bits): bits 0–1 its column, bits 2–3 its row of tiles.
+ * The frame address is then just wires: BANK0, BANK1, A0, A1, A2, BANK2,
+ * BANK3. Reading D8 gives BANK.
+ */
+export const BIG_SCREEN = SCREEN_SIZES["32×32"];
+export const BIG_FRAME_BYTES = frameBytes(BIG_SCREEN);
+export const BIG_PORT = { window: 0xd0, bank: 0xd8 } as const;
+export const BIG_TILES = 16;
+export const isBigScreenAddress = (address: number) => (address & 0xf0) === 0xd0;
+export const isWindowAddress = (address: number) => (address & 0xf8) === BIG_PORT.window;
+/** The big screen's byte that window row `r` shows while BANK is `bank`. */
+export const windowByte = (bank: number, r: number) =>
+  ((bank >> 2) * 8 + (r & 7)) * rowBytes(BIG_SCREEN) + (bank & 3);
+/** A big-screen write: the frame byte and its new value. */
+export type FrameWrite = { byte: number; value: number };
 export const BLITTER_PORT = { x: 0xe0, y: 0xe1, colour: 0xe2, arg: 0xe3, cmd: 0xe4 } as const;
 export const isBlitterAddress = (address: number) => (address & 0xf0) === BLITTER_BASE;
 /** Register index (A0–A2) of each blitter port address; 5–7 are unused. */
@@ -491,6 +516,16 @@ export function describeOperand(
       ? { short: `[${hex(operand)}] pixel`, long: `the pixel at the cursor (${hex(operand)})` }
       : { short: `[${hex(operand)}] pixel ${role}`, long: `pixel ${role} (${hex(operand)})` };
   }
+  if (kind === "RAM address" && isWindowAddress(operand))
+    return {
+      short: `[${hex(operand)}] window ${operand & 7}`,
+      long: `big-screen window row ${operand & 7} (${hex(operand)})`,
+    };
+  if (kind === "RAM address" && operand === BIG_PORT.bank)
+    return {
+      short: `[${hex(operand)}] bank`,
+      long: `the big screen's bank register (${hex(operand)})`,
+    };
   if (kind === "RAM address" && isBlitterAddress(operand)) {
     const register = BLITTER_REGISTERS[operand & 7];
     return register
@@ -548,6 +583,7 @@ type Statement =
   | { kind: "print"; line: number; expression: Expression }
   | { kind: "call"; line: number; name: string; argument: string | null }
   | { kind: "plot"; line: number; x: string; y: string; colour: string | null }
+  | { kind: "bank"; line: number; tile: string }
   | { kind: "sprite"; line: number; name: string; rows: number[] }
   | { kind: "blit"; line: number; command: string; args: string[] }
   | { kind: "return"; line: number; expression: Expression | null }
@@ -578,8 +614,8 @@ type FunctionDefinition = {
   line: number;
 };
 const NAME = "[A-Za-z_]\\w*";
-/** `screen[3]`: screen row 3, at data address F3. */
-const SCREEN_ROW = "screen\\[\\s*\\d+\\s*\\]";
+/** `screen[3]`: screen row 3, at data address F3; `window[3]`: row 3 of the big screen's bank window, at D3. */
+const SCREEN_ROW = "(?:screen|window)\\[\\s*\\d+\\s*\\]";
 const VALUE = `(?:${SCREEN_ROW}|${NAME}|\\d+)`;
 
 function parseExpression(text: string, line: number): Expression {
@@ -677,6 +713,12 @@ function parseProgram(source: string): {
       }
       if (/^plot\b/.test(text))
         fail(line, "Use plot(x, y); or plot(x, y, colour); with numbers or variables.");
+      const bank = new RegExp(`^bank\\s*\\(\\s*(${VALUE})\\s*\\)\\s*;$`).exec(text);
+      if (bank) {
+        statements.push({ kind: "bank", line, tile: bank[1] });
+        continue;
+      }
+      if (/^bank\b/.test(text)) fail(line, "Use bank(tile); with a number or variable, 0 to 15.");
       const sprite = new RegExp(`^sprite\\s+(${NAME})\\s*=\\s*\\[([\\d\\s,]*)\\]\\s*;$`).exec(text);
       if (sprite) {
         const rows = sprite[2].split(",").map((item) => item.trim());
@@ -753,6 +795,7 @@ function parseProgram(source: string): {
       position++;
       if (header[1] === "print") fail(line, "print is reserved for output.");
       if (header[1] === "plot") fail(line, "plot is reserved for the screen.");
+      if (header[1] === "bank") fail(line, "bank is reserved for the big screen.");
       if (header[1] === "blit" || header[1] === "sprite")
         fail(line, `${header[1]} is reserved for the blitter.`);
       if (BUILTINS.has(header[1]) || header[1] === WAIT_VBLANK)
@@ -895,10 +938,14 @@ export function compileProgram(
     return place;
   };
   const resolve = (value: string, scope: Scope, line: number): Operand => {
-    const row = /^screen\[\s*(\d+)\s*\]$/.exec(value);
+    const row = /^(screen|window)\[\s*(\d+)\s*\]$/.exec(value);
     if (row) {
-      if (Number(row[1]) >= SCREEN_ROWS) fail(line, `Screen rows are 0 to ${SCREEN_ROWS - 1}.`);
-      return { mode: "ram", value: SCREEN_BASE + Number(row[1]) };
+      const what = row[1] === "screen" ? "Screen rows" : "Window rows";
+      if (Number(row[2]) >= SCREEN_ROWS) fail(line, `${what} are 0 to ${SCREEN_ROWS - 1}.`);
+      return {
+        mode: "ram",
+        value: (row[1] === "screen" ? SCREEN_BASE : BIG_PORT.window) + Number(row[2]),
+      };
     }
     if (/^\d+$/.test(value)) {
       const number = Number(value);
@@ -1018,7 +1065,7 @@ export function compileProgram(
     );
   const target = (name: string, scope: Scope, line: number): Place => {
     if (/^\d+$/.test(name)) fail(line, "Assignment target must be a variable.");
-    if (name.startsWith("screen["))
+    if (name.startsWith("screen[") || name.startsWith("window["))
       return { frame: false, address: resolve(name, scope, line).value };
     const place = scope.get(name) ?? globals.get(name);
     if (place === undefined) fail(line, `Unknown variable “${name}”.`);
@@ -1078,7 +1125,7 @@ export function compileProgram(
     for (const statement of statements) {
       const line = statement.line;
       if (statement.kind === "assign") {
-        if (statement.declaration && statement.name.startsWith("screen["))
+        if (statement.declaration && /^(screen|window)\[/.test(statement.name))
           fail(line, "A screen row is not a variable: write screen[0] = 1; without let.");
         if (
           statement.declaration &&
@@ -1101,6 +1148,12 @@ export function compileProgram(
         emit(OPCODES.OUT, 0, "PRINT ACC", line);
       } else if (statement.kind === "call") {
         call(statement.name, statement.argument, scope, line, caller);
+      } else if (statement.kind === "bank") {
+        // One store: BANK picks which 8×8 tile of the big screen window[0]–window[7] show.
+        if (/^\d+$/.test(statement.tile) && Number(statement.tile) >= BIG_TILES)
+          fail(line, `Big-screen tiles are 0 to ${BIG_TILES - 1}.`);
+        load(statement.tile, scope, line);
+        emit(OPCODES.STM, BIG_PORT.bank, `BANK ← ${statement.tile}`, line);
       } else if (statement.kind === "plot") {
         // Three stores to the pixel port: cursor x, cursor y, then the colour.
         const { x, y, colour } = statement;
@@ -1348,6 +1401,10 @@ export const SAMPLE_PROGRAMS = {
   CROSS: "for (let i = 0; i < 8; i++) {\n  plot(i, i);\n  let j = 7 - i;\n  plot(i, j);\n}",
   // The blitter copies the heart into rows 0–7 while the CPU counts; the CPU
   // waits for it before drawing its own row.
+  // bank(t) points window[0]–window[7] at tile t of the 32×32 big screen: 5 steps
+  // through the 4 × 4 tiles is the diagonal, so four smileys run corner to corner.
+  BANKS:
+    "for (let t = 0; t < 16; t = t + 5) {\n  bank(t);\n  window[0] = 60;\n  window[1] = 66;\n  window[2] = 165;\n  window[3] = 129;\n  window[4] = 165;\n  window[5] = 153;\n  window[6] = 66;\n  window[7] = 60;\n}",
   BLIT: "sprite heart = [102, 255, 255, 255, 126, 60, 24, 0];\nblit(sprite, heart, 0);\nlet count = 0;\nfor (let i = 0; i < 3; i++) {\n  count = count + 1;\n  print(count);\n}\nblit(wait);\nscreen[7] = 255;",
 } as const;
 
@@ -1744,6 +1801,8 @@ export type Registers = {
   /** The pixel port's cursor (0–7 each). */
   pixelX: number;
   pixelY: number;
+  /** The big screen's bank register: which 8×8 tile D0–D7 show (0–15). */
+  bank: number;
 };
 
 export type TickPhase = "fetch" | "decode" | "execute";
@@ -1769,6 +1828,10 @@ export type Tick = {
   screenBlocked: boolean;
   /** The blitter's registers after the clock edge. */
   blitter: BlitterState;
+  /** The big screen's 128 frame bytes after the clock edge. */
+  frame: number[];
+  /** What this tick's clock edge wrote to the big screen, if anything. */
+  frameWrite: FrameWrite | null;
   /** Return stack entries, bottom first. With the stack in RAM: RAM[1F] down to RAM[SP]. */
   stack: number[];
   output: number[];
@@ -1827,25 +1890,32 @@ export function traceTicks(
   const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
   const ram = Array<number>(STACK_MODELS[stack].ramBytes).fill(0);
   const screen = Array<number>(SCREEN_ROWS).fill(0);
+  const frame = Array<number>(BIG_FRAME_BYTES).fill(0);
   let blitter = initialBlitter();
   // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM, a screen row, the
   // pixel port or the blitter. While the blitter is BUSY its row is on the screen's address
   // lines, so a screen read returns that row.
   // The scanout runs from reset alongside the CPU: on tick i its beam is at beamAt(i).
   const readData = (address: number, cursorY: number) =>
-    isBlitterAddress(address)
-      ? Number(blitter.busy)
-      : isVideoStatus(address)
-        ? Number(beamAt(ticks.length).vblank)
-        : isScreenAddress(address)
-          ? screen[
-              blitter.busy
-                ? blitterRow(blitter)
-                : isPixelPort(address)
-                  ? cursorY
-                  : address & (SCREEN_ROWS - 1)
-            ]
-          : ram[address & (ram.length - 1)];
+    isBigScreenAddress(address)
+      ? isWindowAddress(address)
+        ? frame[windowByte(registers.bank, address)]
+        : address === BIG_PORT.bank
+          ? registers.bank
+          : 0
+      : isBlitterAddress(address)
+        ? Number(blitter.busy)
+        : isVideoStatus(address)
+          ? Number(beamAt(ticks.length).vblank)
+          : isScreenAddress(address)
+            ? screen[
+                blitter.busy
+                  ? blitterRow(blitter)
+                  : isPixelPort(address)
+                    ? cursorY
+                    : address & (SCREEN_ROWS - 1)
+              ]
+            : ram[address & (ram.length - 1)];
   const stackMemory = Array<number>(16).fill(0);
   /** With the stack in RAM, SP may not move below the last fixed variable. */
   const floor = inRam ? program.variables.length : 0;
@@ -1868,6 +1938,7 @@ export function traceTicks(
     int: false,
     pixelX: 0,
     pixelY: 0,
+    bank: 0,
   };
   let t = 0;
   let instruction = 0;
@@ -1924,6 +1995,7 @@ export function traceTicks(
     let screenWrite: ScreenWrite | null = null;
     let screenBlocked = false;
     let blitterWrite: { register: number; value: number } | null = null;
+    let frameWrite: FrameWrite | null = null;
     if (!fault && bus !== null) {
       if (on.has("CMAR_IN")) next.cmar = bus;
       if (on.has("IR_IN")) next.ir = bus;
@@ -1938,6 +2010,11 @@ export function traceTicks(
         if (role === "x") next.pixelX = bus & (SCREEN_ROWS - 1);
         else if (role === "y") next.pixelY = bus & (SCREEN_ROWS - 1);
         else if (isBlitterAddress(address)) blitterWrite = { register: address & 7, value: bus };
+        else if (isWindowAddress(address)) {
+          const byte = windowByte(registers.bank, address);
+          frame[byte] = bus;
+          frameWrite = { byte, value: bus };
+        } else if (address === BIG_PORT.bank) next.bank = bus & (BIG_TILES - 1);
         else if (blitter.busy && isScreenAddress(address)) screenBlocked = true;
         else if (role === "pixel") {
           const { pixelX: x, pixelY: y } = registers;
@@ -1947,7 +2024,7 @@ export function traceTicks(
           const y = address & (SCREEN_ROWS - 1);
           screen[y] = bus;
           screenWrite = { y, x: null, row: bus };
-        } else ram[address & (ram.length - 1)] = bus;
+        } else if (!isBigScreenAddress(address)) ram[address & (ram.length - 1)] = bus;
       }
       if (on.has("STACK_IN")) stackMemory[registers.sp] = bus;
       if (on.has("OUT_IN")) {
@@ -1992,6 +2069,8 @@ export function traceTicks(
       screenWrite,
       screenBlocked,
       blitter: { ...blitter },
+      frame: [...frame],
+      frameWrite,
       stack: inRam ? ram.slice(registers.sp).reverse() : stackMemory.slice(0, registers.sp),
       output: [...output],
       halted,
@@ -2020,6 +2099,12 @@ function explainExecute(
   blitterWasBusy = false,
 ): string {
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
+  if (mnemonic === "STM" && operand === BIG_PORT.bank)
+    return `BANK becomes ${after.bank}: window[0]–window[7] now show tile ${after.bank}, column ${after.bank & 3} and row ${after.bank >> 2} of the big screen's 4 × 4 tiles.`;
+  if (mnemonic === "STM" && isWindowAddress(operand)) {
+    const byte = windowByte(after.bank, operand);
+    return `Write ACC (${after.acc}) to window row ${operand & 7}. With BANK ${after.bank} that is big-screen byte ${byte}: row ${byte >> 2}, pixels ${(byte & 3) * 8}–${(byte & 3) * 8 + 7}.`;
+  }
   if (mnemonic === "STM" && isBlitterAddress(operand)) {
     if (blitterWasBusy)
       return `The blitter is BUSY and ignores the write of ${after.acc} to ${meaning}.`;
@@ -2175,11 +2260,15 @@ export function traceProgram(
     pixelY: 0,
     screenWrite: null,
     blitter: initialBlitter(),
+    frame: Array(BIG_FRAME_BYTES).fill(0),
+    bank: 0,
+    frameWrite: null,
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
       ...state,
       screenWrite: null,
+      frameWrite: null,
       ...patch,
       ram: patch.ram ?? [...state.ram],
       screen: patch.screen ?? [...state.screen],
@@ -2207,6 +2296,9 @@ export function traceProgram(
       blitter: last.blitter,
       // The blitter draws on any tick, fetch and decode included.
       screen: [...last.screen],
+      frame: last.frame,
+      bank: last.registers.bank,
+      frameWrite: ticks.findLast((tick) => tick.frameWrite)?.frameWrite ?? null,
     };
   };
   /** What the blitter did during `ticks`, as a sentence to append, or "". */

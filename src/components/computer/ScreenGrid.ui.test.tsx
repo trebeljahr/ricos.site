@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { blankFrame, paint, SCREEN_SIZES } from "../../lib/computer/video";
 import { LogicBuilder } from "./LogicBuilder";
+import { ProgramStepper } from "./ProgramStepper";
 import { ScreenGrid } from "./ScreenGrid";
 
 beforeEach(() => {
@@ -53,5 +54,18 @@ describe("sized screen grids", () => {
     expect(
       screen.getByRole("img", { name: /^32×32 SCREEN 32×32, 0 of 1024 pixels lit/ }),
     ).toBeTruthy();
+  }, 20000);
+
+  it("shows the BANKS program filling the big screen tile by tile", () => {
+    render(<ProgramStepper />);
+    fireEvent.click(screen.getByRole("button", { name: "BANKS" }));
+    const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
+    const big = () =>
+      screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label");
+    expect(big()).toBe("Big screen 32×32, 0 of 1024 pixels lit");
+    fireEvent.change(slider, { target: { value: slider.max } });
+    // Four smileys of 26 lit pixels each.
+    expect(big()).toBe("Big screen 32×32, 104 of 1024 pixels lit");
+    expect(screen.getByLabelText("Bank").textContent).toContain("BANK 15");
   }, 20000);
 });

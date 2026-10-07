@@ -585,6 +585,11 @@ type DataMemoryWiring = {
    * rom256 holding `bytes`) for its sprite copies.
    */
   blitter?: { unit: Place; rom: Place; bytes: readonly number[] };
+  /**
+   * Optional 32×32 big screen at D0–DF: a vram32x32 framebuffer and a BANK
+   * register. D0–D7 are the bank window, D8 is BANK.
+   */
+  big?: { frame: Place; bank: Place };
   /** Top left of the decode and read-select gates. */
   x: number;
   y: number;
@@ -628,12 +633,32 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
       ),
       "BLITTER (E_)",
     );
+  // D_ = 1101: A7, A6 and A4 on, A5 off.
+  const bigSel =
+    wiring.big &&
+    b.gate(
+      id("big-sel"),
+      "and",
+      x + 140,
+      y - 1500,
+      lower,
+      b.gate(
+        id("big-a4"),
+        "and",
+        x,
+        y - 1500,
+        address[4],
+        b.gate(id("a5-low"), "not", x - 140, y - 1500, address[5], undefined, "NOT A5"),
+      ),
+      "BIG SCREEN (D_)",
+    );
+  const io = [screenSel, blitSel, bigSel].filter((sel): sel is string => Boolean(sel));
   const ramSel = b.gate(
     id("ram-sel"),
     "not",
     x + 280,
     y + 120,
-    blitSel ? b.gate(id("io-sel"), "or", x + 140, y + 120, screenSel, blitSel) : screenSel,
+    io.length > 1 ? b.orTree(id("io-sel"), io, x + 140, y + 120) : screenSel,
     undefined,
     "RAM",
   );
@@ -875,6 +900,10 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
       blitSel,
       "BLITTER BUSY",
     );
+  const bigRead =
+    wiring.big && bigSel
+      ? addBigScreen(b, wiring.big, { address, data, we, clock, select: bigSel, zero, id }, x, y)
+      : null;
   return range(8).map((bit) => {
     const row = y + 300 + bit * 140;
     const fromRam = b.gate(id(`ram-q${bit}`), "and", x + 560, row, [wiring.ram.id, bit], ramSel);
@@ -887,6 +916,16 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
       screenRead,
     );
     let read = b.gate(id(`read${bit}`), "or", x + 700, row, fromRam, fromScreen, `READ BIT ${bit}`);
+    if (bigRead)
+      read = b.gate(
+        id(`read${bit}-big`),
+        "or",
+        x + 1120,
+        row,
+        read,
+        bigRead[bit],
+        `READ BIT ${bit}`,
+      );
     if (bit > 0) return read;
     if (video && status) {
       const fromStatus = b.gate(
@@ -903,6 +942,90 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
     if (blitStatus)
       read = b.gate(id("read0-blit"), "or", x + 980, row, read, blitStatus, "READ BIT 0");
     return read;
+  });
+}
+
+/**
+ * The big screen's part of the data memory: BANK at D8 and the 32×32
+ * framebuffer behind the D0–D7 window. The window row's frame address is
+ * BANK0, BANK1, A0, A1, A2, BANK2, BANK3: no adder, only wires, because the
+ * screen's sides are powers of two. Returns the 8 read bits for D_ addresses.
+ */
+function addBigScreen(
+  b: Builder,
+  big: { frame: Place; bank: Place },
+  bus: {
+    address: Ref[];
+    data: Ref[];
+    we: Ref;
+    clock: Ref;
+    select: Ref;
+    zero: Ref;
+    id: (name: string) => string;
+  },
+  x: number,
+  y: number,
+): Ref[] {
+  const { address, data, we, clock, select, zero, id } = bus;
+  const top = y - 1500;
+  const windowSel = b.gate(
+    id("window-sel"),
+    "and",
+    x + 280,
+    top + 80,
+    select,
+    b.gate(id("a3-low"), "not", x + 140, top + 80, address[3], undefined, "NOT A3"),
+    "WINDOW (D0–D7)",
+  );
+  const low3 = b.orTree(id("a012-any"), address.slice(0, 3), x, top + 160);
+  const bankSel = b.gate(
+    id("bank-sel"),
+    "and",
+    x + 420,
+    top + 160,
+    b.gate(id("big-a3"), "and", x + 280, top + 160, select, address[3]),
+    b.gate(id("a012-none"), "not", x + 140, top + 220, low3, undefined, "A0–A2 = 0"),
+    "BANK (D8)",
+  );
+  b.add(big.bank.id, "module", big.bank.x, big.bank.y, big.bank.label ?? "BANK (D8)", {
+    module: datapathCircuit("register8"),
+    behaviour: "register8",
+  });
+  for (let bit = 0; bit < 8; bit++) b.connect(bit < 4 ? data[bit] : zero, big.bank.id, bit);
+  b.connect(
+    b.gate(id("bank-we"), "and", x + 560, top + 160, we, bankSel, "SET BANK"),
+    big.bank.id,
+    8,
+  );
+  b.connect(clock, big.bank.id, 9);
+  const bank = range(4).map((bit): Ref => [big.bank.id, bit]);
+  b.add(big.frame.id, "module", big.frame.x, big.frame.y, big.frame.label ?? "32×32 SCREEN", {
+    module: datapathCircuit("vram32x32"),
+    behaviour: "vram32x32",
+  });
+  const frameAddress = [bank[0], bank[1], address[0], address[1], address[2], bank[2], bank[3]];
+  [
+    ...frameAddress,
+    ...data,
+    b.gate(id("window-we"), "and", x + 560, top + 80, we, windowSel, "WINDOW WE"),
+    ...range(7).map(() => zero),
+    clock,
+  ].forEach((source, input) => {
+    b.connect(source, big.frame.id, input);
+  });
+  return range(8).map((bit) => {
+    const at = top + 400 + bit * 120;
+    const fromWindow = b.gate(
+      id(`window-q${bit}`),
+      "and",
+      x + 700,
+      at,
+      [big.frame.id, bit],
+      windowSel,
+    );
+    if (bit >= 4) return fromWindow;
+    const fromBank = b.gate(id(`bank-q${bit}`), "and", x + 700, at + 60, bank[bit], bankSel);
+    return b.gate(id(`big-q${bit}`), "or", x + 840, at, fromWindow, fromBank);
   });
 }
 

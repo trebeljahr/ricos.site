@@ -13,6 +13,7 @@ import {
   withOpcodes,
 } from "src/lib/computer/microcodeTable";
 import {
+  BIG_SCREEN,
   byteBits,
   type CompiledProgram,
   compileProgram,
@@ -23,6 +24,7 @@ import {
   INTERRUPT_SAMPLES,
   INTERRUPT_VECTOR,
   type IsaEntry,
+  isBigScreenAddress,
   isBlitterAddress,
   isScreenAddress,
   KEY_HANDLER,
@@ -41,7 +43,7 @@ import { MicrocodeEditor } from "./MicrocodeEditor";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT } = SAMPLE_PROGRAMS;
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT, BANKS } = SAMPLE_PROGRAMS;
 const { RECURSION } = RAM_STACK_SAMPLES;
 const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
@@ -144,6 +146,11 @@ export function ProgramStepper() {
   const usesBlitter = Boolean(
     compilation.program?.instructions.some(
       ({ opcode, operand }) => readsData(opcode) && isBlitterAddress(operand),
+    ),
+  );
+  const usesBigScreen = Boolean(
+    compilation.program?.instructions.some(
+      ({ opcode, operand }) => readsData(opcode) && isBigScreenAddress(operand),
     ),
   );
   const usesScreen =
@@ -556,6 +563,20 @@ export function ProgramStepper() {
                       )}
                     </>
                   )}
+                  {usesBigScreen && (
+                    <>
+                      <ScreenGrid
+                        rows={state.frame}
+                        size={BIG_SCREEN}
+                        label="Big screen"
+                        className={styles.pixelScreen}
+                      />
+                      <div className={styles.flags} role="status" aria-label="Bank">
+                        BANK {state.bank} <span>·</span> TILE COLUMN {state.bank & 3}, ROW{" "}
+                        {state.bank >> 2}
+                      </div>
+                    </>
+                  )}
                   <div className={styles.flags}>
                     ZERO {Number(state.zero)} <span>·</span> CARRY {Number(state.carry)}
                   </div>
@@ -838,6 +859,9 @@ export function ProgramSource({
           title="The blitter copies a sprite while the CPU counts"
         >
           BLIT
+        </button>
+        <button type="button" onClick={() => preset(BANKS)} className={styles.button}>
+          BANKS
         </button>
         <button
           type="button"

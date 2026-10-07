@@ -38,7 +38,7 @@ const ramHelpers = cpuCircuit([])
   .nodes.map((node) => node.id)
   .filter((id) => id.startsWith(`${CPU_PARTS.ram}-`));
 /**
- * The pixel port and the blitter come pre-wired: their bus lane inputs are
+ * The pixel port, the blitter and the big screen come pre-wired: their bus lane inputs are
  * plumbing, not reader wiring.
  */
 const screenPorts = [
@@ -50,6 +50,9 @@ const screenPorts = [
   CPU_PARTS.blitter,
   CPU_PARTS.blitterRom,
   "blitter-busy",
+  CPU_PARTS.bigScreen,
+  CPU_PARTS.bank,
+  "bank-display",
 ];
 const isPortPlumbing = (wire: Wire) =>
   screenPorts.includes(wire.to) || wire.to.startsWith(`${CPU_PARTS.ram}-row-d-direct`);

@@ -49,6 +49,7 @@ const folded = (state: Snapshot, stack: StackModel = "hardware") => ({
   ram: (state.blocks?.[CPU_PARTS.ram] as Bytes).bytes,
   stack: (state.blocks?.[CPU_PARTS.stack] as Bytes | undefined)?.bytes ?? [],
   screen: (state.blocks?.[CPU_PARTS.screen] as Bytes).bytes,
+  frame: (state.blocks?.[CPU_PARTS.bigScreen] as Bytes).bytes,
 });
 
 describe("CPU unfolded to a gate netlist", () => {
@@ -145,12 +146,14 @@ describe("CPU unfolded to a gate netlist", () => {
           expect(gates.ram, `${where}: RAM vs folded`).toEqual(after.ram);
           expect(gates.stack, `${where}: stack vs folded`).toEqual(after.stack);
           expect(gates.screen, `${where}: screen vs folded`).toEqual(after.screen);
+          expect(gates.frame, `${where}: big screen vs folded`).toEqual(after.frame);
           // Past its trace a program has halted, and HALT freezes it.
           const last = run.ticks[Math.min(index, run.ticks.length - 1)];
           const { BUS: _bus, ...probes } = gates.probes;
           expect(probes, `${where}: probes vs trace`).toEqual(expectedProbes(last));
           expect(gates.ram, `${where}: RAM vs trace`).toEqual(last.ram);
           expect(gates.screen, `${where}: screen vs trace`).toEqual(last.screen);
+          expect(gates.frame, `${where}: big screen vs trace`).toEqual(last.frame);
           if (stack === "hardware")
             expect(gates.stack.slice(0, last.registers.sp), `${where}: stack vs trace`).toEqual(
               last.stack,
@@ -159,7 +162,8 @@ describe("CPU unfolded to a gate netlist", () => {
           if (!tick) expect(gates.halted, `${where}: halted`).toBe(true);
         });
       }
-    }, 60_000);
+      // ~55 s alone since the 32×32 big screen joined the CPU; more under a loaded machine.
+    }, 180_000);
   }
 
   it("measures ticks per second", () => {

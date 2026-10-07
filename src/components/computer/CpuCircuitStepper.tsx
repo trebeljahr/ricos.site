@@ -13,11 +13,13 @@ import { foldBlockState, screenRows } from "src/lib/computer/datapathBlocks";
 import type { Circuit, Node, Snapshot, Wire } from "src/lib/computer/logic";
 import { readProbes } from "src/lib/computer/probes";
 import {
+  BIG_SCREEN,
   type BlitterState,
   describeBlitter,
   hex,
   INTERRUPT_VECTOR,
   isaFor,
+  isBigScreenAddress,
   isBlitterAddress,
   isScreenAddress,
   type KeySchedule,
@@ -206,6 +208,10 @@ export function CpuCircuitStepper() {
       isa.find((item) => item.opcode === opcode)?.operand === "RAM address" ? [operand] : [],
     ) ?? [];
   const usesBlitter = dataAddresses.some(isBlitterAddress);
+  const frame =
+    circuit && snapshot && dataAddresses.some(isBigScreenAddress)
+      ? blockBytes(circuit, snapshot, CPU_PARTS.bigScreen)
+      : null;
   const usesScreen = usesBlitter || dataAddresses.some(isScreenAddress);
   const blitter =
     circuit && snapshot && usesBlitter
@@ -551,6 +557,14 @@ export function CpuCircuitStepper() {
                     <div className={stepper.flags} role="status" aria-label="Blitter">
                       BLITTER <span>·</span> {describeBlitter(blitter)}
                     </div>
+                  )}
+                  {frame && (
+                    <ScreenGrid
+                      rows={frame}
+                      size={BIG_SCREEN}
+                      label="Big screen"
+                      className={stepper.pixelScreen}
+                    />
                   )}
                 </div>
               </div>

@@ -39,6 +39,8 @@ export type Node = {
   /** Probe name on a display4/display8, read by `readProbes` (e.g. ACC, PC). */
   probe?: string;
   module?: Circuit;
+  /** Name of a registered behavioural block this module runs as while folded. */
+  behaviour?: string;
 };
 export const WIRE_COLORS = {
   cyan: "#69e2e0",
@@ -66,6 +68,8 @@ export type Snapshot = {
   lastClock: Record<string, boolean>;
   outputs: Record<string, boolean[]>;
   modules: Record<string, Snapshot>;
+  /** State of behavioural blocks, keyed by module node id. */
+  blocks?: Record<string, unknown>;
   unstable: boolean;
 };
 
@@ -175,6 +179,214 @@ export const initialSnapshot = (): Snapshot => ({
   unstable: false,
 });
 
+/**
+ * A behavioural block: a module whose folded form runs as one function call
+ * instead of simulating its inner gates. The module's inner circuit stays the
+ * gate form, shown when the reader opens the block; its switch/clock/pulse and
+ * lamp nodes define the ports, so `inputs` and `outputs` must match them.
+ *
+ * `evaluate` must be pure. During a settle its `outputs` drive the block's
+ * output ports; after the first settle of a tick the engine commits its
+ * `nextState`, then settles again with the new state. It sees the clock only as
+ * an input, so a clocked block keeps the last clock level in its own state to
+ * find rising edges. Return the same state object when nothing changed, so a
+ * folded module around the block can be skipped while idle.
+ */
+export type BlockDefinition<State = unknown> = {
+  name: string;
+  inputs: string[];
+  outputs: string[];
+  initialState: () => State;
+  evaluate: (inputs: boolean[], state: State) => { outputs: boolean[]; nextState: State };
+};
+const BLOCKS = new Map<string, BlockDefinition>();
+export function registerBlock<State>(definition: BlockDefinition<State>) {
+  BLOCKS.set(definition.name, definition as unknown as BlockDefinition);
+}
+export const blockDefinition = (name: string) => BLOCKS.get(name);
+/** The registered block a module node runs as, or undefined when it simulates its gates. */
+export function activeBlock(node: Node): BlockDefinition | undefined {
+  if (node.type !== "module" || !node.module || !node.behaviour) return undefined;
+  const definition = BLOCKS.get(node.behaviour);
+  return definition &&
+    definition.inputs.length === moduleInputs(node.module).length &&
+    definition.outputs.length === moduleOutputs(node.module).length
+    ? definition
+    : undefined;
+}
+
+const MEMORY_TYPES = new Set<GateType>(["dff", "srlatch", "dlatch", "dramcell"]);
+const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", "input4", "input8"]);
+const SETTLED_TYPES = new Set<GateType>([
+  "module",
+  "lamp",
+  "display4",
+  "display8",
+  "nmos",
+  "pmos",
+  "junction",
+  "not",
+  "and",
+  "or",
+  "xor",
+  "xnor",
+  "nand",
+  "nor",
+]);
+
+/**
+ * Everything step() needs that depends only on the circuit's structure: who
+ * drives each input port, and the order to settle nodes in. Built once per
+ * circuit object; the builder replaces circuits rather than editing them.
+ */
+type Compiled = {
+  nodes: Node[];
+  wires: Wire[];
+  nodeCount: number;
+  wireCount: number;
+  /** Per node, per input port: id of the driving node and its output port. */
+  sourceId: (string | undefined)[][];
+  sourcePort: Int32Array[];
+  /** Whether the driver has several outputs, kept in `outputs` rather than `values`. */
+  sourceMulti: Uint8Array[];
+  /** Strongly connected groups of settled nodes, in topological order. */
+  groups: number[][];
+  cyclic: boolean[];
+  memory: number[];
+  blocks: (BlockDefinition | undefined)[];
+  inputIds: string[];
+  outputIds: string[][];
+};
+const compiledCircuits = new WeakMap<Circuit, Compiled>();
+
+function compile(circuit: Circuit): Compiled {
+  const cached = compiledCircuits.get(circuit);
+  if (
+    cached &&
+    cached.nodes === circuit.nodes &&
+    cached.wires === circuit.wires &&
+    cached.nodeCount === circuit.nodes.length &&
+    cached.wireCount === circuit.wires.length
+  )
+    return cached;
+  const nodes = circuit.nodes;
+  const index = new Map<string, number>();
+  nodes.forEach((node, i) => index.set(node.id, i));
+  const counts = nodes.map(inputCount);
+  const sourceNode = counts.map((count) => new Int32Array(count).fill(-1));
+  const sourcePort = counts.map((count) => new Int32Array(count));
+  const settled = nodes.map((node) => SETTLED_TYPES.has(node.type));
+  const next: number[][] = nodes.map(() => []);
+  const selfLoop = new Array<boolean>(nodes.length).fill(false);
+  for (const wire of circuit.wires) {
+    const from = index.get(wire.from);
+    const to = index.get(wire.to);
+    if (from === undefined || to === undefined) continue;
+    const output = wire.output ?? 0;
+    if (wire.input >= counts[to] || output >= outputCount(nodes[from])) continue;
+    // The first wire into a port wins, as it did with wires.find.
+    if (sourceNode[to][wire.input] !== -1) continue;
+    sourceNode[to][wire.input] = from;
+    sourcePort[to][wire.input] = output;
+    if (settled[from] && settled[to]) {
+      next[from].push(to);
+      if (from === to) selfLoop[from] = true;
+    }
+  }
+  // Tarjan's algorithm, iterative so deep gate chains cannot overflow the stack.
+  // It emits groups sinks first, so the list is reversed afterwards.
+  const order = new Int32Array(nodes.length).fill(-1);
+  const low = new Int32Array(nodes.length);
+  const onStack = new Uint8Array(nodes.length);
+  const stack: number[] = [];
+  const groups: number[][] = [];
+  let counter = 0;
+  for (let root = 0; root < nodes.length; root++) {
+    if (!settled[root] || order[root] !== -1) continue;
+    const work: [number, number][] = [[root, 0]];
+    order[root] = low[root] = counter++;
+    stack.push(root);
+    onStack[root] = 1;
+    while (work.length) {
+      const frame = work[work.length - 1];
+      const [node, edge] = frame;
+      if (edge < next[node].length) {
+        frame[1]++;
+        const target = next[node][edge];
+        if (order[target] === -1) {
+          order[target] = low[target] = counter++;
+          stack.push(target);
+          onStack[target] = 1;
+          work.push([target, 0]);
+        } else if (onStack[target]) low[node] = Math.min(low[node], order[target]);
+        continue;
+      }
+      work.pop();
+      if (work.length) {
+        const parent = work[work.length - 1][0];
+        low[parent] = Math.min(low[parent], low[node]);
+      }
+      if (low[node] !== order[node]) continue;
+      const group: number[] = [];
+      let member: number;
+      do {
+        member = stack.pop()!;
+        onStack[member] = 0;
+        group.push(member);
+      } while (member !== node);
+      // Inside a feedback loop nodes update in array order, as they always have.
+      groups.push(group.sort((a, b) => a - b));
+    }
+  }
+  groups.reverse();
+  const compiled: Compiled = {
+    nodes,
+    wires: circuit.wires,
+    nodeCount: nodes.length,
+    wireCount: circuit.wires.length,
+    sourceId: sourceNode.map((ports) =>
+      Array.from(ports, (from) => (from === -1 ? undefined : nodes[from].id)),
+    ),
+    sourcePort,
+    sourceMulti: sourceNode.map((ports) =>
+      Uint8Array.from(ports, (from) =>
+        from !== -1 && MULTI_OUTPUT_TYPES.has(nodes[from].type) ? 1 : 0,
+      ),
+    ),
+    groups,
+    cyclic: groups.map((group) => group.length > 1 || selfLoop[group[0]]),
+    memory: nodes.flatMap((node, i) => (MEMORY_TYPES.has(node.type) ? [i] : [])),
+    blocks: nodes.map(activeBlock),
+    inputIds: moduleInputs(circuit).map((node) => node.id),
+    outputIds: nodes.map((node) =>
+      node.type === "module" && node.module
+        ? moduleOutputs(node.module).map((port) => port.id)
+        : [],
+    ),
+  };
+  compiledCircuits.set(circuit, compiled);
+  return compiled;
+}
+
+/**
+ * Snapshots known to be fixed points: stepping the same circuit again with the
+ * same clock level and port inputs returns the same snapshot. A folded module
+ * whose inputs did not change is then not simulated again.
+ */
+const settledSnapshots = new WeakMap<Snapshot, { circuit: Circuit; key: string }>();
+const bitKey = (bits: boolean[]) => {
+  let key = "";
+  for (const bit of bits) key += bit ? "1" : "0";
+  return key;
+};
+const sameRecord = <T>(a: Record<string, T> | undefined, b: Record<string, T> | undefined) => {
+  if (a === b) return true;
+  if (!a || !b) return Object.keys(a ?? b ?? {}).length === 0;
+  const keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+  return keys.every((key) => Object.is(a[key], b[key]));
+};
+
 export function step(
   circuit: Circuit,
   previous: Snapshot,
@@ -183,123 +395,184 @@ export function step(
   overrides: Record<string, boolean> = {},
   depth = 0,
 ): Snapshot {
-  const nodes = new Map(circuit.nodes.map((node) => [node.id, node]));
-  const wires = circuit.wires.filter(
-    (wire) =>
-      nodes.has(wire.from) &&
-      nodes.has(wire.to) &&
-      wire.input < inputCount(nodes.get(wire.to)!) &&
-      (wire.output ?? 0) < outputCount(nodes.get(wire.from)!),
-  );
+  const compiled = compile(circuit);
+  const { nodes, sourceId, sourcePort, sourceMulti } = compiled;
   const values: Record<string, boolean> = { ...previous.values };
   const outputs: Record<string, boolean[]> = { ...previous.outputs };
   const modules: Record<string, Snapshot> = { ...previous.modules };
-  for (const node of circuit.nodes) {
+  const blockState: Record<string, unknown> = { ...previous.blocks };
+  for (const node of nodes) {
     if (node.type === "switch") values[node.id] = overrides[node.id] ?? Boolean(node.value);
-    if (node.type === "clock") values[node.id] = overrides[node.id] ?? clockHigh;
-    if (node.type === "pulse") values[node.id] = overrides[node.id] ?? Boolean(pulses[node.id]);
-    if (node.type === "high") values[node.id] = true;
-    if (node.type === "ground") values[node.id] = false;
-    if (node.type === "input4" || node.type === "input8") {
+    else if (node.type === "clock") values[node.id] = overrides[node.id] ?? clockHigh;
+    else if (node.type === "pulse")
+      values[node.id] = overrides[node.id] ?? Boolean(pulses[node.id]);
+    else if (node.type === "high") values[node.id] = true;
+    else if (node.type === "ground") values[node.id] = false;
+    else if (node.type === "input4" || node.type === "input8") {
       const bits = node.type === "input4" ? 4 : 8;
       outputs[node.id] = Array.from({ length: bits }, (_, bit) =>
         Boolean(((node.numberValue ?? 0) >> bit) & 1),
       );
-    }
-    if (["dff", "srlatch", "dlatch", "dramcell"].includes(node.type))
-      values[node.id] = Boolean(previous.memory[node.id]);
+    } else if (MEMORY_TYPES.has(node.type)) values[node.id] = Boolean(previous.memory[node.id]);
   }
   let unstable = false;
-  const inputs = (node: Node) =>
-    Array.from({ length: inputCount(node) }, (_, port) => {
-      const wire = wires.find((candidate) => candidate.to === node.id && candidate.input === port);
-      return wire ? Boolean(outputs[wire.from]?.[wire.output ?? 0] ?? values[wire.from]) : false;
-    });
-  // Combinational gates settle within one tick. A feedback loop that does not settle is flagged.
-  const settle = () => {
-    for (let pass = 0; pass <= circuit.nodes.length; pass++) {
-      let changed = false;
-      for (const node of circuit.nodes) {
-        const signals = inputs(node);
-        const [a, b] = signals;
-        let next: boolean;
-        switch (node.type) {
-          case "module": {
-            if (depth >= 6 || !node.module) continue;
-            const innerInputs = moduleInputs(node.module);
-            const inner = step(
-              node.module,
-              previous.modules[node.id] ?? initialSnapshot(),
-              clockHigh,
-              {},
-              Object.fromEntries(innerInputs.map((port, index) => [port.id, signals[index]])),
-              depth + 1,
-            );
-            modules[node.id] = inner;
-            const bits = moduleOutputs(node.module).map((port) => Boolean(inner.values[port.id]));
-            if (bits.some((bit, index) => bit !== outputs[node.id]?.[index])) changed = true;
-            outputs[node.id] = bits;
-            next = bits[0] ?? false;
-            if (inner.unstable) unstable = true;
-            break;
-          }
-          case "lamp":
-            next = a;
-            break;
-          case "display4":
-          case "display8":
-            outputs[node.id] = signals;
-            next = signals.some(Boolean);
-            break;
-          case "nmos":
-            next = a && b;
-            break;
-          case "pmos":
-            next = !a && b;
-            break;
-          case "junction":
-            next = a || b;
-            break;
-          case "not":
-            next = !a;
-            break;
-          case "and":
-            next = a && b;
-            break;
-          case "or":
-            next = a || b;
-            break;
-          case "xor":
-            next = a !== b;
-            break;
-          case "xnor":
-            next = a === b;
-            break;
-          case "nand":
-            next = !(a && b);
-            break;
-          case "nor":
-            next = !(a || b);
-            break;
-          default:
-            continue;
-        }
-        if (values[node.id] !== next) {
-          values[node.id] = next;
-          changed = true;
-        }
-      }
-      if (!changed) break;
-      if (pass === circuit.nodes.length) unstable = true;
+  const signal = (i: number, port: number) => {
+    const id = sourceId[i][port];
+    if (id === undefined) return false;
+    return Boolean(
+      sourceMulti[i][port] ? (outputs[id]?.[sourcePort[i][port]] ?? values[id]) : values[id],
+    );
+  };
+  const inputs = (i: number) => {
+    const signals = new Array<boolean>(sourceId[i].length);
+    for (let port = 0; port < signals.length; port++) signals[port] = signal(i, port);
+    return signals;
+  };
+  // A module is a pure function of its previous inner snapshot, the clock level
+  // and its inputs, so within one step each input pattern runs at most once.
+  const moduleRuns = new Map<string, Map<string, Snapshot>>();
+  const runModule = (node: Node, signals: boolean[]) => {
+    const key = bitKey(signals);
+    let runs = moduleRuns.get(node.id);
+    if (!runs) moduleRuns.set(node.id, (runs = new Map()));
+    const known = runs.get(key);
+    if (known) return known;
+    const before = previous.modules[node.id];
+    const settledAs = before && settledSnapshots.get(before);
+    const inner =
+      settledAs &&
+      settledAs.circuit === node.module &&
+      settledAs.key === `${clockHigh ? 1 : 0}${key}`
+        ? before
+        : step(
+            node.module!,
+            before ?? initialSnapshot(),
+            clockHigh,
+            {},
+            Object.fromEntries(
+              compile(node.module!).inputIds.map((id, index) => [id, signals[index]]),
+            ),
+            depth + 1,
+          );
+    runs.set(key, inner);
+    return inner;
+  };
+  // A behavioural block is evaluated once per input pattern per phase: against
+  // the previous state before the clock commit, and the new state after it.
+  let blockRuns = new Map<string, Map<string, ReturnType<BlockDefinition["evaluate"]>>>();
+  const runBlock = (node: Node, block: BlockDefinition, signals: boolean[]) => {
+    const key = bitKey(signals);
+    let runs = blockRuns.get(node.id);
+    if (!runs) blockRuns.set(node.id, (runs = new Map()));
+    let result = runs.get(key);
+    if (!result) {
+      if (!(node.id in blockState)) blockState[node.id] = block.initialState();
+      result = block.evaluate(signals, blockState[node.id]);
+      runs.set(key, result);
     }
+    return result;
+  };
+  /** Evaluates one settled node; returns whether its outputs changed. */
+  const evaluate = (i: number): boolean => {
+    const node = nodes[i];
+    const a = signal(i, 0);
+    const b = signal(i, 1);
+    let next: boolean;
+    let changed = false;
+    switch (node.type) {
+      case "module": {
+        if (depth >= 6 || !node.module) return false;
+        const signals = inputs(i);
+        const block = compiled.blocks[i];
+        let bits: boolean[];
+        if (block) {
+          bits = runBlock(node, block, signals).outputs.map(Boolean);
+        } else {
+          const inner = runModule(node, signals);
+          modules[node.id] = inner;
+          bits = compiled.outputIds[i].map((id) => Boolean(inner.values[id]));
+          if (inner.unstable) unstable = true;
+        }
+        const old = outputs[node.id];
+        if (!old || bits.some((bit, index) => bit !== old[index])) changed = true;
+        outputs[node.id] = bits;
+        next = bits[0] ?? false;
+        break;
+      }
+      case "lamp":
+        next = a;
+        break;
+      case "display4":
+      case "display8": {
+        const signals = inputs(i);
+        outputs[node.id] = signals;
+        next = signals.some(Boolean);
+        break;
+      }
+      case "nmos":
+        next = a && b;
+        break;
+      case "pmos":
+        next = !a && b;
+        break;
+      case "junction":
+        next = a || b;
+        break;
+      case "not":
+        next = !a;
+        break;
+      case "and":
+        next = a && b;
+        break;
+      case "or":
+        next = a || b;
+        break;
+      case "xor":
+        next = a !== b;
+        break;
+      case "xnor":
+        next = a === b;
+        break;
+      case "nand":
+        next = !(a && b);
+        break;
+      case "nor":
+        next = !(a || b);
+        break;
+      default:
+        return false;
+    }
+    if (values[node.id] !== next) {
+      values[node.id] = next;
+      changed = true;
+    }
+    return changed;
+  };
+  // Acyclic parts settle in one topological pass. A feedback loop (a latch built
+  // from gates) repeats until it holds still; one that never does is flagged.
+  const settle = () => {
+    compiled.groups.forEach((group, g) => {
+      if (!compiled.cyclic[g]) {
+        evaluate(group[0]);
+        return;
+      }
+      const limit = 2 * group.length + 2;
+      for (let pass = 0; pass <= limit; pass++) {
+        let changed = false;
+        for (const i of group) if (evaluate(i)) changed = true;
+        if (!changed) break;
+        if (pass === limit) unstable = true;
+      }
+    });
   };
   settle();
   const memory = { ...previous.memory };
   const age = { ...previous.age };
   const lastClock = { ...previous.lastClock };
-  for (const node of circuit.nodes) {
+  for (const i of compiled.memory) {
+    const node = nodes[i];
     if (node.type !== "dff" && node.type !== "dramcell") continue;
-    const [data, clock] = inputs(node);
+    const [data, clock] = inputs(i);
     if (clock && !previous.lastClock[node.id]) {
       memory[node.id] = data;
       if (node.type === "dramcell") age[node.id] = 0;
@@ -309,24 +582,51 @@ export function step(
     }
     lastClock[node.id] = clock;
   }
-  for (const node of circuit.nodes) {
+  for (const i of compiled.memory) {
+    const node = nodes[i];
     if (node.type !== "srlatch") continue;
-    const [set, reset] = inputs(node);
+    const [set, reset] = inputs(i);
     if (set && reset) unstable = true;
     else if (set) memory[node.id] = true;
     else if (reset) memory[node.id] = false;
   }
-  for (const node of circuit.nodes) {
+  for (const i of compiled.memory) {
+    const node = nodes[i];
     if (node.type !== "dlatch") continue;
-    const [data, enable] = inputs(node);
+    const [data, enable] = inputs(i);
     if (enable) memory[node.id] = data;
   }
+  let blocksChanged = false;
+  nodes.forEach((node, i) => {
+    const block = compiled.blocks[i];
+    if (!block || depth >= 6) return;
+    const state = blockState[node.id];
+    const nextState = runBlock(node, block, inputs(i)).nextState;
+    if (!Object.is(nextState, state)) blocksChanged = true;
+    blockState[node.id] = nextState;
+  });
+  blockRuns = new Map();
   lastClock.__dramTick = clockHigh;
-  for (const node of circuit.nodes)
-    if (["dff", "srlatch", "dlatch", "dramcell"].includes(node.type))
-      values[node.id] = Boolean(memory[node.id]);
+  for (const i of compiled.memory) values[nodes[i].id] = Boolean(memory[nodes[i].id]);
   settle();
-  return { values, memory, age, lastClock, outputs, modules, unstable };
+  let settledModules = true;
+  for (const id of moduleRuns.keys())
+    if (!settledSnapshots.has(modules[id])) settledModules = false;
+  const result: Snapshot = { values, memory, age, lastClock, outputs, modules, unstable };
+  if (previous.blocks || compiled.blocks.some(Boolean)) result.blocks = blockState;
+  if (
+    !unstable &&
+    settledModules &&
+    !blocksChanged &&
+    sameRecord(memory, previous.memory) &&
+    sameRecord(age, previous.age) &&
+    sameRecord(lastClock, previous.lastClock)
+  )
+    settledSnapshots.set(result, {
+      circuit,
+      key: `${clockHigh ? 1 : 0}${bitKey(compiled.inputIds.map((id) => Boolean(values[id])))}`,
+    });
+  return result;
 }
 
 const node = (
@@ -649,7 +949,16 @@ function registerCircuit(kind: "shift" | "counter"): Circuit {
   return circuit;
 }
 
-type StorageKind = "sr-latch" | "gated-sr-latch" | "d-latch" | "jk-latch" | "t-latch" | "d-flip-flop" | "sr-flip-flop" | "jk-flip-flop" | "t-flip-flop";
+type StorageKind =
+  | "sr-latch"
+  | "gated-sr-latch"
+  | "d-latch"
+  | "jk-latch"
+  | "t-latch"
+  | "d-flip-flop"
+  | "sr-flip-flop"
+  | "jk-flip-flop"
+  | "t-flip-flop";
 
 function storageCircuit(kind: StorageKind): Circuit {
   const names: Record<StorageKind, string> = {
@@ -668,11 +977,23 @@ function storageCircuit(kind: StorageKind): Circuit {
     circuit.nodes.push(node(id, type, x, y, label));
     return id;
   };
-  const connect = (from: string, to: string, input = 0) => circuit.wires.push(wire(from, to, input));
+  const connect = (from: string, to: string, input = 0) =>
+    circuit.wires.push(wire(from, to, input));
   const isLatch = kind.endsWith("latch");
   const clockName = isLatch ? "ENABLE" : "CLOCK";
-  const core = kind === "sr-latch" || kind === "gated-sr-latch" || kind === "d-latch" ? "srlatch" : kind === "jk-latch" || kind === "t-latch" ? "dlatch" : "dff";
-  add("core", core, 570, 195, core === "srlatch" ? "SET / RESET" : core === "dlatch" ? "LEVEL STORAGE" : "EDGE STORAGE");
+  const core =
+    kind === "sr-latch" || kind === "gated-sr-latch" || kind === "d-latch"
+      ? "srlatch"
+      : kind === "jk-latch" || kind === "t-latch"
+        ? "dlatch"
+        : "dff";
+  add(
+    "core",
+    core,
+    570,
+    195,
+    core === "srlatch" ? "SET / RESET" : core === "dlatch" ? "LEVEL STORAGE" : "EDGE STORAGE",
+  );
   add("q", "lamp", 810, 170, "Q");
   add("notQ", "not", 770, 310, "INVERT Q");
   add("qbar", "lamp", 960, 310, "Q̅");
@@ -840,11 +1161,22 @@ export const PRESETS: Record<string, Circuit> = {
   "8-bit shift register": registerCircuit("shift"),
   "8-bit binary counter": registerCircuit("counter"),
   ...Object.fromEntries(
-    (["sr-latch", "gated-sr-latch", "d-latch", "jk-latch", "t-latch", "d-flip-flop", "sr-flip-flop", "jk-flip-flop", "t-flip-flop"] as StorageKind[])
-      .map((kind) => {
-        const circuit = storageCircuit(kind);
-        return [circuit.name, circuit];
-      }),
+    (
+      [
+        "sr-latch",
+        "gated-sr-latch",
+        "d-latch",
+        "jk-latch",
+        "t-latch",
+        "d-flip-flop",
+        "sr-flip-flop",
+        "jk-flip-flop",
+        "t-flip-flop",
+      ] as StorageKind[]
+    ).map((kind) => {
+      const circuit = storageCircuit(kind);
+      return [circuit.name, circuit];
+    }),
   ),
   ...MEMORY_PRESETS,
 };
@@ -1127,10 +1459,27 @@ export const BLUEPRINTS: Record<string, Circuit> = Object.fromEntries(
   ),
 );
 
+/**
+ * Import limits. They guard the parser against hostile JSON from saved circuits
+ * and imports, and keep any accepted circuit stepping at an interactive rate.
+ * Measured with logic.benchmark.test.ts (`BENCH=1`): at about 10,000 evaluated
+ * nodes the slowest synthetic circuit took 13 ms per tick on Rico's Mac
+ * under load, against a 16 ms frame. One level stays smaller, so the editor
+ * still draws it.
+ */
+export const MAX_CIRCUIT_NODES = 2000;
+export const MAX_CIRCUIT_WIRES = 6000;
+/** Nodes the engine evaluates, summed over every nesting level; a behavioural block counts as 1. */
+export const MAX_TOTAL_NODES = 10000;
+/** Nodes parsed in total, including the gate forms behind behavioural blocks. */
+export const MAX_PARSED_NODES = 4 * MAX_TOTAL_NODES;
+export const MAX_DEPTH = 5;
+
 export function validateCircuit(
   value: unknown,
   depth = 0,
-  budget = { remaining: 3000 },
+  budget = { remaining: MAX_TOTAL_NODES, parsed: MAX_PARSED_NODES },
+  folded = false,
 ): Circuit | null {
   if (!value || typeof value !== "object") return null;
   const item = value as Partial<Circuit>;
@@ -1138,13 +1487,16 @@ export function validateCircuit(
     typeof item.name !== "string" ||
     !Array.isArray(item.nodes) ||
     !Array.isArray(item.wires) ||
-    item.nodes.length > 300 ||
-    item.wires.length > 800 ||
-    depth > 5 ||
-    budget.remaining < item.nodes.length
+    item.nodes.length > MAX_CIRCUIT_NODES ||
+    item.wires.length > MAX_CIRCUIT_WIRES ||
+    depth > MAX_DEPTH ||
+    budget.parsed < item.nodes.length ||
+    (!folded && budget.remaining < item.nodes.length)
   )
     return null;
-  budget.remaining -= item.nodes.length;
+  budget.parsed -= item.nodes.length;
+  // Inside a behavioural block the gates are only drawn, never evaluated.
+  if (!folded) budget.remaining -= item.nodes.length;
   const types = Object.keys(INPUTS);
   if (
     !item.nodes.every(
@@ -1175,7 +1527,7 @@ export function validateCircuit(
           typeof group.label === "string" &&
           group.label.length <= 80 &&
           Array.isArray(group.nodeIds) &&
-          group.nodeIds.length <= 300 &&
+          group.nodeIds.length <= MAX_CIRCUIT_NODES &&
           group.nodeIds.every((id) => typeof id === "string" && ids.has(id)),
       ) ||
       new Set(item.groups.map((group) => group.id)).size !== item.groups.length)
@@ -1192,9 +1544,11 @@ export function validateCircuit(
     )
   )
     return null;
+  const behaviours = new Map<string, string>();
   for (const n of item.nodes) {
     if (n.type !== "module") continue;
-    const inner = validateCircuit(n.module, depth + 1, budget);
+    const behaviour = typeof n.behaviour === "string" ? blockDefinition(n.behaviour) : undefined;
+    const inner = validateCircuit(n.module, depth + 1, budget, folded || Boolean(behaviour));
     if (
       !inner ||
       moduleInputs(inner).length > 24 ||
@@ -1203,7 +1557,20 @@ export function validateCircuit(
     )
       return null;
     validatedModules.set(n.id, inner);
+    // An unknown behaviour falls back to simulating the gates, which were
+    // charged to the budget above. A known one must match the gate form's ports,
+    // because those gates were not charged.
+    if (behaviour) {
+      if (!activeBlock({ ...n, module: inner, behaviour: behaviour.name })) return null;
+      behaviours.set(n.id, behaviour.name);
+    }
   }
+  const ports = new Map(
+    item.nodes.map((n) => {
+      const typed = { ...n, module: validatedModules.get(n.id) } as Node;
+      return [n.id, { inputs: inputCount(typed), outputs: outputCount(typed) }];
+    }),
+  );
   if (
     !item.wires.every(
       (w) =>
@@ -1213,17 +1580,9 @@ export function validateCircuit(
         ids.has(w.to) &&
         Number.isInteger(w.input) &&
         w.input >= 0 &&
-        w.input <
-          inputCount({
-            ...item.nodes!.find((n) => n.id === w.to)!,
-            module: validatedModules.get(w.to),
-          }) &&
+        w.input < ports.get(w.to)!.inputs &&
         (w.output === undefined || (Number.isInteger(w.output) && w.output >= 0)) &&
-        (w.output ?? 0) <
-          outputCount({
-            ...item.nodes!.find((n) => n.id === w.from)!,
-            module: validatedModules.get(w.from),
-          }),
+        (w.output ?? 0) < ports.get(w.from)!.outputs,
     )
   )
     return null;
@@ -1241,6 +1600,7 @@ export function validateCircuit(
       numberValue: n.numberValue,
       ...(n.probe ? { probe: n.probe } : {}),
       module: validatedModules.get(n.id),
+      ...(behaviours.has(n.id) ? { behaviour: behaviours.get(n.id) } : {}),
     })),
     wires: item.wires.map((w) => ({
       id: w.id,

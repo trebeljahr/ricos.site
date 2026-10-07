@@ -112,7 +112,7 @@ function OtherDoors() {
   return (
     <div className="mt-sub">
       <p className="m-0 text-sm font-semibold donation-muted text-gray-600 dark:text-gray-300">
-        Other ways to give
+        Other ways to buy me a coffee
       </p>
       {described.length > 0 && (
         <div className="mt-label grid gap-tight sm:grid-cols-2">
@@ -253,7 +253,7 @@ const tileClass =
 export function DonationCard({
   className,
   reference = SITE_REFERENCE,
-  title = "Help keep this place alive",
+  title = "Buy me a coffee",
 }: FullCardProps) {
   const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
@@ -277,7 +277,7 @@ export function DonationCard({
             {title}
           </h2>
           <p className="mt-label mb-0 max-w-prose donation-muted text-gray-700 dark:text-gray-200">
-            Monthly helps me plan ahead. A one-off is just as welcome.
+            One coffee or one every month. Both keep me making things.
           </p>
 
           {showStripe && (
@@ -346,7 +346,7 @@ export function DonationCard({
                             className={clsx(tileClass, "min-h-20 justify-center px-5 py-4")}
                           >
                             <span className="text-xl font-bold donation-ink text-gray-900 dark:text-white">
-                              Donate any amount
+                              Pick your own amount
                             </span>
                             <span className="mt-tight text-sm donation-muted text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
                               You choose on the next page. EUR 10 suggested, EUR 1 minimum.
@@ -394,12 +394,12 @@ export function DonationStrip({ className }: DonationCardProps) {
         Free to read. Not free to make.
       </p>
       <p className="mt-tight mb-0 max-w-prose donation-muted text-gray-700 dark:text-gray-200">
-        If this piece was worth something to you, a small donation keeps the place ad-free and gives
-        me room for the next one.
+        If this piece was worth something to you, buy me a coffee. It keeps the place ad-free and
+        gives me room for the next one.
       </p>
       <div className="mt-stack flex flex-wrap items-center gap-tight">
         <Link href="/donate" className={stripButtonClass}>
-          Donate
+          Buy me a coffee
         </Link>
       </div>
     </aside>
@@ -868,7 +868,7 @@ export function DonationThanks({ className, backTo, message }: ThanksProps) {
           >
             <p className="mx-auto mt-label mb-0 max-w-md donation-muted text-gray-700 dark:text-gray-200">
               {message ??
-                "Your donation went through, and it means a lot to me. It buys me time to make the next thing."}{" "}
+                "Thanks for the coffee. It means a lot to me, and it buys me time to make the next thing."}{" "}
               Your receipt comes by email.
             </p>
             <p className="mt-para mb-0 font-serif text-lg italic donation-muted text-gray-700 dark:text-gray-200">

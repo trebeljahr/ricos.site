@@ -1,5 +1,4 @@
 import { DonationCard, DonationThanks, useDonationSupportedAt } from "@components/DonationCard";
-import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
@@ -13,7 +12,6 @@ import {
   DONATION_SOURCE_STORAGE_KEY,
   FROM_QUERY_KEY,
   isFreshSource,
-  manageDonationUrl,
   SOURCE_TTL_MS,
   type StoredDonationSource,
   THANKS_QUERY_KEY,
@@ -100,15 +98,15 @@ export default function DonatePage({
 
   return (
     <Layout
-      title="Donate – ricos.site"
-      description="If something here was useful or made your day a little better, here are a few ways to help me keep making more of it."
+      title="Buy me a coffee – ricos.site"
+      description="If something here was useful or made your day a little better, you can buy me a coffee."
       url="donate"
       keywords={[
+        "buy me a coffee",
         "donate",
         "support",
         "ko-fi",
         "patreon",
-        "buy me a coffee",
         "sponsor",
         "Rico Trebeljahr",
       ]}
@@ -116,12 +114,18 @@ export default function DonatePage({
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Donate", url: "/donate" },
+          { name: "Buy me a coffee", url: "/donate" },
         ]}
       />
       <PageMain>
         <article className="mx-auto max-w-prose prose md:prose-lg xl:prose-xl dark:prose-invert">
-          <Header breadcrumbs={{ path: "donate" }} title="Donate" />
+          <Header
+            breadcrumbs={{
+              path: "donate",
+              overwrites: [{ matchingPath: "donate", newText: "buy-me-a-coffee" }],
+            }}
+            title="Buy me a coffee"
+          />
 
           {/* A donor coming back from Stripe lands at the top of the page, so the
               thanks goes first and the pitch they already answered steps aside. */}
@@ -130,14 +134,13 @@ export default function DonatePage({
           ) : (
             <>
               <p>
-                Everything I make here is free and I want to keep it that way, but to do so I need
-                your help.
+                Everything I make here is free, and I want to keep it that way. Most of it gets
+                written with a coffee next to me.
               </p>
 
               <p>
-                If something here made your day a little better, consider supporting me and my work.
-                It buys me time to work on the next essay or strange little experiment and would
-                mean the world to me.
+                If something here made your day a little better, you can buy me one. It buys me time
+                for the next essay or strange little experiment, and it would mean the world to me.
               </p>
 
               <DonationCard className="mt-group" />
@@ -165,14 +168,6 @@ export default function DonatePage({
 
         <footer className="mx-auto mt-section max-w-prose">
           <NewsletterForm />
-          {/* Always here, so a monthly donor can find the way out without hunting. */}
-          {manageDonationUrl && (
-            <p className="mt-group mb-0 text-center text-sm text-gray-600 dark:text-gray-400">
-              <ExternalLink href={manageDonationUrl} className="hover:text-accent">
-                Manage monthly donation
-              </ExternalLink>
-            </p>
-          )}
           <ToTopButton />
         </footer>
       </PageMain>

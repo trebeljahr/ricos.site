@@ -32,7 +32,7 @@ export const SiteFooter = () => {
         >
           <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-self-start">
             <Link href="/donate" className="hover:text-accent">
-              Donation Box
+              Buy me a coffee
             </Link>
             <EggCounter />
           </div>

@@ -994,7 +994,8 @@ html {
   }
 }
 
-body:has(.popup) {
+/* On <html>, not <body>: see useScrollLock for why a body lock breaks the sticky navbar. */
+html:has(.popup) {
   overflow: hidden;
 }
 

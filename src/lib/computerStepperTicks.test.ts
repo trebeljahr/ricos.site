@@ -144,7 +144,17 @@ describe("per-tick trace", () => {
     it(`${name}: matches the old three-phase trace`, () => {
       const legacy = legacyTraceProgram(program);
       const derived = traceProgram(program).map(
-        ({ tick: _t, key: _k, keyReady: _r, interruptsOn: _i, keyPress: _p, ...rest }) => rest,
+        ({
+          tick: _t,
+          key: _k,
+          keyReady: _r,
+          interruptsOn: _i,
+          keyPress: _p,
+          pixelX: _x,
+          pixelY: _y,
+          screenWrite: _w,
+          ...rest
+        }) => rest,
       );
       expect(derived).toEqual(legacy);
       const ticks = traceTicks(program);

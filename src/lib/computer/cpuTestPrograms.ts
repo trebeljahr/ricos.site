@@ -130,6 +130,26 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     [HALT, 0],
   ),
   "unknown opcode halts": raw([LDI, 9], [0x00, 0], [OUT, 0]),
+  "pixel port": raw(
+    [LDI, 0xff],
+    [STM, 0xf6], // a full row
+    [LDI, 0x0d], // x = 5 (low 3 bits)
+    [STM, 0xf8],
+    [LDI, 0x0e], // y = 6
+    [STM, 0xf9],
+    [LDI, 0], // colour 0: pixel off
+    [STM, 0xfa],
+    [ADDM, 0xfb], // any port address reads the cursor's row: DF
+    [OUT, 0],
+    [LDI, 3],
+    [STM, 0xfc], // FC repeats F8: x = 3
+    [STM, 0xff], // FF repeats FA: ACC bit 0 is 1, pixel stays on
+    [LDI, 2],
+    [STM, 0xfa], // pixel (3, 6) off
+    [LDM, 0xf6],
+    [OUT, 0],
+    [HALT, 0],
+  ),
   "interrupt opcodes, no key": interruptOpcodes("hardware"),
   "compiled calls in a loop": compileProgram(
     "fn twice(n) {\n  return n + n;\n}\nfn add3(n) {\n  let m = twice(n);\n  return m + 3;\n}\nlet total = 0;\nfor (let i = 0; i < 5; i = i + 2) {\n  let t = add3(i);\n  total = total + t;\n  print(total);\n}\nprint(total);",

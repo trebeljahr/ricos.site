@@ -36,6 +36,8 @@ const controlOf = (state: Snapshot) =>
     .slice(0, SIGNALS.length)
     .reduce((word, bit, index) => (bit ? word | (1 << index) : word), 0);
 const bytesOf = (state: Snapshot, id: string) => (state.blocks?.[id] as Bytes).bytes;
+const cursorOf = (state: Snapshot) =>
+  [CPU_PARTS.pixelX, CPU_PARTS.pixelY].map((id) => (state.blocks?.[id] as { q: number }).q);
 
 /**
  * Runs the circuit next to the trace; returns the number of ticks compared.
@@ -68,6 +70,10 @@ function lockstep(
     expect(probes, `${where}: probes`).toEqual(expectedProbes(tick));
     expect(bytesOf(state, CPU_PARTS.ram), `${where}: data RAM`).toEqual(tick.ram);
     expect(bytesOf(state, CPU_PARTS.screen), `${where}: screen`).toEqual(tick.screen);
+    expect(cursorOf(state), `${where}: pixel cursor`).toEqual([
+      tick.registers.pixelX,
+      tick.registers.pixelY,
+    ]);
     if (!inRam)
       expect(
         bytesOf(state, CPU_PARTS.stack).slice(0, tick.registers.sp),
@@ -146,6 +152,24 @@ describe("CPU lockstep with the per-tick trace", () => {
     it(name, () => {
       expect(lockstep(program)).toBeGreaterThan(0);
     });
+
+  it("draws the CROSS preset's X one pixel per plot, as the trace does", () => {
+    const circuit = CPU_PRESETS["Toy CPU (CROSS program)"];
+    const program = compileProgram(SAMPLE_PROGRAMS.CROSS);
+    lockstep(program, circuit);
+    const ticks = traceTicks(program);
+    expect(ticks.at(-1)!.screen).toEqual([0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81]);
+    const plots = ticks.filter((tick) => tick.screenWrite?.x != null);
+    expect(plots).toHaveLength(16);
+    // Each plot changes exactly one pixel (the X's centre pixels are each plotted once).
+    for (const tick of plots) {
+      const before = ticks[tick.index - 1].screen;
+      const changed = tick.screen.flatMap((row, y) =>
+        Array.from({ length: 8 }, (_, x) => x).filter((x) => ((row ^ before[y]) >> x) & 1),
+      );
+      expect(changed).toHaveLength(1);
+    }
+  });
 
   it("runs the builder preset to HALT with OUT = 6", () => {
     const [circuit] = Object.values(CPU_PRESETS);

@@ -6,6 +6,7 @@ import {
   describeOperand,
   encodeInstruction,
   OPCODES,
+  PIXEL_PORT,
   SAMPLE_PROGRAMS,
   SCREEN_BASE,
   SCREEN_ROWS,
@@ -180,5 +181,103 @@ describe("memory-mapped screen", () => {
     const rows = [...new Set(sweep.map(({ screen }) => screen[3]))];
     expect(rows).toEqual([0, 1, 2, 4, 8, 16, 32, 64, 128]);
     expect(sweep.at(-1)?.output).toEqual([128]);
+  });
+});
+
+describe("pixel port and plot", () => {
+  const raw = (pairs: [number, number][]) => ({
+    instructions: pairs.map(([opcode, operand], index) => ({
+      address: index * 2,
+      opcode,
+      operand,
+      label: "",
+      line: index + 1,
+    })),
+    bytes: pairs.flat(),
+    variables: [],
+  });
+  const { LDI, LDM, STM, OUT, HALT } = OPCODES;
+
+  it("F8 and F9 set the cursor, FA writes ACC bit 0 to that one pixel", () => {
+    const ticks = traceTicks(
+      raw([
+        [LDI, 0xff],
+        [STM, 0xf2], // row 2 all on
+        [LDI, 13], // low 3 bits: 5
+        [STM, PIXEL_PORT.x],
+        [LDI, 2],
+        [STM, PIXEL_PORT.y],
+        [LDI, 2], // bit 0 is 0: pixel off
+        [STM, PIXEL_PORT.pixel],
+        [LDM, 0xfd], // any port address reads the cursor's row
+        [OUT, 0],
+        [LDI, 0],
+        [STM, 0xfc], // FC repeats F8: x = 0
+        [LDI, 1],
+        [STM, 0xff], // FF repeats FA (A1 set)
+        [HALT, 0],
+      ]),
+    );
+    const end = ticks.at(-1)!;
+    expect(end.screen[2]).toBe(0xff & ~(1 << 5));
+    expect(end.output).toEqual([0xdf]);
+    expect(end.registers).toMatchObject({ pixelX: 0, pixelY: 2 });
+    expect(end.ram).toEqual(Array(16).fill(0));
+    const writes = ticks.flatMap(({ screenWrite }) => (screenWrite ? [screenWrite] : []));
+    expect(writes).toEqual([
+      { y: 2, x: null, row: 0xff },
+      { y: 2, x: 5, row: 0xdf },
+      { y: 2, x: 0, row: 0xdf },
+    ]);
+    // A write is recorded on the tick whose clock edge stores it: STM's last tick.
+    for (const tick of ticks.filter(({ screenWrite }) => screenWrite))
+      expect(tick.control).toContain("RAM_IN");
+  });
+
+  it("compiles plot(x, y) to three stores and draws the CROSS sample", () => {
+    const program = compileProgram("let a = 3;\nplot(a, 6);\nplot(1, 1, 0);");
+    expect(program.bytes.slice(4, 16)).toEqual([
+      LDM,
+      0,
+      STM,
+      PIXEL_PORT.x,
+      LDI,
+      6,
+      STM,
+      PIXEL_PORT.y,
+      LDI,
+      1,
+      STM,
+      PIXEL_PORT.pixel,
+    ]);
+    expect(program.bytes.slice(24, 28)).toEqual([LDI, 0, STM, PIXEL_PORT.pixel]);
+    expect(traceProgram(program).at(-1)?.screen[6]).toBe(8);
+    const cross = traceProgram(compileProgram(SAMPLE_PROGRAMS.CROSS));
+    expect(cross.at(-1)?.screen).toEqual([0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81]);
+    // The stepper sees the grid fill in one pixel per plot.
+    const plotted = cross.filter(({ screenWrite }) => screenWrite);
+    expect(plotted).toHaveLength(16);
+    expect(
+      plotted.every(({ phase, screenWrite }) => phase === "execute" && screenWrite!.x !== null),
+    ).toBe(true);
+    expect(plotted[3].explanation).toMatch(/turns pixel \(1, 6\) on/);
+    expect(describeOperand(STM, PIXEL_PORT.y, []).long).toBe("pixel y (F9)");
+  });
+
+  it("rejects plots it can tell are off the screen, and plot as a name", () => {
+    expect(() => compileProgram("plot(8, 0);")).toThrow("Pixel x is 0 to 7");
+    expect(() => compileProgram("plot(0, 9);")).toThrow("Pixel y is 0 to 7");
+    expect(() => compileProgram("plot(0, 0, 2);")).toThrow("Pixel colour is 0 to 1");
+    expect(() => compileProgram("plot(1 + 2, 0);")).toThrow("Use plot(x, y);");
+    expect(() => compileProgram("fn plot(n) {\n  return n;\n}")).toThrow("reserved");
+  });
+
+  it("rejects a key handler that plots while the main program plots too", () => {
+    const both = "fn on_key(k) {\n  plot(k, 0);\n}\nloop {\n  plot(1, 1);\n}";
+    expect(() => compileProgram(both)).toThrow("both plot");
+    expect(() => compileProgram(both, { stack: "ram" })).toThrow("both plot");
+    expect(() =>
+      compileProgram("fn on_key(k) {\n  plot(k, 0);\n}\nloop {\n  screen[1] = 3;\n}"),
+    ).not.toThrow();
   });
 });

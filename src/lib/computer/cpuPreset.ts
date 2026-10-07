@@ -13,7 +13,8 @@
 // then read at SP" (RET), one micro-step each, so the stack here is a 16-byte
 // RAM addressed by SP, and SP is a register with its own ALU as an
 // incrementer. DMAR holds a full byte: F0–F7 reach the 8×8 screen instead of
-// the RAM, and RAM_OUT drives whichever of the two the address selects. Every
+// the RAM, F8–FA its pixel port (cursor x, cursor y, plot one pixel), and
+// RAM_OUT drives whichever the address selects. Every
 // clocked part runs on the control unit's GCLK, so HALT
 // freezes the whole machine.
 //
@@ -61,6 +62,9 @@ export const CPU_PARTS = {
   dmar: "dmar",
   ram: "ram",
   screen: "screen",
+  pixelX: "pixel-x",
+  pixelY: "pixel-y",
+  plotter: "plotter",
   acc: "acc",
   alu: "alu",
   flags: "flags",
@@ -143,6 +147,8 @@ const X = {
   part: 2050,
   partProbe: 2450,
   helper: 2750,
+  port: 4050,
+  portProbe: 4450,
 };
 
 function zeroTestCircuit(): Circuit {
@@ -201,9 +207,21 @@ export function cpuCircuit(
     ram: { id: CPU_PARTS.ram, x: X.part, y: 2740, label: inRam ? "DATA RAM + STACK" : "DATA RAM" },
     ramKind: inRam ? "ram32" : "ram16",
     screen: { id: CPU_PARTS.screen, x: X.part, y: 4550, label: "8×8 SCREEN" },
+    pixel: {
+      x: { id: CPU_PARTS.pixelX, x: X.port, y: 3700, label: "PIXEL X (F8)" },
+      y: { id: CPU_PARTS.pixelY, x: X.port, y: 4150, label: "PIXEL Y (F9)" },
+      plotter: { id: CPU_PARTS.plotter, x: X.port, y: 4600, label: "PIXEL PLOTTER (FA)" },
+    },
     x: X.helper,
     y: 2320,
   });
+  for (const [part, y, label] of [
+    [CPU_PARTS.pixelX, 3700, "PIXEL X"],
+    [CPU_PARTS.pixelY, 4150, "PIXEL Y"],
+  ] as const) {
+    b.add(`${part}-display`, "display4", X.portProbe, y, label);
+    wireBits(bits(part, 3), `${part}-display`);
+  }
   // The handler vector: a constant byte, one HIGH or GROUND per bit.
   b.add("vec-one", "high", X.clock, 5000, "1");
   b.add("vec-zero", "ground", X.clock, 5100, "0");
@@ -425,6 +443,18 @@ export function cpuCircuit(
         activeWhen: CPU_PARTS.int,
       },
       {
+        id: "screen",
+        label: "Screen: STM F8 sets the cursor's x, F9 its y, FA plots one pixel",
+        nodeIds: [
+          CPU_PARTS.screen,
+          CPU_PARTS.pixelX,
+          `${CPU_PARTS.pixelX}-display`,
+          CPU_PARTS.pixelY,
+          `${CPU_PARTS.pixelY}-display`,
+          CPU_PARTS.plotter,
+        ],
+      },
+      {
         id: "bus",
         label: "One shared bus: each *_OUT line enables one driver",
         nodeIds: [
@@ -446,12 +476,14 @@ export const cpuFromSource = (source: string, name?: string, stack: StackModel =
 const LOOP_PRESET = "Toy CPU (LOOP program)";
 const RECURSION_PRESET = "Toy CPU, stack in RAM (RECURSION program)";
 const KEYBOARD_PRESET = "Toy CPU (KEYBOARD program)";
+const CROSS_PRESET = "Toy CPU (CROSS program)";
 
 /** Builder examples: the CPU running one of the stepper's sample programs. */
 export const CPU_PRESETS: Record<string, Circuit> = {
   [LOOP_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.LOOP, LOOP_PRESET),
   [RECURSION_PRESET]: cpuFromSource(RAM_STACK_SAMPLES.RECURSION, RECURSION_PRESET, "ram"),
   [KEYBOARD_PRESET]: cpuFromSource(INTERRUPT_SAMPLES.KEYBOARD, KEYBOARD_PRESET),
+  [CROSS_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.CROSS, CROSS_PRESET),
 };
 
 export const CPU_HINTS: Record<string, string> = {
@@ -461,4 +493,6 @@ export const CPU_HINTS: Record<string, string> = {
     "The same CPU with its stack in data RAM: SP starts at 32 and counts down, CALL stores the return address at RAM[SP], and each call of sum gets its own stack frame at SP + 0, SP + 1, … That is what lets sum call itself. Run the clock until HALTED lights; OUT then shows 10.",
   [KEYBOARD_PRESET]:
     "The CPU waiting in a loop for keys. Set a key code on KEY BIT 0–7, switch KEY PRESS on for one clock cycle, then off. KEY READY and IRQ light; when the current instruction ends, INT comes on and the interrupt box glows: the control unit pushes PC, turns interrupts off and drives the vector 02 into PC. The handler draws the key code on screen row 3 and counts the presses on OUT.",
+  [CROSS_PRESET]:
+    "The CPU drawing an X with plot(x, y). Each plot is three stores: STM F8 loads PIXEL X, STM F9 loads PIXEL Y, and STM FA sends the colour through the PIXEL PLOTTER. On that tick the screen's row address comes from PIXEL Y, and the plotter hands back the row with one bit changed. Run the clock and watch the screen fill in, one pixel per plot, until HALTED lights.",
 };

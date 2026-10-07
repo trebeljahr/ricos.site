@@ -33,19 +33,20 @@ export type CpuLevelSpec = {
 
 const WIRING_PARTS: GateType[] = ["junction", "splitter", "merger", "busdriver"];
 
-const ramHelpers = [
-  "ram-high-lo",
-  "ram-high-hi",
-  "ram-screen-sel",
-  "ram-ram-sel",
-  "ram-ram-we",
-  "ram-screen-we",
-  ...Array.from({ length: 8 }, (_, bit) => [
-    `ram-ram-q${bit}`,
-    `ram-screen-q${bit}`,
-    `ram-read${bit}`,
-  ]).flat(),
+/** The data memory's decode, read-select and pixel port gates (ids "ram-…"). */
+const ramHelpers = cpuCircuit([])
+  .nodes.map((node) => node.id)
+  .filter((id) => id.startsWith(`${CPU_PARTS.ram}-`));
+/** The pixel port comes pre-wired: its bus lane inputs are plumbing, not reader wiring. */
+const pixelPort = [
+  CPU_PARTS.pixelX,
+  `${CPU_PARTS.pixelX}-display`,
+  CPU_PARTS.pixelY,
+  `${CPU_PARTS.pixelY}-display`,
+  CPU_PARTS.plotter,
 ];
+const isPortPlumbing = (wire: Wire) =>
+  pixelPort.includes(wire.to) || wire.to.startsWith(`${CPU_PARTS.ram}-row-d-direct`);
 
 export const CPU_LEVEL_SPECS: CpuLevelSpec[] = [
   {
@@ -131,8 +132,8 @@ export const CPU_LEVEL_SPECS: CpuLevelSpec[] = [
     goal: "Keep variables in RAM: DMAR takes the address from the bus, RAM_IN stores the bus there, RAM_OUT reads it back. ADDM and SUBM read RAM into OPERAND first.",
     steps: [
       "Wire bus lanes 0–7 into DMAR and DMAR_IN into its LOAD.",
-      "Wire bus lanes into the data inputs of the data RAM and of the screen.",
-      "Wire RAM_IN into both write-enable gates, connect the RAM bus driver to the bus and RAM_OUT to its enable.",
+      "Wire bus lanes into the data inputs of the data RAM. The screen and its pixel port take the bus through gates that are already wired.",
+      "Wire RAM_IN into the write-enable gates, connect the RAM bus driver to the bus and RAM_OUT to its enable.",
     ],
     parts: [
       CPU_PARTS.dmar,
@@ -140,6 +141,7 @@ export const CPU_LEVEL_SPECS: CpuLevelSpec[] = [
       CPU_PARTS.ram,
       CPU_PARTS.screen,
       ...ramHelpers,
+      ...pixelPort,
       "ram-lanes",
       "ram-drive",
     ],
@@ -235,7 +237,8 @@ export function readerLevel(wire: Wire): number | undefined {
   if (fromControl && wire.to !== "halted") return levelOfNode.get(wire.to);
   if (wire.to === CPU_PARTS.bus) return levelOfNode.get(wire.from);
   if (wire.from === CPU_PARTS.bus) return 1;
-  if (wire.from === "bus-lanes" && wire.to !== "bus-probe") return levelOfNode.get(wire.to);
+  if (wire.from === "bus-lanes" && wire.to !== "bus-probe" && !isPortPlumbing(wire))
+    return levelOfNode.get(wire.to);
   return undefined;
 }
 

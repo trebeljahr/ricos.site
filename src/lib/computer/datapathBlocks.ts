@@ -1,12 +1,12 @@
 // Datapath blocks for the toy CPU: register8, sp8, counter8, alu8, rom256, ram16,
-// ram32, stack16 and the screen8x8 framebuffer. Each is a module node whose gate form is the inner circuit and whose
+// ram32, stack16, the screen8x8 framebuffer and the plot8 pixel plotter. Each is a module node whose gate form is the inner circuit and whose
 // folded form runs as a registered behavioural block (see `registerBlock`).
 //
 // Outputs always come from the state before the clock commit, as a D flip-flop's
 // do, so the folded block and its gates agree after every step. RAM, stack and
 // screen rows are nested register8 blocks; ROM is 16 page blocks of readable byte rows.
 
-import { SCREEN_ROWS } from "../computerStepper";
+import { plotRow, SCREEN_ROWS } from "../computerStepper";
 import {
   Builder,
   busPorts,
@@ -338,6 +338,48 @@ export function screenRows(state: unknown): number[] {
   return range(SCREEN_ROWS).map((r) => (bytes?.[r] ?? 0) & 255);
 }
 
+// ---------------------------------------------------------------- plot8
+
+/**
+ * The pixel port's plotter: OUT is ROW with bit X replaced by C. A 3-to-8
+ * decoder turns X into one select line; each bit is a 2-way mux between the
+ * old pixel and C. Seven pixels pass through, one changes.
+ */
+function plot8Circuit(): Circuit {
+  const b = new Builder();
+  ports(b, [...busPorts("row", "ROW"), ...busPorts("x", "X", 3), ["c", "C"]]);
+  const x = range(3).map((bit) => `x${bit}`);
+  const inverted = x.map((bit, i) =>
+    b.gate(`x-not${i}`, "not", 200, 30 + i * 80, bit, undefined, `NOT X${i}`),
+  );
+  const pick = (column: number, bit: number) => ((column >> bit) & 1 ? x[bit] : inverted[bit]);
+  for (let bit = 0; bit < 8; bit++) {
+    const y = 30 + bit * 160;
+    const low = b.gate(`sel-p${bit}`, "and", 350, y, pick(bit, 0), pick(bit, 1));
+    const sel = b.gate(`sel${bit}`, "and", 500, y, low, pick(bit, 2), `X = ${bit}`);
+    const keep = b.gate(`keep-not${bit}`, "not", 650, y + 60, sel, undefined, `NOT X = ${bit}`);
+    const old = b.gate(`old${bit}`, "and", 800, y + 60, `row${bit}`, keep, `KEEP PIXEL ${bit}`);
+    const fresh = b.gate(`new${bit}`, "and", 800, y, "c", sel, `C INTO PIXEL ${bit}`);
+    b.gate(`out${bit}`, "or", 950, y, fresh, old);
+    b.gate(`q${bit}`, "lamp", 1100, y, `out${bit}`, undefined, `OUT${bit}`);
+  }
+  return b.circuit("Pixel plotter");
+}
+
+registerBlock<null>({
+  name: "plot8",
+  inputs: [...busPorts("row", "ROW"), ...busPorts("x", "X", 3), ["c", "C"]].map(([, l]) => l),
+  outputs: range(8).map((bit) => `OUT${bit}`),
+  initialState: () => null,
+  evaluate: (inputs, state) => ({
+    outputs: toBits(
+      plotRow(toNumber(inputs.slice(0, 8)), toNumber(inputs.slice(8, 11)), Number(inputs[11])),
+      8,
+    ),
+    nextState: state,
+  }),
+});
+
 // ---------------------------------------------------------------- data memory
 
 type Place = { id: string; x: number; y: number; label?: string };
@@ -351,44 +393,113 @@ type DataMemoryWiring = {
   /** ram16 (A0–A3) by default; ram32 (A0–A4) for the stack-in-RAM CPU. */
   ramKind?: "ram16" | "ram32";
   screen: Place;
+  /** The pixel port: cursor x and y registers and the plotter. */
+  pixel: { x: Place; y: Place; plotter: Place };
   /** Top left of the decode and read-select gates. */
   x: number;
   y: number;
 };
 
 /**
- * Adds a RAM and a screen8x8 behind one 8-bit data address, decoded as
- * `traceTicks` does: high nibble F selects the screen (row = A0–A2), anything
- * else the RAM (row = A0–A3, or A0–A4 for ram32). Returns the 8 read bits of
- * the selected byte.
+ * Adds a RAM, a screen8x8 and its pixel port behind one 8-bit data address,
+ * decoded as `traceTicks` does: F0–F7 are screen rows (row = A0–A2), F8–FF the
+ * pixel port (A1 = 0: cursor x or y by A0; A1 = 1: plot), anything else the
+ * RAM (row = A0–A3, or A0–A4 for ram32). On a port address the screen sees the
+ * cursor's y as its row and the plotter's output as its data, so one clock edge
+ * rewrites a single pixel. Returns the 8 read bits of the selected byte.
  */
 export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
-  const { address, data, we, clock, x, y } = wiring;
+  const { address, data, we, clock, x, y, pixel } = wiring;
   const id = (name: string) => `${wiring.ram.id}-${name}`;
   const upper = b.gate(id("high-lo"), "and", x, y, address[4], address[5]);
   const lower = b.gate(id("high-hi"), "and", x, y + 80, address[6], address[7]);
   const screenSel = b.gate(id("screen-sel"), "and", x + 140, y + 40, upper, lower, "SCREEN (F_)");
   const ramSel = b.gate(id("ram-sel"), "not", x + 280, y + 120, screenSel, undefined, "RAM");
   const ramWe = b.gate(id("ram-we"), "and", x + 420, y + 40, we, ramSel, "RAM WE");
-  const screenWe = b.gate(id("screen-we"), "and", x + 420, y + 200, we, screenSel, "SCREEN WE");
+
+  // Pixel port decode: F8–FF, then A1 and A0 pick x, y or plot.
+  const portSel = b.gate(
+    id("port-sel"),
+    "and",
+    x + 280,
+    y - 160,
+    screenSel,
+    address[3],
+    "PIXEL PORT (F8+)",
+  );
+  const rowSel = b.gate(id("row-sel"), "not", x + 420, y - 160, portSel, undefined, "NOT PORT");
+  const portWe = b.gate(id("port-we"), "and", x + 420, y - 80, we, portSel, "PORT WE");
+  const notA1 = b.gate(id("a1-low"), "not", x + 560, y - 240, address[1], undefined, "NOT A1");
+  const notA0 = b.gate(id("a0-low"), "not", x + 560, y - 320, address[0], undefined, "NOT A0");
+  const cursorWrite = b.gate(id("cursor-we"), "and", x + 700, y - 240, portWe, notA1);
+  const xWe = b.gate(id("x-we"), "and", x + 840, y - 320, cursorWrite, notA0, "SET X (F8)");
+  const yWe = b.gate(id("y-we"), "and", x + 840, y - 240, cursorWrite, address[0], "SET Y (F9)");
+  const plotWe = b.gate(id("plot-we"), "and", x + 700, y - 80, portWe, address[1], "PLOT (FA)");
+  const rowWe = b.gate(id("row-we"), "and", x + 560, y + 200, we, screenSel);
+  const rowWrite = b.gate(id("row-only-we"), "and", x + 700, y + 200, rowWe, rowSel);
+  const screenWe = b.gate(id("screen-we"), "or", x + 840, y + 200, rowWrite, plotWe, "SCREEN WE");
+
   const block = (
     place: Place,
     kind: "ram16" | "ram32" | "screen8x8",
     addressBits: number,
     write: Ref,
+    rowAddress: Ref[] = address,
+    rowData: Ref[] = data,
   ) => {
     b.add(place.id, "module", place.x, place.y, place.label ?? DATAPATH_BLOCKS[kind].label, {
       module: datapathCircuit(kind),
       behaviour: kind,
     });
-    for (let bit = 0; bit < addressBits; bit++) b.connect(address[bit], place.id, bit);
-    for (const [bit, source] of data.entries()) b.connect(source, place.id, addressBits + bit);
+    for (let bit = 0; bit < addressBits; bit++) b.connect(rowAddress[bit], place.id, bit);
+    for (const [bit, source] of rowData.entries()) b.connect(source, place.id, addressBits + bit);
     b.connect(write, place.id, addressBits + 8);
     b.connect(clock, place.id, addressBits + 9);
   };
+  /** A 2-way mux per bit: `port` on a pixel port address, else `direct`. */
+  const viaPort = (name: string, direct: Ref[], port: Ref[], top: number) =>
+    direct.map((source, bit) => {
+      const row = top + bit * 120;
+      const fromDirect = b.gate(id(`${name}-direct${bit}`), "and", x + 980, row, source, rowSel);
+      const fromPort = b.gate(
+        id(`${name}-port${bit}`),
+        "and",
+        x + 980,
+        row + 60,
+        port[bit],
+        portSel,
+      );
+      return b.gate(id(`${name}${bit}`), "or", x + 1120, row, fromDirect, fromPort);
+    });
+
+  // Cursor registers: three bits each; the upper five D inputs are tied low.
+  const zero = b.add(id("cursor-zero"), "ground", pixel.x.x - 200, pixel.x.y, "0");
+  const cursor = (place: Place, load: Ref) => {
+    b.add(place.id, "module", place.x, place.y, place.label, {
+      module: datapathCircuit("register8"),
+      behaviour: "register8",
+    });
+    for (let bit = 0; bit < 8; bit++) b.connect(bit < 3 ? data[bit] : zero, place.id, bit);
+    b.connect(load, place.id, 8);
+    b.connect(clock, place.id, 9);
+    return range(3).map((bit): Ref => [place.id, bit]);
+  };
+  const cursorX = cursor(pixel.x, xWe);
+  const cursorY = cursor(pixel.y, yWe);
+  const screenRow = viaPort("row-a", address.slice(0, 3), cursorY, y - 600);
+  b.add(pixel.plotter.id, "module", pixel.plotter.x, pixel.plotter.y, pixel.plotter.label, {
+    module: datapathCircuit("plot8"),
+    behaviour: "plot8",
+  });
+  for (let bit = 0; bit < 8; bit++) b.connect([wiring.screen.id, bit], pixel.plotter.id, bit);
+  for (const [bit, source] of cursorX.entries()) b.connect(source, pixel.plotter.id, 8 + bit);
+  b.connect(data[0], pixel.plotter.id, 11);
+  const plotted = range(8).map((bit): Ref => [pixel.plotter.id, bit]);
+  const screenData = viaPort("row-d", data, plotted, y + 1500);
+
   const ramKind = wiring.ramKind ?? "ram16";
   block(wiring.ram, ramKind, RAM_ADDRESS_BITS[ramKind], ramWe);
-  block(wiring.screen, "screen8x8", 3, screenWe);
+  block(wiring.screen, "screen8x8", 3, screenWe, screenRow, screenData);
   return range(8).map((bit) => {
     const row = y + 300 + bit * 140;
     const fromRam = b.gate(id(`ram-q${bit}`), "and", x + 560, row, [wiring.ram.id, bit], ramSel);
@@ -415,6 +526,11 @@ export function dataMemoryCircuit(): Circuit {
     clock: "clock",
     ram: { id: "ram", x: 1000, y: 30 },
     screen: { id: "screen", x: 1000, y: 800 },
+    pixel: {
+      x: { id: "pixel-x", x: 1600, y: 800, label: "PIXEL X" },
+      y: { id: "pixel-y", x: 1600, y: 1300, label: "PIXEL Y" },
+      plotter: { id: "plotter", x: 1600, y: 1800, label: DATAPATH_BLOCKS.plot8.label },
+    },
     x: 200,
     y: 1500,
   });
@@ -633,6 +749,10 @@ export const DATAPATH_BLOCKS = {
     label: "8×8 SCREEN",
     hint: "A picks a row (y); with WE on, a rising CLK stores D there. Bit i lights pixel x = i.",
   },
+  plot8: {
+    label: "PIXEL PLOTTER",
+    hint: "OUT is ROW with bit X set to C: one pixel changes, the other seven pass through.",
+  },
   ram32: {
     label: "32-BYTE RAM",
     hint: "Five address bits pick one of 32 rows; with WE on, a rising CLK stores D there.",
@@ -673,6 +793,8 @@ export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = [
       return ramCircuit(5);
     case "screen8x8":
       return screen8x8Circuit();
+    case "plot8":
+      return plot8Circuit();
     case "stack16":
       return stack16Circuit();
     case "rom256":
@@ -735,6 +857,7 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
     }
     case "rom256":
     case "alu8":
+    case "plot8":
       break;
   }
   return snapshot;
@@ -781,6 +904,7 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
     case "rom256":
       return { bytes: romBytes(node.module) };
     case "alu8":
+    case "plot8":
       return null;
   }
 }

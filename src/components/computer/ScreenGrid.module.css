@@ -23,3 +23,7 @@
   background: var(--pixel-on, #ff4d4d);
   box-shadow: 0 0 4px var(--pixel-glow, #ff393d99);
 }
+.written {
+  outline: 1px solid var(--pixel-written, #ffd84d);
+  outline-offset: -1px;
+}

@@ -97,7 +97,7 @@
 .empty { display: block; padding: 12px 0; color: #5a6b5d; font-size: 10px; }
 .outputScreen { display: flex; align-items: center; overflow: hidden; padding: 8px 12px; font-size: 31px; text-overflow: ellipsis; white-space: nowrap; }
 /* The memory-mapped 8×8 screen (STM F0–F7), in the LCD's greens. */
-.pixelScreen { --pixel-off: #9aab95; --pixel-on: #24452a; --pixel-glow: transparent; --screen-border: #6b806b; --screen-background: #aab6a6; margin-top: var(--spacing-tight); }
+.pixelScreen { --pixel-off: #9aab95; --pixel-on: #24452a; --pixel-glow: transparent; --screen-border: #6b806b; --screen-background: #aab6a6; --pixel-written: #b0412e; margin-top: var(--spacing-tight); }
 .flags { margin-top: 9px; color: #36503b; font-size: 10px; }
 .flags span { color: #66836a; }
 .bitSection { margin-top: 20px; }

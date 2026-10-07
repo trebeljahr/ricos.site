@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { compileProgram, SAMPLE_PROGRAMS, traceTicks } from "../computerStepper";
+import { compileProgram, plotRow, SAMPLE_PROGRAMS, traceTicks } from "../computerStepper";
 import {
   alu,
   DATAPATH_KINDS,
@@ -237,6 +237,18 @@ describe("datapath blocks", () => {
     }
   });
 
+  it("plot8: block equals gates for every row, column and colour", { timeout: 60_000 }, () => {
+    const pair = new Pair("plot8");
+    for (let row = 0; row < 256; row++)
+      for (let x = 0; x < 8; x++)
+        for (const c of [false, true]) {
+          const out = toNumber(pair.apply([...toBits(row, 8), ...toBits(x, 3), c]));
+          expect(out).toBe(plotRow(row, x, Number(c)));
+          // Only bit x may change.
+          expect((out ^ row) & ~(1 << x)).toBe(0);
+        }
+  });
+
   it("screen8x8: rows read back as bytes, blank without state", () => {
     expect(screenRows(undefined)).toEqual(Array(8).fill(0));
     expect(screenRows({ bytes: [1, 2, 3], clock: false })).toEqual([1, 2, 3, 0, 0, 0, 0, 0]);
@@ -387,6 +399,9 @@ describe("memory-mapped data memory", () => {
     mixed:
       "let a = 7;\nscreen[2] = a + 5;\nlet b = screen[2];\nscreen[5] = b - a;\nprint(screen[5]);",
     LOOP: SAMPLE_PROGRAMS.LOOP,
+    CROSS: SAMPLE_PROGRAMS.CROSS,
+    "plot over rows":
+      "screen[4] = 255;\nlet c = 0;\nplot(2, 4, c);\nplot(7, 4, c);\nplot(0, 1);\nlet x = 12;\nplot(x, 4);\nprint(screen[4]);",
   };
   for (const [name, source] of Object.entries(programs))
     for (const gates of [false, true])

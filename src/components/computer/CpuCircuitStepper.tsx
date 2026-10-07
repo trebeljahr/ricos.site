@@ -532,7 +532,12 @@ export function CpuCircuitStepper() {
                       : "—"}
                   </div>
                   {screen && (
-                    <ScreenGrid rows={screen} label="Screen" className={stepper.pixelScreen} />
+                    <ScreenGrid
+                      rows={screen}
+                      label="Screen"
+                      className={stepper.pixelScreen}
+                      written={previous?.screenWrite ?? null}
+                    />
                   )}
                 </div>
               </div>

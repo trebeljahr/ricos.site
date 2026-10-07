@@ -47,6 +47,11 @@ export type Snapshot = {
   ram: number[];
   /** Screen rows 0–7, written by STM F0–F7. Bit i of a row is the pixel at x = i. */
   screen: number[];
+  /** The pixel port's cursor, set by STM F8 (x) and STM F9 (y). */
+  pixelX: number;
+  pixelY: number;
+  /** The last screen write in this snapshot's ticks, if any. */
+  screenWrite: ScreenWrite | null;
   stack: number[];
   output: number[];
   activeAddress: number | null;
@@ -67,13 +72,32 @@ export type Snapshot = {
 };
 
 /**
- * Memory-mapped screen: data addresses F0–F7 are the 8×8 screen's rows 0–7. Any
- * address with high nibble F selects the screen (row = low 3 bits); every other
- * address reaches the 16-byte RAM through its low 4 bits.
+ * Memory-mapped screen: data addresses F0–F7 are the 8×8 screen's rows 0–7, and
+ * F8–FF are its pixel port. Any address with high nibble F selects the screen;
+ * every other address reaches RAM through its low 4 bits (5 with the stack in RAM).
  */
 export const SCREEN_BASE = 0xf0;
 export const SCREEN_ROWS = 8;
 export const isScreenAddress = (address: number) => (address & 0xf0) === SCREEN_BASE;
+
+/**
+ * The pixel port draws one pixel without touching the rest of its row. STM F8
+ * sets the cursor's x and STM F9 its y (low 3 bits each); STM FA writes ACC
+ * bit 0 into the pixel at the cursor. The port decodes A0–A1 only, so FB–FF
+ * repeat F8–FA. Reading any port address gives the cursor's row, screen[y].
+ */
+export const PIXEL_PORT = { x: 0xf8, y: 0xf9, pixel: 0xfa } as const;
+export const isPixelPort = (address: number) => (address & 0xf8) === 0xf8;
+export type PixelPortRole = "x" | "y" | "pixel";
+export const pixelPortRole = (address: number): PixelPortRole =>
+  (address & 2) !== 0 ? "pixel" : (address & 1) !== 0 ? "y" : "x";
+
+/** A screen write: a whole row (STM F0–F7, `x` null) or one pixel through the port. */
+export type ScreenWrite = { y: number; x: number | null; row: number };
+
+/** `row` with the pixel at `x` set to `colour` bit 0: what the port's plotter computes. */
+export const plotRow = (row: number, x: number, colour: number) =>
+  colour & 1 ? (row | (1 << x)) & 255 : row & ~(1 << x) & 255;
 
 export const OPCODES = {
   LDI: 0x10,
@@ -287,6 +311,12 @@ export function describeOperand(
 ): OperandMeaning {
   const kind = ISA.find((item) => item.opcode === opcode)?.operand;
   if (kind === "literal") return { short: `#${operand}`, long: `number ${operand}` };
+  if (kind === "RAM address" && isPixelPort(operand)) {
+    const role = pixelPortRole(operand);
+    return role === "pixel"
+      ? { short: `[${hex(operand)}] pixel`, long: `the pixel at the cursor (${hex(operand)})` }
+      : { short: `[${hex(operand)}] pixel ${role}`, long: `pixel ${role} (${hex(operand)})` };
+  }
   if (kind === "RAM address" && isScreenAddress(operand)) {
     const row = operand & (SCREEN_ROWS - 1);
     return {
@@ -334,6 +364,7 @@ type Statement =
     }
   | { kind: "print"; line: number; expression: Expression }
   | { kind: "call"; line: number; name: string; argument: string | null }
+  | { kind: "plot"; line: number; x: string; y: string; colour: string | null }
   | { kind: "return"; line: number; expression: Expression | null }
   | {
       kind: "if";
@@ -452,6 +483,15 @@ function parseProgram(source: string): {
         });
         continue;
       }
+      const plot = new RegExp(
+        `^plot\\s*\\(\\s*(${VALUE})\\s*,\\s*(${VALUE})\\s*(?:,\\s*(${VALUE})\\s*)?\\)\\s*;$`,
+      ).exec(text);
+      if (plot) {
+        statements.push({ kind: "plot", line, x: plot[1], y: plot[2], colour: plot[3] ?? null });
+        continue;
+      }
+      if (/^plot\b/.test(text))
+        fail(line, "Use plot(x, y); or plot(x, y, colour); with numbers or variables.");
       const returned = /^return(?:\s+(.+))?\s*;$/.exec(text);
       if (returned) {
         statements.push({
@@ -484,7 +524,7 @@ function parseProgram(source: string): {
         });
         continue;
       }
-      fail(line, "Use let, assignment, print, for, loop, if, function call, or return.");
+      fail(line, "Use let, assignment, print, plot, for, loop, if, function call, or return.");
     }
     if (inside) fail(lines.length, "Missing closing brace.");
     return statements;
@@ -497,6 +537,7 @@ function parseProgram(source: string): {
     if (header) {
       position++;
       if (header[1] === "print") fail(line, "print is reserved for output.");
+      if (header[1] === "plot") fail(line, "plot is reserved for the screen.");
       if (BUILTINS.has(header[1])) fail(line, `${header[1]} is built in.`);
       if (functions.some((item) => item.name === header[1]))
         fail(line, `Function “${header[1]}” is already defined.`);
@@ -566,6 +607,8 @@ export function compileProgram(
   /** Stack-in-RAM frame size per function: parameter plus locals. */
   const frameSizes = new Map<string, number>();
   const mainCalls = new Set<{ name: string; line: number }>();
+  /** Functions (and "main") whose own code plots a pixel. */
+  const plotters = new Set<string>();
 
   const emit = (opcode: number, operand: number, label: string, line: number): number => {
     if (instructions.length >= 128) fail(line, "Program exceeds 256 code bytes.");
@@ -732,6 +775,28 @@ export function compileProgram(
         emit(OPCODES.OUT, 0, "PRINT ACC", line);
       } else if (statement.kind === "call") {
         call(statement.name, statement.argument, scope, line, caller);
+      } else if (statement.kind === "plot") {
+        // Three stores to the pixel port: cursor x, cursor y, then the colour.
+        const { x, y, colour } = statement;
+        for (const [value, limit, what] of [
+          [x, SCREEN_ROWS - 1, "x"],
+          [y, SCREEN_ROWS - 1, "y"],
+          [colour, 1, "colour"],
+        ] as const)
+          if (value && /^\d+$/.test(value) && Number(value) > limit)
+            fail(line, `Pixel ${what} is 0 to ${limit}.`);
+        plotters.add(caller);
+        load(x, scope, line);
+        emit(OPCODES.STM, PIXEL_PORT.x, `PIXEL X ← ${x}`, line);
+        load(y, scope, line);
+        emit(OPCODES.STM, PIXEL_PORT.y, `PIXEL Y ← ${y}`, line);
+        load(colour ?? "1", scope, line);
+        emit(
+          OPCODES.STM,
+          PIXEL_PORT.pixel,
+          colour === null ? "PLOT" : `PLOT COLOUR ${colour}`,
+          line,
+        );
       } else if (statement.kind === "return") {
         if (caller === "main") fail(line, "return is only valid inside a function.");
         if (statement.expression) compileExpression(statement.expression, scope, line, caller);
@@ -865,9 +930,7 @@ export function compileProgram(
     return result;
   };
   for (const name of functions.keys()) depth(name);
-  if (handler && !inRam) {
-    // Every function variable has one fixed address: a key press inside a function the
-    // handler also runs would overwrite the interrupted call's variables.
+  if (handler) {
     const reach = (names: Iterable<string>, seen = new Set<string>()): Set<string> => {
       for (const name of names)
         if (!seen.has(name)) {
@@ -877,9 +940,18 @@ export function compileProgram(
       return seen;
     };
     const fromMain = reach([...mainCalls].map(({ name }) => name));
-    const shared = [...reach(functionCalls.get(KEY_HANDLER) ?? [])].find((name) =>
-      fromMain.has(name),
-    );
+    // The cursor is one pair of registers: a key press between a plot's stores would move it.
+    const handlerPlots = [...reach([KEY_HANDLER])].some((name) => plotters.has(name));
+    if (handlerPlots && (plotters.has("main") || [...fromMain].some((name) => plotters.has(name))))
+      fail(
+        handler.line,
+        `${KEY_HANDLER} and the main program both plot. A key press between setting a pixel's x and y would move the main program's cursor, so plot in only one of them.`,
+      );
+    // Every function variable has one fixed address: a key press inside a function the
+    // handler also runs would overwrite the interrupted call's variables.
+    const shared = inRam
+      ? undefined
+      : [...reach(functionCalls.get(KEY_HANDLER) ?? [])].find((name) => fromMain.has(name));
     if (shared)
       fail(
         handler.line,
@@ -919,6 +991,8 @@ export const SAMPLE_PROGRAMS = {
   // Doubling the row byte moves its one lit pixel a step to the right.
   SWEEP:
     "let pixel = 1;\nfor (let i = 0; i < 8; i++) {\n  screen[3] = pixel;\n  pixel = pixel + pixel;\n}\nprint(screen[3]);",
+  // plot(x, y) lights the pixel in column x of row y; two diagonals make an X.
+  CROSS: "for (let i = 0; i < 8; i++) {\n  plot(i, i);\n  let j = 7 - i;\n  plot(i, j);\n}",
 } as const;
 
 /**
@@ -1209,6 +1283,9 @@ export type Registers = {
   ie: boolean;
   /** INT latch: the next ticks run the interrupt entry instead of an instruction. */
   int: boolean;
+  /** The pixel port's cursor (0–7 each). */
+  pixelX: number;
+  pixelY: number;
 };
 
 export type TickPhase = "fetch" | "decode" | "execute";
@@ -1228,6 +1305,8 @@ export type Tick = {
   registers: Registers;
   ram: number[];
   screen: number[];
+  /** What this tick's clock edge wrote to the screen, if anything. */
+  screenWrite: ScreenWrite | null;
   /** Return stack entries, bottom first. With the stack in RAM: RAM[1F] down to RAM[SP]. */
   stack: number[];
   output: number[];
@@ -1283,11 +1362,13 @@ export function traceTicks(
   const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
   const ram = Array<number>(STACK_MODELS[stack].ramBytes).fill(0);
   const screen = Array<number>(SCREEN_ROWS).fill(0);
-  // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM or the screen.
-  const data = (address: number): [number[], number] =>
-    isScreenAddress(address)
-      ? [screen, address & (SCREEN_ROWS - 1)]
-      : [ram, address & (ram.length - 1)];
+  // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM, a screen row or the pixel port.
+  const readData = (address: number, cursorY: number) =>
+    isPixelPort(address)
+      ? screen[cursorY]
+      : isScreenAddress(address)
+        ? screen[address & (SCREEN_ROWS - 1)]
+        : ram[address & (ram.length - 1)];
   const stackMemory = Array<number>(16).fill(0);
   /** With the stack in RAM, SP may not move below the last fixed variable. */
   const floor = inRam ? program.variables.length : 0;
@@ -1308,6 +1389,8 @@ export function traceTicks(
     keyReady: false,
     ie: false,
     int: false,
+    pixelX: 0,
+    pixelY: 0,
   };
   let t = 0;
   let instruction = 0;
@@ -1329,10 +1412,7 @@ export function traceTicks(
       PC: () => registers.pc,
       ROM: () => rom[registers.cmar],
       OPR: () => registers.opr,
-      RAM: () => {
-        const [memory, row] = data(registers.dmar);
-        return memory[row];
-      },
+      RAM: () => readData(registers.dmar, registers.pixelY),
       ACC: () => registers.acc,
       ALU: () => sum & 255,
       STACK: () => stackMemory[registers.sp],
@@ -1353,6 +1433,7 @@ export function traceTicks(
           : null;
     const next = { ...registers };
     const keyPress = keys[ticks.length] ?? null;
+    let screenWrite: ScreenWrite | null = null;
     if (!fault && bus !== null) {
       if (on.has("CMAR_IN")) next.cmar = bus;
       if (on.has("IR_IN")) next.ir = bus;
@@ -1362,8 +1443,19 @@ export function traceTicks(
       if (on.has("SP_IN")) next.sp = bus;
       if (on.has("ACC_IN")) next.acc = bus;
       if (on.has("RAM_IN")) {
-        const [memory, row] = data(registers.dmar);
-        memory[row] = bus;
+        const address = registers.dmar;
+        const role = isPixelPort(address) ? pixelPortRole(address) : null;
+        if (role === "x") next.pixelX = bus & (SCREEN_ROWS - 1);
+        else if (role === "y") next.pixelY = bus & (SCREEN_ROWS - 1);
+        else if (role === "pixel") {
+          const { pixelX: x, pixelY: y } = registers;
+          screen[y] = plotRow(screen[y], x, bus);
+          screenWrite = { y, x, row: screen[y] };
+        } else if (isScreenAddress(address)) {
+          const y = address & (SCREEN_ROWS - 1);
+          screen[y] = bus;
+          screenWrite = { y, x: null, row: bus };
+        } else ram[address & (ram.length - 1)] = bus;
       }
       if (on.has("STACK_IN")) stackMemory[registers.sp] = bus;
       if (on.has("OUT_IN")) {
@@ -1396,6 +1488,7 @@ export function traceTicks(
       registers: { ...registers },
       ram: [...ram],
       screen: [...screen],
+      screenWrite,
       stack: inRam ? ram.slice(registers.sp).reverse() : stackMemory.slice(0, registers.sp),
       output: [...output],
       halted,
@@ -1420,8 +1513,15 @@ function explainExecute(
   after: Registers,
   stack: number[],
   inRam: boolean,
+  write: ScreenWrite | null,
 ): string {
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
+  if (mnemonic === "STM" && write && write.x !== null)
+    return `ACC bit 0 is ${after.acc & 1}, so the plotter turns pixel (${write.x}, ${write.y}) ${after.acc & 1 ? "on" : "off"}; screen row ${write.y} becomes ${byteBits(write.row)}.`;
+  if (mnemonic === "STM" && isPixelPort(operand) && pixelPortRole(operand) !== "pixel") {
+    const role = pixelPortRole(operand);
+    return `Set the pixel cursor's ${role} to ${role === "x" ? after.pixelX : after.pixelY} (ACC ${after.acc}, low 3 bits).`;
+  }
   switch (mnemonic) {
     case "LDI":
       return `Load the number ${operand} itself into ACC.`;
@@ -1520,10 +1620,14 @@ export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): 
     keyReady: false,
     interruptsOn: false,
     keyPress: null,
+    pixelX: 0,
+    pixelY: 0,
+    screenWrite: null,
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
       ...state,
+      screenWrite: null,
       ...patch,
       ram: patch.ram ?? [...state.ram],
       screen: patch.screen ?? [...state.screen],
@@ -1545,6 +1649,9 @@ export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): 
       keyReady: last.registers.keyReady,
       interruptsOn: last.registers.ie,
       keyPress: ticks.find((tick) => tick.keyPress !== null)?.keyPress ?? null,
+      pixelX: last.registers.pixelX,
+      pixelY: last.registers.pixelY,
+      screenWrite: ticks.findLast((tick) => tick.screenWrite)?.screenWrite ?? null,
     };
   };
   for (const group of groups) {
@@ -1610,7 +1717,16 @@ export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): 
     const touchesRam =
       !isScreenAddress(last.registers.dmar) &&
       group.some(({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"));
-    const effect = explainExecute(opcode, operand, meaning, state, after, last.stack, inRam);
+    const effect = explainExecute(
+      opcode,
+      operand,
+      meaning,
+      state,
+      after,
+      last.stack,
+      inRam,
+      last.screenWrite,
+    );
     record({
       phase: "execute",
       pc: after.pc,

@@ -24,7 +24,7 @@ import panel from "./ByteExplorer.module.css";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY } = SAMPLE_PROGRAMS;
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS } = SAMPLE_PROGRAMS;
 const { RECURSION } = RAM_STACK_SAMPLES;
 const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
@@ -418,7 +418,17 @@ export function ProgramStepper() {
                   </div>
                   <div className={styles.outputScreen}>{state.output.join(" ") || "—"}</div>
                   {usesScreen && (
-                    <ScreenGrid rows={state.screen} label="Screen" className={styles.pixelScreen} />
+                    <>
+                      <ScreenGrid
+                        rows={state.screen}
+                        label="Screen"
+                        className={styles.pixelScreen}
+                        written={state.screenWrite}
+                      />
+                      <div className={styles.flags}>
+                        PIXEL X {state.pixelX} <span>·</span> Y {state.pixelY}
+                      </div>
+                    </>
                   )}
                   <div className={styles.flags}>
                     ZERO {Number(state.zero)} <span>·</span> CARRY {Number(state.carry)}
@@ -621,6 +631,9 @@ export function ProgramSource({
         </button>
         <button type="button" onClick={() => preset(SMILEY)} className={styles.button}>
           SCREEN
+        </button>
+        <button type="button" onClick={() => preset(CROSS)} className={styles.button}>
+          PLOT
         </button>
         <button
           type="button"

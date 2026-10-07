@@ -1,19 +1,23 @@
 // The if-chain interpreter that traceProgram used before it was derived from
 // the microcode ticks. Tests only: it is the reference the tick trace must match.
 import {
+  byteBits,
   type CompiledProgram,
   describeOperand,
+  type Snapshot as FullSnapshot,
   hex,
   ISA,
+  isPixelPort,
   isScreenAddress,
   OPCODES,
-  type Snapshot as FullSnapshot,
+  pixelPortRole,
+  plotRow,
 } from "./computerStepper";
 
-/** The snapshot fields that predate the key port. */
+/** The snapshot fields that predate the key port and the pixel cursor. */
 export type Snapshot = Omit<
   FullSnapshot,
-  "tick" | "key" | "keyReady" | "interruptsOn" | "keyPress"
+  "tick" | "key" | "keyReady" | "interruptsOn" | "keyPress" | "pixelX" | "pixelY" | "screenWrite"
 >;
 
 export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
@@ -47,6 +51,9 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
     snapshots.push(state);
   };
   record({});
+  // The pixel port's cursor (F8 x, F9 y); FA plots at it.
+  let cursorX = 0;
+  let cursorY = 0;
   for (let count = 0; count < 512; count++) {
     const address = state.pc;
     const instruction = program.instructions[address / 2];
@@ -79,7 +86,8 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
     let ram = state.ram;
     let screen = state.screen;
     // Data addresses F0–F7 are the screen's rows; the RAM is only touched below them.
-    const read = (at: number) => (isScreenAddress(at) ? screen[at & 7] : ram[at]);
+    const read = (at: number) =>
+      isPixelPort(at) ? screen[cursorY] : isScreenAddress(at) ? screen[at & 7] : ram[at];
     const touch = (at: number) => (isScreenAddress(at) ? null : at);
     let stack = state.stack;
     let output = state.output;
@@ -96,6 +104,17 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
         opcode === OPCODES.LDI
           ? `Load the number ${operand} itself into ACC.`
           : `Go to ${meaning}, read the ${accumulator} stored there, and load it into ACC.`;
+    } else if (opcode === OPCODES.STM && isPixelPort(operand)) {
+      const role = pixelPortRole(operand);
+      if (role === "pixel") {
+        screen = [...screen];
+        screen[cursorY] = plotRow(screen[cursorY], cursorX, accumulator);
+        effect = `ACC bit 0 is ${accumulator & 1}, so the plotter turns pixel (${cursorX}, ${cursorY}) ${accumulator & 1 ? "on" : "off"}; screen row ${cursorY} becomes ${byteBits(screen[cursorY])}.`;
+      } else {
+        if (role === "x") cursorX = accumulator & 7;
+        else cursorY = accumulator & 7;
+        effect = `Set the pixel cursor's ${role} to ${accumulator & 7} (ACC ${accumulator}, low 3 bits).`;
+      }
     } else if (opcode === OPCODES.STM) {
       if (isScreenAddress(operand)) {
         screen = [...screen];

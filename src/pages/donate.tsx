@@ -98,7 +98,7 @@ export default function DonatePage({
 
   return (
     <Layout
-      title="Buy me a coffee – ricos.site"
+      title="Support Me – ricos.site"
       description="If something here was useful or made your day a little better, you can buy me a coffee."
       url="donate"
       keywords={[
@@ -114,7 +114,7 @@ export default function DonatePage({
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Buy me a coffee", url: "/donate" },
+          { name: "Support Me", url: "/donate" },
         ]}
       />
       <PageMain>
@@ -122,9 +122,9 @@ export default function DonatePage({
           <Header
             breadcrumbs={{
               path: "donate",
-              overwrites: [{ matchingPath: "donate", newText: "buy-me-a-coffee" }],
+              overwrites: [{ matchingPath: "donate", newText: "support-me" }],
             }}
-            title="Support me creating this work"
+            title="Support Me"
           />
 
           {/* A donor coming back from Stripe lands at the top of the page, so the

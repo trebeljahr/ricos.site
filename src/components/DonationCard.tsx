@@ -277,7 +277,7 @@ export function DonationCard({
             {title}
           </h2>
           <p className="mt-label mb-0 max-w-prose donation-muted text-gray-700 dark:text-gray-200">
-            One coffee or one every month. Both keep me making things.
+            Give once, or set up a small monthly gift.
           </p>
 
           {showStripe && (
@@ -300,15 +300,15 @@ export function DonationCard({
                           <motion.div key={option.label} variants={tileVariants}>
                             <ExternalLink
                               href={option.href ? withReference(option.href, reference) : "#"}
-                              className={clsx(tileClass, "min-h-28 justify-between px-4 py-3")}
+                              className={clsx(tileClass, "px-4 py-3")}
                             >
-                              {option.emoji && (
-                                <span aria-hidden className="self-end mb-2 text-2xl leading-none">
-                                  {option.emoji}
-                                </span>
-                              )}
-                              <span className="text-xl font-bold donation-ink text-gray-900 dark:text-white">
+                              <span className="flex items-center justify-between gap-label text-xl font-bold donation-ink text-gray-900 dark:text-white">
                                 {option.label} / month
+                                {option.emoji && (
+                                  <span aria-hidden className="text-2xl leading-none">
+                                    {option.emoji}
+                                  </span>
+                                )}
                               </span>
                               <span className="mt-tight text-sm donation-muted text-gray-600 group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-gray-100">
                                 {option.note}

@@ -12,6 +12,7 @@ import { type Timeline, createTimeline, currentFrame, push, replaceSnapshot, see
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
+  BUS_TYPES,
   BLUEPRINTS as sourceBlueprints,
   type BlueprintFamily,
   blueprintGate,
@@ -23,6 +24,7 @@ import {
   inputCount,
   isProbeDisplay,
   inputLabel,
+  inputWidth,
   LABELS,
   type LogicGate,
   moduleInputs,
@@ -31,6 +33,7 @@ import {
   normalizeProbeName,
   outputCount,
   outputLabel,
+  outputWidth,
   PRESETS as sourcePresets,
   PROBE_NAMES,
   type Snapshot,
@@ -38,7 +41,9 @@ import {
   validateCircuit,
   WIRE_COLORS,
   type WireColor,
+  wireFits,
 } from "../../lib/computer/logic";
+import { type BusValue, formatBus } from "../../lib/computer/bus";
 import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
@@ -74,6 +79,8 @@ const circuitHints: Record<string, string> = {
     "On each clock edge, SERIAL IN enters bit 0 and stored bits shift toward bit 7.",
   "8-bit binary counter":
     "On each clock edge, the 8-bit value increases by one. Q0 is the least significant bit.",
+  "8-bit shared bus":
+    "Top: each source reaches the shared bus through a driver with its own ENABLE. No driver on leaves the bus floating (Z, grey); two drivers with different values conflict (X, red). Bottom: a multiplexer picks one source with SELECT B, so two sources can never fight.",
 };
 const MIN_ZOOM = 1e-9;
 const MAX_ZOOM = 1e9;
@@ -126,6 +133,10 @@ const partColors: Record<GateType, string> = {
   srlatch: "#b9e976",
   dlatch: "#b9e976",
   dramcell: "#7cb8ff",
+  splitter: "#7cb8ff",
+  merger: "#7cb8ff",
+  busdriver: "#69e2e0",
+  bus: "#69e2e0",
   module: "#ffc76a",
 };
 type WireDraft = {
@@ -138,6 +149,21 @@ type WireDraft = {
   originX: number;
   originY: number;
 };
+/** The value on a bus part: hex when driven, Z when floating, X on a conflict. */
+function BusReadout({ value }: { value: BusValue }) {
+  return (
+    <span
+      className={clsx(
+        styles.busReadout,
+        value === "Z" && styles.busValueFloating,
+        value === "X" && styles.busValueConflict,
+      )}
+      title={value === "Z" ? "Floating: no driver is enabled" : value === "X" ? "Conflict: enabled drivers disagree" : `${value} decimal`}
+    >
+      {formatBus(value)}
+    </span>
+  );
+}
 function PortWirePreview({ wiring }: { wiring: ReturnType<typeof usePortWiring> }) {
   return <g data-port-preview={wiring.previews.length || undefined}>
     {wiring.previews.map(({ from, to }, index) => <path key={index}
@@ -179,6 +205,10 @@ const palette: GateType[] = [
   "dff",
   "srlatch",
   "dlatch",
+  "merger",
+  "splitter",
+  "busdriver",
+  "bus",
 ];
 const clone = (circuit: Circuit): Circuit => JSON.parse(JSON.stringify(circuit));
 type ViewLevel = { parent: Circuit; snapshot: Snapshot; via: string; moduleId?: string; unfolded: string[]; viewport?: ViewportState };
@@ -448,7 +478,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     const boundaryPorts = (kind: InlineEndpoint["kind"]) => endpoints
       .filter((port) => port.boundary && port.kind === kind)
       .map((port) => ({ nodeId: port.id, kind, index: port.port, ...port.point,
-        bank: `boundary-${kind}-${portLabelBank(port.label)}`, label: port.label }));
+        bank: `boundary-${kind}-${portLabelBank(port.label)}`, label: port.label, width: 1 as const }));
     return [...boundaryPorts("output"), ...wiringPorts(layout.parts, portPoint), ...boundaryPorts("input")];
   }, [endpoints, layout.parts]);
   const portWiring = usePortWiring({
@@ -484,6 +514,13 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     if (first.kind === second.kind || first.id === second.id) return;
     const from = first.kind === "output" ? first : second;
     const to = first.kind === "input" ? first : second;
+    const fromNode = circuit.nodes.find((item) => item.id === from.id);
+    const toNode = circuit.nodes.find((item) => item.id === to.id);
+    if (fromNode && toNode && !wireFits(fromNode, from.port, toNode, to.port)) {
+      setPortMessage("Bus ports carry 8 lanes and connect only to other bus ports.");
+      setPendingPort(null);
+      return;
+    }
     onEdit(path, (inner) => {
       const existing = inner.wires.find((wire) => wire.to === to.id && wire.input === to.port);
       if (existing?.from === from.id && (existing.output ?? 0) === from.port) return inner;
@@ -926,6 +963,9 @@ export function LogicBuilder() {
     for (const { inner, layout } of expandedDetails.values()) addExpanded(inner, layout);
     return counts;
   }, [circuit.nodes.length, circuit.wires.length, expandedDetails]);
+  const busConflicts = circuit.nodes
+    .filter((node) => node.type === "bus" && snapshot.buses?.[node.id] === "X")
+    .map((node) => node.label || LABELS[node.type]);
   const displayNodes = useMemo<DisplayNode[]>(() => {
     const nodes = circuit.nodes.map((node) => {
       const detail = expandedDetails.get(node.id);
@@ -1699,6 +1739,19 @@ export function LogicBuilder() {
     }
     if (from === to) {
       setMessage("A gate cannot wire to itself.");
+      return;
+    }
+    const fromNode = circuit.nodes.find((item) => item.id === from);
+    const toNode = circuit.nodes.find((item) => item.id === to);
+    if (fromNode && toNode && !wireFits(fromNode, output, toNode, input)) {
+      setMessage(
+        outputWidth(fromNode, output) === 8
+          ? "This is an 8-lane bus. Connect it to a bus input, or split it into bits first."
+          : inputWidth(toNode, input) === 8
+            ? "This input takes an 8-lane bus. Merge 8 single wires into a bus first."
+            : "Those ports have different widths.",
+      );
+      setPending(null);
       return;
     }
     const sourceColor =
@@ -2764,8 +2817,11 @@ export function LogicBuilder() {
                         ? routes.paths[wire.id]
                         : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 })
                       : orientedWirePath({ x: x1, y: y1 }, { x: x2, y: y2 }, outputSide(from), inputSide(to));
-                    const color =
-                      WIRE_COLORS[wire.color ?? defaultWireColor(wire.from, circuit.nodes)];
+                    const isBus = outputWidth(from, wire.output ?? 0) === 8;
+                    const wireColor = wire.color ?? defaultWireColor(wire.from, circuit.nodes);
+                    // Red on a bus means a conflict, so a driven bus never uses the coral wire colour.
+                    const color = WIRE_COLORS[isBus && wireColor === "coral" ? "blue" : wireColor];
+                    const busValue = isBus ? snapshot.buses?.[wire.from] ?? "Z" : undefined;
                     return (
                       <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
                         <path
@@ -2824,12 +2880,33 @@ export function LogicBuilder() {
                           d={d}
                           className={clsx(
                             styles.wire,
-                            (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
-                              snapshot.values[wire.from]) &&
-                              styles.live,
+                            isBus
+                              ? [
+                                  styles.busLanes,
+                                  busValue === "Z" && styles.busFloating,
+                                  busValue === "X" && styles.busConflict,
+                                  typeof busValue === "number" && busValue > 0 && styles.live,
+                                ]
+                              : (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
+                                  snapshot.values[wire.from]) &&
+                                  styles.live,
                             selectedWires.includes(wire.id) && styles.wireSelected,
                           )}
                         />
+                        {isBus && (
+                          <text
+                            x={x1 + (outputSide(from) === "left" ? -10 : 10)}
+                            y={y1 - 9}
+                            textAnchor={outputSide(from) === "left" ? "end" : "start"}
+                            className={clsx(
+                              styles.busValue,
+                              busValue === "Z" && styles.busValueFloating,
+                              busValue === "X" && styles.busValueConflict,
+                            )}
+                          >
+                            {formatBus(busValue)}
+                          </text>
+                        )}
                       </g>
                     );
                   })}
@@ -3158,6 +3235,16 @@ export function LogicBuilder() {
                           >
                             SEND
                           </button>
+                        ) : BUS_TYPES.has(node.type) ? (
+                          <BusReadout
+                            value={
+                              node.type === "splitter"
+                                ? snapshot.buses?.[
+                                    circuit.wires.find((wire) => wire.to === node.id)?.from ?? ""
+                                  ] ?? "Z"
+                                : snapshot.buses?.[node.id] ?? "Z"
+                            }
+                          />
                         ) : node.type === "module" ? (
                           <span className={styles.moduleBits}>
                             {moduleInputs(node.module!).length} IN ·{" "}
@@ -3256,10 +3343,15 @@ export function LogicBuilder() {
             </div>
           </div>
           <div className={styles.status}>
-            <span className={snapshot.unstable ? styles.warning : ""}>
+            <span
+              className={snapshot.unstable || busConflicts.length ? styles.warning : ""}
+              role={busConflicts.length ? "alert" : undefined}
+            >
               {snapshot.unstable
                 ? "Feedback loop did not settle. Add a flip-flop to store state."
-                : message}
+                : busConflicts.length
+                  ? `Bus conflict on ${busConflicts.join(", ")}: two enabled drivers send different values. Turn one driver off.`
+                  : message}
             </span>
             <span>
               {canvasCounts.parts} parts · {canvasCounts.wires} wires

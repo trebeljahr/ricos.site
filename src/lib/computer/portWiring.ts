@@ -1,17 +1,20 @@
 import {
   inputCount,
   inputLabel,
+  inputWidth,
   LABELS,
   type Node,
   outputCount,
   outputLabel,
+  outputWidth,
   type Wire,
 } from "./logic";
 
 export type PortKind = "input" | "output";
 export type PortRef = { nodeId: string; kind: PortKind; index: number };
 export type PortPoint = { x: number; y: number };
-export type WiringPort = PortRef & PortPoint & { bank: string; label: string };
+/** `width` is 8 for a bus port, which only joins other bus ports. */
+export type WiringPort = PortRef & PortPoint & { bank: string; label: string; width: 1 | 8 };
 export type PortConnection = Pick<Wire, "from" | "to" | "input"> & { output: number };
 export type PortPlan = {
   connections: PortConnection[];
@@ -44,6 +47,7 @@ export function wiringPorts<T extends Node>(
             index,
             ...point(node, index, kind),
             bank: JSON.stringify([node.id, kind, bankStart]),
+            width: kind === "input" ? inputWidth(node, index) : outputWidth(node, index),
             label: `${node.label || node.module?.name || LABELS[node.type]} ${label}`,
           };
         },
@@ -88,6 +92,15 @@ export function planPortConnections(
   });
   if (connections.some((wire) => wire.from === wire.to))
     return fail("A part cannot wire to itself.", connections);
+  const width = (nodeId: string, kind: PortKind, index: number) =>
+    ports.find((port) => port.nodeId === nodeId && port.kind === kind && port.index === index)
+      ?.width ?? 1;
+  if (
+    connections.some(
+      (wire) => width(wire.from, "output", wire.output) !== width(wire.to, "input", wire.input),
+    )
+  )
+    return fail("Bus ports carry 8 lanes and connect only to other bus ports.", connections);
   if (
     connections.some((connection) =>
       wires.some(

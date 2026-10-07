@@ -24,7 +24,7 @@ export const nodeHeight = (node: DisplayNode) =>
             : Math.max(inputCount(node), outputCount(node))) *
             25,
       )
-    : ["input4", "input8", "display4", "display8"].includes(node.type)
+    : ["input4", "input8", "display4", "display8", "merger", "splitter", "bus"].includes(node.type)
       ? Math.max(
           node.type.startsWith("display") ? 142 : 116,
           92 + Math.max(inputCount(node), outputCount(node)) * 24,

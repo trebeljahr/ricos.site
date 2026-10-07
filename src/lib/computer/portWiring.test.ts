@@ -112,3 +112,32 @@ describe("port connection planning", () => {
     expect(planPortConnections([outputs[0]], inputs[0], ports, many).error).toContain("800");
   });
 });
+
+describe("bus port wiring", () => {
+  const parts: Node[] = [
+    { id: "bits", type: "input8", x: 0, y: 0 },
+    { id: "merge", type: "merger", x: 200, y: 0 },
+    { id: "drive", type: "busdriver", x: 400, y: 0 },
+    { id: "bus", type: "bus", x: 600, y: 0 },
+    { id: "lamp", type: "lamp", x: 800, y: 0 },
+  ];
+  const all = wiringPorts(parts, (node, index) => ({ x: node.x, y: node.y + index * 25 }));
+  const port = (nodeId: string, kind: "input" | "output", index = 0) =>
+    all.find((item) => item.nodeId === nodeId && item.kind === kind && item.index === index)!;
+  it("connects 8 bits into a merger and buses to bus inputs", () => {
+    const bits = all.filter((item) => item.nodeId === "bits");
+    expect(planPortConnections(bits, port("merge", "input"), all, []).connections).toHaveLength(8);
+    expect(planPortConnections([port("merge", "output")], port("drive", "input"), all, []).error)
+      .toBeUndefined();
+    expect(planPortConnections([port("drive", "output")], port("bus", "input", 1), all, []).error)
+      .toBeUndefined();
+  });
+  it("refuses to join a bus port with a single-bit port", () => {
+    expect(planPortConnections([port("bus", "output")], port("lamp", "input"), all, []).error)
+      .toContain("Bus ports");
+    expect(planPortConnections([port("bits", "output")], port("drive", "input"), all, []).error)
+      .toContain("Bus ports");
+    expect(planPortConnections([port("bits", "output")], port("drive", "input", 1), all, []).error)
+      .toBeUndefined();
+  });
+});

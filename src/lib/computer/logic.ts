@@ -1,3 +1,4 @@
+import { bitsFromBus, busFromBits, type BusValue, resolveBus } from "./bus";
 import { MEMORY_PRESETS } from "./memoryCircuits";
 
 export type GateType =
@@ -25,6 +26,10 @@ export type GateType =
   | "srlatch"
   | "dlatch"
   | "dramcell"
+  | "splitter"
+  | "merger"
+  | "busdriver"
+  | "bus"
   | "module";
 export type Node = {
   id: string;
@@ -70,6 +75,8 @@ export type Snapshot = {
   modules: Record<string, Snapshot>;
   /** State of behavioural blocks, keyed by module node id. */
   blocks?: Record<string, unknown>;
+  /** Values of 8-lane bus outputs (merger, bus driver, bus), keyed by node id. */
+  buses?: Record<string, BusValue>;
   unstable: boolean;
 };
 
@@ -98,6 +105,10 @@ export const INPUTS: Record<GateType, number> = {
   srlatch: 2,
   dlatch: 2,
   dramcell: 2,
+  splitter: 1,
+  merger: 8,
+  busdriver: 2,
+  bus: 4,
   module: 0,
 };
 export const LABELS: Record<GateType, string> = {
@@ -125,6 +136,10 @@ export const LABELS: Record<GateType, string> = {
   srlatch: "SR LATCH",
   dlatch: "D LATCH",
   dramcell: "DRAM CAPACITOR",
+  splitter: "BUS SPLITTER",
+  merger: "BUS MERGER",
+  busdriver: "BUS DRIVER",
+  bus: "8-BIT BUS",
   module: "CIRCUIT",
 };
 export const PROBE_NAMES = ["ACC", "PC", "IR", "OPERAND", "SP", "FLAGS", "BUS"] as const;
@@ -154,21 +169,42 @@ export const outputCount = (node: Node) =>
       ? 0
       : node.type === "input4"
         ? 4
-        : node.type === "input8"
+        : node.type === "input8" || node.type === "splitter"
           ? 8
           : 1;
+/** Bus ports carry 8 lanes on one wire; every other port carries one bit. */
+export const BUS_TYPES = new Set<GateType>(["splitter", "merger", "busdriver", "bus"]);
+export const inputWidth = (node: Node, index: number): 1 | 8 =>
+  node.type === "bus" || (index === 0 && (node.type === "splitter" || node.type === "busdriver"))
+    ? 8
+    : 1;
+export const outputWidth = (node: Node, _index = 0): 1 | 8 =>
+  node.type === "merger" || node.type === "busdriver" || node.type === "bus" ? 8 : 1;
+/** Whether a wire joins ports of the same width. */
+export const wireFits = (from: Node, output: number, to: Node, input: number) =>
+  outputWidth(from, output) === inputWidth(to, input);
 export const inputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
-    : node.type === "display4" || node.type === "display8"
+    : node.type === "display4" || node.type === "display8" || node.type === "merger"
       ? `Bit ${index}`
-      : `Input ${index + 1}`;
+      : node.type === "splitter"
+        ? "Bus"
+        : node.type === "busdriver"
+          ? index === 0
+            ? "Data bus"
+            : "Enable"
+          : node.type === "bus"
+            ? `Driver ${index + 1}`
+            : `Input ${index + 1}`;
 export const outputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-    : node.type === "input4" || node.type === "input8"
+    : node.type === "input4" || node.type === "input8" || node.type === "splitter"
       ? `Bit ${index}`
-      : "Output";
+      : outputWidth(node, index) === 8
+        ? "Bus"
+        : "Output";
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
@@ -216,8 +252,9 @@ export function activeBlock(node: Node): BlockDefinition | undefined {
 }
 
 const MEMORY_TYPES = new Set<GateType>(["dff", "srlatch", "dlatch", "dramcell"]);
-const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", "input4", "input8"]);
+const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", "input4", "input8", "splitter"]);
 const SETTLED_TYPES = new Set<GateType>([
+  ...BUS_TYPES,
   "module",
   "lamp",
   "display4",
@@ -254,6 +291,7 @@ type Compiled = {
   cyclic: boolean[];
   memory: number[];
   blocks: (BlockDefinition | undefined)[];
+  hasBuses: boolean;
   inputIds: string[];
   outputIds: string[][];
 };
@@ -284,6 +322,7 @@ function compile(circuit: Circuit): Compiled {
     if (from === undefined || to === undefined) continue;
     const output = wire.output ?? 0;
     if (wire.input >= counts[to] || output >= outputCount(nodes[from])) continue;
+    if (!wireFits(nodes[from], output, nodes[to], wire.input)) continue;
     // The first wire into a port wins, as it did with wires.find.
     if (sourceNode[to][wire.input] !== -1) continue;
     sourceNode[to][wire.input] = from;
@@ -357,6 +396,7 @@ function compile(circuit: Circuit): Compiled {
     cyclic: groups.map((group) => group.length > 1 || selfLoop[group[0]]),
     memory: nodes.flatMap((node, i) => (MEMORY_TYPES.has(node.type) ? [i] : [])),
     blocks: nodes.map(activeBlock),
+    hasBuses: nodes.some((node) => BUS_TYPES.has(node.type)),
     inputIds: moduleInputs(circuit).map((node) => node.id),
     outputIds: nodes.map((node) =>
       node.type === "module" && node.module
@@ -401,6 +441,7 @@ export function step(
   const outputs: Record<string, boolean[]> = { ...previous.outputs };
   const modules: Record<string, Snapshot> = { ...previous.modules };
   const blockState: Record<string, unknown> = { ...previous.blocks };
+  const buses: Record<string, BusValue> = { ...previous.buses };
   for (const node of nodes) {
     if (node.type === "switch") values[node.id] = overrides[node.id] ?? Boolean(node.value);
     else if (node.type === "clock") values[node.id] = overrides[node.id] ?? clockHigh;
@@ -427,6 +468,32 @@ export function step(
     const signals = new Array<boolean>(sourceId[i].length);
     for (let port = 0; port < signals.length; port++) signals[port] = signal(i, port);
     return signals;
+  };
+  /** An unwired bus input floats. */
+  const busSignal = (i: number, port: number): BusValue => {
+    const id = sourceId[i][port];
+    return id === undefined ? "Z" : (buses[id] ?? "Z");
+  };
+  /** Settles a splitter, merger, bus driver or bus; returns whether its output changed. */
+  const evaluateBusPart = (i: number): boolean => {
+    const node = nodes[i];
+    if (node.type === "splitter") {
+      const bits = bitsFromBus(busSignal(i, 0));
+      const old = outputs[node.id];
+      outputs[node.id] = bits;
+      return !old || bits.some((bit, index) => bit !== old[index]);
+    }
+    const next =
+      node.type === "merger"
+        ? busFromBits(inputs(i))
+        : node.type === "busdriver"
+          ? signal(i, 1)
+            ? busSignal(i, 0)
+            : "Z"
+          : resolveBus(sourceId[i].map((_, port) => busSignal(i, port)));
+    if (buses[node.id] === next) return false;
+    buses[node.id] = next;
+    return true;
   };
   // A module is a pure function of its previous inner snapshot, the clock level
   // and its inputs, so within one step each input pattern runs at most once.
@@ -475,6 +542,7 @@ export function step(
   /** Evaluates one settled node; returns whether its outputs changed. */
   const evaluate = (i: number): boolean => {
     const node = nodes[i];
+    if (BUS_TYPES.has(node.type)) return evaluateBusPart(i);
     const a = signal(i, 0);
     const b = signal(i, 1);
     let next: boolean;
@@ -614,6 +682,7 @@ export function step(
     if (!settledSnapshots.has(modules[id])) settledModules = false;
   const result: Snapshot = { values, memory, age, lastClock, outputs, modules, unstable };
   if (previous.blocks || compiled.blocks.some(Boolean)) result.blocks = blockState;
+  if (previous.buses || compiled.hasBuses) result.buses = buses;
   if (
     !unstable &&
     settledModules &&
@@ -949,6 +1018,64 @@ function registerCircuit(kind: "shift" | "counter"): Circuit {
   return circuit;
 }
 
+/**
+ * Two 8-bit sources share one tri-state bus, beside a multiplexer that picks
+ * between the same two sources. Switch on both enables to see a bus conflict.
+ */
+function sharedBusCircuit(): Circuit {
+  const circuit: Circuit = {
+    name: "8-bit shared bus",
+    nodes: [
+      { ...node("a", "input8", 40, 60, "SOURCE A"), numberValue: 0x2a },
+      { ...node("b", "input8", 40, 360, "SOURCE B"), numberValue: 0x99 },
+      node("enable-a", "switch", 330, 220, "ENABLE A", true),
+      node("enable-b", "switch", 330, 520, "ENABLE B"),
+      node("merge-a", "merger", 330, 40, "A LANES"),
+      node("merge-b", "merger", 330, 340, "B LANES"),
+      node("drive-a", "busdriver", 560, 100, "DRIVE A"),
+      node("drive-b", "busdriver", 560, 400, "DRIVE B"),
+      node("bus", "bus", 800, 250, "SHARED BUS"),
+      node("split", "splitter", 1030, 250, "BUS LANES"),
+      { ...node("bus-display", "display8", 1260, 230, "BUS"), probe: "BUS" },
+      node("select", "switch", 330, 760, "SELECT B"),
+      { id: "mux", type: "module", module: multiplexerCircuit(), x: 560, y: 700, label: "MUX" },
+      node("mux-display", "display8", 1260, 760, "MUX OUT"),
+      // A module needs a lamp output, so the example can also be placed as a block.
+      node("lane0", "lamp", 1260, 480, "BUS LANE 0"),
+    ],
+    wires: [],
+    groups: [
+      {
+        id: "tri-state",
+        label: "Tri-state bus: one enable per source",
+        nodeIds: ["enable-a", "enable-b", "merge-a", "merge-b", "drive-a", "drive-b", "bus", "split", "bus-display", "lane0"],
+      },
+      { id: "multiplexer", label: "Multiplexer: one select picks a source", nodeIds: ["select", "mux", "mux-display"] },
+    ],
+  };
+  const link = (from: string, to: string, input = 0, output = 0) =>
+    circuit.wires.push({ id: `${from}-${output}-${to}-${input}`, from, to, input, output });
+  for (let bit = 0; bit < 8; bit++) {
+    link("a", "merge-a", bit, bit);
+    link("b", "merge-b", bit, bit);
+    link("split", "bus-display", bit, bit);
+    // The multiplexer's ports follow its node order: SELECT, then A0, B0, A1, B1, …
+    link("a", "mux", 1 + 2 * bit, bit);
+    link("b", "mux", 2 + 2 * bit, bit);
+    link("mux", "mux-display", bit, bit);
+  }
+  link("merge-a", "drive-a");
+  link("enable-a", "drive-a", 1);
+  link("merge-b", "drive-b");
+  link("enable-b", "drive-b", 1);
+  link("drive-a", "bus");
+  link("drive-b", "bus", 1);
+  link("bus", "split");
+  link("select", "mux");
+  link("split", "lane0");
+  return circuit;
+}
+
 type StorageKind =
   | "sr-latch"
   | "gated-sr-latch"
@@ -1160,6 +1287,7 @@ export const PRESETS: Record<string, Circuit> = {
   "8-bit magnitude comparator": comparisonCircuit(),
   "8-bit shift register": registerCircuit("shift"),
   "8-bit binary counter": registerCircuit("counter"),
+  "8-bit shared bus": sharedBusCircuit(),
   ...Object.fromEntries(
     (
       [
@@ -1568,7 +1696,7 @@ export function validateCircuit(
   const ports = new Map(
     item.nodes.map((n) => {
       const typed = { ...n, module: validatedModules.get(n.id) } as Node;
-      return [n.id, { inputs: inputCount(typed), outputs: outputCount(typed) }];
+      return [n.id, { node: typed, inputs: inputCount(typed), outputs: outputCount(typed) }];
     }),
   );
   if (
@@ -1582,7 +1710,8 @@ export function validateCircuit(
         w.input >= 0 &&
         w.input < ports.get(w.to)!.inputs &&
         (w.output === undefined || (Number.isInteger(w.output) && w.output >= 0)) &&
-        (w.output ?? 0) < ports.get(w.from)!.outputs,
+        (w.output ?? 0) < ports.get(w.from)!.outputs &&
+        wireFits(ports.get(w.from)!.node, w.output ?? 0, ports.get(w.to)!.node, w.input),
     )
   )
     return null;

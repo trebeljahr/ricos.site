@@ -232,3 +232,12 @@
 .timeline{width:96px;accent-color:#72e3d5}
 .timeline:disabled{opacity:.4}
 .timelineCycle{min-width:64px;font:12px ui-monospace,SFMono-Regular,monospace;white-space:nowrap;color:#b9c9d2}
+
+.wire.busLanes{stroke-width:7;opacity:.85}
+.wire.busLanes.live{filter:drop-shadow(0 0 6px var(--wire-color))}
+.wire.busFloating{stroke:#7d8a92;opacity:.7;stroke-dasharray:10 7;filter:none}
+.wire.busConflict{stroke:#ff5a52;opacity:1;filter:drop-shadow(0 0 6px #ff5a52)}
+.busValue{font:700 12px ui-monospace,SFMono-Regular,monospace;fill:var(--wire-color);paint-order:stroke;stroke:#101a22;stroke-width:4px;pointer-events:none}
+.busValueFloating{fill:#9aa7ae;color:#9aa7ae}
+.busValueConflict{fill:#ff6b63;color:#ff6b63}
+.busReadout{font:700 15px ui-monospace,SFMono-Regular,monospace;color:#7fe6d6}

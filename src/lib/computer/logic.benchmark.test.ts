@@ -10,6 +10,7 @@ import {
   type Synthetic,
 } from "./benchmark/syntheticCircuits";
 import {
+  BUS_TYPES,
   type GateType,
   initialSnapshot,
   MAX_CIRCUIT_NODES,
@@ -144,6 +145,8 @@ function randomCircuit(seed: number, size: number, feedback: boolean): Synthetic
 describe("engine equivalence with the previous step()", () => {
   it("matches on every bundled example", () => {
     for (const [name, circuit] of Object.entries(PRESETS)) {
+      // The previous engine predates bus parts.
+      if (circuit.nodes.some((node) => BUS_TYPES.has(node.type))) continue;
       const switches = circuit.nodes
         .filter((node) => node.type === "switch")
         .map((node) => node.id);

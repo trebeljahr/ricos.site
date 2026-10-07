@@ -182,6 +182,8 @@
 .moduleBody .nodePartName{display:-webkit-box;overflow:hidden;white-space:normal;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-height:14px}
 .moduleBody .moduleBits{font-size:9px;white-space:nowrap}
 .nodeBody:has(.digitalScreen){gap:6px}
+/* A folded 8×8 screen shows its pixel grid in place of the module symbol. */
+.moduleBody.screenBody{gap:var(--spacing-hair)}
 /* Toolbar groups share a label baseline and keep the canvas as the visual focus. */
 .toolbar{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 16px 12px}
 .toolbarTop{display:flex;align-items:center;gap:18px;min-width:0}

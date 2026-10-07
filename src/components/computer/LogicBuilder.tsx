@@ -55,7 +55,7 @@ import {
   simulationCircuit,
   syncBlockStates,
 } from "../../lib/computer/blockFolding";
-import { DATAPATH_BLOCKS, DATAPATH_KINDS, type DatapathKind, datapathCircuit } from "../../lib/computer/datapathBlocks";
+import { DATAPATH_BLOCKS, DATAPATH_KINDS, type DatapathKind, datapathCircuit, screenRows } from "../../lib/computer/datapathBlocks";
 import { compileProgram, SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
@@ -67,6 +67,7 @@ import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
 import { GateSymbol } from "./GateSymbol";
+import { ScreenGrid } from "./ScreenGrid";
 import styles from "./LogicBuilder.module.css";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -806,9 +807,11 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
                   <span className={styles.nodeLabel} title="Double-click to edit label"
                     onDoubleClick={() => beginLabel(part)}>{part.label}</span>}
               </div>
-              <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuitName={part.module?.name} /></span>
+              {part.behaviour === "screen8x8"
+                ? <ScreenGrid rows={screenRows(snapshot.blocks?.[part.id])} label={part.label || DATAPATH_BLOCKS.screen8x8.label} />
+                : <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuitName={part.module?.name} /></span>}
               <strong className={styles.nodePartName}>{part.type === "module" ? part.module?.name : LABELS[part.type]}</strong>
-              {part.type === "module" ? <span className={styles.moduleBits}>
+              {part.behaviour === "screen8x8" ? null : part.type === "module" ? <span className={styles.moduleBits}>
                 {inputCount(part)} IN · {outputCount(part)} OUT
               </span> : <span className={styles.bit}>{snapshot.values[part.id] ? "1" : "0"}</span>}
             </div>}
@@ -3225,6 +3228,7 @@ export function LogicBuilder() {
                         className={clsx(
                           styles.nodeBody,
                           node.type === "module" && styles.moduleBody,
+                          node.behaviour === "screen8x8" && styles.screenBody,
                         )}
                         style={expandedDetails.has(node.id) ? { display: "none" } : undefined}
                       >
@@ -3284,7 +3288,13 @@ export function LogicBuilder() {
                             </>
                           )}
                         </div>
-                        {!["input4", "input8", "display4", "display8"].includes(
+                        {node.behaviour === "screen8x8" ? (
+                          // A folded screen draws its pixels; unfolded, its register rows show instead.
+                          <ScreenGrid
+                            rows={screenRows(boardSnapshot.blocks?.[node.id])}
+                            label={node.label || DATAPATH_BLOCKS.screen8x8.label}
+                          />
+                        ) : !["input4", "input8", "display4", "display8"].includes(
                           node.type,
                         ) && (
                           <span className={styles.nodeSymbol}>
@@ -3398,10 +3408,12 @@ export function LogicBuilder() {
                             }
                           />
                         ) : node.type === "module" ? (
-                          <span className={styles.moduleBits}>
-                            {moduleInputs(node.module!).length} IN ·{" "}
-                            {moduleOutputs(node.module!).length} OUT
-                          </span>
+                          node.behaviour !== "screen8x8" && (
+                            <span className={styles.moduleBits}>
+                              {moduleInputs(node.module!).length} IN ·{" "}
+                              {moduleOutputs(node.module!).length} OUT
+                            </span>
+                          )
                         ) : (
                           <span className={styles.bit}>{boardSnapshot.values[node.id] ? "1" : "0"}</span>
                         )}

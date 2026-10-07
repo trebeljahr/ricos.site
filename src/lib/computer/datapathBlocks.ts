@@ -1,10 +1,12 @@
-// Datapath blocks for the toy CPU: register8, counter8, alu8, rom256, ram16 and
-// stack16. Each is a module node whose gate form is the inner circuit and whose
+// Datapath blocks for the toy CPU: register8, counter8, alu8, rom256, ram16,
+// stack16 and the screen8x8 framebuffer. Each is a module node whose gate form is the inner circuit and whose
 // folded form runs as a registered behavioural block (see `registerBlock`).
 //
 // Outputs always come from the state before the clock commit, as a D flip-flop's
-// do, so the folded block and its gates agree after every step. RAM and stack
-// rows are nested register8 blocks; ROM is 16 page blocks of readable byte rows.
+// do, so the folded block and its gates agree after every step. RAM, stack and
+// screen rows are nested register8 blocks; ROM is 16 page blocks of readable byte rows.
+
+import { SCREEN_ROWS } from "../computerStepper";
 import {
   Builder,
   busPorts,
@@ -184,11 +186,12 @@ const rowNode = (id: string, x: number, y: number, label: string): Node => ({
 });
 
 /**
- * 16 register8 rows sharing the data inputs. `write[r]` loads row r on the
- * clock; the outputs read the row picked by `read[r]`. Returns the 8 read bits.
+ * One register8 row per `write` line, sharing the data inputs. `write[r]` loads
+ * row r on the clock; the outputs read the row picked by `read[r]`. Returns the
+ * 8 read bits.
  */
 function memoryRows(b: Builder, data: Ref[], write: Ref[], read: Ref[], x: number): Ref[] {
-  const rows = range(16).map((r) => {
+  const rows = write.map((_, r) => {
     const id = `row${r}`;
     b.nodes.push(rowNode(id, x, 30 + r * 220, `ROW ${hex(r).slice(1)}`));
     data.forEach((bit, i) => b.connect(bit, id, i));
@@ -203,7 +206,7 @@ function memoryRows(b: Builder, data: Ref[], write: Ref[], read: Ref[], x: numbe
         b.gate(`pick${r}-${bit}`, "and", x + 260, 30 + r * 220 + bit * 24, [row, bit], read[r]),
       ),
       x + 420,
-      30 + bit * 440,
+      30 + (bit * write.length * 220) / 8,
       `READ BIT ${bit}`,
     ),
   );
@@ -238,27 +241,118 @@ function ram16Circuit(): Circuit {
 }
 
 type Ram = { bytes: number[]; clock: boolean };
-registerBlock<Ram>({
-  name: "ram16",
-  inputs: [...busPorts("a", "A", 4), ...busPorts("d", "D"), ["we", "WE"], ["clock", "CLK"]].map(
-    ([, l]) => l,
-  ),
-  outputs: range(8).map((bit) => `Q${bit}`),
-  initialState: () => ({ bytes: Array(16).fill(0), clock: false }),
-  evaluate: (inputs, state) => {
-    const address = toNumber(inputs.slice(0, 4));
-    const [we, clock] = inputs.slice(12);
-    let bytes = state.bytes;
-    if (clock && !state.clock && we) {
-      bytes = [...bytes];
-      bytes[address] = toNumber(inputs.slice(4, 12));
-    }
-    return {
-      outputs: toBits(state.bytes[address], 8),
-      nextState: bytes === state.bytes && clock === state.clock ? state : { bytes, clock },
-    };
-  },
-});
+/** A byte memory with `addressBits` address lines: A, D, WE, CLK in, Q (the addressed row) out. */
+function registerMemory(name: string, addressBits: number) {
+  registerBlock<Ram>({
+    name,
+    inputs: [
+      ...busPorts("a", "A", addressBits),
+      ...busPorts("d", "D"),
+      ["we", "WE"],
+      ["clock", "CLK"],
+    ].map(([, l]) => l),
+    outputs: range(8).map((bit) => `Q${bit}`),
+    initialState: () => ({ bytes: Array(1 << addressBits).fill(0), clock: false }),
+    evaluate: (inputs, state) => {
+      const address = toNumber(inputs.slice(0, addressBits));
+      const [we, clock] = inputs.slice(addressBits + 8);
+      let bytes = state.bytes;
+      if (clock && !state.clock && we) {
+        bytes = [...bytes];
+        bytes[address] = toNumber(inputs.slice(addressBits, addressBits + 8));
+      }
+      return {
+        outputs: toBits(state.bytes[address], 8),
+        nextState: bytes === state.bytes && clock === state.clock ? state : { bytes, clock },
+      };
+    },
+  });
+}
+registerMemory("ram16", 4);
+
+// ---------------------------------------------------------------- screen8x8
+
+/**
+ * An 8×8 monochrome framebuffer: 8 register8 rows, one per y. Bit i of a row is
+ * the pixel at x = i. A picks the row; with WE on, a rising CLK stores D there.
+ * Q reads row A back, as RAM does.
+ */
+function screen8x8Circuit(): Circuit {
+  const b = new Builder();
+  ports(b, [...busPorts("a", "A", 3), ...busPorts("d", "D"), ["we", "WE"], ["clock", "CLK"]]);
+  const address = range(3).map((bit) => `a${bit}`);
+  const inverted = address.map((bit, i) =>
+    b.gate(`addr-not${i}`, "not", 200, 30 + i * 80, bit, undefined, `NOT A${i}`),
+  );
+  const pick = (row: number, bit: number) => ((row >> bit) & 1 ? address[bit] : inverted[bit]);
+  const select = range(SCREEN_ROWS).map((row) => {
+    const low = b.gate(`addr-p${row}`, "and", 350, 30 + row * 90, pick(row, 0), pick(row, 1));
+    return b.gate(`addr-sel${row}`, "and", 500, 30 + row * 90, low, pick(row, 2), `ROW ${row}`);
+  });
+  const write = select.map((sel, r) =>
+    b.gate(`write${r}`, "and", 680, 30 + r * 90, sel, "we", `WRITE ${r}`),
+  );
+  const out = memoryRows(
+    b,
+    range(8).map((bit) => `d${bit}`),
+    write,
+    select,
+    900,
+  );
+  out.forEach((bit, i) => b.gate(`q${i}`, "lamp", 2000, 30 + i * 220, bit, undefined, `Q${i}`));
+  return b.circuit("8×8 screen");
+}
+registerMemory("screen8x8", 3);
+
+/** The screen's 8 row bytes (row index = y, bit i = pixel x = i); blank for no state. */
+export function screenRows(state: unknown): number[] {
+  const bytes = (state as Partial<Ram> | null | undefined)?.bytes;
+  return range(SCREEN_ROWS).map((r) => (bytes?.[r] ?? 0) & 255);
+}
+
+// ---------------------------------------------------------------- data memory
+
+/**
+ * Data memory as the CPU's DMAR sees it: an 8-bit address whose high nibble F
+ * selects the screen (row = A0–A2), and anything else the RAM (row = A0–A3), as
+ * `traceTicks` does. Inputs A0–A7, D0–D7, WE, CLK; Q reads the selected byte.
+ */
+export function dataMemoryCircuit(): Circuit {
+  const b = new Builder();
+  ports(b, [...busPorts("a", "A"), ...busPorts("d", "D"), ["we", "WE"], ["clock", "CLK"]]);
+  const upper = b.gate("high-lo", "and", 200, 1500, "a4", "a5");
+  const lower = b.gate("high-hi", "and", 200, 1580, "a6", "a7");
+  b.gate("screen-sel", "and", 340, 1540, upper, lower, "SCREEN (F_)");
+  b.gate("ram-sel", "not", 480, 1620, "screen-sel", undefined, "RAM");
+  b.gate("ram-we", "and", 620, 1540, "we", "ram-sel", "RAM WE");
+  b.gate("screen-we", "and", 620, 1700, "we", "screen-sel", "SCREEN WE");
+  const block = (
+    id: string,
+    kind: "ram16" | "screen8x8",
+    y: number,
+    addressBits: number,
+    we: string,
+  ) => {
+    b.add(id, "module", 800, y, DATAPATH_BLOCKS[kind].label, {
+      module: datapathCircuit(kind),
+      behaviour: kind,
+    });
+    range(addressBits).forEach((bit) => b.connect(`a${bit}`, id, bit));
+    range(8).forEach((bit) => b.connect(`d${bit}`, id, addressBits + bit));
+    b.connect(we, id, addressBits + 8);
+    b.connect("clock", id, addressBits + 9);
+  };
+  block("ram", "ram16", 30, 4, "ram-we");
+  block("screen", "screen8x8", 800, 3, "screen-we");
+  range(8).forEach((bit) => {
+    const y = 30 + bit * 200;
+    const fromRam = b.gate(`ram-q${bit}`, "and", 1100, y, ["ram", bit], "ram-sel");
+    const fromScreen = b.gate(`screen-q${bit}`, "and", 1100, y + 70, ["screen", bit], "screen-sel");
+    const read = b.gate(`read${bit}`, "or", 1250, y, fromRam, fromScreen, `READ BIT ${bit}`);
+    b.gate(`q${bit}`, "lamp", 1400, y, read, undefined, `Q${bit}`);
+  });
+  return b.circuit("Data memory");
+}
 
 // ---------------------------------------------------------------- stack16
 
@@ -463,6 +557,10 @@ export const DATAPATH_BLOCKS = {
   },
   rom256: { label: "256-BYTE ROM", hint: "A picks a byte; D reads it. Unfold to see the rows." },
   ram16: { label: "16-BYTE RAM", hint: "A picks a row; with WE on, a rising CLK stores D there." },
+  screen8x8: {
+    label: "8×8 SCREEN",
+    hint: "A picks a row (y); with WE on, a rising CLK stores D there. Bit i lights pixel x = i.",
+  },
   stack16: {
     label: "16-ENTRY STACK",
     hint: "PUSH stores D at SP and adds 1; POP subtracts 1. TOP is the last entry.",
@@ -493,6 +591,8 @@ export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = [
       return alu8Circuit();
     case "ram16":
       return ram16Circuit();
+    case "screen8x8":
+      return screen8x8Circuit();
     case "stack16":
       return stack16Circuit();
     case "rom256":
@@ -535,7 +635,8 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
       seedCells(snapshot, cellIds("cell"), q, clock);
       break;
     }
-    case "ram16": {
+    case "ram16":
+    case "screen8x8": {
       const { bytes, clock } = state as Ram;
       for (const [r, q] of bytes.entries()) snapshot.blocks![`row${r}`] = rowState(q, clock);
       break;
@@ -570,8 +671,9 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
     case "register8":
     case "counter8":
       return { q: readCells(inner, cellIds("cell")), clock: Boolean(inner.lastClock.cell0) };
-    case "ram16": {
-      const rows = range(16).map(row);
+    case "ram16":
+    case "screen8x8": {
+      const rows = range(node.behaviour === "ram16" ? 16 : SCREEN_ROWS).map(row);
       return { bytes: rows.map((r) => r.q), clock: rows[0].clock };
     }
     case "stack16": {

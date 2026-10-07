@@ -7,13 +7,18 @@ import {
   describeOperand,
   hex,
   ISA,
+  isScreenAddress,
   SAMPLE_PROGRAMS,
   traceProgram,
 } from "src/lib/computerStepper";
 import panel from "./ByteExplorer.module.css";
 import styles from "./ProgramStepper.module.css";
+import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION } = SAMPLE_PROGRAMS;
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY } = SAMPLE_PROGRAMS;
+const dataOpcodes = new Set<number>(
+  ISA.filter((item) => item.operand === "RAM address").map((item) => item.opcode),
+);
 const BIT_WEIGHTS = [128, 64, 32, 16, 8, 4, 2, 1];
 
 export function ProgramStepper() {
@@ -44,6 +49,11 @@ export function ProgramStepper() {
   const changed = source !== loaded;
   const highlightedLine = changed ? null : (hoveredLine ?? active?.line ?? null);
   const variables = compilation.program?.variables ?? [];
+  const usesScreen = Boolean(
+    compilation.program?.instructions.some(
+      ({ opcode, operand }) => dataOpcodes.has(opcode) && isScreenAddress(operand),
+    ),
+  );
   const setBitWeights = state
     ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
     : [];
@@ -183,6 +193,9 @@ export function ProgramStepper() {
             </button>
             <button type="button" onClick={() => preset(FUNCTION)} className={styles.button}>
               FUNCTION
+            </button>
+            <button type="button" onClick={() => preset(SMILEY)} className={styles.button}>
+              SCREEN
             </button>
           </div>
           {changed && (
@@ -397,6 +410,9 @@ export function ProgramStepper() {
                     <span>OUTPUT DEVICE</span>
                   </div>
                   <div className={styles.outputScreen}>{state.output.join(" ") || "—"}</div>
+                  {usesScreen && (
+                    <ScreenGrid rows={state.screen} label="Screen" className={styles.pixelScreen} />
+                  )}
                   <div className={styles.flags}>
                     ZERO {Number(state.zero)} <span>·</span> CARRY {Number(state.carry)}
                   </div>

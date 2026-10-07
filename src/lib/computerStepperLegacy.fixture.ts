@@ -5,6 +5,7 @@ import {
   describeOperand,
   hex,
   ISA,
+  isScreenAddress,
   OPCODES,
   type Snapshot,
 } from "./computerStepper";
@@ -20,6 +21,7 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
     zero: true,
     carry: false,
     ram: Array(16).fill(0),
+    screen: Array(8).fill(0),
     stack: [],
     output: [],
     activeAddress: null,
@@ -32,6 +34,7 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
       ...state,
       ...patch,
       ram: patch.ram ?? [...state.ram],
+      screen: patch.screen ?? [...state.screen],
       stack: patch.stack ?? [...state.stack],
       output: patch.output ?? [...state.output],
     };
@@ -68,6 +71,10 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
     });
     let accumulator = state.accumulator;
     let ram = state.ram;
+    let screen = state.screen;
+    // Data addresses F0–F7 are the screen's rows; the RAM is only touched below them.
+    const read = (at: number) => (isScreenAddress(at) ? screen[at & 7] : ram[at]);
+    const touch = (at: number) => (isScreenAddress(at) ? null : at);
     let stack = state.stack;
     let output = state.output;
     let carry = state.carry;
@@ -76,17 +83,22 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
     let pc = address + 2;
     let effect = "";
     if (opcode === OPCODES.LDI || opcode === OPCODES.LDM) {
-      accumulator = opcode === OPCODES.LDI ? operand : ram[operand];
+      accumulator = opcode === OPCODES.LDI ? operand : read(operand);
       zero = accumulator === 0;
-      if (opcode === OPCODES.LDM) touchedAddress = operand;
+      if (opcode === OPCODES.LDM) touchedAddress = touch(operand);
       effect =
         opcode === OPCODES.LDI
           ? `Load the number ${operand} itself into ACC.`
           : `Go to ${meaning}, read the ${accumulator} stored there, and load it into ACC.`;
     } else if (opcode === OPCODES.STM) {
-      ram = [...ram];
-      ram[operand] = accumulator;
-      touchedAddress = operand;
+      if (isScreenAddress(operand)) {
+        screen = [...screen];
+        screen[operand & 7] = accumulator;
+      } else {
+        ram = [...ram];
+        ram[operand] = accumulator;
+      }
+      touchedAddress = touch(operand);
       effect = `Write ACC (${accumulator}) to ${meaning}.`;
     } else if (
       opcode === OPCODES.ADDI ||
@@ -96,12 +108,12 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
     ) {
       const immediate = opcode === OPCODES.ADDI || opcode === OPCODES.SUBI;
       const subtract = opcode === OPCODES.SUBI || opcode === OPCODES.SUBM;
-      const value = immediate ? operand : ram[operand];
+      const value = immediate ? operand : read(operand);
       const result = subtract ? accumulator - value : accumulator + value;
       carry = subtract ? result < 0 : result > 255;
       accumulator = result & 255;
       zero = accumulator === 0;
-      if (!immediate) touchedAddress = operand;
+      if (!immediate) touchedAddress = touch(operand);
       effect = `ALU ${subtract ? "subtracts" : "adds"} ${value}; ACC becomes ${accumulator}${carry ? (subtract ? " (borrow)" : " (carry out)") : ""}.`;
     } else if (opcode === OPCODES.OUT) {
       output = [...output, accumulator];
@@ -151,6 +163,7 @@ export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
       zero,
       carry,
       ram,
+      screen,
       stack,
       output,
       touchedAddress,

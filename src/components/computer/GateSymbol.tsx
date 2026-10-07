@@ -7,6 +7,8 @@ const moduleMarks: Record<string, string> = {
   "256-byte ROM": "ROM",
   "16-byte RAM": "RAM",
   "16-entry stack": "STK",
+  "8×8 screen": "SCR",
+  "Data memory": "DM",
   "Half adder": "HA",
   "Full adder": "FA",
   "Clocked memory": "MEM",
@@ -164,15 +166,21 @@ export function GateSymbol({ type, circuitName }: { type: GateType; circuitName?
           )}
         </>
       )}
-      {type === "merger" && <path d="M6 7 L30 21 M6 14 L30 21 M6 28 L30 21 M6 35 L30 21 M30 21 H58" strokeWidth="2" />}
-      {type === "splitter" && <path d="M6 21 H34 L58 7 M34 21 L58 14 M34 21 L58 28 M34 21 L58 35" strokeWidth="2" />}
+      {type === "merger" && (
+        <path d="M6 7 L30 21 M6 14 L30 21 M6 28 L30 21 M6 35 L30 21 M30 21 H58" strokeWidth="2" />
+      )}
+      {type === "splitter" && (
+        <path d="M6 21 H34 L58 7 M34 21 L58 14 M34 21 L58 28 M34 21 L58 35" strokeWidth="2" />
+      )}
       {type === "busdriver" && (
         <>
           <path d="M18 7 V35 L46 21 Z M4 21 H18 M46 21 H60 M32 4 V14" />
           <circle cx="32" cy="4" r="2" />
         </>
       )}
-      {type === "bus" && <path d="M4 21 H60 M14 9 V21 M28 9 V21 M42 33 V21 M50 9 V21" strokeWidth="2" />}
+      {type === "bus" && (
+        <path d="M4 21 H60 M14 9 V21 M28 9 V21 M42 33 V21 M50 9 V21" strokeWidth="2" />
+      )}
       {type === "ground" && <path d="M32 5 V16 M16 16 H48 M21 23 H43 M27 30 H37" />}
       {type === "junction" && <path d="M8 10 H28 V21 H55 M8 32 H28 V21 M28 21 H29" />}
     </svg>

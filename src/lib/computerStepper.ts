@@ -23,6 +23,8 @@ export type Snapshot = {
   zero: boolean;
   carry: boolean;
   ram: number[];
+  /** Screen rows 0–7, written by STM F0–F7. Bit i of a row is the pixel at x = i. */
+  screen: number[];
   stack: number[];
   output: number[];
   activeAddress: number | null;
@@ -30,6 +32,15 @@ export type Snapshot = {
   explanation: string;
   halted: boolean;
 };
+
+/**
+ * Memory-mapped screen: data addresses F0–F7 are the 8×8 screen's rows 0–7. Any
+ * address with high nibble F selects the screen (row = low 3 bits); every other
+ * address reaches the 16-byte RAM through its low 4 bits.
+ */
+export const SCREEN_BASE = 0xf0;
+export const SCREEN_ROWS = 8;
+export const isScreenAddress = (address: number) => (address & 0xf0) === SCREEN_BASE;
 
 export const OPCODES = {
   LDI: 0x10,
@@ -153,6 +164,13 @@ export function describeOperand(
 ): OperandMeaning {
   const kind = ISA.find((item) => item.opcode === opcode)?.operand;
   if (kind === "literal") return { short: `#${operand}`, long: `number ${operand}` };
+  if (kind === "RAM address" && isScreenAddress(operand)) {
+    const row = operand & (SCREEN_ROWS - 1);
+    return {
+      short: `[${hex(operand)}] screen ${row}`,
+      long: `screen row ${row} (${hex(operand)})`,
+    };
+  }
   if (kind === "RAM address") {
     const name = variables.find(({ address }) => address === operand)?.name;
     return {
@@ -203,7 +221,9 @@ type FunctionDefinition = {
   line: number;
 };
 const NAME = "[A-Za-z_]\\w*";
-const VALUE = `(?:${NAME}|\\d+)`;
+/** `screen[3]`: screen row 3, at data address F3. */
+const SCREEN_ROW = "screen\\[\\s*\\d+\\s*\\]";
+const VALUE = `(?:${SCREEN_ROW}|${NAME}|\\d+)`;
 
 function parseExpression(text: string, line: number): Expression {
   const value = text.trim();
@@ -279,7 +299,9 @@ function parseProgram(source: string): {
         });
         continue;
       }
-      const assignment = new RegExp(`^(let\\s+)?(${NAME})\\s*=\\s*(.+)\\s*;$`).exec(text);
+      const assignment = new RegExp(`^(let\\s+)?(${SCREEN_ROW}|${NAME})\\s*=\\s*(.+)\\s*;$`).exec(
+        text,
+      );
       if (assignment) {
         statements.push({
           kind: "assign",
@@ -363,6 +385,11 @@ export function compileProgram(source: string): CompiledProgram {
     return address;
   };
   const resolve = (value: string, scope: Map<string, number>, line: number) => {
+    const row = /^screen\[\s*(\d+)\s*\]$/.exec(value);
+    if (row) {
+      if (Number(row[1]) >= SCREEN_ROWS) fail(line, `Screen rows are 0 to ${SCREEN_ROWS - 1}.`);
+      return { literal: false, value: SCREEN_BASE + Number(row[1]) };
+    }
     if (/^\d+$/.test(value)) {
       const number = Number(value);
       if (number > 255) fail(line, "Numbers must be between 0 and 255.");
@@ -432,6 +459,8 @@ export function compileProgram(source: string): CompiledProgram {
     for (const statement of statements) {
       const line = statement.line;
       if (statement.kind === "assign") {
+        if (statement.declaration && statement.name.startsWith("screen["))
+          fail(line, "A screen row is not a variable: write screen[0] = 1; without let.");
         if (
           statement.declaration &&
           ((statement.expression.kind === "value" &&
@@ -554,13 +583,19 @@ export const SAMPLE_PROGRAMS = {
   LOOP: "let sum = 0;\nfor (let i = 0; i < 4; i++) {\n  sum = sum + i;\n}\nprint(sum);",
   FUNCTION:
     "fn bump(n) {\n  return n + 1;\n}\nlet x = 2;\nfor (let i = 0; i < 3; i++) {\n  x = bump(x);\n}\nprint(x);",
+  // Each byte is one screen row; bit 0 is the leftmost pixel.
+  SMILEY:
+    "screen[0] = 60;\nscreen[1] = 66;\nscreen[2] = 165;\nscreen[3] = 129;\nscreen[4] = 165;\nscreen[5] = 153;\nscreen[6] = 66;\nscreen[7] = 60;",
+  // Doubling the row byte moves its one lit pixel a step to the right.
+  SWEEP:
+    "let pixel = 1;\nfor (let i = 0; i < 8; i++) {\n  screen[3] = pixel;\n  pixel = pixel + pixel;\n}\nprint(screen[3]);",
 } as const;
 
 // ---------------------------------------------------------------------------
 // Control unit: one clock tick = one micro-step.
 //
 // Harvard split: code ROM (256 bytes, addressed by CMAR), data RAM (16 bytes,
-// addressed by DMAR) and a 16-entry return stack (addressed by SP). One 8-bit
+// addressed by DMAR; F0–F7 reach the screen instead) and a 16-entry return stack (addressed by SP). One 8-bit
 // bus joins them; each tick at most one *_OUT signal drives it. The ALU always
 // sees ACC and the operand register (OPR), so ADDM/SUBM first copy the RAM
 // byte into OPR. The zero flag is wired to ACC (ACC === 0); FLAGS_IN latches
@@ -732,6 +767,7 @@ export type Tick = {
   busDriver: BusDriver | null;
   registers: Registers;
   ram: number[];
+  screen: number[];
   /** Return stack entries below SP. */
   stack: number[];
   output: number[];
@@ -752,6 +788,10 @@ export function traceTicks(
 ): Tick[] {
   const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
   const ram = Array<number>(16).fill(0);
+  const screen = Array<number>(SCREEN_ROWS).fill(0);
+  // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM or the screen.
+  const data = (address: number): [number[], number] =>
+    isScreenAddress(address) ? [screen, address & (SCREEN_ROWS - 1)] : [ram, address & 15];
   const stackMemory = Array<number>(16).fill(0);
   const output: number[] = [];
   const ticks: Tick[] = [];
@@ -786,7 +826,10 @@ export function traceTicks(
       PC: () => registers.pc,
       ROM: () => rom[registers.cmar],
       OPR: () => registers.opr,
-      RAM: () => ram[registers.dmar],
+      RAM: () => {
+        const [memory, row] = data(registers.dmar);
+        return memory[row];
+      },
       ACC: () => registers.acc,
       ALU: () => sum & 255,
       STACK: () => stackMemory[registers.sp],
@@ -806,9 +849,12 @@ export function traceTicks(
       if (on.has("IR_IN")) next.ir = bus;
       if (on.has("OPR_IN")) next.opr = bus;
       if (on.has("PC_IN")) next.pc = bus;
-      if (on.has("DMAR_IN")) next.dmar = bus & 15;
+      if (on.has("DMAR_IN")) next.dmar = bus;
       if (on.has("ACC_IN")) next.acc = bus;
-      if (on.has("RAM_IN")) ram[registers.dmar] = bus;
+      if (on.has("RAM_IN")) {
+        const [memory, row] = data(registers.dmar);
+        memory[row] = bus;
+      }
       if (on.has("STACK_IN")) stackMemory[registers.sp] = bus;
       if (on.has("OUT_IN")) {
         next.out = bus;
@@ -835,6 +881,7 @@ export function traceTicks(
       busDriver,
       registers: { ...registers },
       ram: [...ram],
+      screen: [...screen],
       stack: stackMemory.slice(0, registers.sp),
       output: [...output],
       halted,
@@ -907,6 +954,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     zero: true,
     carry: false,
     ram: Array(16).fill(0),
+    screen: Array(SCREEN_ROWS).fill(0),
     stack: [],
     output: [],
     activeAddress: null,
@@ -919,6 +967,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       ...state,
       ...patch,
       ram: patch.ram ?? [...state.ram],
+      screen: patch.screen ?? [...state.screen],
       stack: patch.stack ?? [...state.stack],
       output: patch.output ?? [...state.output],
     };
@@ -962,9 +1011,9 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       return snapshots;
     }
     const after = last.registers;
-    const touchesRam = group.some(
-      ({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"),
-    );
+    const touchesRam =
+      !isScreenAddress(last.registers.dmar) &&
+      group.some(({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"));
     const effect = explainExecute(opcode, operand, meaning, state, after, last.stack);
     record({
       phase: "execute",
@@ -973,9 +1022,10 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       zero: after.zero,
       carry: after.carry,
       ram: [...last.ram],
+      screen: [...last.screen],
       stack: [...last.stack],
       output: [...last.output],
-      touchedAddress: touchesRam ? after.dmar : null,
+      touchedAddress: touchesRam ? after.dmar & 15 : null,
       activeAddress: address,
       explanation: `${effect} PC is now ${hex(after.pc)}.`,
       halted: last.halted,

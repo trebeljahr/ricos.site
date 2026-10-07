@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { compileProgram, SAMPLE_PROGRAMS } from "../computerStepper";
+import { compileProgram, SAMPLE_PROGRAMS, traceTicks } from "../computerStepper";
 import {
   alu,
   DATAPATH_KINDS,
   type DatapathKind,
+  dataMemoryCircuit,
   datapathNode,
   foldBlockState,
   romBytes,
+  screenRows,
   toBits,
   toNumber,
   unfoldBlockState,
@@ -33,6 +35,14 @@ function random(seed: number) {
   };
 }
 const EDGES = [0, 1, 127, 128, 254, 255];
+
+/** The same circuit with every nested block running as gates. */
+const strip = (circuit: Circuit): Circuit => ({
+  ...circuit,
+  nodes: circuit.nodes.map((n) =>
+    n.module ? { ...n, behaviour: undefined, module: strip(n.module) } : n,
+  ),
+});
 
 /** A top-level circuit with one switch per block input and one lamp per output. */
 function harness(block: Node, behavioural: boolean): Circuit {
@@ -189,13 +199,27 @@ describe("datapath blocks", () => {
       expect(toNumber(pair.apply(toBits(address, 8)))).toBe(bytes[address] ?? 0);
   });
 
+  it("screen8x8: block equals gates over seeded random row writes and reads", () => {
+    const pair = new Pair("screen8x8");
+    const model = Array(8).fill(0);
+    const next = random(5);
+    for (let i = 0; i < 300; i++) {
+      const row = Math.floor(next() * 8);
+      const data = i < 24 ? EDGES[i % EDGES.length] : Math.floor(next() * 256);
+      const write = next() < 0.4;
+      const out = pair.tick([...toBits(row, 3), ...toBits(data, 8), write]);
+      if (write) model[row] = data;
+      expect(toNumber(out), `step ${i}`).toBe(model[row]);
+      expect(screenRows(pair.states[0].blocks?.dut), `step ${i}`).toEqual(model);
+    }
+  });
+
+  it("screen8x8: rows read back as bytes, blank without state", () => {
+    expect(screenRows(undefined)).toEqual(Array(8).fill(0));
+    expect(screenRows({ bytes: [1, 2, 3], clock: false })).toEqual([1, 2, 3, 0, 0, 0, 0, 0]);
+  });
+
   it("matches a gate form whose nested rows also run as gates", () => {
-    const strip = (circuit: Circuit): Circuit => ({
-      ...circuit,
-      nodes: circuit.nodes.map((n) =>
-        n.module ? { ...n, behaviour: undefined, module: strip(n.module) } : n,
-      ),
-    });
     const pair = new Pair("ram16");
     pair.circuits[1] = harness({ ...pair.block, module: strip(pair.block.module!) }, false);
     const next = random(4);
@@ -222,6 +246,11 @@ describe("carrying state across fold and unfold", () => {
       (p) => [3, 9, 15].forEach((a) => p.tick([...toBits(a, 4), ...toBits(a * 17, 8), true])),
     ],
     ["stack16", (p) => [0x11, 0x22, 0x33].forEach((d) => p.tick([...toBits(d, 8), true, false]))],
+    [
+      "screen8x8",
+      (p) =>
+        [0, 4, 7].forEach((y) => p.tick([...toBits(y, 3), ...toBits(0x81 >> (y % 4), 8), true])),
+    ],
   ];
   for (const [kind, fill] of cases)
     it(`${kind}: unfolding seeds the gates and folding reads them back`, () => {
@@ -281,4 +310,63 @@ describe("carrying state across fold and unfold", () => {
       expect(toNumber(state.outputs.acc), `gates=${gates}`).toBe(5);
     }
   });
+});
+
+describe("memory-mapped data memory", () => {
+  /** Drives dataMemoryCircuit tick by tick as the CPU's DMAR, bus and RAM_IN would. */
+  function run(source: string, gates: boolean) {
+    const module = gates ? strip(dataMemoryCircuit()) : dataMemoryCircuit();
+    const block: Node = { id: "dut", type: "module", x: 0, y: 0, module };
+    const circuit = harness(block, false);
+    let state = initialSnapshot();
+    const lamps = circuit.nodes.filter((n) => n.type === "lamp");
+    const apply = (address: number, data: number, we: boolean, clock: boolean) => {
+      const inputs = [...toBits(address, 8), ...toBits(data, 8), we, clock];
+      state = step(
+        circuit,
+        state,
+        false,
+        {},
+        Object.fromEntries(inputs.map((b, i) => [`in${i}`, b])),
+      );
+      expect(state.unstable).toBe(false);
+      return toNumber(lamps.map((n) => Boolean(state.values[n.id])));
+    };
+    const ticks = traceTicks(compileProgram(source));
+    let dmar = 0;
+    // Only ticks that touch data memory need simulating; WE is off on the rest.
+    for (const tick of ticks) {
+      const write = tick.control.includes("RAM_IN");
+      if (write || tick.control.includes("RAM_OUT")) {
+        const read = apply(dmar, tick.bus ?? 0, write, false);
+        if (!write) expect(read, `tick ${tick.index}`).toBe(tick.bus);
+        apply(dmar, tick.bus ?? 0, write, true);
+      }
+      dmar = tick.registers.dmar;
+    }
+    const peek = (address: number) => apply(address, 0, false, false);
+    const end = ticks.at(-1)!;
+    return {
+      end,
+      ram: Array.from({ length: 16 }, (_, a) => peek(a)),
+      screen: Array.from({ length: 8 }, (_, y) => peek(0xf0 + y)),
+    };
+  }
+
+  const programs = {
+    SMILEY: SAMPLE_PROGRAMS.SMILEY,
+    SWEEP: SAMPLE_PROGRAMS.SWEEP,
+    mixed:
+      "let a = 7;\nscreen[2] = a + 5;\nlet b = screen[2];\nscreen[5] = b - a;\nprint(screen[5]);",
+    LOOP: SAMPLE_PROGRAMS.LOOP,
+  };
+  for (const [name, source] of Object.entries(programs))
+    for (const gates of [false, true])
+      it(`${name}: RAM and screen match the stepper (${gates ? "all gates" : "blocks"})`, {
+        timeout: 30_000,
+      }, () => {
+        const { end, ram, screen } = run(source, gates);
+        expect(ram).toEqual(end.ram);
+        expect(screen).toEqual(end.screen);
+      });
 });

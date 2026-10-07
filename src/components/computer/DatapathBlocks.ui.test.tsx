@@ -55,6 +55,7 @@ describe("datapath blocks in the builder", () => {
       "256-BYTE ROM",
       "16-BYTE RAM",
       "16-ENTRY STACK",
+      "8×8 SCREEN",
     ])
       expect(within(parts).getByRole("button", { name: label })).toBeTruthy();
     fireEvent.click(within(parts).getByRole("button", { name: "8-BIT ALU" }));
@@ -98,5 +99,69 @@ describe("datapath blocks in the builder", () => {
     fireEvent.click(button("← Back"));
     cycle();
     expect(acc()).toContain("164");
+  }, 20000);
+
+  it("draws a folded screen as an 8×8 grid that follows ticks, scrubbing and folding", () => {
+    const range = Array.from({ length: 8 }, (_, bit) => bit);
+    const bench: Circuit = {
+      name: "Screen bench",
+      nodes: [
+        { id: "row", type: "input4", x: 40, y: 40, numberValue: 2, label: "ROW" },
+        { id: "data", type: "input8", x: 40, y: 240, numberValue: 0xa5, label: "DATA" },
+        { id: "we", type: "switch", x: 40, y: 500, value: true, label: "WE" },
+        { id: "clk", type: "clock", x: 40, y: 620 },
+        datapathNode("screen8x8", "lcd", 420, 40),
+      ],
+      wires: [
+        ...range
+          .slice(0, 3)
+          .map((bit) => ({ id: `a${bit}`, from: "row", output: bit, to: "lcd", input: bit })),
+        ...range.map((bit) => ({
+          id: `d${bit}`,
+          from: "data",
+          output: bit,
+          to: "lcd",
+          input: 3 + bit,
+        })),
+        { id: "we", from: "we", to: "lcd", input: 11 },
+        { id: "clk", from: "clk", to: "lcd", input: 12 },
+      ],
+    };
+    localStorage.setItem(
+      "ricos-computer-circuits-v1",
+      JSON.stringify({ current: bench, saved: {} }),
+    );
+    render(<LogicBuilder />);
+    const grid = () => screen.queryByRole("img", { name: /^8×8 SCREEN rows / });
+    const lit = () =>
+      Array.from(grid()!.querySelectorAll("[data-lit=true]")).map(
+        (pixel) => `${pixel.getAttribute("data-x")},${pixel.getAttribute("data-y")}`,
+      );
+    expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 00 00 00 00 00 00");
+    expect(grid()!.querySelectorAll("[data-x]")).toHaveLength(64);
+
+    cycle();
+    expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 00 00 00 00 00");
+    expect(lit()).toEqual(["0,2", "2,2", "5,2", "7,2"]); // A5 = 1010 0101, bit 0 is x = 0
+
+    fireEvent.click(button("Toggle bit 0 of ROW"));
+    fireEvent.click(button("Toggle bit 7 of DATA"));
+    cycle();
+    expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 25 00 00 00 00");
+
+    // Stepping back through the recorded ticks redraws the grid from each frame.
+    fireEvent.click(button("Back ½ cycle"));
+    fireEvent.click(button("Back ½ cycle"));
+    expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 00 00 00 00 00");
+    fireEvent.click(button("Step ½ cycle"));
+    fireEvent.click(button("Step ½ cycle"));
+    expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 25 00 00 00 00");
+
+    // Unfolded, the register rows replace the grid; folding brings the same pixels back.
+    fireEvent.click(button("Unfold 8×8 SCREEN in place"));
+    expect(grid()).toBeNull();
+    expect(screen.getByRole("group", { name: /^ROW 3 — 8-bit register part/ })).toBeTruthy();
+    fireEvent.click(button("Refold box"));
+    expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 25 00 00 00 00");
   }, 20000);
 });

@@ -253,7 +253,7 @@ const tileClass =
 export function DonationCard({
   className,
   reference = SITE_REFERENCE,
-  title = "Buy me a coffee",
+  title = "Buy me a coffee ☕",
 }: FullCardProps) {
   const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);

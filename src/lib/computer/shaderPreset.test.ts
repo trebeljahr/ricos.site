@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { screenRows } from "./datapathBlocks";
+import { screenRows, screenView } from "./datapathBlocks";
 import { type Circuit, initialSnapshot, type Snapshot, step, validateCircuit } from "./logic";
-import { compileShader, renderShader, SAMPLE_SHADERS } from "./shader";
+import { compileShader, renderShader, SAMPLE_SHADERS, shadeFrame, WIDE_SHADERS } from "./shader";
+import { SHADER_32X32 } from "./shaderBlocks";
 import { SHADER_PRESETS, shaderDemoCircuit } from "./shaderPreset";
 
 /** Clocks a circuit `cycles` times, low then high. */
@@ -44,6 +45,21 @@ describe("shader demo presets", () => {
 
   it("keeps every preset inside the import limits", () => {
     for (const circuit of Object.values(SHADER_PRESETS))
-      expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))?.nodes).toHaveLength(4);
+      expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))?.nodes).toHaveLength(
+        circuit.nodes.length,
+      );
+  });
+});
+
+describe("32×32 shader preset", () => {
+  it("fills the 32×32 screen with the model's frame and passes the validator", () => {
+    const name = "Shader: 32×32 square, 8 lanes in 4 passes";
+    const circuit = SHADER_PRESETS[name];
+    expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))).not.toBeNull();
+    const { frame, ticks } = shadeFrame(compileShader(WIDE_SHADERS.SQUARE).bytes, SHADER_32X32);
+    // 16× the ticks of the 8×8 frame of the same program.
+    expect(ticks).toBe(16 * frameCycles(WIDE_SHADERS.SQUARE));
+    const state = run(circuit, ticks);
+    expect(screenView("vram32x32", state.blocks?.screen).rows).toEqual(frame);
   });
 });

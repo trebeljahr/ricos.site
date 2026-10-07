@@ -18,9 +18,11 @@ import {
   laneNext,
   renderShader,
   SAMPLE_SHADERS,
+  SHADER_8X8,
   SHADER_OPS,
+  shadeFrame,
 } from "./shader";
-import { shaderBytes } from "./shaderBlocks";
+import { SHADER_32X32, shaderBytes } from "./shaderBlocks";
 
 /** Seeded PRNG (mulberry32), so failures reproduce. */
 function random(seed: number) {
@@ -321,5 +323,75 @@ describe("shader8 across fold and unfold", () => {
     const node = datapathNode("shaderLane", "dut", 0, 0);
     const lane = { a: 5, p: true, clock: true };
     expect(foldBlockState(node, unfoldBlockState(node, lane))).toEqual(lane);
+  });
+});
+
+describe("shader on a 32×32 screen", () => {
+  const CHECKER = compileShader(SAMPLE_SHADERS.CHECKER).bytes;
+  const at = (frame: number[], x: number, y: number) => (frame[y * 4 + (x >> 3)] >> (x & 7)) & 1;
+
+  it("keeps the 8×8 unit's frames, and draws 32×32 with x and y up to 31", () => {
+    const small = shadeFrame(CHECKER, SHADER_8X8);
+    expect(small.frame).toEqual(renderShader(CHECKER, 8).map((row) => row.pixels));
+    for (const lanes of [8, 16, 32]) {
+      const { frame } = shadeFrame(CHECKER, { width: 32, height: 32, lanes });
+      for (let y = 0; y < 32; y++)
+        for (let x = 0; x < 32; x++)
+          expect(at(frame, x, y), `${lanes} lanes: ${x}, ${y}`).toBe((x ^ y) & 1);
+    }
+    // A square that only fits on the big screen: 8 ≤ x < 24 and 8 ≤ y < 24 (immediates are 0–7).
+    const square = compileShader(
+      "LD x\nSHR 3\nSUB 1\nLT 2\nSET\nLD y\nSHR 3\nSUB 1\nLT 2\nAND p\nSET",
+    ).bytes;
+    const { frame } = shadeFrame(square, SHADER_32X32);
+    for (let y = 0; y < 32; y++)
+      for (let x = 0; x < 32; x++)
+        expect(at(frame, x, y), `${x}, ${y}`).toBe(Number(x >= 8 && x < 24 && y >= 8 && y < 24));
+  });
+
+  it("takes width / lanes passes a row: 4× the ticks with 8 lanes as with 32", () => {
+    const ticks = (lanes: number) => shadeFrame(CHECKER, { width: 32, height: 32, lanes }).ticks;
+    const perPass = compileShader(SAMPLE_SHADERS.CHECKER).instructions.length;
+    expect(ticks(32)).toBe(32 * perPass);
+    expect(ticks(16)).toBe(2 * ticks(32));
+    expect(ticks(8)).toBe(4 * ticks(32));
+    expect(shadeFrame(CHECKER, SHADER_8X8).ticks).toBe(8 * perPass);
+  });
+
+  it("shaderLane5: block equals gates over random control and operands", () => {
+    const node = datapathNode("shaderLane5", "dut", 0, 0);
+    expect(moduleInputs(node.module!)).toHaveLength(23);
+    const runners = [new Runner(node), new Runner({ ...node, behaviour: undefined })];
+    const next = random(5);
+    for (let i = 0; i < 400; i++) {
+      const inputs = Array.from({ length: 22 }, () => next() < 0.3);
+      for (const clock of [false, true]) {
+        const [a, b] = runners.map((r) => r.apply([...inputs, clock]));
+        expect(b, `step ${i}`).toEqual(a);
+      }
+    }
+  });
+
+  it("shader32x32: writes the model's frame bytes, as block and as gates", {
+    timeout: 60_000,
+  }, () => {
+    const node = datapathNode("shader32x32", "dut", 0, 0, CHECKER);
+    expect(activeBlock(node)?.name).toBe("shader32x32");
+    expect(moduleOutputs(node.module!)).toHaveLength(21);
+    const folded = new Runner(node);
+    const gates = new Runner({ ...node, behaviour: undefined });
+    const frame = Array(128).fill(0);
+    const { ticks } = shadeFrame(CHECKER, SHADER_32X32);
+    for (let tick = 0; tick < ticks; tick++) {
+      const out = folded.apply([true, false]);
+      expect(gates.apply([true, false]), `tick ${tick}`).toEqual(out);
+      if (out[15]) frame[toNumber(out.slice(0, 7))] = toNumber(out.slice(7, 15));
+      folded.apply([true, true]);
+      gates.apply([true, true]);
+    }
+    expect(frame).toEqual(shadeFrame(CHECKER, SHADER_32X32).frame);
+    const state = folded.state.blocks?.dut;
+    expect(foldBlockState(node, gates.state.modules.dut)).toEqual(state);
+    expect(foldBlockState(node, unfoldBlockState(node, state))).toEqual(state);
   });
 });

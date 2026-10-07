@@ -129,6 +129,12 @@ export const SAMPLE_SHADERS = {
   SQUARE: "LD x\nSUB 2\nLT 4\nSET\nLD y\nSUB 2\nLT 4\nAND p\nSET",
 } as const;
 
+/** Shaders for the 32×32 unit, whose x and y go up to 31. */
+export const WIDE_SHADERS = {
+  /** A 16×16 square in the middle: 8 ≤ x < 24 and 8 ≤ y < 24, as (x >> 3) − 1 < 2. */
+  SQUARE: "LD x\nSHR 3\nSUB 1\nLT 2\nSET\nLD y\nSHR 3\nSUB 1\nLT 2\nAND p\nSET",
+} as const;
+
 // ---------------------------------------------------------------- lane
 
 /**
@@ -181,16 +187,16 @@ export function decodeShader(byte: number, y: number, t: number): LaneControl {
  * One lane's next A and P. Each active line ORs its result in, exactly as the
  * lane's gates do, so the block and the gates agree even for odd line mixes.
  */
-export function laneNext(c: LaneControl, x: number, a: number, p: boolean) {
+export function laneNext(c: LaneControl, x: number, a: number, p: boolean, mask = MASK) {
   const b = c.shared | (c.useX ? x : 0) | (c.useP && p ? 1 : 0);
-  const raw = a + (c.SUBTRACT ? ~b & MASK : b) + Number(c.SUBTRACT);
-  const below = raw <= MASK; // no carry out of A + NOT B + 1 means A < B
+  const raw = a + (c.SUBTRACT ? ~b & mask : b) + Number(c.SUBTRACT);
+  const below = raw <= mask; // no carry out of A + NOT B + 1 means A < B
   let next = 0;
   if (c.LD) next |= b;
   if (c.AND) next |= a & b;
   if (c.OR) next |= a | b;
   if (c.XOR) next |= a ^ b;
-  if (c.ADD || c.SUB) next |= raw & MASK;
+  if (c.ADD || c.SUB) next |= raw & mask;
   if (c.SHR) next |= a >> b;
   if (c.LT && below) next |= 1;
   if (c.EQ && a === b) next |= 1;
@@ -204,6 +210,8 @@ export type ShaderState = {
   pc: number;
   y: number;
   t: number;
+  /** Which group of `lanes` pixels in the row the lanes compute; 0 when the lanes span the row. */
+  pass?: number;
   /** Accumulator per lane. */
   a: number[];
   /** Pixel bits, bit i for lane i. */
@@ -217,24 +225,76 @@ export const initialShaderState = (): ShaderState => ({
   pixels: 0,
 });
 
-/** One clock tick: every lane runs the instruction at PC. END moves to the next row. */
-export function shaderStep(bytes: readonly number[], state: ShaderState): ShaderState {
+/**
+ * A shader unit's shape: the screen it fills and how many lanes it has. With
+ * fewer lanes than pixels in a row, each row takes width / lanes passes, and
+ * lane i of pass c computes pixel x = c * lanes + i. Values (A, x, y, t) are
+ * log2(width) bits wide, so x and y reach the whole screen; immediates stay 0–7.
+ */
+export type ShaderShape = { width: number; height: number; lanes: number };
+export const SHADER_8X8: ShaderShape = { width: 8, height: 8, lanes: SHADER_LANES };
+export const shaderMask = (shape: ShaderShape) => shape.width - 1;
+export const shaderPasses = (shape: ShaderShape) => shape.width / shape.lanes;
+export const initialShaderStateFor = (shape: ShaderShape): ShaderState => ({
+  ...initialShaderState(),
+  a: Array<number>(shape.lanes).fill(0),
+  ...(shape === SHADER_8X8 ? {} : { pass: 0 }),
+});
+
+/**
+ * One clock tick: every lane runs the instruction at PC. END writes the lanes'
+ * pixels out and moves to the next pass, and after the row's last pass to the
+ * next row; T counts frames.
+ */
+export function shaderStep(
+  bytes: readonly number[],
+  state: ShaderState,
+  shape: ShaderShape = SHADER_8X8,
+): ShaderState {
+  const mask = shaderMask(shape);
+  const pass = state.pass ?? 0;
   const byte = bytes[state.pc] ?? 0;
   const control = decodeShader(byte, state.y, state.t);
   let pixels = 0;
-  const a = state.a.map((value, x) => {
-    const next = laneNext(control, x, value, Boolean((state.pixels >> x) & 1));
-    if (next.p) pixels |= 1 << x;
+  const a = state.a.map((value, lane) => {
+    const x = pass * shape.lanes + lane;
+    const next = laneNext(control, x, value, Boolean((state.pixels >> lane) & 1), mask);
+    if (next.p) pixels |= 1 << lane;
     return next.a;
   });
   const end = byte >> 4 === 0;
+  const rowDone = end && pass === shaderPasses(shape) - 1;
+  const frameDone = rowDone && state.y === shape.height - 1;
   return {
     pc: end ? 0 : (state.pc + 1) % SHADER_ROM_SIZE,
-    y: end ? (state.y + 1) & MASK : state.y,
-    t: end && state.y === MASK ? (state.t + 1) & MASK : state.t,
+    y: frameDone ? 0 : rowDone ? state.y + 1 : state.y,
+    t: frameDone ? (state.t + 1) & mask : state.t,
+    ...(state.pass === undefined ? {} : { pass: end && !rowDone ? pass + 1 : end ? 0 : pass }),
     a,
     pixels,
   };
+}
+
+/**
+ * Runs a shader for one whole frame on `shape` and returns the frame bytes
+ * (row y's byte c at y * width / 8 + c) and the ticks it took. A wide shape
+ * with few lanes takes width / lanes times as many ticks.
+ */
+export function shadeFrame(bytes: readonly number[], shape: ShaderShape) {
+  const frame = Array<number>((shape.width / 8) * shape.height).fill(0);
+  let state = initialShaderStateFor(shape);
+  let ticks = 0;
+  for (let written = 0; written < shape.height * shaderPasses(shape); ticks++) {
+    if (shaderRowReady(bytes, state)) {
+      const pass = state.pass ?? 0;
+      for (let byte = 0; byte < shape.lanes / 8; byte++)
+        frame[state.y * (shape.width / 8) + (pass * shape.lanes) / 8 + byte] =
+          (state.pixels >> (byte * 8)) & 255;
+      written++;
+    }
+    state = shaderStep(bytes, state, shape);
+  }
+  return { frame, ticks };
 }
 
 /** Whether the instruction at PC is END, i.e. the row is ready to be written. */

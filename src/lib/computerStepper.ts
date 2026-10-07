@@ -278,8 +278,31 @@ export const ISA = [
 export const isaFor = (stack: StackModel) =>
   ISA.filter((item) => !("stack" in item) || item.stack === stack);
 
-export function encodeInstruction(opcode: number, operand: number): [number, number] {
-  if (!ISA.some((item) => item.opcode === opcode)) throw new Error("Unknown opcode.");
+/** What an instruction's second byte means; `describeOperand` reads it this way. */
+export const OPERAND_KINDS = [
+  "literal",
+  "RAM address",
+  "code address",
+  "stack offset",
+  "SP change",
+  "unused",
+] as const;
+export type OperandKind = (typeof OPERAND_KINDS)[number];
+
+/** An instruction set entry, as the decoder, assembler and instruction views read it. */
+export type IsaEntry = {
+  readonly mnemonic: string;
+  readonly opcode: number;
+  readonly operand: OperandKind;
+  readonly effect: string;
+};
+
+export function encodeInstruction(
+  opcode: number,
+  operand: number,
+  isa: readonly IsaEntry[] = ISA,
+): [number, number] {
+  if (!isa.some((item) => item.opcode === opcode)) throw new Error("Unknown opcode.");
   if (!Number.isInteger(operand) || operand < 0 || operand > 255)
     throw new Error("Operand must be a byte.");
   return [opcode, operand];
@@ -303,13 +326,18 @@ export const signedByte = (value: number) => (value >= 128 ? value - 256 : value
 
 export type OperandMeaning = { short: string; long: string };
 
-/** Says whether an operand byte is a number, a RAM address, or a code address. */
+/**
+ * Says whether an operand byte is a number, a RAM address, or a code address.
+ * `isa` is the instruction set to read the opcode in; pass an edited table's
+ * `microcodeIsa(table)` for opcodes the default set does not have.
+ */
 export function describeOperand(
   opcode: number,
   operand: number,
   variables: CompiledProgram["variables"],
+  isa: readonly IsaEntry[] = ISA,
 ): OperandMeaning {
-  const kind = ISA.find((item) => item.opcode === opcode)?.operand;
+  const kind = isa.find((item) => item.opcode === opcode)?.operand;
   if (kind === "literal") return { short: `#${operand}`, long: `number ${operand}` };
   if (kind === "RAM address" && isPixelPort(operand)) {
     const role = pixelPortRole(operand);
@@ -1065,15 +1093,27 @@ export const SIGNALS = [
   "KEY_OUT",
   "IE_SET",
   "IE_CLR",
+  // The ALU outputs ACC AND OPR instead of the sum, and its carry is 0. No
+  // default opcode uses it; it is there for opcodes added in the microcode editor.
+  "ALU_AND",
 ] as const;
 
 export type Signal = (typeof SIGNALS)[number];
 export type ControlWord = readonly Signal[];
 export type Mnemonic = (typeof ISA)[number]["mnemonic"];
-/** Execute steps for one opcode, starting at T4. JNC branches on the carry flag. */
+/** The flag a conditional opcode branches on; both are microcode ROM address bits. */
+export type BranchFlag = "carry" | "zero";
+/**
+ * Execute steps for one opcode, starting at T4. A conditional opcode has one
+ * list for each value of `flag`: JNC branches on carry.
+ */
 export type ExecuteSteps =
   | readonly ControlWord[]
-  | { carryClear: readonly ControlWord[]; carrySet: readonly ControlWord[] };
+  | {
+      readonly flag: BranchFlag;
+      readonly clear: readonly ControlWord[];
+      readonly set: readonly ControlWord[];
+    };
 
 /** T-states a single instruction may use; the microcode ROM has room for this many. */
 export const MAX_T_STATES = 8;
@@ -1112,8 +1152,9 @@ export const EXECUTE_STEPS: Partial<Record<Mnemonic, ExecuteSteps>> = {
   OUT: [["ACC_OUT", "OUT_IN", "STEP_RESET"]],
   JMP: [["OPR_OUT", "PC_IN", "STEP_RESET"]],
   JNC: {
-    carryClear: [["OPR_OUT", "PC_IN", "STEP_RESET"]],
-    carrySet: [["STEP_RESET"]],
+    flag: "carry",
+    clear: [["OPR_OUT", "PC_IN", "STEP_RESET"]],
+    set: [["STEP_RESET"]],
   },
   CALL: [["PC_OUT", "STACK_IN"], ["SP_INC"], ["OPR_OUT", "PC_IN", "STEP_RESET"]],
   RET: [["SP_DEC"], ["STACK_OUT", "PC_IN", "STEP_RESET"]],
@@ -1184,19 +1225,86 @@ export const INTERRUPT_STEPS: Record<StackModel, readonly ControlWord[]> = {
 /** An opcode the decoder does not know stops the clock. */
 const UNKNOWN_STEPS: readonly ControlWord[] = [["HALT"]];
 
-/** The microcode lookup: (opcode, T-state, carry flag) → control word. */
+/** One opcode of a microcode table: its instruction set entry and its execute steps. */
+export type MicrocodeOpcode = IsaEntry & { readonly steps: ExecuteSteps };
+
+/**
+ * A microcode table: everything the control unit does, as plain data. The
+ * trace, the generated control ROM and the CPU circuit all take one, so an
+ * edited table runs the same way in the stepper and in the circuit. Fetch
+ * (T0–T3) is wired and the same for every opcode; `interrupt` runs from T0
+ * in place of a fetch. `stack` is the CPU the table is written for.
+ */
+export type MicrocodeTable = {
+  readonly stack: StackModel;
+  readonly opcodes: readonly MicrocodeOpcode[];
+  readonly interrupt: readonly ControlWord[];
+};
+
+const defaultTables = new Map<StackModel, MicrocodeTable>();
+/** The microcode table each CPU ships with: its instruction set and the execute steps above. */
+export function defaultMicrocode(stack: StackModel = "hardware"): MicrocodeTable {
+  let table = defaultTables.get(stack);
+  if (!table) {
+    table = {
+      stack,
+      opcodes: isaFor(stack).map(({ mnemonic, opcode, operand, effect }) => ({
+        mnemonic,
+        opcode,
+        operand,
+        effect,
+        steps: MICROCODE[stack][mnemonic] ?? UNKNOWN_STEPS,
+      })),
+      interrupt: INTERRUPT_STEPS[stack],
+    };
+    defaultTables.set(stack, table);
+  }
+  return table;
+}
+
+/** A table, or the default table of a CPU. */
+export type MicrocodeSource = StackModel | MicrocodeTable;
+const tableOf = (source: MicrocodeSource) =>
+  typeof source === "string" ? defaultMicrocode(source) : source;
+
+/** The instruction set a table decodes, for the assembler and the instruction views. */
+export const microcodeIsa = (source: MicrocodeSource): readonly IsaEntry[] =>
+  tableOf(source).opcodes;
+
+const opcodeIndex = new WeakMap<MicrocodeTable, Map<number, MicrocodeOpcode>>();
+/** The table's entry for `opcode`, or undefined when the decoder does not know it. */
+export function microcodeEntry(
+  source: MicrocodeSource,
+  opcode: number,
+): MicrocodeOpcode | undefined {
+  const table = tableOf(source);
+  let index = opcodeIndex.get(table);
+  if (!index) {
+    index = new Map(table.opcodes.map((entry) => [entry.opcode, entry]));
+    opcodeIndex.set(table, index);
+  }
+  return index.get(opcode);
+}
+
+/** The steps a conditional opcode takes for these flags; a plain list as it is. */
+export const branchSteps = (steps: ExecuteSteps, carry: boolean, zero: boolean) =>
+  "flag" in steps ? ((steps.flag === "zero" ? zero : carry) ? steps.set : steps.clear) : steps;
+
+/**
+ * The microcode lookup: (opcode, T-state, carry flag, zero flag) → control word.
+ * `table` is the microcode table, or a CPU whose default table to use.
+ */
 export function controlWord(
   opcode: number,
   t: number,
   carry: boolean,
-  stack: StackModel = "hardware",
+  table: MicrocodeSource = "hardware",
+  zero = false,
 ): ControlWord {
-  if (opcode === INT_OPCODE) return INTERRUPT_STEPS[stack][t] ?? [];
+  if (opcode === INT_OPCODE) return tableOf(table).interrupt[t] ?? [];
   if (t < FETCH_STEPS.length) return FETCH_STEPS[t];
-  const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
-  const steps = (mnemonic && MICROCODE[stack][mnemonic]) || UNKNOWN_STEPS;
-  const list = "carrySet" in steps ? (carry ? steps.carrySet : steps.carryClear) : steps;
-  return list[t - FETCH_STEPS.length] ?? [];
+  const steps = microcodeEntry(table, opcode)?.steps ?? UNKNOWN_STEPS;
+  return branchSteps(steps, carry, zero)[t - FETCH_STEPS.length] ?? [];
 }
 
 export function encodeControlWord(word: ControlWord): number {
@@ -1207,20 +1315,29 @@ export function decodeControlWord(bits: number): Signal[] {
   return SIGNALS.filter((_, index) => (bits & (1 << index)) !== 0);
 }
 
-/** ROM address for (opcode, T-state, carry): opcode byte, then 3 T bits, then carry. */
-export function microcodeAddress(opcode: number, t: number, carry: boolean): number {
-  return (opcode << 4) | (t << 1) | (carry ? 1 : 0);
+/**
+ * ROM address for (opcode, T-state, carry, zero): zero flag, opcode byte, 3 T
+ * bits, carry. The zero bit is the top bit, so with zero off every address is
+ * where it was before the zero flag joined the address.
+ */
+export function microcodeAddress(opcode: number, t: number, carry: boolean, zero = false): number {
+  return (zero ? 1 << 12 : 0) | (opcode << 4) | (t << 1) | (carry ? 1 : 0);
 }
 
+/** Words in the microcode ROM: every opcode, T-state, carry and zero. */
+export const MICROCODE_ROM_SIZE = 256 * MAX_T_STATES * 4;
+
 /** Microcode ROM contents generated from the table, so the two cannot drift apart. */
-export function microcodeRom(stack: StackModel = "hardware"): number[] {
-  const rom = Array<number>(256 * MAX_T_STATES * 2).fill(0);
+export function microcodeRom(source: MicrocodeSource = "hardware"): number[] {
+  const table = tableOf(source);
+  const rom = Array<number>(MICROCODE_ROM_SIZE).fill(0);
   for (let opcode = 0; opcode < 256; opcode++)
     for (let t = 0; t < MAX_T_STATES; t++)
       for (const carry of [false, true])
-        rom[microcodeAddress(opcode, t, carry)] = encodeControlWord(
-          controlWord(opcode, t, carry, stack),
-        );
+        for (const zero of [false, true])
+          rom[microcodeAddress(opcode, t, carry, zero)] = encodeControlWord(
+            controlWord(opcode, t, carry, table, zero),
+          );
   return rom;
 }
 
@@ -1237,7 +1354,7 @@ export type BusDriver =
   | "VECTOR"
   | "KEY";
 
-const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
+export const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
   PC_OUT: "PC",
   ROM_OUT: "ROM",
   OPR_OUT: "OPR",
@@ -1251,7 +1368,7 @@ const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
   KEY_OUT: "KEY",
 };
 
-const BUS_READERS: readonly Signal[] = [
+export const BUS_READERS: readonly Signal[] = [
   "CMAR_IN",
   "IR_IN",
   "OPR_IN",
@@ -1356,9 +1473,12 @@ export function traceTicks(
   program: CompiledProgram,
   maxInstructions: number = MAX_INSTRUCTIONS,
   keys: KeySchedule = {},
+  table: MicrocodeTable = defaultMicrocode(stackModelOf(program)),
 ): Tick[] {
   const stack = stackModelOf(program);
   const inRam = stack === "ram";
+  if (table.stack !== stack)
+    throw new Error(`The microcode table is for the ${STACK_MODELS[table.stack].label} CPU.`);
   const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
   const ram = Array<number>(STACK_MODELS[stack].ramBytes).fill(0);
   const screen = Array<number>(SCREEN_ROWS).fill(0);
@@ -1399,7 +1519,13 @@ export function traceTicks(
     if (t === 0) address = registers.pc;
     if (t >= MAX_T_STATES) throw new Error(`Microcode for ${hex(registers.ir)} never resets.`);
     const interrupt = registers.int;
-    const control = controlWord(interrupt ? INT_OPCODE : registers.ir, t, registers.carry, stack);
+    const control = controlWord(
+      interrupt ? INT_OPCODE : registers.ir,
+      t,
+      registers.carry,
+      table,
+      registers.zero,
+    );
     if (control.length === 0)
       throw new Error(`Microcode for ${hex(registers.ir)} has no control word at T${t}.`);
     const on = new Set(control);
@@ -1407,7 +1533,12 @@ export function traceTicks(
     if (drivers.length > 1) throw new Error(`Bus conflict at T${t}: ${drivers.join(", ")}.`);
     const busDriver = drivers.length ? BUS_DRIVERS[drivers[0]]! : null;
     const subtract = on.has("ALU_SUB");
-    const sum = subtract ? registers.acc - registers.opr : registers.acc + registers.opr;
+    const and = on.has("ALU_AND");
+    const sum = and
+      ? registers.acc & registers.opr
+      : subtract
+        ? registers.acc - registers.opr
+        : registers.acc + registers.opr;
     const busValues: Record<BusDriver, () => number> = {
       PC: () => registers.pc,
       ROM: () => rom[registers.cmar],
@@ -1467,7 +1598,7 @@ export function traceTicks(
       if (on.has("PC_INC")) next.pc = (registers.pc + 1) & 255;
       if (on.has("SP_INC")) next.sp = registers.sp + 1;
       if (on.has("SP_DEC")) next.sp = registers.sp - 1;
-      if (on.has("FLAGS_IN")) next.carry = subtract ? sum < 0 : sum > 255;
+      if (on.has("FLAGS_IN")) next.carry = !and && (subtract ? sum < 0 : sum > 255);
       next.zero = next.acc === 0;
       if (keyPress !== null) next.key = keyPress;
       next.keyReady = keyPress !== null || (registers.keyReady && !on.has("KEY_OUT"));
@@ -1595,7 +1726,34 @@ function explainInterrupt(tick: Tick, inRam: boolean): string {
   return `Interrupt: SP moves up to ${hex(tick.registers.sp)}.`;
 }
 
-export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): Snapshot[] {
+/**
+ * Whether `entry` is the CPU's own opcode, unedited: only then do the
+ * stepper's hand-written explanations describe what its microcode does.
+ */
+function isDefaultEntry(entry: MicrocodeOpcode, stack: StackModel): boolean {
+  const original = microcodeEntry(stack, entry.opcode);
+  return (
+    original !== undefined &&
+    original.mnemonic === entry.mnemonic &&
+    JSON.stringify(original.steps) === JSON.stringify(entry.steps)
+  );
+}
+
+/** What an edited or added opcode did, read from the registers it changed. */
+function explainEdited(entry: MicrocodeOpcode, before: Snapshot, after: Registers): string {
+  const changes = [
+    after.acc !== before.accumulator && `ACC becomes ${after.acc}`,
+    after.carry !== before.carry && `carry becomes ${Number(after.carry)}`,
+    after.zero !== before.zero && `zero becomes ${Number(after.zero)}`,
+  ].filter(Boolean);
+  return `${entry.mnemonic} runs edited microcode (${entry.effect || "no effect given"}): ${changes.length ? changes.join(", ") : "ACC and flags stay the same"}.`;
+}
+
+export function traceProgram(
+  program: CompiledProgram,
+  keys: KeySchedule = {},
+  table: MicrocodeTable = defaultMicrocode(stackModelOf(program)),
+): Snapshot[] {
   const inRam = stackModelOf(program) === "ram";
   const snapshots: Snapshot[] = [];
   let state: Snapshot = {
@@ -1638,7 +1796,7 @@ export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): 
   };
   record({});
   const groups: Tick[][] = [];
-  for (const tick of traceTicks(program, MAX_INSTRUCTIONS, keys))
+  for (const tick of traceTicks(program, MAX_INSTRUCTIONS, keys, table))
     (groups[tick.instruction] ??= []).push(tick);
   /** Key port, tick and machine state after `ticks`, for any snapshot. */
   const port = (ticks: Tick[]): Partial<Snapshot> => {
@@ -1690,8 +1848,9 @@ export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): 
     }
     const opcode = group[1].registers.ir;
     const operand = group[3].registers.opr;
-    const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic ?? hex(opcode);
-    const meaning = describeOperand(opcode, operand, program.variables).long;
+    const entry = microcodeEntry(table, opcode);
+    const mnemonic = entry?.mnemonic ?? hex(opcode);
+    const meaning = describeOperand(opcode, operand, program.variables, table.opcodes).long;
     record({
       phase: "fetch",
       ir: opcode,
@@ -1717,16 +1876,19 @@ export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): 
     const touchesRam =
       !isScreenAddress(last.registers.dmar) &&
       group.some(({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"));
-    const effect = explainExecute(
-      opcode,
-      operand,
-      meaning,
-      state,
-      after,
-      last.stack,
-      inRam,
-      last.screenWrite,
-    );
+    const effect =
+      entry && !isDefaultEntry(entry, table.stack)
+        ? explainEdited(entry, state, after)
+        : explainExecute(
+            opcode,
+            operand,
+            meaning,
+            state,
+            after,
+            last.stack,
+            inRam,
+            last.screenWrite,
+          );
     record({
       phase: "execute",
       pc: after.pc,

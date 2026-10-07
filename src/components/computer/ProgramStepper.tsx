@@ -2,25 +2,40 @@ import clsx from "clsx";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
+  AND_JZ_PROGRAM,
+  AND_OPCODE,
+  assembleProgram,
+  JZ_OPCODE,
+  type MicrocodeProblem,
+  parseMicrocodeJson,
+  programProblems,
+  validateMicrocode,
+  withOpcodes,
+} from "src/lib/computer/microcodeTable";
+import {
   byteBits,
   type CompiledProgram,
   compileProgram,
+  defaultMicrocode,
   describeOperand,
   hex,
   INTERRUPT_SAMPLES,
   INTERRUPT_VECTOR,
-  ISA,
-  isaFor,
+  type IsaEntry,
   isScreenAddress,
   KEY_HANDLER,
   type KeySchedule,
+  type MicrocodeTable,
+  microcodeIsa,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
+  type Snapshot,
   STACK_MODELS,
   type StackModel,
   traceProgram,
 } from "src/lib/computerStepper";
 import panel from "./ByteExplorer.module.css";
+import { MicrocodeEditor } from "./MicrocodeEditor";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
@@ -30,10 +45,47 @@ const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
 const keyLabel = (code: number) =>
   code >= 33 && code < 127 ? `“${String.fromCharCode(code)}” (${code})` : String(code);
-const dataOpcodes = new Set<number>(
-  ISA.filter((item) => item.operand === "RAM address").map((item) => item.opcode),
-);
 const BIT_WEIGHTS = [128, 64, 32, 16, 8, 4, 2, 1];
+
+/** How the program is written: the source language (default ISA) or assembly for the table. */
+export type Language = "source" | "assembly";
+
+type Tables = Record<StackModel, MicrocodeTable>;
+const DEFAULT_TABLES: Tables = {
+  hardware: defaultMicrocode("hardware"),
+  ram: defaultMicrocode("ram"),
+};
+/** Edited microcode tables, per CPU, in this browser only. */
+const TABLES_KEY = "computer.microcode.v1";
+
+function loadTables(): Tables {
+  const tables = { ...DEFAULT_TABLES };
+  try {
+    const saved = JSON.parse(localStorage.getItem(TABLES_KEY) ?? "{}");
+    for (const stack of Object.keys(STACK_MODELS) as StackModel[]) {
+      if (!saved?.[stack]) continue;
+      const table = parseMicrocodeJson(JSON.stringify(saved[stack]));
+      if (table.stack === stack) tables[stack] = table;
+    }
+  } catch {
+    // Storage blocked or a bad saved table: keep the defaults.
+  }
+  return tables;
+}
+
+function saveTables(tables: Tables) {
+  try {
+    const edited = Object.fromEntries(
+      Object.entries(tables).filter(
+        ([stack, table]) => table !== DEFAULT_TABLES[stack as StackModel],
+      ),
+    );
+    if (Object.keys(edited).length) localStorage.setItem(TABLES_KEY, JSON.stringify(edited));
+    else localStorage.removeItem(TABLES_KEY);
+  } catch {
+    // Storage blocked: the edit still works until the page reloads.
+  }
+}
 /** Whether the program has a key handler: the compiler then puts a jump at the interrupt vector. */
 const hasHandler = (program: CompiledProgram | null) =>
   Boolean(program?.instructions.some(({ label }) => label === "INTERRUPT VECTOR"));
@@ -44,14 +96,39 @@ export function ProgramStepper() {
   const [step, setStep] = useState(0);
   const [stack, setStack] = useState<StackModel>("hardware");
   const [keys, setKeys] = useState<KeySchedule>({});
+  const [language, setLanguage] = useState<Language>("source");
+  const [tables, setTables] = useState<Tables>(DEFAULT_TABLES);
+  const [editing, setEditing] = useState(false);
   const inRam = stack === "ram";
-  const isa = isaFor(stack);
+  const table = tables[stack];
+  const isa = microcodeIsa(table);
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
-  const compilation = useMemo(() => compileSource(loaded, stack), [loaded, stack]);
-  const trace = useMemo(
-    () => (compilation.program ? traceProgram(compilation.program, keys) : []),
-    [compilation.program, keys],
+  useEffect(() => {
+    const saved = loadTables();
+    setTables(saved);
+    if (saved.hardware !== DEFAULT_TABLES.hardware || saved.ram !== DEFAULT_TABLES.ram)
+      setEditing(true);
+  }, []);
+  const compilation = useMemo(
+    () => (language === "assembly" ? assembleSource(loaded, table) : compileSource(loaded, stack)),
+    [loaded, stack, language, table],
   );
+  const problems: MicrocodeProblem[] = useMemo(
+    () => [
+      ...validateMicrocode(table),
+      ...(compilation.program ? programProblems(compilation.program, table) : []),
+    ],
+    [table, compilation.program],
+  );
+  const run = useMemo((): { trace: Snapshot[]; error: string | null } => {
+    if (!compilation.program || problems.length) return { trace: [], error: null };
+    try {
+      return { trace: traceProgram(compilation.program, keys, table), error: null };
+    } catch (error) {
+      return { trace: [], error: (error as Error).message };
+    }
+  }, [compilation.program, keys, table, problems.length]);
+  const trace = run.trace;
   const state = trace[Math.min(step, trace.length - 1)];
   const active =
     state?.activeAddress === null || state?.activeAddress === undefined
@@ -61,7 +138,9 @@ export function ProgramStepper() {
   const variables = compilation.program?.variables ?? [];
   const usesScreen = Boolean(
     compilation.program?.instructions.some(
-      ({ opcode, operand }) => dataOpcodes.has(opcode) && isScreenAddress(operand),
+      ({ opcode, operand }) =>
+        isa.some((item) => item.opcode === opcode && item.operand === "RAM address") &&
+        isScreenAddress(operand),
     ),
   );
   const setBitWeights = state
@@ -75,7 +154,7 @@ export function ProgramStepper() {
     hasHandler(compilation.program) ||
     Boolean(
       compilation.program?.instructions.some(({ opcode }) =>
-        ISA.some((item) => item.opcode === opcode && ["IN", "EI"].includes(item.mnemonic)),
+        isa.some((item) => item.opcode === opcode && ["IN", "EI"].includes(item.mnemonic)),
       ),
     );
   // The interrupt path, stage by stage, for this snapshot.
@@ -91,7 +170,7 @@ export function ProgramStepper() {
   const operandMeaning =
     state?.ir === null || state?.ir === undefined || state.operand === null
       ? null
-      : describeOperand(state.ir, state.operand, variables);
+      : describeOperand(state.ir, state.operand, variables, isa);
 
   function compile() {
     setLoaded(source);
@@ -100,7 +179,8 @@ export function ProgramStepper() {
     playSwitch();
   }
 
-  function preset(value: string, model: StackModel = stack) {
+  function preset(value: string, model: StackModel = stack, as: Language = "source") {
+    setLanguage(as);
     setStack(model);
     setSource(value);
     setLoaded(value);
@@ -111,6 +191,27 @@ export function ProgramStepper() {
 
   function chooseStack(model: StackModel) {
     setStack(model);
+    setKeys({});
+    setStep(0);
+    playSwitch();
+  }
+
+  function changeTable(next: MicrocodeTable) {
+    const updated = { ...tables, [next.stack]: next };
+    setTables(updated);
+    saveTables(updated);
+    setKeys({});
+    setStep(0);
+  }
+
+  /** The AND + JZ exercise: add both opcodes to this CPU's table and run a program that uses them. */
+  function exercise() {
+    changeTable(withOpcodes(table, AND_OPCODE, JZ_OPCODE));
+    preset(AND_JZ_PROGRAM, stack, "assembly");
+  }
+
+  function chooseLanguage(next: Language) {
+    setLanguage(next);
     setKeys({});
     setStep(0);
     playSwitch();
@@ -170,6 +271,10 @@ export function ProgramStepper() {
           compilation={compilation}
           changed={changed}
           activeAddress={active?.address ?? null}
+          isa={isa}
+          language={language}
+          onLanguageChange={chooseLanguage}
+          onExercise={exercise}
         />
 
         <div className={styles.outputSide}>
@@ -177,6 +282,12 @@ export function ProgramStepper() {
             <span>03 / CPU CLOCK</span>
             <span>{state?.halted ? "HALTED" : (state?.phase.toUpperCase() ?? "READY")}</span>
           </div>
+          {compilation.program && !state && (
+            <p role="alert" className={styles.error}>
+              {run.error ??
+                `The CPU cannot run this: ${problems.length} microcode problem${problems.length === 1 ? "" : "s"}. Fix ${problems.length === 1 ? "it" : "them"} in the microcode table below.`}
+            </p>
+          )}
           {state && (
             <>
               <div className={styles.transport}>
@@ -463,11 +574,44 @@ export function ProgramStepper() {
           )}
         </div>
       </div>
+      <div className={styles.controls}>
+        <button
+          type="button"
+          aria-expanded={editing}
+          onClick={() => {
+            setEditing(!editing);
+            playSwitch();
+          }}
+          className={editing ? styles.primaryButton : styles.button}
+        >
+          {editing ? "HIDE" : "EDIT"} MICROCODE TABLE
+          {problems.length
+            ? ` · ${problems.length} PROBLEM${problems.length === 1 ? "" : "S"}`
+            : ""}
+        </button>
+      </div>
+      {editing && (
+        <MicrocodeEditor
+          table={table}
+          onChange={changeTable}
+          problems={problems}
+          onExercise={exercise}
+        />
+      )}
     </section>
   );
 }
 
 type Compilation = { program: CompiledProgram | null; error: string | null };
+
+/** Assembles a program for a microcode table, turning an assembler error into a message. */
+export function assembleSource(source: string, table: MicrocodeTable): Compilation {
+  try {
+    return { program: assembleProgram(source, table), error: null };
+  } catch (error) {
+    return { program: null, error: (error as Error).message };
+  }
+}
 
 /** Compiles source for one CPU, turning a compile error into a message. */
 export function compileSource(source: string, stack: StackModel = "hardware"): Compilation {
@@ -492,6 +636,13 @@ type ProgramSourceProps = {
   changed: boolean;
   /** Code address of the instruction the CPU is running, if any. */
   activeAddress: number | null;
+  /** The instruction set the tape decodes with; an edited microcode table's, or the CPU's. */
+  isa?: readonly IsaEntry[];
+  /** With `onLanguageChange`, the source can be switched to assembly for the microcode table. */
+  language?: Language;
+  onLanguageChange?: (language: Language) => void;
+  /** Loads the AND + JZ microcode exercise. */
+  onExercise?: () => void;
 };
 
 /** The CPU choice, source editor and instruction tape: write, compile, and see which line runs. */
@@ -505,13 +656,17 @@ export function ProgramSource({
   compilation,
   changed,
   activeAddress,
+  isa = microcodeIsa(stack),
+  language = "source",
+  onLanguageChange,
+  onExercise,
 }: ProgramSourceProps) {
+  const assembly = language === "assembly";
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
   const instructionListRef = useRef<HTMLOListElement>(null);
   const sourceMirrorRef = useRef<HTMLDivElement>(null);
   const sourceLines = source.split("\n");
   const inRam = stack === "ram";
-  const isa = isaFor(stack);
   const active =
     activeAddress === null
       ? null
@@ -574,8 +729,29 @@ export function ProgramSource({
           </button>
         ))}
       </fieldset>
+      {onLanguageChange && (
+        <fieldset className={styles.stackChoice}>
+          <legend>LANGUAGE</legend>
+          {(
+            [
+              ["source", "SOURCE CODE"],
+              ["assembly", "ASSEMBLY"],
+            ] as const
+          ).map(([value, name]) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={language === value}
+              onClick={() => onLanguageChange(value)}
+              className={language === value ? styles.primaryButton : styles.button}
+            >
+              {name}
+            </button>
+          ))}
+        </fieldset>
+      )}
       <label className={styles.label} htmlFor="program-source">
-        WRITE A PROGRAM
+        {assembly ? "WRITE ASSEMBLY: ONE INSTRUCTION PER LINE" : "WRITE A PROGRAM"}
       </label>
       <div className={styles.sourceFrame}>
         <div ref={sourceMirrorRef} className={styles.sourceMirror} aria-hidden="true">
@@ -615,8 +791,13 @@ export function ProgramSource({
       </div>
       <div className={styles.controls}>
         <button type="button" onClick={compile} className={styles.primaryButton}>
-          COMPILE + RESET
+          {assembly ? "ASSEMBLE + RESET" : "COMPILE + RESET"}
         </button>
+        {onExercise && (
+          <button type="button" onClick={onExercise} className={styles.button}>
+            AND + JZ
+          </button>
+        )}
         <button type="button" onClick={() => preset(EXAMPLE)} className={styles.button}>
           2 + 3
         </button>
@@ -697,8 +878,11 @@ export function ProgramSource({
                   {byteBits(instruction.opcode)} {byteBits(instruction.operand)}
                 </span>
                 <span className={styles.mnemonic} title={instruction.label}>
-                  <b>{isa.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic}</b>{" "}
-                  {describeOperand(instruction.opcode, instruction.operand, variables).short}
+                  <b>
+                    {isa.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic ??
+                      `?${hex(instruction.opcode)}`}
+                  </b>{" "}
+                  {describeOperand(instruction.opcode, instruction.operand, variables, isa).short}
                 </span>
                 <span>{instruction.line ? `L${instruction.line}` : "GEN"}</span>
               </li>
@@ -715,7 +899,9 @@ export function ProgramSource({
                 frame.
               </>
             )}{" "}
-            GEN is code the compiler adds.
+            {assembly
+              ? "In assembly, every line is one instruction: L3 is line 3."
+              : "GEN is code the compiler adds."}
             {hasHandler(compilation.program) && (
               <>
                 {" "}

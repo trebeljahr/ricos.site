@@ -132,18 +132,33 @@ registerBlock<ClockedByte>({
 
 // ---------------------------------------------------------------- alu8
 
-/** The ALU's arithmetic: CARRY is the carry out on add and the borrow on subtract. */
-export function alu(a: number, b: number, sub: boolean) {
+/**
+ * The ALU's arithmetic: CARRY is the carry out on add and the borrow on
+ * subtract. With `and` on, the result is A AND B and CARRY is 0.
+ */
+export function alu(a: number, b: number, sub: boolean, and = false) {
+  if (and) {
+    const result = a & b;
+    return { result, carry: false, zero: result === 0 };
+  }
   const raw = sub ? a - b : a + b;
   const result = raw & 255;
   return { result, carry: sub ? raw < 0 : raw > 255, zero: result === 0 };
 }
 
+const ALU_PORTS: [string, string][] = [
+  ...busPorts("a", "A"),
+  ...busPorts("b", "B"),
+  ["sub", "SUB"],
+  ["and", "AND"],
+];
+
 function alu8Circuit(): Circuit {
   const b = new Builder();
-  ports(b, [...busPorts("a", "A"), ...busPorts("b", "B"), ["sub", "SUB"]]);
+  ports(b, ALU_PORTS);
   // A − B is A + NOT B + 1: SUB flips every B bit and is the first carry in.
   let carry: Ref = "sub";
+  b.gate("add", "not", 220, 1520, "and", undefined, "NOT AND");
   for (let bit = 0; bit < 8; bit++) {
     const y = 30 + bit * 190;
     const operand = b.gate(`bx${bit}`, "xor", 220, y, `b${bit}`, "sub", `B${bit} OR NOT B${bit}`);
@@ -152,15 +167,29 @@ function alu8Circuit(): Circuit {
     const both = b.gate(`both${bit}`, "and", 380, y + 70, `a${bit}`, operand);
     const pass = b.gate(`pass${bit}`, "and", 540, y + 70, half, carry);
     carry = b.gate(`carry${bit}`, "or", 700, y + 70, both, pass, `CARRY ${bit + 1}`);
+    // AND picks A AND B over the sum.
+    const masked = b.gate(
+      `ab${bit}`,
+      "and",
+      700,
+      y + 130,
+      `a${bit}`,
+      `b${bit}`,
+      `A${bit} AND B${bit}`,
+    );
+    const keepAnd = b.gate(`pick-and${bit}`, "and", 860, y + 130, masked, "and");
+    const keepSum = b.gate(`pick-sum${bit}`, "and", 860, y, `sum${bit}`, "add");
+    b.gate(`out${bit}`, "or", 980, y, keepSum, keepAnd, `R${bit}`);
   }
   for (let bit = 0; bit < 8; bit++)
-    b.gate(`r${bit}`, "lamp", 1100, 30 + bit * 190, `sum${bit}`, undefined, `R${bit}`);
-  // No carry out of A + NOT B + 1 means A < B: a borrow.
+    b.gate(`r${bit}`, "lamp", 1100, 30 + bit * 190, `out${bit}`, undefined, `R${bit}`);
+  // No carry out of A + NOT B + 1 means A < B: a borrow. AND has no carry.
   b.gate("flag", "xor", 860, 1600, carry, "sub", "CARRY OR BORROW");
-  b.gate("carry", "lamp", 1100, 1600, "flag", undefined, "CARRY");
+  b.gate("flag-add", "and", 980, 1600, "flag", "add", "NOT FOR AND");
+  b.gate("carry", "lamp", 1100, 1600, "flag-add", undefined, "CARRY");
   const any = b.orTree(
     "zero",
-    range(8).map((bit) => `sum${bit}`),
+    range(8).map((bit) => `out${bit}`),
     860,
     1700,
     "ANY BIT",
@@ -172,7 +201,7 @@ function alu8Circuit(): Circuit {
 
 registerBlock<null>({
   name: "alu8",
-  inputs: [...busPorts("a", "A"), ...busPorts("b", "B"), ["sub", "SUB"]].map(([, l]) => l),
+  inputs: ALU_PORTS.map(([, l]) => l),
   outputs: [...range(8).map((bit) => `R${bit}`), "CARRY", "ZERO"],
   initialState: () => null,
   evaluate: (inputs, state) => {
@@ -180,6 +209,7 @@ registerBlock<null>({
       toNumber(inputs.slice(0, 8)),
       toNumber(inputs.slice(8, 16)),
       inputs[16],
+      Boolean(inputs[17]),
     );
     return { outputs: [...toBits(result, 8), carry, zero], nextState: state };
   },
@@ -741,7 +771,7 @@ export const DATAPATH_BLOCKS = {
   counter8: { label: "PROGRAM COUNTER", hint: "On a rising CLK: LOAD takes D, else INC adds 1." },
   alu8: {
     label: "8-BIT ALU",
-    hint: "R = A + B, or A − B with SUB. CARRY is the borrow when subtracting.",
+    hint: "R = A + B, or A − B with SUB, or A AND B with AND. CARRY is the borrow when subtracting and 0 for AND.",
   },
   rom256: { label: "256-BYTE ROM", hint: "A picks a byte; D reads it. Unfold to see the rows." },
   ram16: { label: "16-BYTE RAM", hint: "A picks a row; with WE on, a rising CLK stores D there." },

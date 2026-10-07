@@ -66,16 +66,31 @@ function random(seed: number) {
  * above 15 wrap, F0–FF reach the screen, and adds and subtracts carry and borrow.
  */
 function randomProgram(seed: number, length = 40, stack: StackModel = "hardware"): CompiledProgram {
+  return randomProgramWith(seed, stack, [], [], length);
+}
+
+/**
+ * A random program as above, with extra opcodes from an edited microcode
+ * table: `plain` take any byte, `branches` take a forward code address.
+ */
+export function randomProgramWith(
+  seed: number,
+  stack: StackModel,
+  plain: number[],
+  branches: number[],
+  length = 40,
+): CompiledProgram {
   const next = random(seed);
   const byte = () => Math.floor(next() * 256);
-  const opcodes: number[] = [LDI, LDM, STM, ADDI, ADDM, SUBI, SUBM, OUT, JMP, JNC];
+  const jumps = [JMP, JNC, ...branches];
+  const opcodes: number[] = [LDI, LDM, STM, ADDI, ADDM, SUBI, SUBM, OUT, ...jumps, ...plain];
   // SP stays at 32, so SP + offset wraps around all 32 bytes of RAM.
   if (stack === "ram") opcodes.push(LDS, STS, ADDS, SUBS);
   const pairs: [number, number][] = [];
   for (let i = 0; i < length; i++) {
     const opcode = opcodes[Math.floor(next() * opcodes.length)];
     const forward = 2 * (i + 1 + Math.floor(next() * 4));
-    pairs.push([opcode, opcode === JMP || opcode === JNC ? Math.min(forward, 2 * length) : byte()]);
+    pairs.push([opcode, jumps.includes(opcode) ? Math.min(forward, 2 * length) : byte()]);
   }
   pairs.push([HALT, 0]);
   return rawFor(stack, ...pairs);

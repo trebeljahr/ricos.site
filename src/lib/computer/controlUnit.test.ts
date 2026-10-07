@@ -137,7 +137,7 @@ describe("control unit", () => {
   it("microcode: the gates hold exactly the ROM generated from the table", () => {
     const block = datapathNode("microcode", "dut", 0, 0);
     expect(microcodeWords(block.module!)).toEqual(microcodeRom());
-    expect(microcodeRom().length).toBe(256 * MAX_T_STATES * 2);
+    expect(microcodeRom().length).toBe(256 * MAX_T_STATES * 4);
     expect(2 ** T_BITS).toBe(MAX_T_STATES);
   });
 
@@ -283,6 +283,8 @@ describe("control unit", () => {
   });
 
   it("uses one ROM address layout with the stepper", () => {
-    expect(microcodeAddress(0xff, MAX_T_STATES - 1, true)).toBe(microcodeRom().length - 1);
+    expect(microcodeAddress(0xff, MAX_T_STATES - 1, true, true)).toBe(microcodeRom().length - 1);
+    // The zero flag is the top address bit: with it off, addresses keep their carry-only layout.
+    expect(microcodeAddress(0xff, MAX_T_STATES - 1, true)).toBe(256 * MAX_T_STATES * 2 - 1);
   });
 });

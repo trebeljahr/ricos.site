@@ -7,12 +7,14 @@ import {
   type CompiledProgram,
   compileProgram,
   decodeControlWord,
+  defaultMicrocode,
   encodeControlWord,
   INT_OPCODE,
   INTERRUPT_VECTOR,
   ISA,
   isaFor,
   type KeySchedule,
+  type MicrocodeTable,
   OPCODES,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
@@ -22,8 +24,23 @@ import {
   traceTicks,
 } from "../computerStepper";
 import { CPU_PARTS, CPU_PRESETS, cpuCircuit, cpuFromSource, keyPressOverrides } from "./cpuPreset";
-import { expectedProbes, KEYED_PROGRAMS, PROGRAMS, RAM_PROGRAMS, ram } from "./cpuTestPrograms";
+import {
+  expectedProbes,
+  KEYED_PROGRAMS,
+  PROGRAMS,
+  RAM_PROGRAMS,
+  ram,
+  randomProgramWith,
+} from "./cpuTestPrograms";
 import { type Circuit, initialSnapshot, type Snapshot, step, validateCircuit } from "./logic";
+import {
+  AND_JZ_PROGRAM,
+  AND_OPCODE,
+  assembleProgram,
+  JZ_OPCODE,
+  validateMicrocode,
+  withOpcodes,
+} from "./microcodeTable";
 import { readProbes } from "./probes";
 
 const { JNC } = OPCODES;
@@ -46,12 +63,14 @@ const cursorOf = (state: Snapshot) =>
  */
 function lockstep(
   program: CompiledProgram,
-  circuit: Circuit = cpuCircuit(program.bytes, undefined, stackModelOf(program)),
+  circuit?: Circuit,
   keys: KeySchedule = {},
   maxInstructions?: number,
+  table: MicrocodeTable = defaultMicrocode(stackModelOf(program)),
 ) {
+  circuit ??= cpuCircuit(program.bytes, undefined, stackModelOf(program), table);
   const inRam = stackModelOf(program) === "ram";
-  const ticks = traceTicks(program, maxInstructions, keys);
+  const ticks = traceTicks(program, maxInstructions, keys, table);
   if (maxInstructions === undefined)
     expect(ticks.at(-1)!.halted, "the trace ends on HALT").toBe(true);
   expect(ticks.some((tick) => tick.fault)).toBe(false);
@@ -301,5 +320,66 @@ describe("interrupts in lockstep with the per-tick trace", () => {
       state = step(circuit, step(circuit, state, true, {}, press), false);
     }
     expect(lit).toEqual(ticks.filter((tick) => tick.interrupt).map((tick) => tick.index));
+  });
+});
+
+describe("an edited microcode table in lockstep with the per-tick trace", () => {
+  for (const stack of ["hardware", "ram"] as const) {
+    const table = withOpcodes(defaultMicrocode(stack), AND_OPCODE, JZ_OPCODE);
+
+    it(`${stack} stack: the AND and JZ exercise table is valid`, () => {
+      expect(validateMicrocode(table)).toEqual([]);
+    });
+
+    it(`${stack} stack: runs the AND + JZ program identically in stepper and circuit`, () => {
+      const program = assembleProgram(AND_JZ_PROGRAM, table);
+      expect(lockstep(program, undefined, {}, undefined, table)).toBeGreaterThan(0);
+      const ticks = traceTicks(program, undefined, {}, table);
+      expect(ticks.at(-1)!.output).toEqual([12, 8, 4, 0]);
+      // JZ took both branches, on the zero flag.
+      const jz = ticks.filter((tick) => tick.registers.ir === JZ_OPCODE.opcode && tick.t === 4);
+      expect(new Set(jz.map((tick) => tick.control.includes("PC_IN")))).toEqual(
+        new Set([true, false]),
+      );
+    });
+
+    it(`${stack} stack: AND clears a carry left by an add`, () => {
+      const program = assembleProgram("LDI 200\nADDI 100\nAND 0xF0\nOUT\nHALT", table);
+      const ticks = traceTicks(program, undefined, {}, table);
+      const add = ticks.find((tick) => tick.registers.ir === OPCODES.ADDI && tick.t === 4)!;
+      expect(add.registers.carry).toBe(true);
+      expect(ticks.at(-1)!.registers.carry).toBe(false);
+      expect(ticks.at(-1)!.output).toEqual([300 & 255 & 0xf0]);
+      lockstep(program, undefined, {}, undefined, table);
+    });
+
+    for (const seed of [11, 12, 13])
+      it(`${stack} stack: random program ${seed} with AND and JZ`, () => {
+        const program = randomProgramWith(seed, stack, [AND_OPCODE.opcode], [JZ_OPCODE.opcode]);
+        expect(lockstep(program, undefined, {}, undefined, table)).toBeGreaterThan(0);
+      });
+  }
+
+  it("runs an edited default opcode: LDI that also adds its operand to OUT", () => {
+    const base = defaultMicrocode("hardware");
+    const ldi = base.opcodes.find((entry) => entry.mnemonic === "LDI")!;
+    const table = withOpcodes(base, {
+      ...ldi,
+      steps: [
+        ["OPR_OUT", "ACC_IN"],
+        ["ACC_OUT", "OUT_IN", "STEP_RESET"],
+      ],
+    });
+    const program = assembleProgram("LDI 7\nLDI 9\nHALT", table);
+    lockstep(program, undefined, {}, undefined, table);
+    expect(traceTicks(program, undefined, {}, table).at(-1)!.output).toEqual([7, 9]);
+  });
+
+  it("refuses a table written for the other CPU", () => {
+    const program = compileProgram(SAMPLE_PROGRAMS.EXAMPLE);
+    expect(() => traceTicks(program, undefined, {}, defaultMicrocode("ram"))).toThrow();
+    expect(() =>
+      cpuCircuit(program.bytes, undefined, "hardware", defaultMicrocode("ram")),
+    ).toThrow();
   });
 });

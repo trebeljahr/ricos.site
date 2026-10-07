@@ -9,7 +9,9 @@
 import {
   INT_OPCODE,
   ISA,
+  type IsaEntry,
   MAX_T_STATES,
+  MICROCODE_ROM_SIZE,
   microcodeAddress,
   microcodeRom,
   SIGNALS,
@@ -87,10 +89,10 @@ registerBlock<TState>({
 
 // ---------------------------------------------------------------- microcode
 
-const mnemonic = (opcode: number) =>
+const mnemonicIn = (isa: readonly IsaEntry[]) => (opcode: number) =>
   opcode === INT_OPCODE
     ? "INT"
-    : (ISA.find((item) => item.opcode === opcode)?.mnemonic ?? opcode.toString(16).toUpperCase());
+    : (isa.find((item) => item.opcode === opcode)?.mnemonic ?? opcode.toString(16).toUpperCase());
 const signalNames = (word: number) => SIGNALS.filter((signal) => word & bitOf(signal)).join(" ");
 
 /**
@@ -99,12 +101,26 @@ const signalNames = (word: number) => SIGNALS.filter((signal) => word & bitOf(si
  * rows that switch it on. Rows are found per T-state. The control word most
  * opcodes share at that T-state (fetch, or HALT for unknown opcodes) is one
  * "OTHER" row; opcodes with their own word get a row each, split on the carry
- * flag only where the word depends on it.
+ * or zero flag only where the word depends on it.
  */
-function microcodeCircuit(rom: readonly number[]): Circuit {
+const MICROCODE_PORTS: [string, string][] = [
+  ...busPorts("op", "OP"),
+  ...busPorts("t", "T", T_BITS),
+  ["carry", "CARRY"],
+  ["zero", "ZERO"],
+];
+
+function microcodeCircuit(rom: readonly number[], isa: readonly IsaEntry[]): Circuit {
+  const mnemonic = mnemonicIn(isa);
   const b = new Builder();
-  ports(b, [...busPorts("op", "OP"), ...busPorts("t", "T", T_BITS), ["carry", "CARRY"]]);
+  ports(b, MICROCODE_PORTS);
   b.gate("no-carry", "not", 200, 30 + (8 + T_BITS) * 90, "carry", undefined, "NOT CARRY");
+  /** NOT ZERO, added the first time a row splits on the zero flag. */
+  const noZero = () => {
+    if (!b.nodes.some((node) => node.id === "no-zero"))
+      b.gate("no-zero", "not", 200, 30 + (9 + T_BITS) * 90, "zero", undefined, "NOT ZERO");
+    return "no-zero";
+  };
   const literal = (prefix: string, bit: number, one: boolean, y: number): Ref => {
     if (one) return `${prefix}${bit}`;
     const id = `not-${prefix}${bit}`;
@@ -163,10 +179,10 @@ function microcodeCircuit(rom: readonly number[]): Circuit {
 
   const rows: { ref: Ref; word: number }[] = [];
   let rowY = 30;
-  const addRow = (id: string, match: Ref, carry: Ref | undefined, word: number, label: string) => {
+  const addRow = (id: string, match: Ref, flags: Ref[], word: number, label: string) => {
     if (!word) return;
-    // Without a carry split the match gate is the row; it takes the row's label.
-    const ref = carry === undefined ? match : b.gate(id, "and", 1100, rowY, match, carry);
+    // Without a flag split the match gate is the row; it takes the row's label.
+    const ref = flags.length === 0 ? match : andTree(id, [match, ...flags], 1100, rowY, label);
     const node = b.nodes.find((n) => n.id === ref);
     if (node) node.label = label.slice(0, 30);
     rows.push({ ref, word });
@@ -175,14 +191,19 @@ function microcodeCircuit(rom: readonly number[]): Circuit {
   for (let t = 0; t < MAX_T_STATES; t++) {
     const groups = new Map<string, number[]>();
     for (let opcode = 0; opcode < 256; opcode++) {
-      const key = `${rom[microcodeAddress(opcode, t, false)]},${rom[microcodeAddress(opcode, t, true)]}`;
+      // Words for (carry, zero) = 00, 10, 01, 11.
+      const key = [false, true]
+        .flatMap((zero) =>
+          [false, true].map((carry) => rom[microcodeAddress(opcode, t, carry, zero)]),
+        )
+        .join(",");
       groups.set(key, [...(groups.get(key) ?? []), opcode]);
     }
     const ordered = [...groups].sort((a, b) => b[1].length - a[1].length);
     const special = ordered.slice(1).flatMap(([, opcodes]) => opcodes);
     for (const [index, [key, opcodes]] of ordered.entries()) {
-      const [clear, set] = key.split(",").map(Number);
-      if (!clear && !set) continue;
+      const words = key.split(",").map(Number);
+      if (words.every((word) => !word)) continue;
       const name =
         index === 0 ? (special.length ? "OTHER" : "ANY") : opcodes.map(mnemonic).join("/");
       const id = `row-t${t}-${index}`;
@@ -204,12 +225,23 @@ function microcodeCircuit(rom: readonly number[]): Circuit {
         which === undefined
           ? tLines[t]
           : b.gate(`${id}-match`, "and", 1000, rowY, tLines[t], which);
-      if (clear === set)
-        addRow(`${id}-row`, match, undefined, clear, `T${t} ${name}: ${signalNames(clear)}`);
-      else {
-        addRow(`${id}-clear`, match, "no-carry", clear, `T${t} ${name} C0: ${signalNames(clear)}`);
-        addRow(`${id}-set`, match, "carry", set, `T${t} ${name} C1: ${signalNames(set)}`);
-      }
+      const [c0z0, c1z0, c0z1, c1z1] = words;
+      const onCarry = c0z0 !== c1z0 || c0z1 !== c1z1;
+      const onZero = c0z0 !== c0z1 || c1z0 !== c1z1;
+      if (!onCarry && !onZero)
+        addRow(`${id}-row`, match, [], c0z0, `T${t} ${name}: ${signalNames(c0z0)}`);
+      else if (!onZero) {
+        addRow(`${id}-clear`, match, ["no-carry"], c0z0, `T${t} ${name} C0: ${signalNames(c0z0)}`);
+        addRow(`${id}-set`, match, ["carry"], c1z0, `T${t} ${name} C1: ${signalNames(c1z0)}`);
+      } else if (!onCarry) {
+        addRow(`${id}-z0`, match, [noZero()], c0z0, `T${t} ${name} Z0: ${signalNames(c0z0)}`);
+        addRow(`${id}-z1`, match, ["zero"], c0z1, `T${t} ${name} Z1: ${signalNames(c0z1)}`);
+      } else
+        for (const [index, word] of words.entries()) {
+          const flags = [index & 1 ? "carry" : "no-carry", index & 2 ? "zero" : noZero()];
+          const tag = `C${index & 1}Z${index >> 1}`;
+          addRow(`${id}-${tag}`, match, flags, word, `T${t} ${name} ${tag}: ${signalNames(word)}`);
+        }
     }
   }
   SIGNALS.forEach((signal, index) => {
@@ -267,29 +299,37 @@ export function microcodeWords(rom: Circuit): number[] {
   let words = wordCache.get(rom);
   if (!words) {
     const run = combinational(rom);
-    words = range(256 * MAX_T_STATES * 2).map((address) =>
+    // With no gate reading ZERO (no opcode branches on it), the zero half repeats the rest.
+    const readsZero = rom.wires.some((wire) => wire.from === "zero");
+    const half = MICROCODE_ROM_SIZE / 2;
+    words = range(readsZero ? MICROCODE_ROM_SIZE : half).map((address) =>
       toNumber(
         run([
           ...toBits(address >> 4, 8),
           ...toBits((address >> 1) & T_MASK, T_BITS),
           Boolean(address & 1),
+          Boolean(address & (1 << 12)),
         ]),
       ),
     );
+    if (!readsZero) words = [...words, ...words];
     wordCache.set(rom, words);
   }
   return words;
 }
 
 type Microcode = { words: number[] };
-const lookup = (words: readonly number[], opcode: number, t: number, carry: boolean) =>
-  words[microcodeAddress(opcode, t, carry)] ?? 0;
+const lookup = (
+  words: readonly number[],
+  opcode: number,
+  t: number,
+  carry: boolean,
+  zero: boolean,
+) => words[microcodeAddress(opcode, t, carry, zero)] ?? 0;
 
 registerBlock<Microcode>({
   name: "microcode",
-  inputs: [...busPorts("op", "OP"), ...busPorts("t", "T", T_BITS), ["carry", "CARRY"]].map(
-    ([, l]) => l,
-  ),
+  inputs: MICROCODE_PORTS.map(([, l]) => l),
   outputs: [...SIGNALS],
   initialState: (module) => ({ words: microcodeWords(module) }),
   evaluate: (inputs, state) => ({
@@ -299,6 +339,7 @@ registerBlock<Microcode>({
         toNumber(inputs.slice(0, 8)),
         toNumber(inputs.slice(8, 8 + T_BITS)),
         inputs[8 + T_BITS],
+        Boolean(inputs[9 + T_BITS]),
       ),
       SIGNALS.length,
     ),
@@ -310,15 +351,21 @@ registerBlock<Microcode>({
 
 /**
  * The whole control unit: the T-state counter addresses the microcode ROM
- * together with the opcode and carry flag. STEP_RESET resets the counter at
+ * together with the opcode, the carry flag and the zero flag. STEP_RESET resets the counter at
  * the end of an instruction. HALT gates the clock: GCLK = CLK AND NOT HALT,
  * so once HALT is on, neither the counter nor anything clocked from GCLK moves.
  * INT (the CPU's interrupt latch) swaps the opcode for INT_OPCODE, so the ROM
  * runs the interrupt entry instead of the instruction in IR.
  */
-function controlCircuit(rom: readonly number[]): Circuit {
+function controlCircuit(rom: readonly number[], isa: readonly IsaEntry[]): Circuit {
   const b = new Builder();
-  ports(b, [...busPorts("op", "OP"), ["carry", "CARRY"], ["clock", "CLK"], ["int", "INT"]]);
+  ports(b, [
+    ...busPorts("op", "OP"),
+    ["carry", "CARRY"],
+    ["clock", "CLK"],
+    ["int", "INT"],
+    ["zero", "ZERO"],
+  ]);
   b.gate("no-int", "not", 130, 1500, "int", undefined, "NOT INT");
   // Each opcode bit: IR's bit, or INT_OPCODE's bit while INT is on.
   const opcode = range(8).map((bit) =>
@@ -342,13 +389,14 @@ function controlCircuit(rom: readonly number[]): Circuit {
       x: 600,
       y: 30,
       label: CONTROL_BLOCKS.microcode.label,
-      module: microcodeCircuit(rom),
+      module: microcodeCircuit(rom, isa),
       behaviour: "microcode",
     },
   );
   for (const [bit, source] of opcode.entries()) b.connect(source, "microcode", bit);
   range(T_BITS).forEach((bit) => b.connect(["tstate", bit], "microcode", 8 + bit));
   b.connect("carry", "microcode", 8 + T_BITS);
+  b.connect("zero", "microcode", 9 + T_BITS);
   const halt: Ref = ["microcode", SIGNALS.indexOf("HALT")];
   b.gate("running", "not", 260, 700, halt, undefined, "NOT HALT");
   b.gate("gclk", "and", 420, 760, "clock", "running", "GATED CLOCK");
@@ -370,12 +418,12 @@ const controlWords = (module: Circuit) => {
 
 registerBlock<Control>({
   name: "control",
-  inputs: [...busPorts("op", "OP").map(([, l]) => l), "CARRY", "CLK", "INT"],
+  inputs: [...busPorts("op", "OP").map(([, l]) => l), "CARRY", "CLK", "INT", "ZERO"],
   outputs: [...SIGNALS, "GCLK"],
   initialState: (module) => ({ t: 0, clock: false, words: controlWords(module) }),
   evaluate: (inputs, state) => {
     const opcode = inputs[10] ? INT_OPCODE : toNumber(inputs.slice(0, 8));
-    const word = lookup(state.words, opcode, state.t, inputs[8]);
+    const word = lookup(state.words, opcode, state.t, inputs[8], Boolean(inputs[11]));
     const gated = inputs[9] && !(word & HALT_BIT);
     const t = gated && !state.clock ? nextT(state.t, Boolean(word & RESET_BIT)) : state.t;
     return {
@@ -394,27 +442,31 @@ export const CONTROL_BLOCKS = {
   },
   microcode: {
     label: "MICROCODE ROM",
-    hint: "Opcode, T-state and carry pick a row; the row's control lines switch on.",
+    hint: "Opcode, T-state, carry and zero pick a row; the row's control lines switch on.",
   },
   control: {
     label: "CONTROL UNIT",
-    hint: "Feed it the opcode, carry, clock and INT. It outputs the control word; HALT stops GCLK. With INT on it runs the interrupt entry instead of the opcode.",
+    hint: "Feed it the opcode, carry, clock, INT and zero. It outputs the control word; HALT stops GCLK. With INT on it runs the interrupt entry instead of the opcode.",
   },
 } as const;
 export type ControlKind = keyof typeof CONTROL_BLOCKS;
 
-/** The gate form of a control block. `rom` defaults to the stepper's microcode table. */
+/**
+ * The gate form of a control block. `rom` defaults to the stepper's microcode
+ * table; `isa` names the ROM's rows, so pass an edited table's opcodes with its ROM.
+ */
 export function controlBlockCircuit(
   kind: ControlKind,
   rom: readonly number[] = microcodeRom(),
+  isa: readonly IsaEntry[] = ISA,
 ): Circuit {
   switch (kind) {
     case "tstate":
       return tstateCircuit();
     case "microcode":
-      return microcodeCircuit(rom);
+      return microcodeCircuit(rom, isa);
     case "control":
-      return controlCircuit(rom);
+      return controlCircuit(rom, isa);
   }
 }
 

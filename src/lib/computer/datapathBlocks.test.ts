@@ -131,12 +131,13 @@ describe("datapath blocks", () => {
     );
     for (let i = 0; i < 300; i++) cases.push([Math.floor(next() * 256), Math.floor(next() * 256)]);
     for (const [a, b] of cases)
-      for (const sub of [false, true]) {
-        const out = pair.apply([...toBits(a, 8), ...toBits(b, 8), sub]);
-        const want = alu(a, b, sub);
-        expect(toNumber(out.slice(0, 8))).toBe(want.result);
-        expect(out.slice(8)).toEqual([want.carry, want.zero]);
-      }
+      for (const sub of [false, true])
+        for (const and of [false, true]) {
+          const out = pair.apply([...toBits(a, 8), ...toBits(b, 8), sub, and]);
+          const want = alu(a, b, sub, and);
+          expect(toNumber(out.slice(0, 8))).toBe(and ? a & b : want.result);
+          expect(out.slice(8)).toEqual([want.carry, want.zero]);
+        }
   });
 
   it("register8: block equals gates loading every byte, and holds without LOAD", () => {

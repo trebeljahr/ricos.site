@@ -37,8 +37,10 @@
 // auxiliary bus that feeds the last slot.
 import {
   compileProgram,
+  defaultMicrocode,
   INTERRUPT_SAMPLES,
   INTERRUPT_VECTOR,
+  type MicrocodeTable,
   microcodeRom,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
@@ -173,12 +175,16 @@ function zeroTestCircuit(): Circuit {
  * The CPU with `bytes` in its code ROM, e.g. `compileProgram(source).bytes`.
  * Drive it with the `clock` node: one full clock cycle (high, then low) is one
  * stepper tick. `stack` picks the variant; compile the bytes for the same one.
+ * `table` is the microcode its control unit's ROM is generated from; pass the
+ * same table to `traceTicks` to run them in lockstep.
  */
 export function cpuCircuit(
   bytes: readonly number[],
   name = "Toy CPU",
   stack: StackModel = "hardware",
+  table: MicrocodeTable = defaultMicrocode(stack),
 ): Circuit {
+  if (table.stack !== stack) throw new Error(`The microcode table is for the ${table.stack} CPU.`);
   const inRam = stack === "ram";
   const drivers = DRIVERS[stack];
   const b = new Builder();
@@ -263,13 +269,14 @@ export function cpuCircuit(
     x: X.code,
     y: 1400,
     label: "CONTROL UNIT",
-    module: controlBlockCircuit("control", microcodeRom(stack)),
+    module: controlBlockCircuit("control", microcodeRom(table), table.opcodes),
     behaviour: "control",
   });
   wireBits(bits(CPU_PARTS.ir), CPU_PARTS.control);
   b.connect([CPU_PARTS.flags, 0], CPU_PARTS.control, 8);
   b.connect("clock", CPU_PARTS.control, 9);
   b.connect(CPU_PARTS.int, CPU_PARTS.control, 10);
+  b.connect(["zero", 0], CPU_PARTS.control, 11);
 
   // ------------------------------------------------------------ bus
   drivers.forEach(([signal, part, label], index) => {
@@ -303,8 +310,10 @@ export function cpuCircuit(
   wireBits(bits(CPU_PARTS.acc), CPU_PARTS.alu);
   wireBits(bits(CPU_PARTS.opr), CPU_PARTS.alu, 8);
   b.connect(line("ALU_SUB"), CPU_PARTS.alu, 16);
+  b.connect(line("ALU_AND"), CPU_PARTS.alu, 17);
 
-  // FLAGS_IN latches the ALU's carry (or borrow); zero is wired to ACC.
+  // FLAGS_IN latches the ALU's carry (or borrow); zero is wired to ACC and
+  // goes back to the control unit, which branches on it like on carry.
   block("register8", CPU_PARTS.flags, X.part, 1900, "CARRY FLAG");
   b.connect([CPU_PARTS.alu, 8], CPU_PARTS.flags, 0);
   b.connect(line("FLAGS_IN"), CPU_PARTS.flags, 8);

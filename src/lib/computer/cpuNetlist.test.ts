@@ -3,10 +3,17 @@
 // stepper's per-tick trace. All programs run at once, one per bit of the
 // netlist's 32-bit words.
 import { describe, expect, it } from "vitest";
-import { compileProgram, SAMPLE_PROGRAMS, SIGNALS, traceTicks } from "../computerStepper";
+import {
+  type CompiledProgram,
+  compileProgram,
+  SAMPLE_PROGRAMS,
+  SIGNALS,
+  type StackModel,
+  traceTicks,
+} from "../computerStepper";
 import { cpuNetlist, loadProgram, readCpu } from "./cpuNetlist";
 import { CPU_PARTS, cpuCircuit } from "./cpuPreset";
-import { expectedProbes, PROGRAMS } from "./cpuTestPrograms";
+import { expectedProbes, PROGRAMS, RAM_PROGRAMS } from "./cpuTestPrograms";
 import { type Circuit, initialSnapshot, type Snapshot, step } from "./logic";
 import { compileNetlist, NetlistSim } from "./netlist";
 import { createNetlistRunner } from "./netlistRunner";
@@ -33,13 +40,14 @@ const controlOf = (state: Snapshot) =>
   (state.outputs[CPU_PARTS.control] ?? [])
     .slice(0, SIGNALS.length)
     .reduce((word, bit, index) => (bit ? word | (1 << index) : word), 0);
-const shape = cpuCircuit([]);
-const folded = (state: Snapshot) => ({
+const shapes = { hardware: cpuCircuit([]), ram: cpuCircuit([], undefined, "ram") };
+/** The stack-in-RAM CPU has no stack part: its stack bytes are RAM bytes. */
+const folded = (state: Snapshot, stack: StackModel = "hardware") => ({
   control: controlOf(state),
   bus: state.buses?.[CPU_PARTS.bus] ?? "Z",
-  probes: readProbes(shape, state),
+  probes: readProbes(shapes[stack], state),
   ram: (state.blocks?.[CPU_PARTS.ram] as Bytes).bytes,
-  stack: (state.blocks?.[CPU_PARTS.stack] as Bytes).bytes,
+  stack: (state.blocks?.[CPU_PARTS.stack] as Bytes | undefined)?.bytes ?? [],
   screen: (state.blocks?.[CPU_PARTS.screen] as Bytes).bytes,
 });
 
@@ -74,60 +82,72 @@ describe("CPU unfolded to a gate netlist", () => {
     expect(differ).toBe(0);
   });
 
-  const programs = Object.entries(PROGRAMS);
-  it(`runs ${programs.length} programs side by side in lockstep with the folded CPU and the trace`, () => {
-    expect(programs.length).toBeLessThanOrEqual(32);
-    const sim = new NetlistSim(cpu.netlist);
-    for (const [copy, [, program]] of programs.entries())
-      loadProgram(sim, cpu, program.bytes, copy);
-    const runs = programs.map(([name, program]) => ({
-      name,
-      ticks: traceTicks(program),
-      circuit: cpuCircuit(program.bytes),
-      state: initialSnapshot(),
-    }));
-    for (const run of runs) run.state = step(run.circuit, run.state, false);
-    sim.step(false);
-    const longest = Math.max(...runs.map((run) => run.ticks.length));
-    for (let index = 0; index <= longest + 2; index++) {
-      runs.forEach((run, copy) => {
-        const tick = run.ticks[index];
-        const gates = readCpu(sim, cpu, copy);
-        const where = `${run.name}, tick ${index}`;
-        const { probes: _p, ...before } = folded(run.state);
-        // Before the rising edge: the control word and bus the tick acts on.
-        expect({ control: gates.control, bus: gates.bus }, `${where}: control and bus`).toEqual({
-          control: before.control,
-          bus: before.bus,
+  const variants: [StackModel, Record<string, CompiledProgram>][] = [
+    ["hardware", PROGRAMS],
+    ["ram", RAM_PROGRAMS],
+  ];
+  for (const [stack, set] of variants) {
+    const programs = Object.entries(set);
+    it(`${stack} stack: runs ${programs.length} programs side by side in lockstep with the folded CPU and the trace`, () => {
+      expect(programs.length).toBeLessThanOrEqual(32);
+      const cpu = cpuNetlist(cpuCircuit([], undefined, stack));
+      if (stack === "ram") {
+        expect(cpu.ram).toHaveLength(32);
+        expect(cpu.stack).toHaveLength(0);
+      }
+      const sim = new NetlistSim(cpu.netlist);
+      for (const [copy, [, program]] of programs.entries())
+        loadProgram(sim, cpu, program.bytes, copy);
+      const runs = programs.map(([name, program]) => ({
+        name,
+        ticks: traceTicks(program),
+        circuit: cpuCircuit(program.bytes, undefined, stack),
+        state: initialSnapshot(),
+      }));
+      for (const run of runs) run.state = step(run.circuit, run.state, false);
+      sim.step(false);
+      const longest = Math.max(...runs.map((run) => run.ticks.length));
+      for (let index = 0; index <= longest + 2; index++) {
+        runs.forEach((run, copy) => {
+          const tick = run.ticks[index];
+          const gates = readCpu(sim, cpu, copy);
+          const where = `${run.name}, tick ${index}`;
+          const { probes: _p, ...before } = folded(run.state, stack);
+          // Before the rising edge: the control word and bus the tick acts on.
+          expect({ control: gates.control, bus: gates.bus }, `${where}: control and bus`).toEqual({
+            control: before.control,
+            bus: before.bus,
+          });
+          if (tick) expect(gates.bus, `${where}: bus vs trace`).toBe(tick.bus ?? "Z");
         });
-        if (tick) expect(gates.bus, `${where}: bus vs trace`).toBe(tick.bus ?? "Z");
-      });
-      sim.tick();
-      runs.forEach((run, copy) => {
-        run.state = step(run.circuit, step(run.circuit, run.state, true), false);
-        const tick = run.ticks[index];
-        const gates = readCpu(sim, cpu, copy);
-        const where = `${run.name}, after tick ${index}`;
-        const after = folded(run.state);
-        expect(sim.unstable).toBe(0);
-        expect(gates.probes, `${where}: probes vs folded`).toEqual(after.probes);
-        expect(gates.ram, `${where}: RAM vs folded`).toEqual(after.ram);
-        expect(gates.stack, `${where}: stack vs folded`).toEqual(after.stack);
-        expect(gates.screen, `${where}: screen vs folded`).toEqual(after.screen);
-        // Past its trace a program has halted, and HALT freezes it.
-        const last = run.ticks[Math.min(index, run.ticks.length - 1)];
-        const { BUS: _bus, ...probes } = gates.probes;
-        expect(probes, `${where}: probes vs trace`).toEqual(expectedProbes(last));
-        expect(gates.ram, `${where}: RAM vs trace`).toEqual(last.ram);
-        expect(gates.screen, `${where}: screen vs trace`).toEqual(last.screen);
-        expect(gates.stack.slice(0, last.registers.sp), `${where}: stack vs trace`).toEqual(
-          last.stack,
-        );
-        expect(gates.control, `${where}: next control word vs folded`).toBe(after.control);
-        if (!tick) expect(gates.halted, `${where}: halted`).toBe(true);
-      });
-    }
-  }, 60_000);
+        sim.tick();
+        runs.forEach((run, copy) => {
+          run.state = step(run.circuit, step(run.circuit, run.state, true), false);
+          const tick = run.ticks[index];
+          const gates = readCpu(sim, cpu, copy);
+          const where = `${run.name}, after tick ${index}`;
+          const after = folded(run.state, stack);
+          expect(sim.unstable).toBe(0);
+          expect(gates.probes, `${where}: probes vs folded`).toEqual(after.probes);
+          expect(gates.ram, `${where}: RAM vs folded`).toEqual(after.ram);
+          expect(gates.stack, `${where}: stack vs folded`).toEqual(after.stack);
+          expect(gates.screen, `${where}: screen vs folded`).toEqual(after.screen);
+          // Past its trace a program has halted, and HALT freezes it.
+          const last = run.ticks[Math.min(index, run.ticks.length - 1)];
+          const { BUS: _bus, ...probes } = gates.probes;
+          expect(probes, `${where}: probes vs trace`).toEqual(expectedProbes(last));
+          expect(gates.ram, `${where}: RAM vs trace`).toEqual(last.ram);
+          expect(gates.screen, `${where}: screen vs trace`).toEqual(last.screen);
+          if (stack === "hardware")
+            expect(gates.stack.slice(0, last.registers.sp), `${where}: stack vs trace`).toEqual(
+              last.stack,
+            );
+          expect(gates.control, `${where}: next control word vs folded`).toBe(after.control);
+          if (!tick) expect(gates.halted, `${where}: halted`).toBe(true);
+        });
+      }
+    }, 60_000);
+  }
 
   it("measures ticks per second", () => {
     const sim = new NetlistSim(cpu.netlist);

@@ -243,3 +243,5 @@
 .busValueFloating{fill:#9aa7ae;color:#9aa7ae}
 .busValueConflict{fill:#ff6b63;color:#ff6b63}
 .busReadout{font:700 15px ui-monospace,SFMono-Regular,monospace;color:#7fe6d6}
+/* Challenge mode: the part the grader names as the likely cause */
+.node.challengeHighlight{outline:3px solid #ff8f87;outline-offset:4px;box-shadow:0 0 0 8px #ff8f8733,0 8px 18px #0005}

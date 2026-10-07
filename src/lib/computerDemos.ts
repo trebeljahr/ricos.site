@@ -19,6 +19,10 @@ export const computerDemos = [
     slug: "program-stepper",
     title: "From source code to CPU steps",
   },
+  {
+    slug: "build-a-cpu",
+    title: "Build your own CPU",
+  },
 ] as const;
 
 export type ComputerDemoSlug = (typeof computerDemos)[number]["slug"];

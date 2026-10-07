@@ -674,7 +674,9 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     setMenu({ x: event.clientX, y: event.clientY, ...selection });
   };
   const labelInput = (part: Node) => <input className={styles.nodeNameInput}
-    aria-label={`Label for ${part.label || LABELS[part.type]}`} value={draftLabel} autoFocus
+    aria-label={`Label for ${part.label || LABELS[part.type]}`} value={draftLabel}
+    // biome-ignore lint/a11y/noAutofocus: the field opens on the reader's own rename action
+    autoFocus
     onChange={(event) => setDraftLabel(event.target.value)} onBlur={saveLabel}
     onKeyDown={(event) => { event.stopPropagation();
       if (event.key === "Enter") event.currentTarget.blur();
@@ -703,7 +705,9 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     ? `${host.label} — ${circuit.name}` : circuit.name;
   return (
     <div ref={root} className={clsx(styles.inlineCircuit, activePath === path && styles.activeInlineCircuit)}
-      data-inline-path={path} aria-label={`${circuit.name} expanded circuit`} tabIndex={0}
+      data-inline-path={path} aria-label={`${circuit.name} expanded circuit`}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: focus makes this the target for keyboard edits
+      tabIndex={0}
       onPointerDown={(event) => { event.stopPropagation(); onActivate(path); setMenu(null); }}
       onPointerMove={(event) => { if (!portWiring.pointerMove(event)) movePointer(event); }}
       onPointerUp={(event) => { if (!portWiring.pointerUp(event)) finishPointer(event); }}
@@ -850,9 +854,31 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   );
 });
 
-export function LogicBuilder() {
+/** Commands a challenge page sends to its builder. */
+export type LogicBuilderHandle = {
+  /** Loads `circuit` and simulates `halfCycles` clock half cycles from reset. */
+  show: (circuit: Circuit, halfCycles: number) => void;
+};
+
+/**
+ * Constrained mode for a challenge page: a fixed start circuit, a short
+ * palette, no presets or browser storage of its own, and a lock rule.
+ */
+export type LogicBuilderChallenge = {
+  circuit: Circuit;
+  /** Returns the circuit with locked parts restored, or the same object. */
+  enforce: (circuit: Circuit) => Circuit;
+  palette: GateType[];
+  /** Node id outlined as the likely wrong part. */
+  highlight?: string;
+  /** Called with the top-level circuit after every change. */
+  onChange?: (circuit: Circuit) => void;
+  handleRef?: React.MutableRefObject<LogicBuilderHandle | null>;
+};
+
+export function LogicBuilder({ challenge }: { challenge?: LogicBuilderChallenge } = {}) {
   const history = useHistoryState<BuilderDocument>(() => ({
-    circuit: clone(PRESETS["Half adder"]),
+    circuit: clone(challenge?.circuit ?? PRESETS["Half adder"]),
     saved: {},
     viewPath: [],
     unfolded: [],
@@ -1357,6 +1383,12 @@ export function LogicBuilder() {
   }, [zoomAt]);
 
   useEffect(() => {
+    if (challenge) {
+      pendingFit.current = true;
+      requestAnimationFrame(() => fitCanvas());
+      setReady(true);
+      return;
+    }
     requestAnimationFrame(() => restoreViewport());
     try {
       const raw = localStorage.getItem(STORAGE);
@@ -1380,7 +1412,7 @@ export function LogicBuilder() {
     setReady(true);
   }, []);
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || challenge) return;
     try {
       const root = viewPath.reduceRight(
         (inner, level) =>
@@ -1485,6 +1517,49 @@ export function LogicBuilder() {
     setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
       snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) }));
   };
+  const enforceLocks = challenge?.enforce;
+  const onChallengeChange = challenge?.onChange;
+  useEffect(() => {
+    // Locks hold at the top level; an edit inside a locked block is undone on the way out.
+    if (!enforceLocks || viewPath.length) return;
+    const fixed = enforceLocks(circuit);
+    if (fixed !== circuit) {
+      circuitRef.current = fixed;
+      history.replace((current) => ({ ...current, circuit: fixed }));
+      setMessage("Pre-placed parts and wires are locked in this level. Add your own wires.");
+      return;
+    }
+    onChallengeChange?.(circuit);
+  }, [circuit, viewPath.length, enforceLocks, onChallengeChange]);
+  const handleRef = challenge?.handleRef;
+  useEffect(() => {
+    if (!handleRef) return;
+    handleRef.current = {
+      show: (next, halfCycles) => {
+        portWiring.clear();
+        setRunning(false);
+        setSelected([]);
+        setSelectedWires([]);
+        circuitRef.current = next;
+        publish({ ...history.current(), circuit: next, viewPath: [], unfolded: [] });
+        unfoldedRef.current = new Set();
+        let frame = { tick: 0, clockHigh: false, pulses: {},
+          snapshot: runStep(next, initialSnapshot(), false, NO_UNFOLDED) };
+        let recorded = createTimeline(frame);
+        for (let i = 0; i < halfCycles; i++) {
+          const high = !frame.clockHigh;
+          frame = { tick: frame.tick + 1, clockHigh: high, pulses: {},
+            snapshot: runStep(next, frame.snapshot, high, NO_UNFOLDED) };
+          recorded = push(recorded, frame);
+        }
+        setTimeline(recorded);
+        setMessage(`Showing cycle ${Math.floor(halfCycles / 2)}. Step back and forward to compare.`);
+      },
+    };
+    return () => {
+      handleRef.current = null;
+    };
+  });
   const clearCanvas = () => {
     portWiring.clear();
     if (!circuit.nodes.length && !circuit.wires.length) return;
@@ -2228,10 +2303,11 @@ export function LogicBuilder() {
     if (dragRef.current) endTransaction();
     setDrag(null);
   };
-  const visibleParts = palette.filter((type) =>
+  const partsPalette = challenge?.palette ?? palette;
+  const visibleParts = partsPalette.filter((type) =>
     `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
-  const visibleBlocks = DATAPATH_KINDS.filter((kind) =>
+  const visibleBlocks = challenge ? [] : DATAPATH_KINDS.filter((kind) =>
     `${kind} ${DATAPATH_BLOCKS[kind].label}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
   const addBlock = (kind: DatapathKind, position?: { x: number; y: number }, inlineTarget?: string | null) => {
@@ -2241,7 +2317,7 @@ export function LogicBuilder() {
       y: position.y - nodeHeight({ id: "drop", type: "module", module: source, x: 0, y: 0 }) / 2,
     }, inlineTarget, { behaviour: kind, label: DATAPATH_BLOCKS[kind].label });
   };
-  const visibleExamples = Object.values(PRESETS).filter((item) =>
+  const visibleExamples = challenge ? [] : Object.values(PRESETS).filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase().trim()),
   );
   const visibleSaved = Object.values(saved).filter((item) =>
@@ -2308,6 +2384,7 @@ export function LogicBuilder() {
                 aria-label="Circuit name"
                 title="Rename circuit"
                 value={nameDraft}
+                readOnly={Boolean(challenge)}
                 maxLength={80}
                 onChange={(event) => setNameDraft(event.target.value)}
                 onBlur={() => {
@@ -2434,9 +2511,9 @@ export function LogicBuilder() {
             <button type="button" onClick={exportCircuit}>
               <ActionIcon name="export" /> Export JSON
             </button>
-            <button type="button" onClick={() => inputFile.current?.click()}>
+            {!challenge && <button type="button" onClick={() => inputFile.current?.click()}>
               <ActionIcon name="import" /> Import JSON
-            </button>
+            </button>}
             <input
               ref={inputFile}
               type="file"
@@ -2450,7 +2527,7 @@ export function LogicBuilder() {
           </>
         }
         save={
-          <>
+          challenge ? null : <>
             <button
               type="button"
               onClick={() => {
@@ -2463,7 +2540,7 @@ export function LogicBuilder() {
           </>
         }
         learning={
-          <>
+          challenge ? null : <>
             <ToolbarMenu label="Learning" panelClassName={styles.learningPanel}>
               <h2>Build from one kind of part</h2>
               <p>Open a gate built from transistors, NAND, or NOR.</p>
@@ -2527,7 +2604,7 @@ export function LogicBuilder() {
           </>
         }
         clear={
-          <>
+          challenge ? null : <>
             <button
               type="button"
               data-tone="danger"
@@ -2679,7 +2756,7 @@ export function LogicBuilder() {
                 <span>{DATAPATH_BLOCKS[kind].label}</span>
               </button>
             ))}
-            <h3 className={styles.partsSection}>Examples and storage</h3>
+            {visibleExamples.length > 0 && <h3 className={styles.partsSection}>Examples and storage</h3>}
             {visibleExamples.map((example) => (
               <div className={styles.savedPart} key={example.name}>
                 <button
@@ -2742,7 +2819,7 @@ export function LogicBuilder() {
               Shift-click or Shift-drag ports to select · Drag selected ports to wire · Scroll to zoom
             </small>
           </div>
-          {isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
+          {!challenge && isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
           <div
             ref={boardViewport}
             onDragOver={(event) => {
@@ -2787,7 +2864,7 @@ export function LogicBuilder() {
                 return;
               }
               const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
-              if (!palette.includes(type)) return;
+              if (!partsPalette.includes(type)) return;
               addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - (inlinePath ? 148 : NODE_HEIGHT) / 2 }, inlinePath);
             }}
             onScroll={recenterCanvas}
@@ -3114,6 +3191,7 @@ export function LogicBuilder() {
                         styles.node,
                         expandedDetails.has(node.id) && styles.expandedNode,
                         selected.includes(node.id) && styles.selected,
+                        challenge?.highlight === node.id && styles.challengeHighlight,
                         boardSnapshot.values[node.id] && styles.active,
                         node.type === "lamp" && boardSnapshot.values[node.id] && styles.lampLit,
                         (inputSide(node) === "top" || outputSide(node) === "top") && styles.topPorts,
@@ -3237,6 +3315,7 @@ export function LogicBuilder() {
                         <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
                           {editingLabel?.id === node.id ? (
                             <input
+                              // biome-ignore lint/a11y/noAutofocus: the field opens on the reader's own rename action
                               autoFocus
                               className={styles.nodeNameInput}
                               aria-label="Part label"

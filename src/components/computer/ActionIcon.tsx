@@ -14,6 +14,7 @@ import {
   ResetIcon,
   ScissorsIcon,
   TrackNextIcon,
+  TrackPreviousIcon,
 } from "@radix-ui/react-icons";
 import type { ComponentType } from "react";
 import { FaTrash } from "../Icons";
@@ -27,7 +28,7 @@ function RotateArrowIcon({ width = 16, height = 16 }: { width?: number; height?:
 }
 
 type ActionIconName =
-  | "unfold" | "fold" | "play" | "pause" | "step" | "reset" | "save"
+  | "unfold" | "fold" | "play" | "pause" | "step" | "stepBack" | "reset" | "save"
   | "export" | "import" | "clear" | "undo" | "redo" | "wiring"
   | "bus" | "delete" | "rotateLeft" | "rotateRight" | "cut"
   | "selectAll" | "close";
@@ -38,6 +39,7 @@ const icons = {
   play: PlayIcon,
   pause: PauseIcon,
   step: TrackNextIcon,
+  stepBack: TrackPreviousIcon,
   reset: ResetIcon,
   save: ArchiveIcon,
   export: ArrowUpIcon,

@@ -8,6 +8,7 @@ import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
+import { type Timeline, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
 import {
   BLUEPRINT_FAMILIES,
   BLUEPRINT_RECIPES,
@@ -786,15 +787,19 @@ export function LogicBuilder() {
   const unfolded = useMemo(() => new Set(history.state.unfolded ?? []), [history.state.unfolded]);
   const [nameDraft, setNameDraft] = useState(circuit.name);
   const cancelNameEdit = useRef(false);
-  const [snapshot, setSnapshot] = useState<Snapshot>(initialSnapshot);
-  const [clockHigh, setClockHigh] = useState(false);
+  // Recorded clock ticks of the circuit on screen, for stepping back and scrubbing.
+  // The timeline belongs to the current view level, not the root circuit: a tick
+  // inside a module only steps that module, so root frames could not be replayed
+  // there. Entering or leaving a module starts a fresh timeline at the current tick.
+  const [timeline, setTimelineState] = useState<Timeline>(() =>
+    createTimeline({ tick: 0, clockHigh: false, pulses: {}, snapshot: initialSnapshot() }));
+  const { snapshot, clockHigh, tick } = currentFrame(timeline);
   const [running, setRunning] = useState(false);
   const hasClock = circuit.nodes.some((node) => node.type === "clock");
   useEffect(() => setNameDraft(circuit.name), [circuit.name]);
   useEffect(() => {
     if (!hasClock) setRunning(false);
   }, [hasClock]);
-  const [tick, setTick] = useState(0);
   const [rate, setRate] = useState(2);
   const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
   const [wireDraft, setWireDraft] = useState<WireDraft | null>(null);
@@ -1109,12 +1114,14 @@ export function LogicBuilder() {
   const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
   const snapshotRef = useRef(snapshot);
+  const timelineRef = useRef(timeline);
   const clockRef = useRef(clockHigh);
   const dragRef = useRef(drag);
   const wireDraftRef = useRef<WireDraft | null>(null);
   const suppressBoardClick = useRef(false);
   circuitRef.current = circuit;
   snapshotRef.current = snapshot;
+  timelineRef.current = timeline;
   clockRef.current = clockHigh;
   dragRef.current = drag;
 
@@ -1304,34 +1311,46 @@ export function LogicBuilder() {
     if (dialog) dialogRef.current?.querySelector<HTMLElement>("input, button")?.focus();
   }, [dialog]);
 
-  const advance = useCallback((pulseIds: Record<string, boolean> = {}, forcedClock?: boolean) => {
-    const high = forcedClock ?? !clockRef.current;
-    clockRef.current = high;
-    setClockHigh(high);
-    const next = step(circuitRef.current, snapshotRef.current, high, pulseIds);
-    snapshotRef.current = next;
-    setSnapshot(next);
-    setTick((value) => value + 1);
+  const setTimeline = useCallback((next: Timeline) => {
+    const frame = currentFrame(next);
+    timelineRef.current = next;
+    snapshotRef.current = frame.snapshot;
+    clockRef.current = frame.clockHigh;
+    setTimelineState(next);
   }, []);
+  /** Starts a fresh timeline at the current tick, for a new view level. */
+  const restartTimeline = (next: Snapshot) =>
+    setTimeline(createTimeline({ ...currentFrame(timelineRef.current), pulses: {}, snapshot: next }));
+  /** Simulates one half cycle after the shown tick; recorded ticks after it are cut. */
+  const advance = useCallback((pulseIds: Record<string, boolean> = {}, forcedClock?: boolean) => {
+    const from = currentFrame(timelineRef.current);
+    const high = forcedClock ?? !from.clockHigh;
+    const next = step(circuitRef.current, from.snapshot, high, pulseIds);
+    setTimeline(push(timelineRef.current, { tick: from.tick + 1, clockHigh: high, pulses: pulseIds, snapshot: next }));
+  }, [setTimeline]);
+  /** Replays the next recorded tick if the reader stepped back, else simulates one. */
+  const stepForward = useCallback(() => {
+    const current = timelineRef.current;
+    if (current.index < current.frames.length - 1) setTimeline(seek(current, current.index + 1));
+    else advance();
+  }, [advance, setTimeline]);
+  const stepBack = () => setTimeline(seek(timelineRef.current, timelineRef.current.index - 1));
   useEffect(() => {
     if (!running) return;
-    const timer = window.setInterval(() => advance(), 1000 / (rate * 2));
+    const timer = window.setInterval(stepForward, 1000 / (rate * 2));
     return () => window.clearInterval(timer);
-  }, [running, rate, advance]);
+  }, [running, rate, stepForward]);
   useEffect(() => {
-    const next = step(circuit, snapshotRef.current, clockRef.current);
-    snapshotRef.current = next;
-    setSnapshot(next);
-  }, [circuit]);
+    // Any edit (an input toggle included) branches history at the shown tick.
+    const cut = truncate(timelineRef.current);
+    const frame = currentFrame(cut);
+    setTimeline(replaceSnapshot(cut, step(circuit, frame.snapshot, frame.clockHigh)));
+  }, [circuit, setTimeline]);
 
   const resetRuntime = () => {
     setRunning(false);
-    setClockHigh(false);
-    clockRef.current = false;
-    setTick(0);
-    const next = step(circuitRef.current, initialSnapshot(), false);
-    snapshotRef.current = next;
-    setSnapshot(next);
+    setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
+      snapshot: step(circuitRef.current, initialSnapshot(), false) }));
   };
   const clearCanvas = () => {
     portWiring.clear();
@@ -1397,8 +1416,7 @@ export function LogicBuilder() {
       moduleId ? (parentSnapshot.modules[moduleId] ?? initialSnapshot()) : initialSnapshot(),
       clockRef.current,
     );
-    snapshotRef.current = inner;
-    setSnapshot(inner);
+    restartTimeline(inner);
     setMessage(`Inside ${via}. Use Back to return.`);
   };
   const returnToDepth = (depth: number) => {
@@ -1429,8 +1447,7 @@ export function LogicBuilder() {
     setSelectedWires([]);
     setPending(null);
     const restored = step(parent, childSnapshot, clockRef.current);
-    snapshotRef.current = restored;
-    setSnapshot(restored);
+    restartTimeline(restored);
     setMessage(`Back to ${parent.name}.`);
   };
   const goBack = () => returnToDepth(viewPath.length - 1);
@@ -1463,9 +1480,7 @@ export function LogicBuilder() {
     setSelected([]);
     setSelectedWires([]);
     setPending(null);
-    const next = step(copy, innerSnapshot, clockRef.current);
-    snapshotRef.current = next;
-    setSnapshot(next);
+    restartTimeline(step(copy, innerSnapshot, clockRef.current));
     setMessage(`Inside ${copy.name}. Use Back to return.`);
   };
   const toggleUnfolded = (id: string) => {
@@ -2344,9 +2359,27 @@ export function LogicBuilder() {
             <button type="button" onClick={() => setRunning((value) => !value)} data-tone="primary">
               <ActionIcon name={running ? "pause" : "play"} /> {running ? "Pause" : "Run clock"}
             </button>
-            <button type="button" onClick={() => advance()} disabled={running}>
+            <button type="button" onClick={stepBack} disabled={running || timeline.index === 0}>
+              <ActionIcon name="stepBack" /> Back ½ cycle
+            </button>
+            <button type="button" onClick={stepForward} disabled={running}>
               <ActionIcon name="step" /> Step ½ cycle
             </button>
+            <input
+              type="range"
+              className={styles.timeline}
+              min={0}
+              max={timeline.frames.length - 1}
+              value={timeline.index}
+              disabled={running || timeline.frames.length < 2}
+              onChange={(event) => setTimeline(seek(timelineRef.current, Number(event.target.value)))}
+              aria-label="Recorded ticks"
+              aria-valuetext={`Cycle ${Math.floor(tick / 2)}, CLK ${clockHigh ? 1 : 0}`}
+              title={`${timeline.frames.length} recorded half cycles`}
+            />
+            <output className={styles.timelineCycle} aria-label="Shown tick">
+              Cycle {Math.floor(tick / 2)}{timeline.index < timeline.frames.length - 1 ? " ⟲" : ""}
+            </output>
           </>
         }
         clockSettings={

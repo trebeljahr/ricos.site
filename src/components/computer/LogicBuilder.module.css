@@ -228,3 +228,7 @@
 
 .contextLabelInput{display:flex;align-items:center;gap:7px}
 .contextLabelInput svg{width:16px;height:16px;flex:none}
+/* Simulation timeline: scrub through recorded clock ticks. */
+.timeline{width:96px;accent-color:#72e3d5}
+.timeline:disabled{opacity:.4}
+.timelineCycle{min-width:64px;font:12px ui-monospace,SFMono-Regular,monospace;white-space:nowrap;color:#b9c9d2}

@@ -20,6 +20,7 @@ import {
   streak,
   WORDS_PER_SECTION,
 } from "src/lib/computerSeries";
+import { CHAPTER_FILE } from "src/lib/computerSeriesLinks";
 
 // A dev-only writing dashboard for the "how computers work" series: what to
 // write next, how far each chapter is, and whether the deadline still holds.
@@ -288,7 +289,7 @@ function readChapters(dir: string): ChapterProgress[] {
   if (!fs.existsSync(dir)) return [];
   const files = fs
     .readdirSync(dir, { recursive: true, encoding: "utf8" })
-    .filter((f) => /^part-[^/]+\/[^/]+\.md$/.test(f.split(path.sep).join("/")));
+    .filter((f) => CHAPTER_FILE.test(f.split(path.sep).join("/")));
   return files
     .map((file) => {
       const full = path.resolve(dir, file);
@@ -329,7 +330,7 @@ export async function getStaticProps() {
     today: daily.find((d) => d.day === todayKey)?.words ?? 0,
     streak: streak(history, todayKey),
     recent: daily.slice(-14),
-    indexPath: path.resolve(SERIES_DIR, "index.md"),
+    indexPath: path.resolve(SERIES_DIR, "Index.md"),
   };
   return { props };
 }

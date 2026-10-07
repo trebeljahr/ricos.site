@@ -792,10 +792,12 @@ export default defineConfig({
     // The files are compiled as MDX, so demos go straight into the text.
     computerChapters: {
       name: "ComputerChapter",
-      pattern: "computer/part-*/*.md",
+      pattern: "computer/Part */*.md",
       schema: s
         .object({
           title: s.string(),
+          /** Fixed once, so renaming a file or its title never breaks a URL. */
+          slug: s.string().optional(),
           part: s.number(),
           partTitle: s.string(),
           number: s.string(),
@@ -806,9 +808,8 @@ export default defineConfig({
           status: s.enum(["idea", "drafting", "revising", "done"]).default("idea"),
           published: s.boolean().default(false),
         })
-        .transform((data, { meta }) => {
-          // "1.1a-text-encodings.md" -> "text-encodings"
-          const slug = slugify((meta.stem ?? "").replace(/^\d+\.\d+[a-z]?-/, ""));
+        .transform((data) => {
+          const slug = data.slug ?? slugify(data.title);
           return { ...data, slug, contentType: "ComputerChapter", link: `/computer/${slug}` };
         })
         // The prev/next line is for clicking through in Obsidian; the site will

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { navBlock, setNavLinks, stripNav } from "./computerSeriesLinks";
+import { CHAPTER_FILE, indexNote, navBlock, setNavLinks, stripNav } from "./computerSeriesLinks";
 
 const file = `---\ntitle: "Bits"\norder: 2\n---\n\n## First\n\nSome text.\n`;
 const links = {
@@ -55,5 +55,26 @@ describe("setNavLinks", () => {
 
   it("refuses a file without frontmatter", () => {
     expect(() => setNavLinks("## No frontmatter\n", {})).toThrow();
+  });
+});
+
+describe("indexNote", () => {
+  it("groups chapters under their part and indents asides", () => {
+    const note = indexNote([
+      { folder: "Part 1 - The Basics", stem: "1.1 Bits and Encodings" },
+      { folder: "Part 1 - The Basics", stem: "1.1a UTF-8", parent: "1.1" },
+      { folder: "Part 2 - The CPU", stem: "2.0 Tying it together" },
+    ]);
+    expect(note).toContain(
+      "## Part 1 - The Basics\n\n- [[1.1 Bits and Encodings]]\n\t- [[1.1a UTF-8]]\n\n## Part 2 - The CPU\n\n- [[2.0 Tying it together]]\n",
+    );
+  });
+});
+
+describe("CHAPTER_FILE", () => {
+  it("matches chapter files inside part folders only", () => {
+    expect(CHAPTER_FILE.test("Part 1 - The Basics/1.1 Bits and Encodings.md")).toBe(true);
+    expect(CHAPTER_FILE.test("Index.md")).toBe(false);
+    expect(CHAPTER_FILE.test("introduction.md")).toBe(false);
   });
 });

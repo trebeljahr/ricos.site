@@ -43,3 +43,27 @@ export function setNavLinks(source: string, links: NavLinks): string {
       : `\n${block}\n${body.trimEnd()}\n\n${block}\n`;
   return `---\n${frontmatter}\n---\n${nextBody}`;
 }
+
+/** "Part 1 - The Basics/1.1 Bits and Encodings.md", relative to the series folder. */
+export const CHAPTER_FILE = /^Part [^/]+\/[^/]+\.md$/;
+
+export type IndexEntry = { folder: string; stem: string; parent?: string };
+
+/** Index.md: every chapter in reading order under its part, asides indented. */
+export function indexNote(entries: IndexEntry[]): string {
+  const lines = [
+    "# How computers work",
+    "",
+    "Written by `pnpm computer:links` in reading order (`order` in each file); edits here get overwritten.",
+    "The outline is [[introduction]]. Progress is at /dev/writing on the dev server.",
+  ];
+  let folder = "";
+  for (const entry of entries) {
+    if (entry.folder !== folder) {
+      folder = entry.folder;
+      lines.push("", `## ${folder}`, "");
+    }
+    lines.push(`${entry.parent ? "\t" : ""}- [[${entry.stem}]]`);
+  }
+  return `${lines.join("\n")}\n`;
+}

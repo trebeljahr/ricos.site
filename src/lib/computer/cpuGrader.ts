@@ -215,7 +215,10 @@ export function findParts(circuit: Circuit): CpuParts {
     const part = wiring.sourceNode(display.id, 0);
     if (part && kindOf(part)) parts[role] = part;
   }
-  parts.ROM = ofKind("rom256")[0];
+  // The code ROM, not the blitter's second read port on it.
+  parts.ROM =
+    ofKind("rom256").find((rom) => wiring.sourceNode(rom.id, 0)?.behaviour !== "blitter") ??
+    ofKind("rom256")[0];
   parts.SCREEN = circuit.nodes.find(
     (node) => node.behaviour === "screen8x8" || node.behaviour === "vram8x8",
   );

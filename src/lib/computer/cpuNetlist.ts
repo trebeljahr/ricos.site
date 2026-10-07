@@ -12,6 +12,8 @@ export type CpuNetlist = {
   netlist: Netlist;
   /** Code ROM bytes, 8 constant nets each. */
   rom: number[][];
+  /** The same bytes again in the blitter's read port on the code ROM; empty without a blitter. */
+  blitterRom: number[][];
   /** The control unit's lines, in SIGNALS order. */
   control: number[];
   halt: number;
@@ -51,13 +53,16 @@ export function cpuNetlist(circuit: Circuit): CpuNetlist {
   const control = nets(CPU_PARTS.control).slice(0, SIGNALS.length);
   const bus = netlist.buses.get(CPU_PARTS.bus);
   if (bus === undefined) throw new Error("The CPU netlist has no bus.");
+  const romBytes = (part: string) =>
+    sequence((page) =>
+      netlist.nodes.has(`${part}/page${page}/byte0`)
+        ? range(16).map((r) => nets(`${part}/page${page}/byte${r}`))
+        : undefined,
+    ).flat();
   return {
     netlist,
-    rom: sequence((page) =>
-      netlist.nodes.has(`${CPU_PARTS.rom}/page${page}/byte0`)
-        ? range(16).map((r) => nets(`${CPU_PARTS.rom}/page${page}/byte${r}`))
-        : undefined,
-    ).flat(),
+    rom: romBytes(CPU_PARTS.rom),
+    blitterRom: romBytes(CPU_PARTS.blitterRom),
     control,
     halt: control[SIGNALS.indexOf("HALT")],
     bus,
@@ -67,14 +72,15 @@ export function cpuNetlist(circuit: Circuit): CpuNetlist {
   };
 }
 
-/** Loads `bytes` into copy `copy`'s code ROM; the other copies keep theirs. */
+/** Loads `bytes` into copy `copy`'s code ROM (both read ports); the other copies keep theirs. */
 export function loadProgram(sim: NetlistSim, cpu: CpuNetlist, bytes: readonly number[], copy = 0) {
   const mask = 1 << copy;
-  for (const [address, nets] of cpu.rom.entries())
-    for (const [bit, net] of nets.entries()) {
-      const on = ((bytes[address] ?? 0) >> bit) & 1;
-      sim.setConstant(net, on ? sim.values[net] | mask : sim.values[net] & ~mask);
-    }
+  for (const rom of [cpu.rom, cpu.blitterRom])
+    for (const [address, nets] of rom.entries())
+      for (const [bit, net] of nets.entries()) {
+        const on = ((bytes[address] ?? 0) >> bit) & 1;
+        sim.setConstant(net, on ? sim.values[net] | mask : sim.values[net] & ~mask);
+      }
 }
 
 export type CpuState = {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  BLITTER_PORT,
   byteBits,
   compileProgram,
   decodeInstruction,
@@ -279,5 +280,152 @@ describe("pixel port and plot", () => {
     expect(() =>
       compileProgram("fn on_key(k) {\n  plot(k, 0);\n}\nloop {\n  screen[1] = 3;\n}"),
     ).not.toThrow();
+  });
+});
+
+describe("blitter", () => {
+  const end = (source: string) => traceTicks(compileProgram(source)).at(-1)!;
+  const blank = Array(SCREEN_ROWS).fill(0);
+  const rows = (changes: Record<number, number>, base = blank) =>
+    base.map((row, y) => changes[y] ?? row);
+
+  it("draws each command's rows", () => {
+    expect(end("blit(clear, 170);").screen).toEqual(Array(SCREEN_ROWS).fill(170));
+    expect(end("screen[4] = 9;\nblit(wait);\nblit(clear);").screen).toEqual(blank);
+    expect(end("blit(fill, 2, 15);").screen).toEqual(rows({ 2: 15 }));
+    // HLINE wraps round the row: x = 6, 7, 0, 1, 2.
+    expect(end("blit(hline, 6, 3, 5);").screen).toEqual(rows({ 3: 0b11000111 }));
+    expect(end("blit(hline, 0, 0, 8);").screen).toEqual(rows({ 0: 255 }));
+    // VLINE wraps down the screen: rows 5, 6, 7, 0, 1, 2. Colour 0 clears.
+    expect(end("blit(vline, 1, 5, 6);").screen).toEqual(
+      rows({ 5: 2, 6: 2, 7: 2, 0: 2, 1: 2, 2: 2 }),
+    );
+    expect(end("blit(clear, 255);\nblit(vline, 7, 0, 2, 0);").screen).toEqual(
+      rows({ 0: 127, 1: 127 }, Array(SCREEN_ROWS).fill(255)),
+    );
+    expect(end("let y = 6;\nblit(pixel, 3, y);").screen).toEqual(rows({ 6: 8 }));
+    // COPY SPRITE writes rows y, y + 1, … from the sprite's 8 bytes in code ROM.
+    expect(end("sprite s = [1, 2, 3, 4, 5, 6, 7, 8];\nblit(sprite, s, 6);").screen).toEqual([
+      3, 4, 5, 6, 7, 8, 1, 2,
+    ]);
+  });
+
+  it("keeps sprite rows in code ROM after the code and points ARG at them", () => {
+    const program = compileProgram(
+      "sprite a = [1, 2, 3, 4, 5, 6, 7, 8];\nsprite b = [9, 9, 9, 9, 9, 9, 9, 9];\nblit(sprite, b, 0);",
+    );
+    const code = program.instructions.length * 2;
+    expect(program.bytes.slice(code)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, ...Array(8).fill(9)]);
+    const load = program.instructions.find(({ label }) => label === "SPRITE b ADDRESS")!;
+    expect(load.operand).toBe(code + 8);
+  });
+
+  it("runs one row per clock edge while the CPU keeps executing", () => {
+    const ticks = traceTicks(compileProgram(SAMPLE_PROGRAMS.BLIT));
+    const start = ticks.findIndex(
+      ({ control, registers }) =>
+        control.includes("RAM_IN") && registers.dmar === BLITTER_PORT.cmd && registers.acc === 6,
+    );
+    expect(ticks[start].blitter).toMatchObject({ busy: true, i: 0, op: 6 });
+    const drawn = ticks.filter(({ screenWrite }) => screenWrite?.by === "blitter");
+    // The 8 ticks after the CMD write, rows 0–7 in order; BUSY clears on the last edge.
+    expect(drawn.map(({ index }) => index)).toEqual(
+      Array.from({ length: 8 }, (_, i) => start + 1 + i),
+    );
+    expect(drawn.map(({ screenWrite }) => screenWrite!.y)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+    expect(drawn.slice(0, 7).every(({ blitter }) => blitter.busy)).toBe(true);
+    expect(drawn[7].blitter.busy).toBe(false);
+    // Meanwhile the CPU moved on: those ticks belong to the next instructions.
+    expect(new Set(drawn.map(({ instruction }) => instruction)).size).toBeGreaterThan(1);
+    expect(drawn.every(({ instruction }) => instruction > ticks[start].instruction)).toBe(true);
+    const last = ticks.at(-1)!;
+    expect(last.screen).toEqual([102, 255, 255, 255, 126, 60, 24, 255]);
+    expect(last.output).toEqual([1, 2, 3]);
+    expect(last.halted).toBe(true);
+  });
+
+  it("reads BUSY, ignores writes while busy, and loses CPU screen writes", () => {
+    const { LDI, LDM, STM, SUBI, JNC, OUT, HALT } = OPCODES;
+    const pairs: [number, number][] = [];
+    // Only the instruction right after STM E4 lands inside its 8 busy ticks.
+    const clear = (...then: [number, number][]) => {
+      pairs.push([LDI, 1], [STM, BLITTER_PORT.cmd], ...then);
+      const wait = pairs.length * 2;
+      pairs.push([LDM, BLITTER_PORT.cmd], [SUBI, 1], [JNC, wait]);
+    };
+    pairs.push([LDI, 255], [STM, BLITTER_PORT.colour]);
+    clear([STM, 0xe8]); // E8 repeats X: ignored while busy, X stays 0
+    clear([STM, 0xf2]); // ACC is 1, but the blitter owns the screen: lost
+    clear([LDM, 0xec], [OUT, 0]); // EC repeats CMD: BUSY reads 1
+    pairs.push([LDM, BLITTER_PORT.x], [OUT, 0], [HALT, 0]); // idle: any E_ reads 0
+    const program = {
+      instructions: pairs.map(([opcode, operand], index) => ({
+        address: index * 2,
+        opcode,
+        operand,
+        label: "",
+        line: index + 1,
+      })),
+      bytes: pairs.flat(),
+      variables: [],
+    };
+    const ticks = traceTicks(program);
+    const last = ticks.at(-1)!;
+    expect(last.blitter).toMatchObject({ x: 0, colour: 255, busy: false });
+    expect(last.screen).toEqual(Array(SCREEN_ROWS).fill(255));
+    expect(last.output).toEqual([1, 0]);
+    const blocked = ticks.filter(({ screenBlocked }) => screenBlocked);
+    expect(blocked).toHaveLength(1);
+    expect(blocked[0].registers.dmar).toBe(0xf2);
+    expect(blocked[0].screenWrite?.by).toBe("blitter");
+    const explanations = traceProgram(program).map(({ explanation }) => explanation);
+    expect(explanations.filter((text) => text.includes("write was lost"))).toHaveLength(1);
+    expect(explanations.filter((text) => text.includes("BUSY and ignores"))).toHaveLength(1);
+  });
+
+  it("explains the blitter's work beside the CPU's", () => {
+    const snapshots = traceProgram(compileProgram(SAMPLE_PROGRAMS.BLIT));
+    const notes = snapshots.filter(({ explanation }) =>
+      explanation.includes("Meanwhile the blitter"),
+    );
+    expect(notes.length).toBeGreaterThan(2);
+    expect(notes.at(-1)!.explanation).toMatch(/finished its SPRITE/);
+    expect(
+      snapshots.some(({ explanation }) => /Start the blitter's SPRITE command/.test(explanation)),
+    ).toBe(true);
+    expect(describeOperand(OPCODES.STM, BLITTER_PORT.cmd, []).long).toBe("blitter cmd (E4)");
+  });
+
+  it("rejects bad blit calls and sprites", () => {
+    expect(() => compileProgram("blit(spin);")).toThrow("Unknown blitter command");
+    expect(() => compileProgram("blit(hline, 0, 0);")).toThrow(
+      "Use blit(hline, x, y, length, colour?);",
+    );
+    expect(() => compileProgram("blit(hline, 0, 0, 9);")).toThrow("Blitter length is 1 to 8.");
+    expect(() => compileProgram("blit(pixel, 8, 0);")).toThrow("Blitter x is 0 to 7.");
+    expect(() => compileProgram("blit(sprite, ghost, 0);")).toThrow("Unknown sprite “ghost”.");
+    expect(() => compileProgram("sprite s = [1, 2];")).toThrow("A sprite is 8 row bytes");
+    expect(() => compileProgram("sprite s = [1, 2, 3, 4, 5, 6, 7, 256];")).toThrow(
+      "between 0 and 255",
+    );
+    expect(() => compileProgram("loop {\n  sprite s = [1, 2, 3, 4, 5, 6, 7, 8];\n}")).toThrow(
+      "top level",
+    );
+    expect(() => compileProgram("fn blit(n) {\n  return n;\n}")).toThrow("reserved");
+    expect(() =>
+      compileProgram("fn on_key(k) {\n  blit(fill, 0, k);\n}\nloop {\n  blit(clear);\n}"),
+    ).toThrow("both use the blitter");
+  });
+
+  it("waits for a running command before HALT stops the clock", () => {
+    const program = compileProgram("blit(clear, 255);");
+    const halt = program.instructions.length - 1;
+    expect(program.instructions.slice(halt - 3).map(({ label }) => label)).toEqual([
+      "READ BLITTER BUSY",
+      "BUSY − 1",
+      "WAIT WHILE BUSY",
+      "HALT",
+    ]);
+    expect(traceTicks(program).at(-1)!.blitter.busy).toBe(false);
   });
 });

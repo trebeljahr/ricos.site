@@ -13,8 +13,10 @@
 // then read at SP" (RET), one micro-step each, so the stack here is a 16-byte
 // RAM addressed by SP, and SP is a register with its own ALU as an
 // incrementer. DMAR holds a full byte: F0–F7 reach the 8×8 screen instead of
-// the RAM, F8–FA its pixel port (cursor x, cursor y, plot one pixel), and
-// RAM_OUT drives whichever the address selects. Every
+// the RAM, F8–FA its pixel port (cursor x, cursor y, plot one pixel), E0–E4
+// the blitter's registers, and RAM_OUT drives whichever the address selects.
+// The blitter reads sprites through a second read port on the code ROM: a
+// copy of the ROM addressed by the blitter, so it never waits for a fetch. Every
 // clocked part runs on the control unit's GCLK, so HALT
 // freezes the whole machine, except the video: a scanout reads the screen
 // through its second port one pixel per tick of the raw clock, a monitor
@@ -51,6 +53,7 @@ import {
   type StackModel,
   VIDEO_SAMPLES,
 } from "../computerStepper";
+import { BLITTER_OUTPUTS } from "./blitterBlock";
 import { Builder, ports, type Ref, range } from "./blockBuilder";
 import { controlBlockCircuit } from "./controlUnit";
 import { addDataMemory, type DatapathKind, datapathNode } from "./datapathBlocks";
@@ -72,6 +75,8 @@ export const CPU_PARTS = {
   plotter: "plotter",
   scanout: "scanout",
   crt: "crt",
+  blitter: "blitter",
+  blitterRom: "blitter-rom",
   acc: "acc",
   alu: "alu",
   flags: "flags",
@@ -229,6 +234,11 @@ export function cpuCircuit(
       crt: { id: CPU_PARTS.crt, x: X.part, y: 5150, label: "8×8 MONITOR" },
       clock: "clock",
     },
+    blitter: {
+      unit: { id: CPU_PARTS.blitter, x: X.port, y: 5700, label: "BLITTER (E0–E4)" },
+      rom: { id: CPU_PARTS.blitterRom, x: X.port, y: 6200, label: "CODE ROM, BLITTER PORT" },
+      bytes,
+    },
     x: X.helper,
     y: 2320,
   });
@@ -239,6 +249,15 @@ export function cpuCircuit(
     b.add(`${part}-display`, "display4", X.portProbe, y, label);
     wireBits(bits(part, 3), `${part}-display`);
   }
+  b.gate(
+    "blitter-busy",
+    "lamp",
+    X.portProbe,
+    5700,
+    [CPU_PARTS.blitter, BLITTER_OUTPUTS.busy],
+    undefined,
+    "BLITTER BUSY",
+  );
   // The handler vector: a constant byte, one HIGH or GROUND per bit.
   b.add("vec-one", "high", X.clock, 5000, "1");
   b.add("vec-zero", "ground", X.clock, 5100, "0");
@@ -477,6 +496,12 @@ export function cpuCircuit(
         ],
       },
       {
+        id: "blitter",
+        label: "Blitter: draws one screen row per tick by itself; while BUSY it owns the screen",
+        nodeIds: [CPU_PARTS.blitter, CPU_PARTS.blitterRom, "blitter-busy"],
+        activeWhen: "blitter-busy",
+      },
+      {
         id: "bus",
         label: "One shared bus: each *_OUT line enables one driver",
         nodeIds: [
@@ -502,6 +527,7 @@ const CROSS_PRESET = "Toy CPU (CROSS program)";
 const TEARING_PRESET = "Toy CPU (TEARING program)";
 const VSYNC_PRESET = "Toy CPU (VSYNC program)";
 const SCANOUT_PRESET = "Scanout and monitor";
+const BLIT_PRESET = "Toy CPU (BLIT program)";
 
 /**
  * A dual-port screen read by a scanout, which drives a monitor: the reader
@@ -554,6 +580,7 @@ export const CPU_PRESETS: Record<string, Circuit> = {
   [SCANOUT_PRESET]: scanoutBench(),
   [TEARING_PRESET]: cpuFromSource(VIDEO_SAMPLES.TEARING, TEARING_PRESET),
   [VSYNC_PRESET]: cpuFromSource(VIDEO_SAMPLES.VSYNC, VSYNC_PRESET),
+  [BLIT_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.BLIT, BLIT_PRESET),
 };
 
 export const CPU_HINTS: Record<string, string> = {
@@ -571,4 +598,6 @@ export const CPU_HINTS: Record<string, string> = {
     "The TEARING program with wait_vblank() before each redraw: LDM FB reads the scanout's VBLANK, and ADDI 255 turns a 1 into a carry for JNC, so the loop runs until the beam reaches the blank lines. The redraw then starts while the beam is off the screen and stays ahead of it, so every frame on the MONITOR is one whole picture.",
   [CROSS_PRESET]:
     "The CPU drawing an X with plot(x, y). Each plot is three stores: STM F8 loads PIXEL X, STM F9 loads PIXEL Y, and STM FA sends the colour through the PIXEL PLOTTER. On that tick the screen's row address comes from PIXEL Y, and the plotter hands back the row with one bit changed. Run the clock and watch the screen fill in, one pixel per plot, until HALTED lights.",
+  [BLIT_PRESET]:
+    "The CPU handing the drawing to the blitter. It stores the sprite's ROM address in E3 and a row in E1, then writes command 6 (COPY SPRITE) to E4. BLITTER BUSY lights, and on each of the next 8 clock edges the blitter copies one sprite byte from its own read port on the code ROM into a screen row, while the CPU fetches and runs let count = 0 and the start of its loop. Storing the same 8 rows itself takes the CPU 16 instructions and 92 ticks (the SCREEN sample). Before the CPU fills the last row itself it waits for BUSY to clear: while BUSY the blitter owns the screen, and a CPU write would be lost.",
 };

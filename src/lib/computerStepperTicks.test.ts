@@ -43,8 +43,11 @@ const deepCalls = Array.from(
     `fn f${index}() {\n  ${index < 16 ? `f${index + 1}();` : "print(1);"}\n  return;\n}`,
 ).join("\n");
 
+// The old interpreter predates the blitter: BLIT's own tests are in computerStepper.test.ts.
+const { BLIT: _blit, ...LEGACY_SAMPLES } = SAMPLE_PROGRAMS;
+
 const SOURCES: Record<string, string> = {
-  ...SAMPLE_PROGRAMS,
+  ...LEGACY_SAMPLES,
   callReturn:
     "fn twice(n) {\n  return n + n;\n}\nfn plusOne(n) {\n  let doubled = twice(n);\n  return doubled + 1;\n}\nlet count = 0;\nfor (let i = 0; i < 2; i++) {\n  for (let j = 0; j < 2; j++) {\n    count = count + 1;\n  }\n}\nprint(plusOne(count));",
   loopJnc:
@@ -153,6 +156,7 @@ describe("per-tick trace", () => {
           pixelX: _x,
           pixelY: _y,
           screenWrite: _w,
+          blitter: _b,
           ...rest
         }) => rest,
       );

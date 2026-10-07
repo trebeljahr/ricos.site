@@ -13,9 +13,12 @@ import { foldBlockState, screenRows } from "src/lib/computer/datapathBlocks";
 import type { Circuit, Node, Snapshot, Wire } from "src/lib/computer/logic";
 import { readProbes } from "src/lib/computer/probes";
 import {
+  type BlitterState,
+  describeBlitter,
   hex,
   INTERRUPT_VECTOR,
   isaFor,
+  isBlitterAddress,
   isScreenAddress,
   type KeySchedule,
   type Registers,
@@ -142,14 +145,16 @@ const expectedProbes = (r: Registers): Partial<Record<CpuProbe, number>> => ({
   IRQ: (r.keyReady ? 1 : 0) | (r.ie ? 2 : 0) | (r.int ? 4 : 0),
 });
 
-/** A block's stored bytes, whether it runs folded (as a block) or unfolded (as gates). */
-function blockBytes(circuit: Circuit, snapshot: Snapshot, id: string): number[] {
-  const folded = snapshot.blocks?.[id] as { bytes?: number[] } | undefined;
-  if (folded?.bytes) return folded.bytes;
+/** A block's state, whether it runs folded (as a block) or unfolded (as gates). */
+function blockState(circuit: Circuit, snapshot: Snapshot, id: string): unknown {
+  if (snapshot.blocks?.[id] !== undefined) return snapshot.blocks[id];
   const node = circuit.nodes.find((item) => item.id === id);
-  const unfolded = node && (foldBlockState(node, snapshot.modules[id]) as { bytes?: number[] });
-  return unfolded?.bytes ?? [];
+  return node && foldBlockState(node, snapshot.modules[id]);
 }
+
+/** A block's stored bytes, whether it runs folded (as a block) or unfolded (as gates). */
+const blockBytes = (circuit: Circuit, snapshot: Snapshot, id: string): number[] =>
+  (blockState(circuit, snapshot, id) as { bytes?: number[] } | undefined)?.bytes ?? [];
 
 export function CpuCircuitStepper() {
   const [source, setSource] = useState<string>(LOOP);
@@ -196,13 +201,16 @@ export function CpuCircuitStepper() {
     ? (Object.keys(expected) as CpuProbe[]).filter((name) => probes[name] !== expected[name])
     : [];
   const ram = circuit && snapshot ? blockBytes(circuit, snapshot, CPU_PARTS.ram) : [];
-  const usesScreen = Boolean(
-    program?.instructions.some(
-      ({ opcode, operand }) =>
-        isa.find((item) => item.opcode === opcode)?.operand === "RAM address" &&
-        isScreenAddress(operand),
-    ),
-  );
+  const dataAddresses =
+    program?.instructions.flatMap(({ opcode, operand }) =>
+      isa.find((item) => item.opcode === opcode)?.operand === "RAM address" ? [operand] : [],
+    ) ?? [];
+  const usesBlitter = dataAddresses.some(isBlitterAddress);
+  const usesScreen = usesBlitter || dataAddresses.some(isScreenAddress);
+  const blitter =
+    circuit && snapshot && usesBlitter
+      ? (blockState(circuit, snapshot, CPU_PARTS.blitter) as BlitterState | undefined)
+      : undefined;
   const screen =
     circuit && snapshot && usesScreen
       ? screenRows({ bytes: blockBytes(circuit, snapshot, CPU_PARTS.screen) })
@@ -538,6 +546,11 @@ export function CpuCircuitStepper() {
                       className={stepper.pixelScreen}
                       written={previous?.screenWrite ?? null}
                     />
+                  )}
+                  {blitter && (
+                    <div className={stepper.flags} role="status" aria-label="Blitter">
+                      BLITTER <span>·</span> {describeBlitter(blitter)}
+                    </div>
                   )}
                 </div>
               </div>

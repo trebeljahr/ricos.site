@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { compileProgram, plotRow, SAMPLE_PROGRAMS, traceTicks } from "../computerStepper";
+import {
+  type BlitterState,
+  blitterClock,
+  blitterData,
+  blitterRow,
+  blitterSource,
+  compileProgram,
+  initialBlitter,
+  plotRow,
+  SAMPLE_PROGRAMS,
+  traceTicks,
+} from "../computerStepper";
 import {
   alu,
   DATAPATH_KINDS,
@@ -490,5 +501,58 @@ describe("video blocks", () => {
     }
     // After the VSYNC the monitor's beam is the scanout's, one tick on.
     expect([x, y]).toEqual([beamAt(FRAME_TICKS + 9).x, beamAt(FRAME_TICKS + 9).y]);
+  });
+});
+
+describe("blitter block", () => {
+  /** Inputs in port order: D, A, WE, R (the screen row or ROM byte it reads), then CLK. */
+  const inputs = (d: number, a: number, we: boolean, r: number) => [
+    ...toBits(d, 8),
+    ...toBits(a, 3),
+    we,
+    ...toBits(r, 8),
+  ];
+  /** Splits the outputs: ROW, OUT, SWE, SRC, BUSY, ROM. */
+  const read = (out: boolean[]) => ({
+    row: toNumber(out.slice(0, 3)),
+    out: toNumber(out.slice(3, 11)),
+    swe: out[11],
+    src: toNumber(out.slice(12, 20)),
+    busy: out[20],
+    rom: out[21],
+  });
+
+  it("equals its gates and the stepper's model over seeded random writes", () => {
+    const pair = new Pair("blitter");
+    const next = random(7);
+    let model = initialBlitter();
+    for (let i = 0; i < 600; i++) {
+      // Mostly register writes and commands, with valid and invalid codes.
+      const a = Math.floor(next() * 8);
+      const d = a === 4 ? Math.floor(next() * 8) : Math.floor(next() * 256);
+      const we = next() < 0.5;
+      const r = Math.floor(next() * 256);
+      // The outputs settle after the edge, so they show the state it stored.
+      const out = read(pair.tick(inputs(d, a, we, r)));
+      model = blitterClock(model, we ? { register: a, value: d } : null);
+      expect(out, `step ${i}`).toEqual({
+        row: blitterRow(model),
+        out: blitterData(model, r, r),
+        swe: model.busy,
+        src: blitterSource(model),
+        busy: model.busy,
+        rom: model.op === 6,
+      });
+      const { clock: _clock, ...state } = pair.states[0].blocks?.dut as BlitterState & {
+        clock: boolean;
+      };
+      expect(state, `state after step ${i}`).toEqual(model);
+    }
+  });
+
+  it("round-trips its registers through unfold and fold mid-command", () => {
+    const node = datapathNode("blitter", "dut", 0, 0);
+    const state = { x: 5, y: 6, colour: 0xa5, arg: 0x3c, op: 6, i: 3, busy: true, clock: true };
+    expect(foldBlockState(node, unfoldBlockState(node, state))).toEqual(state);
   });
 });

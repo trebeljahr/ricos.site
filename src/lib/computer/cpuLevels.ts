@@ -37,16 +37,22 @@ const WIRING_PARTS: GateType[] = ["junction", "splitter", "merger", "busdriver"]
 const ramHelpers = cpuCircuit([])
   .nodes.map((node) => node.id)
   .filter((id) => id.startsWith(`${CPU_PARTS.ram}-`));
-/** The pixel port comes pre-wired: its bus lane inputs are plumbing, not reader wiring. */
-const pixelPort = [
+/**
+ * The pixel port and the blitter come pre-wired: their bus lane inputs are
+ * plumbing, not reader wiring.
+ */
+const screenPorts = [
   CPU_PARTS.pixelX,
   `${CPU_PARTS.pixelX}-display`,
   CPU_PARTS.pixelY,
   `${CPU_PARTS.pixelY}-display`,
   CPU_PARTS.plotter,
+  CPU_PARTS.blitter,
+  CPU_PARTS.blitterRom,
+  "blitter-busy",
 ];
 const isPortPlumbing = (wire: Wire) =>
-  pixelPort.includes(wire.to) || wire.to.startsWith(`${CPU_PARTS.ram}-row-d-direct`);
+  screenPorts.includes(wire.to) || wire.to.startsWith(`${CPU_PARTS.ram}-row-d-direct`);
 
 export const CPU_LEVEL_SPECS: CpuLevelSpec[] = [
   {
@@ -132,7 +138,7 @@ export const CPU_LEVEL_SPECS: CpuLevelSpec[] = [
     goal: "Keep variables in RAM: DMAR takes the address from the bus, RAM_IN stores the bus there, RAM_OUT reads it back. ADDM and SUBM read RAM into OPERAND first.",
     steps: [
       "Wire bus lanes 0–7 into DMAR and DMAR_IN into its LOAD.",
-      "Wire bus lanes into the data inputs of the data RAM. The screen and its pixel port take the bus through gates that are already wired.",
+      "Wire bus lanes into the data inputs of the data RAM. The screen, its pixel port and the blitter take the bus through gates that are already wired.",
       "Wire RAM_IN into the write-enable gates, connect the RAM bus driver to the bus and RAM_OUT to its enable.",
     ],
     parts: [
@@ -141,7 +147,7 @@ export const CPU_LEVEL_SPECS: CpuLevelSpec[] = [
       CPU_PARTS.ram,
       CPU_PARTS.screen,
       ...ramHelpers,
-      ...pixelPort,
+      ...screenPorts,
       "ram-lanes",
       "ram-drive",
     ],

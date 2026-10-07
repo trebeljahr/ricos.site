@@ -17,11 +17,13 @@ import {
   type CompiledProgram,
   compileProgram,
   defaultMicrocode,
+  describeBlitter,
   describeOperand,
   hex,
   INTERRUPT_SAMPLES,
   INTERRUPT_VECTOR,
   type IsaEntry,
+  isBlitterAddress,
   isScreenAddress,
   KEY_HANDLER,
   type KeySchedule,
@@ -39,7 +41,7 @@ import { MicrocodeEditor } from "./MicrocodeEditor";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS } = SAMPLE_PROGRAMS;
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT } = SAMPLE_PROGRAMS;
 const { RECURSION } = RAM_STACK_SAMPLES;
 const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
@@ -136,13 +138,21 @@ export function ProgramStepper() {
       : (compilation.program?.instructions[Math.floor(state.activeAddress / 2)] ?? null);
   const changed = source !== loaded;
   const variables = compilation.program?.variables ?? [];
-  const usesScreen = Boolean(
+  /** Whether the opcode's operand is a data address (RAM, screen or blitter). */
+  const readsData = (opcode: number) =>
+    isa.some((item) => item.opcode === opcode && item.operand === "RAM address");
+  const usesBlitter = Boolean(
     compilation.program?.instructions.some(
-      ({ opcode, operand }) =>
-        isa.some((item) => item.opcode === opcode && item.operand === "RAM address") &&
-        isScreenAddress(operand),
+      ({ opcode, operand }) => readsData(opcode) && isBlitterAddress(operand),
     ),
   );
+  const usesScreen =
+    usesBlitter ||
+    Boolean(
+      compilation.program?.instructions.some(
+        ({ opcode, operand }) => readsData(opcode) && isScreenAddress(operand),
+      ),
+    );
   const setBitWeights = state
     ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
     : [];
@@ -539,6 +549,11 @@ export function ProgramStepper() {
                       <div className={styles.flags}>
                         PIXEL X {state.pixelX} <span>·</span> Y {state.pixelY}
                       </div>
+                      {usesBlitter && (
+                        <div className={styles.flags} role="status" aria-label="Blitter">
+                          BLITTER <span>·</span> {describeBlitter(state.blitter)}
+                        </div>
+                      )}
                     </>
                   )}
                   <div className={styles.flags}>
@@ -815,6 +830,14 @@ export function ProgramSource({
         </button>
         <button type="button" onClick={() => preset(CROSS)} className={styles.button}>
           PLOT
+        </button>
+        <button
+          type="button"
+          onClick={() => preset(BLIT)}
+          className={styles.button}
+          title="The blitter copies a sprite while the CPU counts"
+        >
+          BLIT
         </button>
         <button
           type="button"

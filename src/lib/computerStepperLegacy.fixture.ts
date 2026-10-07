@@ -14,10 +14,18 @@ import {
   plotRow,
 } from "./computerStepper";
 
-/** The snapshot fields that predate the key port and the pixel cursor. */
+/** The snapshot fields that predate the key port, the pixel cursor and the blitter. */
 export type Snapshot = Omit<
   FullSnapshot,
-  "tick" | "key" | "keyReady" | "interruptsOn" | "keyPress" | "pixelX" | "pixelY" | "screenWrite"
+  | "tick"
+  | "key"
+  | "keyReady"
+  | "interruptsOn"
+  | "keyPress"
+  | "pixelX"
+  | "pixelY"
+  | "screenWrite"
+  | "blitter"
 >;
 
 export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {

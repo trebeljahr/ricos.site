@@ -8,6 +8,14 @@
 
 import { plotRow, SCREEN_ROWS } from "../computerStepper";
 import {
+  BLITTER_BLOCKS,
+  BLITTER_OUTPUTS,
+  type BlitterKind,
+  blitterBlockCircuit,
+  foldBlitterState,
+  unfoldBlitterState,
+} from "./blitterBlock";
+import {
   Builder,
   busPorts,
   cellIds,
@@ -559,6 +567,11 @@ type DataMemoryWiring = {
    * runs the beam; it may keep running when the CPU's clock stops.
    */
   video?: { scanout: Place; crt: Place; clock: Ref };
+  /**
+   * Optional blitter at E0–EF, with a second read port on the code ROM (a
+   * rom256 holding `bytes`) for its sprite copies.
+   */
+  blitter?: { unit: Place; rom: Place; bytes: readonly number[] };
   /** Top left of the decode and read-select gates. */
   x: number;
   y: number;
@@ -571,7 +584,10 @@ type DataMemoryWiring = {
  * RAM (row = A0–A3, or A0–A4 for ram32). On a port address the screen sees the
  * cursor's y as its row and the plotter's output as its data, so one clock edge
  * rewrites a single pixel. With `video`, reading FB (or FF) gives VBLANK in
- * bit 0. Returns the 8 read bits of the selected byte.
+ * bit 0. With a blitter, E0–EF reach it instead of RAM, and while it is BUSY
+ * it owns the screen's write port: row, data and WE come from the blitter, so
+ * CPU screen writes are lost and screen reads see the blitter's row. Reading
+ * E0–EF gives BUSY in bit 0. Returns the 8 read bits of the selected byte.
  */
 export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
   const { address, data, we, clock, x, y, pixel } = wiring;
@@ -579,7 +595,35 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
   const upper = b.gate(id("high-lo"), "and", x, y, address[4], address[5]);
   const lower = b.gate(id("high-hi"), "and", x, y + 80, address[6], address[7]);
   const screenSel = b.gate(id("screen-sel"), "and", x + 140, y + 40, upper, lower, "SCREEN (F_)");
-  const ramSel = b.gate(id("ram-sel"), "not", x + 280, y + 120, screenSel, undefined, "RAM");
+  const { blitter } = wiring;
+  // E_ = 1110: A7, A6 and A5 on, A4 off.
+  const blitSel =
+    blitter &&
+    b.gate(
+      id("blit-sel"),
+      "and",
+      x + 140,
+      y - 1200,
+      lower,
+      b.gate(
+        id("blit-a5"),
+        "and",
+        x,
+        y - 1200,
+        address[5],
+        b.gate(id("a4-low"), "not", x - 140, y - 1200, address[4], undefined, "NOT A4"),
+      ),
+      "BLITTER (E_)",
+    );
+  const ramSel = b.gate(
+    id("ram-sel"),
+    "not",
+    x + 280,
+    y + 120,
+    blitSel ? b.gate(id("io-sel"), "or", x + 140, y + 120, screenSel, blitSel) : screenSel,
+    undefined,
+    "RAM",
+  );
   const ramWe = b.gate(id("ram-we"), "and", x + 420, y + 40, we, ramSel, "RAM WE");
 
   // Pixel port decode: F8–FF, then A1 and A0 pick x, y or plot.
@@ -666,10 +710,105 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
   const ramKind = wiring.ramKind ?? "ram16";
   block(wiring.ram, ramKind, RAM_ADDRESS_BITS[ramKind], ramWe);
   const { video } = wiring;
-  if (!video) block(wiring.screen, "screen8x8", 3, screenWe, screenRow, screenData);
-  else {
+  // The screen's write port: from the CPU side, or from the blitter while it is BUSY.
+  let screenWrite: { we: Ref; row: Ref[]; data: Ref[] } = {
+    we: screenWe,
+    row: screenRow,
+    data: screenData,
+  };
+  if (blitter && blitSel) {
+    const { unit, rom } = blitter;
+    b.add(unit.id, "module", unit.x, unit.y, unit.label ?? DATAPATH_BLOCKS.blitter.label, {
+      module: datapathCircuit("blitter"),
+      behaviour: "blitter",
+    });
+    const blitWe = b.gate(id("blit-we"), "and", x + 420, y - 1200, we, blitSel, "BLITTER WE");
+    // R: the screen row, or the code ROM byte while the blitter's ROM line is on.
+    const fromRom: Ref = [unit.id, BLITTER_OUTPUTS.rom];
+    const fromScreen = b.gate(
+      id("blit-from-screen"),
+      "not",
+      x + 1260,
+      y - 1000,
+      fromRom,
+      undefined,
+      "READ SCREEN",
+    );
+    const read = range(8).map((bit) =>
+      b.gate(
+        id(`blit-read${bit}`),
+        "or",
+        x + 1540,
+        y - 2000 + bit * 120,
+        b.gate(
+          id(`blit-read-screen${bit}`),
+          "and",
+          x + 1400,
+          y - 2000 + bit * 120,
+          [wiring.screen.id, bit],
+          fromScreen,
+        ),
+        b.gate(
+          id(`blit-read-rom${bit}`),
+          "and",
+          x + 1400,
+          y - 1940 + bit * 120,
+          [rom.id, bit],
+          fromRom,
+        ),
+      ),
+    );
+    [...data, ...address.slice(0, 3), blitWe, ...read, clock].forEach((source, input) => {
+      b.connect(source, unit.id, input);
+    });
+    b.add(rom.id, "module", rom.x, rom.y, rom.label ?? "CODE ROM, BLITTER PORT", {
+      module: datapathCircuit("rom256", blitter.bytes),
+      behaviour: "rom256",
+    });
+    range(8).forEach((bit) => {
+      b.connect([unit.id, BLITTER_OUTPUTS.src + bit], rom.id, bit);
+    });
+    // While BUSY the blitter has the screen: a 2-way mux per line, BUSY picks.
+    const busy: Ref = [unit.id, BLITTER_OUTPUTS.busy];
+    const cpuSide = b.gate(
+      id("cpu-screen"),
+      "not",
+      x + 1260,
+      y - 800,
+      busy,
+      undefined,
+      "CPU HAS SCREEN",
+    );
+    const byBusy = (name: string, cpu: Ref[], first: number, top: number) =>
+      cpu.map((source, bit) => {
+        const row = top + bit * 120;
+        return b.gate(
+          id(`${name}${bit}`),
+          "or",
+          x + 1540,
+          row,
+          b.gate(id(`${name}-cpu${bit}`), "and", x + 1400, row, source, cpuSide),
+          b.gate(id(`${name}-blit${bit}`), "and", x + 1400, row + 60, [unit.id, first + bit], busy),
+        );
+      });
+    screenWrite = {
+      we: b.gate(
+        id("screen-we-any"),
+        "or",
+        x + 980,
+        y + 200,
+        screenWe,
+        busy,
+        "SCREEN WE (CPU OR BLITTER)",
+      ),
+      row: byBusy("blit-row", screenRow, BLITTER_OUTPUTS.row, y - 600),
+      data: byBusy("blit-data", screenData, BLITTER_OUTPUTS.out, y + 1500),
+    };
+  }
+  const screenKind = video ? "vram8x8" : "screen8x8";
+  block(wiring.screen, screenKind, 3, screenWrite.we, screenWrite.row, screenWrite.data);
+  if (video) {
     // Dual port: the CPU writes through A/D/WE while the scanout reads row Y through RA.
-    block(wiring.screen, "vram8x8", 3, screenWe, screenRow, screenData);
     const screen = wiring.screen.id;
     const scanout = video.scanout.id;
     b.add(scanout, "module", video.scanout.x, video.scanout.y, video.scanout.label, {
@@ -710,6 +849,19 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
         "SCREEN READ",
       )
     : screenSel;
+  // E0–EF read the blitter's BUSY.
+  const blitStatus =
+    blitter &&
+    blitSel &&
+    b.gate(
+      id("blit-status"),
+      "and",
+      x + 560,
+      y + 100,
+      [blitter.unit.id, BLITTER_OUTPUTS.busy],
+      blitSel,
+      "BLITTER BUSY",
+    );
   return range(8).map((bit) => {
     const row = y + 300 + bit * 140;
     const fromRam = b.gate(id(`ram-q${bit}`), "and", x + 560, row, [wiring.ram.id, bit], ramSel);
@@ -721,26 +873,23 @@ export function addDataMemory(b: Builder, wiring: DataMemoryWiring): Ref[] {
       [wiring.screen.id, bit],
       screenRead,
     );
-    const read = b.gate(
-      id(`read${bit}`),
-      "or",
-      x + 700,
-      row,
-      fromRam,
-      fromScreen,
-      `READ BIT ${bit}`,
-    );
-    if (!video || bit > 0 || !status) return read;
-    const fromStatus = b.gate(
-      id("vblank-q"),
-      "and",
-      x + 560,
-      row - 60,
-      [video.scanout.id, 9],
-      status,
-      "VBLANK",
-    );
-    return b.gate(id("read0-status"), "or", x + 840, row, read, fromStatus, "READ BIT 0");
+    let read = b.gate(id(`read${bit}`), "or", x + 700, row, fromRam, fromScreen, `READ BIT ${bit}`);
+    if (bit > 0) return read;
+    if (video && status) {
+      const fromStatus = b.gate(
+        id("vblank-q"),
+        "and",
+        x + 560,
+        row - 60,
+        [video.scanout.id, 9],
+        status,
+        "VBLANK",
+      );
+      read = b.gate(id("read0-status"), "or", x + 840, row, read, fromStatus, "READ BIT 0");
+    }
+    if (blitStatus)
+      read = b.gate(id("read0-blit"), "or", x + 980, row, read, blitStatus, "READ BIT 0");
+    return read;
   });
 }
 
@@ -997,8 +1146,10 @@ export const DATAPATH_BLOCKS = {
   ...CONTROL_BLOCKS,
   ...SHADER_BLOCKS,
   ...VIDEO_BLOCKS,
+  ...BLITTER_BLOCKS,
 } as const;
 const isControlKind = (kind: DatapathKind): kind is ControlKind => kind in CONTROL_BLOCKS;
+const isBlitterKind = (kind: DatapathKind): kind is BlitterKind => kind in BLITTER_BLOCKS;
 const isShaderKind = (kind: DatapathKind): kind is ShaderKind => kind in SHADER_BLOCKS;
 const isVideoKind = (kind: DatapathKind): kind is VideoKind => kind in VIDEO_BLOCKS;
 export type DatapathKind = keyof typeof DATAPATH_BLOCKS;
@@ -1014,6 +1165,7 @@ export function datapathCircuit(kind: DatapathKind, bytes: readonly number[] = [
   if (isControlKind(kind)) return controlBlockCircuit(kind);
   if (isShaderKind(kind)) return shaderBlockCircuit(kind, bytes);
   if (isVideoKind(kind)) return videoBlockCircuit(kind, (part) => datapathCircuit(part));
+  if (isBlitterKind(kind)) return blitterBlockCircuit(kind);
   switch (kind) {
     case "register8":
       return register8Circuit();
@@ -1069,6 +1221,7 @@ export function unfoldBlockState(node: Node, state: unknown): Snapshot {
   if (isControlKind(node.behaviour)) return unfoldControlState(node.behaviour, state);
   if (isShaderKind(node.behaviour)) return unfoldShaderState(node.behaviour, state);
   if (isVideoKind(node.behaviour)) return unfoldVideoState(node.behaviour, state);
+  if (isBlitterKind(node.behaviour)) return unfoldBlitterState(state);
   switch (node.behaviour) {
     case "register8":
     case "counter8": {
@@ -1111,6 +1264,7 @@ export function foldBlockState(node: Node, snapshot: Snapshot | undefined): unkn
   if (isShaderKind(node.behaviour)) return foldShaderState(node, node.behaviour, inner);
   if (isVideoKind(node.behaviour))
     return foldVideoState(node, node.behaviour, inner, foldBlockState);
+  if (isBlitterKind(node.behaviour)) return foldBlitterState(inner);
   // A nested row may run as gates (unfolded) or as a block; prefer the gates.
   const row = (r: number): ClockedByte => {
     const gates = inner.modules[`row${r}`];

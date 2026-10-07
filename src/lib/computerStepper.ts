@@ -54,6 +54,8 @@ export type Snapshot = {
   pixelY: number;
   /** The last screen write in this snapshot's ticks, if any. */
   screenWrite: ScreenWrite | null;
+  /** The blitter's registers after this snapshot's ticks. */
+  blitter: BlitterState;
   stack: number[];
   output: number[];
   activeAddress: number | null;
@@ -99,12 +101,147 @@ export const isVideoStatus = (address: number) => isPixelPort(address) && (addre
 export const pixelPortRole = (address: number): PixelPortRole =>
   (address & 2) !== 0 ? "pixel" : (address & 1) !== 0 ? "y" : "x";
 
-/** A screen write: a whole row (STM F0–F7, `x` null) or one pixel through the port. */
-export type ScreenWrite = { y: number; x: number | null; row: number };
+/**
+ * A screen write: a whole row (STM F0–F7, `x` null) or one pixel through the
+ * port. `by` is "blitter" when the blitter wrote it rather than the CPU.
+ */
+export type ScreenWrite = { y: number; x: number | null; row: number; by?: "blitter" };
 
 /** `row` with the pixel at `x` set to `colour` bit 0: what the port's plotter computes. */
 export const plotRow = (row: number, x: number, colour: number) =>
   colour & 1 ? (row | (1 << x)) & 255 : row & ~(1 << x) & 255;
+
+/**
+ * The blitter: a command processor that draws into the screen by itself while
+ * the CPU runs on. Data addresses E0–EF reach it instead of RAM; it decodes
+ * A0–A2, so E8–EF repeat E0–E7. STM E0 sets X, E1 Y (low 3 bits each), E2
+ * COLOUR (a row pattern, or bit 0 for a pixel), E3 ARG (a line's length, or a
+ * sprite's code ROM address), and STM E4 starts the command in ACC. Any read
+ * gives BUSY in bit 0. While BUSY, the blitter ignores register writes and
+ * owns the screen: each clock edge it writes one row, and CPU screen writes
+ * are lost.
+ */
+export const BLITTER_BASE = 0xe0;
+export const BLITTER_PORT = { x: 0xe0, y: 0xe1, colour: 0xe2, arg: 0xe3, cmd: 0xe4 } as const;
+export const isBlitterAddress = (address: number) => (address & 0xf0) === BLITTER_BASE;
+/** Register index (A0–A2) of each blitter port address; 5–7 are unused. */
+export const BLITTER_REGISTERS = ["x", "y", "colour", "arg", "cmd"] as const;
+
+/** Command codes for STM E4. 0 and 7 do nothing. */
+export const BLIT_COMMANDS = {
+  clear: 1,
+  fill: 2,
+  hline: 3,
+  vline: 4,
+  pixel: 5,
+  sprite: 6,
+} as const;
+export type BlitCommand = keyof typeof BLIT_COMMANDS;
+export const blitCommandName = (op: number): BlitCommand | null =>
+  (Object.keys(BLIT_COMMANDS) as BlitCommand[]).find((name) => BLIT_COMMANDS[name] === op) ?? null;
+
+/** The blitter's registers. `op` is the command, `i` the step it is on. */
+export type BlitterState = {
+  x: number;
+  y: number;
+  colour: number;
+  arg: number;
+  op: number;
+  i: number;
+  busy: boolean;
+};
+export const initialBlitter = (): BlitterState => ({
+  x: 0,
+  y: 0,
+  colour: 0,
+  arg: 0,
+  op: 0,
+  i: 0,
+  busy: false,
+});
+
+/**
+ * The index of a command's last step. CLEAR and SPRITE write all 8 rows;
+ * FILL and PIXEL one; HLINE and VLINE ARG pixels (low 3 bits, 0 means 8).
+ */
+export function blitterLast({ op, arg }: BlitterState): number {
+  const command = blitCommandName(op);
+  if (command === "clear" || command === "sprite") return 7;
+  if (command === "hline" || command === "vline") return (arg - 1) & 7;
+  return 0;
+}
+
+/** The screen row step `i` writes. Rows wrap: a sprite at y = 6 ends on row 5. */
+export function blitterRow(state: BlitterState): number {
+  const command = blitCommandName(state.op);
+  if (command === "clear") return state.i;
+  if (command === "vline" || command === "sprite") return (state.y + state.i) & 7;
+  return command ? state.y : 0;
+}
+
+/** The pixel column step `i` changes, or null when it writes a whole row. */
+export function blitterColumn(state: BlitterState): number | null {
+  const command = blitCommandName(state.op);
+  if (command === "hline") return (state.x + state.i) & 7;
+  if (command === "vline" || command === "pixel") return state.x;
+  return null;
+}
+
+/** Code ROM address of the sprite byte for step `i`: ARG + i. */
+export const blitterSource = (state: BlitterState) => (state.arg + state.i) & 255;
+
+/**
+ * The byte step `i` writes to its row. `row` is that row's current value
+ * (the screen's read-back) and `rom` the code ROM byte at `blitterSource`.
+ */
+export function blitterData(state: BlitterState, row: number, rom: number): number {
+  const command = blitCommandName(state.op);
+  if (command === "sprite") return rom & 255;
+  if (command === "clear" || command === "fill") return state.colour & 255;
+  const column = blitterColumn(state);
+  return column === null ? 0 : plotRow(row, column, state.colour);
+}
+
+/** The blitter's state in a few words for a readout: "BUSY · SPRITE · STEP 3 OF 8" or "IDLE". */
+export function describeBlitter(state: BlitterState): string {
+  if (!state.busy) return "IDLE";
+  const command = blitCommandName(state.op)!.toUpperCase();
+  return `BUSY · ${command} · STEP ${state.i + 1} OF ${blitterLast(state) + 1}`;
+}
+
+/**
+ * One clock edge. While BUSY the blitter takes a step (the screen stores its
+ * row on the same edge) and goes idle after the last one. Otherwise `write`,
+ * a register index and a byte, sets a register; writing a valid command
+ * starts it at step 0.
+ */
+export function blitterClock(
+  state: BlitterState,
+  write: { register: number; value: number } | null,
+): BlitterState {
+  if (state.busy) {
+    const done = state.i === blitterLast(state);
+    return { ...state, i: done ? 0 : state.i + 1, busy: !done };
+  }
+  if (!write) return state;
+  const value = write.value & 255;
+  switch (BLITTER_REGISTERS[write.register & 7]) {
+    case "x":
+      return { ...state, x: value & 7 };
+    case "y":
+      return { ...state, y: value & 7 };
+    case "colour":
+      return { ...state, colour: value };
+    case "arg":
+      return { ...state, arg: value };
+    case "cmd": {
+      const op = value & 7;
+      return { ...state, op, i: 0, busy: blitCommandName(op) !== null };
+    }
+    default:
+      return state;
+  }
+}
 
 export const OPCODES = {
   LDI: 0x10,
@@ -354,6 +491,15 @@ export function describeOperand(
       ? { short: `[${hex(operand)}] pixel`, long: `the pixel at the cursor (${hex(operand)})` }
       : { short: `[${hex(operand)}] pixel ${role}`, long: `pixel ${role} (${hex(operand)})` };
   }
+  if (kind === "RAM address" && isBlitterAddress(operand)) {
+    const register = BLITTER_REGISTERS[operand & 7];
+    return register
+      ? {
+          short: `[${hex(operand)}] blit ${register}`,
+          long: `blitter ${register} (${hex(operand)})`,
+        }
+      : { short: `[${hex(operand)}] blit`, long: `the blitter (${hex(operand)})` };
+  }
   if (kind === "RAM address" && isScreenAddress(operand)) {
     const row = operand & (SCREEN_ROWS - 1);
     return {
@@ -402,6 +548,8 @@ type Statement =
   | { kind: "print"; line: number; expression: Expression }
   | { kind: "call"; line: number; name: string; argument: string | null }
   | { kind: "plot"; line: number; x: string; y: string; colour: string | null }
+  | { kind: "sprite"; line: number; name: string; rows: number[] }
+  | { kind: "blit"; line: number; command: string; args: string[] }
   | { kind: "return"; line: number; expression: Expression | null }
   | {
       kind: "if";
@@ -529,6 +677,33 @@ function parseProgram(source: string): {
       }
       if (/^plot\b/.test(text))
         fail(line, "Use plot(x, y); or plot(x, y, colour); with numbers or variables.");
+      const sprite = new RegExp(`^sprite\\s+(${NAME})\\s*=\\s*\\[([\\d\\s,]*)\\]\\s*;$`).exec(text);
+      if (sprite) {
+        const rows = sprite[2].split(",").map((item) => item.trim());
+        if (rows.length !== SCREEN_ROWS || rows.some((row) => !/^\d+$/.test(row)))
+          fail(
+            line,
+            `A sprite is ${SCREEN_ROWS} row bytes: sprite name = [n, n, n, n, n, n, n, n];`,
+          );
+        if (rows.some((row) => Number(row) > 255)) fail(line, "Numbers must be between 0 and 255.");
+        statements.push({ kind: "sprite", line, name: sprite[1], rows: rows.map(Number) });
+        continue;
+      }
+      if (/^sprite\b/.test(text))
+        fail(line, `A sprite is ${SCREEN_ROWS} row bytes: sprite name = [n, n, n, n, n, n, n, n];`);
+      const blit = new RegExp(`^blit\\s*\\(\\s*([a-z]+)\\s*((?:,\\s*${VALUE}\\s*)*)\\)\\s*;$`).exec(
+        text,
+      );
+      if (blit) {
+        const args = blit[2]
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        statements.push({ kind: "blit", line, command: blit[1], args });
+        continue;
+      }
+      if (/^blit\b/.test(text))
+        fail(line, "Use blit(command, …); for example blit(sprite, heart, 0); or blit(wait);");
       const returned = /^return(?:\s+(.+))?\s*;$/.exec(text);
       if (returned) {
         statements.push({
@@ -561,7 +736,10 @@ function parseProgram(source: string): {
         });
         continue;
       }
-      fail(line, "Use let, assignment, print, plot, for, loop, if, function call, or return.");
+      fail(
+        line,
+        "Use let, assignment, print, plot, blit, sprite, for, loop, if, function call, or return.",
+      );
     }
     if (inside) fail(lines.length, "Missing closing brace.");
     return statements;
@@ -575,6 +753,8 @@ function parseProgram(source: string): {
       position++;
       if (header[1] === "print") fail(line, "print is reserved for output.");
       if (header[1] === "plot") fail(line, "plot is reserved for the screen.");
+      if (header[1] === "blit" || header[1] === "sprite")
+        fail(line, `${header[1]} is reserved for the blitter.`);
       if (BUILTINS.has(header[1]) || header[1] === WAIT_VBLANK)
         fail(line, `${header[1]} is built in.`);
       if (functions.some((item) => item.name === header[1]))
@@ -597,6 +777,29 @@ function parseProgram(source: string): {
   }
   return { main, functions };
 }
+
+/** Each blit command's arguments, in order, and the blitter register each one sets. */
+type BlitArg = {
+  name: string;
+  register: "x" | "y" | "colour" | "arg";
+  min: number;
+  max: number;
+  /** The default when the argument is left out. */
+  optional?: string;
+};
+const blitX: BlitArg = { name: "x", register: "x", min: 0, max: 7 };
+const blitY: BlitArg = { name: "y", register: "y", min: 0, max: 7 };
+const blitLength: BlitArg = { name: "length", register: "arg", min: 1, max: 8 };
+const blitColour: BlitArg = { name: "colour", register: "colour", min: 0, max: 1, optional: "1" };
+const BLIT_SPECS: Record<BlitCommand | "wait", BlitArg[]> = {
+  wait: [],
+  clear: [{ name: "pattern", register: "colour", min: 0, max: 255, optional: "0" }],
+  fill: [blitY, { name: "pattern", register: "colour", min: 0, max: 255 }],
+  hline: [blitX, blitY, blitLength, blitColour],
+  vline: [blitX, blitY, blitLength, blitColour],
+  pixel: [blitX, blitY, blitColour],
+  sprite: [{ name: "sprite", register: "arg", min: 0, max: 255 }, blitY],
+};
 
 /** The key handler: a function with this name runs when a key is pressed. */
 export const KEY_HANDLER = "on_key";
@@ -654,6 +857,18 @@ export function compileProgram(
   const mainCalls = new Set<{ name: string; line: number }>();
   /** Functions (and "main") whose own code plots a pixel. */
   const plotters = new Set<string>();
+  /** Functions (and "main") whose own code drives the blitter. */
+  const blitters = new Set<string>();
+  /** Sprites: 8 row bytes each, stored in code ROM after the code. */
+  const sprites = new Map<string, number[]>();
+  for (const statement of ast.main)
+    if (statement.kind === "sprite") {
+      if (sprites.has(statement.name))
+        fail(statement.line, `Sprite “${statement.name}” is already declared.`);
+      sprites.set(statement.name, statement.rows);
+    }
+  /** LDI instructions whose operand becomes a sprite's code ROM address. */
+  const spritePatches: { index: number; name: string }[] = [];
 
   const emit = (opcode: number, operand: number, label: string, line: number): number => {
     if (instructions.length >= 128) fail(line, "Program exceeds 256 code bytes.");
@@ -809,6 +1024,56 @@ export function compileProgram(
     if (place === undefined) fail(line, `Unknown variable “${name}”.`);
     return place;
   };
+  /** Polls BUSY: LDM E4 reads 1 while busy, and 1 − 1 does not borrow, so JNC loops. */
+  const waitForBlitter = (line: number) => {
+    const start = instructions.length * 2;
+    emit(OPCODES.LDM, BLITTER_PORT.cmd, "READ BLITTER BUSY", line);
+    emit(OPCODES.SUBI, 1, "BUSY − 1", line);
+    emit(OPCODES.JNC, start, "WAIT WHILE BUSY", line);
+  };
+  /**
+   * blit(command, …): waits until the blitter is idle (it ignores register
+   * writes while BUSY), stores each argument in its register, then the
+   * command code. blit(wait) only waits.
+   */
+  const blit = (command: string, args: string[], scope: Scope, line: number, caller: string) => {
+    const spec = BLIT_SPECS[command as keyof typeof BLIT_SPECS];
+    if (!spec)
+      fail(
+        line,
+        `Unknown blitter command “${command}”. Use ${Object.keys(BLIT_SPECS).join(", ")}.`,
+      );
+    const required = spec.filter((arg) => !arg.optional).length;
+    if (args.length < required || args.length > spec.length)
+      fail(
+        line,
+        `Use blit(${[command, ...spec.map((arg) => (arg.optional ? `${arg.name}?` : arg.name))].join(", ")});`,
+      );
+    blitters.add(caller);
+    waitForBlitter(line);
+    if (command === "wait") return;
+    for (const [index, arg] of spec.entries()) {
+      const value = args[index] ?? arg.optional ?? "0";
+      if (arg.name === "sprite") {
+        if (!sprites.has(value)) fail(line, `Unknown sprite “${value}”.`);
+        spritePatches.push({ index: instructions.length, name: value });
+        emit(OPCODES.LDI, 0, `SPRITE ${value} ADDRESS`, line);
+      } else {
+        if (/^\d+$/.test(value) && (Number(value) < arg.min || Number(value) > arg.max))
+          fail(line, `Blitter ${arg.name} is ${arg.min} to ${arg.max}.`);
+        load(value, scope, line);
+      }
+      emit(
+        OPCODES.STM,
+        BLITTER_PORT[arg.register],
+        `BLIT ${arg.register.toUpperCase()} ← ${value}`,
+        line,
+      );
+    }
+    const code = BLIT_COMMANDS[command as BlitCommand];
+    emit(OPCODES.LDI, code, `BLIT ${command.toUpperCase()}`, line);
+    emit(OPCODES.STM, BLITTER_PORT.cmd, "START BLITTER", line);
+  };
   const compileStatements = (statements: Statement[], scope: Scope, caller: string) => {
     for (const statement of statements) {
       const line = statement.line;
@@ -858,6 +1123,11 @@ export function compileProgram(
           colour === null ? "PLOT" : `PLOT COLOUR ${colour}`,
           line,
         );
+      } else if (statement.kind === "sprite") {
+        if (!ast.main.includes(statement))
+          fail(line, "Declare sprites at the top level, outside loops, ifs and functions.");
+      } else if (statement.kind === "blit") {
+        blit(statement.command, statement.args, scope, line, caller);
       } else if (statement.kind === "return") {
         if (caller === "main") fail(line, "return is only valid inside a function.");
         if (statement.expression) compileExpression(statement.expression, scope, line, caller);
@@ -932,6 +1202,8 @@ export function compileProgram(
     emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
   }
   compileStatements(ast.main, globals, "main");
+  // HALT stops GCLK, and the blitter with it: let a running command finish first.
+  if (blitters.size) waitForBlitter(0);
   emit(OPCODES.HALT, 0, "HALT", 0);
   for (const definition of ast.functions) {
     functionStarts.set(definition.name, instructions.length * 2);
@@ -1003,6 +1275,13 @@ export function compileProgram(
     const fromMain = reach([...mainCalls].map(({ name }) => name));
     // The cursor is one pair of registers: a key press between a plot's stores would move it.
     const handlerPlots = [...reach([KEY_HANDLER])].some((name) => plotters.has(name));
+    // Same for the blitter's registers: a key press between two stores would mix commands.
+    const handlerBlits = [...reach([KEY_HANDLER])].some((name) => blitters.has(name));
+    if (handlerBlits && (blitters.has("main") || [...fromMain].some((name) => blitters.has(name))))
+      fail(
+        handler.line,
+        `${KEY_HANDLER} and the main program both use the blitter. A key press between setting its registers would mix two commands, so blit in only one of them.`,
+      );
     if (handlerPlots && (plotters.has("main") || [...fromMain].some((name) => plotters.has(name))))
       fail(
         handler.line,
@@ -1031,9 +1310,22 @@ export function compileProgram(
         `Stack and variables collide: ${variables.length} variable byte${variables.length === 1 ? "" : "s"} plus ${deepest} stack bytes do not fit in ${ramBytes} bytes of RAM.`,
       );
   }
+  // Sprite rows follow the code in ROM; the blitter's COPY SPRITE reads them from there.
+  const spriteBase = instructions.length * 2;
+  const spriteNames = [...sprites.keys()];
+  if (spriteBase + spriteNames.length * SCREEN_ROWS > 256)
+    fail(
+      ast.main.find((statement) => statement.kind === "sprite")?.line ?? 1,
+      "Program and sprites exceed 256 code bytes.",
+    );
+  for (const { index, name } of spritePatches)
+    instructions[index].operand = spriteBase + spriteNames.indexOf(name) * SCREEN_ROWS;
   return {
     instructions,
-    bytes: instructions.flatMap(({ opcode, operand }) => [opcode, operand]),
+    bytes: [
+      ...instructions.flatMap(({ opcode, operand }) => [opcode, operand]),
+      ...spriteNames.flatMap((name) => sprites.get(name)!),
+    ],
     variables,
     stack,
   };
@@ -1054,6 +1346,9 @@ export const SAMPLE_PROGRAMS = {
     "let pixel = 1;\nfor (let i = 0; i < 8; i++) {\n  screen[3] = pixel;\n  pixel = pixel + pixel;\n}\nprint(screen[3]);",
   // plot(x, y) lights the pixel in column x of row y; two diagonals make an X.
   CROSS: "for (let i = 0; i < 8; i++) {\n  plot(i, i);\n  let j = 7 - i;\n  plot(i, j);\n}",
+  // The blitter copies the heart into rows 0–7 while the CPU counts; the CPU
+  // waits for it before drawing its own row.
+  BLIT: "sprite heart = [102, 255, 255, 255, 126, 60, 24, 0];\nblit(sprite, heart, 0);\nlet count = 0;\nfor (let i = 0; i < 3; i++) {\n  count = count + 1;\n  print(count);\n}\nblit(wait);\nscreen[7] = 255;",
 } as const;
 
 /**
@@ -1089,7 +1384,7 @@ export const RAM_STACK_SAMPLES = {
 // Control unit: one clock tick = one micro-step.
 //
 // Harvard split: code ROM (256 bytes, addressed by CMAR), data RAM (16 bytes,
-// addressed by DMAR; F0–F7 reach the screen instead) and a 16-entry return stack (addressed by SP). One 8-bit
+// addressed by DMAR; F0–FF reach the screen and E0–EF the blitter instead) and a 16-entry return stack (addressed by SP). One 8-bit
 // bus joins them; each tick at most one *_OUT signal drives it. The ALU always
 // sees ACC and the operand register (OPR), so ADDM/SUBM first copy the RAM
 // byte into OPR. The zero flag is wired to ACC (ACC === 0); FLAGS_IN latches
@@ -1470,6 +1765,10 @@ export type Tick = {
   screen: number[];
   /** What this tick's clock edge wrote to the screen, if anything. */
   screenWrite: ScreenWrite | null;
+  /** The CPU wrote to the screen while the blitter was BUSY, so the write was lost. */
+  screenBlocked: boolean;
+  /** The blitter's registers after the clock edge. */
+  blitter: BlitterState;
   /** Return stack entries, bottom first. With the stack in RAM: RAM[1F] down to RAM[SP]. */
   stack: number[];
   output: number[];
@@ -1528,15 +1827,24 @@ export function traceTicks(
   const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
   const ram = Array<number>(STACK_MODELS[stack].ramBytes).fill(0);
   const screen = Array<number>(SCREEN_ROWS).fill(0);
-  // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM, a screen row or the pixel port.
+  let blitter = initialBlitter();
+  // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM, a screen row, the
+  // pixel port or the blitter. While the blitter is BUSY its row is on the screen's address
+  // lines, so a screen read returns that row.
   // The scanout runs from reset alongside the CPU: on tick i its beam is at beamAt(i).
   const readData = (address: number, cursorY: number) =>
-    isVideoStatus(address)
-      ? Number(beamAt(ticks.length).vblank)
-      : isPixelPort(address)
-        ? screen[cursorY]
+    isBlitterAddress(address)
+      ? Number(blitter.busy)
+      : isVideoStatus(address)
+        ? Number(beamAt(ticks.length).vblank)
         : isScreenAddress(address)
-          ? screen[address & (SCREEN_ROWS - 1)]
+          ? screen[
+              blitter.busy
+                ? blitterRow(blitter)
+                : isPixelPort(address)
+                  ? cursorY
+                  : address & (SCREEN_ROWS - 1)
+            ]
           : ram[address & (ram.length - 1)];
   const stackMemory = Array<number>(16).fill(0);
   /** With the stack in RAM, SP may not move below the last fixed variable. */
@@ -1614,6 +1922,8 @@ export function traceTicks(
     const next = { ...registers };
     const keyPress = keys[ticks.length] ?? null;
     let screenWrite: ScreenWrite | null = null;
+    let screenBlocked = false;
+    let blitterWrite: { register: number; value: number } | null = null;
     if (!fault && bus !== null) {
       if (on.has("CMAR_IN")) next.cmar = bus;
       if (on.has("IR_IN")) next.ir = bus;
@@ -1627,6 +1937,8 @@ export function traceTicks(
         const role = isPixelPort(address) ? pixelPortRole(address) : null;
         if (role === "x") next.pixelX = bus & (SCREEN_ROWS - 1);
         else if (role === "y") next.pixelY = bus & (SCREEN_ROWS - 1);
+        else if (isBlitterAddress(address)) blitterWrite = { register: address & 7, value: bus };
+        else if (blitter.busy && isScreenAddress(address)) screenBlocked = true;
         else if (role === "pixel") {
           const { pixelX: x, pixelY: y } = registers;
           screen[y] = plotRow(screen[y], x, bus);
@@ -1642,6 +1954,15 @@ export function traceTicks(
         next.out = bus;
         output.push(bus);
       }
+    }
+    // The blitter runs on GCLK too: no edge on a HALT or fault tick.
+    if (!fault && !on.has("HALT")) {
+      if (blitter.busy) {
+        const y = blitterRow(blitter);
+        screen[y] = blitterData(blitter, screen[y], rom[blitterSource(blitter)]);
+        screenWrite = { y, x: blitterColumn(blitter), row: screen[y], by: "blitter" };
+      }
+      blitter = blitterClock(blitter, blitterWrite);
     }
     if (!fault) {
       if (on.has("PC_INC")) next.pc = (registers.pc + 1) & 255;
@@ -1669,6 +1990,8 @@ export function traceTicks(
       ram: [...ram],
       screen: [...screen],
       screenWrite,
+      screenBlocked,
+      blitter: { ...blitter },
       stack: inRam ? ram.slice(registers.sp).reverse() : stackMemory.slice(0, registers.sp),
       output: [...output],
       halted,
@@ -1694,9 +2017,26 @@ function explainExecute(
   stack: number[],
   inRam: boolean,
   write: ScreenWrite | null,
+  blitterWasBusy = false,
 ): string {
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
-  if (mnemonic === "STM" && write && write.x !== null)
+  if (mnemonic === "STM" && isBlitterAddress(operand)) {
+    if (blitterWasBusy)
+      return `The blitter is BUSY and ignores the write of ${after.acc} to ${meaning}.`;
+    if (BLITTER_REGISTERS[operand & 7] !== "cmd") return `Set ${meaning} to ${after.acc}.`;
+    const command = blitCommandName(after.acc & 7);
+    return command
+      ? `Start the blitter's ${command.toUpperCase()} command (${after.acc & 7}). From the next clock edge it draws one row per tick by itself, and BUSY reads 1 until it is done.`
+      : `Command ${after.acc & 7} is not a blitter command; the blitter stays idle.`;
+  }
+  if (
+    (mnemonic === "LDM" || mnemonic === "ADDM" || mnemonic === "SUBM") &&
+    isBlitterAddress(operand)
+  )
+    return mnemonic === "LDM"
+      ? `Read the blitter's BUSY flag into ACC: ${after.acc}${after.acc ? ", still drawing" : ", done"}.`
+      : `Read the blitter's BUSY flag (${after.opr}); ACC becomes ${after.acc}.`;
+  if (mnemonic === "STM" && write && write.x !== null && write.by !== "blitter")
     return `ACC bit 0 is ${after.acc & 1}, so the plotter turns pixel (${write.x}, ${write.y}) ${after.acc & 1 ? "on" : "off"}; screen row ${write.y} becomes ${byteBits(write.row)}.`;
   if (mnemonic === "STM" && isPixelPort(operand) && pixelPortRole(operand) !== "pixel") {
     const role = pixelPortRole(operand);
@@ -1834,6 +2174,7 @@ export function traceProgram(
     pixelX: 0,
     pixelY: 0,
     screenWrite: null,
+    blitter: initialBlitter(),
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
@@ -1849,8 +2190,8 @@ export function traceProgram(
   };
   record({});
   const groups: Tick[][] = [];
-  for (const tick of traceTicks(program, MAX_INSTRUCTIONS, keys, table))
-    (groups[tick.instruction] ??= []).push(tick);
+  const ticks = traceTicks(program, MAX_INSTRUCTIONS, keys, table);
+  for (const tick of ticks) (groups[tick.instruction] ??= []).push(tick);
   /** Key port, tick and machine state after `ticks`, for any snapshot. */
   const port = (ticks: Tick[]): Partial<Snapshot> => {
     const last = ticks.at(-1)!;
@@ -1863,7 +2204,29 @@ export function traceProgram(
       pixelX: last.registers.pixelX,
       pixelY: last.registers.pixelY,
       screenWrite: ticks.findLast((tick) => tick.screenWrite)?.screenWrite ?? null,
+      blitter: last.blitter,
+      // The blitter draws on any tick, fetch and decode included.
+      screen: [...last.screen],
     };
+  };
+  /** What the blitter did during `ticks`, as a sentence to append, or "". */
+  const blitterNote = (ticks: Tick[]): string => {
+    const rows = ticks.flatMap(({ screenWrite }) =>
+      screenWrite?.by === "blitter" ? [screenWrite.y] : [],
+    );
+    const lost = ticks.some((tick) => tick.screenBlocked);
+    const last = ticks.at(-1)!.blitter;
+    const command = blitCommandName(last.op)?.toUpperCase();
+    const parts: string[] = [];
+    if (rows.length)
+      parts.push(
+        `Meanwhile the blitter ${last.busy ? "keeps drawing" : "finished"} its ${command}: it wrote screen row${rows.length === 1 ? "" : "s"} ${rows.join(", ")}${last.busy ? `, step ${last.i + 1} of ${blitterLast(last) + 1} is next` : ""}.`,
+      );
+    if (lost)
+      parts.push(
+        "The blitter was BUSY and owns the screen, so the CPU's screen write was lost: wait with blit(wait); first.",
+      );
+    return parts.length ? ` ${parts.join(" ")}` : "";
   };
   for (const group of groups) {
     const address = group[0].address;
@@ -1910,14 +2273,14 @@ export function traceProgram(
       operand: null,
       activeAddress: address,
       touchedAddress: null,
-      explanation: `PC points to code address ${hex(address)}. Fetch opcode ${hex(opcode)} into the instruction register.`,
+      explanation: `PC points to code address ${hex(address)}. Fetch opcode ${hex(opcode)} into the instruction register.${blitterNote(group.slice(0, 2))}`,
       ...port(group.slice(0, 2)),
     });
     record({
       phase: "decode",
       operand,
       activeAddress: address + 1,
-      explanation: `Decode ${hex(opcode)} as ${mnemonic} (${instruction.label}); the next byte, ${hex(operand)}, is its operand: ${meaning}.`,
+      explanation: `Decode ${hex(opcode)} as ${mnemonic} (${instruction.label}); the next byte, ${hex(operand)}, is its operand: ${meaning}.${blitterNote(group.slice(2, 4))}`,
       ...port(group.slice(2, 4)),
     });
     const last = group.at(-1)!;
@@ -1928,6 +2291,7 @@ export function traceProgram(
     const after = last.registers;
     const touchesRam =
       !isScreenAddress(last.registers.dmar) &&
+      !isBlitterAddress(last.registers.dmar) &&
       group.some(({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"));
     const effect =
       entry && !isDefaultEntry(entry, table.stack)
@@ -1941,6 +2305,9 @@ export function traceProgram(
             last.stack,
             inRam,
             last.screenWrite,
+            group.some(
+              ({ control, index }) => control.includes("RAM_IN") && ticks[index - 1]?.blitter.busy,
+            ),
           );
     record({
       phase: "execute",
@@ -1954,7 +2321,7 @@ export function traceProgram(
       output: [...last.output],
       touchedAddress: touchesRam ? after.dmar & (state.ram.length - 1) : null,
       activeAddress: address,
-      explanation: `${effect} PC is now ${hex(after.pc)}.${after.int ? " A key is waiting and interrupts are on: next comes the interrupt, not a fetch." : ""}`,
+      explanation: `${effect} PC is now ${hex(after.pc)}.${after.int ? " A key is waiting and interrupts are on: next comes the interrupt, not a fetch." : ""}${blitterNote(group.slice(4))}`,
       halted: last.halted,
       ...(inRam ? { sp: after.sp } : {}),
       ...port(group.slice(4)),

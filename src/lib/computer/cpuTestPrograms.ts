@@ -169,6 +169,49 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     [OUT, 0],
     [HALT, 0],
   ),
+  "blitter port": raw(
+    [LDI, 8],
+    [STM, 0xe3], // ARG: 8 pixels
+    [LDI, 1],
+    [STM, 0xe2], // COLOUR 1
+    [LDI, 4],
+    [STM, 0xe1], // Y 4
+    [LDI, 3],
+    [STM, 0xe4], // HLINE along row 4
+    [STM, 0xe8], // E8 repeats X (E0); BUSY, so ignored
+    [LDM, 0xe4], // address 18: wait while BUSY
+    [SUBI, 1],
+    [JNC, 18],
+    [LDI, 4],
+    [STM, 0xe4], // VLINE down column 0 from row 4, wrapping
+    [LDM, 0xf5], // BUSY: reads the blitter's row, not row 5
+    [OUT, 0],
+    [LDM, 0xe4], // address 32
+    [SUBI, 1],
+    [JNC, 32],
+    [LDI, 0x81],
+    [STM, 0xe2],
+    [LDI, 1],
+    [STM, 0xe4], // CLEAR every row to 81
+    [STM, 0xf3], // BUSY: the CPU's write is lost
+    [ADDM, 0xec], // EC repeats E4: BUSY reads 1
+    [OUT, 0],
+    [LDM, 0xe4], // address 52
+    [SUBI, 1],
+    [JNC, 52],
+    [LDI, 7],
+    [STM, 0xe4], // 7 is no command: stays idle
+    [LDM, 0xe4],
+    [OUT, 0],
+    [LDI, 5],
+    [STM, 0xe4], // SET PIXEL (0, 4)
+    [LDM, 0xe4],
+    [OUT, 0],
+    [HALT, 0],
+  ),
+  "every blitter command": compileProgram(
+    "sprite face = [60, 66, 165, 129, 165, 153, 66, 60];\nblit(clear, 170);\nblit(fill, 2, 15);\nblit(hline, 6, 3, 5);\nlet c = 0;\nblit(vline, 1, 5, 6, c);\nlet x = 0;\nblit(pixel, x, 4);\nblit(wait);\nprint(screen[3]);\nblit(sprite, face, 6);",
+  ),
   "interrupt opcodes, no key": interruptOpcodes("hardware"),
   "compiled calls in a loop": compileProgram(
     "fn twice(n) {\n  return n + n;\n}\nfn add3(n) {\n  let m = twice(n);\n  return m + 3;\n}\nlet total = 0;\nfor (let i = 0; i < 5; i = i + 2) {\n  let t = add3(i);\n  total = total + t;\n  print(total);\n}\nprint(total);",

@@ -25,3 +25,7 @@
 - `/src/pages` - Next.js pages
 - `/src/models` - 3D models and related components
 - `/src/lib` - Utility functions and helpers
+
+## AI writing destination (2026-09-30)
+
+AI-written plans, research, drafts, reports, and manual QA notes belong in `/Users/rico/projects/ai-work-notes/`; project notes normally use `projects/<project>/`. Search existing folders before adding one. This is a separate local Git repository and Obsidian vault. Keep source code and code-specific technical documentation in their project repositories. Leave Rico's human-written notes in ricos.site untouched. This destination supersedes older instructions allowing AI prose in ricos.site. Do not recreate the old generated-content folder. Stage only task-owned paths in the relevant repository. Existing running sessions must reload these instructions. Uploading personal records requires explicit approval; a private remote alone is not approval.

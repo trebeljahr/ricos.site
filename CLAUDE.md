@@ -37,3 +37,7 @@
 - Page metadata lives in `src/content/needlestack/meta.json`, keyed by needle id, separate from `needles.json` so refetches do not churn the file that records curation decisions. `pnpm needles:stats` prints coverage.
 - The public rewrite lives at `/needlestack-2` (hub, `/needlestack-2/[door]`, `/needlestack-2/archive`, in `src/pages/needlestack-2/`). `/needlestack` stays the old markdown page, rendered by `src/pages/[id].tsx` with its haystack egg, until the rewrite carries the same links; do not claim that slug from the new pages.
 - A needle is only public once it is `status: "reviewed"` with `rating >= 1`. No script may set that; only the triage UI does, one link at a time.
+
+## AI writing destination (2026-09-30)
+
+AI-written plans, research, drafts, reports, and manual QA notes belong in `/Users/rico/projects/ai-work-notes/`; project notes normally use `projects/<project>/`. Search existing folders before adding one. This is a separate local Git repository and Obsidian vault. Keep source code and code-specific technical documentation in their project repositories. Leave Rico's human-written notes in ricos.site untouched. This destination supersedes older instructions allowing AI prose in ricos.site. Do not recreate the old generated-content folder. Stage only task-owned paths in the relevant repository. Existing running sessions must reload these instructions. Uploading personal records requires explicit approval; a private remote alone is not approval.

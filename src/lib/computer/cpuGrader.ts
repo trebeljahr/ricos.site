@@ -98,7 +98,7 @@ export const FULL_CPU_LEVEL = CPU_LEVELS[CPU_LEVELS.length - 1];
 
 // ---------------------------------------------------------------- finding parts
 
-type Role = BusDriver | "PC" | "CMAR" | "IR" | "DMAR" | "FLAGS" | "SP" | "OUT";
+type Role = BusDriver | "PC" | "CMAR" | "IR" | "DMAR" | "FLAGS" | "SP" | "OUT" | "SCREEN";
 
 /** The probe a register role is named by. */
 const PROBE_OF: Partial<Record<Role, GradedProbe>> = {
@@ -130,6 +130,7 @@ const PART_NAME: Record<Role, string> = {
   ROM: "the code ROM",
   RAM: "the data RAM",
   STACK: "the stack RAM",
+  SCREEN: "the screen",
   ALU: "the ALU",
 };
 
@@ -187,6 +188,13 @@ class Wiring {
   readers = (id: string) => this.circuit.wires.filter((wire) => wire.from === id);
 }
 
+function roleOfEnable(wiring: Wiring, control: Node | undefined, driver: string) {
+  const enable = wiring.source(driver, 1);
+  if (!control || enable?.from !== control.id) return undefined;
+  const signal = SIGNALS[enable.output];
+  return (Object.keys(OUT_LINE) as BusDriver[]).find((role) => OUT_LINE[role] === signal);
+}
+
 /** Finds the control unit, the bus, its drivers and every named part. */
 export function findParts(circuit: Circuit): CpuParts {
   const wiring = new Wiring(circuit);
@@ -200,6 +208,7 @@ export function findParts(circuit: Circuit): CpuParts {
     if (part && kindOf(part)) parts[role] = part;
   }
   parts.ROM = ofKind("rom256")[0];
+  parts.SCREEN = circuit.nodes.find((node) => node.behaviour === "screen8x8");
   for (const ram of ofKind("ram16")) {
     const address = wiring.source(ram.id, 0)?.from;
     const role = parts.SP && address === parts.SP.id ? "STACK" : "RAM";
@@ -222,11 +231,18 @@ export function findParts(circuit: Circuit): CpuParts {
   const roleOf = (node: Node | undefined) =>
     node && (Object.entries(parts).find(([, part]) => part?.id === node.id)?.[0] as Role);
 
+  const control = ofKind("control")[0];
   return {
-    control: ofKind("control")[0],
+    control,
     bus,
     parts,
-    drivers: drivers.map(({ id, part }) => ({ id, part, role: roleOf(part) })),
+    // A driver fed through gates (e.g. the RAM/screen read mux) is named by its
+    // enable line instead of its source.
+    drivers: drivers.map(({ id, part }) => ({
+      id,
+      part,
+      role: roleOf(part) ?? (part && kindOf(part) ? undefined : roleOfEnable(wiring, control, id)),
+    })),
   };
 }
 
@@ -289,6 +305,8 @@ export type TickSide = {
   bus: BusReading;
   probes: Partial<Record<GradedProbe, number>>;
   ram?: number[];
+  /** Screen rows, compared with RAM when the circuit has a screen (DMAR F0–F7). */
+  screen?: number[];
   stack?: number[];
 };
 
@@ -349,7 +367,7 @@ function instructionAt(program: CompiledProgram, address: number) {
   };
 }
 
-function expectedSide(tick: Tick, level: CpuLevel): TickSide {
+function expectedSide(tick: Tick, level: CpuLevel, screen: boolean): TickSide {
   const r = tick.registers;
   const all: Record<GradedProbe, number> = {
     PC: r.pc,
@@ -367,6 +385,7 @@ function expectedSide(tick: Tick, level: CpuLevel): TickSide {
     bus: { value: tick.bus ?? "Z", drivers: tick.busDriver ? [tick.busDriver] : [] },
     probes: Object.fromEntries(level.probes.map((probe) => [probe, all[probe]])),
     ...(level.memory.includes("RAM") && { ram: tick.ram }),
+    ...(level.memory.includes("RAM") && screen && { screen: tick.screen }),
     ...(level.memory.includes("STACK") && { stack: tick.stack }),
   };
 }
@@ -401,6 +420,8 @@ export function gradeCpu(
     return {
       probes: Object.fromEntries(level.probes.map((probe) => [probe, read[probe]])),
       ...(level.memory.includes("RAM") && { ram: bytesOf(state, found.parts.RAM) }),
+      ...(level.memory.includes("RAM") &&
+        found.parts.SCREEN && { screen: bytesOf(state, found.parts.SCREEN) }),
       ...(level.memory.includes("STACK") && {
         stack: bytesOf(state, found.parts.STACK)?.slice(0, read.SP ?? 0),
       }),
@@ -416,7 +437,7 @@ export function gradeCpu(
     const edge = step(circuit, state, true);
     const next = step(circuit, edge, false);
     const actual: TickSide = { control, bus, ...after(next, level) };
-    const expected = expectedSide(tick, level);
+    const expected = expectedSide(tick, level, Boolean(found.parts.SCREEN));
     const graded = level.maxT === undefined || tick.t <= level.maxT;
     const wrong = graded ? compare(expected, actual, next.unstable) : [];
     if (wrong.length) {
@@ -454,6 +475,7 @@ function compare(expected: TickSide, actual: TickSide, unstable: boolean): strin
   for (const [probe, value] of Object.entries(expected.probes))
     if (actual.probes[probe as GradedProbe] !== value) wrong.push(probe);
   if (expected.ram && expected.ram.join() !== actual.ram?.join()) wrong.push("RAM");
+  if (expected.screen && expected.screen.join() !== actual.screen?.join()) wrong.push("SCREEN");
   if (expected.stack && expected.stack.join() !== actual.stack?.join()) wrong.push("STACK");
   return wrong;
 }
@@ -718,19 +740,24 @@ const RULES: Rule[] = [
     };
   },
   (ctx) => {
-    const memory = ctx.wrong.includes("RAM") ? "RAM" : ctx.wrong.includes("STACK") ? "STACK" : null;
+    const memory = (["RAM", "SCREEN", "STACK"] as const).find((m) => ctx.wrong.includes(m));
     if (!memory) return;
     const ram = ctx.found.parts[memory];
-    const line: Signal = memory === "RAM" ? "RAM_IN" : "STACK_IN";
-    if (ram && ctx.expected.control.includes(line) && !isLine(ctx, ram.id, 12, line))
+    const line: Signal = memory === "STACK" ? "STACK_IN" : "RAM_IN";
+    // WE follows the address inputs (4 for RAM, 3 for the screen) and 8 data inputs.
+    const we = (memory === "SCREEN" ? 3 : 4) + 8;
+    const source = ram && ctx.wiring.source(ram.id, we);
+    // A WE fed through gates (the RAM/screen decode) is not judged here.
+    const direct = !source || source.from === ctx.found.control?.id;
+    if (ram && direct && ctx.expected.control.includes(line) && !isLine(ctx, ram.id, we, line))
       return {
         rule: "ram-not-written",
-        message: `${line} was active and the bus held ${value(ctx.actual.bus.value)}, but ${PART_NAME[memory]} didn't store it: its WE input is ${feedOf(ctx, ram.id, 12)}; wire it to ${line}.`,
+        message: `${line} was active and the bus held ${value(ctx.actual.bus.value)}, but ${PART_NAME[memory]} didn't store it: its WE input is ${feedOf(ctx, ram.id, we)}; wire it to ${line}.`,
         part: ram.id,
       };
     return {
       rule: "memory-wrong",
-      message: `${PART_NAME[memory]} doesn't hold what it should after this tick: check its address inputs (${memory === "RAM" ? "DMAR" : "SP"} Q0–Q3), its D inputs from the bus and its WE line.`,
+      message: `${PART_NAME[memory]} doesn't hold what it should after this tick: check its address inputs (${memory === "STACK" ? "SP" : "DMAR"}), its D inputs from the bus and its WE line.`,
       part: ram?.id,
     };
   },

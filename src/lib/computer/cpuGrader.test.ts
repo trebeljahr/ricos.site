@@ -122,6 +122,7 @@ describe("CPU grader on the correct preset", () => {
       SP: "sp",
       OUT: "out",
       ROM: "rom",
+      SCREEN: "screen",
       RAM: "ram",
       STACK: "stack",
       ALU: "alu",
@@ -285,6 +286,16 @@ const BROKEN: Broken[] = [
     rule: "ram-not-written",
     part: "ram",
     message: /RAM_IN was active and the bus held 05, but the data RAM didn't store it/,
+  },
+  {
+    name: "screen write enable removed",
+    program: raw([LDI, 9], [STM, 0xf3], [HALT, 0]),
+    break: (c) => removeWire(c, "screen", 11),
+    tick: (p) => firstTick(p, has("RAM_IN")),
+    rule: "ram-not-written",
+    part: "screen",
+    message:
+      /RAM_IN was active and the bus held 09, but the screen didn't store it: its WE input is not connected/,
   },
   {
     name: "SP load removed",

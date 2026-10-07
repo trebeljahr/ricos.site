@@ -30,6 +30,7 @@
     "quotes:apply": "tsx src/scripts/quotes/quoteReview.ts apply",
     "needles:import": "tsx src/scripts/needles/import.ts",
     "needles:fetch": "tsx src/scripts/needles/fetch.ts",
+    "computer:links": "tsx src/scripts/computer/links.ts",
     "needles:classify": "tsx src/scripts/needles/classify.ts",
     "needles:skim": "tsx src/scripts/needles/skim.ts",
     "needles:batch": "tsx src/scripts/needles/batch.ts",

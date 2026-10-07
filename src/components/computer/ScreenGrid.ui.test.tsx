@@ -79,4 +79,20 @@ describe("sized screen grids", () => {
     );
     expect(screen.getByLabelText("Bank").textContent).toMatch(/ADDR 53\s*·\s*STEP 4/);
   }, 20000);
+
+  it("shows the STAMP program's big blitter at work and its four boxes at the end", () => {
+    render(<ProgramStepper />);
+    fireEvent.click(screen.getByRole("button", { name: "STAMP" }));
+    const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
+    const status = () => screen.getByLabelText("Big blitter").textContent ?? "";
+    let step = 0;
+    while (!status().includes("BUSY") && step < Number(slider.max))
+      fireEvent.change(slider, { target: { value: String(++step) } });
+    expect(status()).toMatch(/BUSY · FILL · ROW \d+ OF 16/);
+    fireEvent.change(slider, { target: { value: slider.max } });
+    expect(status()).toContain("IDLE");
+    expect(screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label")).toBe(
+      "Big screen 32×32, 240 of 1024 pixels lit",
+    );
+  }, 20000);
 });

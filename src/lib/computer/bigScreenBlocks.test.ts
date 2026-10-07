@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { BigScreenCard } from "./bigScreenBlocks";
 import { CPU_PRESETS } from "./cpuPreset";
 import {
   datapathNode,
@@ -308,17 +309,42 @@ describe("big screen card", () => {
     expect(moduleInputs(node.module!)).toHaveLength(19);
     const bench = new Bench([node, { ...node, behaviour: undefined }]);
     const next = random(11);
-    for (let i = 0; i < 400; i++) {
-      // Mostly D0–DB, sometimes another address the card must leave alone.
-      const address = next() < 0.85 ? 0xd0 + Math.floor(next() * 12) : Math.floor(next() * 256);
+    for (let i = 0; i < 600; i++) {
+      // Mostly D0–DF, sometimes another address the card must leave alone.
+      const address = next() < 0.85 ? 0xd0 + Math.floor(next() * 16) : Math.floor(next() * 256);
       const data = Math.floor(next() * 256);
       const we = next() < 0.6;
       const re = !we && next() < 0.5;
       bench.tick([...toBits(address, 8), ...toBits(data, 8), we, re], `step ${i}`);
     }
-    const state = bench.states[0].blocks?.dut as { bytes: number[]; portAddr: number };
+    const state = bench.states[0].blocks?.dut as BigScreenCard;
     expect(state.bytes.some(Boolean)).toBe(true);
     expect(foldBlockState(node, bench.states[1].modules.dut)).toEqual(state);
     expect(foldBlockState(node, unfoldBlockState(node, state))).toEqual(state);
+  });
+
+  it("fills and copies rectangles one byte per tick, as block and as gates", {
+    timeout: 60_000,
+  }, () => {
+    const node = datapathNode("bigScreenCard", "dut", 0, 0);
+    const bench = new Bench([node, { ...node, behaviour: undefined }]);
+    const store = (address: number, value: number) =>
+      bench.tick([...toBits(address, 8), ...toBits(value, 8), true, false], `STM ${address}`);
+    const idle = () => bench.tick([...toBits(0, 8), ...toBits(0, 8), false, false], "tick");
+    const busy = () =>
+      Boolean(bench.tick([...toBits(0xdf, 8), ...toBits(0, 8), false, false], "read DF")[0]);
+    store(0xd9, 0); // ADDR 0
+    for (const value of [1, 2, 3, 4]) store(0xda, value); // bytes 0–3
+    store(0xdc, 64); // DST: row 16
+    store(0xdd, 0); // SRC: row 0
+    store(0xde, (1 << 2) | 3); // 2 rows of 4
+    store(0xdf, 2); // COPY
+    let ticks = 0;
+    while (busy()) ticks++;
+    expect(ticks).toBe(7); // the start edge was the first read; 8 bytes in all
+    const frame = (bench.states[0].blocks?.dut as BigScreenCard).bytes;
+    expect(frame.slice(64, 72)).toEqual([1, 2, 3, 4, 0, 0, 0, 0]);
+    idle();
+    expect(foldBlockState(node, bench.states[1].modules.dut)).toEqual(bench.states[0].blocks?.dut);
   });
 });

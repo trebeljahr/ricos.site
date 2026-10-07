@@ -16,12 +16,28 @@ import {
   BIG_FRAME_BYTES,
   BIG_PORT,
   BIG_TILES,
+  type BigBlitter,
+  bigBlitterClock,
+  bigBlitterData,
+  initialBigBlitter,
+  isBigBlitAddress,
   isBigScreenAddress,
   isWindowAddress,
   portStep,
   windowByte,
 } from "../computerStepper";
-import { Builder, busPorts, ports, type Ref, range, toBits, toNumber } from "./blockBuilder";
+import {
+  Builder,
+  busPorts,
+  cellIds,
+  ports,
+  type Ref,
+  range,
+  readCells,
+  seedCells,
+  toBits,
+  toNumber,
+} from "./blockBuilder";
 import {
   activeBlock,
   type Circuit,
@@ -452,6 +468,227 @@ const CARD_INPUTS: [string, string][] = [
   ["clock", "CLK"],
 ];
 
+/** Flip-flops of the big blitter's step counters: I (byte column) and J (row). */
+const BLIT_I = 2;
+const BLIT_J = 5;
+
+/**
+ * The big blitter's gates inside the card. DST, SRC, SIZE and OP are
+ * register8s that load while it is idle; BUSY, I and J are flip-flops.
+ * DPTR and SPTR are register8s that load DST and SRC on START, then each
+ * tick their own value plus DELTA from an alu8: 1, or after the last column
+ * 4 − I, which is the next row's first column. FILL writes SRC itself, COPY
+ * the frame's second-port byte at SPTR.
+ */
+function addBigBlitter(
+  b: Builder,
+  parts: BigScreenParts,
+  bus: { address: Ref[]; data: Ref[]; select: Ref },
+) {
+  const { address, data, select } = bus;
+  const x = 2600;
+  const reg = (id: string, label: string, bits: Ref[], load: Ref, y: number) => {
+    b.add(id, "module", x + 600, y, label, { module: parts("register8"), behaviour: "register8" });
+    for (let bit = 0; bit < 8; bit++) b.connect(bits[bit] ?? "zero", id, bit);
+    b.connect(load, id, 8);
+    b.connect("clock", id, 9);
+    return range(8).map((bit): Ref => [id, bit]);
+  };
+  const cell = (id: string, next: Ref, y: number, label: string) => {
+    b.add(id, "dff", x + 600, y, label);
+    b.connect(next, id);
+    b.connect("clock", id, 1);
+    return id;
+  };
+  const blitSel = b.gate(
+    "bb-sel",
+    "and",
+    x,
+    30,
+    b.gate("bb-a3a2", "and", x - 140, 30, "a3", "a2"),
+    select,
+    "BIG BLITTER (DC–DF)",
+  );
+  const idle = b.gate("bb-idle", "not", x, 90, "bb-busy", undefined, "IDLE");
+  const write = b.gate(
+    "bb-we",
+    "and",
+    x + 140,
+    90,
+    b.gate("bb-we-sel", "and", x, 150, "we", blitSel),
+    idle,
+  );
+  const notA = [0, 1].map((bit) =>
+    b.gate(`bb-not-a${bit}`, "not", x, 210 + bit * 60, address[bit]),
+  );
+  const loadOf = (n: number, label: string) =>
+    b.gate(
+      `bb-load${n}`,
+      "and",
+      x + 420,
+      330 + n * 60,
+      write,
+      b.gate(
+        `bb-is${n}`,
+        "and",
+        x + 280,
+        330 + n * 60,
+        n & 1 ? address[0] : notA[0],
+        n & 2 ? address[1] : notA[1],
+      ),
+      label,
+    );
+  const dst = reg("bb-dst", "DST (DC)", data.slice(0, 7), loadOf(0, "SET DST"), 30);
+  const src = reg("bb-src", "SRC (DD)", data, loadOf(1, "SET SRC"), 330);
+  const size = reg("bb-size", "SIZE (DE)", data.slice(0, 7), loadOf(2, "SET SIZE"), 630);
+  const cmd = loadOf(3, "SET CMD");
+  const op = reg("bb-op", "OP (DF)", data.slice(0, 2), cmd, 930);
+  // FILL is 1, COPY 2: exactly one of D0 and D1 on.
+  const start = b.gate(
+    "bb-start",
+    "and",
+    x + 560,
+    600,
+    cmd,
+    b.gate("bb-valid", "xor", x + 420, 600, data[0], data[1]),
+    "START",
+  );
+  const i = range(BLIT_I).map((bit) => `bb-i${bit}`);
+  const j = range(BLIT_J).map((bit) => `bb-j${bit}`);
+  const equal = (prefix: string, a: Ref[], c: Ref[], y: number) =>
+    a
+      .slice(1)
+      .reduce<Ref>(
+        (acc, bit, n) =>
+          b.gate(
+            `${prefix}-all${n}`,
+            "and",
+            x + 1000 + n * 100,
+            y,
+            acc,
+            b.gate(
+              `${prefix}-eq${n + 1}`,
+              "not",
+              x + 900,
+              y + (n + 1) * 40,
+              b.gate(`${prefix}-x${n + 1}`, "xor", x + 800, y + (n + 1) * 40, bit, c[n + 1]),
+            ),
+          ),
+        b.gate(
+          `${prefix}-eq0`,
+          "not",
+          x + 900,
+          y,
+          b.gate(`${prefix}-x0`, "xor", x + 800, y, a[0], c[0]),
+        ),
+      );
+  const lastCol = equal("bb-lastcol", i, size.slice(0, 2), 1300);
+  const lastRow = equal("bb-lastrow", j, size.slice(2, 7), 1500);
+  const done = b.gate("bb-done", "and", x + 1500, 1400, lastCol, lastRow, "LAST BYTE");
+  const more = b.gate(
+    "bb-more",
+    "and",
+    x + 1640,
+    1400,
+    "bb-busy",
+    b.gate("bb-not-done", "not", x + 1500, 1460, done),
+    "MORE BYTES",
+  );
+  cell("bb-busy", b.gate("bb-busy-next", "or", x + 1780, 1400, more, start), 1400, "BUSY");
+  const notLastCol = b.gate("bb-not-lastcol", "not", x + 1100, 1600, lastCol);
+  // I: + 1 within a row, 0 after the last column (and whenever idle).
+  const iNext = [
+    b.gate("bb-i-inc0", "not", x + 1200, 1700, i[0]),
+    b.gate("bb-i-inc1", "xor", x + 1200, 1760, i[1], i[0]),
+  ];
+  i.forEach((id, bit) => {
+    cell(
+      id,
+      b.gate(
+        `bb-i-n${bit}`,
+        "and",
+        x + 1400,
+        1700 + bit * 60,
+        b.gate(`bb-i-go${bit}`, "and", x + 1300, 1700 + bit * 60, "bb-busy", notLastCol),
+        iNext[bit],
+      ),
+      1700 + bit * 60,
+      `I BIT ${bit}`,
+    );
+  });
+  // J: + 1 after each row's last column, held otherwise, 0 when done or idle.
+  let carry: Ref = lastCol;
+  j.forEach((id, bit) => {
+    const y = 1900 + bit * 80;
+    const next = b.gate(`bb-j-sum${bit}`, "xor", x + 1200, y, id, carry);
+    carry = b.gate(`bb-j-c${bit}`, "and", x + 1200, y + 40, id, carry);
+    cell(id, b.gate(`bb-j-n${bit}`, "and", x + 1400, y, next, more), y, `J BIT ${bit}`);
+  });
+  // DELTA: 1 within a row; 4 − I at the last column.
+  const anyI = b.gate("bb-i-any", "or", x + 1100, 2400, i[0], i[1]);
+  const delta: Ref[] = [
+    b.gate("bb-delta0", "or", x + 1300, 2400, notLastCol, i[0]),
+    b.gate(
+      "bb-delta1",
+      "and",
+      x + 1300,
+      2460,
+      lastCol,
+      b.gate("bb-i-x", "xor", x + 1200, 2460, i[0], i[1]),
+    ),
+    b.gate(
+      "bb-delta2",
+      "and",
+      x + 1300,
+      2520,
+      lastCol,
+      b.gate("bb-i-none", "not", x + 1200, 2520, anyI),
+    ),
+  ];
+  const keep = b.gate("bb-not-start", "not", x + 1500, 2600, start);
+  const load = b.gate("bb-ptr-load", "or", x + 1640, 2600, start, more, "MOVE POINTERS");
+  const pointer = (name: string, from: Ref[], y: number) => {
+    const adder = `bb-${name}-add`;
+    b.add(adder, "module", x + 1800, y, `${name.toUpperCase()} + DELTA`, {
+      module: parts("alu8"),
+      behaviour: "alu8",
+    });
+    const current = range(8).map((bit): Ref => [`bb-${name}`, bit]);
+    [...current, ...range(8).map((bit) => delta[bit] ?? "zero"), "zero", "zero"].forEach(
+      (source, input) => {
+        b.connect(source, adder, input);
+      },
+    );
+    const next = range(7).map((bit) =>
+      b.gate(
+        `bb-${name}-n${bit}`,
+        "or",
+        x + 2200,
+        y + bit * 60,
+        b.gate(`bb-${name}-s${bit}`, "and", x + 2100, y + bit * 60, from[bit], start),
+        b.gate(`bb-${name}-m${bit}`, "and", x + 2100, y + bit * 60 + 30, [adder, bit], keep),
+      ),
+    );
+    return reg(`bb-${name}`, name.toUpperCase(), next, load, y).slice(0, 7);
+  };
+  const dptr = pointer("dptr", dst, 2800);
+  const sptr = pointer("sptr", src, 3400);
+  // The byte to write: SRC for FILL, the second port's byte for COPY.
+  const copy = op[1];
+  const fill = b.gate("bb-fill", "not", x + 1500, 4000, copy, undefined, "FILL");
+  const out = range(8).map((bit) =>
+    b.gate(
+      `bb-data${bit}`,
+      "or",
+      x + 1700,
+      4000 + bit * 80,
+      b.gate(`bb-data-fill${bit}`, "and", x + 1600, 4000 + bit * 80, src[bit], fill),
+      b.gate(`bb-data-copy${bit}`, "and", x + 1600, 4040 + bit * 80, ["frame", 8 + bit], copy),
+    ),
+  );
+  return { busy: "bb-busy", idle, select: blitSel, dptr, sptr, data: out };
+}
+
 /**
  * The CPU's 32×32 big screen as one card on the data bus: the D_ decode, the
  * bank window, BANK, the auto-increment port and the framebuffer. Inputs are
@@ -600,11 +837,28 @@ function cardCircuit(parts: BigScreenParts): Circuit {
     b.gate("frame-sel", "or", 760, 120, windowSel, dataSel, "WINDOW OR DA"),
     "FRAME WE",
   );
-  [...frameAddress, ...data, frameWe, ...range(7).map(() => "zero"), "clock"].forEach(
-    (source, input) => {
-      b.connect(source, "frame", input);
-    },
-  );
+  const blit = addBigBlitter(b, parts, { address, data, select });
+  // While the big blitter is BUSY it has the frame's write port: DPTR, its byte, WE.
+  const byBusy = (name: string, cpu: Ref[], blitter: Ref[], top: number) =>
+    cpu.map((source, bit) =>
+      b.gate(
+        `${name}${bit}`,
+        "or",
+        1680,
+        top + bit * 80,
+        b.gate(`${name}-cpu${bit}`, "and", 1620, top + bit * 80, source, blit.idle),
+        b.gate(`${name}-blit${bit}`, "and", 1620, top + bit * 80 + 40, blitter[bit], blit.busy),
+      ),
+    );
+  [
+    ...byBusy("frame-ab", frameAddress, blit.dptr, 3000),
+    ...byBusy("frame-db", data, blit.data, 3700),
+    b.gate("frame-we-any", "or", 1000, 120, frameWe, blit.busy, "FRAME WE (CPU OR BLITTER)"),
+    ...blit.sptr,
+    "clock",
+  ].forEach((source, input) => {
+    b.connect(source, "frame", input);
+  });
   const frameRead = b.gate("frame-read", "or", 1900, 1000, windowSel, dataSel);
   range(8).forEach((bit) => {
     const at = 1100 + bit * 160;
@@ -612,6 +866,7 @@ function cardCircuit(parts: BigScreenParts): Circuit {
     if (bit < 4) sources.push(b.gate(`bank-q${bit}`, "and", 2000, at + 40, bank[bit], bankSel));
     if (bit < 7) sources.push(b.gate(`addr-q${bit}`, "and", 2000, at + 80, portAddr[bit], addrSel));
     if (bit === 0) sources.push(b.gate("step-q", "and", 2000, at + 120, step[0], stepSel));
+    if (bit === 0) sources.push(b.gate("bb-busy-q", "and", 2000, at + 160, blit.busy, blit.select));
     b.gate(
       `q${bit}`,
       "lamp",
@@ -625,12 +880,13 @@ function cardCircuit(parts: BigScreenParts): Circuit {
   return b.circuit("Big screen card");
 }
 
-/** The card's registers and framebuffer. */
+/** The card's registers, framebuffer and big blitter. */
 export type BigScreenCard = {
   bytes: number[];
   bank: number;
   portAddr: number;
   portDown: boolean;
+  blitter: BigBlitter;
   clock: boolean;
 };
 
@@ -643,42 +899,58 @@ registerBlock<BigScreenCard>({
     bank: 0,
     portAddr: 0,
     portDown: false,
+    blitter: initialBigBlitter(),
     clock: false,
   }),
   evaluate: (inputs, state) => {
     const address = toNumber(inputs.slice(0, 8));
     const data = toNumber(inputs.slice(8, 16));
     const [we, re, clock] = inputs.slice(16);
+    const { blitter } = state;
+    // While the big blitter is BUSY its DPTR is on the frame's address lines.
+    const at = (byte: number) => state.bytes[blitter.busy ? blitter.dptr : byte];
     const read = !isBigScreenAddress(address)
       ? 0
-      : isWindowAddress(address)
-        ? state.bytes[windowByte(state.bank, address)]
-        : address === BIG_PORT.bank
-          ? state.bank
-          : address === BIG_PORT.addr
-            ? state.portAddr
-            : address === BIG_PORT.data
-              ? state.bytes[state.portAddr]
-              : address === BIG_PORT.step
-                ? Number(state.portDown)
-                : 0;
+      : isBigBlitAddress(address)
+        ? Number(blitter.busy)
+        : isWindowAddress(address)
+          ? at(windowByte(state.bank, address))
+          : address === BIG_PORT.bank
+            ? state.bank
+            : address === BIG_PORT.addr
+              ? state.portAddr
+              : address === BIG_PORT.data
+                ? at(state.portAddr)
+                : address === BIG_PORT.step
+                  ? Number(state.portDown)
+                  : 0;
     const outputs = toBits(read, 8);
     if (clock === state.clock) return { outputs, nextState: state };
-    if (!clock || !isBigScreenAddress(address)) return { outputs, nextState: { ...state, clock } };
+    if (!clock) return { outputs, nextState: { ...state, clock } };
     let { bytes, bank, portAddr, portDown } = state;
-    if (we && isWindowAddress(address)) {
+    const mine = isBigScreenAddress(address);
+    // The CPU's frame writes are lost while the big blitter owns the write port.
+    if (mine && we && !blitter.busy && isWindowAddress(address)) {
       bytes = [...bytes];
       bytes[windowByte(bank, address)] = data;
-    } else if (we && address === BIG_PORT.bank) bank = data & (BIG_TILES - 1);
-    else if (we && address === BIG_PORT.addr) portAddr = data & (BIG_FRAME_BYTES - 1);
-    else if (we && address === BIG_PORT.step) portDown = Boolean(data & 1);
-    else if (we && address === BIG_PORT.data) {
+    } else if (mine && we && address === BIG_PORT.bank) bank = data & (BIG_TILES - 1);
+    else if (mine && we && address === BIG_PORT.addr) portAddr = data & (BIG_FRAME_BYTES - 1);
+    else if (mine && we && address === BIG_PORT.step) portDown = Boolean(data & 1);
+    else if (mine && we && !blitter.busy && address === BIG_PORT.data) {
       bytes = [...bytes];
       bytes[portAddr] = data;
     }
-    if ((we || re) && address === BIG_PORT.data)
+    if (mine && (we || re) && address === BIG_PORT.data)
       portAddr = (state.portAddr + portStep(state.portDown)) & (BIG_FRAME_BYTES - 1);
-    return { outputs, nextState: { bytes, bank, portAddr, portDown, clock } };
+    if (blitter.busy) {
+      bytes = bytes === state.bytes ? [...bytes] : bytes;
+      bytes[blitter.dptr] = bigBlitterData(blitter, state.bytes);
+    }
+    const next = bigBlitterClock(
+      blitter,
+      mine && we && isBigBlitAddress(address) ? { register: address & 3, value: data } : null,
+    );
+    return { outputs, nextState: { bytes, bank, portAddr, portDown, blitter: next, clock } };
   },
 });
 
@@ -747,7 +1019,18 @@ export function unfoldBigScreenState(kind: BigScreenKind, state: unknown): Snaps
   snapshot.blocks = {};
   if (state == null) return snapshot;
   if (kind === "bigScreenCard") {
-    const { bytes, bank, portAddr, portDown, clock } = state as BigScreenCard;
+    const { bytes, bank, portAddr, portDown, blitter, clock } = state as BigScreenCard;
+    snapshot.blocks["bb-dst"] = byteState(blitter.dst, clock);
+    snapshot.blocks["bb-src"] = byteState(blitter.src, clock);
+    snapshot.blocks["bb-size"] = byteState(blitter.size, clock);
+    snapshot.blocks["bb-op"] = byteState(blitter.op, clock);
+    snapshot.blocks["bb-dptr"] = byteState(blitter.dptr, clock);
+    snapshot.blocks["bb-sptr"] = byteState(blitter.sptr, clock);
+    snapshot.blocks["bb-dptr-add"] = null;
+    snapshot.blocks["bb-sptr-add"] = null;
+    seedCells(snapshot, ["bb-busy"], Number(blitter.busy), clock);
+    seedCells(snapshot, cellIds("bb-i", BLIT_I), blitter.i, clock);
+    seedCells(snapshot, cellIds("bb-j", BLIT_J), blitter.j, clock);
     snapshot.blocks.bank = byteState(bank, clock);
     snapshot.blocks["port-addr"] = byteState(portAddr, clock);
     snapshot.blocks["port-step"] = byteState(Number(portDown), clock);
@@ -804,6 +1087,17 @@ export function foldBigScreenState(
       bank: bank.q,
       portAddr: byte("port-addr").q,
       portDown: Boolean(byte("port-step").q & 1),
+      blitter: {
+        dst: byte("bb-dst").q,
+        src: byte("bb-src").q,
+        size: byte("bb-size").q,
+        op: byte("bb-op").q,
+        busy: Boolean(inner.memory["bb-busy"]),
+        dptr: byte("bb-dptr").q,
+        sptr: byte("bb-sptr").q,
+        i: readCells(inner, cellIds("bb-i", BLIT_I)),
+        j: readCells(inner, cellIds("bb-j", BLIT_J)),
+      },
       clock: bank.clock,
     } satisfies BigScreenCard;
   }

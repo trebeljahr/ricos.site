@@ -63,6 +63,8 @@ export type Snapshot = {
   /** The big screen's port: ADDR and whether DA moves it down a row. */
   portAddr: number;
   portDown: boolean;
+  /** The big blitter after this snapshot's ticks. */
+  bigBlitter: BigBlitter;
   stack: number[];
   output: number[];
   activeAddress: number | null;
@@ -156,8 +158,105 @@ export const isWindowAddress = (address: number) => (address & 0xf8) === BIG_POR
 /** The big screen's byte that window row `r` shows while BANK is `bank`. */
 export const windowByte = (bank: number, r: number) =>
   ((bank >> 2) * 8 + (r & 7)) * rowBytes(BIG_SCREEN) + (bank & 3);
-/** A big-screen write: the frame byte and its new value. */
-export type FrameWrite = { byte: number; value: number };
+/** A big-screen write: the frame byte and its new value; `by` is set when the big blitter wrote it. */
+export type FrameWrite = { byte: number; value: number; by?: "blitter" };
+
+/**
+ * The big blitter, on the same card at DC–DF. It works on whole bytes of
+ * the 32×32 frame: STM DC sets DST and STM DD SRC (frame byte addresses,
+ * y * 4 + x / 8), STM DE sets SIZE (rows − 1 in bits 2–6, byte columns − 1 in
+ * bits 0–1), and STM DF starts a command: 1 FILL writes SRC itself into every
+ * byte of the DST rectangle, 2 COPY copies the SRC rectangle there. A COPY of
+ * 2 columns and 16 rows stamps a 16×16 sprite drawn elsewhere in the frame.
+ *
+ * Each clock edge it writes one byte: it reads the source through the
+ * framebuffer's second port and writes the destination through the first.
+ * Reading any of DC–DF gives BUSY in bit 0. While BUSY it
+ * ignores DC–DF, owns the frame's write port, and CPU window and DA writes
+ * are lost, as with the 8×8 blitter.
+ */
+export const BIG_BLIT = { dst: 0xdc, src: 0xdd, size: 0xde, cmd: 0xdf } as const;
+export const BIG_BLIT_COMMANDS = { fill: 1, copy: 2 } as const;
+export const isBigBlitAddress = (address: number) => (address & 0xfc) === BIG_BLIT.dst;
+export type BigBlitter = {
+  dst: number;
+  src: number;
+  size: number;
+  op: number;
+  busy: boolean;
+  /** Where the next byte goes and comes from, and its column and row in the rectangle. */
+  dptr: number;
+  sptr: number;
+  i: number;
+  j: number;
+};
+export const initialBigBlitter = (): BigBlitter => ({
+  dst: 0,
+  src: 0,
+  size: 0,
+  op: 0,
+  busy: false,
+  dptr: 0,
+  sptr: 0,
+  i: 0,
+  j: 0,
+});
+/** Byte columns and rows in the rectangle SIZE describes. */
+export const blitColumns = (size: number) => (size & 3) + 1;
+export const blitRows = (size: number) => ((size >> 2) & 31) + 1;
+const bigBlitCommand = (op: number) =>
+  op === BIG_BLIT_COMMANDS.fill ? "fill" : op === BIG_BLIT_COMMANDS.copy ? "copy" : null;
+
+/** The byte the big blitter writes at `dptr` this tick: SRC for FILL, the frame byte at `sptr` for COPY. */
+export const bigBlitterData = (state: BigBlitter, frame: readonly number[]) =>
+  state.op === BIG_BLIT_COMMANDS.copy ? (frame[state.sptr] ?? 0) : state.src & 255;
+
+/**
+ * One clock edge of the big blitter. While BUSY it moves on to the next byte:
+ * right along the row, or, after its last column, down to the next row's
+ * first column (4 − (columns − 1) bytes on). Otherwise `write` sets DST, SRC
+ * or SIZE (register 0–2), or starts the command in register 3.
+ */
+export function bigBlitterClock(
+  state: BigBlitter,
+  write: { register: number; value: number } | null,
+): BigBlitter {
+  const wrap = (address: number) => address & (BIG_FRAME_BYTES - 1);
+  if (state.busy) {
+    const lastColumn = state.i === blitColumns(state.size) - 1;
+    if (lastColumn && state.j === blitRows(state.size) - 1)
+      return { ...state, busy: false, i: 0, j: 0 };
+    const step = lastColumn ? rowBytes(BIG_SCREEN) - state.i : 1;
+    return {
+      ...state,
+      dptr: wrap(state.dptr + step),
+      sptr: wrap(state.sptr + step),
+      i: lastColumn ? 0 : state.i + 1,
+      j: lastColumn ? state.j + 1 : state.j,
+    };
+  }
+  if (!write) return state;
+  const value = write.value & 255;
+  switch (write.register & 3) {
+    case 0:
+      return { ...state, dst: wrap(value) };
+    case 1:
+      return { ...state, src: value };
+    case 2:
+      return { ...state, size: value & 127 };
+    default: {
+      const op = value & 3;
+      if (!bigBlitCommand(op)) return { ...state, op };
+      return { ...state, op, busy: true, dptr: state.dst, sptr: wrap(state.src), i: 0, j: 0 };
+    }
+  }
+}
+
+/** The big blitter's state for a readout: "BUSY · COPY · ROW 3 OF 16" or "IDLE". */
+export function describeBigBlitter(state: BigBlitter): string {
+  if (!state.busy) return "IDLE";
+  return `BUSY · ${bigBlitCommand(state.op)!.toUpperCase()} · ROW ${state.j + 1} OF ${blitRows(state.size)}`;
+}
 export const BLITTER_PORT = { x: 0xe0, y: 0xe1, colour: 0xe2, arg: 0xe3, cmd: 0xe4 } as const;
 export const isBlitterAddress = (address: number) => (address & 0xf0) === BLITTER_BASE;
 /** Register index (A0–A2) of each blitter port address; 5–7 are unused. */
@@ -532,6 +631,13 @@ export function describeOperand(
       short: `[${hex(operand)}] window ${operand & 7}`,
       long: `big-screen window row ${operand & 7} (${hex(operand)})`,
     };
+  if (kind === "RAM address" && isBigBlitAddress(operand)) {
+    const register = ["dst", "src", "size", "cmd"][operand & 3];
+    return {
+      short: `[${hex(operand)}] big blit ${register}`,
+      long: `big blitter ${register} (${hex(operand)})`,
+    };
+  }
   if (kind === "RAM address" && operand === BIG_PORT.addr)
     return {
       short: `[${hex(operand)}] addr`,
@@ -607,6 +713,7 @@ type Statement =
   | { kind: "call"; line: number; name: string; argument: string | null }
   | { kind: "plot"; line: number; x: string; y: string; colour: string | null }
   | { kind: "bank"; line: number; tile: string }
+  | { kind: "bigblit"; line: number; command: "fill" | "copy" | "wait"; args: number[] }
   | { kind: "sprite"; line: number; name: string; rows: number[] }
   | { kind: "blit"; line: number; command: string; args: string[] }
   | { kind: "return"; line: number; expression: Expression | null }
@@ -742,6 +849,26 @@ function parseProgram(source: string): {
         continue;
       }
       if (/^bank\b/.test(text)) fail(line, "Use bank(tile); with a number or variable, 0 to 15.");
+      const bigBlit = /^big_(fill|copy|wait)\s*\(([\d\s,]*)\)\s*;$/.exec(text);
+      if (bigBlit) {
+        const args = bigBlit[2]
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .map(Number);
+        statements.push({
+          kind: "bigblit",
+          line,
+          command: bigBlit[1] as "fill" | "copy" | "wait",
+          args,
+        });
+        continue;
+      }
+      if (/^big_(fill|copy|wait)\b/.test(text))
+        fail(
+          line,
+          "Use big_fill(col, row, cols, rows, byte);, big_copy(fromCol, fromRow, toCol, toRow, cols, rows); or big_wait(); with numbers.",
+        );
       const sprite = new RegExp(`^sprite\\s+(${NAME})\\s*=\\s*\\[([\\d\\s,]*)\\]\\s*;$`).exec(text);
       if (sprite) {
         const rows = sprite[2].split(",").map((item) => item.trim());
@@ -818,7 +945,8 @@ function parseProgram(source: string): {
       position++;
       if (header[1] === "print") fail(line, "print is reserved for output.");
       if (header[1] === "plot") fail(line, "plot is reserved for the screen.");
-      if (header[1] === "bank") fail(line, "bank is reserved for the big screen.");
+      if (header[1] === "bank" || /^big_(fill|copy|wait)$/.test(header[1]))
+        fail(line, `${header[1]} is reserved for the big screen.`);
       if (header[1] === "blit" || header[1] === "sprite")
         fail(line, `${header[1]} is reserved for the blitter.`);
       if (BUILTINS.has(header[1]) || header[1] === WAIT_VBLANK || PORT_CALLS.has(header[1]))
@@ -929,8 +1057,10 @@ export function compileProgram(
   const mainCalls = new Set<{ name: string; line: number }>();
   /** Functions (and "main") whose own code plots a pixel. */
   const plotters = new Set<string>();
-  /** Functions (and "main") whose own code sets BANK or uses the big screen's port. */
+  /** Functions (and "main") whose own code sets BANK or uses the big screen's port or blitter. */
   const bigUsers = new Set<string>();
+  /** Whether any code starts the big blitter, so HALT must wait for it. */
+  let bigBlits = false;
   /** Functions (and "main") whose own code drives the blitter. */
   const blitters = new Set<string>();
   /** Sprites: 8 row bytes each, stored in code ROM after the code. */
@@ -1177,6 +1307,52 @@ export function compileProgram(
     emit(OPCODES.LDI, code, `BLIT ${command.toUpperCase()}`, line);
     emit(OPCODES.STM, BLITTER_PORT.cmd, "START BLITTER", line);
   };
+  /** Polls DF: 1 while the big blitter is busy, and 1 − 1 does not borrow, so JNC loops. */
+  const waitForBigBlitter = (line: number) => {
+    const start = instructions.length * 2;
+    emit(OPCODES.LDM, BIG_BLIT.cmd, "READ BIG BLITTER BUSY", line);
+    emit(OPCODES.SUBI, 1, "BUSY − 1", line);
+    emit(OPCODES.JNC, start, "WAIT WHILE BUSY", line);
+  };
+  /**
+   * big_fill(col, row, cols, rows, byte); and big_copy(fromCol, fromRow, toCol,
+   * toRow, cols, rows); in byte columns (0–3, 8 pixels each) and pixel rows
+   * (0–31). Each waits until the big blitter is idle, then sets DST, SRC and
+   * SIZE and starts it. big_wait(); only waits.
+   */
+  const bigBlit = (command: "fill" | "copy" | "wait", args: number[], line: number) => {
+    const arity = { fill: 5, copy: 6, wait: 0 }[command];
+    if (args.length !== arity)
+      fail(
+        line,
+        command === "fill"
+          ? "Use big_fill(col, row, cols, rows, byte);"
+          : command === "copy"
+            ? "Use big_copy(fromCol, fromRow, toCol, toRow, cols, rows);"
+            : "big_wait() takes no arguments.",
+      );
+    waitForBigBlitter(line);
+    if (command === "wait") return;
+    const check = (value: number, max: number, what: string, min = 0) => {
+      if (value < min || value > max) fail(line, `Big blitter ${what} is ${min} to ${max}.`);
+      return value;
+    };
+    const byteAt = (col: number, row: number) =>
+      check(row, 31, "row") * rowBytes(BIG_SCREEN) + check(col, 3, "col");
+    const [cols, rows] = command === "fill" ? args.slice(2, 4) : args.slice(4, 6);
+    const size = ((check(rows, 32, "rows", 1) - 1) << 2) | (check(cols, 4, "cols", 1) - 1);
+    const dst = command === "fill" ? byteAt(args[0], args[1]) : byteAt(args[2], args[3]);
+    const src = command === "fill" ? check(args[4], 255, "byte") : byteAt(args[0], args[1]);
+    for (const [value, register, label] of [
+      [dst, BIG_BLIT.dst, "DST"],
+      [src, BIG_BLIT.src, command === "fill" ? "FILL BYTE" : "SRC"],
+      [size, BIG_BLIT.size, "SIZE"],
+      [BIG_BLIT_COMMANDS[command], BIG_BLIT.cmd, `START ${command.toUpperCase()}`],
+    ] as const) {
+      emit(OPCODES.LDI, value, `${label} ${value}`, line);
+      emit(OPCODES.STM, register, label.startsWith("START") ? label : `BIG BLIT ${label}`, line);
+    }
+  };
   const compileStatements = (statements: Statement[], scope: Scope, caller: string) => {
     for (const statement of statements) {
       const line = statement.line;
@@ -1204,6 +1380,10 @@ export function compileProgram(
         emit(OPCODES.OUT, 0, "PRINT ACC", line);
       } else if (statement.kind === "call") {
         call(statement.name, statement.argument, scope, line, caller);
+      } else if (statement.kind === "bigblit") {
+        bigUsers.add(caller);
+        bigBlits = true;
+        bigBlit(statement.command, statement.args, line);
       } else if (statement.kind === "bank") {
         bigUsers.add(caller);
         // One store: BANK picks which 8×8 tile of the big screen window[0]–window[7] show.
@@ -1312,8 +1492,9 @@ export function compileProgram(
     emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
   }
   compileStatements(ast.main, globals, "main");
-  // HALT stops GCLK, and the blitter with it: let a running command finish first.
+  // HALT stops GCLK, and the blitters with it: let a running command finish first.
   if (blitters.size) waitForBlitter(0);
+  if (bigBlits) waitForBigBlitter(0);
   emit(OPCODES.HALT, 0, "HALT", 0);
   for (const definition of ast.functions) {
     functionStarts.set(definition.name, instructions.length * 2);
@@ -1471,6 +1652,11 @@ export const SAMPLE_PROGRAMS = {
   // The port writes one byte per store: ADDR moves on by itself. A band across
   // the top row, then a line down column 8 with the step set to a whole row.
   PORT: "vram_at(0);\nfor (let i = 0; i < 4; i++) {\n  vram(255);\n}\nvram_step(4);\nvram_at(5);\nfor (let j = 0; j < 12; j++) {\n  vram(1);\n}",
+  // The big blitter draws a 16×16 box with four fills, then stamps copies of it
+  // while the CPU counts: two CPU stores start each command, then it writes
+  // one byte per tick by itself.
+  STAMP:
+    "big_fill(0, 0, 2, 16, 255);\nbig_fill(0, 1, 2, 14, 0);\nbig_fill(0, 1, 1, 14, 1);\nbig_fill(1, 1, 1, 14, 128);\nbig_copy(0, 0, 2, 0, 2, 16);\nlet count = 0;\nfor (let i = 0; i < 3; i++) {\n  count = count + 1;\n  print(count);\n}\nbig_copy(0, 0, 0, 16, 2, 16);\nbig_copy(0, 0, 2, 16, 2, 16);",
   BLIT: "sprite heart = [102, 255, 255, 255, 126, 60, 24, 0];\nblit(sprite, heart, 0);\nlet count = 0;\nfor (let i = 0; i < 3; i++) {\n  count = count + 1;\n  print(count);\n}\nblit(wait);\nscreen[7] = 255;",
 } as const;
 
@@ -1901,6 +2087,9 @@ export type Tick = {
   frame: number[];
   /** What this tick's clock edge wrote to the big screen, if anything. */
   frameWrite: FrameWrite | null;
+  /** The big blitter after the clock edge, and whether a CPU frame write was lost to it. */
+  bigBlitter: BigBlitter;
+  frameBlocked: boolean;
   /** Return stack entries, bottom first. With the stack in RAM: RAM[1F] down to RAM[SP]. */
   stack: number[];
   output: number[];
@@ -1961,23 +2150,28 @@ export function traceTicks(
   const screen = Array<number>(SCREEN_ROWS).fill(0);
   const frame = Array<number>(BIG_FRAME_BYTES).fill(0);
   let blitter = initialBlitter();
+  let bigBlitter = initialBigBlitter();
+  /** While the big blitter is BUSY its destination is on the frame's address lines. */
+  const frameByte = (byte: number) => frame[bigBlitter.busy ? bigBlitter.dptr : byte];
   // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM, a screen row, the
   // pixel port or the blitter. While the blitter is BUSY its row is on the screen's address
   // lines, so a screen read returns that row.
   // The scanout runs from reset alongside the CPU: on tick i its beam is at beamAt(i).
   const readData = (address: number, cursorY: number) =>
     isBigScreenAddress(address)
-      ? isWindowAddress(address)
-        ? frame[windowByte(registers.bank, address)]
-        : address === BIG_PORT.bank
-          ? registers.bank
-          : address === BIG_PORT.addr
-            ? registers.portAddr
-            : address === BIG_PORT.data
-              ? frame[registers.portAddr]
-              : address === BIG_PORT.step
-                ? Number(registers.portDown)
-                : 0
+      ? isBigBlitAddress(address)
+        ? Number(bigBlitter.busy)
+        : isWindowAddress(address)
+          ? frameByte(windowByte(registers.bank, address))
+          : address === BIG_PORT.bank
+            ? registers.bank
+            : address === BIG_PORT.addr
+              ? registers.portAddr
+              : address === BIG_PORT.data
+                ? frameByte(registers.portAddr)
+                : address === BIG_PORT.step
+                  ? Number(registers.portDown)
+                  : 0
       : isBlitterAddress(address)
         ? Number(blitter.busy)
         : isVideoStatus(address)
@@ -2073,6 +2267,8 @@ export function traceTicks(
     let screenBlocked = false;
     let blitterWrite: { register: number; value: number } | null = null;
     let frameWrite: FrameWrite | null = null;
+    let frameBlocked = false;
+    let bigBlitterWrite: { register: number; value: number } | null = null;
     if (!fault && bus !== null) {
       if (on.has("CMAR_IN")) next.cmar = bus;
       if (on.has("IR_IN")) next.ir = bus;
@@ -2087,6 +2283,9 @@ export function traceTicks(
         if (role === "x") next.pixelX = bus & (SCREEN_ROWS - 1);
         else if (role === "y") next.pixelY = bus & (SCREEN_ROWS - 1);
         else if (isBlitterAddress(address)) blitterWrite = { register: address & 7, value: bus };
+        else if (isBigBlitAddress(address)) bigBlitterWrite = { register: address & 3, value: bus };
+        else if (bigBlitter.busy && (isWindowAddress(address) || address === BIG_PORT.data))
+          frameBlocked = true;
         else if (isWindowAddress(address)) {
           const byte = windowByte(registers.bank, address);
           frame[byte] = bus;
@@ -2131,6 +2330,13 @@ export function traceTicks(
         screenWrite = { y, x: blitterColumn(blitter), row: screen[y], by: "blitter" };
       }
       blitter = blitterClock(blitter, blitterWrite);
+      // The big blitter sits on the big screen card, on GCLK as well.
+      if (bigBlitter.busy) {
+        const byte = bigBlitter.dptr;
+        frame[byte] = bigBlitterData(bigBlitter, frame);
+        frameWrite = { byte, value: frame[byte], by: "blitter" };
+      }
+      bigBlitter = bigBlitterClock(bigBlitter, bigBlitterWrite);
     }
     if (!fault) {
       if (on.has("PC_INC")) next.pc = (registers.pc + 1) & 255;
@@ -2162,6 +2368,8 @@ export function traceTicks(
       blitter: { ...blitter },
       frame: [...frame],
       frameWrite,
+      bigBlitter: { ...bigBlitter },
+      frameBlocked,
       stack: inRam ? ram.slice(registers.sp).reverse() : stackMemory.slice(0, registers.sp),
       output: [...output],
       halted,
@@ -2188,8 +2396,26 @@ function explainExecute(
   inRam: boolean,
   write: ScreenWrite | null,
   blitterWasBusy = false,
+  bigBlitterWasBusy = false,
 ): string {
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
+  if (mnemonic === "STM" && isBigBlitAddress(operand)) {
+    if (bigBlitterWasBusy)
+      return `The big blitter is BUSY and ignores the write of ${after.acc} to ${meaning}.`;
+    if (operand !== BIG_BLIT.cmd) return `Set ${meaning} to ${after.acc}.`;
+    const command = bigBlitCommand(after.acc & 3);
+    return command
+      ? `Start the big blitter's ${command.toUpperCase()}: from the next clock edge it writes one big-screen byte per tick by itself, and DF reads 1 until it is done.`
+      : `Command ${after.acc & 3} is not a big blitter command; it stays idle.`;
+  }
+  if (mnemonic === "LDM" && isBigBlitAddress(operand))
+    return `Read the big blitter's BUSY flag into ACC: ${after.acc}${after.acc ? ", still writing" : ", done"}.`;
+  if (
+    bigBlitterWasBusy &&
+    mnemonic === "STM" &&
+    (isWindowAddress(operand) || operand === BIG_PORT.data)
+  )
+    return `The big blitter is BUSY and owns the big screen, so this write of ${after.acc} is lost.`;
   if (operand === BIG_PORT.data && (mnemonic === "STM" || mnemonic === "LDM")) {
     const moved = (after.portAddr - portStep(before.portDown)) & (BIG_FRAME_BYTES - 1);
     const what =
@@ -2368,6 +2594,7 @@ export function traceProgram(
     frameWrite: null,
     portAddr: 0,
     portDown: false,
+    bigBlitter: initialBigBlitter(),
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
@@ -2405,6 +2632,7 @@ export function traceProgram(
       bank: last.registers.bank,
       portAddr: last.registers.portAddr,
       portDown: last.registers.portDown,
+      bigBlitter: last.bigBlitter,
       frameWrite: ticks.findLast((tick) => tick.frameWrite)?.frameWrite ?? null,
     };
   };
@@ -2414,12 +2642,22 @@ export function traceProgram(
       screenWrite?.by === "blitter" ? [screenWrite.y] : [],
     );
     const lost = ticks.some((tick) => tick.screenBlocked);
+    const bigBytes = ticks.filter(({ frameWrite }) => frameWrite?.by === "blitter").length;
+    const big = ticks.at(-1)!.bigBlitter;
     const last = ticks.at(-1)!.blitter;
     const command = blitCommandName(last.op)?.toUpperCase();
     const parts: string[] = [];
     if (rows.length)
       parts.push(
         `Meanwhile the blitter ${last.busy ? "keeps drawing" : "finished"} its ${command}: it wrote screen row${rows.length === 1 ? "" : "s"} ${rows.join(", ")}${last.busy ? `, step ${last.i + 1} of ${blitterLast(last) + 1} is next` : ""}.`,
+      );
+    if (bigBytes)
+      parts.push(
+        `The big blitter ${big.busy ? "keeps going" : "finished"}: it wrote ${bigBytes} byte${bigBytes === 1 ? "" : "s"} of the big screen.`,
+      );
+    if (ticks.some((tick) => tick.frameBlocked))
+      parts.push(
+        "The big blitter was BUSY and owns the big screen, so the CPU's write to it was lost.",
       );
     if (lost)
       parts.push(
@@ -2506,6 +2744,10 @@ export function traceProgram(
             last.screenWrite,
             group.some(
               ({ control, index }) => control.includes("RAM_IN") && ticks[index - 1]?.blitter.busy,
+            ),
+            group.some(
+              ({ control, index }) =>
+                control.includes("RAM_IN") && ticks[index - 1]?.bigBlitter.busy,
             ),
           );
     record({

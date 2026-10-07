@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
+import type { BigScreenCard } from "src/lib/computer/bigScreenBlocks";
 import { formatBus } from "src/lib/computer/bus";
 import { layoutCircuit } from "src/lib/computer/circuitLayout";
 import {
@@ -15,6 +16,7 @@ import { readProbes } from "src/lib/computer/probes";
 import {
   BIG_SCREEN,
   type BlitterState,
+  describeBigBlitter,
   describeBlitter,
   hex,
   INTERRUPT_VECTOR,
@@ -208,10 +210,10 @@ export function CpuCircuitStepper() {
       isa.find((item) => item.opcode === opcode)?.operand === "RAM address" ? [operand] : [],
     ) ?? [];
   const usesBlitter = dataAddresses.some(isBlitterAddress);
-  const frame =
+  const card =
     circuit && snapshot && dataAddresses.some(isBigScreenAddress)
-      ? blockBytes(circuit, snapshot, CPU_PARTS.bigScreen)
-      : null;
+      ? (blockState(circuit, snapshot, CPU_PARTS.bigScreen) as BigScreenCard | undefined)
+      : undefined;
   const usesScreen = usesBlitter || dataAddresses.some(isScreenAddress);
   const blitter =
     circuit && snapshot && usesBlitter
@@ -558,13 +560,19 @@ export function CpuCircuitStepper() {
                       BLITTER <span>·</span> {describeBlitter(blitter)}
                     </div>
                   )}
-                  {frame && (
-                    <ScreenGrid
-                      rows={frame}
-                      size={BIG_SCREEN}
-                      label="Big screen"
-                      className={stepper.pixelScreen}
-                    />
+                  {card && (
+                    <>
+                      <ScreenGrid
+                        rows={card.bytes}
+                        size={BIG_SCREEN}
+                        label="Big screen"
+                        className={stepper.pixelScreen}
+                      />
+                      <div className={stepper.flags} role="status" aria-label="Big blitter">
+                        BANK {card.bank} <span>·</span> ADDR {card.portAddr} <span>·</span> BIG
+                        BLITTER {describeBigBlitter(card.blitter)}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

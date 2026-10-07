@@ -263,6 +263,46 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     [OUT, 0],
     [HALT, 0],
   ),
+  "big blitter": raw(
+    [LDI, 0x5a],
+    [STM, 0xd0], // window: byte 0
+    [LDI, 0x81],
+    [STM, 0xd1], // byte 4
+    [LDI, 0x7e],
+    [STM, 0xdd], // SRC: fill byte 7E
+    [LDI, 125],
+    [STM, 0xdc], // DST 125: row 31, col 1
+    [LDI, 0x07], // SIZE: 2 rows (wraps to row 0), 4 columns
+    [STM, 0xde],
+    [LDI, 1],
+    [STM, 0xdf], // FILL: 8 bytes, wrapping past 127
+    [STM, 0xd2], // BUSY: the window write is lost
+    [LDM, 0xd3], // BUSY: reads the byte at DPTR
+    [OUT, 0],
+    [LDM, 0xdc], // DC reads BUSY too
+    [OUT, 0],
+    [LDM, 0xdf], // address 34: wait while BUSY
+    [SUBI, 1],
+    [JNC, 34],
+    [LDI, 0],
+    [STM, 0xdd], // SRC 0: byte 0
+    [LDI, 66],
+    [STM, 0xdc], // DST 66: row 16, col 2
+    [LDI, 0x04], // 2 rows, 1 column
+    [STM, 0xde],
+    [LDI, 2],
+    [STM, 0xdf], // COPY bytes 0, 4 to 66, 70
+    [LDI, 3],
+    [STM, 0xdf], // BUSY: ignored
+    [LDM, 0xdf], // address 60: wait
+    [SUBI, 1],
+    [JNC, 60],
+    [LDI, 3],
+    [STM, 0xdf], // idle: 3 is no command, it stays idle
+    [LDM, 0xdf],
+    [OUT, 0],
+    [HALT, 0],
+  ),
   "every blitter command": compileProgram(
     "sprite face = [60, 66, 165, 129, 165, 153, 66, 60];\nblit(clear, 170);\nblit(fill, 2, 15);\nblit(hline, 6, 3, 5);\nlet c = 0;\nblit(vline, 1, 5, 6, c);\nlet x = 0;\nblit(pixel, x, 4);\nblit(wait);\nprint(screen[3]);\nblit(sprite, face, 6);",
   ),

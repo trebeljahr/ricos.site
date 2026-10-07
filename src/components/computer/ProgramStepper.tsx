@@ -18,6 +18,7 @@ import {
   type CompiledProgram,
   compileProgram,
   defaultMicrocode,
+  describeBigBlitter,
   describeBlitter,
   describeOperand,
   hex,
@@ -44,7 +45,8 @@ import { MicrocodeEditor } from "./MicrocodeEditor";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT, BANKS, PORT } = SAMPLE_PROGRAMS;
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT, BANKS, PORT, STAMP } =
+  SAMPLE_PROGRAMS;
 const { RECURSION } = RAM_STACK_SAMPLES;
 const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
@@ -576,6 +578,9 @@ export function ProgramStepper() {
                         BANK {state.bank} <span>·</span> ADDR {state.portAddr} <span>·</span> STEP{" "}
                         {portStep(state.portDown)}
                       </div>
+                      <div className={styles.flags} role="status" aria-label="Big blitter">
+                        BIG BLITTER <span>·</span> {describeBigBlitter(state.bigBlitter)}
+                      </div>
                     </>
                   )}
                   <div className={styles.flags}>
@@ -866,6 +871,9 @@ export function ProgramSource({
         </button>
         <button type="button" onClick={() => preset(PORT)} className={styles.button}>
           PORT
+        </button>
+        <button type="button" onClick={() => preset(STAMP)} className={styles.button}>
+          STAMP
         </button>
         <button
           type="button"

@@ -98,6 +98,7 @@ function lockstep(
       tick.registers.portAddr,
       tick.registers.portDown,
     ]);
+    expect(card.blitter, `${where}: big blitter`).toEqual(tick.bigBlitter);
     expect(cursorOf(state), `${where}: pixel cursor`).toEqual([
       tick.registers.pixelX,
       tick.registers.pixelY,

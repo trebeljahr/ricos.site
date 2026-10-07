@@ -31,6 +31,7 @@ export type Snapshot = Omit<
   | "frameWrite"
   | "portAddr"
   | "portDown"
+  | "bigBlitter"
 >;
 
 export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {

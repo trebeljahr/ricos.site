@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  BIG_BLIT,
+  BIG_BLIT_COMMANDS,
   BIG_FRAME_BYTES,
   BIG_PORT,
   BIG_TILES,
   BLITTER_PORT,
+  blitColumns,
+  blitRows,
   byteBits,
   compileProgram,
   decodeInstruction,
@@ -620,5 +624,100 @@ describe("big screen port", () => {
     expect(() => compileProgram("fn on_key(k) {\n  vram(k);\n}\nloop {\n  bank(1);\n}")).toThrow(
       "BANK or port",
     );
+  });
+});
+
+describe("big blitter", () => {
+  /** The 16×16 box STAMP draws: a full top and bottom row, the side pixels between. */
+  const box = (frame: number[], col: number, row: number) =>
+    Array.from({ length: 16 }, (_, r) => [
+      frame[(row + r) * 4 + col],
+      frame[(row + r) * 4 + col + 1],
+    ]);
+  const BOX = Array.from({ length: 16 }, (_, r) => (r === 0 || r === 15 ? [255, 255] : [1, 128]));
+
+  it("draws the STAMP sample: one box filled, three copied, while the CPU counts", () => {
+    const ticks = traceTicks(compileProgram(SAMPLE_PROGRAMS.STAMP));
+    const end = ticks.at(-1)!;
+    for (const [col, row] of [
+      [0, 0],
+      [2, 0],
+      [0, 16],
+      [2, 16],
+    ])
+      expect(box(end.frame, col, row), `box at ${col}, ${row}`).toEqual(BOX);
+    expect(end.output).toEqual([1, 2, 3]);
+    expect(end.bigBlitter.busy).toBe(false);
+    // The first COPY (32 bytes) runs while the CPU starts its loop: other instructions, same ticks.
+    const copies = ticks.filter(({ frameWrite }) => frameWrite?.by === "blitter");
+    expect(copies.length).toBe(32 + 28 + 14 + 14 + 32 * 3);
+    const firstCopy = copies.slice(60 + 28, 60 + 28 + 32);
+    expect(new Set(firstCopy.map(({ instruction }) => instruction)).size).toBeGreaterThan(1);
+  });
+
+  it("writes one byte per tick, wraps past byte 127, and loses CPU frame writes while busy", () => {
+    const program = (pairs: [number, number][]) => ({
+      instructions: pairs.map(([opcode, operand], index) => ({
+        address: index * 2,
+        opcode,
+        operand,
+        label: "",
+        line: index + 1,
+      })),
+      bytes: pairs.flat(),
+      variables: [],
+    });
+    const { LDI, STM, LDM, OUT, HALT } = OPCODES;
+    const ticks = traceTicks(
+      program([
+        [LDI, 0x7e],
+        [STM, BIG_BLIT.src],
+        [LDI, 125],
+        [STM, BIG_BLIT.dst],
+        [LDI, (1 << 2) | 3],
+        [STM, BIG_BLIT.size],
+        [LDI, BIG_BLIT_COMMANDS.fill],
+        [STM, BIG_BLIT.cmd],
+        [STM, BIG_PORT.window + 2], // lost
+        [LDM, BIG_BLIT.cmd],
+        [OUT, 0],
+        [HALT, 0],
+      ]),
+    );
+    const start = ticks.findIndex(
+      ({ control, registers }) => control.includes("RAM_IN") && registers.dmar === BIG_BLIT.cmd,
+    );
+    const written = ticks.filter(({ frameWrite }) => frameWrite?.by === "blitter");
+    expect(written.map(({ index }) => index)).toEqual(
+      Array.from({ length: 8 }, (_, i) => start + 1 + i),
+    );
+    // Row 31 columns 1–3, then row 0 columns 0–3 after the wrap, then row 1 column 0.
+    expect(written.map(({ frameWrite }) => frameWrite!.byte)).toEqual([
+      125, 126, 127, 0, 1, 2, 3, 4,
+    ]);
+    expect(ticks.filter(({ frameBlocked }) => frameBlocked)).toHaveLength(1);
+    // The LDM after the lost store reads DF 12 ticks after the start: the 8 bytes are done.
+    expect(ticks.at(-1)!.output).toEqual([0]);
+    expect(blitColumns((1 << 2) | 3)).toBe(4);
+    expect(blitRows(31 << 2)).toBe(32);
+  });
+
+  it("rejects big blitter calls that do not fit", () => {
+    expect(() => compileProgram("big_fill(4, 0, 1, 1, 1);")).toThrow("Big blitter col is 0 to 3.");
+    expect(() => compileProgram("big_fill(0, 32, 1, 1, 1);")).toThrow(
+      "Big blitter row is 0 to 31.",
+    );
+    expect(() => compileProgram("big_copy(0, 0, 0, 1, 5, 1);")).toThrow(
+      "Big blitter cols is 1 to 4.",
+    );
+    expect(() => compileProgram("big_fill(0, 0, 1, 1);")).toThrow("Use big_fill(");
+    expect(() => compileProgram("big_fill(a, 0, 1, 1, 1);")).toThrow("with numbers");
+    const program = compileProgram("big_fill(1, 2, 2, 3, 9);");
+    expect(program.instructions.slice(-4).map(({ label }) => label)).toEqual([
+      "READ BIG BLITTER BUSY",
+      "BUSY − 1",
+      "WAIT WHILE BUSY",
+      "HALT",
+    ]);
   });
 });

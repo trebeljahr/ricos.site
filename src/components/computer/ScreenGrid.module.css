@@ -14,6 +14,7 @@
   background: var(--screen-background, #090f1b);
   box-shadow: inset 0 2px 6px #000b;
   flex: none;
+  width: max-content;
 }
 .pixel {
   border-radius: 2px;

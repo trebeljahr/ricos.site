@@ -12,8 +12,8 @@ import styles from "./ScreenGrid.module.css";
 const hex = (value: number) => value.toString(16).toUpperCase().padStart(2, "0");
 /** Up to this width every pixel is its own element; wider screens draw on a canvas. */
 const MAX_ELEMENT_WIDTH = 32;
-/** Grids keep about the 8×8 grid's footprint: smaller pixels for more of them. */
-const pixelSize = (width: number) => Math.max(1, Math.floor(88 / width) - 1);
+/** Bigger grids get smaller pixels: about 128px across, 2px pixels at least. */
+const pixelSize = (width: number) => Math.max(2, Math.floor(128 / width) - 1);
 
 /**
  * An LED grid drawn from a screen's frame bytes: row y's byte c is at

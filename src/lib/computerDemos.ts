@@ -28,6 +28,10 @@ export const computerDemos = [
     title: "Read the screen out like a display",
   },
   {
+    slug: "big-screens",
+    title: "Why bigger screens need a GPU",
+  },
+  {
     slug: "build-a-cpu",
     title: "Build your own CPU",
   },

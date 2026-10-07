@@ -16,8 +16,24 @@
 // the RAM, and RAM_OUT drives whichever of the two the address selects. Every
 // clocked part runs on the control unit's GCLK, so HALT
 // freezes the whole machine.
-import { compileProgram, SAMPLE_PROGRAMS, SIGNALS, type Signal } from "../computerStepper";
+//
+// The stack-in-RAM variant drops the return stack. Data RAM grows to 32 bytes
+// (5 address bits), SP is a register that resets to 32, and two more parts drive
+// the bus: SP itself and a second adder for SP + OPR, the address of a byte in
+// the current stack frame. SP_IN loads SP from the bus (ADDSP), so SP's input
+// picks between the bus and SP ± 1. Its control unit holds the variant's
+// microcode, generated from the same table as the stepper's.
+import {
+  compileProgram,
+  microcodeRom,
+  RAM_STACK_SAMPLES,
+  SAMPLE_PROGRAMS,
+  SIGNALS,
+  type Signal,
+  type StackModel,
+} from "../computerStepper";
 import { Builder, ports, type Ref, range } from "./blockBuilder";
+import { controlBlockCircuit } from "./controlUnit";
 import { addDataMemory, type DatapathKind, datapathNode } from "./datapathBlocks";
 import type { Circuit } from "./logic";
 
@@ -37,6 +53,7 @@ export const CPU_PARTS = {
   flags: "flags",
   sp: "sp",
   stack: "stack",
+  frame: "frame",
   out: "out",
   bus: "bus",
 } as const;
@@ -57,15 +74,18 @@ export const CPU_PROBES = [
 export type CpuProbe = (typeof CPU_PROBES)[number];
 
 /** Which part drives the bus for each *_OUT line, in bus driver order. */
-const DRIVERS: [Signal, string, string][] = [
+const SHARED_DRIVERS: [Signal, string, string][] = [
   ["PC_OUT", "pc", "PC"],
   ["ROM_OUT", "rom", "ROM"],
   ["OPR_OUT", "opr", "OPERAND"],
   ["RAM_OUT", "ram", "RAM"],
   ["ACC_OUT", "acc", "ACC"],
   ["ALU_OUT", "alu", "ALU"],
-  ["STACK_OUT", "stack", "STACK"],
 ];
+const DRIVERS: Record<StackModel, [Signal, string, string][]> = {
+  hardware: [...SHARED_DRIVERS, ["STACK_OUT", "stack", "STACK"]],
+  ram: [...SHARED_DRIVERS, ["SP_OUT", "sp", "SP"], ["FRAME_OUT", "frame", "SP + OPR"]],
+};
 
 // Columns, left to right.
 const X = {
@@ -102,9 +122,15 @@ function zeroTestCircuit(): Circuit {
 /**
  * The CPU with `bytes` in its code ROM, e.g. `compileProgram(source).bytes`.
  * Drive it with the `clock` node: one full clock cycle (high, then low) is one
- * stepper tick.
+ * stepper tick. `stack` picks the variant; compile the bytes for the same one.
  */
-export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit {
+export function cpuCircuit(
+  bytes: readonly number[],
+  name = "Toy CPU",
+  stack: StackModel = "hardware",
+): Circuit {
+  const inRam = stack === "ram";
+  const drivers = DRIVERS[stack];
   const b = new Builder();
   const block = (kind: DatapathKind, id: string, x: number, y: number, label: string) => {
     const node = datapathNode(kind, id, x, y, kind === "rom256" ? bytes : undefined);
@@ -128,7 +154,8 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
     data: range(8).map(lane),
     we: line("RAM_IN"),
     clock: gclk,
-    ram: { id: CPU_PARTS.ram, x: X.part, y: 2740, label: "DATA RAM" },
+    ram: { id: CPU_PARTS.ram, x: X.part, y: 2740, label: inRam ? "DATA RAM + STACK" : "DATA RAM" },
+    ramKind: inRam ? "ram32" : "ram16",
     screen: { id: CPU_PARTS.screen, x: X.part, y: 4550, label: "8×8 SCREEN" },
     x: X.helper,
     y: 2320,
@@ -161,13 +188,21 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
   wireBits(bits(CPU_PARTS.cmar), CPU_PARTS.rom);
 
   // ------------------------------------------------------------ control unit
-  block("control", CPU_PARTS.control, X.code, 1400, "CONTROL UNIT");
+  b.nodes.push({
+    id: CPU_PARTS.control,
+    type: "module",
+    x: X.code,
+    y: 1400,
+    label: "CONTROL UNIT",
+    module: controlBlockCircuit("control", microcodeRom(stack)),
+    behaviour: "control",
+  });
   wireBits(bits(CPU_PARTS.ir), CPU_PARTS.control);
   b.connect([CPU_PARTS.flags, 0], CPU_PARTS.control, 8);
   b.connect("clock", CPU_PARTS.control, 9);
 
   // ------------------------------------------------------------ bus
-  DRIVERS.forEach(([signal, part, label], index) => {
+  drivers.forEach(([signal, part, label], index) => {
     const y = 30 + index * 420;
     b.add(`${part}-lanes`, "merger", X.merge, y, `${label} LANES`);
     wireBits(driverBits(part), `${part}-lanes`);
@@ -218,24 +253,54 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
   busRegister(CPU_PARTS.dmar, 2320, "DATA ADDRESS (DMAR)", line("DMAR_IN"));
   probe("dmar-probe", "DMAR", X.partProbe, 2320, bits(CPU_PARTS.dmar));
 
-  // SP ← SP ± 1 through its own ALU; the stack RAM is addressed by SP.
-  block("register8", CPU_PARTS.sp, X.part, 3200, "STACK POINTER (SP)");
+  // SP ← SP ± 1 through its own ALU.
+  block(inRam ? "sp8" : "register8", CPU_PARTS.sp, X.part, 3200, "STACK POINTER (SP)");
   block("alu8", "sp-step", X.helper, 3200, "SP ± 1");
   b.add("one", "high", X.helper, 3700, "1");
   wireBits(bits(CPU_PARTS.sp), "sp-step");
   b.connect("one", "sp-step", 8);
   b.connect(line("SP_DEC"), "sp-step", 16);
-  wireBits(bits("sp-step"), CPU_PARTS.sp);
   b.gate("sp-move", "or", X.helper, 3850, line("SP_INC"), line("SP_DEC"), "SP MOVES");
-  b.connect("sp-move", CPU_PARTS.sp, 8);
   b.connect(gclk, CPU_PARTS.sp, 9);
   probe("sp-probe", "SP", X.partProbe, 3200, bits(CPU_PARTS.sp));
 
-  block("ram16", CPU_PARTS.stack, X.part, 3650, "RETURN STACK");
-  wireBits(bits(CPU_PARTS.sp, 4), CPU_PARTS.stack);
-  wireBits(range(8).map(lane), CPU_PARTS.stack, 4);
-  b.connect(line("STACK_IN"), CPU_PARTS.stack, 12);
-  b.connect(gclk, CPU_PARTS.stack, 13);
+  if (inRam) {
+    // SP's input: the bus on SP_IN (ADDSP), else SP ± 1.
+    b.gate("sp-keep-step", "not", X.helper, 4000, line("SP_IN"), undefined, "NOT SP_IN");
+    for (const bit of range(8)) {
+      const y = 4100 + bit * 120;
+      const fromBus = b.gate(`sp-bus${bit}`, "and", X.helper, y, lane(bit), line("SP_IN"));
+      const fromStep = b.gate(
+        `sp-step${bit}`,
+        "and",
+        X.helper,
+        y + 60,
+        ["sp-step", bit],
+        "sp-keep-step",
+      );
+      b.gate(`sp-d${bit}`, "or", X.helper + 150, y, fromBus, fromStep);
+      b.connect(`sp-d${bit}`, CPU_PARTS.sp, bit);
+    }
+    b.gate("sp-load", "or", X.helper + 150, 3850, "sp-move", line("SP_IN"), "SP LOADS");
+    b.connect("sp-load", CPU_PARTS.sp, 8);
+
+    // SP + OPR: the address of a stack-frame byte, for LDS, STS, ADDS, SUBS and ADDSP.
+    block("alu8", CPU_PARTS.frame, X.part, 3650, "FRAME ADDRESS (SP + OPR)");
+    wireBits(bits(CPU_PARTS.sp), CPU_PARTS.frame);
+    wireBits(bits(CPU_PARTS.opr), CPU_PARTS.frame, 8);
+    b.add("add", "ground", X.helper, 3650, "ADD");
+    b.connect("add", CPU_PARTS.frame, 16);
+  } else {
+    wireBits(bits("sp-step"), CPU_PARTS.sp);
+    b.connect("sp-move", CPU_PARTS.sp, 8);
+
+    // The return stack is a RAM addressed by SP.
+    block("ram16", CPU_PARTS.stack, X.part, 3650, "RETURN STACK");
+    wireBits(bits(CPU_PARTS.sp, 4), CPU_PARTS.stack);
+    wireBits(range(8).map(lane), CPU_PARTS.stack, 4);
+    b.connect(line("STACK_IN"), CPU_PARTS.stack, 12);
+    b.connect(gclk, CPU_PARTS.stack, 13);
+  }
 
   busRegister(CPU_PARTS.out, 4100, "OUTPUT", line("OUT_IN"));
   probe("out-probe", "OUT", X.partProbe, 4100, bits(CPU_PARTS.out));
@@ -255,7 +320,7 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
         id: "bus",
         label: "One shared bus: each *_OUT line enables one driver",
         nodeIds: [
-          ...DRIVERS.flatMap(([, part]) => [`${part}-lanes`, `${part}-drive`]),
+          ...drivers.flatMap(([, part]) => [`${part}-lanes`, `${part}-drive`]),
           CPU_PARTS.bus,
           "bus-lanes",
           "bus-probe",
@@ -265,16 +330,22 @@ export function cpuCircuit(bytes: readonly number[], name = "Toy CPU"): Circuit 
   };
 }
 
-/** The CPU preset with a program compiled from source. */
-export const cpuFromSource = (source: string, name?: string) =>
-  cpuCircuit(compileProgram(source).bytes, name);
+/** The CPU preset with a program compiled from source for the same variant. */
+export const cpuFromSource = (source: string, name?: string, stack: StackModel = "hardware") =>
+  cpuCircuit(compileProgram(source, { stack }).bytes, name, stack);
+
+const LOOP_PRESET = "Toy CPU (LOOP program)";
+const RECURSION_PRESET = "Toy CPU, stack in RAM (RECURSION program)";
 
 /** Builder examples: the CPU running one of the stepper's sample programs. */
 export const CPU_PRESETS: Record<string, Circuit> = {
-  "Toy CPU (LOOP program)": cpuFromSource(SAMPLE_PROGRAMS.LOOP, "Toy CPU (LOOP program)"),
+  [LOOP_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.LOOP, LOOP_PRESET),
+  [RECURSION_PRESET]: cpuFromSource(RAM_STACK_SAMPLES.RECURSION, RECURSION_PRESET, "ram"),
 };
 
 export const CPU_HINTS: Record<string, string> = {
-  "Toy CPU (LOOP program)":
+  [LOOP_PRESET]:
     "The program stepper's CPU, running its LOOP program. Each clock cycle is one micro-step: the control unit switches on its control lines, one part drives the bus, and the parts whose *_IN line is on take the bus value. Run the clock until HALTED lights; OUT then shows 6.",
+  [RECURSION_PRESET]:
+    "The same CPU with its stack in data RAM: SP starts at 32 and counts down, CALL stores the return address at RAM[SP], and each call of sum gets its own stack frame at SP + 0, SP + 1, … That is what lets sum call itself. Run the clock until HALTED lights; OUT then shows 10.",
 };

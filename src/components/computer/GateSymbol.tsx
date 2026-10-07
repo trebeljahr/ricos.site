@@ -6,6 +6,8 @@ const moduleMarks: Record<string, string> = {
   "ALU with flags": "ALU",
   "256-byte ROM": "ROM",
   "16-byte RAM": "RAM",
+  "32-byte RAM": "RAM",
+  "Stack pointer": "SP",
   "16-entry stack": "STK",
   "8×8 screen": "SCR",
   "Data memory": "DM",

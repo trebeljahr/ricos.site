@@ -172,6 +172,29 @@ describe("datapath blocks", () => {
     }
   });
 
+  it("ram32: block equals gates over seeded random reads and writes", () => {
+    const pair = new Pair("ram32");
+    const model = Array(32).fill(0);
+    const next = random(5);
+    for (let i = 0; i < 400; i++) {
+      const address = Math.floor(next() * 32);
+      const data = Math.floor(next() * 256);
+      const write = next() < 0.4;
+      const out = pair.tick([...toBits(address, 5), ...toBits(data, 8), write]);
+      if (write) model[address] = data;
+      expect(toNumber(out), `step ${i}`).toBe(model[address]);
+    }
+  });
+
+  it("sp8: resets to 32, loads every byte, and holds without LOAD", () => {
+    const pair = new Pair("sp8");
+    expect(toNumber(pair.apply([...toBits(0, 8), false, false]))).toBe(32);
+    for (let value = 0; value < 256; value++) {
+      expect(toNumber(pair.tick([...toBits(value, 8), true]))).toBe(value);
+      expect(toNumber(pair.tick([...toBits(~value & 255, 8), false]))).toBe(value);
+    }
+  });
+
   it("stack16: block equals gates for push, pop, wrap and push-beats-pop", () => {
     const pair = new Pair("stack16");
     const model: number[] = Array(16).fill(0);
@@ -251,6 +274,11 @@ describe("carrying state across fold and unfold", () => {
       (p) =>
         [0, 4, 7].forEach((y) => p.tick([...toBits(y, 3), ...toBits(0x81 >> (y % 4), 8), true])),
     ],
+    [
+      "ram32",
+      (p) => [3, 17, 31].forEach((a) => p.tick([...toBits(a, 5), ...toBits(a * 7, 8), true])),
+    ],
+    ["sp8", (p) => p.tick([...toBits(0x1d, 8), true])],
   ];
   for (const [kind, fill] of cases)
     it(`${kind}: unfolding seeds the gates and folding reads them back`, () => {

@@ -61,6 +61,16 @@
 .stackReadout > div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .stackReadout strong { color: #203d28; font-size: 13px; white-space: pre; }
 .stackReadout small { color: #3d5442; font-size: 10px; line-height: 1.4; }
+.stackReadout .stackBytes { white-space: normal; font-size: 11px; text-align: right; }
+.stackChoice { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; padding: 0; border: 0; }
+.stackChoice legend { float: left; margin-right: 4px; padding: 6px 0; color: #5a6b5d; font-size: 10px; }
+.ramGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin-top: 8px; padding: 4px; border: 1px solid #6b806b; border-radius: 4px; background: linear-gradient(#849484, #aab6a6); box-shadow: inset 0 2px 4px #46574870, 0 1px #dce2d5; }
+.ramCell { display: grid; min-width: 0; padding: 2px 4px; border-radius: 2px; color: #4b604f; font-size: 9px; }
+.ramCell > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ramCell strong { color: #24452a; font-size: 12px; }
+.ramVariable { background: #b9c8b2; }
+.ramStack { background: #9fb59c; color: #203d28; }
+.ramTop { box-shadow: inset 0 0 0 1px #24452a; }
 .lowerReadouts { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 18px; }
 .lowerReadouts > div { min-width: 0; }
 .ramList, .outputScreen { min-height: 76px; margin-top: 8px; }

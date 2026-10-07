@@ -6,11 +6,14 @@ import {
   decodeControlWord,
   EXECUTE_STEPS,
   ISA,
+  isaFor,
   MAX_T_STATES,
   microcodeAddress,
   microcodeRom,
   OPCODES,
+  RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
+  STACK_MODELS,
   traceProgram,
   traceTicks,
 } from "./computerStepper";
@@ -93,25 +96,42 @@ describe("microcode table", () => {
     expect(controlWord(OPCODES.RET, 4, false)).toEqual(["SP_DEC"]);
   });
 
-  it("ends every opcode with STEP_RESET or HALT within the ROM's T-states", () => {
-    for (const { opcode } of ISA)
-      for (const carry of [false, true]) {
-        let t = 4;
-        while (t < MAX_T_STATES && controlWord(opcode, t, carry).length) t++;
-        const final = controlWord(opcode, t - 1, carry);
-        expect(final.includes("STEP_RESET") || final.includes("HALT")).toBe(true);
-        expect(t).toBeLessThanOrEqual(MAX_T_STATES);
-      }
+  for (const stack of ["hardware", "ram"] as const) {
+    it(`${stack} stack: ends every opcode with STEP_RESET or HALT within the ROM's T-states`, () => {
+      for (const { opcode } of ISA)
+        for (const carry of [false, true]) {
+          let t = 4;
+          while (t < MAX_T_STATES && controlWord(opcode, t, carry, stack).length) t++;
+          const final = controlWord(opcode, t - 1, carry, stack);
+          expect(final.includes("STEP_RESET") || final.includes("HALT")).toBe(true);
+          expect(t).toBeLessThanOrEqual(MAX_T_STATES);
+        }
+    });
+
+    it(`${stack} stack: generates a microcode ROM that decodes back to the table`, () => {
+      const rom = microcodeRom(stack);
+      for (let opcode = 0; opcode < 256; opcode++)
+        for (let t = 0; t < MAX_T_STATES; t++)
+          for (const carry of [false, true])
+            expect(new Set(decodeControlWord(rom[microcodeAddress(opcode, t, carry)]))).toEqual(
+              new Set(controlWord(opcode, t, carry, stack)),
+            );
+    });
+  }
+
+  it("halts the separate-stack CPU on stack-in-RAM opcodes", () => {
+    const ramOnly = ISA.filter((item) => !isaFor("hardware").includes(item));
+    expect(ramOnly.map((item) => item.mnemonic)).toEqual(["LDS", "STS", "ADDS", "SUBS", "ADDSP"]);
+    for (const { opcode } of ramOnly) expect(controlWord(opcode, 4, false)).toEqual(["HALT"]);
   });
 
-  it("generates a microcode ROM that decodes back to the table", () => {
-    const rom = microcodeRom();
-    for (let opcode = 0; opcode < 256; opcode++)
-      for (let t = 0; t < MAX_T_STATES; t++)
-        for (const carry of [false, true])
-          expect(new Set(decodeControlWord(rom[microcodeAddress(opcode, t, carry)]))).toEqual(
-            new Set(controlWord(opcode, t, carry)),
-          );
+  it("moves CALL and RET through data RAM on the stack-in-RAM CPU", () => {
+    expect(controlWord(OPCODES.CALL, 4, false, "ram")).toEqual(["SP_DEC"]);
+    expect(controlWord(OPCODES.CALL, 6, false, "ram")).toEqual(["PC_OUT", "RAM_IN"]);
+    expect(controlWord(OPCODES.RET, 4, false, "ram")).toEqual(["SP_OUT", "DMAR_IN", "SP_INC"]);
+    for (let t = 0; t < MAX_T_STATES; t++)
+      for (const opcode of [OPCODES.CALL, OPCODES.RET])
+        expect(controlWord(opcode, t, false, "ram")).not.toContain("STACK_IN");
   });
 });
 
@@ -190,5 +210,63 @@ describe("per-tick trace", () => {
     const ticks = traceTicks(PROGRAMS.endlessLoop);
     expect(ticks.at(-1)?.instruction).toBe(511);
     expect(ticks.at(-1)?.halted).toBe(false);
+  });
+});
+
+describe("stack-in-RAM trace", () => {
+  const ram = (source: string) => compileProgram(source, { stack: "ram" });
+
+  it("keeps the stack in RAM: SP counts down from 32 and the stack is RAM[1F] down to SP", () => {
+    const ticks = traceTicks(ram(RAM_STACK_SAMPLES.RECURSION));
+    expect(ticks[0].registers.sp).toBe(32);
+    expect(ticks.at(-1)!.output).toEqual([10]);
+    for (const tick of ticks) {
+      expect(tick.ram).toHaveLength(STACK_MODELS.ram.ramBytes);
+      expect(tick.stack).toEqual(tick.ram.slice(tick.registers.sp).reverse());
+    }
+    // The first CALL stores its return address (04) at RAM[1F].
+    const call = ticks.find(
+      (tick) => tick.control.includes("RAM_IN") && tick.registers.ir === OPCODES.CALL,
+    )!;
+    expect(call.ram[31]).toBe(4);
+  });
+
+  it("runs every sample program to the same output on both CPUs", () => {
+    for (const source of Object.values(SAMPLE_PROGRAMS))
+      expect(traceTicks(ram(source)).at(-1)!.output).toEqual(
+        traceTicks(compileProgram(source)).at(-1)!.output,
+      );
+  });
+
+  it("gives each call its own frame, so recursion works", () => {
+    const source =
+      "fn down(n) {\n  print(n);\n  if (0 < n) {\n    let next = n - 1;\n    down(next);\n  }\n  return;\n}\ndown(3);";
+    expect(() => compileProgram(source)).toThrow("Recursive calls need the stack-in-RAM CPU");
+    expect(traceTicks(ram(source)).at(-1)!.output).toEqual([3, 2, 1, 0]);
+    const snapshots = traceProgram(ram(source));
+    expect(snapshots[0].sp).toBe(32);
+    expect(snapshots.at(-1)!.halted).toBe(true);
+  });
+
+  it("stops when the stack runs into a variable, and names it", () => {
+    const deep = ram(`let a = 1;\n${RAM_STACK_SAMPLES.RECURSION.replace("sum(4)", "sum(9)")}`);
+    const end = traceTicks(deep).at(-1)!;
+    expect(end.fault).toBe(
+      "Stack overflow: the stack ran into variable “a” at RAM 00. Execution stopped.",
+    );
+    expect(end.registers.sp).toBeGreaterThanOrEqual(1);
+    expect(traceProgram(deep).at(-1)!.explanation).toContain("Stack overflow");
+  });
+
+  it("rejects a program whose variables and call chain cannot fit, at compile time", () => {
+    const lets = Array.from({ length: 30 }, (_, i) => `let v${i} = 0;`).join("\n");
+    expect(() => ram(`${lets}\nfn f(n) {\n  let a = 1;\n  return a;\n}\nprint(f(1));`)).toThrow(
+      "Stack and variables collide: 30 variable bytes plus 3 stack bytes",
+    );
+  });
+
+  it("stops on RET with an empty stack", () => {
+    const end = traceTicks({ ...raw([[OPCODES.RET, 0]]), stack: "ram" }).at(-1)!;
+    expect(end.fault).toContain("The stack is empty");
   });
 });

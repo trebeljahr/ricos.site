@@ -6,11 +6,33 @@ export type Instruction = {
   line: number;
 };
 
+/**
+ * Where the CPU keeps return addresses. "hardware": a separate 16-entry return
+ * stack, with every variable at a fixed address in 16 bytes of data RAM.
+ * "ram": the stack lives in 32 bytes of data RAM, SP counts down from the top,
+ * and function parameters and locals live in stack frames, so recursion works.
+ */
+export type StackModel = "hardware" | "ram";
+
+export const STACK_MODELS: Record<StackModel, { label: string; ramBytes: number }> = {
+  hardware: { label: "SEPARATE RETURN STACK", ramBytes: 16 },
+  ram: { label: "STACK IN RAM", ramBytes: 32 },
+};
+
+/** SP after reset in the stack-in-RAM CPU: one past the top byte, so the first push lands at 1F. */
+export const STACK_TOP = STACK_MODELS.ram.ramBytes;
+
 export type CompiledProgram = {
   instructions: Instruction[];
   bytes: number[];
+  /** Variables at fixed RAM addresses, from 0 up. With the stack in RAM, only main's. */
   variables: { name: string; address: number }[];
+  /** Which CPU the bytes are for; absent means "hardware". */
+  stack?: StackModel;
 };
+
+export const stackModelOf = (program: Pick<CompiledProgram, "stack">): StackModel =>
+  program.stack ?? "hardware";
 
 export type Phase = "ready" | "fetch" | "decode" | "execute";
 
@@ -31,6 +53,8 @@ export type Snapshot = {
   touchedAddress: number | null;
   explanation: string;
   halted: boolean;
+  /** Stack pointer; only the stack-in-RAM CPU shows it. */
+  sp?: number;
 };
 
 /**
@@ -55,6 +79,12 @@ export const OPCODES = {
   JNC: 0xa0,
   CALL: 0xb0,
   RET: 0xc0,
+  // Stack-in-RAM CPU only (item M): 0xD0–0xD4. 0xD5–0xEF stay free for later extensions.
+  LDS: 0xd0,
+  STS: 0xd1,
+  ADDS: 0xd2,
+  SUBS: 0xd3,
+  ADDSP: 0xd4,
   HALT: 0xf0,
 } as const;
 
@@ -131,8 +161,47 @@ export const ISA = [
     operand: "unused",
     effect: "PC ← popped return PC",
   },
+  {
+    mnemonic: "LDS",
+    opcode: OPCODES.LDS,
+    operand: "stack offset",
+    effect: "ACC ← RAM[SP + offset]",
+    stack: "ram",
+  },
+  {
+    mnemonic: "STS",
+    opcode: OPCODES.STS,
+    operand: "stack offset",
+    effect: "RAM[SP + offset] ← ACC",
+    stack: "ram",
+  },
+  {
+    mnemonic: "ADDS",
+    opcode: OPCODES.ADDS,
+    operand: "stack offset",
+    effect: "ACC ← ACC + RAM[SP + offset]",
+    stack: "ram",
+  },
+  {
+    mnemonic: "SUBS",
+    opcode: OPCODES.SUBS,
+    operand: "stack offset",
+    effect: "ACC ← ACC − RAM[SP + offset]",
+    stack: "ram",
+  },
+  {
+    mnemonic: "ADDSP",
+    opcode: OPCODES.ADDSP,
+    operand: "SP change",
+    effect: "SP ← SP + operand (80–FF count as negative)",
+    stack: "ram",
+  },
   { mnemonic: "HALT", opcode: OPCODES.HALT, operand: "unused", effect: "stop" },
 ] as const;
+
+/** The instructions one CPU decodes; the stack-in-RAM opcodes halt the other CPU. */
+export const isaFor = (stack: StackModel) =>
+  ISA.filter((item) => !("stack" in item) || item.stack === stack);
 
 export function encodeInstruction(opcode: number, operand: number): [number, number] {
   if (!ISA.some((item) => item.opcode === opcode)) throw new Error("Unknown opcode.");
@@ -153,6 +222,9 @@ export function hex(value: number): string {
 export function byteBits(value: number): string {
   return value.toString(2).padStart(8, "0");
 }
+
+/** A byte read as two's complement: 80–FF are −128 to −1. */
+export const signedByte = (value: number) => (value >= 128 ? value - 256 : value);
 
 export type OperandMeaning = { short: string; long: string };
 
@@ -180,6 +252,15 @@ export function describeOperand(
   }
   if (kind === "code address")
     return { short: `→${hex(operand)}`, long: `code address ${hex(operand)}` };
+  if (kind === "stack offset")
+    return { short: `[SP+${operand}]`, long: `RAM address SP + ${operand} (stack frame)` };
+  if (kind === "SP change") {
+    const change = signedByte(operand);
+    return {
+      short: `SP${change < 0 ? "−" : "+"}${Math.abs(change)}`,
+      long: `${change < 0 ? "allocate" : "free"} ${Math.abs(change)} stack byte${Math.abs(change) === 1 ? "" : "s"}`,
+    };
+  }
   return { short: "", long: "not used" };
 }
 
@@ -203,6 +284,14 @@ type Statement =
   | { kind: "print"; line: number; expression: Expression }
   | { kind: "call"; line: number; name: string; argument: string | null }
   | { kind: "return"; line: number; expression: Expression | null }
+  | {
+      kind: "if";
+      line: number;
+      left: string;
+      operator: "<" | ">";
+      right: string;
+      body: Statement[];
+    }
   | {
       kind: "for";
       line: number;
@@ -279,6 +368,22 @@ function parseProgram(source: string): {
         });
         continue;
       }
+      const branch = new RegExp(
+        `^if\\s*\\(\\s*(${VALUE})\\s*([<>])\\s*(${VALUE})\\s*\\)\\s*\\{$`,
+      ).exec(text);
+      if (branch) {
+        statements.push({
+          kind: "if",
+          line,
+          left: branch[1],
+          operator: branch[2] as "<" | ">",
+          right: branch[3],
+          body: parseBlock(true),
+        });
+        continue;
+      }
+      if (/^if\b/.test(text))
+        fail(line, "Use if (a < b) { or if (a > b) { with the closing brace on its own line.");
       if (/^for\b/.test(text))
         fail(line, "Use for (let i = 0; i < 3; i++) { with the closing brace on its own line.");
       const print = /^print\s*\((.*)\)\s*;$/.exec(text);
@@ -322,7 +427,7 @@ function parseProgram(source: string): {
         });
         continue;
       }
-      fail(line, "Use let, assignment, print, for, function call, or return.");
+      fail(line, "Use let, assignment, print, for, if, function call, or return.");
     }
     if (inside) fail(lines.length, "Missing closing brace.");
     return statements;
@@ -356,15 +461,44 @@ function parseProgram(source: string): {
   return { main, functions };
 }
 
-export function compileProgram(source: string): CompiledProgram {
+/** Where a name lives: a fixed RAM address, or a byte in the current stack frame. */
+type Place = { frame: boolean; address: number };
+type Scope = Map<string, Place>;
+type Operand = { mode: "literal" | "ram" | "frame"; value: number };
+
+/** Declared names in a function body, in order: each one gets a frame byte. */
+function declarations(statements: Statement[]): { name: string; line: number }[] {
+  return statements.flatMap((statement) => {
+    if (statement.kind === "assign" && statement.declaration)
+      return [{ name: statement.name, line: statement.line }];
+    if (statement.kind === "for")
+      return [
+        ...(statement.declaration ? [{ name: statement.name, line: statement.line }] : []),
+        ...declarations(statement.body),
+      ];
+    if (statement.kind === "if") return declarations(statement.body);
+    return [];
+  });
+}
+
+export function compileProgram(
+  source: string,
+  options: { stack?: StackModel } = {},
+): CompiledProgram {
+  const stack = options.stack ?? "hardware";
+  const inRam = stack === "ram";
+  const ramBytes = STACK_MODELS[stack].ramBytes;
   const ast = parseProgram(source);
   const instructions: Instruction[] = [];
   const variables: { name: string; address: number }[] = [];
-  const globals = new Map<string, number>();
+  const globals: Scope = new Map();
   const functionStarts = new Map<string, number>();
   const callPatches: { address: number; name: string; line: number }[] = [];
   const functions = new Map(ast.functions.map((definition) => [definition.name, definition]));
   const functionCalls = new Map<string, Set<string>>();
+  /** Stack-in-RAM frame size per function: parameter plus locals. */
+  const frameSizes = new Map<string, number>();
+  const mainCalls = new Set<{ name: string; line: number }>();
 
   const emit = (opcode: number, operand: number, label: string, line: number): number => {
     if (instructions.length >= 128) fail(line, "Program exceeds 256 code bytes.");
@@ -376,37 +510,60 @@ export function compileProgram(source: string): CompiledProgram {
     if (target < 0 || target > 255 || target % 2 !== 0) throw new Error("Invalid branch target.");
     instructions[address / 2].operand = target;
   };
-  const allocate = (name: string, scope: Map<string, number>, display: string, line: number) => {
+  /** Gives a declared name its home: a frame byte inside functions on the RAM-stack CPU. */
+  const allocate = (name: string, scope: Scope, display: string, line: number, frame: boolean) => {
     if (scope.has(name)) fail(line, `“${name}” is already declared.`);
-    if (variables.length >= 16) fail(line, "At most 16 variables fit in RAM.");
-    const address = variables.length;
-    scope.set(name, address);
-    variables.push({ name: display, address });
-    return address;
+    if (frame) {
+      const place = { frame: true, address: scope.size };
+      scope.set(name, place);
+      return place;
+    }
+    if (variables.length >= ramBytes) fail(line, `At most ${ramBytes} variables fit in RAM.`);
+    const place = { frame: false, address: variables.length };
+    scope.set(name, place);
+    variables.push({ name: display, address: place.address });
+    return place;
   };
-  const resolve = (value: string, scope: Map<string, number>, line: number) => {
+  const resolve = (value: string, scope: Scope, line: number): Operand => {
     const row = /^screen\[\s*(\d+)\s*\]$/.exec(value);
     if (row) {
       if (Number(row[1]) >= SCREEN_ROWS) fail(line, `Screen rows are 0 to ${SCREEN_ROWS - 1}.`);
-      return { literal: false, value: SCREEN_BASE + Number(row[1]) };
+      return { mode: "ram", value: SCREEN_BASE + Number(row[1]) };
     }
     if (/^\d+$/.test(value)) {
       const number = Number(value);
       if (number > 255) fail(line, "Numbers must be between 0 and 255.");
-      return { literal: true, value: number };
+      return { mode: "literal", value: number };
     }
-    const address = scope.get(value) ?? globals.get(value);
-    if (address === undefined) fail(line, `Unknown variable “${value}”.`);
-    return { literal: false, value: address };
+    const place = scope.get(value) ?? globals.get(value);
+    if (place === undefined) fail(line, `Unknown variable “${value}”.`);
+    return { mode: place.frame ? "frame" : "ram", value: place.address };
   };
-  const load = (value: string, scope: Map<string, number>, line: number) => {
+  const pick = <T>(operand: Operand, literal: T, ram: T, frame: T) =>
+    operand.mode === "literal" ? literal : operand.mode === "ram" ? ram : frame;
+  const load = (value: string, scope: Scope, line: number) => {
     const result = resolve(value, scope, line);
-    emit(result.literal ? OPCODES.LDI : OPCODES.LDM, result.value, `LOAD ${value}`, line);
+    emit(pick(result, OPCODES.LDI, OPCODES.LDM, OPCODES.LDS), result.value, `LOAD ${value}`, line);
+  };
+  const add = (value: string, subtract: boolean, label: string, scope: Scope, line: number) => {
+    const result = resolve(value, scope, line);
+    const opcode = subtract
+      ? pick(result, OPCODES.SUBI, OPCODES.SUBM, OPCODES.SUBS)
+      : pick(result, OPCODES.ADDI, OPCODES.ADDM, OPCODES.ADDS);
+    emit(opcode, result.value, label, line);
+  };
+  const store = (place: Place, label: string, line: number) =>
+    emit(place.frame ? OPCODES.STS : OPCODES.STM, place.address, label, line);
+  /** Frees the frame and returns; ACC keeps the return value. */
+  const leave = (caller: string, line: number) => {
+    const size = frameSizes.get(caller) ?? 0;
+    if (size) emit(OPCODES.ADDSP, size, `FREE FRAME (${size})`, line);
+    emit(OPCODES.RET, 0, "RETURN", line);
   };
   const call = (
     name: string,
     argument: string | null,
-    scope: Map<string, number>,
+    scope: Scope,
     line: number,
     caller: string,
   ) => {
@@ -421,10 +578,11 @@ export function compileProgram(source: string): CompiledProgram {
     const address = emit(OPCODES.CALL, 0, `CALL ${name}`, line);
     callPatches.push({ address, name, line });
     if (caller !== "main") functionCalls.get(caller)?.add(name);
+    else mainCalls.add({ name, line });
   };
   const compileExpression = (
     expression: Expression,
-    scope: Map<string, number>,
+    scope: Scope,
     line: number,
     caller: string,
   ) => {
@@ -434,28 +592,32 @@ export function compileProgram(source: string): CompiledProgram {
       call(expression.name, expression.argument, scope, line, caller);
     } else {
       load(expression.left, scope, line);
-      const result = resolve(expression.right, scope, line);
-      const opcode =
-        expression.operator === "+"
-          ? result.literal
-            ? OPCODES.ADDI
-            : OPCODES.ADDM
-          : result.literal
-            ? OPCODES.SUBI
-            : OPCODES.SUBM;
-      emit(
-        opcode,
-        result.value,
+      add(
+        expression.right,
+        expression.operator === "-",
         `${expression.operator === "+" ? "ADD" : "SUB"} ${expression.right}`,
+        scope,
         line,
       );
     }
   };
-  const compileStatements = (
-    statements: Statement[],
-    scope: Map<string, number>,
-    caller: string,
-  ) => {
+  const declare = (name: string, scope: Scope, caller: string, line: number) =>
+    allocate(
+      name,
+      scope,
+      caller === "main" ? name : `${caller}.${name}`,
+      line,
+      inRam && caller !== "main",
+    );
+  const target = (name: string, scope: Scope, line: number): Place => {
+    if (/^\d+$/.test(name)) fail(line, "Assignment target must be a variable.");
+    if (name.startsWith("screen["))
+      return { frame: false, address: resolve(name, scope, line).value };
+    const place = scope.get(name) ?? globals.get(name);
+    if (place === undefined) fail(line, `Unknown variable “${name}”.`);
+    return place;
+  };
+  const compileStatements = (statements: Statement[], scope: Scope, caller: string) => {
     for (const statement of statements) {
       const line = statement.line;
       if (statement.kind === "assign") {
@@ -472,18 +634,11 @@ export function compileProgram(source: string): CompiledProgram {
               statement.expression.argument === statement.name))
         )
           fail(line, `“${statement.name}” has no value yet.`);
-        const address = statement.declaration
-          ? allocate(
-              statement.name,
-              scope,
-              caller === "main" ? statement.name : `${caller}.${statement.name}`,
-              line,
-            )
-          : resolve(statement.name, scope, line).value;
-        if (!statement.declaration && /^\d+$/.test(statement.name))
-          fail(line, "Assignment target must be a variable.");
+        const place = statement.declaration
+          ? declare(statement.name, scope, caller, line)
+          : target(statement.name, scope, line);
         compileExpression(statement.expression, scope, line, caller);
-        emit(OPCODES.STM, address, `STORE ${statement.name}`, line);
+        store(place, `STORE ${statement.name}`, line);
       } else if (statement.kind === "print") {
         compileExpression(statement.expression, scope, line, caller);
         emit(OPCODES.OUT, 0, "PRINT ACC", line);
@@ -492,87 +647,121 @@ export function compileProgram(source: string): CompiledProgram {
       } else if (statement.kind === "return") {
         if (caller === "main") fail(line, "return is only valid inside a function.");
         if (statement.expression) compileExpression(statement.expression, scope, line, caller);
-        emit(OPCODES.RET, 0, "RETURN", line);
+        leave(caller, line);
+      } else if (statement.kind === "if") {
+        // a < b borrows exactly when it is true, so JNC skips the body when it is false.
+        const [small, big] =
+          statement.operator === "<"
+            ? [statement.left, statement.right]
+            : [statement.right, statement.left];
+        load(small, scope, line);
+        add(
+          big,
+          true,
+          `COMPARE ${statement.left} ${statement.operator} ${statement.right}`,
+          scope,
+          line,
+        );
+        const skipAddress = emit(OPCODES.JNC, 0, "SKIP IF FALSE", line);
+        compileStatements(statement.body, scope, caller);
+        patch(skipAddress, instructions.length * 2);
       } else {
         if (statement.declaration && statement.initial === statement.name)
           fail(line, `“${statement.name}” has no value yet.`);
-        const address = statement.declaration
-          ? allocate(
-              statement.name,
-              scope,
-              caller === "main" ? statement.name : `${caller}.${statement.name}`,
-              line,
-            )
-          : resolve(statement.name, scope, line).value;
+        const place = statement.declaration
+          ? declare(statement.name, scope, caller, line)
+          : target(statement.name, scope, line);
         load(statement.initial, scope, line);
-        emit(OPCODES.STM, address, `INIT ${statement.name}`, line);
+        store(place, `INIT ${statement.name}`, line);
         const testAddress = instructions.length * 2;
-        emit(OPCODES.LDM, address, `TEST ${statement.name}`, line);
-        const limit = resolve(statement.limit, scope, line);
         emit(
-          limit.literal ? OPCODES.SUBI : OPCODES.SUBM,
-          limit.value,
-          `COMPARE < ${statement.limit}`,
+          place.frame ? OPCODES.LDS : OPCODES.LDM,
+          place.address,
+          `TEST ${statement.name}`,
           line,
         );
+        add(statement.limit, true, `COMPARE < ${statement.limit}`, scope, line);
         const exitAddress = emit(OPCODES.JNC, 0, "EXIT IF ≥", line);
         compileStatements(statement.body, scope, caller);
-        emit(OPCODES.LDM, address, `LOAD ${statement.name}`, line);
-        const increment = resolve(statement.increment, scope, line);
         emit(
-          increment.literal ? OPCODES.ADDI : OPCODES.ADDM,
-          increment.value,
-          `INCREMENT ${statement.name}`,
+          place.frame ? OPCODES.LDS : OPCODES.LDM,
+          place.address,
+          `LOAD ${statement.name}`,
           line,
         );
-        emit(OPCODES.STM, address, `STORE ${statement.name}`, line);
+        add(statement.increment, false, `INCREMENT ${statement.name}`, scope, line);
+        store(place, `STORE ${statement.name}`, line);
         emit(OPCODES.JMP, testAddress, "REPEAT LOOP", line);
         patch(exitAddress, instructions.length * 2);
       }
     }
   };
 
-  for (const definition of ast.functions) functionCalls.set(definition.name, new Set());
+  for (const definition of ast.functions) {
+    functionCalls.set(definition.name, new Set());
+    if (inRam)
+      frameSizes.set(
+        definition.name,
+        (definition.parameter ? 1 : 0) + declarations(definition.body).length,
+      );
+  }
   compileStatements(ast.main, globals, "main");
   emit(OPCODES.HALT, 0, "HALT", 0);
   for (const definition of ast.functions) {
     functionStarts.set(definition.name, instructions.length * 2);
-    const scope = new Map<string, number>();
-    if (definition.parameter)
-      allocate(
-        definition.parameter,
-        scope,
-        `${definition.name}.${definition.parameter}`,
-        definition.line,
-      );
-    if (definition.parameter)
-      emit(
-        OPCODES.STM,
-        scope.get(definition.parameter)!,
-        `ARG ${definition.parameter}`,
-        definition.line,
-      );
+    const scope: Scope = new Map();
+    const size = frameSizes.get(definition.name) ?? 0;
+    // The frame: SP + 0 is the parameter, then each local; above it, the return address.
+    if (size) emit(OPCODES.ADDSP, 256 - size, `MAKE FRAME (${size})`, definition.line);
+    if (definition.parameter) {
+      const place = declare(definition.parameter, scope, definition.name, definition.line);
+      store(place, `ARG ${definition.parameter}`, definition.line);
+    }
     compileStatements(definition.body, scope, definition.name);
     emit(OPCODES.LDI, 0, "DEFAULT RETURN 0", 0);
-    emit(OPCODES.RET, 0, "RETURN", 0);
+    leave(definition.name, 0);
   }
   for (const callSite of callPatches) patch(callSite.address, functionStarts.get(callSite.name)!);
+
+  // Stack bytes one call to `name` needs, counting its return address; null when recursive.
   const visiting = new Set<string>();
-  const visited = new Set<string>();
-  const visit = (name: string) => {
-    if (visiting.has(name))
-      fail(functions.get(name)!.line, "Recursive calls are not supported by this toy RAM model.");
-    if (visited.has(name)) return;
+  const depths = new Map<string, number | null>();
+  const depth = (name: string): number | null => {
+    if (visiting.has(name)) {
+      if (!inRam)
+        fail(
+          functions.get(name)!.line,
+          "Recursive calls need the stack-in-RAM CPU: every variable here has one fixed RAM address.",
+        );
+      return null;
+    }
+    if (depths.has(name)) return depths.get(name)!;
     visiting.add(name);
-    for (const callee of functionCalls.get(name) ?? []) visit(callee);
+    let deepest: number | null = 0;
+    for (const callee of functionCalls.get(name) ?? []) {
+      const inner = depth(callee);
+      deepest = inner === null || deepest === null ? null : Math.max(deepest, inner);
+    }
     visiting.delete(name);
-    visited.add(name);
+    const result = deepest === null ? null : 1 + (frameSizes.get(name) ?? 0) + deepest;
+    depths.set(name, result);
+    return result;
   };
-  for (const name of functions.keys()) visit(name);
+  for (const name of functions.keys()) depth(name);
+  if (inRam) {
+    // Recursion depth is only known at run time; the trace stops on a collision then.
+    const deepest = Math.max(0, ...[...mainCalls].map(({ name }) => depths.get(name) ?? 0));
+    if (variables.length + deepest > ramBytes)
+      fail(
+        [...mainCalls].find(({ name }) => depths.get(name) === deepest)?.line ?? 1,
+        `Stack and variables collide: ${variables.length} variable byte${variables.length === 1 ? "" : "s"} plus ${deepest} stack bytes do not fit in ${ramBytes} bytes of RAM.`,
+      );
+  }
   return {
     instructions,
     bytes: instructions.flatMap(({ opcode, operand }) => [opcode, operand]),
     variables,
+    stack,
   };
 }
 
@@ -591,6 +780,12 @@ export const SAMPLE_PROGRAMS = {
     "let pixel = 1;\nfor (let i = 0; i < 8; i++) {\n  screen[3] = pixel;\n  pixel = pixel + pixel;\n}\nprint(screen[3]);",
 } as const;
 
+/** Programs for the stack-in-RAM CPU: they recurse, so the other CPU rejects them. */
+export const RAM_STACK_SAMPLES = {
+  RECURSION:
+    "fn sum(n) {\n  if (n > 0) {\n    let less = n - 1;\n    let rest = sum(less);\n    return rest + n;\n  }\n  return 0;\n}\nprint(sum(4));",
+} as const;
+
 // ---------------------------------------------------------------------------
 // Control unit: one clock tick = one micro-step.
 //
@@ -600,6 +795,11 @@ export const SAMPLE_PROGRAMS = {
 // sees ACC and the operand register (OPR), so ADDM/SUBM first copy the RAM
 // byte into OPR. The zero flag is wired to ACC (ACC === 0); FLAGS_IN latches
 // the ALU's carry (or borrow, when ALU_SUB is on).
+//
+// The stack-in-RAM CPU has no return stack: data RAM grows to 32 bytes, SP
+// counts down from 32, and two more parts drive the bus: SP itself (SP_OUT)
+// and an adder for SP + OPR (FRAME_OUT), the address of a stack-frame byte.
+// SP_IN loads SP from the bus, for ADDSP.
 
 export const SIGNALS = [
   "PC_OUT",
@@ -625,6 +825,9 @@ export const SIGNALS = [
   "OUT_IN",
   "HALT",
   "STEP_RESET",
+  "SP_OUT",
+  "SP_IN",
+  "FRAME_OUT",
 ] as const;
 
 export type Signal = (typeof SIGNALS)[number];
@@ -646,7 +849,8 @@ export const FETCH_STEPS: readonly ControlWord[] = [
   ["ROM_OUT", "OPR_IN", "PC_INC"],
 ];
 
-export const EXECUTE_STEPS: Record<Mnemonic, ExecuteSteps> = {
+/** Execute steps of the separate-return-stack CPU (the default). */
+export const EXECUTE_STEPS: Partial<Record<Mnemonic, ExecuteSteps>> = {
   LDI: [["OPR_OUT", "ACC_IN", "STEP_RESET"]],
   LDM: [
     ["OPR_OUT", "DMAR_IN"],
@@ -679,14 +883,57 @@ export const EXECUTE_STEPS: Record<Mnemonic, ExecuteSteps> = {
   HALT: [["HALT"]],
 };
 
+const FRAME_ADDRESS: ControlWord = ["FRAME_OUT", "DMAR_IN"];
+
+/**
+ * Execute steps of the stack-in-RAM CPU: CALL and RET move SP through data RAM
+ * (SP − 1, then store PC at RAM[SP]; read RAM[SP] into PC and SP + 1), and the
+ * stack-frame opcodes address RAM[SP + operand].
+ */
+export const RAM_STACK_STEPS: Record<Mnemonic, ExecuteSteps> = {
+  ...(EXECUTE_STEPS as Record<
+    Exclude<Mnemonic, "LDS" | "STS" | "ADDS" | "SUBS" | "ADDSP">,
+    ExecuteSteps
+  >),
+  CALL: [
+    ["SP_DEC"],
+    ["SP_OUT", "DMAR_IN"],
+    ["PC_OUT", "RAM_IN"],
+    ["OPR_OUT", "PC_IN", "STEP_RESET"],
+  ],
+  RET: [
+    ["SP_OUT", "DMAR_IN", "SP_INC"],
+    ["RAM_OUT", "PC_IN", "STEP_RESET"],
+  ],
+  LDS: [FRAME_ADDRESS, ["RAM_OUT", "ACC_IN", "STEP_RESET"]],
+  STS: [FRAME_ADDRESS, ["ACC_OUT", "RAM_IN", "STEP_RESET"]],
+  ADDS: [FRAME_ADDRESS, ["RAM_OUT", "OPR_IN"], ["ALU_OUT", "ACC_IN", "FLAGS_IN", "STEP_RESET"]],
+  SUBS: [
+    FRAME_ADDRESS,
+    ["RAM_OUT", "OPR_IN"],
+    ["ALU_OUT", "ALU_SUB", "ACC_IN", "FLAGS_IN", "STEP_RESET"],
+  ],
+  ADDSP: [["FRAME_OUT", "SP_IN", "STEP_RESET"]],
+};
+
+export const MICROCODE: Record<StackModel, Partial<Record<Mnemonic, ExecuteSteps>>> = {
+  hardware: EXECUTE_STEPS,
+  ram: RAM_STACK_STEPS,
+};
+
 /** An opcode the decoder does not know stops the clock. */
 const UNKNOWN_STEPS: readonly ControlWord[] = [["HALT"]];
 
 /** The microcode lookup: (opcode, T-state, carry flag) → control word. */
-export function controlWord(opcode: number, t: number, carry: boolean): ControlWord {
+export function controlWord(
+  opcode: number,
+  t: number,
+  carry: boolean,
+  stack: StackModel = "hardware",
+): ControlWord {
   if (t < FETCH_STEPS.length) return FETCH_STEPS[t];
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
-  const steps = mnemonic ? EXECUTE_STEPS[mnemonic] : UNKNOWN_STEPS;
+  const steps = (mnemonic && MICROCODE[stack][mnemonic]) || UNKNOWN_STEPS;
   const list = "carrySet" in steps ? (carry ? steps.carrySet : steps.carryClear) : steps;
   return list[t - FETCH_STEPS.length] ?? [];
 }
@@ -705,16 +952,18 @@ export function microcodeAddress(opcode: number, t: number, carry: boolean): num
 }
 
 /** Microcode ROM contents generated from the table, so the two cannot drift apart. */
-export function microcodeRom(): number[] {
+export function microcodeRom(stack: StackModel = "hardware"): number[] {
   const rom = Array<number>(256 * MAX_T_STATES * 2).fill(0);
   for (let opcode = 0; opcode < 256; opcode++)
     for (let t = 0; t < MAX_T_STATES; t++)
       for (const carry of [false, true])
-        rom[microcodeAddress(opcode, t, carry)] = encodeControlWord(controlWord(opcode, t, carry));
+        rom[microcodeAddress(opcode, t, carry)] = encodeControlWord(
+          controlWord(opcode, t, carry, stack),
+        );
   return rom;
 }
 
-export type BusDriver = "PC" | "ROM" | "OPR" | "RAM" | "ACC" | "ALU" | "STACK";
+export type BusDriver = "PC" | "ROM" | "OPR" | "RAM" | "ACC" | "ALU" | "STACK" | "SP" | "FRAME";
 
 const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
   PC_OUT: "PC",
@@ -724,6 +973,8 @@ const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
   ACC_OUT: "ACC",
   ALU_OUT: "ALU",
   STACK_OUT: "STACK",
+  SP_OUT: "SP",
+  FRAME_OUT: "FRAME",
 };
 
 const BUS_READERS: readonly Signal[] = [
@@ -736,6 +987,7 @@ const BUS_READERS: readonly Signal[] = [
   "ACC_IN",
   "STACK_IN",
   "OUT_IN",
+  "SP_IN",
 ];
 
 export type Registers = {
@@ -768,7 +1020,7 @@ export type Tick = {
   registers: Registers;
   ram: number[];
   screen: number[];
-  /** Return stack entries below SP. */
+  /** Return stack entries, bottom first. With the stack in RAM: RAM[1F] down to RAM[SP]. */
   stack: number[];
   output: number[];
   halted: boolean;
@@ -779,6 +1031,33 @@ export type Tick = {
 export const MAX_INSTRUCTIONS = 512;
 
 /**
+ * Why a stack-in-RAM tick cannot run, or null. SP must stay between the fixed
+ * variables (below `floor`) and STACK_TOP; SP_IN reads its bus value as SP plus
+ * a signed change, so 80–FF move SP down.
+ */
+function ramStackFault(
+  sp: number,
+  on: ReadonlySet<Signal>,
+  bus: number | null,
+  floor: number,
+  variables: CompiledProgram["variables"],
+): string | null {
+  const next = on.has("SP_DEC")
+    ? sp - 1
+    : on.has("SP_INC")
+      ? sp + 1
+      : on.has("SP_IN") && bus !== null
+        ? sp + signedByte((bus - sp) & 255)
+        : sp;
+  if (next > STACK_TOP) return "The stack is empty: nothing to pop. Execution stopped.";
+  if (next >= floor) return null;
+  const variable = variables[floor - 1];
+  return variable
+    ? `Stack overflow: the stack ran into variable “${variable.name}” at RAM ${hex(variable.address)}. Execution stopped.`
+    : "Stack overflow: the stack filled all of data RAM. Execution stopped.";
+}
+
+/**
  * Runs a program from the microcode table alone, one tick at a time. Stops on
  * HALT, a stack fault, or after `maxInstructions` instructions.
  */
@@ -786,13 +1065,19 @@ export function traceTicks(
   program: CompiledProgram,
   maxInstructions: number = MAX_INSTRUCTIONS,
 ): Tick[] {
+  const stack = stackModelOf(program);
+  const inRam = stack === "ram";
   const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
-  const ram = Array<number>(16).fill(0);
+  const ram = Array<number>(STACK_MODELS[stack].ramBytes).fill(0);
   const screen = Array<number>(SCREEN_ROWS).fill(0);
   // DMAR holds the full 8-bit address; RAM_OUT and RAM_IN reach RAM or the screen.
   const data = (address: number): [number[], number] =>
-    isScreenAddress(address) ? [screen, address & (SCREEN_ROWS - 1)] : [ram, address & 15];
+    isScreenAddress(address)
+      ? [screen, address & (SCREEN_ROWS - 1)]
+      : [ram, address & (ram.length - 1)];
   const stackMemory = Array<number>(16).fill(0);
+  /** With the stack in RAM, SP may not move below the last fixed variable. */
+  const floor = inRam ? program.variables.length : 0;
   const output: number[] = [];
   const ticks: Tick[] = [];
   let registers: Registers = {
@@ -804,7 +1089,7 @@ export function traceTicks(
     acc: 0,
     carry: false,
     zero: true,
-    sp: 0,
+    sp: inRam ? STACK_TOP : 0,
     out: 0,
   };
   let t = 0;
@@ -813,7 +1098,7 @@ export function traceTicks(
   while (instruction < maxInstructions) {
     if (t === 0) address = registers.pc;
     if (t >= MAX_T_STATES) throw new Error(`Microcode for ${hex(registers.ir)} never resets.`);
-    const control = controlWord(registers.ir, t, registers.carry);
+    const control = controlWord(registers.ir, t, registers.carry, stack);
     if (control.length === 0)
       throw new Error(`Microcode for ${hex(registers.ir)} has no control word at T${t}.`);
     const on = new Set(control);
@@ -833,12 +1118,15 @@ export function traceTicks(
       ACC: () => registers.acc,
       ALU: () => sum & 255,
       STACK: () => stackMemory[registers.sp],
+      SP: () => registers.sp,
+      FRAME: () => (registers.sp + registers.opr) & 255,
     };
     const bus = busDriver ? busValues[busDriver]() : null;
     if (bus === null && control.some((signal) => BUS_READERS.includes(signal)))
       throw new Error(`Nothing drives the bus at T${t}.`);
-    const fault =
-      on.has("STACK_IN") && registers.sp >= stackMemory.length
+    const fault = inRam
+      ? ramStackFault(registers.sp, on, bus, floor, program.variables)
+      : on.has("STACK_IN") && registers.sp >= stackMemory.length
         ? "Return stack is full. Execution stopped."
         : on.has("SP_DEC") && registers.sp === 0
           ? "Return stack is empty. Execution stopped."
@@ -850,6 +1138,7 @@ export function traceTicks(
       if (on.has("OPR_IN")) next.opr = bus;
       if (on.has("PC_IN")) next.pc = bus;
       if (on.has("DMAR_IN")) next.dmar = bus;
+      if (on.has("SP_IN")) next.sp = bus;
       if (on.has("ACC_IN")) next.acc = bus;
       if (on.has("RAM_IN")) {
         const [memory, row] = data(registers.dmar);
@@ -882,7 +1171,7 @@ export function traceTicks(
       registers: { ...registers },
       ram: [...ram],
       screen: [...screen],
-      stack: stackMemory.slice(0, registers.sp),
+      stack: inRam ? ram.slice(registers.sp).reverse() : stackMemory.slice(0, registers.sp),
       output: [...output],
       halted,
       fault,
@@ -903,6 +1192,7 @@ function explainExecute(
   before: Snapshot,
   after: Registers,
   stack: number[],
+  inRam: boolean,
 ): string {
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
   switch (mnemonic) {
@@ -928,9 +1218,22 @@ function explainExecute(
         ? `Borrow is set: enter the loop body at ${hex(after.pc)}.`
         : `No borrow: leave the loop at ${hex(operand)}.`;
     case "CALL":
-      return `Push return address ${hex(stack.at(-1)!)}; jump to function at ${hex(operand)}.`;
+      return `Push return address ${hex(stack.at(-1)!)}${inRam ? ` to RAM ${hex(after.sp)}` : ""}; jump to function at ${hex(operand)}.`;
     case "RET":
-      return `Pop return address ${hex(after.pc)}; resume caller with ACC = ${after.acc}.`;
+      return `Pop return address ${hex(after.pc)}${inRam ? ` from RAM ${hex(after.dmar)}` : ""}; resume caller with ACC = ${after.acc}.`;
+    case "LDS":
+      return `SP + ${operand} is RAM ${hex(after.dmar)}: read the ${after.acc} stored there into ACC.`;
+    case "STS":
+      return `SP + ${operand} is RAM ${hex(after.dmar)}: write ACC (${after.acc}) there.`;
+    case "ADDS":
+    case "SUBS":
+      return `SP + ${operand} is RAM ${hex(after.dmar)}; the ALU ${mnemonic === "SUBS" ? "subtracts" : "adds"} its ${after.opr}; ACC becomes ${after.acc}${after.carry ? (mnemonic === "SUBS" ? " (borrow)" : " (carry out)") : ""}.`;
+    case "ADDSP": {
+      const change = signedByte(operand);
+      return change < 0
+        ? `Make a stack frame: SP moves down ${-change} byte${change === -1 ? "" : "s"} to ${hex(after.sp)}.`
+        : `Free the stack frame: SP moves up ${change} byte${change === 1 ? "" : "s"} to ${hex(after.sp)}.`;
+    }
     case "HALT":
       return "HALT stops the CPU clock in this toy model.";
     default:
@@ -944,6 +1247,7 @@ function explainExecute(
  * after T3, execute after the instruction's last tick.
  */
 export function traceProgram(program: CompiledProgram): Snapshot[] {
+  const inRam = stackModelOf(program) === "ram";
   const snapshots: Snapshot[] = [];
   let state: Snapshot = {
     phase: "ready",
@@ -953,7 +1257,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     accumulator: 0,
     zero: true,
     carry: false,
-    ram: Array(16).fill(0),
+    ram: Array(STACK_MODELS[stackModelOf(program)].ramBytes).fill(0),
     screen: Array(SCREEN_ROWS).fill(0),
     stack: [],
     output: [],
@@ -961,6 +1265,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     touchedAddress: null,
     explanation: "Program compiled. Step to fetch the first instruction byte.",
     halted: false,
+    ...(inRam ? { sp: STACK_TOP } : {}),
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
@@ -1014,7 +1319,7 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     const touchesRam =
       !isScreenAddress(last.registers.dmar) &&
       group.some(({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"));
-    const effect = explainExecute(opcode, operand, meaning, state, after, last.stack);
+    const effect = explainExecute(opcode, operand, meaning, state, after, last.stack, inRam);
     record({
       phase: "execute",
       pc: after.pc,
@@ -1025,10 +1330,11 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       screen: [...last.screen],
       stack: [...last.stack],
       output: [...last.output],
-      touchedAddress: touchesRam ? after.dmar & 15 : null,
+      touchedAddress: touchesRam ? after.dmar & (state.ram.length - 1) : null,
       activeAddress: address,
       explanation: `${effect} PC is now ${hex(after.pc)}.`,
       halted: last.halted,
+      ...(inRam ? { sp: after.sp } : {}),
     });
     if (last.halted) return snapshots;
   }

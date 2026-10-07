@@ -132,6 +132,7 @@ const PART_NAME: Record<Role, string> = {
   STACK: "the stack RAM",
   SCREEN: "the screen",
   ALU: "the ALU",
+  FRAME: "the SP + OPR adder",
 };
 
 /** Which control line drives each part onto the bus. */
@@ -143,6 +144,8 @@ const OUT_LINE: Record<BusDriver, Signal> = {
   ACC: "ACC_OUT",
   ALU: "ALU_OUT",
   STACK: "STACK_OUT",
+  SP: "SP_OUT",
+  FRAME: "FRAME_OUT",
 };
 
 /** Which control line loads each register from the bus, and that input's port. */

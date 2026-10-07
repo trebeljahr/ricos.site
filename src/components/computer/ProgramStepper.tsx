@@ -7,8 +7,12 @@ import {
   describeOperand,
   hex,
   ISA,
+  isaFor,
   isScreenAddress,
+  RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
+  STACK_MODELS,
+  type StackModel,
   traceProgram,
 } from "src/lib/computerStepper";
 import panel from "./ByteExplorer.module.css";
@@ -16,6 +20,7 @@ import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
 const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY } = SAMPLE_PROGRAMS;
+const { RECURSION } = RAM_STACK_SAMPLES;
 const dataOpcodes = new Set<number>(
   ISA.filter((item) => item.operand === "RAM address").map((item) => item.opcode),
 );
@@ -25,6 +30,9 @@ export function ProgramStepper() {
   const [source, setSource] = useState<string>(EXAMPLE);
   const [loaded, setLoaded] = useState<string>(EXAMPLE);
   const [step, setStep] = useState(0);
+  const [stack, setStack] = useState<StackModel>("hardware");
+  const inRam = stack === "ram";
+  const isa = isaFor(stack);
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
   const instructionListRef = useRef<HTMLOListElement>(null);
   const sourceMirrorRef = useRef<HTMLDivElement>(null);
@@ -32,11 +40,11 @@ export function ProgramStepper() {
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   const compilation = useMemo(() => {
     try {
-      return { program: compileProgram(loaded), error: null };
+      return { program: compileProgram(loaded, { stack }), error: null };
     } catch (error) {
       return { program: null, error: (error as Error).message };
     }
-  }, [loaded]);
+  }, [loaded, stack]);
   const trace = useMemo(
     () => (compilation.program ? traceProgram(compilation.program) : []),
     [compilation.program],
@@ -60,7 +68,7 @@ export function ProgramStepper() {
   const decodedOpcode =
     state?.ir === null || state?.ir === undefined
       ? null
-      : (ISA.find(({ opcode }) => opcode === state.ir) ?? null);
+      : (isa.find(({ opcode }) => opcode === state.ir) ?? null);
   const operandMeaning =
     state?.ir === null || state?.ir === undefined || state.operand === null
       ? null
@@ -84,12 +92,19 @@ export function ProgramStepper() {
     playSwitch();
   }
 
-  function preset(value: string) {
+  function preset(value: string, model: StackModel = stack) {
+    setStack(model);
     setSource(value);
     setLoaded(value);
     setStep(0);
     setHoveredLine(null);
     playButton();
+  }
+
+  function chooseStack(model: StackModel) {
+    setStack(model);
+    setStep(0);
+    playSwitch();
   }
 
   function moveStep(next: number) {
@@ -139,6 +154,20 @@ export function ProgramStepper() {
           <div className={panel.sectionHead}>
             <span>01 / SOURCE CODE</span>
           </div>
+          <fieldset className={styles.stackChoice}>
+            <legend>CPU</legend>
+            {(Object.keys(STACK_MODELS) as StackModel[]).map((model) => (
+              <button
+                key={model}
+                type="button"
+                aria-pressed={stack === model}
+                onClick={() => chooseStack(model)}
+                className={stack === model ? styles.primaryButton : styles.button}
+              >
+                {STACK_MODELS[model].label} · {STACK_MODELS[model].ramBytes}-BYTE RAM
+              </button>
+            ))}
+          </fieldset>
           <label className={styles.label} htmlFor="program-source">
             WRITE A PROGRAM
           </label>
@@ -197,6 +226,14 @@ export function ProgramStepper() {
             <button type="button" onClick={() => preset(SMILEY)} className={styles.button}>
               SCREEN
             </button>
+            <button
+              type="button"
+              onClick={() => preset(RECURSION, "ram")}
+              className={styles.button}
+              title="Needs the stack-in-RAM CPU; switches to it"
+            >
+              RECURSION
+            </button>
           </div>
           {changed && (
             <p id="program-syntax" className={styles.hint}>
@@ -248,7 +285,7 @@ export function ProgramStepper() {
                       {byteBits(instruction.opcode)} {byteBits(instruction.operand)}
                     </span>
                     <span className={styles.mnemonic} title={instruction.label}>
-                      <b>{ISA.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic}</b>{" "}
+                      <b>{isa.find(({ opcode }) => opcode === instruction.opcode)?.mnemonic}</b>{" "}
                       {describeOperand(instruction.opcode, instruction.operand, variables).short}
                     </span>
                     <span>{instruction.line ? `L${instruction.line}` : "GEN"}</span>
@@ -258,12 +295,20 @@ export function ProgramStepper() {
               <p className={styles.hint}>
                 Each instruction is two bytes: opcode, then operand. <b>#5</b> is the number 5
                 itself. <b>[00]</b> is RAM address 00, so the CPU uses the value stored there.{" "}
-                <b>→0A</b> is a code address to jump to. GEN is the compiler-added halt.
+                <b>→0A</b> is a code address to jump to.
+                {inRam && (
+                  <>
+                    {" "}
+                    <b>[SP+1]</b> is the byte at RAM address SP + 1, inside the current function's
+                    stack frame.
+                  </>
+                )}{" "}
+                GEN is code the compiler adds.
               </p>
               <details className={styles.isaDetails}>
                 <summary>INSTRUCTION SET / VIEW KEY</summary>
                 <div className={styles.isaList}>
-                  {ISA.map((item) => (
+                  {isa.map((item) => (
                     <div key={item.opcode}>
                       <b>{hex(item.opcode)}</b>
                       <b>{item.mnemonic}</b>
@@ -361,49 +406,105 @@ export function ProgramStepper() {
                   </div>
                 ))}
               </div>
-              <div className={styles.stackReadout}>
-                <div>
-                  <span>CALL STACK / TOP AT RIGHT</span>
-                  <strong>
-                    {state.stack.length
-                      ? state.stack.map((address) => `→${hex(address)}`).join("  ")
-                      : "EMPTY"}
-                  </strong>
+              {inRam ? (
+                <div className={styles.stackReadout}>
+                  <div>
+                    <span>STACK IN RAM / SP = {hex(state.sp ?? 0)} / TOP AT RIGHT</span>
+                    <strong className={styles.stackBytes}>
+                      {state.stack.length
+                        ? state.stack
+                            .map((value, index) => `[${hex(31 - index)}]${hex(value)}`)
+                            .join(" ")
+                        : "EMPTY"}
+                    </strong>
+                  </div>
+                  <small>
+                    SP starts at 20, just past the last RAM byte, and counts down. CALL moves SP
+                    down one byte and stores the return address there; RET reads it back and moves
+                    SP up. Each function then moves SP down once more to make its frame: the
+                    parameter at SP+0, then each local. Every call gets a fresh frame, so a function
+                    can call itself. Too many calls and the stack runs into the variables at the
+                    bottom of RAM.
+                  </small>
                 </div>
-                <small>
-                  CALL pushes the code address to come back to; RET pops it. The stack holds only
-                  return addresses. Variables, parameters and loop counters each get one fixed RAM
-                  address, which is why a function cannot call itself.
-                </small>
-              </div>
+              ) : (
+                <div className={styles.stackReadout}>
+                  <div>
+                    <span>CALL STACK / TOP AT RIGHT</span>
+                    <strong>
+                      {state.stack.length
+                        ? state.stack.map((address) => `→${hex(address)}`).join("  ")
+                        : "EMPTY"}
+                    </strong>
+                  </div>
+                  <small>
+                    CALL pushes the code address to come back to; RET pops it. The stack holds only
+                    return addresses. Variables, parameters and loop counters each get one fixed RAM
+                    address, which is why a function cannot call itself. Switch the CPU to STACK IN
+                    RAM to compare.
+                  </small>
+                </div>
+              )}
               <div className={styles.lowerReadouts}>
                 <div>
                   <div className={panel.sectionHead}>
                     <span>DATA MEMORY / RAM</span>
                   </div>
-                  <div className={styles.ramList}>
-                    <div className={clsx(styles.ramRow, styles.ramHead)} aria-hidden="true">
-                      <span>ADDR</span>
-                      <span>VARIABLE</span>
-                      <span>VALUE</span>
+                  {inRam ? (
+                    <div className={styles.ramGrid}>
+                      {state.ram.map((value, address) => {
+                        const variable = variables.find((item) => item.address === address);
+                        const onStack = address >= (state.sp ?? STACK_MODELS.ram.ramBytes);
+                        return (
+                          <div
+                            // biome-ignore lint/suspicious/noArrayIndexKey: one cell per fixed RAM address.
+                            key={address}
+                            title={
+                              variable
+                                ? `${hex(address)}: variable ${variable.name}`
+                                : onStack
+                                  ? `${hex(address)}: stack`
+                                  : `${hex(address)}: free`
+                            }
+                            className={clsx(
+                              styles.ramCell,
+                              variable && styles.ramVariable,
+                              onStack && styles.ramStack,
+                              address === state.sp && styles.ramTop,
+                              state.touchedAddress === address && styles.activeRam,
+                            )}
+                          >
+                            <span>{variable ? variable.name : hex(address)}</span>
+                            <strong>{value}</strong>
+                          </div>
+                        );
+                      })}
                     </div>
-                    {compilation.program?.variables.map(({ name, address }) => (
-                      <div
-                        key={address}
-                        className={clsx(
-                          styles.ramRow,
-                          state.touchedAddress === address && styles.activeRam,
-                        )}
-                      >
-                        <span>[{hex(address)}]</span>
-                        <span>{name}</span>
-                        <strong>{state.ram[address]}</strong>
+                  ) : (
+                    <div className={styles.ramList}>
+                      <div className={clsx(styles.ramRow, styles.ramHead)} aria-hidden="true">
+                        <span>ADDR</span>
+                        <span>VARIABLE</span>
+                        <span>VALUE</span>
                       </div>
-                    ))}
-                    {compilation.program?.variables.length === 0 && (
-                      <span className={styles.empty}>NO VARIABLES</span>
-                    )}
-                  </div>
+                      {compilation.program?.variables.map(({ name, address }) => (
+                        <div
+                          key={address}
+                          className={clsx(
+                            styles.ramRow,
+                            state.touchedAddress === address && styles.activeRam,
+                          )}
+                        >
+                          <span>[{hex(address)}]</span>
+                          <span>{name}</span>
+                          <strong>{state.ram[address]}</strong>
+                        </div>
+                      ))}
+                      {compilation.program?.variables.length === 0 && (
+                        <span className={styles.empty}>NO VARIABLES</span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <div className={panel.sectionHead}>

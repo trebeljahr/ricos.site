@@ -1740,6 +1740,8 @@ export const MAX_TOTAL_NODES = 10000;
 /** Nodes parsed in total, including the gate forms behind behavioural blocks. */
 export const MAX_PARSED_NODES = 4 * MAX_TOTAL_NODES;
 export const MAX_DEPTH = 5;
+/** Inputs or outputs on one module; the control unit's control word plus GCLK needs 27. */
+export const MAX_MODULE_PORTS = 32;
 
 export function validateCircuit(
   value: unknown,
@@ -1817,9 +1819,9 @@ export function validateCircuit(
     const inner = validateCircuit(n.module, depth + 1, budget, folded || Boolean(behaviour));
     if (
       !inner ||
-      moduleInputs(inner).length > 24 ||
+      moduleInputs(inner).length > MAX_MODULE_PORTS ||
       moduleOutputs(inner).length < 1 ||
-      moduleOutputs(inner).length > 24
+      moduleOutputs(inner).length > MAX_MODULE_PORTS
     )
       return null;
     validatedModules.set(n.id, inner);

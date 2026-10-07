@@ -6,12 +6,17 @@ import {
   type CompiledProgram,
   compileProgram,
   OPCODES,
+  RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
+  type StackModel,
   type Tick,
 } from "../computerStepper";
 
 /** A program given as raw bytes, for opcodes and branches the compiler never emits. */
-export const raw = (...pairs: [number, number][]): CompiledProgram => ({
+export const raw = (...pairs: [number, number][]): CompiledProgram => rawFor("hardware", ...pairs);
+/** Raw bytes for one CPU variant. */
+export const rawFor = (stack: StackModel, ...pairs: [number, number][]): CompiledProgram => ({
+  stack,
   instructions: pairs.map(([opcode, operand], i) => ({
     address: i * 2,
     opcode,
@@ -24,6 +29,7 @@ export const raw = (...pairs: [number, number][]): CompiledProgram => ({
 });
 
 const { LDI, LDM, STM, ADDI, ADDM, SUBI, SUBM, OUT, JMP, JNC, CALL, RET, HALT } = OPCODES;
+const { LDS, STS, ADDS, SUBS, ADDSP } = OPCODES;
 
 /** Seeded PRNG (mulberry32), so a failing random program can be rerun. */
 function random(seed: number) {
@@ -41,10 +47,12 @@ function random(seed: number) {
  * JMP/JNC so it always reaches HALT. Operands are any byte, so RAM addresses
  * above 15 wrap, F0–FF reach the screen, and adds and subtracts carry and borrow.
  */
-function randomProgram(seed: number, length = 40): CompiledProgram {
+function randomProgram(seed: number, length = 40, stack: StackModel = "hardware"): CompiledProgram {
   const next = random(seed);
   const byte = () => Math.floor(next() * 256);
-  const opcodes = [LDI, LDM, STM, ADDI, ADDM, SUBI, SUBM, OUT, JMP, JNC];
+  const opcodes: number[] = [LDI, LDM, STM, ADDI, ADDM, SUBI, SUBM, OUT, JMP, JNC];
+  // SP stays at 32, so SP + offset wraps around all 32 bytes of RAM.
+  if (stack === "ram") opcodes.push(LDS, STS, ADDS, SUBS);
   const pairs: [number, number][] = [];
   for (let i = 0; i < length; i++) {
     const opcode = opcodes[Math.floor(next() * opcodes.length)];
@@ -52,7 +60,7 @@ function randomProgram(seed: number, length = 40): CompiledProgram {
     pairs.push([opcode, opcode === JMP || opcode === JNC ? Math.min(forward, 2 * length) : byte()]);
   }
   pairs.push([HALT, 0]);
-  return raw(...pairs);
+  return rawFor(stack, ...pairs);
 }
 
 export const PROGRAMS: Record<string, CompiledProgram> = {
@@ -108,6 +116,47 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     "fn twice(n) {\n  return n + n;\n}\nfn add3(n) {\n  let m = twice(n);\n  return m + 3;\n}\nlet total = 0;\nfor (let i = 0; i < 5; i = i + 2) {\n  let t = add3(i);\n  total = total + t;\n  print(total);\n}\nprint(total);",
   ),
   ...Object.fromEntries([1, 2, 3, 4, 5, 6].map((seed) => [`random ${seed}`, randomProgram(seed)])),
+};
+
+export const ram = (source: string) => compileProgram(source, { stack: "ram" });
+
+/** Programs for the stack-in-RAM CPU: the same samples, recursion, and every new opcode. */
+export const RAM_PROGRAMS: Record<string, CompiledProgram> = {
+  ...Object.fromEntries(
+    Object.entries({ ...SAMPLE_PROGRAMS, ...RAM_STACK_SAMPLES }).map(([name, source]) => [
+      name,
+      ram(source),
+    ]),
+  ),
+  "every stack opcode": rawFor(
+    "ram",
+    [LDI, 200],
+    [ADDSP, 256 - 3], // SP 32 → 29
+    [STS, 0],
+    [STS, 2],
+    [ADDS, 0], // carry out
+    [SUBS, 2], // borrow
+    [LDS, 2],
+    [CALL, 22],
+    [ADDSP, 3], // SP back to 32
+    [OUT, 0],
+    [HALT, 0],
+    [SUBI, 1], // address 22
+    [RET, 0],
+  ),
+  "recursive countdown": ram(
+    "fn down(n) {\n  print(n);\n  if (0 < n) {\n    let next = n - 1;\n    down(next);\n  }\n  return;\n}\nlet start = 5;\ndown(start);",
+  ),
+  "nested CALL/RET": ram(
+    "fn twice(n) {\n  return n + n;\n}\nfn add3(n) {\n  let m = twice(n);\n  return m + 3;\n}\nlet total = 0;\nfor (let i = 0; i < 5; i = i + 2) {\n  let t = add3(i);\n  total = total + t;\n  print(total);\n}\nprint(total);",
+  ),
+  "loop inside a recursive function": ram(
+    "fn tri(n) {\n  let s = 0;\n  for (let i = 0; i < n; i++) {\n    s = s + 1;\n  }\n  if (1 < n) {\n    let m = n - 1;\n    let r = tri(m);\n    s = s + r;\n  }\n  return s;\n}\nprint(tri(3));",
+  ),
+  "hardware-only opcode halts": rawFor("ram", [LDI, 9], [0x00, 0], [OUT, 0]),
+  ...Object.fromEntries(
+    [1, 2, 3, 4].map((seed) => [`random ${seed}`, randomProgram(seed, 40, "ram")]),
+  ),
 };
 
 /** The probe values the stepper's registers should show after `tick`. */

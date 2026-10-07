@@ -87,7 +87,8 @@ describe("toy compiler and CPU trace", () => {
     expect(() => compileProgram("fn f(n) {\n  return n;\n}\nlet x = f(x);")).toThrow(
       "has no value yet",
     );
-    expect(() => compileProgram("if (x) print(x);")).toThrow("Use let");
+    expect(() => compileProgram("if (x) print(x);")).toThrow("Use if (a < b)");
+    expect(() => compileProgram("while (x) {")).toThrow("Use let");
     expect(() => compileProgram("fn a() {\n  a();\n}\na();")).toThrow("Recursive calls");
     expect(() => encodeInstruction(0xff, 0)).toThrow("Unknown opcode");
     expect(decodeInstruction([OPCODES.LDI, 7])?.mnemonic).toBe("LDI");

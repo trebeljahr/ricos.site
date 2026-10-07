@@ -124,7 +124,7 @@ export default function DonatePage({
               path: "donate",
               overwrites: [{ matchingPath: "donate", newText: "buy-me-a-coffee" }],
             }}
-            title="Buy me a coffee"
+            title="Support me creating this work"
           />
 
           {/* A donor coming back from Stripe lands at the top of the page, so the

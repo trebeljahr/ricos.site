@@ -36,8 +36,11 @@ import {
   outputWidth,
   PRESETS as sourcePresets,
   PROBE_NAMES,
+  type Ripple,
+  rippleFrame,
   type Snapshot,
   step,
+  stepWithDelays,
   validateCircuit,
   WIRE_COLORS,
   type WireColor,
@@ -838,6 +841,10 @@ export function LogicBuilder() {
     if (!hasClock) setRunning(false);
   }, [hasClock]);
   const [rate, setRate] = useState(2);
+  // Ripple replay: off by default; when on, a tick's changes play back in gate-delay order.
+  const [rippleOn, setRippleOn] = useState(false);
+  const [rippleSpeed, setRippleSpeed] = useState(250);
+  const [replay, setReplay] = useState<{ from: Snapshot; ripple: Ripple; at: number } | null>(null);
   const [pending, setPending] = useState<{ from: string; output: number } | null>(null);
   const [wireDraft, setWireDraft] = useState<WireDraft | null>(null);
   const [selectedWires, setSelectedWires] = useState<string[]>([]);
@@ -1156,6 +1163,7 @@ export function LogicBuilder() {
   const snapshotRef = useRef(snapshot);
   const timelineRef = useRef(timeline);
   const clockRef = useRef(clockHigh);
+  const rippleRef = useRef(rippleOn);
   const dragRef = useRef(drag);
   const wireDraftRef = useRef<WireDraft | null>(null);
   const suppressBoardClick = useRef(false);
@@ -1163,6 +1171,7 @@ export function LogicBuilder() {
   snapshotRef.current = snapshot;
   timelineRef.current = timeline;
   clockRef.current = clockHigh;
+  rippleRef.current = rippleOn;
   dragRef.current = drag;
 
   const zoomAt = useCallback(
@@ -1357,7 +1366,18 @@ export function LogicBuilder() {
     snapshotRef.current = frame.snapshot;
     clockRef.current = frame.clockHigh;
     setTimelineState(next);
+    setReplay(null);
   }, []);
+  /** One tick from `from`. With ripple on, the result is the same and is replayed in delay order. */
+  const settleTick = useCallback(
+    (target: Circuit, from: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {}) => {
+      if (!rippleRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        return { next: step(target, from, high, pulseIds), replay: null };
+      const ripple = stepWithDelays(target, from, high, pulseIds);
+      return { next: ripple.snapshot, replay: ripple.steps > 0 ? { from, ripple, at: 0 } : null };
+    },
+    [],
+  );
   /** Starts a fresh timeline at the current tick, for a new view level. */
   const restartTimeline = (next: Snapshot) =>
     setTimeline(createTimeline({ ...currentFrame(timelineRef.current), pulses: {}, snapshot: next }));
@@ -1365,9 +1385,10 @@ export function LogicBuilder() {
   const advance = useCallback((pulseIds: Record<string, boolean> = {}, forcedClock?: boolean) => {
     const from = currentFrame(timelineRef.current);
     const high = forcedClock ?? !from.clockHigh;
-    const next = step(circuitRef.current, from.snapshot, high, pulseIds);
+    const { next, replay } = settleTick(circuitRef.current, from.snapshot, high, pulseIds);
     setTimeline(push(timelineRef.current, { tick: from.tick + 1, clockHigh: high, pulses: pulseIds, snapshot: next }));
-  }, [setTimeline]);
+    setReplay(replay);
+  }, [setTimeline, settleTick]);
   /** Replays the next recorded tick if the reader stepped back, else simulates one. */
   const stepForward = useCallback(() => {
     const current = timelineRef.current;
@@ -1384,8 +1405,26 @@ export function LogicBuilder() {
     // Any edit (an input toggle included) branches history at the shown tick.
     const cut = truncate(timelineRef.current);
     const frame = currentFrame(cut);
-    setTimeline(replaceSnapshot(cut, step(circuit, frame.snapshot, frame.clockHigh)));
-  }, [circuit, setTimeline]);
+    const { next, replay } = settleTick(circuit, frame.snapshot, frame.clockHigh);
+    setTimeline(replaceSnapshot(cut, next));
+    setReplay(replay);
+  }, [circuit, setTimeline, settleTick]);
+  useEffect(() => {
+    if (!replay) return;
+    const timer = window.setTimeout(
+      () => setReplay(replay.at + 1 >= replay.ripple.steps ? null : { ...replay, at: replay.at + 1 }),
+      rippleSpeed,
+    );
+    return () => window.clearTimeout(timer);
+  }, [replay, rippleSpeed]);
+  useEffect(() => {
+    if (!rippleOn) setReplay(null);
+  }, [rippleOn]);
+  // What the board draws: the shown tick, or a frame of its ripple replay.
+  const boardSnapshot = useMemo(
+    () => (replay ? rippleFrame(replay.from, replay.ripple, replay.at) : snapshot),
+    [replay, snapshot],
+  );
 
   const resetRuntime = () => {
     setRunning(false);
@@ -2273,6 +2312,28 @@ export function LogicBuilder() {
               </div>
             )}
             <ToolbarSwitch
+              label="Gate delay"
+              offLabel="Instant"
+              onLabel="Ripple"
+              checked={rippleOn}
+              description="Replays each change one gate at a time. Off when reduced motion is set."
+              onChange={setRippleOn}
+            />
+            {rippleOn && (
+              <label className={styles.rate}>
+                Ripple{" "}
+                <select
+                  value={rippleSpeed}
+                  onChange={(event) => setRippleSpeed(Number(event.target.value))}
+                  aria-label="Time per gate delay"
+                >
+                  <option value={600}>Slow</option>
+                  <option value={250}>Medium</option>
+                  <option value={80}>Fast</option>
+                </select>
+              </label>
+            )}
+            <ToolbarSwitch
               label="Wire paths"
               offLabel="Simple"
               onLabel="Routed"
@@ -2757,7 +2818,7 @@ export function LogicBuilder() {
                       const from = circuit.nodes.find((node) => node.id === bus.from);
                       const color = WIRE_COLORS[defaultWireColor(bus.from, circuit.nodes)];
                       const live =
-                        snapshot.outputs[bus.from]?.[bus.output] ?? snapshot.values[bus.from];
+                        boardSnapshot.outputs[bus.from]?.[bus.output] ?? boardSnapshot.values[bus.from];
                       return (
                         <g key={bus.key} style={{ "--wire-color": color } as React.CSSProperties}>
                           <path
@@ -2821,7 +2882,7 @@ export function LogicBuilder() {
                     const wireColor = wire.color ?? defaultWireColor(wire.from, circuit.nodes);
                     // Red on a bus means a conflict, so a driven bus never uses the coral wire colour.
                     const color = WIRE_COLORS[isBus && wireColor === "coral" ? "blue" : wireColor];
-                    const busValue = isBus ? snapshot.buses?.[wire.from] ?? "Z" : undefined;
+                    const busValue = isBus ? boardSnapshot.buses?.[wire.from] ?? "Z" : undefined;
                     return (
                       <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
                         <path
@@ -2887,8 +2948,8 @@ export function LogicBuilder() {
                                   busValue === "X" && styles.busConflict,
                                   typeof busValue === "number" && busValue > 0 && styles.live,
                                 ]
-                              : (snapshot.outputs[wire.from]?.[wire.output ?? 0] ??
-                                  snapshot.values[wire.from]) &&
+                              : (boardSnapshot.outputs[wire.from]?.[wire.output ?? 0] ??
+                                  boardSnapshot.values[wire.from]) &&
                                   styles.live,
                             selectedWires.includes(wire.id) && styles.wireSelected,
                           )}
@@ -2957,8 +3018,8 @@ export function LogicBuilder() {
                         styles.node,
                         expandedDetails.has(node.id) && styles.expandedNode,
                         selected.includes(node.id) && styles.selected,
-                        snapshot.values[node.id] && styles.active,
-                        node.type === "lamp" && snapshot.values[node.id] && styles.lampLit,
+                        boardSnapshot.values[node.id] && styles.active,
+                        node.type === "lamp" && boardSnapshot.values[node.id] && styles.lampLit,
                         (inputSide(node) === "top" || outputSide(node) === "top") && styles.topPorts,
                       )}
                       style={
@@ -3183,7 +3244,7 @@ export function LogicBuilder() {
                           >
                             {node.probe && <span className={styles.probeName}>{node.probe}</span>}
                             <span className={styles.decimalValue}>
-                              {(snapshot.outputs[node.id] ?? []).reduce(
+                              {(boardSnapshot.outputs[node.id] ?? []).reduce(
                                 (value, bit, index) => value + (bit ? 2 ** index : 0),
                                 0,
                               )}
@@ -3192,7 +3253,7 @@ export function LogicBuilder() {
                               {Array.from(
                                 { length: node.type === "display4" ? 4 : 8 },
                                 (_, index) =>
-                                  snapshot.outputs[node.id]?.[
+                                  boardSnapshot.outputs[node.id]?.[
                                     (node.type === "display4" ? 4 : 8) - index - 1
                                   ]
                                     ? "1"
@@ -3203,11 +3264,11 @@ export function LogicBuilder() {
                         ) : node.type === "lamp" ? (
                           <span className={styles.lampState}>
                             <span
-                              className={clsx(styles.led, snapshot.values[node.id] && styles.ledOn)}
+                              className={clsx(styles.led, boardSnapshot.values[node.id] && styles.ledOn)}
                               role="img"
-                              aria-label={snapshot.values[node.id] ? "LED on" : "LED off"}
+                              aria-label={boardSnapshot.values[node.id] ? "LED on" : "LED off"}
                             />
-                            <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
+                            <span className={styles.bit}>{boardSnapshot.values[node.id] ? "1" : "0"}</span>
                           </span>
                         ) : node.type === "switch" ? (
                           <button
@@ -3239,10 +3300,10 @@ export function LogicBuilder() {
                           <BusReadout
                             value={
                               node.type === "splitter"
-                                ? snapshot.buses?.[
+                                ? boardSnapshot.buses?.[
                                     circuit.wires.find((wire) => wire.to === node.id)?.from ?? ""
                                   ] ?? "Z"
-                                : snapshot.buses?.[node.id] ?? "Z"
+                                : boardSnapshot.buses?.[node.id] ?? "Z"
                             }
                           />
                         ) : node.type === "module" ? (
@@ -3251,7 +3312,7 @@ export function LogicBuilder() {
                             {moduleOutputs(node.module!).length} OUT
                           </span>
                         ) : (
-                          <span className={styles.bit}>{snapshot.values[node.id] ? "1" : "0"}</span>
+                          <span className={styles.bit}>{boardSnapshot.values[node.id] ? "1" : "0"}</span>
                         )}
                       </div>
                       {!expandedDetails.has(node.id) && isUnfoldable(node) && (
@@ -3269,7 +3330,7 @@ export function LogicBuilder() {
                       {expandedDetails.get(node.id) && (
                         <InlineCircuit host={node} circuit={expandedDetails.get(node.id)!.inner}
                           layout={expandedDetails.get(node.id)!.layout} unfolded={unfolded}
-                          snapshot={snapshot.modules[node.id] ?? EMPTY_SNAPSHOT}
+                          snapshot={boardSnapshot.modules[node.id] ?? EMPTY_SNAPSHOT}
                           {...inlineActions} onActivate={setActiveInlinePath}
                           activePath={activeInlinePath} zoom={zoom} path={node.id} />
                       )}

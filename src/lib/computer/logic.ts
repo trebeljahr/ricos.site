@@ -270,6 +270,7 @@ const SETTLED_TYPES = new Set<GateType>([
   "nand",
   "nor",
 ]);
+const ZERO_DELAY_TYPES = new Set<GateType>(["lamp", "display4", "display8", "junction"]);
 
 /**
  * Everything step() needs that depends only on the circuit's structure: who
@@ -434,6 +435,8 @@ export function step(
   pulses: Record<string, boolean> = {},
   overrides: Record<string, boolean> = {},
   depth = 0,
+  /** When given, filled with the delay step of every node that changed; see stepWithDelays. */
+  delays?: Record<string, number>,
 ): Snapshot {
   const compiled = compile(circuit);
   const { nodes, sourceId, sourcePort, sourceMulti } = compiled;
@@ -456,6 +459,15 @@ export function step(
       );
     } else if (MEMORY_TYPES.has(node.type)) values[node.id] = Boolean(previous.memory[node.id]);
   }
+  if (delays)
+    for (const node of nodes)
+      if (
+        Boolean(values[node.id]) !== Boolean(previous.values[node.id]) ||
+        (MULTI_OUTPUT_TYPES.has(node.type) &&
+          node.type !== "module" &&
+          bitKey(outputs[node.id] ?? []) !== bitKey(previous.outputs[node.id] ?? []))
+      )
+        delays[node.id] = 0;
   let unstable = false;
   const signal = (i: number, port: number) => {
     const id = sourceId[i][port];
@@ -616,18 +628,39 @@ export function step(
     }
     return changed;
   };
+  // With unit gate delay a node changes one step after the latest of its inputs
+  // that changed this tick. `floor` is the earliest step in the current phase.
+  let floor = 1;
+  const timed = (i: number): boolean => {
+    const id = nodes[i].id;
+    const before = outputs[id];
+    const changed = evaluate(i);
+    if (!changed && (before === outputs[id] || bitKey(before ?? []) === bitKey(outputs[id] ?? [])))
+      return changed;
+    // Lamps, displays and junctions are wire ends and splices, not gates.
+    const gap = ZERO_DELAY_TYPES.has(nodes[i].type) ? 0 : 1;
+    let at = floor;
+    for (let port = 0; port < sourceId[i].length; port++) {
+      const source = sourceId[i][port];
+      const t = source === undefined ? undefined : delays![source];
+      if (t !== undefined && t + gap > at) at = t + gap;
+    }
+    delays![id] = at;
+    return changed;
+  };
+  const run = delays ? timed : evaluate;
   // Acyclic parts settle in one topological pass. A feedback loop (a latch built
   // from gates) repeats until it holds still; one that never does is flagged.
   const settle = () => {
     compiled.groups.forEach((group, g) => {
       if (!compiled.cyclic[g]) {
-        evaluate(group[0]);
+        run(group[0]);
         return;
       }
       const limit = 2 * group.length + 2;
       for (let pass = 0; pass <= limit; pass++) {
         let changed = false;
-        for (const i of group) if (evaluate(i)) changed = true;
+        for (const i of group) if (run(i)) changed = true;
         if (!changed) break;
         if (pass === limit) unstable = true;
       }
@@ -675,7 +708,18 @@ export function step(
   });
   blockRuns = new Map();
   lastClock.__dramTick = clockHigh;
+  // Stored bits and block states change together, one step after the first settle.
+  let commitAt = 1;
+  if (delays) {
+    for (const t of Object.values(delays)) if (t + 1 > commitAt) commitAt = t + 1;
+    for (const i of compiled.memory)
+      if (Boolean(memory[nodes[i].id]) !== Boolean(values[nodes[i].id]))
+        delays[nodes[i].id] = commitAt;
+  }
   for (const i of compiled.memory) values[nodes[i].id] = Boolean(memory[nodes[i].id]);
+  // Whatever changes now does so because of the commit; a block whose state
+  // moved changes its outputs at the commit step, like a flip-flop.
+  floor = commitAt;
   settle();
   let settledModules = true;
   for (const id of moduleRuns.keys())
@@ -696,6 +740,53 @@ export function step(
       key: `${clockHigh ? 1 : 0}${bitKey(compiled.inputIds.map((id) => Boolean(values[id])))}`,
     });
   return result;
+}
+
+export type Ripple = {
+  snapshot: Snapshot;
+  /** Delay step at which each node's value (and so its output wires) last changed this tick. */
+  delays: Record<string, number>;
+  /** The last delay step of the tick: replaying 0..steps shows every change. */
+  steps: number;
+};
+
+/**
+ * The same tick as step(), timed with unit gate delay: a gate changes one step
+ * after the latest input that changed, a folded block counts as one gate, and
+ * stored bits change one step after the first settle. Sources that changed are
+ * at step 0. A feedback loop advances one step per pass and keeps step()'s pass
+ * limit and `unstable` flag, so the settled values are exactly step()'s.
+ */
+export function stepWithDelays(
+  circuit: Circuit,
+  previous: Snapshot,
+  clockHigh: boolean,
+  pulses: Record<string, boolean> = {},
+  overrides: Record<string, boolean> = {},
+): Ripple {
+  const delays: Record<string, number> = {};
+  const snapshot = step(circuit, previous, clockHigh, pulses, overrides, 0, delays);
+  let steps = 0;
+  for (const t of Object.values(delays)) if (t > steps) steps = t;
+  return { snapshot, delays, steps };
+}
+
+/** What the reader sees `at` a delay step: changes up to it, earlier values after. */
+export function rippleFrame(previous: Snapshot, ripple: Ripple, at: number): Snapshot {
+  if (at >= ripple.steps) return ripple.snapshot;
+  const values = { ...ripple.snapshot.values };
+  const outputs = { ...ripple.snapshot.outputs };
+  const buses = ripple.snapshot.buses && { ...ripple.snapshot.buses };
+  for (const [id, t] of Object.entries(ripple.delays)) {
+    if (t <= at) continue;
+    values[id] = Boolean(previous.values[id]);
+    if (id in previous.outputs) outputs[id] = previous.outputs[id];
+    else delete outputs[id];
+    if (!buses) continue;
+    if (previous.buses && id in previous.buses) buses[id] = previous.buses[id];
+    else delete buses[id];
+  }
+  return { ...ripple.snapshot, values, outputs, ...(buses && { buses }) };
 }
 
 const node = (

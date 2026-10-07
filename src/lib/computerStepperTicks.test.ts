@@ -5,6 +5,10 @@ import {
   controlWord,
   decodeControlWord,
   EXECUTE_STEPS,
+  INT_OPCODE,
+  INTERRUPT_SAMPLES,
+  INTERRUPT_STEPS,
+  INTERRUPT_VECTOR,
   ISA,
   isaFor,
   MAX_T_STATES,
@@ -139,7 +143,9 @@ describe("per-tick trace", () => {
   for (const [name, program] of Object.entries(PROGRAMS)) {
     it(`${name}: matches the old three-phase trace`, () => {
       const legacy = legacyTraceProgram(program);
-      const derived = traceProgram(program);
+      const derived = traceProgram(program).map(
+        ({ tick: _t, key: _k, keyReady: _r, interruptsOn: _i, keyPress: _p, ...rest }) => rest,
+      );
       expect(derived).toEqual(legacy);
       const ticks = traceTicks(program);
       const end = ticks.at(-1)!;
@@ -268,5 +274,105 @@ describe("stack-in-RAM trace", () => {
   it("stops on RET with an empty stack", () => {
     const end = traceTicks({ ...raw([[OPCODES.RET, 0]]), stack: "ram" }).at(-1)!;
     expect(end.fault).toContain("The stack is empty");
+  });
+});
+
+describe("key port and interrupts", () => {
+  const { JMP, EI, DI, IN, RETI, OUT, HALT, LDI } = OPCODES;
+  const handler = "let last = 0;\nfn on_key(k) {\n  last = k;\n}\nloop {\n}";
+
+  it("puts a jump to the handler at the interrupt vector and turns interrupts on", () => {
+    for (const stack of ["hardware", "ram"] as const) {
+      const program = compileProgram(handler, { stack });
+      const start = program.bytes.slice(0, 6);
+      expect(start.slice(0, 3)).toEqual([JMP, INTERRUPT_VECTOR + 2, JMP]);
+      expect(start.slice(4)).toEqual([EI, 0]);
+      const entry = program.instructions[start[3] / 2];
+      expect(entry.label).toBe("SAVE ACC");
+      const ops = program.instructions.map((instruction) => instruction.opcode);
+      expect(ops).toContain(IN);
+      expect(ops.at(-1)).toBe(RETI);
+      expect(program.variables.map((variable) => variable.name)).toContain("on_key.carry");
+    }
+  });
+
+  it("leaves programs without a handler unchanged", () => {
+    expect(compileProgram(SAMPLE_PROGRAMS.LOOP).bytes[0]).toBe(LDI);
+  });
+
+  it("compiles loop, key(), interrupts_on() and interrupts_off()", () => {
+    const program = compileProgram(
+      "interrupts_off();\nlet k = key();\nprint(k);\ninterrupts_on();\nloop {\n  print(k);\n}",
+    );
+    const ops = program.instructions.map((instruction) => instruction.opcode);
+    expect(ops.slice(0, 3)).toEqual([DI, IN, OPCODES.STM]);
+    expect(ops).toContain(EI);
+    const last = program.instructions.at(-2)!;
+    expect(last.opcode).toBe(JMP);
+    expect(last.label).toBe("LOOP FOREVER");
+  });
+
+  it("rejects calling the handler, built-in names, and shared functions on the hardware-stack CPU", () => {
+    expect(() => compileProgram(`${handler}\non_key(1);`)).toThrow(/runs when a key is pressed/);
+    expect(() => compileProgram("fn key() {\n  return 1;\n}")).toThrow(/built in/);
+    expect(() => compileProgram("let x = key(3);")).toThrow(/takes no arguments/);
+    const shared =
+      "fn twice(n) {\n  return n + n;\n}\nfn on_key(k) {\n  let t = twice(k);\n}\nprint(twice(2));";
+    expect(() => compileProgram(shared)).toThrow(/both call “twice”/);
+    expect(compileProgram(shared, { stack: "ram" }).bytes.length).toBeGreaterThan(0);
+  });
+
+  it("enters the interrupt from T0 without a fetch, generated into the ROM as opcode EF", () => {
+    for (const stack of ["hardware", "ram"] as const) {
+      const steps = INTERRUPT_STEPS[stack];
+      for (const [t, word] of steps.entries())
+        expect(controlWord(INT_OPCODE, t, false, stack)).toEqual(word);
+      expect(steps.at(-1)).toEqual(["VEC_OUT", "PC_IN", "STEP_RESET"]);
+      expect(steps.length).toBeLessThanOrEqual(MAX_T_STATES);
+      const rom = microcodeRom(stack);
+      expect(decodeControlWord(rom[microcodeAddress(INT_OPCODE, 0, true)])).toEqual(
+        decodeControlWord(rom[microcodeAddress(INT_OPCODE, 0, false)]),
+      );
+    }
+    expect(ISA.some((item) => (item.opcode as number) === INT_OPCODE)).toBe(false);
+  });
+
+  it("latches a key press, holds it while interrupts are off, and IN clears KEY READY", () => {
+    const program = raw([
+      [DI, 0],
+      [LDI, 1],
+      [IN, 0],
+      [OUT, 0],
+      [HALT, 0],
+    ]);
+    const ticks = traceTicks(program, undefined, { 6: 77 });
+    expect(ticks[6].registers.key).toBe(77);
+    expect(ticks[6].registers.keyReady).toBe(true);
+    expect(ticks.some((tick) => tick.interrupt)).toBe(false);
+    const read = ticks.find((tick) => tick.control.includes("KEY_OUT"))!;
+    expect(read.bus).toBe(77);
+    expect(read.busDriver).toBe("KEY");
+    expect(read.registers.keyReady).toBe(false);
+    expect(ticks.at(-1)!.output).toEqual([77]);
+  });
+
+  it("shows the interrupt tick by tick in the stepper, and a later key keeps the earlier steps", () => {
+    for (const stack of ["hardware", "ram"] as const) {
+      const program = compileProgram(INTERRUPT_SAMPLES.KEYBOARD, { stack });
+      const quiet = traceProgram(program);
+      const pressed = traceProgram(program, { 40: 5 });
+      const at = pressed.findIndex((snapshot) => snapshot.keyPress === 5);
+      expect(pressed.slice(0, at)).toEqual(quiet.slice(0, at));
+      const interrupt = pressed.filter((snapshot) => snapshot.phase === "interrupt");
+      expect(interrupt).toHaveLength(INTERRUPT_STEPS[stack].length);
+      expect(interrupt[0].explanation).toMatch(/A key is waiting and interrupts are on/);
+      expect(interrupt.at(-1)!.pc).toBe(INTERRUPT_VECTOR);
+      expect(interrupt.at(-1)!.interruptsOn).toBe(false);
+      expect(pressed.at(-1)!.screen[3]).toBe(5);
+      expect(pressed.at(-1)!.output).toEqual([1]);
+      // Ticks only move forward, so a press can be scheduled after any snapshot's tick.
+      for (let i = 1; i < pressed.length; i++)
+        expect(pressed[i].tick).toBeGreaterThanOrEqual(pressed[i - 1].tick);
+    }
   });
 });

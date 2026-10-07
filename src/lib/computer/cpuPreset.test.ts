@@ -8,17 +8,21 @@ import {
   compileProgram,
   decodeControlWord,
   encodeControlWord,
+  INT_OPCODE,
+  INTERRUPT_VECTOR,
   ISA,
   isaFor,
+  type KeySchedule,
   OPCODES,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
   SIGNALS,
   stackModelOf,
+  type Tick,
   traceTicks,
 } from "../computerStepper";
-import { CPU_PARTS, CPU_PRESETS, cpuCircuit, cpuFromSource } from "./cpuPreset";
-import { expectedProbes, PROGRAMS, RAM_PROGRAMS, ram } from "./cpuTestPrograms";
+import { CPU_PARTS, CPU_PRESETS, cpuCircuit, cpuFromSource, keyPressOverrides } from "./cpuPreset";
+import { expectedProbes, KEYED_PROGRAMS, PROGRAMS, RAM_PROGRAMS, ram } from "./cpuTestPrograms";
 import { type Circuit, initialSnapshot, type Snapshot, step, validateCircuit } from "./logic";
 import { readProbes } from "./probes";
 
@@ -33,14 +37,21 @@ const controlOf = (state: Snapshot) =>
     .reduce((word, bit, index) => (bit ? word | (1 << index) : word), 0);
 const bytesOf = (state: Snapshot, id: string) => (state.blocks?.[id] as Bytes).bytes;
 
-/** Runs the circuit next to the trace; returns the number of ticks compared. */
+/**
+ * Runs the circuit next to the trace; returns the number of ticks compared.
+ * A key press flips the keyboard switches for that tick's rising clock edge.
+ * With `maxInstructions`, the program need not halt.
+ */
 function lockstep(
   program: CompiledProgram,
   circuit: Circuit = cpuCircuit(program.bytes, undefined, stackModelOf(program)),
+  keys: KeySchedule = {},
+  maxInstructions?: number,
 ) {
   const inRam = stackModelOf(program) === "ram";
-  const ticks = traceTicks(program);
-  expect(ticks.at(-1)!.halted, "the trace ends on HALT").toBe(true);
+  const ticks = traceTicks(program, maxInstructions, keys);
+  if (maxInstructions === undefined)
+    expect(ticks.at(-1)!.halted, "the trace ends on HALT").toBe(true);
   expect(ticks.some((tick) => tick.fault)).toBe(false);
   let state = step(circuit, initialSnapshot(), false);
   for (const tick of ticks) {
@@ -49,7 +60,8 @@ function lockstep(
       decodeControlWord(encodeControlWord(tick.control)),
     );
     expect(busOf(state), `${where}: bus`).toBe(tick.bus ?? "Z");
-    state = step(circuit, state, true);
+    const press = tick.keyPress === null ? {} : keyPressOverrides(tick.keyPress);
+    state = step(circuit, state, true, {}, press);
     state = step(circuit, state, false);
     expect(state.unstable, `${where}: settles`).toBe(false);
     const { BUS: _bus, ...probes } = readProbes(circuit, state);
@@ -62,6 +74,7 @@ function lockstep(
         `${where}: stack`,
       ).toEqual(tick.stack);
   }
+  if (maxInstructions !== undefined) return ticks.length;
   // HALT gates the clock: more cycles change nothing.
   const halted = readProbes(circuit, state);
   for (let i = 0; i < 3; i++) state = step(circuit, step(circuit, state, true), false);
@@ -80,6 +93,8 @@ describe("CPU preset", () => {
       "DMAR",
       "FLAGS",
       "IR",
+      "IRQ",
+      "KEY",
       "OPERAND",
       "OUT",
       "PC",
@@ -161,5 +176,106 @@ describe("stack-in-RAM CPU lockstep with the per-tick trace", () => {
     expect(circuit.nodes.find((node) => node.id === CPU_PARTS.ram)?.behaviour).toBe("ram32");
     expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))).not.toBeNull();
     expect(readProbes(circuit, step(circuit, initialSnapshot(), false)).SP).toBe(32);
+  });
+});
+
+describe("interrupts in lockstep with the per-tick trace", () => {
+  for (const stack of ["hardware", "ram"] as const)
+    for (const [name, { program, keys }] of Object.entries(KEYED_PROGRAMS[stack]))
+      it(`${stack} stack: ${name}`, () => {
+        const endless = !traceTicks(program, undefined, keys).at(-1)!.halted;
+        expect(lockstep(program, undefined, keys, endless ? 300 : undefined)).toBeGreaterThan(0);
+      });
+
+  const ticksOf = (stack: "hardware" | "ram", name: string) => {
+    const { program, keys } = KEYED_PROGRAMS[stack][name];
+    return { ticks: traceTicks(program, undefined, keys), keys };
+  };
+  /** First tick of each interrupt entry. */
+  const entries = (ticks: Tick[]) => ticks.filter((tick) => tick.interrupt && tick.t === 0);
+
+  for (const stack of ["hardware", "ram"] as const) {
+    it(`${stack} stack: a key mid-instruction waits for the instruction to end, then runs the handler`, () => {
+      const { ticks, keys } = ticksOf(stack, "key arriving mid-instruction");
+      const pressed = Number(Object.keys(keys)[0]);
+      const [entry] = entries(ticks);
+      const interrupted = ticks[pressed];
+      // The interrupt starts on the tick after the pressed instruction's STEP_RESET.
+      const end = ticks.findIndex(
+        (tick) => tick.index >= pressed && tick.control.includes("STEP_RESET"),
+      );
+      expect(interrupted.t).toBe(5);
+      expect(entry.index).toBe(end + 1);
+      expect(entry.control).toContain("IE_CLR");
+      const vector = ticks.find((tick) => tick.interrupt && tick.control.includes("VEC_OUT"))!;
+      expect(vector.bus).toBe(INTERRUPT_VECTOR);
+      expect(vector.busDriver).toBe("VECTOR");
+      // RETI resumes at the PC the entry pushed: the instruction after the interrupted one.
+      const reti = ticks.find(
+        (tick) => tick.registers.ir === OPCODES.RETI && tick.control.includes("STEP_RESET"),
+      )!;
+      expect(ticks[reti.index + 1].address).toBe(entry.address);
+      expect(entry.address).toBe(interrupted.address + 2);
+      const end2 = ticks.at(-1)!;
+      expect(end2.halted).toBe(true);
+      // Same sum as without the key: ACC and carry survive the handler.
+      const plain = traceTicks(KEYED_PROGRAMS[stack]["key arriving mid-instruction"].program);
+      expect(end2.output).toEqual([plain.at(-1)!.output[0], 1, 65]);
+    });
+
+    it(`${stack} stack: a press while the handler runs waits for RETI`, () => {
+      const { ticks } = ticksOf(stack, "nested press while interrupts are off");
+      const starts = entries(ticks);
+      expect(starts).toHaveLength(2);
+      const reti = ticks.filter(
+        (tick) => tick.registers.ir === OPCODES.RETI && tick.control.includes("STEP_RESET"),
+      );
+      // The second entry follows the first RETI directly, with interrupts off in between.
+      expect(starts[1].index).toBe(reti[0].index + 1);
+      const between = ticks.slice(starts[0].index + 1, reti[0].index);
+      expect(between.every((tick) => !tick.registers.ie)).toBe(true);
+      expect(between.some((tick) => tick.keyPress !== null)).toBe(true);
+      expect(ticks.at(-1)!.output.slice(1)).toEqual([2, 66]);
+    });
+
+    it(`${stack} stack: two quick presses interrupt once and keep the later key`, () => {
+      const { ticks } = ticksOf(stack, "two presses before the handler reads the key");
+      expect(entries(ticks)).toHaveLength(1);
+      expect(ticks.at(-1)!.output.slice(1)).toEqual([1, 67]);
+    });
+
+    it(`${stack} stack: DI holds the key until EI`, () => {
+      const { ticks } = ticksOf(stack, "DI holds a key until EI");
+      const [entry] = entries(ticks);
+      const ei = ticks.find((tick) => tick.registers.ir === OPCODES.EI && tick.t === 4)!;
+      expect(entry.index).toBe(ei.index + 1);
+      expect(ticks.at(-1)!.output).toEqual([3, 42, 42]);
+    });
+  }
+
+  it("runs the interrupt entry from T0 with no fetch, on both CPUs", () => {
+    for (const stack of ["hardware", "ram"] as const) {
+      const { ticks } = ticksOf(stack, "keyboard sample");
+      const entry = entries(ticks)[0];
+      expect(entry.control).not.toContain("CMAR_IN");
+      expect(entry.control).toContain(stack === "ram" ? "SP_DEC" : "STACK_IN");
+      expect(INT_OPCODE).toBe(0xef);
+    }
+  });
+
+  it("lights the interrupt group in the circuit while INT is on", () => {
+    const { program, keys } = KEYED_PROGRAMS.hardware["key arriving mid-instruction"];
+    const circuit = cpuCircuit(program.bytes);
+    const group = circuit.groups?.find((item) => item.id === "interrupt");
+    expect(group?.activeWhen).toBe(CPU_PARTS.int);
+    const ticks = traceTicks(program, undefined, keys);
+    let state = step(circuit, initialSnapshot(), false);
+    const lit: number[] = [];
+    for (const tick of ticks) {
+      if (state.values[CPU_PARTS.int]) lit.push(tick.index);
+      const press = tick.keyPress === null ? {} : keyPressOverrides(tick.keyPress);
+      state = step(circuit, step(circuit, state, true, {}, press), false);
+    }
+    expect(lit).toEqual(ticks.filter((tick) => tick.interrupt).map((tick) => tick.index));
   });
 });

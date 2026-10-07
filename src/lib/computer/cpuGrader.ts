@@ -30,7 +30,8 @@ import { duplicateProbes, listProbes, readProbes } from "./probes";
 
 // ---------------------------------------------------------------- levels
 
-type GradedProbe = Exclude<CpuProbe, "BUS">;
+// The key port and interrupt probes are not graded: the grader runs programs without key presses.
+type GradedProbe = Exclude<CpuProbe, "BUS" | "KEY" | "IRQ">;
 
 export type CpuLevel = {
   id: number;
@@ -133,6 +134,8 @@ const PART_NAME: Record<Role, string> = {
   SCREEN: "the screen",
   ALU: "the ALU",
   FRAME: "the SP + OPR adder",
+  VECTOR: "the interrupt vector",
+  KEY: "the key port",
 };
 
 /** Which control line drives each part onto the bus. */
@@ -146,6 +149,8 @@ const OUT_LINE: Record<BusDriver, Signal> = {
   STACK: "STACK_OUT",
   SP: "SP_OUT",
   FRAME: "FRAME_OUT",
+  VECTOR: "VEC_OUT",
+  KEY: "KEY_OUT",
 };
 
 /** Which control line loads each register from the bus, and that input's port. */

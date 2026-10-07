@@ -65,7 +65,20 @@ describe("CPU unfolded to a gate netlist", () => {
     expect(cpu.ram.length).toBeGreaterThanOrEqual(16);
     expect(cpu.screen).toHaveLength(8);
     expect(cpu.netlist.probes.map(([name]) => name).sort()).toEqual(
-      ["ACC", "BUS", "CMAR", "DMAR", "FLAGS", "IR", "OPERAND", "OUT", "PC", "SP"].sort(),
+      [
+        "ACC",
+        "BUS",
+        "CMAR",
+        "DMAR",
+        "FLAGS",
+        "IR",
+        "IRQ",
+        "KEY",
+        "OPERAND",
+        "OUT",
+        "PC",
+        "SP",
+      ].sort(),
     );
   });
 

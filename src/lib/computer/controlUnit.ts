@@ -7,6 +7,7 @@
 // from the table. Its behavioural form reads its words back out of those gates.
 
 import {
+  INT_OPCODE,
   ISA,
   MAX_T_STATES,
   microcodeAddress,
@@ -87,7 +88,9 @@ registerBlock<TState>({
 // ---------------------------------------------------------------- microcode
 
 const mnemonic = (opcode: number) =>
-  ISA.find((item) => item.opcode === opcode)?.mnemonic ?? opcode.toString(16).toUpperCase();
+  opcode === INT_OPCODE
+    ? "INT"
+    : (ISA.find((item) => item.opcode === opcode)?.mnemonic ?? opcode.toString(16).toUpperCase());
 const signalNames = (word: number) => SIGNALS.filter((signal) => word & bitOf(signal)).join(" ");
 
 /**
@@ -310,10 +313,19 @@ registerBlock<Microcode>({
  * together with the opcode and carry flag. STEP_RESET resets the counter at
  * the end of an instruction. HALT gates the clock: GCLK = CLK AND NOT HALT,
  * so once HALT is on, neither the counter nor anything clocked from GCLK moves.
+ * INT (the CPU's interrupt latch) swaps the opcode for INT_OPCODE, so the ROM
+ * runs the interrupt entry instead of the instruction in IR.
  */
 function controlCircuit(rom: readonly number[]): Circuit {
   const b = new Builder();
-  ports(b, [...busPorts("op", "OP"), ["carry", "CARRY"], ["clock", "CLK"]]);
+  ports(b, [...busPorts("op", "OP"), ["carry", "CARRY"], ["clock", "CLK"], ["int", "INT"]]);
+  b.gate("no-int", "not", 130, 1500, "int", undefined, "NOT INT");
+  // Each opcode bit: IR's bit, or INT_OPCODE's bit while INT is on.
+  const opcode = range(8).map((bit) =>
+    (INT_OPCODE >> bit) & 1
+      ? b.gate(`op-sel${bit}`, "or", 160, 30 + bit * 90, `op${bit}`, "int")
+      : b.gate(`op-sel${bit}`, "and", 160, 30 + bit * 90, `op${bit}`, "no-int"),
+  );
   b.nodes.push(
     {
       id: "tstate",
@@ -334,7 +346,7 @@ function controlCircuit(rom: readonly number[]): Circuit {
       behaviour: "microcode",
     },
   );
-  range(8).forEach((bit) => b.connect(`op${bit}`, "microcode", bit));
+  for (const [bit, source] of opcode.entries()) b.connect(source, "microcode", bit);
   range(T_BITS).forEach((bit) => b.connect(["tstate", bit], "microcode", 8 + bit));
   b.connect("carry", "microcode", 8 + T_BITS);
   const halt: Ref = ["microcode", SIGNALS.indexOf("HALT")];
@@ -358,11 +370,12 @@ const controlWords = (module: Circuit) => {
 
 registerBlock<Control>({
   name: "control",
-  inputs: [...busPorts("op", "OP").map(([, l]) => l), "CARRY", "CLK"],
+  inputs: [...busPorts("op", "OP").map(([, l]) => l), "CARRY", "CLK", "INT"],
   outputs: [...SIGNALS, "GCLK"],
   initialState: (module) => ({ t: 0, clock: false, words: controlWords(module) }),
   evaluate: (inputs, state) => {
-    const word = lookup(state.words, toNumber(inputs.slice(0, 8)), state.t, inputs[8]);
+    const opcode = inputs[10] ? INT_OPCODE : toNumber(inputs.slice(0, 8));
+    const word = lookup(state.words, opcode, state.t, inputs[8]);
     const gated = inputs[9] && !(word & HALT_BIT);
     const t = gated && !state.clock ? nextT(state.t, Boolean(word & RESET_BIT)) : state.t;
     return {
@@ -385,7 +398,7 @@ export const CONTROL_BLOCKS = {
   },
   control: {
     label: "CONTROL UNIT",
-    hint: "Feed it the opcode, carry and clock. It outputs the control word; HALT stops GCLK.",
+    hint: "Feed it the opcode, carry, clock and INT. It outputs the control word; HALT stops GCLK. With INT on it runs the interrupt entry instead of the opcode.",
   },
 } as const;
 export type ControlKind = keyof typeof CONTROL_BLOCKS;

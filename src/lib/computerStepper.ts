@@ -34,7 +34,7 @@ export type CompiledProgram = {
 export const stackModelOf = (program: Pick<CompiledProgram, "stack">): StackModel =>
   program.stack ?? "hardware";
 
-export type Phase = "ready" | "fetch" | "decode" | "execute";
+export type Phase = "ready" | "fetch" | "decode" | "execute" | "interrupt";
 
 export type Snapshot = {
   phase: Phase;
@@ -55,6 +55,15 @@ export type Snapshot = {
   halted: boolean;
   /** Stack pointer; only the stack-in-RAM CPU shows it. */
   sp?: number;
+  /** Index of the last clock tick this snapshot includes; −1 before the first. */
+  tick: number;
+  /** Key port: the last key code and whether it waits to be read (the IRQ line). */
+  key: number;
+  keyReady: boolean;
+  /** Interrupts enabled. */
+  interruptsOn: boolean;
+  /** Key pressed during this snapshot's ticks, if any. */
+  keyPress: number | null;
 };
 
 /**
@@ -85,8 +94,26 @@ export const OPCODES = {
   ADDS: 0xd2,
   SUBS: 0xd3,
   ADDSP: 0xd4,
+  // Keyboard and interrupts (item N), both CPUs: 0xE0–0xE3.
+  IN: 0xe0,
+  EI: 0xe1,
+  DI: 0xe2,
+  RETI: 0xe3,
   HALT: 0xf0,
 } as const;
+
+/**
+ * Not an instruction: while an interrupt is being entered, the control unit
+ * looks up this opcode instead of IR, and its microcode pushes PC and jumps to
+ * the handler vector. A program should never contain it.
+ */
+export const INT_OPCODE = 0xef;
+
+/** Code address the interrupt jumps to. The compiler puts a JMP to the key handler there. */
+export const INTERRUPT_VECTOR = 0x02;
+
+/** Tick index → key code: on that tick's clock edge the key port latches the code and raises KEY READY. */
+export type KeySchedule = Readonly<Record<number, number>>;
 
 export const ISA = [
   {
@@ -196,6 +223,30 @@ export const ISA = [
     effect: "SP ← SP + operand (80–FF count as negative)",
     stack: "ram",
   },
+  {
+    mnemonic: "IN",
+    opcode: OPCODES.IN,
+    operand: "unused",
+    effect: "ACC ← key code; key ready ← 0",
+  },
+  {
+    mnemonic: "EI",
+    opcode: OPCODES.EI,
+    operand: "unused",
+    effect: "interrupts on",
+  },
+  {
+    mnemonic: "DI",
+    opcode: OPCODES.DI,
+    operand: "unused",
+    effect: "interrupts off",
+  },
+  {
+    mnemonic: "RETI",
+    opcode: OPCODES.RETI,
+    operand: "unused",
+    effect: "PC ← popped PC; interrupts on",
+  },
   { mnemonic: "HALT", opcode: OPCODES.HALT, operand: "unused", effect: "stop" },
 ] as const;
 
@@ -292,6 +343,7 @@ type Statement =
       right: string;
       body: Statement[];
     }
+  | { kind: "loop"; line: number; body: Statement[] }
   | {
       kind: "for";
       line: number;
@@ -382,6 +434,11 @@ function parseProgram(source: string): {
         });
         continue;
       }
+      if (/^loop\s*\{$/.test(text)) {
+        statements.push({ kind: "loop", line, body: parseBlock(true) });
+        continue;
+      }
+      if (/^loop\b/.test(text)) fail(line, "Use loop { with the closing brace on its own line.");
       if (/^if\b/.test(text))
         fail(line, "Use if (a < b) { or if (a > b) { with the closing brace on its own line.");
       if (/^for\b/.test(text))
@@ -427,7 +484,7 @@ function parseProgram(source: string): {
         });
         continue;
       }
-      fail(line, "Use let, assignment, print, for, if, function call, or return.");
+      fail(line, "Use let, assignment, print, for, loop, if, function call, or return.");
     }
     if (inside) fail(lines.length, "Missing closing brace.");
     return statements;
@@ -440,6 +497,7 @@ function parseProgram(source: string): {
     if (header) {
       position++;
       if (header[1] === "print") fail(line, "print is reserved for output.");
+      if (BUILTINS.has(header[1])) fail(line, `${header[1]} is built in.`);
       if (functions.some((item) => item.name === header[1]))
         fail(line, `Function “${header[1]}” is already defined.`);
       functions.push({
@@ -461,6 +519,15 @@ function parseProgram(source: string): {
   return { main, functions };
 }
 
+/** The key handler: a function with this name runs when a key is pressed. */
+export const KEY_HANDLER = "on_key";
+/** Built-in calls: key() reads the key port; the other two switch interrupts on and off. */
+const BUILTINS = new Map<string, { opcode: number; label: string }>([
+  ["key", { opcode: OPCODES.IN, label: "READ KEY" }],
+  ["interrupts_on", { opcode: OPCODES.EI, label: "INTERRUPTS ON" }],
+  ["interrupts_off", { opcode: OPCODES.DI, label: "INTERRUPTS OFF" }],
+]);
+
 /** Where a name lives: a fixed RAM address, or a byte in the current stack frame. */
 type Place = { frame: boolean; address: number };
 type Scope = Map<string, Place>;
@@ -476,7 +543,7 @@ function declarations(statements: Statement[]): { name: string; line: number }[]
         ...(statement.declaration ? [{ name: statement.name, line: statement.line }] : []),
         ...declarations(statement.body),
       ];
-    if (statement.kind === "if") return declarations(statement.body);
+    if (statement.kind === "if" || statement.kind === "loop") return declarations(statement.body);
     return [];
   });
 }
@@ -554,11 +621,24 @@ export function compileProgram(
   };
   const store = (place: Place, label: string, line: number) =>
     emit(place.frame ? OPCODES.STS : OPCODES.STM, place.address, label, line);
-  /** Frees the frame and returns; ACC keeps the return value. */
+  /** RAM bytes where the key handler saves the ACC and carry flag of the code it interrupted. */
+  let saved: { acc: number; carry: number } | null = null;
+  /**
+   * Frees the frame and returns; ACC keeps the return value. The key handler
+   * instead restores the interrupted code's carry flag and ACC, then RETI.
+   */
   const leave = (caller: string, line: number) => {
     const size = frameSizes.get(caller) ?? 0;
     if (size) emit(OPCODES.ADDSP, size, `FREE FRAME (${size})`, line);
-    emit(OPCODES.RET, 0, "RETURN", line);
+    if (caller !== KEY_HANDLER || !saved) {
+      emit(OPCODES.RET, 0, "RETURN", line);
+      return;
+    }
+    // 0 − saved carry borrows exactly when the saved carry was 1.
+    emit(OPCODES.LDI, 0, "RESTORE CARRY", line);
+    emit(OPCODES.SUBM, saved.carry, "RESTORE CARRY", line);
+    emit(OPCODES.LDM, saved.acc, "RESTORE ACC", line);
+    emit(OPCODES.RETI, 0, "RETURN FROM INTERRUPT", line);
   };
   const call = (
     name: string,
@@ -567,6 +647,14 @@ export function compileProgram(
     line: number,
     caller: string,
   ) => {
+    const builtin = BUILTINS.get(name);
+    if (builtin) {
+      if (argument) fail(line, `${name}() takes no arguments.`);
+      emit(builtin.opcode, 0, builtin.label, line);
+      return;
+    }
+    if (name === KEY_HANDLER)
+      fail(line, `${KEY_HANDLER} runs when a key is pressed; the program does not call it.`);
     const definition = functions.get(name);
     if (!definition) fail(line, `Unknown function “${name}”.`);
     if (Boolean(argument) !== Boolean(definition.parameter))
@@ -665,6 +753,10 @@ export function compileProgram(
         const skipAddress = emit(OPCODES.JNC, 0, "SKIP IF FALSE", line);
         compileStatements(statement.body, scope, caller);
         patch(skipAddress, instructions.length * 2);
+      } else if (statement.kind === "loop") {
+        const start = instructions.length * 2;
+        compileStatements(statement.body, scope, caller);
+        emit(OPCODES.JMP, start, "LOOP FOREVER", line);
       } else {
         if (statement.declaration && statement.initial === statement.name)
           fail(line, `“${statement.name}” has no value yet.`);
@@ -705,12 +797,37 @@ export function compileProgram(
         (definition.parameter ? 1 : 0) + declarations(definition.body).length,
       );
   }
+  const handler = functions.get(KEY_HANDLER);
+  if (handler) {
+    // Code address 02 is the interrupt vector: a jump to the key handler.
+    emit(OPCODES.JMP, INTERRUPT_VECTOR + 2, "SKIP VECTOR", handler.line);
+    const vector = emit(OPCODES.JMP, 0, "INTERRUPT VECTOR", handler.line);
+    callPatches.push({ address: vector, name: KEY_HANDLER, line: handler.line });
+    emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
+  }
   compileStatements(ast.main, globals, "main");
   emit(OPCODES.HALT, 0, "HALT", 0);
   for (const definition of ast.functions) {
     functionStarts.set(definition.name, instructions.length * 2);
     const scope: Scope = new Map();
     const size = frameSizes.get(definition.name) ?? 0;
+    const line = definition.line;
+    if (definition === handler) {
+      // The interrupted code may sit between a SUB and its JNC: save ACC and carry first.
+      const acc = allocate("#acc", globals, `${KEY_HANDLER}.acc`, line, false);
+      const carry = allocate("#carry", globals, `${KEY_HANDLER}.carry`, line, false);
+      saved = { acc: acc.address, carry: carry.address };
+      emit(OPCODES.STM, acc.address, "SAVE ACC", line);
+      const clear = emit(OPCODES.JNC, 0, "SAVE CARRY", line);
+      emit(OPCODES.LDI, 1, "CARRY WAS 1", line);
+      const join = emit(OPCODES.JMP, 0, "SAVE CARRY", line);
+      patch(clear, instructions.length * 2);
+      emit(OPCODES.LDI, 0, "CARRY WAS 0", line);
+      patch(join, instructions.length * 2);
+      emit(OPCODES.STM, carry.address, "SAVE CARRY", line);
+      // Reading the key also clears KEY READY, so RETI does not re-enter the handler.
+      emit(OPCODES.IN, 0, "READ KEY", line);
+    }
     // The frame: SP + 0 is the parameter, then each local; above it, the return address.
     if (size) emit(OPCODES.ADDSP, 256 - size, `MAKE FRAME (${size})`, definition.line);
     if (definition.parameter) {
@@ -718,7 +835,7 @@ export function compileProgram(
       store(place, `ARG ${definition.parameter}`, definition.line);
     }
     compileStatements(definition.body, scope, definition.name);
-    emit(OPCODES.LDI, 0, "DEFAULT RETURN 0", 0);
+    if (definition !== handler) emit(OPCODES.LDI, 0, "DEFAULT RETURN 0", 0);
     leave(definition.name, 0);
   }
   for (const callSite of callPatches) patch(callSite.address, functionStarts.get(callSite.name)!);
@@ -748,9 +865,33 @@ export function compileProgram(
     return result;
   };
   for (const name of functions.keys()) depth(name);
+  if (handler && !inRam) {
+    // Every function variable has one fixed address: a key press inside a function the
+    // handler also runs would overwrite the interrupted call's variables.
+    const reach = (names: Iterable<string>, seen = new Set<string>()): Set<string> => {
+      for (const name of names)
+        if (!seen.has(name)) {
+          seen.add(name);
+          reach(functionCalls.get(name) ?? [], seen);
+        }
+      return seen;
+    };
+    const fromMain = reach([...mainCalls].map(({ name }) => name));
+    const shared = [...reach(functionCalls.get(KEY_HANDLER) ?? [])].find((name) =>
+      fromMain.has(name),
+    );
+    if (shared)
+      fail(
+        handler.line,
+        `${KEY_HANDLER} and the main program both call “${shared}”. Its variables have fixed RAM addresses, so a key press during that call would overwrite them. Use the stack-in-RAM CPU.`,
+      );
+  }
   if (inRam) {
     // Recursion depth is only known at run time; the trace stops on a collision then.
-    const deepest = Math.max(0, ...[...mainCalls].map(({ name }) => depths.get(name) ?? 0));
+    // A key press can arrive at the deepest point, so the handler's stack bytes come on top.
+    const deepest =
+      Math.max(0, ...[...mainCalls].map(({ name }) => depths.get(name) ?? 0)) +
+      (handler ? (depths.get(KEY_HANDLER) ?? 0) : 0);
     if (variables.length + deepest > ramBytes)
       fail(
         [...mainCalls].find(({ name }) => depths.get(name) === deepest)?.line ?? 1,
@@ -780,6 +921,16 @@ export const SAMPLE_PROGRAMS = {
     "let pixel = 1;\nfor (let i = 0; i < 8; i++) {\n  screen[3] = pixel;\n  pixel = pixel + pixel;\n}\nprint(screen[3]);",
 } as const;
 
+/**
+ * Programs with a key handler. They loop forever and wait for keys, so the
+ * stepper stops them after MAX_INSTRUCTIONS.
+ */
+export const INTERRUPT_SAMPLES = {
+  // Each key press draws its code as a row of pixels and counts the presses.
+  KEYBOARD:
+    "let presses = 0;\nfn on_key(k) {\n  screen[3] = k;\n  presses = presses + 1;\n  print(presses);\n}\nloop {\n}",
+} as const;
+
 /** Programs for the stack-in-RAM CPU: they recurse, so the other CPU rejects them. */
 export const RAM_STACK_SAMPLES = {
   RECURSION:
@@ -800,6 +951,14 @@ export const RAM_STACK_SAMPLES = {
 // counts down from 32, and two more parts drive the bus: SP itself (SP_OUT)
 // and an adder for SP + OPR (FRAME_OUT), the address of a stack-frame byte.
 // SP_IN loads SP from the bus, for ADDSP.
+//
+// Both CPUs have a key port and an interrupt line. A key press latches its
+// code in the KEY register and raises KEY READY; KEY_OUT drives the code onto
+// the bus and lowers KEY READY. IE (interrupts enabled) is set by IE_SET and
+// cleared by IE_CLR. On the clock edge that ends an instruction (STEP_RESET),
+// the INT latch takes KEY READY AND IE, both as they will be after that edge.
+// While INT is on, the control unit looks up INT_OPCODE instead of IR, from T0:
+// push PC, clear IE, and VEC_OUT drives the handler vector into PC.
 
 export const SIGNALS = [
   "PC_OUT",
@@ -828,6 +987,10 @@ export const SIGNALS = [
   "SP_OUT",
   "SP_IN",
   "FRAME_OUT",
+  "VEC_OUT",
+  "KEY_OUT",
+  "IE_SET",
+  "IE_CLR",
 ] as const;
 
 export type Signal = (typeof SIGNALS)[number];
@@ -880,6 +1043,10 @@ export const EXECUTE_STEPS: Partial<Record<Mnemonic, ExecuteSteps>> = {
   },
   CALL: [["PC_OUT", "STACK_IN"], ["SP_INC"], ["OPR_OUT", "PC_IN", "STEP_RESET"]],
   RET: [["SP_DEC"], ["STACK_OUT", "PC_IN", "STEP_RESET"]],
+  IN: [["KEY_OUT", "ACC_IN", "STEP_RESET"]],
+  EI: [["IE_SET", "STEP_RESET"]],
+  DI: [["IE_CLR", "STEP_RESET"]],
+  RETI: [["SP_DEC"], ["STACK_OUT", "PC_IN", "IE_SET", "STEP_RESET"]],
   HALT: [["HALT"]],
 };
 
@@ -905,6 +1072,10 @@ export const RAM_STACK_STEPS: Record<Mnemonic, ExecuteSteps> = {
     ["SP_OUT", "DMAR_IN", "SP_INC"],
     ["RAM_OUT", "PC_IN", "STEP_RESET"],
   ],
+  RETI: [
+    ["SP_OUT", "DMAR_IN", "SP_INC"],
+    ["RAM_OUT", "PC_IN", "IE_SET", "STEP_RESET"],
+  ],
   LDS: [FRAME_ADDRESS, ["RAM_OUT", "ACC_IN", "STEP_RESET"]],
   STS: [FRAME_ADDRESS, ["ACC_OUT", "RAM_IN", "STEP_RESET"]],
   ADDS: [FRAME_ADDRESS, ["RAM_OUT", "OPR_IN"], ["ALU_OUT", "ACC_IN", "FLAGS_IN", "STEP_RESET"]],
@@ -921,6 +1092,21 @@ export const MICROCODE: Record<StackModel, Partial<Record<Mnemonic, ExecuteSteps
   ram: RAM_STACK_STEPS,
 };
 
+/**
+ * Interrupt entry, looked up as INT_OPCODE from T0 with no fetch: push PC the
+ * way CALL does, clear IE so the handler is not interrupted, and load PC with
+ * the vector. It takes the place of the next instruction's fetch.
+ */
+export const INTERRUPT_STEPS: Record<StackModel, readonly ControlWord[]> = {
+  hardware: [["PC_OUT", "STACK_IN", "IE_CLR"], ["SP_INC"], ["VEC_OUT", "PC_IN", "STEP_RESET"]],
+  ram: [
+    ["SP_DEC", "IE_CLR"],
+    ["SP_OUT", "DMAR_IN"],
+    ["PC_OUT", "RAM_IN"],
+    ["VEC_OUT", "PC_IN", "STEP_RESET"],
+  ],
+};
+
 /** An opcode the decoder does not know stops the clock. */
 const UNKNOWN_STEPS: readonly ControlWord[] = [["HALT"]];
 
@@ -931,6 +1117,7 @@ export function controlWord(
   carry: boolean,
   stack: StackModel = "hardware",
 ): ControlWord {
+  if (opcode === INT_OPCODE) return INTERRUPT_STEPS[stack][t] ?? [];
   if (t < FETCH_STEPS.length) return FETCH_STEPS[t];
   const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
   const steps = (mnemonic && MICROCODE[stack][mnemonic]) || UNKNOWN_STEPS;
@@ -963,7 +1150,18 @@ export function microcodeRom(stack: StackModel = "hardware"): number[] {
   return rom;
 }
 
-export type BusDriver = "PC" | "ROM" | "OPR" | "RAM" | "ACC" | "ALU" | "STACK" | "SP" | "FRAME";
+export type BusDriver =
+  | "PC"
+  | "ROM"
+  | "OPR"
+  | "RAM"
+  | "ACC"
+  | "ALU"
+  | "STACK"
+  | "SP"
+  | "FRAME"
+  | "VECTOR"
+  | "KEY";
 
 const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
   PC_OUT: "PC",
@@ -975,6 +1173,8 @@ const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
   STACK_OUT: "STACK",
   SP_OUT: "SP",
   FRAME_OUT: "FRAME",
+  VEC_OUT: "VECTOR",
+  KEY_OUT: "KEY",
 };
 
 const BUS_READERS: readonly Signal[] = [
@@ -1001,6 +1201,14 @@ export type Registers = {
   zero: boolean;
   sp: number;
   out: number;
+  /** Last key code the key port latched. */
+  key: number;
+  /** A key is waiting: set by a press, cleared by KEY_OUT (IN). This is the IRQ line. */
+  keyReady: boolean;
+  /** Interrupts enabled (IE). */
+  ie: boolean;
+  /** INT latch: the next ticks run the interrupt entry instead of an instruction. */
+  int: boolean;
 };
 
 export type TickPhase = "fetch" | "decode" | "execute";
@@ -1026,6 +1234,10 @@ export type Tick = {
   halted: boolean;
   /** Set when the tick could not complete; no state changed on that tick. */
   fault: string | null;
+  /** The tick runs the interrupt entry (INT_OPCODE), not an instruction. */
+  interrupt: boolean;
+  /** Key code pressed on this tick's clock edge, if any. */
+  keyPress: number | null;
 };
 
 export const MAX_INSTRUCTIONS = 512;
@@ -1064,6 +1276,7 @@ function ramStackFault(
 export function traceTicks(
   program: CompiledProgram,
   maxInstructions: number = MAX_INSTRUCTIONS,
+  keys: KeySchedule = {},
 ): Tick[] {
   const stack = stackModelOf(program);
   const inRam = stack === "ram";
@@ -1091,6 +1304,10 @@ export function traceTicks(
     zero: true,
     sp: inRam ? STACK_TOP : 0,
     out: 0,
+    key: 0,
+    keyReady: false,
+    ie: false,
+    int: false,
   };
   let t = 0;
   let instruction = 0;
@@ -1098,7 +1315,8 @@ export function traceTicks(
   while (instruction < maxInstructions) {
     if (t === 0) address = registers.pc;
     if (t >= MAX_T_STATES) throw new Error(`Microcode for ${hex(registers.ir)} never resets.`);
-    const control = controlWord(registers.ir, t, registers.carry, stack);
+    const interrupt = registers.int;
+    const control = controlWord(interrupt ? INT_OPCODE : registers.ir, t, registers.carry, stack);
     if (control.length === 0)
       throw new Error(`Microcode for ${hex(registers.ir)} has no control word at T${t}.`);
     const on = new Set(control);
@@ -1120,6 +1338,8 @@ export function traceTicks(
       STACK: () => stackMemory[registers.sp],
       SP: () => registers.sp,
       FRAME: () => (registers.sp + registers.opr) & 255,
+      VECTOR: () => INTERRUPT_VECTOR,
+      KEY: () => registers.key,
     };
     const bus = busDriver ? busValues[busDriver]() : null;
     if (bus === null && control.some((signal) => BUS_READERS.includes(signal)))
@@ -1132,6 +1352,7 @@ export function traceTicks(
           ? "Return stack is empty. Execution stopped."
           : null;
     const next = { ...registers };
+    const keyPress = keys[ticks.length] ?? null;
     if (!fault && bus !== null) {
       if (on.has("CMAR_IN")) next.cmar = bus;
       if (on.has("IR_IN")) next.ir = bus;
@@ -1156,6 +1377,10 @@ export function traceTicks(
       if (on.has("SP_DEC")) next.sp = registers.sp - 1;
       if (on.has("FLAGS_IN")) next.carry = subtract ? sum < 0 : sum > 255;
       next.zero = next.acc === 0;
+      if (keyPress !== null) next.key = keyPress;
+      next.keyReady = keyPress !== null || (registers.keyReady && !on.has("KEY_OUT"));
+      next.ie = on.has("IE_SET") || (registers.ie && !on.has("IE_CLR"));
+      if (on.has("STEP_RESET")) next.int = next.keyReady && next.ie;
       registers = next;
     }
     const halted = fault !== null || on.has("HALT");
@@ -1175,6 +1400,8 @@ export function traceTicks(
       output: [...output],
       halted,
       fault,
+      interrupt,
+      keyPress,
     });
     if (halted) break;
     if (on.has("STEP_RESET")) {
@@ -1234,6 +1461,14 @@ function explainExecute(
         ? `Make a stack frame: SP moves down ${-change} byte${change === -1 ? "" : "s"} to ${hex(after.sp)}.`
         : `Free the stack frame: SP moves up ${change} byte${change === 1 ? "" : "s"} to ${hex(after.sp)}.`;
     }
+    case "IN":
+      return `Read key code ${after.key} from the key port into ACC; KEY READY goes off.`;
+    case "EI":
+      return "Interrupts on: a waiting key now interrupts the program after each instruction.";
+    case "DI":
+      return "Interrupts off: a key press waits in the key port until interrupts are on again.";
+    case "RETI":
+      return `Pop return address ${hex(after.pc)}${inRam ? ` from RAM ${hex(after.dmar)}` : ""} and turn interrupts back on; the interrupted code resumes.`;
     case "HALT":
       return "HALT stops the CPU clock in this toy model.";
     default:
@@ -1246,7 +1481,21 @@ function explainExecute(
  * grouped from the per-tick trace: fetch shows the state after T1, decode
  * after T3, execute after the instruction's last tick.
  */
-export function traceProgram(program: CompiledProgram): Snapshot[] {
+/** The interrupt entry's ticks, in words. */
+function explainInterrupt(tick: Tick, inRam: boolean): string {
+  const on = new Set(tick.control);
+  if (on.has("VEC_OUT"))
+    return `The control unit drives the interrupt vector ${hex(INTERRUPT_VECTOR)} into PC: the next fetch runs the key handler.`;
+  if (on.has("STACK_IN") || (on.has("RAM_IN") && on.has("PC_OUT")))
+    return `A key is waiting and interrupts are on, so instead of fetching, the control unit pushes PC (${hex(tick.bus ?? 0)})${inRam ? ` to RAM ${hex(tick.registers.dmar)}` : " to the return stack"}${on.has("IE_CLR") ? " and turns interrupts off" : ""}.`;
+  if (on.has("SP_DEC"))
+    return `A key is waiting and interrupts are on, so instead of fetching, the control unit starts the interrupt: SP moves down to ${hex(tick.registers.sp)} and interrupts go off.`;
+  if (on.has("SP_OUT"))
+    return `SP (${hex(tick.registers.sp)}) goes to DMAR: PC will be stored there.`;
+  return `Interrupt: SP moves up to ${hex(tick.registers.sp)}.`;
+}
+
+export function traceProgram(program: CompiledProgram, keys: KeySchedule = {}): Snapshot[] {
   const inRam = stackModelOf(program) === "ram";
   const snapshots: Snapshot[] = [];
   let state: Snapshot = {
@@ -1266,6 +1515,11 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     explanation: "Program compiled. Step to fetch the first instruction byte.",
     halted: false,
     ...(inRam ? { sp: STACK_TOP } : {}),
+    tick: -1,
+    key: 0,
+    keyReady: false,
+    interruptsOn: false,
+    keyPress: null,
   };
   const record = (patch: Partial<Snapshot>) => {
     state = {
@@ -1280,9 +1534,44 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
   };
   record({});
   const groups: Tick[][] = [];
-  for (const tick of traceTicks(program)) (groups[tick.instruction] ??= []).push(tick);
+  for (const tick of traceTicks(program, MAX_INSTRUCTIONS, keys))
+    (groups[tick.instruction] ??= []).push(tick);
+  /** Key port, tick and machine state after `ticks`, for any snapshot. */
+  const port = (ticks: Tick[]): Partial<Snapshot> => {
+    const last = ticks.at(-1)!;
+    return {
+      tick: last.index,
+      key: last.registers.key,
+      keyReady: last.registers.keyReady,
+      interruptsOn: last.registers.ie,
+      keyPress: ticks.find((tick) => tick.keyPress !== null)?.keyPress ?? null,
+    };
+  };
   for (const group of groups) {
     const address = group[0].address;
+    if (group[0].interrupt) {
+      for (const tick of group) {
+        if (tick.fault) {
+          record({ phase: "interrupt", halted: true, explanation: tick.fault, ...port([tick]) });
+          return snapshots;
+        }
+        const after = tick.registers;
+        record({
+          phase: "interrupt",
+          pc: after.pc,
+          ram: [...tick.ram],
+          stack: [...tick.stack],
+          activeAddress: null,
+          touchedAddress: tick.control.includes("RAM_IN")
+            ? after.dmar & (state.ram.length - 1)
+            : null,
+          explanation: explainInterrupt(tick, inRam),
+          ...(inRam ? { sp: after.sp } : {}),
+          ...port([tick]),
+        });
+      }
+      continue;
+    }
     const instruction = program.instructions[address / 2];
     if (!instruction || instruction.address !== address) {
       record({
@@ -1303,16 +1592,18 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       activeAddress: address,
       touchedAddress: null,
       explanation: `PC points to code address ${hex(address)}. Fetch opcode ${hex(opcode)} into the instruction register.`,
+      ...port(group.slice(0, 2)),
     });
     record({
       phase: "decode",
       operand,
       activeAddress: address + 1,
       explanation: `Decode ${hex(opcode)} as ${mnemonic} (${instruction.label}); the next byte, ${hex(operand)}, is its operand: ${meaning}.`,
+      ...port(group.slice(2, 4)),
     });
     const last = group.at(-1)!;
     if (last.fault) {
-      record({ phase: "execute", halted: true, explanation: last.fault });
+      record({ phase: "execute", halted: true, explanation: last.fault, ...port(group.slice(4)) });
       return snapshots;
     }
     const after = last.registers;
@@ -1332,9 +1623,10 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       output: [...last.output],
       touchedAddress: touchesRam ? after.dmar & (state.ram.length - 1) : null,
       activeAddress: address,
-      explanation: `${effect} PC is now ${hex(after.pc)}.`,
+      explanation: `${effect} PC is now ${hex(after.pc)}.${after.int ? " A key is waiting and interrupts are on: next comes the interrupt, not a fetch." : ""}`,
       halted: last.halted,
       ...(inRam ? { sp: after.sp } : {}),
+      ...port(group.slice(4)),
     });
     if (last.halted) return snapshots;
   }

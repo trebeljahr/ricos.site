@@ -64,6 +64,19 @@
 .stackReadout .stackBytes { white-space: normal; font-size: 11px; text-align: right; }
 .stackChoice { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; padding: 0; border: 0; }
 .stackChoice legend { float: left; margin-right: 4px; padding: 6px 0; color: #5a6b5d; font-size: 10px; }
+/* Key port and the interrupt path: key press → IRQ → push PC → handler. */
+.keyPanel { display: grid; gap: 6px; margin-top: 10px; padding: 8px 10px; border: 1px solid #718172; border-radius: 4px; background: linear-gradient(#879587, #a5b1a1); box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5; color: #354a39; font-size: 10px; }
+.keyPanel small { color: #3d5442; font-size: 10px; line-height: 1.4; }
+.keyRow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.keyRow b { color: #203d28; }
+.keyInput { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.keyInput small { flex-basis: 100%; color: #3d5442; font-size: 10px; line-height: 1.4; }
+.keyInput input { width: 92px; min-height: 30px; padding: 4px 8px; border: 2px solid #4a594d; border-radius: 4px; background: #203927; color: #d3efbf; font: inherit; font-size: 11px; caret-color: transparent; }
+.keyInput input:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 2px; }
+.keyInput input:disabled { opacity: .42; }
+.interruptPath { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.interruptPath li { position: relative; padding: 5px 4px; border: 1px solid #6b806b; border-radius: 3px; background: #9aab95; color: #4b604f; font-size: 9.5px; text-align: center; letter-spacing: .04em; }
+.interruptPath .pathOn { border-color: #24452a; background: #cce4b1; color: #1c4b23; font-weight: 700; box-shadow: 0 0 0 1px #24452a; }
 .ramGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin-top: 8px; padding: 4px; border: 1px solid #6b806b; border-radius: 4px; background: linear-gradient(#849484, #aab6a6); box-shadow: inset 0 2px 4px #46574870, 0 1px #dce2d5; }
 .ramCell { display: grid; min-width: 0; padding: 2px 4px; border-radius: 2px; color: #4b604f; font-size: 9px; }
 .ramCell > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

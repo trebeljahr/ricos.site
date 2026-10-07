@@ -162,7 +162,9 @@ describe("CPU grader structure check", () => {
 
   it("names missing blocks, a missing bus and a probe on the wrong part", () => {
     const circuit = clone(cpuCircuit([]));
-    circuit.nodes = circuit.nodes.filter((node) => node.id !== CPU_PARTS.bus && node.id !== "alu");
+    circuit.nodes = circuit.nodes.filter(
+      (node) => ![CPU_PARTS.bus, "aux-bus", "alu"].includes(node.id),
+    );
     circuit.wires.find(into("acc-probe", 0))!.from = "bus-lanes";
     const errors = checkStructure(circuit);
     expect(errors).toContain("This level needs 2 ALUs; found 1.");

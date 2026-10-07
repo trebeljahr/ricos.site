@@ -64,7 +64,13 @@ export type Wire = {
   output?: number;
   color?: WireColor;
 };
-export type CircuitGroup = { id: string; label: string; nodeIds: string[] };
+export type CircuitGroup = {
+  id: string;
+  label: string;
+  nodeIds: string[];
+  /** Node whose value lights the group up while it is on, e.g. a CPU's INT latch. */
+  activeWhen?: string;
+};
 export type Circuit = { name: string; nodes: Node[]; wires: Wire[]; groups?: CircuitGroup[] };
 export type Snapshot = {
   values: Record<string, boolean>;
@@ -1796,7 +1802,9 @@ export function validateCircuit(
           group.label.length <= 80 &&
           Array.isArray(group.nodeIds) &&
           group.nodeIds.length <= MAX_CIRCUIT_NODES &&
-          group.nodeIds.every((id) => typeof id === "string" && ids.has(id)),
+          group.nodeIds.every((id) => typeof id === "string" && ids.has(id)) &&
+          (group.activeWhen === undefined ||
+            (typeof group.activeWhen === "string" && ids.has(group.activeWhen))),
       ) ||
       new Set(item.groups.map((group) => group.id)).size !== item.groups.length)
   )
@@ -1886,6 +1894,7 @@ export function validateCircuit(
       id: group.id,
       label: group.label,
       nodeIds: [...group.nodeIds],
+      ...(group.activeWhen === undefined ? {} : { activeWhen: group.activeWhen }),
     })),
   };
 }

@@ -882,8 +882,11 @@ export type LogicBuilderChallenge = {
 
 /** Clock controls of a locked builder, for the page that embeds it. */
 export type LockedClock = {
-  /** One full clock cycle: high, then low. Records two frames. */
-  cycle: () => void;
+  /**
+   * One full clock cycle: high, then low. Records two frames. `overrides` hold
+   * switches at the given values for the rising edge only, e.g. a key press.
+   */
+  cycle: (overrides?: Record<string, boolean>) => void;
   /** Shows recorded frame `index`; frames after it stay recorded. */
   seek: (index: number) => void;
   reset: () => void;
@@ -1490,13 +1493,14 @@ export function LogicBuilder({
   }, []);
   /** One tick from `from`. With ripple on, the result is the same and is replayed in delay order. */
   const settleTick = useCallback(
-    (source: Circuit, previous: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {}) => {
+    (source: Circuit, previous: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {},
+      overrides: Record<string, boolean> = {}) => {
       // Blocks unfolded in place run as gates, carrying their stored state.
       const target = simulationCircuit(source, unfoldedRef.current);
       const from = syncBlockStates(source, previous, unfoldedRef.current);
       if (!rippleRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-        return { next: step(target, from, high, pulseIds), replay: null };
-      const ripple = stepWithDelays(target, from, high, pulseIds);
+        return { next: step(target, from, high, pulseIds, overrides), replay: null };
+      const ripple = stepWithDelays(target, from, high, pulseIds, overrides);
       return { next: ripple.snapshot, replay: ripple.steps > 0 ? { from, ripple, at: 0 } : null };
     },
     [],
@@ -1520,9 +1524,9 @@ export function LogicBuilder({
   }, [advance, setTimeline]);
   const stepBack = () => setTimeline(seek(timelineRef.current, timelineRef.current.index - 1));
   /** One full clock cycle as two recorded frames; ripple replays the rising edge. */
-  const cycle = useCallback(() => {
+  const cycle = useCallback((overrides: Record<string, boolean> = {}) => {
     const from = currentFrame(timelineRef.current);
-    const rise = settleTick(circuitRef.current, from.snapshot, true);
+    const rise = settleTick(circuitRef.current, from.snapshot, true, {}, overrides);
     const fall = settleTick(circuitRef.current, rise.next, false);
     const risen = push(timelineRef.current, { tick: from.tick + 1, clockHigh: true, pulses: {}, snapshot: rise.next });
     setTimeline(push(risen, { tick: from.tick + 2, clockHigh: false, pulses: {}, snapshot: fall.next }));
@@ -3073,7 +3077,8 @@ export function LogicBuilder({
                   return (
                     <div
                       key={group.id}
-                      className={styles.circuitGroup}
+                      className={clsx(styles.circuitGroup,
+                        group.activeWhen && boardSnapshot.values[group.activeWhen] && styles.activeGroup)}
                       style={{ left: (left - bounds.left) * boardRatio,
                         top: (top - bounds.top) * boardRatio,
                         width: (right - left) * boardRatio,

@@ -154,7 +154,9 @@ describe("control unit", () => {
   it("microcode: the row view names its rows after the table", () => {
     const rom = datapathNode("microcode", "dut", 0, 0).module!;
     const labels = rom.nodes.map((node) => node.label ?? "");
-    expect(labels).toContain("T0 ANY: PC_OUT CMAR_IN");
+    // Fetch is every opcode's T0 except the interrupt entry's.
+    expect(labels).toContain("T0 OTHER: PC_OUT CMAR_IN");
+    expect(labels.some((label) => label.startsWith("T0 INT: PC_OUT STACK_IN IE_CLR"))).toBe(true);
     expect(labels.some((label) => label.startsWith("T4 OTHER: HALT"))).toBe(true);
     expect(labels.some((label) => label.startsWith("T4 JNC C0:"))).toBe(true);
   });

@@ -7,9 +7,13 @@ import {
   compileProgram,
   describeOperand,
   hex,
+  INTERRUPT_SAMPLES,
+  INTERRUPT_VECTOR,
   ISA,
   isaFor,
   isScreenAddress,
+  KEY_HANDLER,
+  type KeySchedule,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
   STACK_MODELS,
@@ -22,23 +26,31 @@ import { ScreenGrid } from "./ScreenGrid";
 
 const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY } = SAMPLE_PROGRAMS;
 const { RECURSION } = RAM_STACK_SAMPLES;
+const { KEYBOARD } = INTERRUPT_SAMPLES;
+/** A key press as the key port sees it: one byte, the character code. */
+const keyLabel = (code: number) =>
+  code >= 33 && code < 127 ? `“${String.fromCharCode(code)}” (${code})` : String(code);
 const dataOpcodes = new Set<number>(
   ISA.filter((item) => item.operand === "RAM address").map((item) => item.opcode),
 );
 const BIT_WEIGHTS = [128, 64, 32, 16, 8, 4, 2, 1];
+/** Whether the program has a key handler: the compiler then puts a jump at the interrupt vector. */
+const hasHandler = (program: CompiledProgram | null) =>
+  Boolean(program?.instructions.some(({ label }) => label === "INTERRUPT VECTOR"));
 
 export function ProgramStepper() {
   const [source, setSource] = useState<string>(EXAMPLE);
   const [loaded, setLoaded] = useState<string>(EXAMPLE);
   const [step, setStep] = useState(0);
   const [stack, setStack] = useState<StackModel>("hardware");
+  const [keys, setKeys] = useState<KeySchedule>({});
   const inRam = stack === "ram";
   const isa = isaFor(stack);
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   const compilation = useMemo(() => compileSource(loaded, stack), [loaded, stack]);
   const trace = useMemo(
-    () => (compilation.program ? traceProgram(compilation.program) : []),
-    [compilation.program],
+    () => (compilation.program ? traceProgram(compilation.program, keys) : []),
+    [compilation.program, keys],
   );
   const state = trace[Math.min(step, trace.length - 1)];
   const active =
@@ -59,6 +71,23 @@ export function ProgramStepper() {
     state?.ir === null || state?.ir === undefined
       ? null
       : (isa.find(({ opcode }) => opcode === state.ir) ?? null);
+  const usesKeys =
+    hasHandler(compilation.program) ||
+    Boolean(
+      compilation.program?.instructions.some(({ opcode }) =>
+        ISA.some((item) => item.opcode === opcode && ["IN", "EI"].includes(item.mnemonic)),
+      ),
+    );
+  // The interrupt path, stage by stage, for this snapshot.
+  const entering = state?.phase === "interrupt";
+  const path = state
+    ? {
+        key: state.keyPress !== null || state.keyReady,
+        irq: entering || (state.keyReady && state.interruptsOn),
+        push: entering && state.pc !== INTERRUPT_VECTOR,
+        handler: entering && state.pc === INTERRUPT_VECTOR,
+      }
+    : null;
   const operandMeaning =
     state?.ir === null || state?.ir === undefined || state.operand === null
       ? null
@@ -66,6 +95,7 @@ export function ProgramStepper() {
 
   function compile() {
     setLoaded(source);
+    setKeys({});
     setStep(0);
     playSwitch();
   }
@@ -74,12 +104,14 @@ export function ProgramStepper() {
     setStack(model);
     setSource(value);
     setLoaded(value);
+    setKeys({});
     setStep(0);
     playButton();
   }
 
   function chooseStack(model: StackModel) {
     setStack(model);
+    setKeys({});
     setStep(0);
     playSwitch();
   }
@@ -87,6 +119,21 @@ export function ProgramStepper() {
   function moveStep(next: number) {
     setStep(next);
     playButton();
+  }
+
+  /**
+   * Presses a key on the clock tick after this snapshot. Presses scheduled for
+   * later ticks belonged to another run from here, so they are dropped. The
+   * trace up to this snapshot stays the same, so the step index stays valid.
+   */
+  function pressKey(code: number) {
+    if (!state || state.halted) return;
+    const tick = state.tick + 1;
+    setKeys((current) => ({
+      ...Object.fromEntries(Object.entries(current).filter(([at]) => Number(at) < tick)),
+      [tick]: code & 255,
+    }));
+    playSwitch();
   }
 
   return (
@@ -168,7 +215,13 @@ export function ProgramStepper() {
               <div className={styles.phaseScreen}>
                 <span>
                   {state.phase.toUpperCase()} ·{" "}
-                  {active ? (active.line ? `SOURCE LINE ${active.line}` : "GENERATED") : "READY"}
+                  {entering
+                    ? "NO FETCH"
+                    : active
+                      ? active.line
+                        ? `SOURCE LINE ${active.line}`
+                        : "GENERATED"
+                      : "READY"}
                 </span>
                 <p aria-live="polite">{state.explanation}</p>
               </div>
@@ -209,6 +262,56 @@ export function ProgramStepper() {
                   </div>
                 ))}
               </div>
+              {usesKeys && path && (
+                <div className={styles.keyPanel}>
+                  <div className={styles.keyRow}>
+                    <label className={styles.keyInput}>
+                      <span>PRESS A KEY</span>
+                      <input
+                        type="text"
+                        value=""
+                        readOnly
+                        disabled={state.halted}
+                        placeholder="type here"
+                        aria-label="Press a key on the next clock tick"
+                        onKeyDown={(event) => {
+                          if (event.key.length !== 1 || event.metaKey || event.ctrlKey) return;
+                          event.preventDefault();
+                          pressKey(event.key.charCodeAt(0));
+                        }}
+                      />
+                    </label>
+                    <span>
+                      KEY <b>{keyLabel(state.key)}</b> · READY <b>{Number(state.keyReady)}</b> ·
+                      INTERRUPTS <b>{state.interruptsOn ? "ON" : "OFF"}</b>
+                    </span>
+                  </div>
+                  <ol className={styles.interruptPath} aria-label="Interrupt path">
+                    {(
+                      [
+                        ["key", "KEY PRESS", "the key port latches the code; KEY READY goes on"],
+                        ["irq", "IRQ", "KEY READY and interrupts on"],
+                        ["push", "PUSH PC", "the return address goes on the stack"],
+                        ["handler", `→ ${hex(INTERRUPT_VECTOR)}`, "PC jumps to the vector"],
+                      ] as const
+                    ).map(([stage, name, meaning]) => (
+                      <li
+                        key={stage}
+                        className={clsx(path[stage] && styles.pathOn)}
+                        aria-current={path[stage] ? "step" : undefined}
+                        title={meaning}
+                      >
+                        {name}
+                      </li>
+                    ))}
+                  </ol>
+                  <small>
+                    {state.keyPress !== null
+                      ? `Key ${keyLabel(state.keyPress)} arrived during this step.`
+                      : "A key you type arrives on the next clock tick. The CPU finishes its instruction first; if interrupts are on, it then pushes PC and jumps to the handler instead of fetching."}
+                  </small>
+                </div>
+              )}
               {inRam ? (
                 <div className={styles.stackReadout}>
                   <div>
@@ -527,6 +630,9 @@ export function ProgramSource({
         >
           RECURSION
         </button>
+        <button type="button" onClick={() => preset(KEYBOARD)} className={styles.button}>
+          KEYBOARD
+        </button>
       </div>
       {changed && (
         <p id="program-syntax" className={styles.hint}>
@@ -597,6 +703,13 @@ export function ProgramSource({
               </>
             )}{" "}
             GEN is code the compiler adds.
+            {hasHandler(compilation.program) && (
+              <>
+                {" "}
+                <b>{KEY_HANDLER}</b> is the key handler: address {hex(INTERRUPT_VECTOR)} jumps to
+                it, and it saves ACC and the carry flag before it runs your code.
+              </>
+            )}
           </p>
           <details className={styles.isaDetails}>
             <summary>INSTRUCTION SET / VIEW KEY</summary>

@@ -23,8 +23,21 @@
 // the current stack frame. SP_IN loads SP from the bus (ADDSP), so SP's input
 // picks between the bus and SP ± 1. Its control unit holds the variant's
 // microcode, generated from the same table as the stepper's.
+//
+// Both variants have a key port and an interrupt path. Eight KEY BIT switches
+// and a KEY PRESS switch stand in for a keyboard: on a clock edge with KEY
+// PRESS on, the KEY register latches the code and the KEY READY flip-flop goes
+// on; KEY_OUT (the IN instruction) drives the code onto the bus and clears KEY
+// READY. IE is a flip-flop set by IE_SET and cleared by IE_CLR. IRQ is KEY READY
+// AND IE as they will be after the edge; the INT flip-flop takes it on every
+// STEP_RESET edge and otherwise holds. INT tells the control unit to run the
+// interrupt entry, which ends with VEC_OUT driving the handler vector onto the
+// bus. The bus has 8 driver slots, so drivers past the seventh share an
+// auxiliary bus that feeds the last slot.
 import {
   compileProgram,
+  INTERRUPT_SAMPLES,
+  INTERRUPT_VECTOR,
   microcodeRom,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
@@ -56,7 +69,25 @@ export const CPU_PARTS = {
   frame: "frame",
   out: "out",
   bus: "bus",
+  key: "key",
+  keyReady: "key-ready",
+  ie: "ie",
+  irq: "irq",
+  int: "int",
 } as const;
+
+/** Switch ids of the keyboard: KEY BIT 0–7 and KEY PRESS. */
+export const KEY_SWITCHES = {
+  bits: range(8).map((bit) => `key-bit${bit}`),
+  press: "key-press",
+} as const;
+
+/** Switch overrides that press `code` on the next rising clock edge. */
+export const keyPressOverrides = (code: number): Record<string, boolean> =>
+  Object.fromEntries([
+    ...KEY_SWITCHES.bits.map((id, bit) => [id, Boolean((code >> bit) & 1)]),
+    [KEY_SWITCHES.press, true],
+  ]);
 
 /** Probe names on the CPU's displays. FLAGS bit 0 is carry, bit 1 is zero. */
 export const CPU_PROBES = [
@@ -70,6 +101,8 @@ export const CPU_PROBES = [
   "SP",
   "OUT",
   "BUS",
+  "KEY",
+  "IRQ",
 ] as const;
 export type CpuProbe = (typeof CPU_PROBES)[number];
 
@@ -82,10 +115,21 @@ const SHARED_DRIVERS: [Signal, string, string][] = [
   ["ACC_OUT", "acc", "ACC"],
   ["ALU_OUT", "alu", "ALU"],
 ];
+const INTERRUPT_DRIVERS: [Signal, string, string][] = [
+  ["KEY_OUT", "key", "KEY"],
+  ["VEC_OUT", "vector", "VECTOR"],
+];
 const DRIVERS: Record<StackModel, [Signal, string, string][]> = {
-  hardware: [...SHARED_DRIVERS, ["STACK_OUT", "stack", "STACK"]],
-  ram: [...SHARED_DRIVERS, ["SP_OUT", "sp", "SP"], ["FRAME_OUT", "frame", "SP + OPR"]],
+  hardware: [...SHARED_DRIVERS, ["STACK_OUT", "stack", "STACK"], ...INTERRUPT_DRIVERS],
+  ram: [
+    ...SHARED_DRIVERS,
+    ["SP_OUT", "sp", "SP"],
+    ["FRAME_OUT", "frame", "SP + OPR"],
+    ...INTERRUPT_DRIVERS,
+  ],
 };
+/** Drivers wired straight to the shared bus; the rest go through the auxiliary bus. */
+const MAIN_SLOTS = 7;
 
 // Columns, left to right.
 const X = {
@@ -160,7 +204,14 @@ export function cpuCircuit(
     x: X.helper,
     y: 2320,
   });
-  const driverBits = (part: string) => (part === CPU_PARTS.ram ? dataRead : bits(part));
+  // The handler vector: a constant byte, one HIGH or GROUND per bit.
+  b.add("vec-one", "high", X.clock, 5000, "1");
+  b.add("vec-zero", "ground", X.clock, 5100, "0");
+  const vectorBits = range(8).map(
+    (bit): Ref => ((INTERRUPT_VECTOR >> bit) & 1 ? "vec-one" : "vec-zero"),
+  );
+  const driverBits = (part: string) =>
+    part === CPU_PARTS.ram ? dataRead : part === "vector" ? vectorBits : bits(part);
   /** A register8 that loads the bus on `load`, clocked by GCLK. */
   const busRegister = (id: string, y: number, label: string, load: Ref) => {
     block("register8", id, X.part, y, label);
@@ -200,6 +251,7 @@ export function cpuCircuit(
   wireBits(bits(CPU_PARTS.ir), CPU_PARTS.control);
   b.connect([CPU_PARTS.flags, 0], CPU_PARTS.control, 8);
   b.connect("clock", CPU_PARTS.control, 9);
+  b.connect(CPU_PARTS.int, CPU_PARTS.control, 10);
 
   // ------------------------------------------------------------ bus
   drivers.forEach(([signal, part, label], index) => {
@@ -209,8 +261,11 @@ export function cpuCircuit(
     b.add(`${part}-drive`, "busdriver", X.drive, y, signal);
     b.connect(`${part}-lanes`, `${part}-drive`);
     b.connect(line(signal), `${part}-drive`, 1);
-    b.connect(`${part}-drive`, CPU_PARTS.bus, index);
+    if (index < MAIN_SLOTS) b.connect(`${part}-drive`, CPU_PARTS.bus, index);
+    else b.connect(`${part}-drive`, "aux-bus", index - MAIN_SLOTS);
   });
+  b.add("aux-bus", "bus", X.bus, 30 + MAIN_SLOTS * 420, "MORE DRIVERS");
+  b.connect("aux-bus", CPU_PARTS.bus, MAIN_SLOTS);
   b.add(CPU_PARTS.bus, "bus", X.bus, 1200, "SHARED BUS");
   b.add("bus-lanes", "splitter", X.lanes, 1200, "BUS LANES");
   b.connect(CPU_PARTS.bus, "bus-lanes");
@@ -305,6 +360,43 @@ export function cpuCircuit(
   busRegister(CPU_PARTS.out, 4100, "OUTPUT", line("OUT_IN"));
   probe("out-probe", "OUT", X.partProbe, 4100, bits(CPU_PARTS.out));
 
+  // ------------------------------------------------------------ keyboard + interrupt
+  const keyY = 5300;
+  b.add(KEY_SWITCHES.press, "switch", X.clock, keyY + 8 * 90, "KEY PRESS");
+  block("register8", CPU_PARTS.key, X.code, keyY, "KEY PORT");
+  for (const [bit, id] of KEY_SWITCHES.bits.entries()) {
+    b.add(id, "switch", X.clock, keyY + bit * 90, `KEY BIT ${bit}`);
+    b.connect(id, CPU_PARTS.key, bit);
+  }
+  b.connect(KEY_SWITCHES.press, CPU_PARTS.key, 8);
+  b.connect(gclk, CPU_PARTS.key, 9);
+  probe("key-probe", "KEY", X.codeProbe, keyY, bits(CPU_PARTS.key));
+  /** A flip-flop clocked by GCLK whose next value is `next`. */
+  const flag = (id: string, y: number, label: string, next: Ref) => {
+    b.add(id, "dff", X.merge, y, label);
+    b.connect(next, id, 0);
+    b.connect(gclk, id, 1);
+  };
+  const flagY = keyY + 500;
+  // KEY READY: set by a press, cleared when IN reads the key.
+  b.gate("key-unread", "not", X.code, flagY, line("KEY_OUT"), undefined, "NOT KEY_OUT");
+  b.gate("key-waits", "and", X.code + 150, flagY, CPU_PARTS.keyReady, "key-unread");
+  const ready = b.gate("ready-next", "or", X.codeProbe, flagY, KEY_SWITCHES.press, "key-waits");
+  flag(CPU_PARTS.keyReady, flagY, "KEY READY", ready);
+  // IE: set by IE_SET (EI, RETI), cleared by IE_CLR (DI, interrupt entry).
+  b.gate("ie-kept", "not", X.code, flagY + 200, line("IE_CLR"), undefined, "NOT IE_CLR");
+  b.gate("ie-stays", "and", X.code + 150, flagY + 200, CPU_PARTS.ie, "ie-kept");
+  const enabled = b.gate("ie-next", "or", X.codeProbe, flagY + 200, line("IE_SET"), "ie-stays");
+  flag(CPU_PARTS.ie, flagY + 200, "INTERRUPTS ON (IE)", enabled);
+  // INT: takes IRQ when an instruction ends, otherwise holds.
+  b.gate(CPU_PARTS.irq, "and", X.drive, flagY + 100, ready, enabled, "IRQ");
+  b.gate("int-take", "and", X.drive, flagY + 400, line("STEP_RESET"), CPU_PARTS.irq);
+  b.gate("int-mid", "not", X.code, flagY + 400, line("STEP_RESET"), undefined, "NOT STEP_RESET");
+  b.gate("int-hold", "and", X.code + 150, flagY + 400, "int-mid", CPU_PARTS.int);
+  b.gate("int-next", "or", X.codeProbe, flagY + 400, "int-take", "int-hold");
+  flag(CPU_PARTS.int, flagY + 400, "INT", "int-next");
+  probe("irq-probe", "IRQ", X.bus, flagY, [CPU_PARTS.keyReady, CPU_PARTS.ie, CPU_PARTS.int]);
+
   // A packaged circuit needs a lamp output; this one shows the HALT line.
   b.gate("halted", "lamp", X.codeProbe, 1400, line("HALT"), undefined, "HALTED");
 
@@ -317,11 +409,28 @@ export function cpuCircuit(
         nodeIds: [CPU_PARTS.pc, "pc-probe", CPU_PARTS.cmar, "cmar-probe", CPU_PARTS.rom],
       },
       {
+        id: "interrupt",
+        label: "Interrupt: key press → KEY READY → IRQ → INT → push PC → vector",
+        nodeIds: [
+          ...KEY_SWITCHES.bits,
+          KEY_SWITCHES.press,
+          CPU_PARTS.key,
+          "key-probe",
+          CPU_PARTS.keyReady,
+          CPU_PARTS.ie,
+          CPU_PARTS.irq,
+          CPU_PARTS.int,
+          "irq-probe",
+        ],
+        activeWhen: CPU_PARTS.int,
+      },
+      {
         id: "bus",
         label: "One shared bus: each *_OUT line enables one driver",
         nodeIds: [
           ...drivers.flatMap(([, part]) => [`${part}-lanes`, `${part}-drive`]),
           CPU_PARTS.bus,
+          "aux-bus",
           "bus-lanes",
           "bus-probe",
         ],
@@ -336,11 +445,13 @@ export const cpuFromSource = (source: string, name?: string, stack: StackModel =
 
 const LOOP_PRESET = "Toy CPU (LOOP program)";
 const RECURSION_PRESET = "Toy CPU, stack in RAM (RECURSION program)";
+const KEYBOARD_PRESET = "Toy CPU (KEYBOARD program)";
 
 /** Builder examples: the CPU running one of the stepper's sample programs. */
 export const CPU_PRESETS: Record<string, Circuit> = {
   [LOOP_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.LOOP, LOOP_PRESET),
   [RECURSION_PRESET]: cpuFromSource(RAM_STACK_SAMPLES.RECURSION, RECURSION_PRESET, "ram"),
+  [KEYBOARD_PRESET]: cpuFromSource(INTERRUPT_SAMPLES.KEYBOARD, KEYBOARD_PRESET),
 };
 
 export const CPU_HINTS: Record<string, string> = {
@@ -348,4 +459,6 @@ export const CPU_HINTS: Record<string, string> = {
     "The program stepper's CPU, running its LOOP program. Each clock cycle is one micro-step: the control unit switches on its control lines, one part drives the bus, and the parts whose *_IN line is on take the bus value. Run the clock until HALTED lights; OUT then shows 6.",
   [RECURSION_PRESET]:
     "The same CPU with its stack in data RAM: SP starts at 32 and counts down, CALL stores the return address at RAM[SP], and each call of sum gets its own stack frame at SP + 0, SP + 1, … That is what lets sum call itself. Run the clock until HALTED lights; OUT then shows 10.",
+  [KEYBOARD_PRESET]:
+    "The CPU waiting in a loop for keys. Set a key code on KEY BIT 0–7, switch KEY PRESS on for one clock cycle, then off. KEY READY and IRQ light; when the current instruction ends, INT comes on and the interrupt box glows: the control unit pushes PC, turns interrupts off and drives the vector 02 into PC. The handler draws the key code on screen row 3 and counts the presses on OUT.",
 };

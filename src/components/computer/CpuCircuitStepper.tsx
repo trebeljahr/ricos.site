@@ -3,14 +3,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { formatBus } from "src/lib/computer/bus";
 import { layoutCircuit } from "src/lib/computer/circuitLayout";
-import { CPU_PARTS, type CpuProbe, cpuCircuit } from "src/lib/computer/cpuPreset";
+import {
+  CPU_PARTS,
+  type CpuProbe,
+  cpuCircuit,
+  keyPressOverrides,
+} from "src/lib/computer/cpuPreset";
 import { foldBlockState, screenRows } from "src/lib/computer/datapathBlocks";
 import type { Circuit, Node, Snapshot, Wire } from "src/lib/computer/logic";
 import { readProbes } from "src/lib/computer/probes";
 import {
   hex,
+  INTERRUPT_VECTOR,
   isaFor,
   isScreenAddress,
+  type KeySchedule,
   type Registers,
   SAMPLE_PROGRAMS,
   SIGNALS,
@@ -37,6 +44,10 @@ const DRIVERS: Partial<Record<Signal, string>> = {
   ACC_OUT: "ACC",
   ALU_OUT: "ALU",
   STACK_OUT: "STACK",
+  SP_OUT: "SP",
+  FRAME_OUT: "SP + OPR",
+  KEY_OUT: "KEY PORT",
+  VEC_OUT: "INTERRUPT VECTOR",
 };
 
 /** The part each *_IN line loads from the bus on the rising edge. */
@@ -50,6 +61,7 @@ const READERS: Partial<Record<Signal, string>> = {
   ACC_IN: "ACC",
   STACK_IN: "STACK",
   OUT_IN: "OUT",
+  SP_IN: "SP",
 };
 
 const ACTIONS: Partial<Record<Signal, string>> = {
@@ -58,6 +70,9 @@ const ACTIONS: Partial<Record<Signal, string>> = {
   FLAGS_IN: "The carry flag stores the ALU's carry.",
   SP_INC: "SP adds 1.",
   SP_DEC: "SP subtracts 1.",
+  KEY_OUT: "KEY READY goes off: the key has been read.",
+  IE_SET: "Interrupts go on.",
+  IE_CLR: "Interrupts go off.",
   STEP_RESET: "The next tick starts the next instruction at T0.",
   HALT: "HALT stops the clock.",
 };
@@ -74,6 +89,22 @@ const REGISTERS: { probe: CpuProbe; name: string }[] = [
   { probe: "SP", name: "STACK POINTER" },
   { probe: "OUT", name: "OUTPUT" },
 ];
+/** Shown when the program reads keys: the key port, and KEY READY · IE · INT. */
+const KEY_REGISTERS: { probe: CpuProbe; name: string }[] = [
+  { probe: "KEY", name: "KEY PORT" },
+  { probe: "IRQ", name: "READY · IE · INT" },
+];
+/** Wires on the interrupt path: they glow while their source is on. */
+const INTERRUPT_PATH = new Set<string>([
+  CPU_PARTS.keyReady,
+  CPU_PARTS.ie,
+  CPU_PARTS.irq,
+  CPU_PARTS.int,
+  "key-press",
+]);
+/** A key as the key port sees it: one byte, the character code. */
+const keyLabel = (code: number) =>
+  code >= 33 && code < 127 ? `“${String.fromCharCode(code)}” (${code})` : String(code);
 
 /** The control lines that are on, read from the control unit's outputs. */
 const activeSignals = (snapshot: Snapshot): Signal[] => {
@@ -107,6 +138,8 @@ const expectedProbes = (r: Registers): Partial<Record<CpuProbe, number>> => ({
   FLAGS: (r.carry ? 1 : 0) | (r.zero ? 2 : 0),
   SP: r.sp,
   OUT: r.out,
+  KEY: r.key,
+  IRQ: (r.keyReady ? 1 : 0) | (r.ie ? 2 : 0) | (r.int ? 4 : 0),
 });
 
 /** A block's stored bytes, whether it runs folded (as a block) or unfolded (as gates). */
@@ -125,6 +158,8 @@ export function CpuCircuitStepper() {
   const [view, setView] = useState<LockedView | null>(null);
   const [running, setRunning] = useState(false);
   const [ripple, setRipple] = useState(false);
+  /** Key presses, by the clock tick whose rising edge latches them. */
+  const [keys, setKeys] = useState<KeySchedule>({});
   const clock = useRef<LockedClock | null>(null);
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   const compilation = useMemo(() => compileSource(loaded, stackModel), [loaded, stackModel]);
@@ -134,7 +169,17 @@ export function CpuCircuitStepper() {
     () => (program ? layoutCircuit(cpuCircuit(program.bytes, "Toy CPU", stackModel)) : null),
     [program, stackModel],
   );
-  const ticks = useMemo(() => (program ? traceTicks(program) : []), [program]);
+  const ticks = useMemo(
+    () => (program ? traceTicks(program, undefined, keys) : []),
+    [program, keys],
+  );
+  const usesKeys = Boolean(
+    program?.instructions.some(({ opcode }) =>
+      isaFor(stackModel).some(
+        (item) => item.opcode === opcode && ["IN", "EI"].includes(item.mnemonic),
+      ),
+    ),
+  );
   const changed = source !== loaded;
 
   const snapshot = view?.frame.snapshot;
@@ -201,9 +246,10 @@ export function CpuCircuitStepper() {
             ripple,
             rippleSpeed: 120,
             glowWire: (wire: Wire, state: Snapshot) =>
-              wire.from === CPU_PARTS.control &&
-              (wire.output ?? 0) < SIGNALS.length &&
-              Boolean(state.outputs[CPU_PARTS.control]?.[wire.output ?? 0]),
+              (wire.from === CPU_PARTS.control &&
+                (wire.output ?? 0) < SIGNALS.length &&
+                Boolean(state.outputs[CPU_PARTS.control]?.[wire.output ?? 0])) ||
+              (INTERRUPT_PATH.has(wire.from) && Boolean(state.values[wire.from])),
             note: (node: Node, state: Snapshot) => {
               if (node.id !== CPU_PARTS.bus) return null;
               const driver = busDriver(activeSignals(state));
@@ -217,6 +263,7 @@ export function CpuCircuitStepper() {
 
   function compile() {
     setLoaded(source);
+    setKeys({});
     setRunning(false);
     playSwitch();
   }
@@ -225,8 +272,24 @@ export function CpuCircuitStepper() {
     setStackModel(model);
     setSource(value);
     setLoaded(value);
+    setKeys({});
     setRunning(false);
     playButton();
+  }
+
+  /**
+   * Runs one clock cycle with the key on the KEY BIT switches and KEY PRESS on
+   * for its rising edge, and records it for the trace. Ticks recorded after the
+   * shown one are cut, so their presses go too.
+   */
+  function pressKey(code: number) {
+    if (!view || halted) return;
+    setKeys((current) => ({
+      ...Object.fromEntries(Object.entries(current).filter(([at]) => Number(at) < cycle)),
+      [cycle]: code & 255,
+    }));
+    clock.current?.cycle(keyPressOverrides(code & 255));
+    playSwitch();
   }
 
   return (
@@ -273,7 +336,11 @@ export function CpuCircuitStepper() {
           <div className={panel.sectionHead}>
             <span>03 / ONE CLOCK</span>
             <span>
-              {halted ? "HALTED" : tick ? `${tick.phase.toUpperCase()} · T${tick.t}` : "READY"}
+              {halted
+                ? "HALTED"
+                : tick
+                  ? `${tick.interrupt ? "INTERRUPT" : tick.phase.toUpperCase()} · T${tick.t}`
+                  : "READY"}
             </span>
           </div>
           {circuit && view && (
@@ -318,6 +385,7 @@ export function CpuCircuitStepper() {
                   type="button"
                   onClick={() => {
                     setRunning(false);
+                    setKeys({});
                     clock.current?.reset();
                     playButton();
                   }}
@@ -354,7 +422,9 @@ export function CpuCircuitStepper() {
                   {halted
                     ? "CLOCK STOPPED"
                     : tick
-                      ? `NEXT TICK · INSTRUCTION ${tick.instruction + 1} AT ${hex(tick.address)}`
+                      ? tick.interrupt
+                        ? `NEXT TICK · INTERRUPT ENTRY · PC ${hex(tick.address)} → ${hex(INTERRUPT_VECTOR)}`
+                        : `NEXT TICK · INSTRUCTION ${tick.instruction + 1} AT ${hex(tick.address)}`
                       : "READY"}
                 </span>
                 <p aria-live="polite">{describeTick(signals, formatBus(bus))}</p>
@@ -373,7 +443,7 @@ export function CpuCircuitStepper() {
                 ))}
               </div>
               <div className={clsx(stepper.registers, styles.registers)}>
-                {REGISTERS.map(({ probe, name }) => (
+                {[...REGISTERS, ...(usesKeys ? KEY_REGISTERS : [])].map(({ probe, name }) => (
                   <div key={probe} className={stepper.register}>
                     <span>
                       <b>{probe}</b>
@@ -384,15 +454,41 @@ export function CpuCircuitStepper() {
                         ? formatBus(bus)
                         : probe === "FLAGS"
                           ? `${(probes.FLAGS ?? 0) >> 1} · ${(probes.FLAGS ?? 0) & 1}`
-                          : hex(probes[probe] ?? 0)}
+                          : probe === "IRQ"
+                            ? [0, 1, 2].map((bit) => ((probes.IRQ ?? 0) >> bit) & 1).join(" · ")
+                            : hex(probes[probe] ?? 0)}
                     </strong>
                     {probe === "IR" && <small>{opcode?.mnemonic ?? "—"}</small>}
                     {probe === "ACC" && <small>{probes.ACC ?? 0} decimal</small>}
                     {probe === "OUT" && <small>{probes.OUT ?? 0} decimal</small>}
                     {probe === "BUS" && <small>{busDriver(signals) ?? "floating"}</small>}
+                    {probe === "KEY" && <small>{keyLabel(probes.KEY ?? 0)}</small>}
                   </div>
                 ))}
               </div>
+              {usesKeys && (
+                <label className={stepper.keyInput}>
+                  <span>PRESS A KEY</span>
+                  <input
+                    type="text"
+                    value=""
+                    readOnly
+                    disabled={running || halted}
+                    placeholder="type here"
+                    aria-label="Press a key: runs one clock tick with KEY PRESS on"
+                    onKeyDown={(event) => {
+                      if (event.key.length !== 1 || event.metaKey || event.ctrlKey) return;
+                      event.preventDefault();
+                      pressKey(event.key.charCodeAt(0));
+                    }}
+                  />
+                  <small>
+                    One clock tick with the code on KEY BIT 0–7 and KEY PRESS on. The glowing wires
+                    then show KEY READY → IRQ → INT, and the interrupt box lights while the control
+                    unit pushes PC and jumps to {hex(INTERRUPT_VECTOR)}.
+                  </small>
+                </label>
+              )}
               <p className={styles.sync} data-match={mismatches.length === 0}>
                 {expected === null
                   ? "REGISTERS READ FROM THE CIRCUIT'S PROBES"

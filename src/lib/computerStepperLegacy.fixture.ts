@@ -7,8 +7,14 @@ import {
   ISA,
   isScreenAddress,
   OPCODES,
-  type Snapshot,
+  type Snapshot as FullSnapshot,
 } from "./computerStepper";
+
+/** The snapshot fields that predate the key port. */
+export type Snapshot = Omit<
+  FullSnapshot,
+  "tick" | "key" | "keyReady" | "interruptsOn" | "keyPress"
+>;
 
 export function legacyTraceProgram(program: CompiledProgram): Snapshot[] {
   const snapshots: Snapshot[] = [];

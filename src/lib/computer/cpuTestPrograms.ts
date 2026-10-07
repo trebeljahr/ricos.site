@@ -5,11 +5,14 @@
 import {
   type CompiledProgram,
   compileProgram,
+  INTERRUPT_SAMPLES,
+  type KeySchedule,
   OPCODES,
   RAM_STACK_SAMPLES,
   SAMPLE_PROGRAMS,
   type StackModel,
   type Tick,
+  traceTicks,
 } from "../computerStepper";
 
 /** A program given as raw bytes, for opcodes and branches the compiler never emits. */
@@ -30,6 +33,21 @@ export const rawFor = (stack: StackModel, ...pairs: [number, number][]): Compile
 
 const { LDI, LDM, STM, ADDI, ADDM, SUBI, SUBM, OUT, JMP, JNC, CALL, RET, HALT } = OPCODES;
 const { LDS, STS, ADDS, SUBS, ADDSP } = OPCODES;
+const { IN, EI, DI, RETI } = OPCODES;
+
+/** EI, DI, IN and RETI with no key pressed: nothing interrupts, RETI returns like RET. */
+const interruptOpcodes = (stack: StackModel) =>
+  rawFor(
+    stack,
+    [EI, 0],
+    [DI, 0],
+    [IN, 0], // no key yet: reads 0
+    [OUT, 0],
+    [CALL, 12],
+    [HALT, 0],
+    [LDI, 7], // address 12
+    [RETI, 0], // interrupts back on
+  );
 
 /** Seeded PRNG (mulberry32), so a failing random program can be rerun. */
 function random(seed: number) {
@@ -112,6 +130,7 @@ export const PROGRAMS: Record<string, CompiledProgram> = {
     [HALT, 0],
   ),
   "unknown opcode halts": raw([LDI, 9], [0x00, 0], [OUT, 0]),
+  "interrupt opcodes, no key": interruptOpcodes("hardware"),
   "compiled calls in a loop": compileProgram(
     "fn twice(n) {\n  return n + n;\n}\nfn add3(n) {\n  let m = twice(n);\n  return m + 3;\n}\nlet total = 0;\nfor (let i = 0; i < 5; i = i + 2) {\n  let t = add3(i);\n  total = total + t;\n  print(total);\n}\nprint(total);",
   ),
@@ -154,9 +173,100 @@ export const RAM_PROGRAMS: Record<string, CompiledProgram> = {
     "fn tri(n) {\n  let s = 0;\n  for (let i = 0; i < n; i++) {\n    s = s + 1;\n  }\n  if (1 < n) {\n    let m = n - 1;\n    let r = tri(m);\n    s = s + r;\n  }\n  return s;\n}\nprint(tri(3));",
   ),
   "hardware-only opcode halts": rawFor("ram", [LDI, 9], [0x00, 0], [OUT, 0]),
+  "interrupt opcodes, no key": interruptOpcodes("ram"),
   ...Object.fromEntries(
     [1, 2, 3, 4].map((seed) => [`random ${seed}`, randomProgram(seed, 40, "ram")]),
   ),
+};
+
+/** A program and the keys pressed while it runs. */
+export type KeyedProgram = { program: CompiledProgram; keys: KeySchedule };
+
+/** The tick index of the first tick that matches, in a run without key presses. */
+const tickWhere = (program: CompiledProgram, match: (tick: Tick) => boolean) =>
+  traceTicks(program).find(match)!.index;
+
+/** A key handler that counts presses and keeps the last key; main does arithmetic between JNCs. */
+const COUNTER = `let count = 0;
+let last = 0;
+fn on_key(k) {
+  last = k;
+  count = count + 1;
+}
+let sum = 0;
+for (let i = 0; i < 12; i++) {
+  sum = sum + i;
+  if (sum > 20) {
+    sum = sum - 20;
+  }
+}
+print(sum);
+print(count);
+print(last);`;
+
+const keyed = (stack: StackModel): Record<string, KeyedProgram> => {
+  const counter = compileProgram(COUNTER, { stack });
+  const recursive = ram(
+    "let last = 0;\nfn on_key(k) {\n  let twice = k + k;\n  last = twice;\n}\nfn sum(n) {\n  if (n > 0) {\n    let less = n - 1;\n    let rest = sum(less);\n    return rest + n;\n  }\n  return 0;\n}\nprint(sum(4));\nprint(last);",
+  );
+  // The first ADDM: four execute ticks, so T5 is mid-instruction.
+  const midAdd = tickWhere(counter, (tick) => tick.registers.ir === ADDM && tick.t === 5);
+  // A tick inside the handler: the press waits while interrupts are off.
+  const inHandler = (first: number) =>
+    traceTicks(counter, undefined, { [first]: 1 }).find(
+      (tick) => tick.index > first && tick.registers.ir === ADDI && tick.t === 4,
+    )!.index;
+  const endsInstruction = tickWhere(
+    counter,
+    (tick) => tick.index > 40 && tick.control.includes("STEP_RESET"),
+  );
+  const programs: Record<string, KeyedProgram> = {
+    "key arriving mid-instruction": { program: counter, keys: { [midAdd]: 65 } },
+    "key on the tick an instruction ends": { program: counter, keys: { [endsInstruction]: 9 } },
+    "nested press while interrupts are off": {
+      program: counter,
+      keys: { [midAdd]: 65, [inHandler(midAdd)]: 66 },
+    },
+    "two presses before the handler reads the key": {
+      program: counter,
+      keys: { [midAdd]: 65, [midAdd + 1]: 67 },
+    },
+    "DI holds a key until EI": {
+      program: rawFor(
+        stack,
+        [JMP, 6],
+        [JMP, 20], // vector (address 2)
+        [HALT, 0],
+        [DI, 0], // address 6
+        [LDI, 1],
+        [ADDI, 2],
+        [OUT, 0], // the key arrives here, interrupts off
+        [EI, 0], // interrupt right after EI
+        [OUT, 0],
+        [HALT, 0],
+        [IN, 0], // address 20: handler
+        [OUT, 0],
+        [RETI, 0],
+      ),
+      keys: { 22: 42 },
+    },
+    "keyboard sample": {
+      program: compileProgram(INTERRUPT_SAMPLES.KEYBOARD, { stack }),
+      keys: { 30: 3, 300: 24, 700: 60 },
+    },
+  };
+  if (stack === "ram")
+    programs["key during recursion"] = {
+      program: recursive,
+      keys: { [tickWhere(recursive, (tick) => tick.registers.sp <= 24)]: 21 },
+    };
+  return programs;
+};
+
+/** Key handler programs for each CPU, run with a schedule of key presses. */
+export const KEYED_PROGRAMS: Record<StackModel, Record<string, KeyedProgram>> = {
+  hardware: keyed("hardware"),
+  ram: keyed("ram"),
 };
 
 /** The probe values the stepper's registers should show after `tick`. */
@@ -172,5 +282,7 @@ export function expectedProbes(tick: Tick) {
     FLAGS: (r.carry ? 1 : 0) | (r.zero ? 2 : 0),
     SP: r.sp,
     OUT: r.out,
+    KEY: r.key,
+    IRQ: (r.keyReady ? 1 : 0) | (r.ie ? 2 : 0) | (r.int ? 4 : 0),
   };
 }

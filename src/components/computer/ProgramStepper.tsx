@@ -7,21 +7,18 @@ import {
   describeOperand,
   hex,
   ISA,
+  SAMPLE_PROGRAMS,
   traceProgram,
 } from "src/lib/computerStepper";
 import panel from "./ByteExplorer.module.css";
 import styles from "./ProgramStepper.module.css";
 
-const EXAMPLE = "let x = 2;\nx = x + 3;\nprint(x);";
-const OVERFLOW = "let x = 255;\nx = x + 1;\nprint(x);";
-const LOOP = "let sum = 0;\nfor (let i = 0; i < 4; i++) {\n  sum = sum + i;\n}\nprint(sum);";
-const FUNCTION =
-  "fn bump(n) {\n  return n + 1;\n}\nlet x = 2;\nfor (let i = 0; i < 3; i++) {\n  x = bump(x);\n}\nprint(x);";
+const { EXAMPLE, OVERFLOW, LOOP, FUNCTION } = SAMPLE_PROGRAMS;
 const BIT_WEIGHTS = [128, 64, 32, 16, 8, 4, 2, 1];
 
 export function ProgramStepper() {
-  const [source, setSource] = useState(EXAMPLE);
-  const [loaded, setLoaded] = useState(EXAMPLE);
+  const [source, setSource] = useState<string>(EXAMPLE);
+  const [loaded, setLoaded] = useState<string>(EXAMPLE);
   const [step, setStep] = useState(0);
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
   const instructionListRef = useRef<HTMLOListElement>(null);

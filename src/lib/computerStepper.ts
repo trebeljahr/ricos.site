@@ -48,25 +48,60 @@ export const OPCODES = {
 } as const;
 
 export const ISA = [
-  { mnemonic: "LDI", opcode: OPCODES.LDI, operand: "literal", effect: "ACC ← operand" },
-  { mnemonic: "LDM", opcode: OPCODES.LDM, operand: "RAM address", effect: "ACC ← RAM[address]" },
-  { mnemonic: "STM", opcode: OPCODES.STM, operand: "RAM address", effect: "RAM[address] ← ACC" },
-  { mnemonic: "ADDI", opcode: OPCODES.ADDI, operand: "literal", effect: "ACC ← ACC + operand" },
+  {
+    mnemonic: "LDI",
+    opcode: OPCODES.LDI,
+    operand: "literal",
+    effect: "ACC ← operand",
+  },
+  {
+    mnemonic: "LDM",
+    opcode: OPCODES.LDM,
+    operand: "RAM address",
+    effect: "ACC ← RAM[address]",
+  },
+  {
+    mnemonic: "STM",
+    opcode: OPCODES.STM,
+    operand: "RAM address",
+    effect: "RAM[address] ← ACC",
+  },
+  {
+    mnemonic: "ADDI",
+    opcode: OPCODES.ADDI,
+    operand: "literal",
+    effect: "ACC ← ACC + operand",
+  },
   {
     mnemonic: "ADDM",
     opcode: OPCODES.ADDM,
     operand: "RAM address",
     effect: "ACC ← ACC + RAM[address]",
   },
-  { mnemonic: "SUBI", opcode: OPCODES.SUBI, operand: "literal", effect: "ACC ← ACC − operand" },
+  {
+    mnemonic: "SUBI",
+    opcode: OPCODES.SUBI,
+    operand: "literal",
+    effect: "ACC ← ACC − operand",
+  },
   {
     mnemonic: "SUBM",
     opcode: OPCODES.SUBM,
     operand: "RAM address",
     effect: "ACC ← ACC − RAM[address]",
   },
-  { mnemonic: "OUT", opcode: OPCODES.OUT, operand: "unused", effect: "output ← ACC" },
-  { mnemonic: "JMP", opcode: OPCODES.JMP, operand: "code address", effect: "PC ← address" },
+  {
+    mnemonic: "OUT",
+    opcode: OPCODES.OUT,
+    operand: "unused",
+    effect: "output ← ACC",
+  },
+  {
+    mnemonic: "JMP",
+    opcode: OPCODES.JMP,
+    operand: "code address",
+    effect: "PC ← address",
+  },
   {
     mnemonic: "JNC",
     opcode: OPCODES.JNC,
@@ -79,7 +114,12 @@ export const ISA = [
     operand: "code address",
     effect: "push return PC; jump",
   },
-  { mnemonic: "RET", opcode: OPCODES.RET, operand: "unused", effect: "PC ← popped return PC" },
+  {
+    mnemonic: "RET",
+    opcode: OPCODES.RET,
+    operand: "unused",
+    effect: "PC ← popped return PC",
+  },
   { mnemonic: "HALT", opcode: OPCODES.HALT, operand: "unused", effect: "stop" },
 ] as const;
 
@@ -135,7 +175,13 @@ type Expression =
   | { kind: "call"; name: string; argument: string | null };
 
 type Statement =
-  | { kind: "assign"; line: number; declaration: boolean; name: string; expression: Expression }
+  | {
+      kind: "assign";
+      line: number;
+      declaration: boolean;
+      name: string;
+      expression: Expression;
+    }
   | { kind: "print"; line: number; expression: Expression }
   | { kind: "call"; line: number; name: string; argument: string | null }
   | { kind: "return"; line: number; expression: Expression | null }
@@ -165,12 +211,20 @@ function parseExpression(text: string, line: number): Expression {
   if (call) return { kind: "call", name: call[1], argument: call[2] ?? null };
   const binary = new RegExp(`^(${VALUE})\\s*([+-])\\s*(${VALUE})$`).exec(value);
   if (binary)
-    return { kind: "binary", left: binary[1], operator: binary[2] as "+" | "-", right: binary[3] };
+    return {
+      kind: "binary",
+      left: binary[1],
+      operator: binary[2] as "+" | "-",
+      right: binary[3],
+    };
   if (new RegExp(`^${VALUE}$`).test(value)) return { kind: "value", value };
   fail(line, "Expected a byte, variable, simple +/− expression, or function call.");
 }
 
-function parseProgram(source: string): { main: Statement[]; functions: FunctionDefinition[] } {
+function parseProgram(source: string): {
+  main: Statement[];
+  functions: FunctionDefinition[];
+} {
   const lines = source.split("\n").map((raw) => raw.replace(/\/\/.*$/, "").trim());
   const functions: FunctionDefinition[] = [];
   let position = 0;
@@ -209,7 +263,11 @@ function parseProgram(source: string): { main: Statement[]; functions: FunctionD
         fail(line, "Use for (let i = 0; i < 3; i++) { with the closing brace on its own line.");
       const print = /^print\s*\((.*)\)\s*;$/.exec(text);
       if (print) {
-        statements.push({ kind: "print", line, expression: parseExpression(print[1], line) });
+        statements.push({
+          kind: "print",
+          line,
+          expression: parseExpression(print[1], line),
+        });
         continue;
       }
       const returned = /^return(?:\s+(.+))?\s*;$/.exec(text);
@@ -234,7 +292,12 @@ function parseProgram(source: string): { main: Statement[]; functions: FunctionD
       }
       const call = new RegExp(`^(${NAME})\\s*\\(\\s*(${VALUE})?\\s*\\)\\s*;$`).exec(text);
       if (call) {
-        statements.push({ kind: "call", line, name: call[1], argument: call[2] ?? null });
+        statements.push({
+          kind: "call",
+          line,
+          name: call[1],
+          argument: call[2] ?? null,
+        });
         continue;
       }
       fail(line, "Use let, assignment, print, for, function call, or return.");
@@ -484,6 +547,355 @@ export function compileProgram(source: string): CompiledProgram {
   };
 }
 
+/** The programs behind the stepper's preset buttons. */
+export const SAMPLE_PROGRAMS = {
+  EXAMPLE: "let x = 2;\nx = x + 3;\nprint(x);",
+  OVERFLOW: "let x = 255;\nx = x + 1;\nprint(x);",
+  LOOP: "let sum = 0;\nfor (let i = 0; i < 4; i++) {\n  sum = sum + i;\n}\nprint(sum);",
+  FUNCTION:
+    "fn bump(n) {\n  return n + 1;\n}\nlet x = 2;\nfor (let i = 0; i < 3; i++) {\n  x = bump(x);\n}\nprint(x);",
+} as const;
+
+// ---------------------------------------------------------------------------
+// Control unit: one clock tick = one micro-step.
+//
+// Harvard split: code ROM (256 bytes, addressed by CMAR), data RAM (16 bytes,
+// addressed by DMAR) and a 16-entry return stack (addressed by SP). One 8-bit
+// bus joins them; each tick at most one *_OUT signal drives it. The ALU always
+// sees ACC and the operand register (OPR), so ADDM/SUBM first copy the RAM
+// byte into OPR. The zero flag is wired to ACC (ACC === 0); FLAGS_IN latches
+// the ALU's carry (or borrow, when ALU_SUB is on).
+
+export const SIGNALS = [
+  "PC_OUT",
+  "PC_INC",
+  "PC_IN",
+  "CMAR_IN",
+  "ROM_OUT",
+  "IR_IN",
+  "OPR_IN",
+  "OPR_OUT",
+  "DMAR_IN",
+  "RAM_OUT",
+  "RAM_IN",
+  "ACC_IN",
+  "ACC_OUT",
+  "ALU_OUT",
+  "ALU_SUB",
+  "FLAGS_IN",
+  "SP_INC",
+  "SP_DEC",
+  "STACK_IN",
+  "STACK_OUT",
+  "OUT_IN",
+  "HALT",
+  "STEP_RESET",
+] as const;
+
+export type Signal = (typeof SIGNALS)[number];
+export type ControlWord = readonly Signal[];
+export type Mnemonic = (typeof ISA)[number]["mnemonic"];
+/** Execute steps for one opcode, starting at T4. JNC branches on the carry flag. */
+export type ExecuteSteps =
+  | readonly ControlWord[]
+  | { carryClear: readonly ControlWord[]; carrySet: readonly ControlWord[] };
+
+/** T-states a single instruction may use; the microcode ROM has room for this many. */
+export const MAX_T_STATES = 8;
+
+/** T0–T3: fetch the opcode into IR, then the operand into OPR. Same for every opcode. */
+export const FETCH_STEPS: readonly ControlWord[] = [
+  ["PC_OUT", "CMAR_IN"],
+  ["ROM_OUT", "IR_IN", "PC_INC"],
+  ["PC_OUT", "CMAR_IN"],
+  ["ROM_OUT", "OPR_IN", "PC_INC"],
+];
+
+export const EXECUTE_STEPS: Record<Mnemonic, ExecuteSteps> = {
+  LDI: [["OPR_OUT", "ACC_IN", "STEP_RESET"]],
+  LDM: [
+    ["OPR_OUT", "DMAR_IN"],
+    ["RAM_OUT", "ACC_IN", "STEP_RESET"],
+  ],
+  STM: [
+    ["OPR_OUT", "DMAR_IN"],
+    ["ACC_OUT", "RAM_IN", "STEP_RESET"],
+  ],
+  ADDI: [["ALU_OUT", "ACC_IN", "FLAGS_IN", "STEP_RESET"]],
+  ADDM: [
+    ["OPR_OUT", "DMAR_IN"],
+    ["RAM_OUT", "OPR_IN"],
+    ["ALU_OUT", "ACC_IN", "FLAGS_IN", "STEP_RESET"],
+  ],
+  SUBI: [["ALU_OUT", "ALU_SUB", "ACC_IN", "FLAGS_IN", "STEP_RESET"]],
+  SUBM: [
+    ["OPR_OUT", "DMAR_IN"],
+    ["RAM_OUT", "OPR_IN"],
+    ["ALU_OUT", "ALU_SUB", "ACC_IN", "FLAGS_IN", "STEP_RESET"],
+  ],
+  OUT: [["ACC_OUT", "OUT_IN", "STEP_RESET"]],
+  JMP: [["OPR_OUT", "PC_IN", "STEP_RESET"]],
+  JNC: {
+    carryClear: [["OPR_OUT", "PC_IN", "STEP_RESET"]],
+    carrySet: [["STEP_RESET"]],
+  },
+  CALL: [["PC_OUT", "STACK_IN"], ["SP_INC"], ["OPR_OUT", "PC_IN", "STEP_RESET"]],
+  RET: [["SP_DEC"], ["STACK_OUT", "PC_IN", "STEP_RESET"]],
+  HALT: [["HALT"]],
+};
+
+/** An opcode the decoder does not know stops the clock. */
+const UNKNOWN_STEPS: readonly ControlWord[] = [["HALT"]];
+
+/** The microcode lookup: (opcode, T-state, carry flag) → control word. */
+export function controlWord(opcode: number, t: number, carry: boolean): ControlWord {
+  if (t < FETCH_STEPS.length) return FETCH_STEPS[t];
+  const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
+  const steps = mnemonic ? EXECUTE_STEPS[mnemonic] : UNKNOWN_STEPS;
+  const list = "carrySet" in steps ? (carry ? steps.carrySet : steps.carryClear) : steps;
+  return list[t - FETCH_STEPS.length] ?? [];
+}
+
+export function encodeControlWord(word: ControlWord): number {
+  return word.reduce((bits, signal) => bits | (1 << SIGNALS.indexOf(signal)), 0);
+}
+
+export function decodeControlWord(bits: number): Signal[] {
+  return SIGNALS.filter((_, index) => (bits & (1 << index)) !== 0);
+}
+
+/** ROM address for (opcode, T-state, carry): opcode byte, then 3 T bits, then carry. */
+export function microcodeAddress(opcode: number, t: number, carry: boolean): number {
+  return (opcode << 4) | (t << 1) | (carry ? 1 : 0);
+}
+
+/** Microcode ROM contents generated from the table, so the two cannot drift apart. */
+export function microcodeRom(): number[] {
+  const rom = Array<number>(256 * MAX_T_STATES * 2).fill(0);
+  for (let opcode = 0; opcode < 256; opcode++)
+    for (let t = 0; t < MAX_T_STATES; t++)
+      for (const carry of [false, true])
+        rom[microcodeAddress(opcode, t, carry)] = encodeControlWord(controlWord(opcode, t, carry));
+  return rom;
+}
+
+export type BusDriver = "PC" | "ROM" | "OPR" | "RAM" | "ACC" | "ALU" | "STACK";
+
+const BUS_DRIVERS: Partial<Record<Signal, BusDriver>> = {
+  PC_OUT: "PC",
+  ROM_OUT: "ROM",
+  OPR_OUT: "OPR",
+  RAM_OUT: "RAM",
+  ACC_OUT: "ACC",
+  ALU_OUT: "ALU",
+  STACK_OUT: "STACK",
+};
+
+const BUS_READERS: readonly Signal[] = [
+  "CMAR_IN",
+  "IR_IN",
+  "OPR_IN",
+  "PC_IN",
+  "DMAR_IN",
+  "RAM_IN",
+  "ACC_IN",
+  "STACK_IN",
+  "OUT_IN",
+];
+
+export type Registers = {
+  pc: number;
+  cmar: number;
+  ir: number;
+  opr: number;
+  dmar: number;
+  acc: number;
+  carry: boolean;
+  zero: boolean;
+  sp: number;
+  out: number;
+};
+
+export type TickPhase = "fetch" | "decode" | "execute";
+
+/** One clock tick. Registers and memories are the values after the clock edge. */
+export type Tick = {
+  index: number;
+  /** Which instruction this tick belongs to, counting from 0 in execution order. */
+  instruction: number;
+  /** Code address the instruction was fetched from. */
+  address: number;
+  t: number;
+  phase: TickPhase;
+  control: ControlWord;
+  bus: number | null;
+  busDriver: BusDriver | null;
+  registers: Registers;
+  ram: number[];
+  /** Return stack entries below SP. */
+  stack: number[];
+  output: number[];
+  halted: boolean;
+  /** Set when the tick could not complete; no state changed on that tick. */
+  fault: string | null;
+};
+
+export const MAX_INSTRUCTIONS = 512;
+
+/**
+ * Runs a program from the microcode table alone, one tick at a time. Stops on
+ * HALT, a stack fault, or after `maxInstructions` instructions.
+ */
+export function traceTicks(
+  program: CompiledProgram,
+  maxInstructions: number = MAX_INSTRUCTIONS,
+): Tick[] {
+  const rom = Array.from({ length: 256 }, (_, index) => program.bytes[index] ?? 0);
+  const ram = Array<number>(16).fill(0);
+  const stackMemory = Array<number>(16).fill(0);
+  const output: number[] = [];
+  const ticks: Tick[] = [];
+  let registers: Registers = {
+    pc: 0,
+    cmar: 0,
+    ir: 0,
+    opr: 0,
+    dmar: 0,
+    acc: 0,
+    carry: false,
+    zero: true,
+    sp: 0,
+    out: 0,
+  };
+  let t = 0;
+  let instruction = 0;
+  let address = 0;
+  while (instruction < maxInstructions) {
+    if (t === 0) address = registers.pc;
+    if (t >= MAX_T_STATES) throw new Error(`Microcode for ${hex(registers.ir)} never resets.`);
+    const control = controlWord(registers.ir, t, registers.carry);
+    if (control.length === 0)
+      throw new Error(`Microcode for ${hex(registers.ir)} has no control word at T${t}.`);
+    const on = new Set(control);
+    const drivers = control.filter((signal) => BUS_DRIVERS[signal]);
+    if (drivers.length > 1) throw new Error(`Bus conflict at T${t}: ${drivers.join(", ")}.`);
+    const busDriver = drivers.length ? BUS_DRIVERS[drivers[0]]! : null;
+    const subtract = on.has("ALU_SUB");
+    const sum = subtract ? registers.acc - registers.opr : registers.acc + registers.opr;
+    const busValues: Record<BusDriver, () => number> = {
+      PC: () => registers.pc,
+      ROM: () => rom[registers.cmar],
+      OPR: () => registers.opr,
+      RAM: () => ram[registers.dmar],
+      ACC: () => registers.acc,
+      ALU: () => sum & 255,
+      STACK: () => stackMemory[registers.sp],
+    };
+    const bus = busDriver ? busValues[busDriver]() : null;
+    if (bus === null && control.some((signal) => BUS_READERS.includes(signal)))
+      throw new Error(`Nothing drives the bus at T${t}.`);
+    const fault =
+      on.has("STACK_IN") && registers.sp >= stackMemory.length
+        ? "Return stack is full. Execution stopped."
+        : on.has("SP_DEC") && registers.sp === 0
+          ? "Return stack is empty. Execution stopped."
+          : null;
+    const next = { ...registers };
+    if (!fault && bus !== null) {
+      if (on.has("CMAR_IN")) next.cmar = bus;
+      if (on.has("IR_IN")) next.ir = bus;
+      if (on.has("OPR_IN")) next.opr = bus;
+      if (on.has("PC_IN")) next.pc = bus;
+      if (on.has("DMAR_IN")) next.dmar = bus & 15;
+      if (on.has("ACC_IN")) next.acc = bus;
+      if (on.has("RAM_IN")) ram[registers.dmar] = bus;
+      if (on.has("STACK_IN")) stackMemory[registers.sp] = bus;
+      if (on.has("OUT_IN")) {
+        next.out = bus;
+        output.push(bus);
+      }
+    }
+    if (!fault) {
+      if (on.has("PC_INC")) next.pc = (registers.pc + 1) & 255;
+      if (on.has("SP_INC")) next.sp = registers.sp + 1;
+      if (on.has("SP_DEC")) next.sp = registers.sp - 1;
+      if (on.has("FLAGS_IN")) next.carry = subtract ? sum < 0 : sum > 255;
+      next.zero = next.acc === 0;
+      registers = next;
+    }
+    const halted = fault !== null || on.has("HALT");
+    ticks.push({
+      index: ticks.length,
+      instruction,
+      address,
+      t,
+      phase: t < 2 ? "fetch" : t < 4 ? "decode" : "execute",
+      control,
+      bus,
+      busDriver,
+      registers: { ...registers },
+      ram: [...ram],
+      stack: stackMemory.slice(0, registers.sp),
+      output: [...output],
+      halted,
+      fault,
+    });
+    if (halted) break;
+    if (on.has("STEP_RESET")) {
+      t = 0;
+      instruction++;
+    } else t++;
+  }
+  return ticks;
+}
+
+function explainExecute(
+  opcode: number,
+  operand: number,
+  meaning: string,
+  before: Snapshot,
+  after: Registers,
+  stack: number[],
+): string {
+  const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic;
+  switch (mnemonic) {
+    case "LDI":
+      return `Load the number ${operand} itself into ACC.`;
+    case "LDM":
+      return `Go to ${meaning}, read the ${after.acc} stored there, and load it into ACC.`;
+    case "STM":
+      return `Write ACC (${after.acc}) to ${meaning}.`;
+    case "ADDI":
+    case "ADDM":
+    case "SUBI":
+    case "SUBM": {
+      const subtract = mnemonic === "SUBI" || mnemonic === "SUBM";
+      return `ALU ${subtract ? "subtracts" : "adds"} ${after.opr}; ACC becomes ${after.acc}${after.carry ? (subtract ? " (borrow)" : " (carry out)") : ""}.`;
+    }
+    case "OUT":
+      return `Copy ACC (${after.acc}) to the output device.`;
+    case "JMP":
+      return `Jump to code address ${hex(operand)}.`;
+    case "JNC":
+      return before.carry
+        ? `Borrow is set: enter the loop body at ${hex(after.pc)}.`
+        : `No borrow: leave the loop at ${hex(operand)}.`;
+    case "CALL":
+      return `Push return address ${hex(stack.at(-1)!)}; jump to function at ${hex(operand)}.`;
+    case "RET":
+      return `Pop return address ${hex(after.pc)}; resume caller with ACC = ${after.acc}.`;
+    case "HALT":
+      return "HALT stops the CPU clock in this toy model.";
+    default:
+      return `Unknown opcode ${hex(opcode)}. Execution stopped.`;
+  }
+}
+
+/**
+ * The stepper's three snapshots per instruction (fetch, decode, execute),
+ * grouped from the per-tick trace: fetch shows the state after T1, decode
+ * after T3, execute after the instruction's last tick.
+ */
 export function traceProgram(program: CompiledProgram): Snapshot[] {
   const snapshots: Snapshot[] = [];
   let state: Snapshot = {
@@ -513,8 +925,10 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
     snapshots.push(state);
   };
   record({});
-  for (let count = 0; count < 512; count++) {
-    const address = state.pc;
+  const groups: Tick[][] = [];
+  for (const tick of traceTicks(program)) (groups[tick.instruction] ??= []).push(tick);
+  for (const group of groups) {
+    const address = group[0].address;
     const instruction = program.instructions[address / 2];
     if (!instruction || instruction.address !== address) {
       record({
@@ -522,9 +936,10 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
         halted: true,
         explanation: `No instruction at code address ${hex(address)}. Execution stopped.`,
       });
-      break;
+      return snapshots;
     }
-    const { opcode, operand, label } = instruction;
+    const opcode = group[1].registers.ir;
+    const operand = group[3].registers.opr;
     const mnemonic = ISA.find((item) => item.opcode === opcode)?.mnemonic ?? hex(opcode);
     const meaning = describeOperand(opcode, operand, program.variables).long;
     record({
@@ -539,107 +954,39 @@ export function traceProgram(program: CompiledProgram): Snapshot[] {
       phase: "decode",
       operand,
       activeAddress: address + 1,
-      explanation: `Decode ${hex(opcode)} as ${mnemonic} (${label}); the next byte, ${hex(operand)}, is its operand: ${meaning}.`,
+      explanation: `Decode ${hex(opcode)} as ${mnemonic} (${instruction.label}); the next byte, ${hex(operand)}, is its operand: ${meaning}.`,
     });
-    let accumulator = state.accumulator;
-    let ram = state.ram;
-    let stack = state.stack;
-    let output = state.output;
-    let carry = state.carry;
-    let zero = state.zero;
-    let touchedAddress: number | null = null;
-    let pc = address + 2;
-    let effect = "";
-    if (opcode === OPCODES.LDI || opcode === OPCODES.LDM) {
-      accumulator = opcode === OPCODES.LDI ? operand : ram[operand];
-      zero = accumulator === 0;
-      if (opcode === OPCODES.LDM) touchedAddress = operand;
-      effect =
-        opcode === OPCODES.LDI
-          ? `Load the number ${operand} itself into ACC.`
-          : `Go to ${meaning}, read the ${accumulator} stored there, and load it into ACC.`;
-    } else if (opcode === OPCODES.STM) {
-      ram = [...ram];
-      ram[operand] = accumulator;
-      touchedAddress = operand;
-      effect = `Write ACC (${accumulator}) to ${meaning}.`;
-    } else if (
-      opcode === OPCODES.ADDI ||
-      opcode === OPCODES.ADDM ||
-      opcode === OPCODES.SUBI ||
-      opcode === OPCODES.SUBM
-    ) {
-      const immediate = opcode === OPCODES.ADDI || opcode === OPCODES.SUBI;
-      const subtract = opcode === OPCODES.SUBI || opcode === OPCODES.SUBM;
-      const value = immediate ? operand : ram[operand];
-      const result = subtract ? accumulator - value : accumulator + value;
-      carry = subtract ? result < 0 : result > 255;
-      accumulator = result & 255;
-      zero = accumulator === 0;
-      if (!immediate) touchedAddress = operand;
-      effect = `ALU ${subtract ? "subtracts" : "adds"} ${value}; ACC becomes ${accumulator}${carry ? (subtract ? " (borrow)" : " (carry out)") : ""}.`;
-    } else if (opcode === OPCODES.OUT) {
-      output = [...output, accumulator];
-      effect = `Copy ACC (${accumulator}) to the output device.`;
-    } else if (opcode === OPCODES.JMP) {
-      pc = operand;
-      effect = `Jump to code address ${hex(operand)}.`;
-    } else if (opcode === OPCODES.JNC) {
-      if (!carry) pc = operand;
-      effect = carry
-        ? `Borrow is set: enter the loop body at ${hex(pc)}.`
-        : `No borrow: leave the loop at ${hex(operand)}.`;
-    } else if (opcode === OPCODES.CALL) {
-      if (stack.length >= 16) {
-        record({
-          phase: "execute",
-          halted: true,
-          explanation: "Return stack is full. Execution stopped.",
-        });
-        break;
-      }
-      stack = [...stack, pc];
-      pc = operand;
-      effect = `Push return address ${hex(stack.at(-1)!)}; jump to function at ${hex(operand)}.`;
-    } else if (opcode === OPCODES.RET) {
-      if (stack.length === 0) {
-        record({
-          phase: "execute",
-          halted: true,
-          explanation: "Return stack is empty. Execution stopped.",
-        });
-        break;
-      }
-      pc = stack.at(-1)!;
-      stack = stack.slice(0, -1);
-      effect = `Pop return address ${hex(pc)}; resume caller with ACC = ${accumulator}.`;
-    } else if (opcode === OPCODES.HALT) {
-      effect = "HALT stops the CPU clock in this toy model.";
-    } else {
-      effect = `Unknown opcode ${hex(opcode)}. Execution stopped.`;
+    const last = group.at(-1)!;
+    if (last.fault) {
+      record({ phase: "execute", halted: true, explanation: last.fault });
+      return snapshots;
     }
-    const halted = opcode === OPCODES.HALT || !ISA.some((item) => item.opcode === opcode);
+    const after = last.registers;
+    const touchesRam = group.some(
+      ({ control }) => control.includes("RAM_OUT") || control.includes("RAM_IN"),
+    );
+    const effect = explainExecute(opcode, operand, meaning, state, after, last.stack);
     record({
       phase: "execute",
-      pc,
-      accumulator,
-      zero,
-      carry,
-      ram,
-      stack,
-      output,
-      touchedAddress,
+      pc: after.pc,
+      accumulator: after.acc,
+      zero: after.zero,
+      carry: after.carry,
+      ram: [...last.ram],
+      stack: [...last.stack],
+      output: [...last.output],
+      touchedAddress: touchesRam ? after.dmar : null,
       activeAddress: address,
-      explanation: `${effect} PC is now ${hex(pc)}.`,
-      halted,
+      explanation: `${effect} PC is now ${hex(after.pc)}.`,
+      halted: last.halted,
     });
-    if (halted) break;
-    if (count === 511)
-      record({
-        phase: "execute",
-        halted: true,
-        explanation: "Stopped after 512 instructions. Check for a loop that never ends.",
-      });
+    if (last.halted) return snapshots;
   }
+  if (groups.length >= MAX_INSTRUCTIONS)
+    record({
+      phase: "execute",
+      halted: true,
+      explanation: `Stopped after ${MAX_INSTRUCTIONS} instructions. Check for a loop that never ends.`,
+    });
   return snapshots;
 }

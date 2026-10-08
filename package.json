@@ -66,6 +66,7 @@
     "sendNewsletter": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local src/scripts/sendNewsletter.ts",
     "newsletter:import": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local src/scripts/newsletter/importFromMailgun.ts",
     "newsletter:sync-unsubscribes": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local src/scripts/newsletter/syncUnsubscribes.ts",
+    "newsletter:chapter": "tsx --env-file-if-exists=.env --env-file-if-exists=.env.local src/scripts/newsletter/chapterAlert.ts",
     "createRedirects": "tsx src/scripts/createRedirects.ts",
     "findIncompleteBooknotes": "tsx src/scripts/findIncompleteBooknotes.ts",
     "fixFolderPaths": "tsx src/scripts/aws/fixFileNames.ts",

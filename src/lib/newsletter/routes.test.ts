@@ -13,9 +13,9 @@ const mailgun = vi.hoisted(() => ({
 vi.mock("src/lib/mailgun", () => mailgun);
 
 const listmonk = vi.hoisted(() => ({
-  confirmSubscription: vi.fn(async (_email: string) => {}),
+  confirmSubscription: vi.fn(async (_email: string, _listId?: number) => {}),
   findSubscriber: vi.fn(async (_email: string): Promise<{ status: string } | null> => null),
-  isConfirmedOnList: vi.fn(async (_email: string) => false),
+  isConfirmedOnList: vi.fn(async (_email: string, _listId?: number) => false),
   sendTransactional: vi.fn(async (_params: unknown) => {}),
 }));
 vi.mock("src/lib/newsletter/listmonk", () => listmonk);
@@ -69,6 +69,8 @@ beforeEach(() => {
   process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
   delete process.env.NEWSLETTER_PROVIDER;
+  process.env.LISTMONK_LIST_ID = "15";
+  delete process.env.LISTMONK_COMPUTER_LIST_ID;
   for (const mock of [...Object.values(mailgun), ...Object.values(listmonk)]) mock.mockClear();
   _resetRateLimit();
 });
@@ -93,6 +95,56 @@ describe("POST /api/signup", () => {
     listmonk.findSubscriber.mockResolvedValueOnce({ status: "blocklisted" });
     const res = await call(signupHandler, { body: { email: "reader@example.com" } });
     expect(res.body).toEqual({ success: "Now check your mail to confirm your subscription!" });
+    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
+  });
+
+  it("sends one confirmation for every chosen list", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    const res = await call(signupHandler, {
+      body: { email: "reader@example.com", lists: ["live-and-learn", "computer", "computer"] },
+    });
+    expect(res.body).toEqual({ success: "Now check your mail to confirm your subscription!" });
+    expect(listmonk.sendTransactional).toHaveBeenCalledTimes(1);
+    expect(listmonk.sendTransactional.mock.calls[0][0]).toMatchObject({
+      subject: "Confirm your signup to Live and Learn and How computers work: new chapters",
+    });
+  });
+
+  it("only asks to confirm the lists the reader is not on yet", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    listmonk.isConfirmedOnList.mockImplementation(async (_email, listId) => listId === 15);
+    const res = await call(signupHandler, {
+      body: { email: "reader@example.com", lists: ["computer", "live-and-learn"] },
+    });
+    expect(res.body).toEqual({ success: "Now check your mail to confirm your subscription!" });
+    expect(listmonk.sendTransactional.mock.calls[0][0]).toMatchObject({
+      subject: "Confirm your signup to How computers work: new chapters",
+    });
+
+    const again = await call(signupHandler, {
+      body: { email: "reader@example.com", lists: ["live-and-learn"] },
+    });
+    expect(again.body).toEqual({ success: "You were already signed up to the newsletter." });
+    expect(listmonk.sendTransactional).toHaveBeenCalledTimes(1);
+    listmonk.isConfirmedOnList.mockReset();
+    listmonk.isConfirmedOnList.mockResolvedValue(false);
+  });
+
+  it("rejects list ids, unknown keys and an empty choice", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    for (const lists of [[15], ["15"], ["other-project"], [], "computer", null]) {
+      _resetRateLimit();
+      const res = await call(signupHandler, { body: { email: "reader@example.com", lists } });
+      expect(res.status, JSON.stringify(lists)).toBe(400);
+    }
+    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
+  });
+
+  it("rejects the chapter list while it has no list id", async () => {
+    const res = await call(signupHandler, {
+      body: { email: "reader@example.com", lists: ["computer"] },
+    });
+    expect(res.status).toBe(400);
     expect(listmonk.sendTransactional).not.toHaveBeenCalled();
   });
 
@@ -131,7 +183,20 @@ describe("GET /api/confirm-email", () => {
     const token = new URL(confirmLink("reader@example.com")).searchParams.get("token");
     const res = await call(confirmHandler, { method: "GET", query: { token: token as string } });
     expect(res.redirect).toBe("/email-signup-success");
-    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com");
+    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 15);
+  });
+
+  it("confirms each list the token names", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    const token = new URL(
+      confirmLink("reader@example.com", ["computer", "live-and-learn"]),
+    ).searchParams.get("token");
+    const res = await call(confirmHandler, { method: "GET", query: { token: token as string } });
+    expect(res.redirect).toBe("/email-signup-success");
+    expect(listmonk.confirmSubscription.mock.calls).toEqual([
+      ["reader@example.com", 21],
+      ["reader@example.com", 15],
+    ]);
   });
 
   it("confirms a Mailgun-era hash link", async () => {
@@ -141,7 +206,7 @@ describe("GET /api/confirm-email", () => {
       query: { hash, email: "Reader@Example.com" },
     });
     expect(res.redirect).toBe("/email-signup-success");
-    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com");
+    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 15);
   });
 
   it("does not confirm an arbitrary address with a made-up hash", async () => {

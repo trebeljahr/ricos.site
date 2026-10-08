@@ -1,5 +1,5 @@
-import bundleAnalyzer from "@next/bundle-analyzer";
 import { existsSync } from "node:fs";
+import bundleAnalyzer from "@next/bundle-analyzer";
 import { generateRedirects } from "./src/scripts/createRedirects.js";
 
 const isDev = process.argv.includes("dev") || process.env.NODE_ENV === "development";
@@ -24,7 +24,9 @@ if (isDev) {
 const shouldRunVelite = isBuild || (isDev && !veliteExternal && !process.env.VELITE_STARTED);
 if (shouldRunVelite) {
   if (!existsSync(new URL("./src/content/Notes/posts", import.meta.url))) {
-    throw new Error("Notes submodule is missing. Run `git submodule update --init src/content/Notes` before building.");
+    throw new Error(
+      "Notes submodule is missing. Run `git submodule update --init src/content/Notes` before building.",
+    );
   }
   if (isDev) process.env.VELITE_STARTED = "1";
   const { build } = await import("velite");
@@ -57,9 +59,27 @@ if (shouldRunVelite) {
   if (!(await veliteHmrStampExists())) await writeVeliteHmrStamp();
 }
 
+/**
+ * The newsletter lists signup forms offer, inlined into the browser bundle
+ * as NEWSLETTER_OFFERED_LISTS. Mirrors `availableListKeys` in
+ * src/lib/newsletter/lists.ts, which the signup API checks at runtime: Live
+ * and Learn always, the chapter alerts once LISTMONK_COMPUTER_LIST_ID is
+ * set and the deployment is not pinned to Mailgun. Only key names, never
+ * list ids, reach the browser.
+ */
+function offeredNewsletterLists() {
+  const onMailgun = process.env.NEWSLETTER_PROVIDER?.trim().toLowerCase() === "mailgun";
+  const computerId = Number(process.env.LISTMONK_COMPUTER_LIST_ID);
+  const computer = !onMailgun && Number.isInteger(computerId) && computerId > 0;
+  return computer ? "live-and-learn,computer" : "live-and-learn";
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  env: {
+    NEWSLETTER_OFFERED_LISTS: offeredNewsletterLists(),
+  },
   experimental: {
     // Back and forward return to the scroll position the page was left at,
     // instead of the top. src/lib/historyState.ts restores list filters to match.

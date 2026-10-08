@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CONFIRM_TOKEN_TTL_MS,
@@ -57,7 +58,47 @@ describe("signed tokens", () => {
     expect(verifyConfirmToken(mintConfirmToken("Reader@Example.com"))).toEqual({
       ok: true,
       email: "reader@example.com",
+      lists: ["live-and-learn"],
     });
+  });
+
+  it("round-trips the chosen lists", () => {
+    const token = mintConfirmToken("reader@example.com", ["computer", "live-and-learn"]);
+    expect(verifyConfirmToken(token)).toEqual({
+      ok: true,
+      email: "reader@example.com",
+      lists: ["computer", "live-and-learn"],
+    });
+    const link = new URL(confirmLink("reader@example.com", ["computer"]));
+    expect(verifyConfirmToken(link.searchParams.get("token") as string)).toMatchObject({
+      lists: ["computer"],
+    });
+  });
+
+  it("confirms a token minted before lists existed to Live and Learn", () => {
+    // The exact shape mintConfirmToken produced until lists were added.
+    const payload = Buffer.from(
+      JSON.stringify({ e: "reader@example.com", x: Date.now() + 60_000 }),
+    ).toString("base64url");
+    const sig = createHmac("sha256", "test-token-secret").update(payload).digest("base64url");
+    expect(verifyConfirmToken(`${payload}.${sig}`)).toEqual({
+      ok: true,
+      email: "reader@example.com",
+      lists: ["live-and-learn"],
+    });
+  });
+
+  it("rejects a signed token naming an unknown or empty list", () => {
+    for (const l of [["listmonk-id-15"], [15], [], "computer", ["computer", "nope"]]) {
+      const payload = Buffer.from(
+        JSON.stringify({ e: "reader@example.com", x: Date.now() + 60_000, l }),
+      ).toString("base64url");
+      const sig = createHmac("sha256", "test-token-secret").update(payload).digest("base64url");
+      expect(verifyConfirmToken(`${payload}.${sig}`), JSON.stringify(l)).toEqual({
+        ok: false,
+        reason: "malformed",
+      });
+    }
   });
 
   it("rejects a tampered signature or payload", () => {
@@ -84,7 +125,7 @@ describe("signed tokens", () => {
 
   it("expires after the TTL", () => {
     const issuedAt = 1_000_000;
-    const token = mintConfirmToken("reader@example.com", issuedAt);
+    const token = mintConfirmToken("reader@example.com", undefined, issuedAt);
     expect(verifyConfirmToken(token, issuedAt + CONFIRM_TOKEN_TTL_MS - 1).ok).toBe(true);
     expect(verifyConfirmToken(token, issuedAt + CONFIRM_TOKEN_TTL_MS + 1)).toEqual({
       ok: false,
@@ -123,6 +164,7 @@ describe("readConfirmLink", () => {
     await expect(readConfirmLink({ token })).resolves.toEqual({
       ok: true,
       email: "reader@example.com",
+      lists: ["live-and-learn"],
     });
   });
 
@@ -131,6 +173,7 @@ describe("readConfirmLink", () => {
     await expect(readConfirmLink({ hash, email: "reader@example.com" })).resolves.toEqual({
       ok: true,
       email: "reader@example.com",
+      lists: ["live-and-learn"],
     });
   });
 
@@ -140,6 +183,7 @@ describe("readConfirmLink", () => {
     await expect(readConfirmLink({ hash, email: "reader news@example.com" })).resolves.toEqual({
       ok: true,
       email: "reader+news@example.com",
+      lists: ["live-and-learn"],
     });
   });
 

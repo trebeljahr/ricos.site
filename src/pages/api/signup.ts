@@ -1,7 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
+  availableListKeys,
+  DEFAULT_LIST,
+  listNames,
+  parseListKeys,
+} from "src/lib/newsletter/lists";
+import {
   checkRateLimit,
-  isAlreadySubscribed,
+  listsToConfirm,
   normalizeEmail,
   sendConfirmationEmail,
 } from "src/lib/newsletter/subscribe";
@@ -43,12 +49,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
+  // List keys only, never list ids (see src/lib/newsletter/lists.ts).
+  const lists = parseListKeys(req.body?.lists);
+  const available = availableListKeys();
+  if (!lists?.every((list) => available.includes(list))) {
+    return res.status(400).json({
+      error: "Invalid list",
+      errorMessage: "Pick at least one of the lists on the form.",
+    });
+  }
+
   try {
-    if (await isAlreadySubscribed(email)) {
-      return res.json({ success: "You were already signed up to the newsletter." });
+    const pending = await listsToConfirm(email, lists);
+    if (pending.length === 0) {
+      return res.json({
+        success:
+          lists.length === 1 && lists[0] === DEFAULT_LIST
+            ? "You were already signed up to the newsletter."
+            : `You were already signed up to ${listNames(lists)}.`,
+      });
     }
 
-    await sendConfirmationEmail(email);
+    await sendConfirmationEmail(email, pending);
 
     res.json({ success: "Now check your mail to confirm your subscription!" });
   } catch (err) {

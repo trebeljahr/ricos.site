@@ -9,9 +9,9 @@ const mailgun = vi.hoisted(() => ({
 vi.mock("src/lib/mailgun", () => mailgun);
 
 const listmonk = vi.hoisted(() => ({
-  confirmSubscription: vi.fn(async (_email: string) => {}),
+  confirmSubscription: vi.fn(async (_email: string, _listId?: number) => {}),
   findSubscriber: vi.fn(async (_email: string): Promise<{ status: string } | null> => null),
-  isConfirmedOnList: vi.fn(async (_email: string) => false),
+  isConfirmedOnList: vi.fn(async (_email: string, _listId?: number) => false),
   sendTransactional: vi.fn(async (_params: { to: string; subject: string; html: string }) => {}),
 }));
 vi.mock("./listmonk", () => listmonk);
@@ -21,6 +21,7 @@ import {
   checkRateLimit,
   confirmAddress,
   isAlreadySubscribed,
+  listsToConfirm,
   newsletterProvider,
   normalizeEmail,
   sendConfirmationEmail,
@@ -37,12 +38,16 @@ beforeEach(() => {
   process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
   delete process.env.NEWSLETTER_PROVIDER;
+  process.env.LISTMONK_LIST_ID = "15";
+  delete process.env.LISTMONK_COMPUTER_LIST_ID;
   for (const mock of [...Object.values(mailgun), ...Object.values(listmonk)]) mock.mockClear();
   _resetRateLimit();
 });
 
 afterEach(() => {
   delete process.env.NEWSLETTER_PROVIDER;
+  delete process.env.LISTMONK_LIST_ID;
+  delete process.env.LISTMONK_COMPUTER_LIST_ID;
 });
 
 describe("newsletterProvider", () => {
@@ -107,15 +112,77 @@ describe("with the ListMonk default", () => {
 
   it("confirms into ListMonk", async () => {
     await confirmAddress("reader@example.com");
-    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com");
+    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 15);
     expect(mailgun.activateEmailListMember).not.toHaveBeenCalled();
+  });
+
+  it("confirms every list the link names", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    await confirmAddress("reader@example.com", ["computer", "live-and-learn"]);
+    expect(listmonk.confirmSubscription.mock.calls).toEqual([
+      ["reader@example.com", 21],
+      ["reader@example.com", 15],
+    ]);
+  });
+
+  it("skips a list whose id is gone, but never Live and Learn", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    await confirmAddress("reader@example.com", ["computer", "live-and-learn"]);
+    expect(listmonk.confirmSubscription.mock.calls).toEqual([["reader@example.com", 15]]);
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
+
+    delete process.env.LISTMONK_LIST_ID;
+    await expect(confirmAddress("reader@example.com")).rejects.toThrow(/LISTMONK_LIST_ID/);
   });
 
   it("asks ListMonk whether the address is already on the list", async () => {
     listmonk.isConfirmedOnList.mockResolvedValueOnce(true);
     await expect(isAlreadySubscribed("reader@example.com")).resolves.toBe(true);
+    expect(listmonk.isConfirmedOnList).toHaveBeenLastCalledWith("reader@example.com", 15);
     listmonk.isConfirmedOnList.mockRejectedValueOnce(new Error("down"));
     await expect(isAlreadySubscribed("reader@example.com")).resolves.toBe(false);
+  });
+
+  it("answers already-subscribed per list", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    // A Live and Learn reader who has not joined the chapter alerts yet.
+    listmonk.isConfirmedOnList.mockImplementation(async (_email, listId) => listId === 15);
+    await expect(isAlreadySubscribed("reader@example.com", "live-and-learn")).resolves.toBe(true);
+    await expect(isAlreadySubscribed("reader@example.com", "computer")).resolves.toBe(false);
+    await expect(
+      listsToConfirm("reader@example.com", ["computer", "live-and-learn"]),
+    ).resolves.toEqual(["computer"]);
+    listmonk.isConfirmedOnList.mockReset();
+    listmonk.isConfirmedOnList.mockResolvedValue(false);
+  });
+
+  it("never counts an unconfigured list as subscribed", async () => {
+    listmonk.isConfirmedOnList.mockResolvedValueOnce(true);
+    await expect(isAlreadySubscribed("reader@example.com", "computer")).resolves.toBe(false);
+    expect(listmonk.isConfirmedOnList).not.toHaveBeenCalled();
+    listmonk.isConfirmedOnList.mockReset();
+    listmonk.isConfirmedOnList.mockResolvedValue(false);
+  });
+
+  it("names the chosen lists in the confirmation email and its link", async () => {
+    await sendConfirmationEmail("reader@example.com", ["computer"]);
+    const { subject, html } = listmonk.sendTransactional.mock.calls[0][0];
+    expect(subject).toBe("Confirm your signup to How computers work: new chapters");
+    expect(html).toContain("Welcome to How computers work: new chapters.");
+    expect(html).toContain("one short email with a link each time a new chapter");
+    const token = new URL(hrefs(html).find((h) => h.includes("token=")) as string).searchParams.get(
+      "token",
+    ) as string;
+    const payload = JSON.parse(Buffer.from(token.split(".")[0], "base64url").toString("utf8"));
+    expect(payload.l).toEqual(["computer"]);
+  });
+
+  it("keeps the Live and Learn email as it was", async () => {
+    await sendConfirmationEmail("reader@example.com");
+    const { html } = listmonk.sendTransactional.mock.calls[0][0];
+    expect(html).toContain("Welcome to Live and Learn.");
+    expect(html).toContain("Double Opt-In is a thing these days, you know.");
   });
 });
 
@@ -147,6 +214,16 @@ describe("pinned with NEWSLETTER_PROVIDER=mailgun", () => {
     await confirmAddress("reader@example.com");
     expect(mailgun.activateEmailListMember).toHaveBeenCalledWith("reader@example.com");
     expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
+  });
+
+  it("only knows Live and Learn", async () => {
+    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    await expect(sendConfirmationEmail("reader@example.com", ["computer"])).rejects.toThrow(
+      /only has the live-and-learn list/,
+    );
+    expect(mailgun.sendEmail).not.toHaveBeenCalled();
+    mailgun.isAlreadySubscribed.mockResolvedValueOnce(true);
+    await expect(isAlreadySubscribed("reader@example.com", "computer")).resolves.toBe(false);
   });
 });
 

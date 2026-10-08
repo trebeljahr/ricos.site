@@ -1,8 +1,14 @@
 import { SaplingEgg } from "@components/EasterEggs/Sapling";
 import clsx from "clsx";
 import Link from "next/link";
-import { type ChangeEvent, type FormEvent, type ReactNode, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, type ReactNode, useId, useRef, useState } from "react";
 import ConfettiExplosion, { type ConfettiProps } from "react-confetti-explosion";
+import {
+  DEFAULT_LIST,
+  type ListKey,
+  NEWSLETTER_LISTS,
+  offeredListKeys,
+} from "src/lib/newsletter/lists";
 import { FancyButton, LoadingDots } from "./FancyUI";
 
 async function fetchData(input: RequestInfo, init?: RequestInit) {
@@ -22,16 +28,30 @@ const mediumConfettiProps: ConfettiProps = {
   zIndex: 400,
 };
 
+/**
+ * Signup form for one of the lists in src/lib/newsletter/lists.ts, Live
+ * and Learn by default. Any other list also offers Live and Learn as an
+ * unticked checkbox. A list this deployment does not offer yet (no list id
+ * configured) falls back to the plain Live and Learn form.
+ */
 export const NewsletterForm = ({
+  list: requestedList = DEFAULT_LIST,
   link,
   heading,
   text,
 }: {
+  list?: ListKey;
   link?: ReactNode;
   heading?: ReactNode;
   text?: ReactNode;
 }) => {
+  const list = offeredListKeys().includes(requestedList) ? requestedList : DEFAULT_LIST;
+  const isDefaultList = list === DEFAULT_LIST;
+  const [ownList, setOwnList] = useState(true);
+  const [alsoDefault, setAlsoDefault] = useState(false);
   const [email, setEmail] = useState("");
+  // Unique per form: /newsletter shows one form per list.
+  const errorId = `${useId()}-email-error`;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<{ message: string; invalidEmail: boolean } | null>(null);
@@ -53,6 +73,14 @@ export const NewsletterForm = ({
       return;
     }
 
+    const lists: ListKey[] = isDefaultList
+      ? [DEFAULT_LIST]
+      : [...(ownList ? [list] : []), ...(alsoDefault ? [DEFAULT_LIST] : [])];
+    if (lists.length === 0) {
+      setError({ message: "Tick at least one of the lists to subscribe.", invalidEmail: false });
+      return;
+    }
+
     setLoading(true);
     setError(null);
     const headers = new Headers();
@@ -63,7 +91,12 @@ export const NewsletterForm = ({
     try {
       const data = await fetchData("/api/signup", {
         method: "POST",
-        body: JSON.stringify({ email, website: honeypotRef.current?.value ?? "" }),
+        body: JSON.stringify({
+          email,
+          website: honeypotRef.current?.value ?? "",
+          // The default form posts what it always has; no `lists` means Live and Learn.
+          ...(isDefaultList ? {} : { lists }),
+        }),
         headers: headers,
       });
 
@@ -83,13 +116,15 @@ export const NewsletterForm = ({
     if (error?.invalidEmail) setError(null);
   };
 
-  const defaultLink = (
+  const listInfo = NEWSLETTER_LISTS[list];
+
+  const defaultLink = isDefaultList ? (
     <Link as="/newsletters" href="/newsletters" className="mt-stack block w-fit">
       Check out what you missed so far.
     </Link>
-  );
+  ) : null;
 
-  const defaultText = (
+  const defaultText = isDefaultList ? (
     <>
       <p className="mb-para">
         Join the Live and Learn Newsletter to receive digital postcards filled with beauty, travel
@@ -97,13 +132,22 @@ export const NewsletterForm = ({
         unsubscribe at any time.
       </p>
     </>
+  ) : (
+    <p className="mb-para">
+      {listInfo.promise} {listInfo.cadence} You can unsubscribe at any time.
+    </p>
   );
 
-  const defaultHeading = (
+  const defaultHeading = isDefaultList ? (
     <h2 className="relative flush-top">
       Subscribe to Live and Learn <SaplingEgg />
     </h2>
+  ) : (
+    <h2 className="flush-top">Get {listInfo.name}</h2>
   );
+
+  const checkboxClass =
+    "size-4 shrink-0 cursor-pointer accent-teal-500 dark:accent-teal-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60";
 
   return (
     <div className="mx-auto w-full max-w-prose">
@@ -166,12 +210,39 @@ export const NewsletterForm = ({
                 ref={honeypotRef}
               />
             </div>
+            {!isDefaultList && (
+              <fieldset className="not-prose mb-stack flex flex-col gap-tight">
+                <legend className="sr-only">Lists to subscribe to</legend>
+                <label className="flex items-center gap-tight cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="lists"
+                    value={list}
+                    checked={ownList}
+                    onChange={(event) => setOwnList(event.target.checked)}
+                    className={checkboxClass}
+                  />
+                  {listInfo.name}
+                </label>
+                <label className="flex items-center gap-tight cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="lists"
+                    value={DEFAULT_LIST}
+                    checked={alsoDefault}
+                    onChange={(event) => setAlsoDefault(event.target.checked)}
+                    className={checkboxClass}
+                  />
+                  Also get {NEWSLETTER_LISTS[DEFAULT_LIST].name}
+                </label>
+              </fieldset>
+            )}
             <div className="flex flex-col gap-stack sm:flex-row sm:items-center">
               <input
                 name="email"
                 type="email"
                 aria-invalid={error?.invalidEmail || undefined}
-                aria-describedby={error ? "email-error" : undefined}
+                aria-describedby={error ? errorId : undefined}
                 required
                 autoComplete="email"
                 className={clsx(
@@ -198,7 +269,7 @@ export const NewsletterForm = ({
 
             {error && (
               <p
-                id="email-error"
+                id={errorId}
                 role="alert"
                 key={error.message}
                 className="flex items-start gap-tight mt-label mb-0 text-sm text-rose-600 dark:text-rose-400 animate-rise-in motion-reduce:animate-none"

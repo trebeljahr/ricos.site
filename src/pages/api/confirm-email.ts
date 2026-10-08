@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
       return res.redirect("/email-signup-error");
     }
-    await confirmAddress(link.email);
+    await confirmAddress(link.email, link.lists);
     res.redirect("/email-signup-success");
   } catch (err) {
     console.error(err);

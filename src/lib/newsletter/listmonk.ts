@@ -362,11 +362,13 @@ export type SendCampaignParams = {
 export type CampaignResult = { id: number; url: string };
 
 /**
- * Create a campaign on `listId` and move it to `running` so ListMonk
- * starts dispatching. `html` and `text` are Go templates: run the issue
- * through `escapeGoTemplate` before adding `{{ UnsubscribeURL }}`.
+ * Create a campaign on `listId` as a draft. Nothing is sent: a draft only
+ * goes out once someone starts it in the ListMonk admin UI (or
+ * `sendCampaign` flips it to `running`). `html` and `text` are Go
+ * templates: run the content through `escapeGoTemplate` before adding
+ * `{{ UnsubscribeURL }}`.
  */
-export async function sendCampaign(params: SendCampaignParams): Promise<CampaignResult> {
+export async function createDraftCampaign(params: SendCampaignParams): Promise<CampaignResult> {
   const headers = resolveEmailHeaders();
   const templateId = positiveId(
     "LISTMONK_CAMPAIGN_TEMPLATE_ID",
@@ -391,7 +393,15 @@ export async function sendCampaign(params: SendCampaignParams): Promise<Campaign
   });
 
   const id = created.data.id;
-  const url = `${listmonkBaseUrl()}/admin/campaigns/${id}`;
+  return { id, url: `${listmonkBaseUrl()}/admin/campaigns/${id}` };
+}
+
+/**
+ * Create a campaign on `listId` and move it to `running` so ListMonk
+ * starts dispatching. See `createDraftCampaign` for `html` and `text`.
+ */
+export async function sendCampaign(params: SendCampaignParams): Promise<CampaignResult> {
+  const { id, url } = await createDraftCampaign(params);
   // The draft already exists here. If the flip to `running` fails, say so:
   // re-running the send would create a second campaign, not start this one.
   try {

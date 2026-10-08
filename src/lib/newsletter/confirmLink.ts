@@ -1,17 +1,20 @@
 import { createHmac, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { baseUrl } from "src/lib/urlUtils";
+import { DEFAULT_LIST, isListKey, type ListKey } from "./lists";
 
 /**
  * The link in the double-opt-in email: `/api/confirm-email?...`.
  *
  * Two formats confirm:
  *
- *   - `?token=` — HMAC-signed `{email, expiry}`, sent since the move to
- *     ListMonk. Expires after `CONFIRM_TOKEN_TTL_MS`.
+ *   - `?token=` — HMAC-signed `{email, expiry, lists}`, sent since the move
+ *     to ListMonk. Expires after `CONFIRM_TOKEN_TTL_MS`. Tokens minted
+ *     before lists existed carry no `lists` and confirm Live and Learn.
  *   - `?hash=&email=` — the Mailgun-era link: a keyed scrypt hash of the
  *     address, no expiry. Mailgun mode still sends it, and links already
- *     sitting in inboxes must keep working through the cutover.
+ *     sitting in inboxes must keep working through the cutover. Always
+ *     Live and Learn.
  */
 
 const scrypt = promisify(scryptCallback) as (
@@ -100,24 +103,38 @@ function b64urlDecode(s: string): Buffer {
   return Buffer.from(s, "base64url");
 }
 
-type TokenPayload = { e: string; x: number };
+// `l` is absent in tokens minted before lists existed.
+type TokenPayload = { e: string; x: number; l?: ListKey[] };
 
 function sign(payload: string): Buffer {
   return createHmac("sha256", tokenSecret()).update(payload).digest();
 }
 
-export function mintConfirmToken(email: string, now: number = Date.now()): string {
-  const payload: TokenPayload = { e: email.toLowerCase(), x: now + CONFIRM_TOKEN_TTL_MS };
+export function mintConfirmToken(
+  email: string,
+  lists: readonly ListKey[] = [DEFAULT_LIST],
+  now: number = Date.now(),
+): string {
+  const payload: TokenPayload = {
+    e: email.toLowerCase(),
+    x: now + CONFIRM_TOKEN_TTL_MS,
+    l: [...lists],
+  };
   const payloadStr = b64urlEncode(Buffer.from(JSON.stringify(payload), "utf8"));
   return `${payloadStr}.${b64urlEncode(sign(payloadStr))}`;
 }
 
-export function confirmLink(email: string, now: number = Date.now()): string {
-  return `${siteUrl()}/api/confirm-email?token=${encodeURIComponent(mintConfirmToken(email, now))}`;
+export function confirmLink(
+  email: string,
+  lists: readonly ListKey[] = [DEFAULT_LIST],
+  now: number = Date.now(),
+): string {
+  const token = mintConfirmToken(email, lists, now);
+  return `${siteUrl()}/api/confirm-email?token=${encodeURIComponent(token)}`;
 }
 
 export type VerifyResult =
-  | { ok: true; email: string }
+  | { ok: true; email: string; lists: ListKey[] }
   | { ok: false; reason: "missing" | "malformed" | "bad_signature" | "expired" };
 
 export function verifyConfirmToken(token: string, now: number = Date.now()): VerifyResult {
@@ -140,8 +157,12 @@ export function verifyConfirmToken(token: string, now: number = Date.now()): Ver
   if (typeof payload.e !== "string" || typeof payload.x !== "number") {
     return { ok: false, reason: "malformed" };
   }
+  const lists = payload.l ?? [DEFAULT_LIST];
+  if (!Array.isArray(lists) || lists.length === 0 || !lists.every(isListKey)) {
+    return { ok: false, reason: "malformed" };
+  }
   if (payload.x < now) return { ok: false, reason: "expired" };
-  return { ok: true, email: payload.e };
+  return { ok: true, email: payload.e, lists };
 }
 
 /** Read whichever link format the query carries. */
@@ -154,5 +175,5 @@ export async function readConfirmLink(
   const email = emailFromQuery(query.email);
   if (!email || typeof query.hash !== "string") return { ok: false, reason: "missing" };
   if (!(await checkLegacyHash(email, query.hash))) return { ok: false, reason: "bad_signature" };
-  return { ok: true, email };
+  return { ok: true, email, lists: [DEFAULT_LIST] };
 }

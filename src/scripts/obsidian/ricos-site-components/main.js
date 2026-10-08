@@ -7,6 +7,11 @@ const { Plugin } = require("obsidian");
 
 const COMPONENTS = [
   { id: "insert-newsletter-form", name: "Insert newsletter form", mdx: "<NewsletterForm />" },
+  {
+    id: "insert-chapter-alerts-form",
+    name: "Insert chapter alerts form",
+    mdx: '<NewsletterForm list="computer" />',
+  },
   { id: "insert-donation-box", name: "Insert donation box", mdx: "<DonationStrip />" },
 ];
 

@@ -7,16 +7,10 @@ import path from "node:path";
  * pages never link a redirect source; the link checker verifies both agree.
  */
 export const STATIC_REDIRECTS = [
-  // Exact "/newsletter" has to come first: the ":id*" rule below also matches
-  // it with an empty id and resolves to "/newsletters/", which Next then
-  // redirects again to "/newsletters" (trailingSlash is false). One hop, not two.
+  // Exact "/newsletter" is a page (the list of mailing lists) since
+  // 2026-10. `:id+` needs at least one segment, so it leaves that page alone.
   {
-    source: "/newsletter",
-    destination: "/newsletters",
-    permanent: true,
-  },
-  {
-    source: "/newsletter/:id*",
+    source: "/newsletter/:id+",
     destination: "/newsletters/:id*",
     permanent: true,
   },

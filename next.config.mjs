@@ -74,6 +74,10 @@ function offeredNewsletterLists() {
   return computer ? "live-and-learn,computer" : "live-and-learn";
 }
 
+/** Plausible script with the extensions this site uses (see the provider in _app.tsx). */
+const PLAUSIBLE_SCRIPT =
+  "script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
@@ -149,6 +153,19 @@ const nextConfig = {
         {
           source: "/api/img/:slug*",
           destination: "/api/local-image?slug=:slug*",
+        },
+        // Plausible, served first-party so content blockers that block
+        // plausible.trebeljahr.com still let visits through. The paths avoid
+        // /js/script.js and /api/event, which filter lists match. Events go
+        // through an API route (not a plain rewrite) to pass the visitor's IP
+        // on, see src/pages/api/kestrel.ts.
+        {
+          source: "/kestrel/k.js",
+          destination: `https://plausible.trebeljahr.com/js/${PLAUSIBLE_SCRIPT}`,
+        },
+        {
+          source: "/kestrel/k",
+          destination: "/api/kestrel",
         },
       ],
     };

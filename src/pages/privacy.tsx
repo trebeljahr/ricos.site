@@ -48,6 +48,14 @@ export default function PrivacyPage() {
             parties.
           </p>
           <p>
+            Your browser loads the Plausible script from this site (<code>ricos.site</code>) and
+            sends its events here too, not to <code>plausible.trebeljahr.com</code> directly. The
+            site server forwards each event to my Plausible instance together with your IP address
+            and user agent, so that Plausible can count visitors and derive the country as described
+            below. The forwarding keeps no copy of the data; the server-log processing described
+            under "Hosting" still applies.
+          </p>
+          <p>
             Plausible does <strong>not use cookies</strong> and does not store anything on your
             device. It does not track visitors across sites or over time and does not collect any
             personal data as defined by the GDPR. IP addresses and user agents are only used

@@ -51,9 +51,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <PlausibleProvider
-        src="https://plausible.trebeljahr.com/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"
+        // First-party proxy of plausible.trebeljahr.com, see rewrites in next.config.mjs.
+        src="/kestrel/k.js"
         scriptProps={
-          { "data-domain": "ricos.site" } as React.ScriptHTMLAttributes<HTMLScriptElement>
+          {
+            "data-domain": "ricos.site",
+            "data-api": "/kestrel/k",
+          } as React.ScriptHTMLAttributes<HTMLScriptElement>
         }
         enabled={process.env.NODE_ENV === "production"}
       >

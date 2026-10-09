@@ -20,15 +20,19 @@ export const ROOT = process.cwd();
 export const CONTENT_DIR = resolve(ROOT, "src/content/Notes");
 export const PUBLIC_DIR = resolve(ROOT, "public");
 
-/** Paths that never resolve to a page route and never map to a file on disk. */
-const IGNORED_ROUTE_PREFIXES = ["/api/", "/_next/", "/static/"];
+/**
+ * Paths that never resolve to a page route and never map to a file on disk.
+ * `/kestrel/**` is the first-party Plausible proxy, rewritten in next.config.mjs.
+ */
+const IGNORED_ROUTE_PREFIXES = ["/api/", "/_next/", "/static/", "/kestrel/"];
 
 /**
  * `/assets/**` is the S3/CloudFront-backed image tree: gitignored locally and
  * rewritten by image-loader.js, so there is nothing on disk to stat.
  * `/_next/**` is emitted by the bundler with content hashes we do not model.
+ * `/kestrel/k.js` is the Plausible script, proxied by a rewrite in next.config.mjs.
  */
-const IGNORED_ASSET_PREFIXES = ["/assets/", "/_next/"];
+const IGNORED_ASSET_PREFIXES = ["/assets/", "/_next/", "/kestrel/"];
 
 const FILE_EXTENSION = /\.[a-z0-9]{2,12}$/i;
 

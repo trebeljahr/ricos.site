@@ -8,7 +8,7 @@
 
 export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
   "1.0": {
-    "Whirlwind Tour": 1500,
+    "Whirlwind Tour": 900,
   },
   "1.1": {
     "Bits and Encodings": 150,

@@ -85,7 +85,7 @@ describe("estimates", () => {
 
   it("looks the chapter up by number in the shared estimates", () => {
     const tour = chapterProgress(meta({ number: "1.0", title: "Whirlwind Tour" }), "", "x.md");
-    expect(tour.target).toBe(1500);
+    expect(tour.target).toBe(900);
   });
 });
 

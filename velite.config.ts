@@ -7,6 +7,7 @@ import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
 import type { Handler } from "mdast-util-to-hast";
 import { bundleMDX } from "mdx-bundler";
+import pLimit from "p-limit";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeCodeTitles from "rehype-code-titles";
 import rehypeKatex from "rehype-katex";
@@ -436,6 +437,13 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
   };
 };
 
+// Velite transforms every document at once, so without a cap ~400 documents
+// start ~800 esbuild builds together. Their combined memory pushed the
+// `pnpm dev` watcher past Node's heap limit, and the orphaned esbuild service
+// then printed one goroutine per pending build ("all goroutines are asleep").
+const bundleLimit = pLimit(8);
+const bundle = (options: Parameters<typeof bundleMDX>[0]) => bundleLimit(() => bundleMDX(options));
+
 // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
 const addBundledMDXContent = async <T extends Record<string, any>>(
   data: T,
@@ -523,7 +531,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const recmaPlugins: Pluggable[] = [];
 
   const rawContent = prepare(meta.content || "");
-  const { code: mdxCode } = await bundleMDX({
+  const { code: mdxCode } = await bundle({
     source: rawContent,
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {
@@ -564,7 +572,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     }
   }
 
-  const { code: excerptCode } = await bundleMDX({
+  const { code: excerptCode } = await bundle({
     source: frontmatterExcerpt || escapeMdx(excerptString),
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {

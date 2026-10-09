@@ -21,7 +21,7 @@
     "dev:next": "NEXT_PUBLIC_IMAGE_BACKEND=local next dev -p 3713",
     "s3:start": "tsx src/scripts/dev/setup-local-s3.ts",
     "watch:assets": "tsx src/scripts/dev/watchAssets.ts",
-    "watch:velite": "tsx src/scripts/dev/watchVelite.ts",
+    "watch:velite": "NODE_OPTIONS=--max-old-space-size=6144 tsx src/scripts/dev/watchVelite.ts",
     "watch:velite-hmr": "tsx src/scripts/dev/watchVeliteHmr.ts",
     "quotes:export": "tsx src/scripts/quotes/quoteReview.ts export",
     "quotes:candidates": "tsx src/scripts/quotes/booknoteQuoteCandidates.ts",

@@ -17,6 +17,21 @@ export function stripNav(body: string): string {
   return body.replace(NAV_BLOCK, "");
 }
 
+// Code first, so a comment shown inside a code block or span stays in it. An
+// unclosed comment runs to the end of the file, as it does in Obsidian.
+const CODE_OR_COMMENT =
+  /^(```|~~~)[\s\S]*?^\1|`[^`\n]+`|<!--[\s\S]*?(?:-->|$(?![\s\S]))|%%[\s\S]*?%%/gm;
+
+/**
+ * A chapter as the site compiles it: no nav block and no notes to self. MDX
+ * rejects HTML comments, and Obsidian's %% comments would show as text.
+ */
+export function chapterToMdx(body: string): string {
+  return stripNav(body).replace(CODE_OR_COMMENT, (match) =>
+    match.startsWith("`") || match.startsWith("~") ? match : "",
+  );
+}
+
 export function navBlock({ prev, next, up }: NavLinks): string {
   const parts = [prev && `← ${prev}`, up && `↑ ${up}`, next && `${next} →`].filter(Boolean);
   return `${NAV_OPEN}\n${parts.join(" · ")}\n${NAV_CLOSE}`;

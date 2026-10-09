@@ -28,7 +28,7 @@ import type { Node } from "unist";
 import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, type ZodMeta } from "velite";
 import seoMetadata from "./src/content/seo-metadata.json";
-import { stripNav } from "./src/lib/computerSeriesLinks";
+import { chapterToMdx } from "./src/lib/computerSeriesLinks";
 import { MDX_DEMO_COMPONENTS } from "./src/lib/mdxDemoComponents";
 
 declare module "mdast" {
@@ -795,8 +795,8 @@ export default defineConfig({
           return { ...data, slug, contentType: "ComputerChapter", link: `/computer/${slug}` };
         })
         // The prev/next line is for clicking through in Obsidian; the site will
-        // build its own. Its HTML comments would not compile as MDX either.
-        .transform((data, ctx) => addBundledMDXContent(data, ctx, stripNav)),
+        // build its own. HTML comments (notes to self) would not compile as MDX.
+        .transform((data, ctx) => addBundledMDXContent(data, ctx, chapterToMdx)),
     },
   },
 });

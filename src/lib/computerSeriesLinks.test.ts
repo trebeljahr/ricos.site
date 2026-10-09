@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { CHAPTER_FILE, indexNote, navBlock, setNavLinks, stripNav } from "./computerSeriesLinks";
+import {
+  CHAPTER_FILE,
+  chapterToMdx,
+  indexNote,
+  navBlock,
+  setNavLinks,
+  stripNav,
+} from "./computerSeriesLinks";
 
 const file = `---\ntitle: "Bits"\norder: 2\n---\n\n## First\n\nSome text.\n`;
 const links = {
@@ -76,5 +83,24 @@ describe("CHAPTER_FILE", () => {
     expect(CHAPTER_FILE.test("Part 1 - The Basics/1.1 Bits and Encodings.md")).toBe(true);
     expect(CHAPTER_FILE.test("Index.md")).toBe(false);
     expect(CHAPTER_FILE.test("introduction.md")).toBe(false);
+  });
+});
+
+describe("chapterToMdx", () => {
+  it("drops the nav block and both kinds of comment", () => {
+    const body = `${navBlock(links)}\n\nOne.\n\n<!-- a demo\ngoes here -->\n\nTwo %%todo%% three.\n`;
+    const mdx = chapterToMdx(body);
+    expect(mdx).not.toMatch(/<!--|%%|nav:/);
+    expect(mdx).toContain("One.");
+    expect(mdx).toContain("Two  three.");
+  });
+
+  it("keeps comments shown in code", () => {
+    const body = "Use `<!-- x -->` here.\n\n```html\n<!-- kept -->\n```\n";
+    expect(chapterToMdx(body)).toBe(body);
+  });
+
+  it("drops an unclosed comment to the end of the file", () => {
+    expect(chapterToMdx("Text.\n\n<!-- half written")).toBe("Text.\n\n");
   });
 });

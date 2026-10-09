@@ -9,6 +9,7 @@
  * watchVeliteHmr.ts sees the JSON this writes: it rewrites the HMR stamp and
  * regenerates backlinks and the search index, same as for any content edit.
  */
+import { watch } from "node:fs";
 import { setPriority } from "node:os";
 import { build } from "velite";
 import { generateR3fLinks, veliteOutputExists } from "../veliteDerived.mjs";
@@ -22,9 +23,34 @@ if (await veliteOutputExists()) {
   } catch {}
 }
 
-const begin = performance.now();
-await build({ watch: true, clean: false, logLevel: "error" });
-await generateR3fLinks();
-console.log(
-  `  [velite] content built in ${((performance.now() - begin) / 1000).toFixed(1)}s, watching for changes`,
-);
+// Velite logs and survives a failed rebuild, but a failed first build throws
+// before it starts watching, and exiting here makes concurrently stop the
+// whole `pnpm dev`. So report the error and try again after the next edit.
+async function buildAndWatch(): Promise<void> {
+  const begin = performance.now();
+  try {
+    await build({ watch: true, clean: false, logLevel: "error" });
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    console.error("  [velite] build failed; fix the file above and save to retry");
+    await nextContentEdit();
+    return buildAndWatch();
+  }
+  await generateR3fLinks();
+  console.log(
+    `  [velite] content built in ${((performance.now() - begin) / 1000).toFixed(1)}s, watching for changes`,
+  );
+}
+
+function nextContentEdit(): Promise<void> {
+  return new Promise((resolve) => {
+    const watcher = watch("src/content", { recursive: true }, (_event, file) => {
+      if (!file || !/\.(mdx?|json|ya?ml)$/.test(file)) return;
+      watcher.close();
+      // Let the editor finish writing before Velite reads the file.
+      setTimeout(resolve, 200);
+    });
+  });
+}
+
+await buildAndWatch();

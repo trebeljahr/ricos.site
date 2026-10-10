@@ -1,16 +1,25 @@
 import { spawn } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { basename, resolve } from "node:path";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { basename, relative, resolve, sep } from "node:path";
 import chokidar from "chokidar";
+import { CHAPTER_FILE } from "../../lib/computerSeriesLinks";
 
 // Velite's own watcher (started in next.config.mjs) rebuilds .velite/*.json
 // when content changes. This process turns those writes into a browser update:
 // it rewrites the stamp that src/lib/loadVeliteData.ts imports, which makes
 // Turbopack refetch getStaticProps in open tabs, then refreshes the outputs
 // derived from content.
+//
+// /dev/writing counts the words in the chapter files itself, so it gets its
+// own stamp, rewritten straight from those files: see the second watcher below.
 
 const VELITE_DIR = resolve(process.cwd(), ".velite");
 const STAMP = resolve(VELITE_DIR, "hmr", "stamp.json");
+const WRITING_STAMP = resolve(VELITE_DIR, "hmr", "writing.json");
+const CHAPTERS_DIR = resolve(
+  process.cwd(),
+  process.env.COMPUTER_SERIES_DIR ?? "src/content/Notes/computer",
+);
 const BACKLINKS = resolve(VELITE_DIR, "backlinks.json");
 const DEBOUNCE_MS = 150;
 
@@ -48,9 +57,9 @@ async function readIfExists(path: string) {
   }
 }
 
-async function writeStamp() {
+async function writeStamp(stamp = STAMP) {
   await mkdir(resolve(VELITE_DIR, "hmr"), { recursive: true });
-  await writeFile(STAMP, JSON.stringify({ updatedAt: Date.now() }));
+  await writeFile(stamp, JSON.stringify({ updatedAt: Date.now() }));
 }
 
 async function flush() {
@@ -111,9 +120,54 @@ watcher.on("unlink", schedule);
 watcher.on("error", (error) => console.error("  [velite-hmr] watcher error:", error));
 watcher.on("ready", () => console.log("  [velite-hmr] watching .velite JSON"));
 
+// The chapter files of the "how computers work" series. A write that leaves the
+// text as it was (a checkout, an editor saving the same bytes) must not refresh
+// /dev/writing, so remember what each file held.
+const chapterText = new Map<string, string | undefined>();
+let writingTimer: NodeJS.Timeout | undefined;
+
+const isChapter = (filePath: string) =>
+  CHAPTER_FILE.test(relative(CHAPTERS_DIR, filePath).split(sep).join("/"));
+
+// A worktree without the Notes submodule has no chapters to list.
+for (const file of await readdir(CHAPTERS_DIR, { recursive: true }).catch(() => [])) {
+  const filePath = resolve(CHAPTERS_DIR, file);
+  if (isChapter(filePath)) chapterText.set(filePath, await readIfExists(filePath));
+}
+
+async function chapterChanged(filePath: string) {
+  if (!isChapter(filePath)) return;
+  const text = await readIfExists(filePath);
+  if (chapterText.get(filePath) === text) return;
+  chapterText.set(filePath, text);
+
+  clearTimeout(writingTimer);
+  writingTimer = setTimeout(() => {
+    writeStamp(WRITING_STAMP).catch((error) =>
+      console.error("  [velite-hmr] writing stamp failed:", error),
+    );
+  }, DEBOUNCE_MS);
+}
+
+const chapterWatcher = chokidar.watch(CHAPTERS_DIR, {
+  depth: 1,
+  ignored: (path, stats) => Boolean(stats?.isFile() && !path.endsWith(".md")),
+  awaitWriteFinish: {
+    pollInterval: 25,
+    stabilityThreshold: 125,
+  },
+  ignoreInitial: true,
+});
+
+chapterWatcher.on("add", chapterChanged);
+chapterWatcher.on("change", chapterChanged);
+chapterWatcher.on("unlink", chapterChanged);
+chapterWatcher.on("error", (error) => console.error("  [velite-hmr] watcher error:", error));
+
 async function close() {
   clearTimeout(timer);
-  await watcher.close();
+  clearTimeout(writingTimer);
+  await Promise.all([watcher.close(), chapterWatcher.close()]);
 }
 
 process.on("SIGINT", () => {

@@ -15,6 +15,7 @@ import {
   dailyWords,
   dayKey,
   type History,
+  LOCK_STEP,
   type NextUp,
   nextUp,
   type Pace,
@@ -30,7 +31,8 @@ import { CHAPTER_FILE } from "src/lib/computerSeriesLinks";
 // write next, how far each chapter is, and whether the deadline still holds.
 // Reads the chapter files in src/content/Notes/computer/ on every request
 // (getStaticProps reruns per request under `next dev`) and keeps one word
-// total per day in .writing-progress.json, which is gitignored.
+// total per day in .writing-progress.json, which is gitignored. An open tab
+// follows the files: see trackChapterEdits below.
 
 // Server-only: computed inside getStaticProps, because `path` is an empty stub
 // in the browser bundle and calling it at module level stops hydration.
@@ -68,7 +70,8 @@ function Bar({
   className?: string;
   thick?: boolean;
 }) {
-  const fraction = max ? Math.min(value, max) / max : 0;
+  // A drafted section can lock in at a target of zero, which is met.
+  const fraction = max ? Math.min(value, max) / max : 1;
   return (
     <div
       className={clsx(
@@ -557,7 +560,9 @@ export default function WritingDevPage(props: Props) {
 
               <p className="mt-section text-sm text-gray-500">
                 Order, titles and status come from each file's frontmatter. Set{" "}
-                <code>status: done</code> to count a chapter as finished whatever its word count.{" "}
+                <code>status: draft-done</code> (or <code>revising</code>, <code>done</code>) to
+                count a chapter as finished: each section short of its estimate then takes its own
+                word count, rounded down to {LOCK_STEP}, as its target.{" "}
                 <a href={obsidianLink(indexPath)}>Open the index in Obsidian</a>.
               </p>
             </div>
@@ -590,10 +595,25 @@ function readHistory(): History {
   }
 }
 
+// Live reload in dev, the same way src/lib/loadVeliteData.ts does it for
+// content pages: src/scripts/dev/watchVeliteHmr.ts rewrites this stamp when a
+// chapter file's text changes, and because the require is static, Turbopack
+// re-evaluates the page and the router refetches getStaticProps in the open
+// tab. It does not wait for Velite, so a chapter that does not compile as MDX
+// yet still counts.
+function trackChapterEdits() {
+  try {
+    require("../../../.velite/hmr/writing.json");
+  } catch {
+    // The stamp only exists once next.config.mjs has run.
+  }
+}
+
 export async function getStaticProps() {
   if (process.env.NODE_ENV === "production") {
     return { notFound: true } as const;
   }
+  trackChapterEdits();
   const dir = seriesDir();
   const chapters = readChapters(dir);
   const todayKey = dayKey(new Date());

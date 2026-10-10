@@ -15,7 +15,16 @@ export const SERIES_DEADLINE = "2026-12-31";
 export const DEFAULT_PARENT_WORDS = 200;
 export const DEFAULT_LEAF_WORDS = 500;
 
-export type ChapterStatus = "idea" | "drafting" | "revising" | "done";
+export type ChapterStatus = "idea" | "drafting" | "draft-done" | "revising" | "done";
+
+/** The goal is a finished draft, so every status from "draft-done" on counts as drafted. */
+const DRAFTED: ChapterStatus[] = ["draft-done", "revising", "done"];
+export const isDrafted = (status: ChapterStatus) => DRAFTED.includes(status);
+/**
+ * A drafted section that stayed short of its estimate takes its own word
+ * count, rounded down to a multiple of this, as its target.
+ */
+export const LOCK_STEP = 50;
 
 export type ChapterMeta = {
   title: string;
@@ -98,13 +107,18 @@ export function chapterProgress(
   path: string,
   estimates: Record<string, number> = SECTION_ESTIMATES[meta.number] ?? {},
 ): ChapterProgress {
-  const sections = splitSections(body, meta.title, estimates);
+  const estimated = splitSections(body, meta.title, estimates);
+  // Once the draft is done, what a section got is what it needed: its target
+  // drops to the words written, so every section of the chapter is complete.
+  const sections = isDrafted(meta.status)
+    ? estimated.map((s) => ({
+        ...s,
+        target: Math.min(s.target, Math.floor(s.words / LOCK_STEP) * LOCK_STEP),
+      }))
+    : estimated;
   const words = sections.reduce((sum, s) => sum + s.words, 0);
   const target = sections.reduce((sum, s) => sum + s.target, 0);
-  const credited =
-    meta.status === "done"
-      ? target
-      : sections.reduce((sum, s) => sum + Math.min(s.words, s.target), 0);
+  const credited = sections.reduce((sum, s) => sum + Math.min(s.words, s.target), 0);
   return { ...meta, path, sections, words, target, credited };
 }
 
@@ -158,7 +172,7 @@ export type NextUp = { chapter: ChapterProgress; section: Section };
 /** The first section, in reading order, still short of its target. */
 export function nextUp(chapters: ChapterProgress[]): NextUp | null {
   for (const chapter of [...chapters].sort((a, b) => a.order - b.order)) {
-    if (chapter.status === "done") continue;
+    if (isDrafted(chapter.status)) continue;
     const section = chapter.sections.find((s) => s.words < s.target);
     if (section) return { chapter, section };
   }

@@ -70,9 +70,20 @@ describe("chapterProgress", () => {
     expect(progress.words).toBe(DEFAULT_PARENT_WORDS * 3);
   });
 
-  it("credits the whole target once a chapter is marked done", () => {
-    const progress = chapterProgress(meta({ status: "done" }), "## Empty\n", "x.md");
-    expect(progress.credited).toBe(progress.target);
+  it("locks a drafted chapter's short sections at their word count, rounded down to 50", () => {
+    const body = `${words(30)}\n\n## Short\n\n${words(437)}\n\n## Exact\n\n${words(400)}\n\n## Long\n\n${words(900)}\n`;
+    const estimates = { Bits: 150, Short: 650, Exact: 650, Long: 500 };
+    const drafting = chapterProgress(meta({ status: "drafting" }), body, "x.md", estimates);
+    expect(drafting.sections.map((s) => s.target)).toEqual([150, 650, 650, 500]);
+
+    for (const status of ["draft-done", "revising", "done"] as const) {
+      const drafted = chapterProgress(meta({ status }), body, "x.md", estimates);
+      // A section already past its estimate keeps the estimate.
+      expect(drafted.sections.map((s) => s.target)).toEqual([0, 400, 400, 500]);
+      expect(drafted.target).toBe(1300);
+      expect(drafted.credited).toBe(drafted.target);
+      expect(drafted.words).toBe(drafting.words);
+    }
   });
 });
 
@@ -109,9 +120,9 @@ describe("pace", () => {
 });
 
 describe("nextUp", () => {
-  it("returns the first unfinished section in reading order, skipping done chapters", () => {
+  it("returns the first unfinished section in reading order, skipping drafted chapters", () => {
     const later = chapterProgress(meta({ order: 2, title: "Later" }), "", "b.md");
-    const done = chapterProgress(meta({ order: 0, status: "done" }), "", "a.md");
+    const done = chapterProgress(meta({ order: 0, status: "draft-done" }), "", "a.md");
     const first = chapterProgress(
       meta({ order: 1 }),
       `${words(DEFAULT_PARENT_WORDS)}\n## Next\n`,

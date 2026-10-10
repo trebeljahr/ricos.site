@@ -795,7 +795,7 @@ export default defineConfig({
           parent: s.string().optional(),
           summary: s.string().optional(),
           order: s.number(),
-          status: s.enum(["idea", "drafting", "revising", "done"]).default("idea"),
+          status: s.enum(["idea", "drafting", "draft-done", "revising", "done"]).default("idea"),
           published: s.boolean().default(false),
         })
         .transform((data) => {

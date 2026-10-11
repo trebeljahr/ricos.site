@@ -12,6 +12,10 @@ export const computerDemos = [
     title: "Switches, states and codebooks",
   },
   {
+    slug: "ascii-typer",
+    title: "Type text, see the bits",
+  },
+  {
     slug: "endian-reader",
     title: "Two bytes, four reading orders",
   },

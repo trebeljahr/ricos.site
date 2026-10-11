@@ -3,6 +3,7 @@ import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo } from "react";
 import type { MDXResult } from "src/@types";
 import type { MdxDemoComponent } from "src/lib/mdxDemoComponents";
+import { AsciiTyper } from "./computer/AsciiTyper";
 import { ByteExplorer } from "./computer/ByteExplorer";
 import { Codebook } from "./computer/Codebook";
 import { CodebookMismatch } from "./computer/CodebookMismatch";
@@ -36,6 +37,7 @@ const allComponents = {
   SwitchStates,
   Codebook,
   CodebookMismatch,
+  AsciiTyper,
   EndianReader,
   UnitVectorDemo,
   ProjectArrowDemo,

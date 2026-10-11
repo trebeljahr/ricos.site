@@ -8,6 +8,7 @@ export const MDX_DEMO_COMPONENTS = [
   "SwitchStates",
   "Codebook",
   "CodebookMismatch",
+  "AsciiTyper",
   "EndianReader",
   "UnitVectorDemo",
   "ProjectArrowDemo",

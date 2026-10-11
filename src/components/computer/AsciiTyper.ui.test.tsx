@@ -46,14 +46,19 @@ describe("AsciiTyper", () => {
     expect(screen.getByRole("status").textContent).toBe("");
   });
 
-  it("types a printable slot when it is pressed and only reads a control slot", () => {
-    const { input, slot } = setup();
-    fireEvent.change(input, { target: { value: "" } });
-    fireEvent.click(slot(65));
+  it("reads a slot when it is pointed at or pressed, and types nothing", () => {
+    const { input, tiles, slot } = setup();
+    fireEvent.change(input, { target: { value: "A" } });
+    const detail = () => screen.getByText(/^(PRINTABLE|CONTROL)$/).previousElementSibling;
+    fireEvent.mouseOver(slot(66));
+    expect(detail()?.textContent).toBe("Capital letter B");
     fireEvent.click(slot(27));
+    expect(detail()?.textContent).toBe("Escape");
     expect(input.value).toBe("A");
+    expect(tiles()).toEqual(["A"]);
+    expect(slot(66).dataset.lit).toBeUndefined();
     expect(slot(65).getAttribute("aria-label")).toBe(
-      "65: Capital letter A. Bits 1000001, hex 41. In your text. Press to type it.",
+      "65: Capital letter A. Bits 1000001, hex 41. In your text.",
     );
     expect(slot(27).getAttribute("aria-label")).toBe(
       "27: Escape, control character. Bits 0011011, hex 1B.",

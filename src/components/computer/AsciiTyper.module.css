@@ -67,15 +67,14 @@ section.typer { overflow: clip; }
   box-shadow: inset 0 1px #f7f7eb, 0 2px 0 #46554a;
   color: #243329;
   font: inherit;
-  cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  cursor: default;
+  transition: box-shadow .12s ease, background .12s ease;
 }
 .cellCode { color: #3d4d41; font-size: 9px; font-weight: 500; line-height: 1; }
 .cellLabel { font-size: 15px; font-weight: 700; line-height: 1; }
-/* Control characters type nothing, so they sit flat in the panel instead of standing up as keys. */
-.control { background: linear-gradient(#97a394, #a7b2a2); box-shadow: inset 0 2px 3px #4657487a; cursor: default; }
+/* Control characters print nothing, so they sit flat in the panel instead of standing up as keys. */
+.control { background: linear-gradient(#97a394, #a7b2a2); box-shadow: inset 0 2px 3px #4657487a; }
 .control .cellLabel { font-size: 10px; font-weight: 600; letter-spacing: 0; }
-.cell:not(.control):active { transform: translateY(2px); box-shadow: inset 0 2px 5px #27452f99; }
 .cell[data-lit="typed"] { border-color: #35553a; background: linear-gradient(#8fbf7c, #b9dc9c); box-shadow: inset 0 3px 6px #27452f80, 0 1px 0 #405044; color: #1e3b25; }
 .cell[data-lit="latest"] { border-color: #1e3b25; background: radial-gradient(ellipse at center, #e2ffc6, #b4ea8c); box-shadow: 0 0 0 1px #1e3b25, 0 0 10px 2px #d6ffb2; color: #143019; }
 .cell:hover { position: relative; z-index: 1; outline: 2px solid #26362a; outline-offset: 1px; }

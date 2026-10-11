@@ -59,7 +59,6 @@ export function AsciiTyper() {
   const typed = new Set(readings.map((reading) => reading.code));
   const shownCode = inspected ?? latestCode;
   const shown = shownCode === null ? null : ASCII_TABLE[shownCode];
-  const full = readings.length >= ASCII_TYPER_LIMIT;
 
   // A refused character leaves React rewriting the field, which throws the
   // caret to the end. Put it back, then let the LCD grow with its text: a line
@@ -105,17 +104,6 @@ export function AsciiTyper() {
     setLatest(next ? next.length - 1 : null);
     note([], 0);
     playButton();
-  }
-
-  function pressSlot(code: number) {
-    setInspected(code);
-    const { char } = ASCII_TABLE[code];
-    if (char === null) return;
-    if (full) {
-      note([], 1);
-      return;
-    }
-    replaceText(text + char);
   }
 
   function moveInTable(event: KeyboardEvent<HTMLFieldSetElement>) {
@@ -272,7 +260,7 @@ export function AsciiTyper() {
         <div className={styles.bay}>
           <div className={clsx(panel.sectionHead, styles.wrappingHead)}>
             <span>ASCII TABLE · 128 SLOTS</span>
-            <span>PRESS A KEY TO TYPE IT</span>
+            <span>POINT AT A SLOT TO READ IT</span>
           </div>
           <div className={clsx(panel.screen, styles.detail)}>
             {shown ? (
@@ -307,7 +295,7 @@ export function AsciiTyper() {
                 </div>
               </>
             ) : (
-              <div className={styles.detailEmpty}>POINT AT A SLOT TO READ IT</div>
+              <div className={styles.detailEmpty}>NO SLOT SELECTED</div>
             )}
           </div>
           <fieldset
@@ -345,13 +333,11 @@ export function AsciiTyper() {
                   entry.code === latestCode ? "latest" : typed.has(entry.code) ? "typed" : undefined
                 }
                 tabIndex={entry.code === (tabStop ?? latestCode ?? 0) ? 0 : -1}
-                aria-disabled={entry.char === null || undefined}
                 aria-label={`${entry.code}: ${entry.name}${
                   entry.char === null ? ", control character" : ""
-                }. Bits ${entry.bits}, hex ${entry.hex}.${typed.has(entry.code) ? " In your text." : ""}${
-                  entry.char === null ? "" : " Press to type it."
-                }`}
-                onClick={() => pressSlot(entry.code)}
+                }. Bits ${entry.bits}, hex ${entry.hex}.${typed.has(entry.code) ? " In your text." : ""}`}
+                // Not every tap or assistive click arrives with a hover or a focus.
+                onClick={() => setInspected(entry.code)}
               >
                 <span className={styles.cellCode}>{entry.code}</span>
                 <span className={styles.cellLabel}>{entry.label}</span>

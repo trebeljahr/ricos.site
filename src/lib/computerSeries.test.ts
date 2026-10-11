@@ -14,6 +14,7 @@ import {
   recordDay,
   splitSections,
   streak,
+  writingOrder,
 } from "./computerSeries";
 
 const meta = (overrides: Partial<ChapterMeta> = {}): ChapterMeta => ({
@@ -131,6 +132,20 @@ describe("nextUp", () => {
     const next = nextUp([later, done, first]);
     expect(next?.chapter.path).toBe("c.md");
     expect(next?.section.heading).toBe("Next");
+  });
+
+  it("leaves every aside until the last chapter is drafted", () => {
+    const aside = chapterProgress(meta({ order: 2, kind: "aside", parent: "1.1" }), "", "aside.md");
+    const lateAside = chapterProgress(meta({ order: 4, kind: "aside" }), "", "late-aside.md");
+    const chapter = chapterProgress(meta({ order: 3 }), "", "chapter.md");
+    expect(writingOrder([lateAside, chapter, aside]).map((c) => c.path)).toEqual([
+      "chapter.md",
+      "aside.md",
+      "late-aside.md",
+    ]);
+    expect(nextUp([aside, lateAside, chapter])?.chapter.path).toBe("chapter.md");
+    const drafted = { ...chapter, status: "draft-done" as const };
+    expect(nextUp([aside, lateAside, drafted])?.chapter.path).toBe("aside.md");
   });
 });
 

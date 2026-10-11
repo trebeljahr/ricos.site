@@ -559,7 +559,8 @@ export default function WritingDevPage(props: Props) {
               ))}
 
               <p className="mt-section text-sm text-gray-500">
-                Order, titles and status come from each file's frontmatter. Set{" "}
+                Order, titles and status come from each file's frontmatter. "Write next" takes the
+                chapters first, in that order, and the asides after the last chapter. Set{" "}
                 <code>status: draft-done</code> (or <code>revising</code>, <code>done</code>) to
                 count a chapter as finished: each section short of its estimate then takes its own
                 word count, rounded down to {LOCK_STEP}, as its target.{" "}

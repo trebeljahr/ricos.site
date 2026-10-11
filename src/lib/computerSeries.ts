@@ -169,9 +169,19 @@ export function pace(
 
 export type NextUp = { chapter: ChapterProgress; section: Section };
 
-/** The first section, in reading order, still short of its target. */
+/**
+ * The order to write in: every chapter in reading order, then the asides in
+ * reading order. An aside is optional reading, so none is due before the last
+ * chapter has its draft.
+ */
+export function writingOrder<T extends Pick<ChapterMeta, "kind" | "order">>(chapters: T[]): T[] {
+  const rank = (c: T) => (c.kind === "aside" ? 1 : 0);
+  return [...chapters].sort((a, b) => rank(a) - rank(b) || a.order - b.order);
+}
+
+/** The first section, in writing order, still short of its target. */
 export function nextUp(chapters: ChapterProgress[]): NextUp | null {
-  for (const chapter of [...chapters].sort((a, b) => a.order - b.order)) {
+  for (const chapter of writingOrder(chapters)) {
     if (isDrafted(chapter.status)) continue;
     const section = chapter.sections.find((s) => s.words < s.target);
     if (section) return { chapter, section };

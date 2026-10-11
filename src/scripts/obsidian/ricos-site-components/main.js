@@ -20,6 +20,7 @@ const COMPONENTS = [
     name: "Insert two codebooks demo",
     mdx: "<CodebookMismatch />",
   },
+  { id: "insert-letter-codebook", name: "Insert letter codebook demo", mdx: "<LetterCodebook />" },
   { id: "insert-ascii-typer", name: "Insert ASCII typer demo", mdx: "<AsciiTyper />" },
   { id: "insert-endian-reader", name: "Insert endian reader demo", mdx: "<EndianReader />" },
 ];

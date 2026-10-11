@@ -30,7 +30,7 @@ function slotOf(event: SyntheticEvent): number | null {
 }
 
 /** Sizes the field to its text. False while it has no layout, as inside a closed callout. */
-function fitHeight(element: HTMLTextAreaElement): boolean {
+export function fitHeight(element: HTMLTextAreaElement): boolean {
   element.style.height = "auto";
   if (element.scrollHeight === 0) return false;
   const borders = element.offsetHeight - element.clientHeight;

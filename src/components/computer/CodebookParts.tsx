@@ -12,16 +12,21 @@ export function DemoMachine({
   label,
   soundEnabled,
   onToggleSound,
+  className,
   children,
 }: {
   title: string;
   label: string;
   soundEnabled: boolean;
   onToggleSound: () => void;
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <section className={clsx("not-prose", panel.machine, styles.demo)} aria-label={label}>
+    <section
+      className={clsx("not-prose", panel.machine, styles.demo, className)}
+      aria-label={label}
+    >
       <div className={panel.screw} aria-hidden="true" />
       <div className={clsx(panel.screw, panel.screwRight)} aria-hidden="true" />
       <div className={clsx(panel.nameplate, styles.nameplate)}>

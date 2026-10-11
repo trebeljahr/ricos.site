@@ -122,7 +122,7 @@ function isAscii(text: string): boolean {
  * Splits text into what a reader calls characters, so an emoji built from
  * several code points, or a letter with a combining accent, is one item.
  */
-function graphemes(text: string): string[] {
+export function graphemes(text: string): string[] {
   if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
     const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
     return Array.from(segmenter.segment(text), (part) => part.segment);
@@ -131,7 +131,7 @@ function graphemes(text: string): string[] {
 }
 
 /** A refused character as shown to the reader: itself, or its code point when it has no ink. */
-function displayRejected(grapheme: string): string {
+export function displayRejected(grapheme: string): string {
   if (!/^[\p{Z}\p{C}\p{M}]+$/u.test(grapheme)) return grapheme;
   const codePoint = grapheme.codePointAt(0) ?? 0;
   return `U+${codePoint.toString(16).padStart(4, "0").toUpperCase()}`;

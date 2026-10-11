@@ -12,6 +12,10 @@ export const computerDemos = [
     title: "Switches, states and codebooks",
   },
   {
+    slug: "letter-codebook",
+    title: "Five switches, one alphabet",
+  },
+  {
     slug: "ascii-typer",
     title: "Type text, see the bits",
   },

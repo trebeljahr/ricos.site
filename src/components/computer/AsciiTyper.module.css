@@ -1,5 +1,5 @@
-/* Rules that change a ByteExplorer class are scoped under .typer, so they win
-   whichever of the two stylesheets loads last. */
+/* Shared by AsciiTyper and LetterCodebook. Rules that change a ByteExplorer
+   class are scoped under .typer, so they win whichever stylesheet loads last. */
 
 /* A sticky child needs a parent that clips without scrolling; .machine's
    overflow: hidden would make the panel its scroll box and pin nothing. */

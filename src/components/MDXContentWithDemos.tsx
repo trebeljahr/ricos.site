@@ -9,6 +9,7 @@ import { Codebook } from "./computer/Codebook";
 import { CodebookMismatch } from "./computer/CodebookMismatch";
 import { EndianReader } from "./computer/EndianReader";
 import { FourByteExplorer } from "./computer/FourByteExplorer";
+import { LetterCodebook } from "./computer/LetterCodebook";
 import { SwitchStates } from "./computer/SwitchStates";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
@@ -37,6 +38,7 @@ const allComponents = {
   SwitchStates,
   Codebook,
   CodebookMismatch,
+  LetterCodebook,
   AsciiTyper,
   EndianReader,
   UnitVectorDemo,

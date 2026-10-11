@@ -6,6 +6,7 @@ import type { MdxDemoComponent } from "src/lib/mdxDemoComponents";
 import { ByteExplorer } from "./computer/ByteExplorer";
 import { Codebook } from "./computer/Codebook";
 import { CodebookMismatch } from "./computer/CodebookMismatch";
+import { EndianReader } from "./computer/EndianReader";
 import { FourByteExplorer } from "./computer/FourByteExplorer";
 import { SwitchStates } from "./computer/SwitchStates";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
@@ -35,6 +36,7 @@ const allComponents = {
   SwitchStates,
   Codebook,
   CodebookMismatch,
+  EndianReader,
   UnitVectorDemo,
   ProjectArrowDemo,
   ProjectionDemo,

@@ -20,6 +20,7 @@ const COMPONENTS = [
     name: "Insert two codebooks demo",
     mdx: "<CodebookMismatch />",
   },
+  { id: "insert-endian-reader", name: "Insert endian reader demo", mdx: "<EndianReader />" },
 ];
 
 /**

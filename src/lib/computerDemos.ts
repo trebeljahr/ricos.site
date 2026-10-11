@@ -12,6 +12,10 @@ export const computerDemos = [
     title: "Switches, states and codebooks",
   },
   {
+    slug: "endian-reader",
+    title: "Two bytes, four reading orders",
+  },
+  {
     slug: "logic-builder",
     title: "Build a logic circuit",
   },

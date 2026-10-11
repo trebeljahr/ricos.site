@@ -2,6 +2,8 @@
 // at the cursor, as the MDX the site renders. Installed into the Notes vault
 // by `pnpm obsidian:install`; edit here, not in the vault copy.
 // Each component must also be registered in src/components/MDXContentWithDemos.tsx.
+// Only the forms and the donation box get a command. The demos of a chapter are
+// typed by hand: do not add one for each new demo.
 
 const { Plugin } = require("obsidian");
 
@@ -13,16 +15,6 @@ const COMPONENTS = [
     mdx: '<NewsletterForm list="computer" />',
   },
   { id: "insert-donation-box", name: "Insert donation box", mdx: "<DonationStrip />" },
-  { id: "insert-switch-states", name: "Insert switch states demo", mdx: "<SwitchStates />" },
-  { id: "insert-codebook", name: "Insert codebook demo", mdx: "<Codebook />" },
-  {
-    id: "insert-codebook-mismatch",
-    name: "Insert two codebooks demo",
-    mdx: "<CodebookMismatch />",
-  },
-  { id: "insert-letter-codebook", name: "Insert letter codebook demo", mdx: "<LetterCodebook />" },
-  { id: "insert-ascii-typer", name: "Insert ASCII typer demo", mdx: "<AsciiTyper />" },
-  { id: "insert-endian-reader", name: "Insert endian reader demo", mdx: "<EndianReader />" },
 ];
 
 /**

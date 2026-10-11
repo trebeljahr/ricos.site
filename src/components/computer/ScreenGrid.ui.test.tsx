@@ -57,7 +57,7 @@ describe("sized screen grids", () => {
   }, 20000);
 
   it("shows the BANKS program filling the big screen tile by tile", () => {
-    render(<ProgramStepper />);
+    render(<ProgramStepper level="bankWindow" />);
     fireEvent.click(screen.getByRole("button", { name: "BANKS" }));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     const big = () =>
@@ -70,18 +70,20 @@ describe("sized screen grids", () => {
   }, 20000);
 
   it("shows the PORT program's ADDR and STEP as it draws", () => {
-    render(<ProgramStepper />);
+    render(<ProgramStepper level="vramPort" />);
     fireEvent.click(screen.getByRole("button", { name: "PORT" }));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     fireEvent.change(slider, { target: { value: slider.max } });
     expect(screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label")).toBe(
       "Big screen 32×32, 44 of 1024 pixels lit",
     );
-    expect(screen.getByLabelText("Bank").textContent).toMatch(/ADDR 53\s*·\s*STEP 4/);
+    expect(screen.getByLabelText("Port").textContent).toMatch(/ADDR 53\s*·\s*STEP 4/);
+    // The program never sets BANK, so the bank readout stays away.
+    expect(screen.queryByLabelText("Bank")).toBeNull();
   }, 20000);
 
   it("shows the STAMP program's big blitter at work and its four boxes at the end", () => {
-    render(<ProgramStepper />);
+    render(<ProgramStepper level="bigBlitter" />);
     fireEvent.click(screen.getByRole("button", { name: "STAMP" }));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     const status = () => screen.getByLabelText("Big blitter").textContent ?? "";

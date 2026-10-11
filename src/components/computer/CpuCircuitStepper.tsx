@@ -13,18 +13,21 @@ import {
 import { foldBlockState, screenRows } from "src/lib/computer/datapathBlocks";
 import type { Circuit, Node, Snapshot, Wire } from "src/lib/computer/logic";
 import { readProbes } from "src/lib/computer/probes";
+import type { StepperPreset } from "src/lib/computer/stepperLevels";
 import {
   BIG_SCREEN,
   type BlitterState,
   describeBigBlitter,
   describeBlitter,
   hex,
+  INTERRUPT_SAMPLES,
   INTERRUPT_VECTOR,
   isaFor,
   isBigScreenAddress,
   isBlitterAddress,
   isScreenAddress,
   type KeySchedule,
+  RAM_STACK_SAMPLES,
   type Registers,
   SAMPLE_PROGRAMS,
   SIGNALS,
@@ -41,6 +44,30 @@ import stepper from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
 const { LOOP } = SAMPLE_PROGRAMS;
+/** The bench runs the full machine, so it offers a program for each of its parts. */
+const PRESETS: readonly StepperPreset[] = [
+  { label: "2 + 3", source: SAMPLE_PROGRAMS.EXAMPLE },
+  { label: "OVERFLOW", source: SAMPLE_PROGRAMS.OVERFLOW },
+  { label: "FOR LOOP", source: LOOP },
+  { label: "FUNCTION", source: SAMPLE_PROGRAMS.FUNCTION },
+  { label: "SCREEN", source: SAMPLE_PROGRAMS.SMILEY },
+  { label: "PLOT", source: SAMPLE_PROGRAMS.CROSS },
+  {
+    label: "BLIT",
+    source: SAMPLE_PROGRAMS.BLIT,
+    title: "The blitter copies a sprite while the CPU counts",
+  },
+  { label: "BANKS", source: SAMPLE_PROGRAMS.BANKS },
+  { label: "PORT", source: SAMPLE_PROGRAMS.PORT },
+  { label: "STAMP", source: SAMPLE_PROGRAMS.STAMP },
+  {
+    label: "RECURSION",
+    source: RAM_STACK_SAMPLES.RECURSION,
+    stack: "ram",
+    title: "Needs the stack-in-RAM CPU; switches to it",
+  },
+  { label: "KEYBOARD", source: INTERRUPT_SAMPLES.KEYBOARD },
+];
 
 /** The part each *_OUT line puts on the bus. */
 const DRIVERS: Partial<Record<Signal, string>> = {
@@ -284,7 +311,7 @@ export function CpuCircuitStepper() {
     playSwitch();
   }
 
-  function preset(value: string, model: StackModel = stackModel) {
+  function preset({ source: value, stack: model = stackModel }: StepperPreset) {
     setStackModel(model);
     setSource(value);
     setLoaded(value);
@@ -337,6 +364,7 @@ export function CpuCircuitStepper() {
           onSourceChange={setSource}
           onCompile={compile}
           onPreset={preset}
+          presets={PRESETS}
           stack={stackModel}
           onStackChange={(model) => {
             setStackModel(model);

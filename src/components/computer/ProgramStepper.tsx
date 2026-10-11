@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
@@ -13,6 +14,22 @@ import {
   withOpcodes,
 } from "src/lib/computer/microcodeTable";
 import {
+  compileProblem,
+  earlierPresets,
+  hasPart,
+  levelMicrocode,
+  levelProblem,
+  modelNumber,
+  type ProgramLanguage,
+  partsUsed,
+  STEPPER_LEVELS,
+  type StepperLevel,
+  type StepperPart,
+  type StepperPreset,
+  stepperLevel,
+} from "src/lib/computer/stepperLevels";
+import { type ComputerDemoSlug, computerDemos } from "src/lib/computerDemos";
+import {
   BIG_SCREEN,
   byteBits,
   type CompiledProgram,
@@ -22,19 +39,13 @@ import {
   describeBlitter,
   describeOperand,
   hex,
-  INTERRUPT_SAMPLES,
   INTERRUPT_VECTOR,
   type IsaEntry,
-  isBigScreenAddress,
-  isBlitterAddress,
-  isScreenAddress,
   KEY_HANDLER,
   type KeySchedule,
   type MicrocodeTable,
   microcodeIsa,
   portStep,
-  RAM_STACK_SAMPLES,
-  SAMPLE_PROGRAMS,
   type Snapshot,
   STACK_MODELS,
   type StackModel,
@@ -45,17 +56,10 @@ import { MicrocodeEditor } from "./MicrocodeEditor";
 import styles from "./ProgramStepper.module.css";
 import { ScreenGrid } from "./ScreenGrid";
 
-const { EXAMPLE, OVERFLOW, LOOP, FUNCTION, SMILEY, CROSS, BLIT, BANKS, PORT, STAMP } =
-  SAMPLE_PROGRAMS;
-const { RECURSION } = RAM_STACK_SAMPLES;
-const { KEYBOARD } = INTERRUPT_SAMPLES;
 /** A key press as the key port sees it: one byte, the character code. */
 const keyLabel = (code: number) =>
   code >= 33 && code < 127 ? `“${String.fromCharCode(code)}” (${code})` : String(code);
 const BIT_WEIGHTS = [128, 64, 32, 16, 8, 4, 2, 1];
-
-/** How the program is written: the source language (default ISA) or assembly for the table. */
-export type Language = "source" | "assembly";
 
 type Tables = Record<StackModel, MicrocodeTable>;
 const DEFAULT_TABLES: Tables = {
@@ -97,29 +101,44 @@ function saveTables(tables: Tables) {
 const hasHandler = (program: CompiledProgram | null) =>
   Boolean(program?.instructions.some(({ label }) => label === "INTERRUPT VECTOR"));
 
-export function ProgramStepper() {
-  const [source, setSource] = useState<string>(EXAMPLE);
-  const [loaded, setLoaded] = useState<string>(EXAMPLE);
+type Props = {
+  /**
+   * The machine to show, named by the part its level adds. Each level is the
+   * one before it plus that part; the default is the base CPU.
+   */
+  level?: StepperPart;
+  /** Link the demo that adds a part the program needs. Only /computer has those pages. */
+  demoLinks?: boolean;
+};
+
+export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props) {
+  const level = stepperLevel(part);
+  const has = (other: StepperPart) => hasPart(level, other);
+  const start = level.presets[0];
+  const [source, setSource] = useState<string>(start.source);
+  const [loaded, setLoaded] = useState<string>(start.source);
   const [step, setStep] = useState(0);
-  const [stack, setStack] = useState<StackModel>("hardware");
+  const [stack, setStack] = useState<StackModel>(start.stack ?? "hardware");
   const [keys, setKeys] = useState<KeySchedule>({});
-  const [language, setLanguage] = useState<Language>("source");
+  const [language, setLanguage] = useState<ProgramLanguage>(start.language ?? "source");
   const [tables, setTables] = useState<Tables>(DEFAULT_TABLES);
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(part === "microcode");
   const inRam = stack === "ram";
-  const table = tables[stack];
+  // The level's CPU: the table without the opcodes of parts it does not have yet.
+  const table = useMemo(() => levelMicrocode(tables[stack], level), [tables, stack, level]);
   const isa = microcodeIsa(table);
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   useEffect(() => {
-    const saved = loadTables();
-    setTables(saved);
-    if (saved.hardware !== DEFAULT_TABLES.hardware || saved.ram !== DEFAULT_TABLES.ram)
-      setEditing(true);
-  }, []);
-  const compilation = useMemo(
-    () => (language === "assembly" ? assembleSource(loaded, table) : compileSource(loaded, stack)),
-    [loaded, stack, language, table],
-  );
+    // Only the machine with the microcode editor runs edited tables.
+    if (part === "microcode") setTables(loadTables());
+  }, [part]);
+  const compilation = useMemo((): Compilation => {
+    const result =
+      language === "assembly" ? assembleSource(loaded, table) : compileSource(loaded, stack);
+    if (result.error !== null) return { program: null, ...problemOf(result.error, level) };
+    const missing = result.program && levelProblem(result.program, level, microcodeIsa(table));
+    return missing ? { program: null, error: missing.message, demo: missing.demo } : result;
+  }, [loaded, stack, language, table, level]);
   const problems: MicrocodeProblem[] = useMemo(
     () => [
       ...validateMicrocode(table),
@@ -143,26 +162,25 @@ export function ProgramStepper() {
       : (compilation.program?.instructions[Math.floor(state.activeAddress / 2)] ?? null);
   const changed = source !== loaded;
   const variables = compilation.program?.variables ?? [];
-  /** Whether the opcode's operand is a data address (RAM, screen or blitter). */
-  const readsData = (opcode: number) =>
-    isa.some((item) => item.opcode === opcode && item.operand === "RAM address");
-  const usesBlitter = Boolean(
-    compilation.program?.instructions.some(
-      ({ opcode, operand }) => readsData(opcode) && isBlitterAddress(operand),
-    ),
+  const used = useMemo(
+    () => (compilation.program ? partsUsed(compilation.program, table.opcodes) : null),
+    [compilation.program, table],
   );
-  const usesBigScreen = Boolean(
-    compilation.program?.instructions.some(
-      ({ opcode, operand }) => readsData(opcode) && isBigScreenAddress(operand),
-    ),
-  );
-  const usesScreen =
-    usesBlitter ||
-    Boolean(
-      compilation.program?.instructions.some(
-        ({ opcode, operand }) => readsData(opcode) && isScreenAddress(operand),
-      ),
-    );
+  /** A part's readout shows on the level that adds the part, and later when the program uses it. */
+  const shows = (other: StepperPart) => other === part || Boolean(used?.has(other));
+  // An interrupt pushes PC, so the key port brings the stack readout with it.
+  const showStack = inRam || shows("calls") || shows("ramStack") || shows("interrupts");
+  const explainStack = part === "calls" || part === "ramStack";
+  // The pixel port and the blitter draw on the screen; the port and the big blitter on the big one.
+  const showScreen = shows("screen") || shows("pixelPort") || shows("blitter");
+  const showBigScreen = shows("bankWindow") || shows("vramPort") || shows("bigBlitter");
+  // The CPU switch belongs to the machine that adds the second CPU, and to the
+  // microcode table, which is one per CPU. The machines between show it once a
+  // program runs on the stack-in-RAM CPU or fails because it needs that CPU.
+  const showCpuChoice =
+    part === "ramStack" ||
+    part === "microcode" ||
+    (has("ramStack") && (inRam || /stack-in-RAM CPU/.test(compilation.error ?? "")));
   const setBitWeights = state
     ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
     : [];
@@ -170,13 +188,6 @@ export function ProgramStepper() {
     state?.ir === null || state?.ir === undefined
       ? null
       : (isa.find(({ opcode }) => opcode === state.ir) ?? null);
-  const usesKeys =
-    hasHandler(compilation.program) ||
-    Boolean(
-      compilation.program?.instructions.some(({ opcode }) =>
-        isa.some((item) => item.opcode === opcode && ["IN", "EI"].includes(item.mnemonic)),
-      ),
-    );
   // The interrupt path, stage by stage, for this snapshot.
   const entering = state?.phase === "interrupt";
   const path = state
@@ -199,7 +210,7 @@ export function ProgramStepper() {
     playSwitch();
   }
 
-  function preset(value: string, model: StackModel = stack, as: Language = "source") {
+  function preset({ source: value, stack: model = stack, language: as = "source" }: StepperPreset) {
     setLanguage(as);
     setStack(model);
     setSource(value);
@@ -227,10 +238,10 @@ export function ProgramStepper() {
   /** The AND + JZ exercise: add both opcodes to this CPU's table and run a program that uses them. */
   function exercise() {
     changeTable(withOpcodes(table, AND_OPCODE, JZ_OPCODE));
-    preset(AND_JZ_PROGRAM, stack, "assembly");
+    preset({ label: "AND + JZ", source: AND_JZ_PROGRAM, language: "assembly" });
   }
 
-  function chooseLanguage(next: Language) {
+  function chooseLanguage(next: ProgramLanguage) {
     setLanguage(next);
     setKeys({});
     setStep(0);
@@ -267,7 +278,10 @@ export function ProgramStepper() {
       <div className={panel.nameplate}>
         <div>
           <strong>PROGRAM EXECUTION UNIT</strong>
-          <span className={styles.model}>8-BIT · MODEL 01</span>
+          <span className={styles.model}>
+            8-BIT · MODEL {String(modelNumber(level)).padStart(2, "0")}
+            {part !== "cpu" && ` · + ${level.name}`}
+          </span>
         </div>
         <button
           type="button"
@@ -286,15 +300,18 @@ export function ProgramStepper() {
           onSourceChange={setSource}
           onCompile={compile}
           onPreset={preset}
+          presets={level.presets}
+          earlier={earlierPresets(level)}
           stack={stack}
-          onStackChange={chooseStack}
+          onStackChange={showCpuChoice ? chooseStack : undefined}
           compilation={compilation}
           changed={changed}
           activeAddress={active?.address ?? null}
           isa={isa}
           language={language}
-          onLanguageChange={chooseLanguage}
-          onExercise={exercise}
+          onLanguageChange={has("microcode") ? chooseLanguage : undefined}
+          onExercise={has("microcode") ? exercise : undefined}
+          demoLinks={demoLinks}
         />
 
         <div className={styles.outputSide}>
@@ -393,7 +410,7 @@ export function ProgramStepper() {
                   </div>
                 ))}
               </div>
-              {usesKeys && path && (
+              {shows("interrupts") && path && (
                 <div className={styles.keyPanel}>
                   <div className={styles.keyRow}>
                     <label className={styles.keyInput}>
@@ -443,45 +460,52 @@ export function ProgramStepper() {
                   </small>
                 </div>
               )}
-              {inRam ? (
-                <div className={styles.stackReadout}>
-                  <div>
-                    <span>STACK IN RAM / SP = {hex(state.sp ?? 0)} / TOP AT RIGHT</span>
-                    <strong className={styles.stackBytes}>
-                      {state.stack.length
-                        ? state.stack
-                            .map((value, index) => `[${hex(31 - index)}]${hex(value)}`)
-                            .join(" ")
-                        : "EMPTY"}
-                    </strong>
+              {showStack &&
+                (inRam ? (
+                  <div className={styles.stackReadout}>
+                    <div>
+                      <span>STACK IN RAM / SP = {hex(state.sp ?? 0)} / TOP AT RIGHT</span>
+                      <strong className={styles.stackBytes}>
+                        {state.stack.length
+                          ? state.stack
+                              .map((value, index) => `[${hex(31 - index)}]${hex(value)}`)
+                              .join(" ")
+                          : "EMPTY"}
+                      </strong>
+                    </div>
+                    {explainStack && (
+                      <small>
+                        SP starts at 20, just past the last RAM byte, and counts down. CALL moves SP
+                        down one byte and stores the return address there; RET reads it back and
+                        moves SP up. Each function then moves SP down once more to make its frame:
+                        the parameter at SP+0, then each local. Every call gets a fresh frame, so a
+                        function can call itself. Too many calls and the stack runs into the
+                        variables at the bottom of RAM.
+                      </small>
+                    )}
                   </div>
-                  <small>
-                    SP starts at 20, just past the last RAM byte, and counts down. CALL moves SP
-                    down one byte and stores the return address there; RET reads it back and moves
-                    SP up. Each function then moves SP down once more to make its frame: the
-                    parameter at SP+0, then each local. Every call gets a fresh frame, so a function
-                    can call itself. Too many calls and the stack runs into the variables at the
-                    bottom of RAM.
-                  </small>
-                </div>
-              ) : (
-                <div className={styles.stackReadout}>
-                  <div>
-                    <span>CALL STACK / TOP AT RIGHT</span>
-                    <strong>
-                      {state.stack.length
-                        ? state.stack.map((address) => `→${hex(address)}`).join("  ")
-                        : "EMPTY"}
-                    </strong>
+                ) : (
+                  <div className={styles.stackReadout}>
+                    <div>
+                      <span>CALL STACK / TOP AT RIGHT</span>
+                      <strong>
+                        {state.stack.length
+                          ? state.stack.map((address) => `→${hex(address)}`).join("  ")
+                          : "EMPTY"}
+                      </strong>
+                    </div>
+                    {explainStack && (
+                      <small>
+                        CALL pushes the code address to come back to; RET pops it. The stack holds
+                        only return addresses. Variables, parameters and loop counters each get one
+                        fixed RAM address, which is why a function cannot call itself.{" "}
+                        {has("ramStack")
+                          ? "Switch the CPU to STACK IN RAM to compare."
+                          : "The next model keeps its stack in RAM, which removes that limit."}
+                      </small>
+                    )}
                   </div>
-                  <small>
-                    CALL pushes the code address to come back to; RET pops it. The stack holds only
-                    return addresses. Variables, parameters and loop counters each get one fixed RAM
-                    address, which is why a function cannot call itself. Switch the CPU to STACK IN
-                    RAM to compare.
-                  </small>
-                </div>
-              )}
+                ))}
               <div className={styles.lowerReadouts}>
                 <div>
                   <div className={panel.sectionHead}>
@@ -548,7 +572,7 @@ export function ProgramStepper() {
                     <span>OUTPUT DEVICE</span>
                   </div>
                   <div className={styles.outputScreen}>{state.output.join(" ") || "—"}</div>
-                  {usesScreen && (
+                  {showScreen && (
                     <>
                       <ScreenGrid
                         rows={state.screen}
@@ -556,17 +580,19 @@ export function ProgramStepper() {
                         className={styles.pixelScreen}
                         written={state.screenWrite}
                       />
-                      <div className={styles.flags}>
-                        PIXEL X {state.pixelX} <span>·</span> Y {state.pixelY}
-                      </div>
-                      {usesBlitter && (
+                      {shows("pixelPort") && (
+                        <div className={styles.flags} role="status" aria-label="Pixel cursor">
+                          PIXEL X {state.pixelX} <span>·</span> Y {state.pixelY}
+                        </div>
+                      )}
+                      {shows("blitter") && (
                         <div className={styles.flags} role="status" aria-label="Blitter">
                           BLITTER <span>·</span> {describeBlitter(state.blitter)}
                         </div>
                       )}
                     </>
                   )}
-                  {usesBigScreen && (
+                  {showBigScreen && (
                     <>
                       <ScreenGrid
                         rows={state.frame}
@@ -574,13 +600,21 @@ export function ProgramStepper() {
                         label="Big screen"
                         className={styles.pixelScreen}
                       />
-                      <div className={styles.flags} role="status" aria-label="Bank">
-                        BANK {state.bank} <span>·</span> ADDR {state.portAddr} <span>·</span> STEP{" "}
-                        {portStep(state.portDown)}
-                      </div>
-                      <div className={styles.flags} role="status" aria-label="Big blitter">
-                        BIG BLITTER <span>·</span> {describeBigBlitter(state.bigBlitter)}
-                      </div>
+                      {shows("bankWindow") && (
+                        <div className={styles.flags} role="status" aria-label="Bank">
+                          BANK {state.bank}
+                        </div>
+                      )}
+                      {shows("vramPort") && (
+                        <div className={styles.flags} role="status" aria-label="Port">
+                          ADDR {state.portAddr} <span>·</span> STEP {portStep(state.portDown)}
+                        </div>
+                      )}
+                      {shows("bigBlitter") && (
+                        <div className={styles.flags} role="status" aria-label="Big blitter">
+                          BIG BLITTER <span>·</span> {describeBigBlitter(state.bigBlitter)}
+                        </div>
+                      )}
                     </>
                   )}
                   <div className={styles.flags}>
@@ -616,35 +650,59 @@ export function ProgramStepper() {
           )}
         </div>
       </div>
-      <div className={styles.controls}>
-        <button
-          type="button"
-          aria-expanded={editing}
-          onClick={() => {
-            setEditing(!editing);
-            playSwitch();
-          }}
-          className={editing ? styles.primaryButton : styles.button}
-        >
-          {editing ? "HIDE" : "EDIT"} MICROCODE TABLE
-          {problems.length
-            ? ` · ${problems.length} PROBLEM${problems.length === 1 ? "" : "S"}`
-            : ""}
-        </button>
-      </div>
-      {editing && (
-        <MicrocodeEditor
-          table={table}
-          onChange={changeTable}
-          problems={problems}
-          onExercise={exercise}
-        />
+      {has("microcode") && (
+        <>
+          <div className={styles.controls}>
+            <button
+              type="button"
+              aria-expanded={editing}
+              onClick={() => {
+                setEditing(!editing);
+                playSwitch();
+              }}
+              className={editing ? styles.primaryButton : styles.button}
+            >
+              {editing ? "HIDE" : "EDIT"} MICROCODE TABLE
+              {problems.length
+                ? ` · ${problems.length} PROBLEM${problems.length === 1 ? "" : "S"}`
+                : ""}
+            </button>
+          </div>
+          {editing && (
+            <MicrocodeEditor
+              table={table}
+              onChange={changeTable}
+              problems={problems}
+              onExercise={exercise}
+            />
+          )}
+        </>
       )}
     </section>
   );
 }
 
-type Compilation = { program: CompiledProgram | null; error: string | null };
+type Compilation = {
+  program: CompiledProgram | null;
+  error: string | null;
+  /** The demo whose machine can run the program, when the error is a part this one lacks. */
+  demo?: ComputerDemoSlug | null;
+};
+
+/** A compile error for one level: the message, and the demo that has the missing part. */
+const problemOf = (message: string, level: StepperLevel) => {
+  const { message: error, demo } = compileProblem(message, level);
+  return { error, demo };
+};
+
+/** "Model 05, “Draw on a screen by storing bytes”, adds it.", as a link when the demo pages exist. */
+function DemoPointer({ slug, link }: { slug: ComputerDemoSlug; link: boolean }) {
+  const level = STEPPER_LEVELS.find((item) => item.slug === slug);
+  const title = computerDemos.find((demo) => demo.slug === slug)?.title;
+  if (!level || !title) return null;
+  const name = `Model ${String(modelNumber(level)).padStart(2, "0")}, “${title}”,`;
+  return <>{link ? <Link href={`/computer/${slug}`}>{name}</Link> : name} adds it.</>;
+}
 
 /** Assembles a program for a microcode table, turning an assembler error into a message. */
 export function assembleSource(source: string, table: MicrocodeTable): Compilation {
@@ -669,10 +727,15 @@ type ProgramSourceProps = {
   onSourceChange: (value: string) => void;
   /** Compile the edited source and reset the machine. */
   onCompile: () => void;
-  /** Load and compile a sample program, for the given CPU. */
-  onPreset: (value: string, stack?: StackModel) => void;
+  /** Load and compile a preset program, on the CPU and in the language it names. */
+  onPreset: (preset: StepperPreset) => void;
+  /** The preset buttons, in order. */
+  presets: readonly StepperPreset[];
+  /** More presets behind a fold: the programs of the machines before this one. */
+  earlier?: readonly StepperPreset[];
   stack: StackModel;
-  onStackChange: (stack: StackModel) => void;
+  /** With this, the CPU can be switched between the two stack models. */
+  onStackChange?: (stack: StackModel) => void;
   compilation: Compilation;
   /** The source differs from the compiled program. */
   changed: boolean;
@@ -681,18 +744,22 @@ type ProgramSourceProps = {
   /** The instruction set the tape decodes with; an edited microcode table's, or the CPU's. */
   isa?: readonly IsaEntry[];
   /** With `onLanguageChange`, the source can be switched to assembly for the microcode table. */
-  language?: Language;
-  onLanguageChange?: (language: Language) => void;
+  language?: ProgramLanguage;
+  onLanguageChange?: (language: ProgramLanguage) => void;
   /** Loads the AND + JZ microcode exercise. */
   onExercise?: () => void;
+  /** Link the demo a compile error names. Only /computer has those pages. */
+  demoLinks?: boolean;
 };
 
-/** The CPU choice, source editor and instruction tape: write, compile, and see which line runs. */
+/** The source editor, preset buttons and instruction tape: write, compile, and see which line runs. */
 export function ProgramSource({
   source,
   onSourceChange,
   onCompile,
   onPreset,
+  presets,
+  earlier = [],
   stack,
   onStackChange,
   compilation,
@@ -702,6 +769,7 @@ export function ProgramSource({
   language = "source",
   onLanguageChange,
   onExercise,
+  demoLinks = false,
 }: ProgramSourceProps) {
   const assembly = language === "assembly";
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
@@ -733,10 +801,22 @@ export function ProgramSource({
     onCompile();
   }
 
-  function preset(value: string, model?: StackModel) {
+  function preset(program: StepperPreset) {
     setHoveredLine(null);
-    onPreset(value, model);
+    onPreset(program);
   }
+
+  const presetButton = (program: StepperPreset) => (
+    <button
+      key={program.label}
+      type="button"
+      onClick={() => preset(program)}
+      className={styles.button}
+      title={program.title}
+    >
+      {program.label}
+    </button>
+  );
 
   function hoverEditorLine(event: MouseEvent<HTMLTextAreaElement>) {
     if (changed) return;
@@ -757,20 +837,22 @@ export function ProgramSource({
       <div className={panel.sectionHead}>
         <span>01 / SOURCE CODE</span>
       </div>
-      <fieldset className={styles.stackChoice}>
-        <legend>CPU</legend>
-        {(Object.keys(STACK_MODELS) as StackModel[]).map((model) => (
-          <button
-            key={model}
-            type="button"
-            aria-pressed={stack === model}
-            onClick={() => onStackChange(model)}
-            className={stack === model ? styles.primaryButton : styles.button}
-          >
-            {STACK_MODELS[model].label} · {STACK_MODELS[model].ramBytes}-BYTE RAM
-          </button>
-        ))}
-      </fieldset>
+      {onStackChange && (
+        <fieldset className={styles.stackChoice}>
+          <legend>CPU</legend>
+          {(Object.keys(STACK_MODELS) as StackModel[]).map((model) => (
+            <button
+              key={model}
+              type="button"
+              aria-pressed={stack === model}
+              onClick={() => onStackChange(model)}
+              className={stack === model ? styles.primaryButton : styles.button}
+            >
+              {STACK_MODELS[model].label} · {STACK_MODELS[model].ramBytes}-BYTE RAM
+            </button>
+          ))}
+        </fieldset>
+      )}
       {onLanguageChange && (
         <fieldset className={styles.stackChoice}>
           <legend>LANGUAGE</legend>
@@ -840,53 +922,14 @@ export function ProgramSource({
             AND + JZ
           </button>
         )}
-        <button type="button" onClick={() => preset(EXAMPLE)} className={styles.button}>
-          2 + 3
-        </button>
-        <button type="button" onClick={() => preset(OVERFLOW)} className={styles.button}>
-          OVERFLOW
-        </button>
-        <button type="button" onClick={() => preset(LOOP)} className={styles.button}>
-          FOR LOOP
-        </button>
-        <button type="button" onClick={() => preset(FUNCTION)} className={styles.button}>
-          FUNCTION
-        </button>
-        <button type="button" onClick={() => preset(SMILEY)} className={styles.button}>
-          SCREEN
-        </button>
-        <button type="button" onClick={() => preset(CROSS)} className={styles.button}>
-          PLOT
-        </button>
-        <button
-          type="button"
-          onClick={() => preset(BLIT)}
-          className={styles.button}
-          title="The blitter copies a sprite while the CPU counts"
-        >
-          BLIT
-        </button>
-        <button type="button" onClick={() => preset(BANKS)} className={styles.button}>
-          BANKS
-        </button>
-        <button type="button" onClick={() => preset(PORT)} className={styles.button}>
-          PORT
-        </button>
-        <button type="button" onClick={() => preset(STAMP)} className={styles.button}>
-          STAMP
-        </button>
-        <button
-          type="button"
-          onClick={() => preset(RECURSION, "ram")}
-          className={styles.button}
-          title="Needs the stack-in-RAM CPU; switches to it"
-        >
-          RECURSION
-        </button>
-        <button type="button" onClick={() => preset(KEYBOARD)} className={styles.button}>
-          KEYBOARD
-        </button>
+        {presets.map(presetButton)}
       </div>
+      {earlier.length > 0 && (
+        <details className={styles.presetFold}>
+          <summary>PROGRAMS FROM EARLIER MODELS</summary>
+          <div className={styles.controls}>{earlier.map(presetButton)}</div>
+        </details>
+      )}
       {changed && (
         <p id="program-syntax" className={styles.hint}>
           <strong>EDIT NOT COMPILED</strong>
@@ -895,6 +938,12 @@ export function ProgramSource({
       {compilation.error && (
         <p role="alert" className={styles.error}>
           {compilation.error}
+          {compilation.demo && (
+            <>
+              {" "}
+              <DemoPointer slug={compilation.demo} link={demoLinks} />
+            </>
+          )}
         </p>
       )}
 

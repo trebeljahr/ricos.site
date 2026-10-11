@@ -26,7 +26,7 @@ describe("the blitter in the UI", () => {
   });
 
   it("draws the BLIT sprite row by row while the stepper's CPU runs on", () => {
-    render(<ProgramStepper />);
+    render(<ProgramStepper level="blitter" />);
     fireEvent.click(button("BLIT"));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     const goTo = (step: number) => fireEvent.change(slider, { target: { value: String(step) } });

@@ -341,6 +341,17 @@ type NodeInfo = {
   parent: { children: Node[] };
 };
 
+// Obsidian writes a pasted image as `assets/Pasted%20image%20….png`, while
+// metadata.json and the image loader are keyed by the plain path.
+const decodeAssetUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  try {
+    return decodeURI(url);
+  } catch {
+    return url;
+  }
+};
+
 const remarkGroupImages: Pluggable = () => {
   return async (tree: Node) => {
     const allImages: NodeInfo[] = [];
@@ -382,7 +393,7 @@ const remarkGroupImages: Pluggable = () => {
               await Promise.all(
                 groupedImages.map(async ({ node }) => {
                   // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
-                  const src = (node as any).url as string;
+                  const src = decodeAssetUrl((node as any).url as string);
                   // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
                   const explicitAlt = ((node as any).alt as string) || "";
                   try {
@@ -395,7 +406,12 @@ const remarkGroupImages: Pluggable = () => {
                       alt: explicitAlt.trim() || alt,
                     };
                   } catch (err) {
-                    console.error("Error getting image metadata for src:", src, err);
+                    // The message only: Node 22 and 24 loop forever colouring the
+                    // stack of an error thrown from Velite's compiled config, which
+                    // sits directly in node_modules, and `pnpm dev` forces colours.
+                    console.error(
+                      `Error getting image metadata for ${src}: ${err instanceof Error ? err.message : err}`,
+                    );
 
                     return {
                       alt: explicitAlt,
@@ -442,7 +458,16 @@ const handleSimpleGalleryNode: Handler = (state, node) => {
 // `pnpm dev` watcher past Node's heap limit, and the orphaned esbuild service
 // then printed one goroutine per pending build ("all goroutines are asleep").
 const bundleLimit = pLimit(8);
-const bundle = (options: Parameters<typeof bundleMDX>[0]) => bundleLimit(() => bundleMDX(options));
+// esbuild only knows mdx-bundler's generated entry point, so name the document.
+// Rethrow esbuild's own error: one created here would carry the stack frame
+// that the image metadata comment above warns about.
+const bundle = (file: string, options: Parameters<typeof bundleMDX>[0]) =>
+  bundleLimit(() =>
+    bundleMDX(options).catch((err: unknown) => {
+      console.error(`[velite] could not compile ${file}`);
+      throw err;
+    }),
+  );
 
 // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
 const addBundledMDXContent = async <T extends Record<string, any>>(
@@ -531,7 +556,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const recmaPlugins: Pluggable[] = [];
 
   const rawContent = prepare(meta.content || "");
-  const { code: mdxCode } = await bundle({
+  const { code: mdxCode } = await bundle(meta.path, {
     source: rawContent,
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {
@@ -572,7 +597,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     }
   }
 
-  const { code: excerptCode } = await bundle({
+  const { code: excerptCode } = await bundle(`${meta.path} (excerpt)`, {
     source: frontmatterExcerpt || escapeMdx(excerptString),
     cwd: path.resolve("src/content/Notes"),
     mdxOptions(options) {

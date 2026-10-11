@@ -13,6 +13,13 @@ const COMPONENTS = [
     mdx: '<NewsletterForm list="computer" />',
   },
   { id: "insert-donation-box", name: "Insert donation box", mdx: "<DonationStrip />" },
+  { id: "insert-switch-states", name: "Insert switch states demo", mdx: "<SwitchStates />" },
+  { id: "insert-codebook", name: "Insert codebook demo", mdx: "<Codebook />" },
+  {
+    id: "insert-codebook-mismatch",
+    name: "Insert two codebooks demo",
+    mdx: "<CodebookMismatch />",
+  },
 ];
 
 /**

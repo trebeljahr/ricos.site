@@ -5,6 +5,9 @@
 export const MDX_DEMO_COMPONENTS = [
   "ByteExplorer",
   "FourByteExplorer",
+  "SwitchStates",
+  "Codebook",
+  "CodebookMismatch",
   "UnitVectorDemo",
   "ProjectArrowDemo",
   "ProjectionDemo",

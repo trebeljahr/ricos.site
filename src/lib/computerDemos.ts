@@ -8,6 +8,10 @@ export const computerDemos = [
     title: "Four bytes, many meanings",
   },
   {
+    slug: "codebook",
+    title: "Switches, states and codebooks",
+  },
+  {
     slug: "logic-builder",
     title: "Build a logic circuit",
   },

@@ -1,6 +1,7 @@
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { blankFrame, litPixels } from "../../lib/computer/video";
 import { BIG_PORT, BIG_SCREEN, BIG_TILES, hex, windowByte } from "../../lib/computerStepper";
+import { buttonClass, ClickLayer, captionClass } from "./DeviceDemoParts";
 import { ScreenGrid } from "./ScreenGrid";
 
 const ROWS = [0, 1, 2, 3, 4, 5, 6, 7];
@@ -11,10 +12,6 @@ const BIG_PIXEL = 8;
 const WINDOW_PIXEL = 22;
 /** The tile the demo opens on: second row, second column, already holding a smiley. */
 const START_BANK = 5;
-
-const buttonClass =
-  "rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-800 hover:border-cyan-500 hover:text-cyan-600 dark:border-gray-700 dark:text-gray-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300";
-const captionClass = "text-sm font-semibold text-gray-800 dark:text-gray-200";
 
 /** BANK's column and row of tiles: bits 0–1 and bits 2–3. */
 const tileColumn = (bank: number) => bank & 3;
@@ -30,22 +27,6 @@ function storeRow(frame: readonly number[], bank: number, row: number, value: nu
 /** `frame` after stores to all 8 window addresses. */
 const storeRows = (frame: readonly number[], bank: number, values: readonly number[]) =>
   values.reduce((next, value, row) => storeRow(next, bank, row, value), [...frame]);
-
-/**
- * A layer of buttons over a ScreenGrid, one per cell. The grid's LEDs start
- * 6px in (its border and padding) and have 1px gutters; half a gutter further
- * out, `columns` equal cells of the layer line up with the LEDs under them.
- */
-function ClickLayer({ columns, children }: { columns: number; children: ReactNode }) {
-  return (
-    <div
-      className="absolute inset-[5.5px] grid"
-      style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
-    >
-      {children}
-    </div>
-  );
-}
 
 /**
  * The big screen's bank window, without a CPU: a 32×32 screen of 128 bytes,

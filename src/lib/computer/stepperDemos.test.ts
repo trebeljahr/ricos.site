@@ -29,6 +29,8 @@ describe("the program stepper's demos", () => {
     const foci = STEPPER_DEMOS.map(({ focus }) => focus);
     expect(new Set(foci).size).toBe(foci.length);
     expect(STEPPER_DEMOS[0].focus).toBeNull();
+    // The screens and their devices have hands-on demos; the stepper keeps the parts that execute.
+    expect(foci.slice(1)).toEqual(["calls", "ramStack", "interrupts", "microcode"]);
     expect(PLAIN_PRESETS.map(({ label }) => label)).toEqual(["2 + 3", "OVERFLOW", "FOR LOOP"]);
   });
 

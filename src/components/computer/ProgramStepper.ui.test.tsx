@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { STEPPER_DEMOS, type StepperDemo } from "../../lib/computer/stepperDemos";
+import { SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { ProgramStepper } from "./ProgramStepper";
 
 beforeEach(() => localStorage.clear());
@@ -104,20 +105,34 @@ describe("the program stepper", () => {
     expect(screen.getByLabelText("Interrupt path")).toBeTruthy();
     expect(screen.getByText("CALL STACK / TOP AT RIGHT")).toBeTruthy();
     expect(screen.queryByRole("img", { name: /^Screen rows/ })).toBeNull();
-    cleanup();
-    show(demoAt("memory-mapped-screen"));
-    expect(screen.getByRole("img", { name: /^Screen rows/ })).toBeTruthy();
-    expect(screen.queryByLabelText("Interrupt path")).toBeNull();
-    expect(screen.queryByText(/CALL STACK/)).toBeNull();
-    expect(screen.queryByLabelText("Pixel cursor")).toBeNull();
-    // KEY ROW needs the key port as well, so its readouts come with it.
+    // KEY ROW draws on the screen as well, so the screen's readout comes with it.
     fireEvent.click(button("KEY ROW")!);
-    expect(screen.getByLabelText("Interrupt path")).toBeTruthy();
+    expect(screen.getByRole("img", { name: /^Screen rows/ })).toBeTruthy();
+    expect(screen.queryByLabelText("Pixel cursor")).toBeNull();
     cleanup();
-    show(demoAt("pixel-port"));
+    show(demoAt("call-stack"));
+    expect(screen.queryByLabelText("Interrupt path")).toBeNull();
+    expect(screen.queryByRole("img", { name: /^Screen rows/ })).toBeNull();
+  });
+
+  it("keeps the readouts of the devices for typed programs that use them", () => {
+    render(<ProgramStepper />);
+    write(SAMPLE_PROGRAMS.SMILEY);
+    expect(screen.getByRole("img", { name: /^Screen rows/ })).toBeTruthy();
+    expect(screen.queryByLabelText("Pixel cursor")).toBeNull();
+    write(SAMPLE_PROGRAMS.CROSS);
     expect(screen.getByLabelText("Pixel cursor")).toBeTruthy();
     expect(screen.queryByLabelText("Blitter")).toBeNull();
-  });
+    write(SAMPLE_PROGRAMS.BLIT);
+    expect(screen.getByLabelText("Blitter")).toBeTruthy();
+    expect(screen.queryByRole("img", { name: /^Big screen/ })).toBeNull();
+    write(SAMPLE_PROGRAMS.PORT);
+    expect(screen.getByLabelText("Port")).toBeTruthy();
+    expect(screen.queryByLabelText("Big blitter")).toBeNull();
+    write(SAMPLE_PROGRAMS.STAMP);
+    expect(screen.getByLabelText("Big blitter")).toBeTruthy();
+    expect(screen.queryByLabelText("Port")).toBeNull();
+  }, 30000);
 
   it("runs every demo's first program to the end", () => {
     for (const demo of STEPPER_DEMOS) {
@@ -131,7 +146,7 @@ describe("the program stepper", () => {
   }, 60000);
 
   it("opens the microcode table and assembly on the microcode demo only", () => {
-    show(demoAt("big-blitter"));
+    show(demoAt("call-stack"));
     expect(button(/MICROCODE TABLE/)).toBeNull();
     expect(button("ASSEMBLY")).toBeNull();
     cleanup();

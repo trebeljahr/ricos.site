@@ -3,6 +3,11 @@
 // independent: none needs another one first. The stepper shows a part's
 // readout on the demo about that part, and elsewhere only when the loaded
 // program uses the part.
+//
+// Only the parts that execute code have a stepper demo. The screens and the
+// devices that draw on them have hands-on demos without a CPU
+// (components/computer/DeviceDemoParts.tsx); the stepper keeps their readouts
+// for typed programs that use them.
 
 import type { ComputerDemoSlug } from "../computerDemos";
 import {
@@ -122,6 +127,11 @@ export const STEPPER_DEMOS: readonly StepperDemo[] = [
         source: POLLING,
         title: "No interrupt: the program reads the key port on every pass",
       },
+      {
+        label: "KEY ROW",
+        source: INTERRUPT_SAMPLES.KEYBOARD,
+        title: "Each key press draws its code as a row of pixels",
+      },
     ],
   },
   {
@@ -131,59 +141,6 @@ export const STEPPER_DEMOS: readonly StepperDemo[] = [
       "The control unit runs each opcode from a table. Each opcode is a list of steps, and each step is the set of control lines that are on for one clock tick. Change a step or add an opcode, then write assembly that uses it. AND + JZ loads a worked example.",
     // Not "ASSEMBLY": that is the language switch's button.
     presets: [{ label: "2 + 3 BY HAND", source: ASSEMBLY, language: "assembly" }],
-  },
-  {
-    slug: "memory-mapped-screen",
-    focus: "screen",
-    intro:
-      "The 8×8 screen sits at data addresses F0 to F7. Each address holds one row, and each bit is one pixel, with bit 0 at the left. The CPU needs no new instruction: STM F3 stores ACC in row 3 the way it stores into RAM.",
-    presets: [
-      { label: "SMILEY", source: SAMPLE_PROGRAMS.SMILEY },
-      {
-        label: "SWEEP",
-        source: SAMPLE_PROGRAMS.SWEEP,
-        title: "Doubling a row byte moves its pixel one step right",
-      },
-      {
-        label: "KEY ROW",
-        source: INTERRUPT_SAMPLES.KEYBOARD,
-        title: "Each key press draws its code as a row of pixels",
-      },
-    ],
-  },
-  {
-    slug: "pixel-port",
-    focus: "pixelPort",
-    intro:
-      "A store to a screen row replaces all 8 of its pixels. The pixel port at F8 to FA changes one: store x in F8, y in F9, then the colour in FA. plot(x, y) compiles to those three stores.",
-    presets: [{ label: "PLOT", source: SAMPLE_PROGRAMS.CROSS }],
-  },
-  {
-    slug: "blitter",
-    focus: "blitter",
-    intro:
-      "The blitter sits at E0 to E4. The CPU stores a position and a command there. The blitter then draws one row or pixel per clock tick, while the CPU runs the next lines of its program. blit(wait) reads the BUSY bit until the blitter is done.",
-    presets: [
-      {
-        label: "BLIT",
-        source: SAMPLE_PROGRAMS.BLIT,
-        title: "The blitter copies a sprite while the CPU counts",
-      },
-    ],
-  },
-  {
-    slug: "vram-port",
-    focus: "vramPort",
-    intro:
-      "The 32×32 screen has 128 bytes, and a port at D9 to DB reaches them one after another. Store a byte number in ADDR (D9). Each store to DATA (DA) then writes that byte and moves ADDR on by itself. STEP (DB) picks how far: one byte across, or one row (4 bytes) down.",
-    presets: [{ label: "PORT", source: SAMPLE_PROGRAMS.PORT }],
-  },
-  {
-    slug: "big-blitter",
-    focus: "bigBlitter",
-    intro:
-      "The big blitter sits at DC to DF. FILL writes one byte into a rectangle of the 32×32 screen, and COPY copies a rectangle to another place. The CPU stores DST, SRC and SIZE and starts the command. The blitter then writes one byte per clock tick while the CPU runs on.",
-    presets: [{ label: "STAMP", source: SAMPLE_PROGRAMS.STAMP }],
   },
 ];
 

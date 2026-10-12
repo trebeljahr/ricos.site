@@ -15,7 +15,8 @@ const press = (name: string) => fireEvent.click(screen.getByRole("button", { nam
 const addresses = () =>
   Array.from(screen.getByLabelText("Window addresses").children).map((row) => row.textContent);
 
-describe("bank window demo", () => {
+// These tests are slow on a loaded machine: jsdom renders every LED as an element.
+describe("bank window demo", { timeout: 30000 }, () => {
   it("opens on tile 5 with a smiley, and the window shows that tile's 8 bytes", () => {
     render(<BankWindowDemo />);
     expect(lit()).toBe(26);

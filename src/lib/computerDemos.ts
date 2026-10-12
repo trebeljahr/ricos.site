@@ -31,8 +31,8 @@ export const computerDemos = [
     slug: "instruction-encoder",
     title: "From instruction to bytes",
   },
-  // The program stepper's ladder: each demo is the one before it plus one part.
-  // The order matches STEPPER_LEVELS in computer/stepperLevels.ts.
+  // The toy CPU running programs. The stepper demos (computer/stepperDemos.ts)
+  // are independent: each puts one part of the same CPU in focus.
   {
     slug: "program-stepper",
     title: "From source code to CPU steps",
@@ -43,12 +43,21 @@ export const computerDemos = [
   },
   {
     slug: "stack-in-ram",
-    title: "Move the stack into RAM and recurse",
+    title: "Keep the stack in RAM and recurse",
   },
   {
     slug: "key-interrupts",
     title: "Interrupt a program with a key press",
   },
+  {
+    slug: "microcode-table",
+    title: "Edit the CPU's microcode table",
+  },
+  {
+    slug: "cpu-circuit",
+    title: "Run a program on the CPU circuit",
+  },
+  // Screens and the parts that draw on them.
   {
     slug: "memory-mapped-screen",
     title: "Draw on a screen by storing bytes",
@@ -62,6 +71,10 @@ export const computerDemos = [
     title: "Let a blitter draw while the CPU runs",
   },
   {
+    slug: "scanout",
+    title: "Read the screen out like a display",
+  },
+  {
     slug: "bank-window",
     title: "Reach a bigger screen through a window",
   },
@@ -72,18 +85,6 @@ export const computerDemos = [
   {
     slug: "big-blitter",
     title: "Fill and copy rectangles on the big screen",
-  },
-  {
-    slug: "microcode-table",
-    title: "Edit the CPU's microcode table",
-  },
-  {
-    slug: "cpu-circuit",
-    title: "Run a program on the CPU circuit",
-  },
-  {
-    slug: "scanout",
-    title: "Read the screen out like a display",
   },
   {
     slug: "big-screens",

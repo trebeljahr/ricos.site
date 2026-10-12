@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import Link from "next/link";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
@@ -14,21 +13,12 @@ import {
   withOpcodes,
 } from "src/lib/computer/microcodeTable";
 import {
-  compileProblem,
-  earlierPresets,
-  hasPart,
-  levelMicrocode,
-  levelProblem,
-  modelNumber,
+  PLAIN_PRESETS,
   type ProgramLanguage,
   partsUsed,
-  STEPPER_LEVELS,
-  type StepperLevel,
   type StepperPart,
   type StepperPreset,
-  stepperLevel,
-} from "src/lib/computer/stepperLevels";
-import { type ComputerDemoSlug, computerDemos } from "src/lib/computerDemos";
+} from "src/lib/computer/stepperDemos";
 import {
   BIG_SCREEN,
   byteBits,
@@ -103,18 +93,17 @@ const hasHandler = (program: CompiledProgram | null) =>
 
 type Props = {
   /**
-   * The machine to show, named by the part its level adds. Each level is the
-   * one before it plus that part; the default is the base CPU.
+   * The part of the CPU this demo is about. Its readout always shows; the
+   * readouts of other parts show only when the loaded program uses them.
+   * Without a focus, the stepper is the plain CPU.
    */
-  level?: StepperPart;
-  /** Link the demo that adds a part the program needs. Only /computer has those pages. */
-  demoLinks?: boolean;
+  focus?: StepperPart;
+  /** The preset programs. The first one is loaded at the start. */
+  presets?: readonly StepperPreset[];
 };
 
-export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props) {
-  const level = stepperLevel(part);
-  const has = (other: StepperPart) => hasPart(level, other);
-  const start = level.presets[0];
+export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
+  const start = presets[0];
   const [source, setSource] = useState<string>(start.source);
   const [loaded, setLoaded] = useState<string>(start.source);
   const [step, setStep] = useState(0);
@@ -122,23 +111,20 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
   const [keys, setKeys] = useState<KeySchedule>({});
   const [language, setLanguage] = useState<ProgramLanguage>(start.language ?? "source");
   const [tables, setTables] = useState<Tables>(DEFAULT_TABLES);
-  const [editing, setEditing] = useState(part === "microcode");
+  /** The microcode editor, assembly and edited tables belong to the demo about the table. */
+  const microcode = focus === "microcode";
+  const [editing, setEditing] = useState(microcode);
   const inRam = stack === "ram";
-  // The level's CPU: the table without the opcodes of parts it does not have yet.
-  const table = useMemo(() => levelMicrocode(tables[stack], level), [tables, stack, level]);
+  const table = tables[stack];
   const isa = microcodeIsa(table);
   const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   useEffect(() => {
-    // Only the machine with the microcode editor runs edited tables.
-    if (part === "microcode") setTables(loadTables());
-  }, [part]);
-  const compilation = useMemo((): Compilation => {
-    const result =
-      language === "assembly" ? assembleSource(loaded, table) : compileSource(loaded, stack);
-    if (result.error !== null) return { program: null, ...problemOf(result.error, level) };
-    const missing = result.program && levelProblem(result.program, level, microcodeIsa(table));
-    return missing ? { program: null, error: missing.message, demo: missing.demo } : result;
-  }, [loaded, stack, language, table, level]);
+    if (microcode) setTables(loadTables());
+  }, [microcode]);
+  const compilation = useMemo(
+    () => (language === "assembly" ? assembleSource(loaded, table) : compileSource(loaded, stack)),
+    [loaded, stack, language, table],
+  );
   const problems: MicrocodeProblem[] = useMemo(
     () => [
       ...validateMicrocode(table),
@@ -166,21 +152,19 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
     () => (compilation.program ? partsUsed(compilation.program, table.opcodes) : null),
     [compilation.program, table],
   );
-  /** A part's readout shows on the level that adds the part, and later when the program uses it. */
-  const shows = (other: StepperPart) => other === part || Boolean(used?.has(other));
+  /** A part's readout shows on the demo about that part, and when the program uses the part. */
+  const shows = (part: StepperPart) => part === focus || Boolean(used?.has(part));
   // An interrupt pushes PC, so the key port brings the stack readout with it.
   const showStack = inRam || shows("calls") || shows("ramStack") || shows("interrupts");
-  const explainStack = part === "calls" || part === "ramStack";
+  const explainStack = focus === "calls" || focus === "ramStack";
   // The pixel port and the blitter draw on the screen; the port and the big blitter on the big one.
   const showScreen = shows("screen") || shows("pixelPort") || shows("blitter");
   const showBigScreen = shows("bankWindow") || shows("vramPort") || shows("bigBlitter");
-  // The CPU switch belongs to the machine that adds the second CPU, and to the
-  // microcode table, which is one per CPU. The machines between show it once a
-  // program runs on the stack-in-RAM CPU or fails because it needs that CPU.
+  // The CPU switch belongs to the stack-in-RAM demo and to the microcode table,
+  // which is one per CPU. Elsewhere it shows once a program is on the
+  // stack-in-RAM CPU, or the compiler says it needs that CPU.
   const showCpuChoice =
-    part === "ramStack" ||
-    part === "microcode" ||
-    (has("ramStack") && (inRam || /stack-in-RAM CPU/.test(compilation.error ?? "")));
+    focus === "ramStack" || microcode || inRam || /stack-in-RAM CPU/.test(compilation.error ?? "");
   const setBitWeights = state
     ? BIT_WEIGHTS.filter((weight) => (state.accumulator & weight) !== 0)
     : [];
@@ -278,10 +262,7 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
       <div className={panel.nameplate}>
         <div>
           <strong>PROGRAM EXECUTION UNIT</strong>
-          <span className={styles.model}>
-            8-BIT · MODEL {String(modelNumber(level)).padStart(2, "0")}
-            {part !== "cpu" && ` · + ${level.name}`}
-          </span>
+          <span className={styles.model}>8-BIT · MODEL 01</span>
         </div>
         <button
           type="button"
@@ -300,8 +281,7 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
           onSourceChange={setSource}
           onCompile={compile}
           onPreset={preset}
-          presets={level.presets}
-          earlier={earlierPresets(level)}
+          presets={presets}
           stack={stack}
           onStackChange={showCpuChoice ? chooseStack : undefined}
           compilation={compilation}
@@ -309,9 +289,8 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
           activeAddress={active?.address ?? null}
           isa={isa}
           language={language}
-          onLanguageChange={has("microcode") ? chooseLanguage : undefined}
-          onExercise={has("microcode") ? exercise : undefined}
-          demoLinks={demoLinks}
+          onLanguageChange={microcode ? chooseLanguage : undefined}
+          onExercise={microcode ? exercise : undefined}
         />
 
         <div className={styles.outputSide}>
@@ -498,10 +477,8 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
                       <small>
                         CALL pushes the code address to come back to; RET pops it. The stack holds
                         only return addresses. Variables, parameters and loop counters each get one
-                        fixed RAM address, which is why a function cannot call itself.{" "}
-                        {has("ramStack")
-                          ? "Switch the CPU to STACK IN RAM to compare."
-                          : "The next model keeps its stack in RAM, which removes that limit."}
+                        fixed RAM address, which is why a function cannot call itself.
+                        {focus === "ramStack" && " Switch the CPU to STACK IN RAM to compare."}
                       </small>
                     )}
                   </div>
@@ -650,7 +627,7 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
           )}
         </div>
       </div>
-      {has("microcode") && (
+      {microcode && (
         <>
           <div className={styles.controls}>
             <button
@@ -682,27 +659,7 @@ export function ProgramStepper({ level: part = "cpu", demoLinks = false }: Props
   );
 }
 
-type Compilation = {
-  program: CompiledProgram | null;
-  error: string | null;
-  /** The demo whose machine can run the program, when the error is a part this one lacks. */
-  demo?: ComputerDemoSlug | null;
-};
-
-/** A compile error for one level: the message, and the demo that has the missing part. */
-const problemOf = (message: string, level: StepperLevel) => {
-  const { message: error, demo } = compileProblem(message, level);
-  return { error, demo };
-};
-
-/** "Model 05, “Draw on a screen by storing bytes”, adds it.", as a link when the demo pages exist. */
-function DemoPointer({ slug, link }: { slug: ComputerDemoSlug; link: boolean }) {
-  const level = STEPPER_LEVELS.find((item) => item.slug === slug);
-  const title = computerDemos.find((demo) => demo.slug === slug)?.title;
-  if (!level || !title) return null;
-  const name = `Model ${String(modelNumber(level)).padStart(2, "0")}, “${title}”,`;
-  return <>{link ? <Link href={`/computer/${slug}`}>{name}</Link> : name} adds it.</>;
-}
+type Compilation = { program: CompiledProgram | null; error: string | null };
 
 /** Assembles a program for a microcode table, turning an assembler error into a message. */
 export function assembleSource(source: string, table: MicrocodeTable): Compilation {
@@ -731,8 +688,6 @@ type ProgramSourceProps = {
   onPreset: (preset: StepperPreset) => void;
   /** The preset buttons, in order. */
   presets: readonly StepperPreset[];
-  /** More presets behind a fold: the programs of the machines before this one. */
-  earlier?: readonly StepperPreset[];
   stack: StackModel;
   /** With this, the CPU can be switched between the two stack models. */
   onStackChange?: (stack: StackModel) => void;
@@ -748,8 +703,6 @@ type ProgramSourceProps = {
   onLanguageChange?: (language: ProgramLanguage) => void;
   /** Loads the AND + JZ microcode exercise. */
   onExercise?: () => void;
-  /** Link the demo a compile error names. Only /computer has those pages. */
-  demoLinks?: boolean;
 };
 
 /** The source editor, preset buttons and instruction tape: write, compile, and see which line runs. */
@@ -759,7 +712,6 @@ export function ProgramSource({
   onCompile,
   onPreset,
   presets,
-  earlier = [],
   stack,
   onStackChange,
   compilation,
@@ -769,7 +721,6 @@ export function ProgramSource({
   language = "source",
   onLanguageChange,
   onExercise,
-  demoLinks = false,
 }: ProgramSourceProps) {
   const assembly = language === "assembly";
   const [hoveredLine, setHoveredLine] = useState<number | null>(null);
@@ -924,12 +875,6 @@ export function ProgramSource({
         )}
         {presets.map(presetButton)}
       </div>
-      {earlier.length > 0 && (
-        <details className={styles.presetFold}>
-          <summary>PROGRAMS FROM EARLIER MODELS</summary>
-          <div className={styles.controls}>{earlier.map(presetButton)}</div>
-        </details>
-      )}
       {changed && (
         <p id="program-syntax" className={styles.hint}>
           <strong>EDIT NOT COMPILED</strong>
@@ -938,12 +883,6 @@ export function ProgramSource({
       {compilation.error && (
         <p role="alert" className={styles.error}>
           {compilation.error}
-          {compilation.demo && (
-            <>
-              {" "}
-              <DemoPointer slug={compilation.demo} link={demoLinks} />
-            </>
-          )}
         </p>
       )}
 

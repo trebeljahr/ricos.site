@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function KeyInterruptsPage() {
-  return <StepperLevelPage level="interrupts" />;
+  return <StepperDemoPage slug="key-interrupts" />;
 }
 
 export async function getStaticProps() {

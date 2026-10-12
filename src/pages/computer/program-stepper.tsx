@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function ProgramStepperPage() {
-  return <StepperLevelPage level="cpu" />;
+  return <StepperDemoPage slug="program-stepper" />;
 }
 
 export async function getStaticProps() {

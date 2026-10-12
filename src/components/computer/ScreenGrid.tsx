@@ -21,7 +21,8 @@ const pixelSize = (width: number) => Math.max(2, Math.floor(128 / width) - 1);
  * a row's first byte is the left column. On the 8×8 screen that is one byte
  * per row. `written` rings the pixel (or, with x null, the whole row) the
  * last write changed. `beam` marks where a monitor's beam paints next; null
- * when it is in vertical blank.
+ * when it is in vertical blank. `pixel` is one LED's side in px, for a grid
+ * that is the subject of its demo; without it the grid picks a compact size.
  */
 export function ScreenGrid({
   rows,
@@ -30,6 +31,7 @@ export function ScreenGrid({
   written = null,
   beam,
   size = SCREEN_8X8,
+  pixel,
 }: {
   rows: readonly number[];
   label: string;
@@ -37,6 +39,7 @@ export function ScreenGrid({
   written?: { x: number | null; y: number } | null;
   beam?: { x: number; y: number } | null;
   size?: ScreenSize;
+  pixel?: number;
 }) {
   const where =
     beam === undefined ? "" : beam ? `, beam at ${beam.x}, ${beam.y}` : ", beam in vertical blank";
@@ -54,11 +57,11 @@ export function ScreenGrid({
       role="img"
       aria-label={`${name}${where}`}
       style={
-        small
+        small && pixel === undefined
           ? undefined
           : ({
               "--screen-columns": size.width,
-              "--pixel-size": `${pixelSize(size.width)}px`,
+              "--pixel-size": `${pixel ?? pixelSize(size.width)}px`,
             } as React.CSSProperties)
       }
     >

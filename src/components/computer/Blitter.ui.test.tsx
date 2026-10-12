@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { LogicBuilder } from "./LogicBuilder";
 import { ProgramStepper } from "./ProgramStepper";
+
+const { BLIT } = SAMPLE_PROGRAMS;
 
 beforeEach(() => {
   localStorage.clear();
@@ -26,7 +29,7 @@ describe("the blitter in the UI", () => {
   });
 
   it("draws the BLIT sprite row by row while the stepper's CPU runs on", () => {
-    render(<ProgramStepper level="blitter" />);
+    render(<ProgramStepper focus="blitter" presets={[{ label: "BLIT", source: BLIT }]} />);
     fireEvent.click(button("BLIT"));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     const goTo = (step: number) => fireEvent.change(slider, { target: { value: String(step) } });

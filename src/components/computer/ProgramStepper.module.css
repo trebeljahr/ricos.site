@@ -18,12 +18,11 @@
 .primaryButton:hover { background: linear-gradient(#e2f4cd, #b4d399); }
 .button:active, .primaryButton:active { transform: translateY(3px); box-shadow: inset 0 2px 4px #566352; }
 .button:disabled, .primaryButton:disabled { opacity: .42; cursor: not-allowed; transform: none; box-shadow: inset 0 1px #f4f4e8, 0 2px 1px #485649; }
-.button:focus-visible, .primaryButton:focus-visible, .sourceFrame:focus-within, .timeline:focus-visible, .isaDetails summary:focus-visible, .presetFold summary:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 3px; }
+.button:focus-visible, .primaryButton:focus-visible, .sourceFrame:focus-within, .timeline:focus-visible, .isaDetails summary:focus-visible { outline: 3px solid #e6ffb9; outline-offset: 3px; }
 .hint { margin: 10px 0 0; color: #415446; font-size: 10px; font-weight: 500; line-height: 1.45; letter-spacing: 0; }
 .hint strong { color: #6b392e; }
 .hint b { color: #203d28; }
 .error { margin: 12px 0 0; padding: 9px; border: 1px solid #8a4c3c; background: #dfb8a4; color: #602d22; font-size: 11px; line-height: 1.45; }
-.error a { color: inherit; font-weight: 700; text-decoration: underline; }
 .instructions { margin-top: 24px; }
 .columnLabels, .instruction { display: grid; grid-template-columns: 30px 54px 140px minmax(0, 1fr) 26px; gap: 6px; align-items: center; }
 .columnLabels { padding: 12px 8px 5px; color: #435648; font-size: 9px; }
@@ -41,10 +40,8 @@
 .activeInstruction.mappedInstruction strong, .activeInstruction.mappedInstruction .binary, .activeInstruction.mappedInstruction > span:last-child { color: #173622; }
 .mnemonic b { margin-right: 2px; }
 .mnemonic { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.isaDetails, .presetFold { margin-top: 12px; color: #334d37; font-size: 10px; }
-.isaDetails summary, .presetFold summary { width: fit-content; cursor: pointer; }
-/* The fold's buttons sit closer to their summary than the main preset row to the editor. */
-.presetFold .controls { margin-top: 8px; }
+.isaDetails { margin-top: 12px; color: #334d37; font-size: 10px; }
+.isaDetails summary { width: fit-content; cursor: pointer; }
 .isaList { margin-top: 8px; padding: 4px 10px; border: 1px solid #617462; background: #95a491; }
 .isaList > div { display: grid; grid-template-columns: 35px 48px 90px 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid #657966; }
 .isaList > div:last-child { border-bottom: 0; }

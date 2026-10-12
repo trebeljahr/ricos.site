@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function CallStackPage() {
-  return <StepperLevelPage level="calls" />;
+  return <StepperDemoPage slug="call-stack" />;
 }
 
 export async function getStaticProps() {

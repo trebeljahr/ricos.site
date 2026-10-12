@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function StackInRamPage() {
-  return <StepperLevelPage level="ramStack" />;
+  return <StepperDemoPage slug="stack-in-ram" />;
 }
 
 export async function getStaticProps() {

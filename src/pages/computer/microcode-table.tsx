@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function MicrocodeTablePage() {
-  return <StepperLevelPage level="microcode" />;
+  return <StepperDemoPage slug="microcode-table" />;
 }
 
 export async function getStaticProps() {

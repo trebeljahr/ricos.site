@@ -13,7 +13,7 @@ import {
 import { foldBlockState, screenRows } from "src/lib/computer/datapathBlocks";
 import type { Circuit, Node, Snapshot, Wire } from "src/lib/computer/logic";
 import { readProbes } from "src/lib/computer/probes";
-import type { StepperPreset } from "src/lib/computer/stepperLevels";
+import type { StepperPreset } from "src/lib/computer/stepperDemos";
 import {
   BIG_SCREEN,
   type BlitterState,

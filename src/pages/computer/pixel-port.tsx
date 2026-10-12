@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function PixelPortPage() {
-  return <StepperLevelPage level="pixelPort" />;
+  return <StepperDemoPage slug="pixel-port" />;
 }
 
 export async function getStaticProps() {

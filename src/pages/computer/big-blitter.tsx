@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function BigBlitterPage() {
-  return <StepperLevelPage level="bigBlitter" />;
+  return <StepperDemoPage slug="big-blitter" />;
 }
 
 export async function getStaticProps() {

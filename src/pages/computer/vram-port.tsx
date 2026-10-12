@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function VramPortPage() {
-  return <StepperLevelPage level="vramPort" />;
+  return <StepperDemoPage slug="vram-port" />;
 }
 
 export async function getStaticProps() {

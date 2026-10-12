@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { blankFrame, paint, SCREEN_SIZES } from "../../lib/computer/video";
+import { SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { LogicBuilder } from "./LogicBuilder";
 import { ProgramStepper } from "./ProgramStepper";
 import { ScreenGrid } from "./ScreenGrid";
@@ -57,7 +58,12 @@ describe("sized screen grids", () => {
   }, 20000);
 
   it("shows the BANKS program filling the big screen tile by tile", () => {
-    render(<ProgramStepper level="bankWindow" />);
+    render(
+      <ProgramStepper
+        focus="bankWindow"
+        presets={[{ label: "BANKS", source: SAMPLE_PROGRAMS.BANKS }]}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "BANKS" }));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     const big = () =>
@@ -70,7 +76,12 @@ describe("sized screen grids", () => {
   }, 20000);
 
   it("shows the PORT program's ADDR and STEP as it draws", () => {
-    render(<ProgramStepper level="vramPort" />);
+    render(
+      <ProgramStepper
+        focus="vramPort"
+        presets={[{ label: "PORT", source: SAMPLE_PROGRAMS.PORT }]}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "PORT" }));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     fireEvent.change(slider, { target: { value: slider.max } });
@@ -83,7 +94,12 @@ describe("sized screen grids", () => {
   }, 20000);
 
   it("shows the STAMP program's big blitter at work and its four boxes at the end", () => {
-    render(<ProgramStepper level="bigBlitter" />);
+    render(
+      <ProgramStepper
+        focus="bigBlitter"
+        presets={[{ label: "STAMP", source: SAMPLE_PROGRAMS.STAMP }]}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "STAMP" }));
     const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
     const status = () => screen.getByLabelText("Big blitter").textContent ?? "";

@@ -1,7 +1,7 @@
-import { StepperLevelPage } from "@components/computer/StepperLevelPage";
+import { StepperDemoPage } from "@components/computer/StepperDemoPage";
 
 export default function MemoryMappedScreenPage() {
-  return <StepperLevelPage level="screen" />;
+  return <StepperDemoPage slug="memory-mapped-screen" />;
 }
 
 export async function getStaticProps() {

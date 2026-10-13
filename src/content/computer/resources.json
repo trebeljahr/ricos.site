@@ -1,0 +1,6088 @@
+{
+  "resources": {
+    "0-30000000000000004-com": {
+      "title": "0.30000000000000004.com",
+      "url": "https://0.30000000000000004.com/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "aosabook-org-en-v1-llvm": {
+      "title": "LLVM (The Architecture of Open Source Applications)",
+      "url": "https://aosabook.org/en/v1/llvm.html",
+      "kind": "book",
+      "origin": "added",
+      "by": "Chris Lattner"
+    },
+    "arstechnica-com-information-technology-2016-05-how-the-i": {
+      "title": "How the Internet works: Submarine fiber, brains in jars, and coaxial cables",
+      "url": "https://arstechnica.com/information-technology/2016/05/how-the-internet-works-submarine-cables-data-centres-last-mile/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Ars Technica"
+    },
+    "beej-us-guide-bgnet": {
+      "title": "Beej's Guide to Network Programming",
+      "url": "https://beej.us/guide/bgnet/",
+      "kind": "book",
+      "origin": "added",
+      "by": "Brian Hall"
+    },
+    "ben-eater-8bit": {
+      "title": "Build an 8-bit computer",
+      "url": "https://eater.net/8bit",
+      "kind": "course",
+      "origin": "bookmark",
+      "by": "Ben Eater"
+    },
+    "bottosson-github-io-posts-oklab": {
+      "title": "A perceptual color space for image processing (Oklab)",
+      "url": "https://bottosson.github.io/posts/oklab/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Björn Ottosson"
+    },
+    "ciechanow-ski-color-spaces": {
+      "title": "Color Spaces",
+      "url": "https://ciechanow.ski/color-spaces/",
+      "kind": "interactive",
+      "origin": "added",
+      "by": "Bartosz Ciechanowski"
+    },
+    "ciechanow-ski-exposing-floating-point": {
+      "title": "Exposing Floating Point",
+      "url": "https://ciechanow.ski/exposing-floating-point/",
+      "kind": "interactive",
+      "origin": "added",
+      "by": "Bartosz Ciechanowski"
+    },
+    "cl-cam-ac-uk-mgk25-ucs-utf-8-history-txt": {
+      "title": "Rob Pike's account of the evening UTF-8 was designed",
+      "url": "https://www.cl.cam.ac.uk/~mgk25/ucs/utf-8-history.txt",
+      "kind": "article",
+      "origin": "added"
+    },
+    "codecapsule-com-2014-02-12-coding-for-ssds-part-1-introd": {
+      "title": "Coding for SSDs, part 1",
+      "url": "https://codecapsule.com/2014/02/12/coding-for-ssds-part-1-introduction-and-table-of-contents/",
+      "kind": "article",
+      "origin": "added"
+    },
+    "compilers-iecc-com-crenshaw": {
+      "title": "Let's Build a Compiler",
+      "url": "https://compilers.iecc.com/crenshaw/",
+      "kind": "book",
+      "origin": "compilers-folder",
+      "by": "Jack Crenshaw"
+    },
+    "computers-theputhoffs-com-adder": {
+      "title": "How Computers Actually Work: Adding Two Numbers",
+      "url": "https://computers.theputhoffs.com/adder.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "computers-theputhoffs-com-binary": {
+      "title": "How Computers Actually Work: Binary Numbers",
+      "url": "https://computers.theputhoffs.com/binary.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "computers-theputhoffs-com-bits-to-pixels": {
+      "title": "How Computers Actually Work: From Bits to Pixels",
+      "url": "https://computers.theputhoffs.com/bits-to-pixels.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "computers-theputhoffs-com-cpu-vs-gpu": {
+      "title": "How Computers Actually Work: CPU vs. GPU",
+      "url": "https://computers.theputhoffs.com/cpu-vs-gpu.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "computers-theputhoffs-com-divide": {
+      "title": "How Computers Actually Work: Division",
+      "url": "https://computers.theputhoffs.com/divide.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "computers-theputhoffs-com-multiply": {
+      "title": "How Computers Actually Work: Multiplication",
+      "url": "https://computers.theputhoffs.com/multiply.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "cpu-land": {
+      "title": "Putting the \"You\" in CPU",
+      "url": "https://cpu.land/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Lexi Mattick and Hack Club"
+    },
+    "crafting-interpreters": {
+      "title": "Crafting Interpreters",
+      "url": "https://craftinginterpreters.com/",
+      "kind": "book",
+      "origin": "compilers-folder",
+      "by": "Robert Nystrom"
+    },
+    "cs-n10u-jp-cpu": {
+      "title": "nand2web: 4-bit CPU",
+      "url": "https://cs.n10u.jp/cpu",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-docs-io": {
+      "title": "nand2web docs: I/O",
+      "url": "https://cs.n10u.jp/docs/io",
+      "kind": "interactive",
+      "origin": "tab",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-lang": {
+      "title": "nand2web: Compiler Pipeline",
+      "url": "https://cs.n10u.jp/lang",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-logic-adder": {
+      "title": "nand2web: From gates to arithmetic",
+      "url": "https://cs.n10u.jp/logic/adder",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-logic-alu": {
+      "title": "nand2web: The ALU",
+      "url": "https://cs.n10u.jp/logic/alu",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-logic-dff": {
+      "title": "nand2web: The clock edge",
+      "url": "https://cs.n10u.jp/logic/dff",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-logic-latch": {
+      "title": "nand2web: Memory from feedback",
+      "url": "https://cs.n10u.jp/logic/latch",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-logic-not-and-or": {
+      "title": "nand2web: NOT, AND, OR from NAND",
+      "url": "https://cs.n10u.jp/logic/not-and-or",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cs-n10u-jp-logic-xor": {
+      "title": "nand2web: XOR",
+      "url": "https://cs.n10u.jp/logic/xor",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "cstack-github-io-db-tutorial": {
+      "title": "Let's Build a Simple Database",
+      "url": "https://cstack.github.io/db_tutorial/",
+      "kind": "course",
+      "origin": "added",
+      "by": "cstack"
+    },
+    "danluu-com-branch-prediction": {
+      "title": "Branch prediction",
+      "url": "https://danluu.com/branch-prediction/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Dan Luu"
+    },
+    "djhworld-cpu": {
+      "title": "I don't know how CPUs work so I simulated one in code",
+      "url": "https://djharper.dev/post/2019/05/21/i-dont-know-how-cpus-work-so-i-simulated-one-in-code/",
+      "kind": "article",
+      "origin": "bookmark",
+      "by": "djhworld"
+    },
+    "dma-fundamentals-pdf": {
+      "title": "DMAFundamentals.pdf",
+      "kind": "paper",
+      "origin": "still-to-read"
+    },
+    "docs-kernel-org-driver-api-usb-dma": {
+      "title": "USB DMA (Linux kernel documentation)",
+      "url": "https://docs.kernel.org/driver-api/usb/dma.html",
+      "kind": "reference",
+      "origin": "still-to-read"
+    },
+    "docs-oracle-com-cd-e19957-01-806-3568-ncg-goldberg": {
+      "title": "What Every Computer Scientist Should Know About Floating-Point Arithmetic",
+      "url": "https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html",
+      "kind": "paper",
+      "origin": "added",
+      "by": "David Goldberg"
+    },
+    "dragon-book": {
+      "title": "Compilers: Principles, Techniques, and Tools (the Dragon Book)",
+      "kind": "book",
+      "by": "Aho, Lam, Sethi and Ullman",
+      "origin": "bookmark"
+    },
+    "en-algorithmica-org-hpc-cpu-cache": {
+      "title": "Algorithmica: CPU Cache",
+      "url": "https://en.algorithmica.org/hpc/cpu-cache/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Sergey Slotin"
+    },
+    "en-algorithmica-org-hpc-pipelining": {
+      "title": "Algorithmica: Instruction-Level Parallelism",
+      "url": "https://en.algorithmica.org/hpc/pipelining/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Sergey Slotin"
+    },
+    "en-algorithmica-org-hpc-pipelining-branching": {
+      "title": "Algorithmica: The Cost of Branching",
+      "url": "https://en.algorithmica.org/hpc/pipelining/branching/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Sergey Slotin"
+    },
+    "en-algorithmica-org-hpc-simd": {
+      "title": "Algorithmica: SIMD Parallelism",
+      "url": "https://en.algorithmica.org/hpc/simd/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Sergey Slotin"
+    },
+    "engineering-a-compiler": {
+      "title": "Engineering a Compiler",
+      "url": "https://dl.acm.org/doi/pdf/10.5555/2737838",
+      "kind": "book",
+      "origin": "bookmark",
+      "by": "Cooper and Torczon"
+    },
+    "explained-from-first-principles-com-internet": {
+      "title": "The Internet explained from first principles",
+      "url": "https://explained-from-first-principles.com/internet/",
+      "kind": "article",
+      "origin": "added"
+    },
+    "fabiensanglard-net-floating-point-visually-explained": {
+      "title": "Floating Point Visually Explained",
+      "url": "https://fabiensanglard.net/floating_point_visually_explained/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Fabien Sanglard"
+    },
+    "fgiesen-wordpress-com-2016-08-07-why-do-cpus-have-multip": {
+      "title": "Why do CPUs have multiple cache levels?",
+      "url": "https://fgiesen.wordpress.com/2016/08/07/why-do-cpus-have-multiple-cache-levels/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Fabian Giesen"
+    },
+    "float-exposed": {
+      "title": "float.exposed",
+      "url": "https://float.exposed/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "gcc-gimple-and-rtl": {
+      "title": "GIMPLE and RTL (GCC internals)",
+      "kind": "reference",
+      "origin": "compilers-folder"
+    },
+    "geeksforgeeks-org-multiplexers-in-digital-logic": {
+      "title": "Multiplexers (GeeksforGeeks)",
+      "url": "https://www.geeksforgeeks.org/multiplexers-in-digital-logic/",
+      "kind": "article",
+      "origin": "tab"
+    },
+    "github-com-aalhour-awesome-compilers": {
+      "title": "aalhour/awesome-compilers",
+      "url": "https://github.com/aalhour/awesome-compilers",
+      "kind": "code",
+      "origin": "bookmark"
+    },
+    "github-com-jdah-jdh-8": {
+      "title": "jdah/jdh-8",
+      "url": "https://github.com/jdah/jdh-8",
+      "kind": "code",
+      "origin": "tab"
+    },
+    "github-com-jdvillal-corestats": {
+      "title": "jdvillal/corestats",
+      "url": "https://github.com/jdvillal/corestats",
+      "kind": "code",
+      "origin": "bookmark"
+    },
+    "github-com-leandromoreira-digital-video-introduction": {
+      "title": "leandromoreira/digital_video_introduction",
+      "url": "https://github.com/leandromoreira/digital_video_introduction",
+      "kind": "code",
+      "origin": "added"
+    },
+    "github-com-ssloy-tinyrenderer-wiki": {
+      "title": "tinyrenderer",
+      "url": "https://github.com/ssloy/tinyrenderer/wiki",
+      "kind": "code",
+      "origin": "added"
+    },
+    "godbolt-org": {
+      "title": "Compiler Explorer",
+      "url": "https://godbolt.org/",
+      "kind": "tool",
+      "origin": "added"
+    },
+    "hackerfab-ece-cmu-edu": {
+      "title": "The Hacker Fab at Carnegie Mellon University",
+      "url": "https://hackerfab.ece.cmu.edu/",
+      "kind": "article",
+      "origin": "bookmark"
+    },
+    "hartley-nyquist-kolmogorov": {
+      "title": "Hartley, Transmission of Information (1928); Nyquist, Certain Factors Affecting Telegraph Speed (1924); Kolmogorov, Three approaches to the quantitative definition of information (1965)",
+      "kind": "paper",
+      "origin": "tab"
+    },
+    "hcaw": {
+      "title": "How Computers Actually Work",
+      "url": "https://computers.theputhoffs.com/",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "hcaw-subtract": {
+      "title": "How Computers Actually Work: Subtraction",
+      "url": "https://computers.theputhoffs.com/subtract.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "hcaw-transistors": {
+      "title": "How Computers Actually Work: The Switch",
+      "url": "https://computers.theputhoffs.com/transistors.html",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "Andrew Puthoff"
+    },
+    "howdns-works": {
+      "title": "How DNS Works (comic)",
+      "url": "https://howdns.works/",
+      "kind": "article",
+      "origin": "added"
+    },
+    "hpbn": {
+      "title": "High Performance Browser Networking",
+      "url": "https://hpbn.co/",
+      "kind": "book",
+      "origin": "added",
+      "by": "Ilya Grigorik"
+    },
+    "implement-dns-wizardzines-com": {
+      "title": "Implement DNS in a weekend",
+      "url": "https://implement-dns.wizardzines.com/",
+      "kind": "course",
+      "origin": "added",
+      "by": "Julia Evans"
+    },
+    "inference-org-uk-mackay-itila-book": {
+      "title": "Information Theory, Inference, and Learning Algorithms (free book)",
+      "url": "https://www.inference.org.uk/mackay/itila/book.html",
+      "kind": "book",
+      "origin": "added",
+      "by": "David MacKay"
+    },
+    "joelonsoftware-com-2003-10-08-the-absolute-minimum-every": {
+      "title": "The Absolute Minimum Every Software Developer Must Know About Unicode and Character Sets",
+      "url": "https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Joel Spolsky"
+    },
+    "khanacademy-org-computing-computer-science-informationth": {
+      "title": "Journey into information theory",
+      "url": "https://www.khanacademy.org/computing/computer-science/informationtheory",
+      "kind": "course",
+      "origin": "added",
+      "by": "Khan Academy"
+    },
+    "lwn-net-articles-631631": {
+      "title": "How programs get run, ELF binaries",
+      "url": "https://lwn.net/Articles/631631/",
+      "kind": "article",
+      "origin": "added",
+      "by": "LWN"
+    },
+    "nand2tetris-book": {
+      "title": "The Elements of Computing Systems",
+      "url": "https://www.nand2tetris.org/book",
+      "kind": "book",
+      "origin": "tab",
+      "by": "Nisan and Schocken"
+    },
+    "nand2tetris-course": {
+      "title": "Nand to Tetris: the projects",
+      "url": "https://www.nand2tetris.org/course",
+      "kind": "course",
+      "origin": "bookmark",
+      "by": "Nisan and Schocken"
+    },
+    "nand2web-arch": {
+      "title": "nand2web: Computer Architecture (pipelining, cache hierarchy)",
+      "url": "https://cs.n10u.jp/arch",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "nand2web-logic-nand": {
+      "title": "nand2web: NAND",
+      "url": "https://cs.n10u.jp/logic/nand",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "nand2web-net": {
+      "title": "nand2web: Networking (TCP and encapsulation, DNS resolution)",
+      "url": "https://cs.n10u.jp/net",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "nand2web-os": {
+      "title": "nand2web: Operating Systems (scheduling, virtual memory)",
+      "url": "https://cs.n10u.jp/os",
+      "kind": "interactive",
+      "origin": "bookmark",
+      "by": "nand2web"
+    },
+    "nandgame": {
+      "title": "Nandgame",
+      "url": "https://nandgame.com/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "os-phil-opp-com": {
+      "title": "Writing an OS in Rust",
+      "url": "https://os.phil-opp.com/",
+      "kind": "course",
+      "origin": "added",
+      "by": "Philipp Oppermann"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-cpu-intro": {
+      "title": "OSTEP: The Process",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-cpu-mechanisms": {
+      "title": "OSTEP: Limited Direct Execution",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-mechanisms.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-cpu-sched": {
+      "title": "OSTEP: Scheduling, Introduction",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-file-devices": {
+      "title": "OSTEP: I/O Devices",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/file-devices.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-file-disks": {
+      "title": "OSTEP: Hard Disk Drives",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/file-disks.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-file-implementation": {
+      "title": "OSTEP: File System Implementation",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-file-intro": {
+      "title": "OSTEP: Files and Directories",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/file-intro.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-file-ssd": {
+      "title": "OSTEP: Flash-based SSDs",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-intro": {
+      "title": "OSTEP: Introduction to Operating Systems",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/intro.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "pages-cs-wisc-edu-remzi-ostep-vm-paging": {
+      "title": "OSTEP: Paging, Introduction",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Remzi and Andrea Arpaci-Dusseau"
+    },
+    "parametric-press-issue-01-unraveling-the-jpeg": {
+      "title": "Unraveling the JPEG (interactive)",
+      "url": "https://parametric.press/issue-01/unraveling-the-jpeg/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "people-freebsd-org-lstewart-articles-cpumemory": {
+      "title": "What Every Programmer Should Know About Memory",
+      "url": "https://people.freebsd.org/~lstewart/articles/cpumemory.pdf",
+      "kind": "paper",
+      "origin": "added",
+      "by": "Ulrich Drepper"
+    },
+    "people-math-harvard-edu-ctm-home-text-others-shannon-ent": {
+      "title": "Shannon (1948): A Mathematical Theory of Communication",
+      "url": "https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf",
+      "kind": "paper",
+      "origin": "added"
+    },
+    "petzold-annotated-turing": {
+      "title": "The Annotated Turing",
+      "kind": "book",
+      "by": "Charles Petzold",
+      "origin": "added"
+    },
+    "petzold-code": {
+      "title": "Code: The Hidden Language of Computer Hardware and Software (2nd ed.)",
+      "url": "https://codehiddenlanguage.com/",
+      "kind": "book",
+      "origin": "added",
+      "by": "Charles Petzold"
+    },
+    "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele": {
+      "title": "Clock In Digital Electronics: Theory and Fundamentals",
+      "url": "https://resources.pcb.cadence.com/blog/2023-clock-in-digital-electronics-theory-and-fundamentals",
+      "kind": "article",
+      "origin": "bookmark",
+      "by": "Cadence"
+    },
+    "sam-zeloof-xyz": {
+      "title": "Sam Zeloof",
+      "url": "http://sam.zeloof.xyz/",
+      "kind": "article",
+      "origin": "added"
+    },
+    "scratchapixel-com": {
+      "title": "Scratchapixel",
+      "url": "https://www.scratchapixel.com/",
+      "kind": "course",
+      "origin": "added"
+    },
+    "sidbala-com-h-264-is-magic": {
+      "title": "H.264 is Magic",
+      "url": "https://sidbala.com/h-264-is-magic/",
+      "kind": "article",
+      "origin": "added",
+      "by": "Sid Bala"
+    },
+    "stackoverflow-com-questions-11227809-why-is-processing-a": {
+      "title": "Why is processing a sorted array faster than processing an unsorted array?",
+      "url": "https://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-processing-an-unsorted-array",
+      "kind": "article",
+      "origin": "added",
+      "by": "Stack Overflow"
+    },
+    "submarinecablemap-com": {
+      "title": "Submarine Cable Map",
+      "url": "https://www.submarinecablemap.com/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "thebookofshaders-com": {
+      "title": "The Book of Shaders",
+      "url": "https://thebookofshaders.com/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "tinytapeout-com": {
+      "title": "Tiny Tapeout",
+      "url": "https://tinytapeout.com/",
+      "kind": "tool",
+      "origin": "added"
+    },
+    "tls13-xargs-org": {
+      "title": "The Illustrated TLS 1.3 Connection",
+      "url": "https://tls13.xargs.org/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "utf8everywhere-org": {
+      "title": "UTF-8 Everywhere",
+      "url": "https://utf8everywhere.org/",
+      "kind": "article",
+      "origin": "added"
+    },
+    "visual6502-org-jssim": {
+      "title": "Visual 6502",
+      "url": "http://www.visual6502.org/JSSim/",
+      "kind": "interactive",
+      "origin": "added"
+    },
+    "webgpufundamentals-org": {
+      "title": "WebGPU Fundamentals",
+      "url": "https://webgpufundamentals.org/",
+      "kind": "course",
+      "origin": "added"
+    },
+    "what-are-multiplexers-video": {
+      "title": "What Are Multiplexers | How Multiplexers Work",
+      "kind": "video",
+      "origin": "tab"
+    },
+    "what-happens-when": {
+      "title": "What happens when…",
+      "url": "https://github.com/alex/what-happens-when",
+      "kind": "article",
+      "origin": "added",
+      "by": "Alex Gaynor and contributors"
+    },
+    "wiki-advanced-microcontroller-bus-architecture": {
+      "title": "Advanced Microcontroller Bus Architecture",
+      "url": "https://en.wikipedia.org/wiki/Advanced_Microcontroller_Bus_Architecture",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-analog-to-digital-converter": {
+      "title": "Analog-to-digital converter",
+      "url": "https://en.wikipedia.org/wiki/Analog-to-digital_converter",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-arbiter-electronics": {
+      "title": "Arbiter (electronics)",
+      "url": "https://en.wikipedia.org/wiki/Arbiter_%28electronics%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-binary-image": {
+      "title": "Binary image",
+      "url": "https://en.wikipedia.org/wiki/Binary_image",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-bios": {
+      "title": "BIOS",
+      "url": "https://en.wikipedia.org/wiki/BIOS",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-blitter": {
+      "title": "Blitter",
+      "url": "https://en.wikipedia.org/wiki/Blitter",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-block-elements": {
+      "title": "Block Elements",
+      "url": "https://en.wikipedia.org/wiki/Block_Elements",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-boolean-algebra": {
+      "title": "Boolean algebra",
+      "url": "https://en.wikipedia.org/wiki/Boolean_algebra",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-booting": {
+      "title": "Booting",
+      "url": "https://en.wikipedia.org/wiki/Booting",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-box-drawing": {
+      "title": "Box Drawing",
+      "url": "https://en.wikipedia.org/wiki/Box_Drawing",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-bus-computing": {
+      "title": "Bus (computing)",
+      "url": "https://en.wikipedia.org/wiki/Bus_%28computing%29",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-bus-contention": {
+      "title": "Bus contention",
+      "url": "https://en.wikipedia.org/wiki/Bus_contention",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-bus-mastering": {
+      "title": "Bus mastering",
+      "url": "https://en.wikipedia.org/wiki/Bus_mastering",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-cache-coherence": {
+      "title": "Cache coherence",
+      "url": "https://en.wikipedia.org/wiki/Cache_coherence",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-cell-processor": {
+      "title": "Cell (processor)",
+      "url": "https://en.wikipedia.org/wiki/Cell_%28processor%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-channel-digital-image": {
+      "title": "Channel (digital image)",
+      "url": "https://en.wikipedia.org/wiki/Channel_%28digital_image%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-channel-i-o": {
+      "title": "Channel I/O",
+      "url": "https://en.wikipedia.org/wiki/Channel_I/O",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-charlieplexing": {
+      "title": "Charlieplexing",
+      "url": "https://en.wikipedia.org/wiki/Charlieplexing",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-clock-signal": {
+      "title": "Clock signal",
+      "url": "https://en.wikipedia.org/wiki/Clock_signal",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-clock-skew": {
+      "title": "Clock skew",
+      "url": "https://en.wikipedia.org/wiki/Clock_skew",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-code-division-multiple-access": {
+      "title": "Code-division multiple access",
+      "url": "https://en.wikipedia.org/wiki/Code-division_multiple_access",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-code-page-437": {
+      "title": "Code page 437",
+      "url": "https://en.wikipedia.org/wiki/Code_page_437",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-coding-theory": {
+      "title": "Coding theory",
+      "url": "https://en.wikipedia.org/wiki/Coding_theory",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-color-depth": {
+      "title": "Color depth",
+      "url": "https://en.wikipedia.org/wiki/Color_depth",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-color-space": {
+      "title": "Color space",
+      "url": "https://en.wikipedia.org/wiki/Color_space",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-concepts-techniques-and-models-of-computer-programming": {
+      "title": "Concepts, Techniques, and Models of Computer Programming",
+      "url": "https://en.wikipedia.org/wiki/Concepts,_Techniques,_and_Models_of_Computer_Programming",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-cordic": {
+      "title": "CORDIC",
+      "url": "https://en.wikipedia.org/wiki/CORDIC",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-crystal-oscillator": {
+      "title": "Crystal oscillator",
+      "url": "https://en.wikipedia.org/wiki/Crystal_oscillator",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-digital-visual-interface": {
+      "title": "Digital Visual Interface",
+      "url": "https://en.wikipedia.org/wiki/Digital_Visual_Interface",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-direct-media-interface": {
+      "title": "Direct Media Interface",
+      "url": "https://en.wikipedia.org/wiki/Direct_Media_Interface",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-direct-memory-access": {
+      "title": "Direct memory access",
+      "url": "https://en.wikipedia.org/wiki/Direct_memory_access",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-disk-storage": {
+      "title": "Disk storage",
+      "url": "https://en.wikipedia.org/wiki/Disk_storage",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-display-device": {
+      "title": "Display device",
+      "url": "https://en.wikipedia.org/wiki/Display_device",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-dynamic-random-access-memory": {
+      "title": "Dynamic random-access memory",
+      "url": "https://en.wikipedia.org/wiki/Dynamic_random-access_memory",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-entropy-in-thermodynamics-and-information-theory": {
+      "title": "Entropy in thermodynamics and information theory",
+      "url": "https://en.wikipedia.org/wiki/Entropy_in_thermodynamics_and_information_theory",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-ffmpeg": {
+      "title": "FFmpeg",
+      "url": "https://en.wikipedia.org/wiki/FFmpeg",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-file-system": {
+      "title": "File system",
+      "url": "https://en.wikipedia.org/wiki/File_system",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-font-rasterization": {
+      "title": "Font rasterization",
+      "url": "https://en.wikipedia.org/wiki/Font_rasterization",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-framebuffer": {
+      "title": "Framebuffer",
+      "url": "https://en.wikipedia.org/wiki/Framebuffer",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-frequency-division-multiplexing": {
+      "title": "Frequency-division multiplexing",
+      "url": "https://en.wikipedia.org/wiki/Frequency-division_multiplexing",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-geometric-shapes-unicode-block": {
+      "title": "Geometric Shapes (Unicode block)",
+      "url": "https://en.wikipedia.org/wiki/Geometric_Shapes_%28Unicode_block%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-gif": {
+      "title": "GIF",
+      "url": "https://en.wikipedia.org/wiki/GIF",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-graphics-processing-unit": {
+      "title": "Graphics processing unit",
+      "url": "https://en.wikipedia.org/wiki/Graphics_processing_unit",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-grayscale": {
+      "title": "Grayscale",
+      "url": "https://en.wikipedia.org/wiki/Grayscale",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-hardware-acceleration": {
+      "title": "Hardware acceleration",
+      "url": "https://en.wikipedia.org/wiki/Hardware_acceleration",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-hardware-register": {
+      "title": "Hardware register",
+      "url": "https://en.wikipedia.org/wiki/Hardware_register",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-hartley-unit": {
+      "title": "Hartley (unit)",
+      "url": "https://en.wikipedia.org/wiki/Hartley_%28unit%29",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-hdmi": {
+      "title": "HDMI",
+      "url": "https://en.wikipedia.org/wiki/HDMI",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-holographic-principle": {
+      "title": "Holographic principle",
+      "url": "https://en.wikipedia.org/wiki/Holographic_principle",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-i-o-acceleration-technology": {
+      "title": "I/O Acceleration Technology",
+      "url": "https://en.wikipedia.org/wiki/I/O_Acceleration_Technology",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-ibm-monochrome-display-adapter": {
+      "title": "IBM Monochrome Display Adapter",
+      "url": "https://en.wikipedia.org/wiki/IBM_Monochrome_Display_Adapter",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-image-compression": {
+      "title": "Image compression",
+      "url": "https://en.wikipedia.org/wiki/Image_compression",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-image-file-format": {
+      "title": "Image file format",
+      "url": "https://en.wikipedia.org/wiki/Image_file_format",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-information-content": {
+      "title": "Information content",
+      "url": "https://en.wikipedia.org/wiki/Information_content",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-information-theory": {
+      "title": "Information theory",
+      "url": "https://en.wikipedia.org/wiki/Information_theory",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-input-output-memory-management-unit": {
+      "title": "Input–output memory management unit",
+      "url": "https://en.wikipedia.org/wiki/Input%E2%80%93output_memory_management_unit",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-instruction-pipelining": {
+      "title": "Instruction pipelining",
+      "url": "https://en.wikipedia.org/wiki/Instruction_pipelining",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-jitter": {
+      "title": "Jitter",
+      "url": "https://en.wikipedia.org/wiki/Jitter",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-jpeg": {
+      "title": "JPEG",
+      "url": "https://en.wikipedia.org/wiki/JPEG",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-karnaugh-map": {
+      "title": "Karnaugh map",
+      "url": "https://en.wikipedia.org/wiki/Karnaugh_map",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-memory-address": {
+      "title": "Memory address",
+      "url": "https://en.wikipedia.org/wiki/Memory_address",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-memory-controller": {
+      "title": "Memory controller",
+      "url": "https://en.wikipedia.org/wiki/Memory_controller",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-memory-mapped-i-o-and-port-mapped-i-o": {
+      "title": "Memory-mapped I/O and port-mapped I/O",
+      "url": "https://en.wikipedia.org/wiki/Memory-mapped_I/O_and_port-mapped_I/O",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-metastability-electronics": {
+      "title": "Metastability (electronics)",
+      "url": "https://en.wikipedia.org/wiki/Metastability_%28electronics%29",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-microcode": {
+      "title": "Microcode",
+      "url": "https://en.wikipedia.org/wiki/Microcode",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-modem": {
+      "title": "Modem",
+      "url": "https://en.wikipedia.org/wiki/Modem",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-multi-core-processor": {
+      "title": "Multi-core processor",
+      "url": "https://en.wikipedia.org/wiki/Multi-core_processor",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-multiple-buffering": {
+      "title": "Multiple buffering",
+      "url": "https://en.wikipedia.org/wiki/Multiple_buffering",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-multiplexer": {
+      "title": "Multiplexer",
+      "url": "https://en.wikipedia.org/wiki/Multiplexer",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-multiplexing": {
+      "title": "Multiplexing",
+      "url": "https://en.wikipedia.org/wiki/Multiplexing",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-mutual-information": {
+      "title": "Mutual information",
+      "url": "https://en.wikipedia.org/wiki/Mutual_information",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-nat-unit": {
+      "title": "Nat (unit)",
+      "url": "https://en.wikipedia.org/wiki/Nat_%28unit%29",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-network-address-translation": {
+      "title": "Network address translation",
+      "url": "https://en.wikipedia.org/wiki/Network_address_translation",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-network-on-a-chip": {
+      "title": "Network on a chip",
+      "url": "https://en.wikipedia.org/wiki/Network_on_a_chip",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-osdev-org-boot-sequence": {
+      "title": "OSDev wiki: Boot Sequence",
+      "url": "https://wiki.osdev.org/Boot_Sequence",
+      "kind": "article",
+      "origin": "added"
+    },
+    "wiki-overclocking": {
+      "title": "Overclocking",
+      "url": "https://en.wikipedia.org/wiki/Overclocking",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-palette-computing": {
+      "title": "Palette (computing)",
+      "url": "https://en.wikipedia.org/wiki/Palette_%28computing%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-peripheral-component-interconnect": {
+      "title": "Peripheral Component Interconnect",
+      "url": "https://en.wikipedia.org/wiki/Peripheral_Component_Interconnect",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-perplexity": {
+      "title": "Perplexity",
+      "url": "https://en.wikipedia.org/wiki/Perplexity",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-physical-address-extension": {
+      "title": "Physical Address Extension",
+      "url": "https://en.wikipedia.org/wiki/Physical_Address_Extension",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-pixel-density": {
+      "title": "Pixel density",
+      "url": "https://en.wikipedia.org/wiki/Pixel_density",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-png": {
+      "title": "PNG",
+      "url": "https://en.wikipedia.org/wiki/PNG",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-polling-computer-science": {
+      "title": "Polling (computer science)",
+      "url": "https://en.wikipedia.org/wiki/Polling_%28computer_science%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-power-on-self-test": {
+      "title": "Power-on self-test",
+      "url": "https://en.wikipedia.org/wiki/Power-on_self-test",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-raster-graphics": {
+      "title": "Raster graphics",
+      "url": "https://en.wikipedia.org/wiki/Raster_graphics",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-read-only-memory": {
+      "title": "Read-only memory",
+      "url": "https://en.wikipedia.org/wiki/Read-only_memory",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-remote-direct-memory-access": {
+      "title": "Remote direct memory access",
+      "url": "https://en.wikipedia.org/wiki/Remote_direct_memory_access",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-rgb-color-model": {
+      "title": "RGB color model",
+      "url": "https://en.wikipedia.org/wiki/RGB_color_model",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-run-length-encoding": {
+      "title": "Run-length encoding",
+      "url": "https://en.wikipedia.org/wiki/Run-length_encoding",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-semigraphics": {
+      "title": "Semigraphics",
+      "url": "https://en.wikipedia.org/wiki/Semigraphics",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-single-instruction-multiple-data": {
+      "title": "Single instruction, multiple data",
+      "url": "https://en.wikipedia.org/wiki/Single_instruction,_multiple_data",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-statistical-time-division-multiplexing": {
+      "title": "Statistical time-division multiplexing",
+      "url": "https://en.wikipedia.org/wiki/Statistical_time-division_multiplexing",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-symbols-for-legacy-computing": {
+      "title": "Symbols for Legacy Computing",
+      "url": "https://en.wikipedia.org/wiki/Symbols_for_Legacy_Computing",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-system-on-a-chip": {
+      "title": "System on a chip",
+      "url": "https://en.wikipedia.org/wiki/System_on_a_chip",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-texture-atlas": {
+      "title": "Texture atlas",
+      "url": "https://en.wikipedia.org/wiki/Texture_atlas",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-three-state-logic": {
+      "title": "Three-state logic",
+      "url": "https://en.wikipedia.org/wiki/Three-state_logic",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-time-division-multiplexing": {
+      "title": "Time-division multiplexing",
+      "url": "https://en.wikipedia.org/wiki/Time-division_multiplexing",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-truth-table": {
+      "title": "Truth table",
+      "url": "https://en.wikipedia.org/wiki/Truth_table",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-udma": {
+      "title": "UDMA",
+      "url": "https://en.wikipedia.org/wiki/UDMA",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-uefi": {
+      "title": "UEFI",
+      "url": "https://en.wikipedia.org/wiki/UEFI",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-unicode-block": {
+      "title": "Unicode block",
+      "url": "https://en.wikipedia.org/wiki/Unicode_block",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-usb": {
+      "title": "USB",
+      "url": "https://en.wikipedia.org/wiki/USB",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-utf-8": {
+      "title": "UTF-8",
+      "url": "https://en.wikipedia.org/wiki/UTF-8",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-vector-graphics": {
+      "title": "Vector graphics",
+      "url": "https://en.wikipedia.org/wiki/Vector_graphics",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-video-bios": {
+      "title": "Video BIOS",
+      "url": "https://en.wikipedia.org/wiki/Video_BIOS",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-video-coding-format": {
+      "title": "Video coding format",
+      "url": "https://en.wikipedia.org/wiki/Video_coding_format",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Wikipedia"
+    },
+    "wiki-video-graphics-array": {
+      "title": "Video Graphics Array",
+      "url": "https://en.wikipedia.org/wiki/Video_Graphics_Array",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-wavelength-division-multiplexing": {
+      "title": "Wavelength-division multiplexing",
+      "url": "https://en.wikipedia.org/wiki/Wavelength-division_multiplexing",
+      "kind": "reference",
+      "origin": "tab",
+      "by": "Wikipedia"
+    },
+    "wiki-wi-fi": {
+      "title": "Wi-Fi",
+      "url": "https://en.wikipedia.org/wiki/Wi-Fi",
+      "kind": "reference",
+      "origin": "bookmark",
+      "by": "Wikipedia"
+    },
+    "wiki-word-computer-architecture": {
+      "title": "Word (computer architecture)",
+      "url": "https://en.wikipedia.org/wiki/Word_%28computer_architecture%29",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wiki-x86-64": {
+      "title": "x86-64",
+      "url": "https://en.wikipedia.org/wiki/X86-64",
+      "kind": "reference",
+      "origin": "still-to-read",
+      "by": "Wikipedia"
+    },
+    "wireguard-com": {
+      "title": "Conceptual Overview",
+      "url": "https://www.wireguard.com/",
+      "kind": "article",
+      "origin": "added",
+      "by": "WireGuard"
+    },
+    "xiph-org-video-vid2": {
+      "title": "D/A and A/D, Digital Show and Tell",
+      "url": "https://xiph.org/video/vid2.shtml",
+      "kind": "video",
+      "origin": "added",
+      "by": "Monty Montgomery"
+    },
+    "yt--6JAgFWCL9w": {
+      "title": "8-bit computer build: Connecting the bus",
+      "url": "https://www.youtube.com/watch?v=-6JAgFWCL9w",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt--HVKm5fIUA8": {
+      "title": "How do Scroll Wheels Work? 🖱🛠🔬",
+      "url": "https://www.youtube.com/watch?v=-HVKm5fIUA8",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt--arYx_oVIj8": {
+      "title": "Designing and building a 1-bit register - 8 bit register - Part 3",
+      "url": "https://www.youtube.com/watch?v=-arYx_oVIj8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt--wMU8vmfaYo": {
+      "title": "Why was Facebook down for five hours?",
+      "url": "https://www.youtube.com/watch?v=-wMU8vmfaYo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 31,
+      "origin": "channel"
+    },
+    "yt-08mmKNLQVHU": {
+      "title": "Coding Adventure: Analyzing Audio",
+      "url": "https://www.youtube.com/watch?v=08mmKNLQVHU",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 21,
+      "origin": "channel"
+    },
+    "yt-0c8b7YfsBKs": {
+      "title": "This Simple Algorithm Powers Real Interpreters: Pratt Parsing",
+      "url": "https://www.youtube.com/watch?v=0c8b7YfsBKs",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 22,
+      "origin": "compilers-folder"
+    },
+    "yt-0me3guauqOU": {
+      "title": "The Unreasonable Effectiveness of JPEG: A Signal Processing Approach",
+      "url": "https://www.youtube.com/watch?v=0me3guauqOU",
+      "kind": "video",
+      "by": "Reducible",
+      "minutes": 35,
+      "origin": "added"
+    },
+    "yt-0q6Ujn_zNH8": {
+      "title": "A simple BIOS for my breadboard computer",
+      "url": "https://www.youtube.com/watch?v=0q6Ujn_zNH8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-16zrEPOsIcI": {
+      "title": "The Engineering that Runs the Digital World 🛠️⚙️💻 How do CPUs Work?",
+      "url": "https://www.youtube.com/watch?v=16zrEPOsIcI",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 36,
+      "origin": "channel"
+    },
+    "yt-1HHeyUVz43k": {
+      "title": "How Hardware Assist Software When Multitasking",
+      "url": "https://www.youtube.com/watch?v=1HHeyUVz43k",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-1I1vxu5qIUM": {
+      "title": "How does Bluetooth Work?",
+      "url": "https://www.youtube.com/watch?v=1I1vxu5qIUM",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-1XrRT0CmzYw": {
+      "title": "Frame formats | Networking tutorial (6 of 13)",
+      "url": "https://www.youtube.com/watch?v=1XrRT0CmzYw",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-24yESm63tSY": {
+      "title": "What is Sound? The Fundamental Science Behind Sound",
+      "url": "https://www.youtube.com/watch?v=24yESm63tSY",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-2iURr3NBprc": {
+      "title": "Installing the world’s worst video card",
+      "url": "https://www.youtube.com/watch?v=2iURr3NBprc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 25,
+      "origin": "channel"
+    },
+    "yt-2lPzTU-3ONI": {
+      "title": "How does n-key rollover work?",
+      "url": "https://www.youtube.com/watch?v=2lPzTU-3ONI",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 37,
+      "origin": "channel"
+    },
+    "yt-33vbFFFn04k": {
+      "title": "How semiconductors work",
+      "url": "https://www.youtube.com/watch?v=33vbFFFn04k",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-35zLnS3fXeA": {
+      "title": "Stepping through a program on the 8-bit breadboard computer",
+      "url": "https://www.youtube.com/watch?v=35zLnS3fXeA",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt-3BJU2drrtCM": {
+      "title": "How a TV Works in Slow Motion - The Slow Mo Guys",
+      "url": "https://www.youtube.com/watch?v=3BJU2drrtCM",
+      "kind": "video",
+      "by": "The Slow Mo Guys",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-3X93PnKRNUo": {
+      "title": "CONCURRENCY IS NOT WHAT YOU THINK",
+      "url": "https://www.youtube.com/watch?v=3X93PnKRNUo",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 17,
+      "origin": "channel"
+    },
+    "yt-3XDH-fZKnQk": {
+      "title": "Let's build a digital clock!",
+      "url": "https://www.youtube.com/watch?v=3XDH-fZKnQk",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 27,
+      "origin": "channel"
+    },
+    "yt-4IMc3CaMhyY": {
+      "title": "TCP: Transmission control protocol | Networking tutorial (12 of 13)",
+      "url": "https://www.youtube.com/watch?v=4IMc3CaMhyY",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 8,
+      "origin": "channel"
+    },
+    "yt-4nCMDvnR2Fg": {
+      "title": "Testing the computer's ALU",
+      "url": "https://www.youtube.com/watch?v=4nCMDvnR2Fg",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 6,
+      "origin": "channel"
+    },
+    "yt-4qH4unVtJkE": {
+      "title": "Twos complement: Negative numbers in binary",
+      "url": "https://www.youtube.com/watch?v=4qH4unVtJkE",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-5Mh3o886qpg": {
+      "title": "How do SSDs Work? | How does your Smartphone store data? | Insanely Complex Nanoscopic Structures!",
+      "url": "https://www.youtube.com/watch?v=5Mh3o886qpg",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-5f2xOxRGKqk": {
+      "title": "The Engineering Puzzle of Storing Trillions of Bits in your Smartphone / SSD using Quantum Mechanics",
+      "url": "https://www.youtube.com/watch?v=5f2xOxRGKqk",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 8,
+      "origin": "channel"
+    },
+    "yt-5rl1tEFXKt0": {
+      "title": "RAM module build - part 3",
+      "url": "https://www.youtube.com/watch?v=5rl1tEFXKt0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-5sw9XJokAqw": {
+      "title": "Threads On Multicore Systems",
+      "url": "https://www.youtube.com/watch?v=5sw9XJokAqw",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt-7A1SzIIKMho": {
+      "title": "I designed my own 8-bit computer just to play PONG",
+      "url": "https://www.youtube.com/watch?v=7A1SzIIKMho",
+      "kind": "video",
+      "by": "jdh",
+      "minutes": 17,
+      "origin": "channel"
+    },
+    "yt-7J7X7aZvMXQ": {
+      "title": "How does Computer Memory Work? 💻🛠",
+      "url": "https://www.youtube.com/watch?v=7J7X7aZvMXQ",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 36,
+      "origin": "channel"
+    },
+    "yt-7WnbIeMgWYA": {
+      "title": "Capacitors are terrible at remembering data. But for this reason we continue doing it.",
+      "url": "https://www.youtube.com/watch?v=7WnbIeMgWYA",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-7YyALikxAlU": {
+      "title": "How CPUs Run Functions",
+      "url": "https://www.youtube.com/watch?v=7YyALikxAlU",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 20,
+      "origin": "bookmark"
+    },
+    "yt-7aXbh9VUB3U": {
+      "title": "So how does a PS/2 keyboard interface work?",
+      "url": "https://www.youtube.com/watch?v=7aXbh9VUB3U",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 33,
+      "origin": "channel"
+    },
+    "yt-7ge7u5VUSbE": {
+      "title": "A PROGRAM is not a PROCESS.",
+      "url": "https://www.youtube.com/watch?v=7ge7u5VUSbE",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 8,
+      "origin": "channel"
+    },
+    "yt-7zffjsXqATg": {
+      "title": "Designing a 7-segment hex decoder",
+      "url": "https://www.youtube.com/watch?v=7zffjsXqATg",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-81BgFhm2vz8": {
+      "title": "Monostable 555 timer - 8-bit computer clock - part 2",
+      "url": "https://www.youtube.com/watch?v=81BgFhm2vz8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-8BhjXqw9MqI": {
+      "title": "Clock synchronization and Manchester coding | Networking tutorial (3 of 13)",
+      "url": "https://www.youtube.com/watch?v=8BhjXqw9MqI",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 12,
+      "origin": "channel"
+    },
+    "yt-9PPrrSyubG0": {
+      "title": "Programming my 8-bit breadboard computer",
+      "url": "https://www.youtube.com/watch?v=9PPrrSyubG0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 15,
+      "origin": "channel"
+    },
+    "yt-9RHGLZLUuwc": {
+      "title": "Coding Adventure: Compute Shaders",
+      "url": "https://www.youtube.com/watch?v=9RHGLZLUuwc",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 5,
+      "origin": "channel"
+    },
+    "yt-9WE3Obdjtv0": {
+      "title": "Testing our computer's registers - 8-bit register - Part 5",
+      "url": "https://www.youtube.com/watch?v=9WE3Obdjtv0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt-9kM3mnxrMMM": {
+      "title": "How do microSD Cards Store 2 TB in such a TINY space?",
+      "url": "https://www.youtube.com/watch?v=9kM3mnxrMMM",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 6,
+      "origin": "channel"
+    },
+    "yt-A9WLYbE0p-I": {
+      "title": "But, what is Virtual Memory?",
+      "url": "https://www.youtube.com/watch?v=A9WLYbE0p-I",
+      "kind": "video",
+      "by": "Tech With Nikola",
+      "minutes": 20,
+      "origin": "bookmark"
+    },
+    "yt-AHYNxpqKqwo": {
+      "title": "The RS-232 protocol",
+      "url": "https://www.youtube.com/watch?v=AHYNxpqKqwo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 26,
+      "origin": "channel"
+    },
+    "yt-AqNDk_UJW4k": {
+      "title": "Making a computer Turing complete",
+      "url": "https://www.youtube.com/watch?v=AqNDk_UJW4k",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-AwUirxi9eBg": {
+      "title": "8-bit CPU control signal overview",
+      "url": "https://www.youtube.com/watch?v=AwUirxi9eBg",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-B2482h_TNwg": {
+      "title": "The $200M Machine that Prints Microchips: The EUV Photolithography System",
+      "url": "https://www.youtube.com/watch?v=B2482h_TNwg",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 39,
+      "origin": "channel"
+    },
+    "yt-B3y0RsVCyrw": {
+      "title": "Huffman Codes: An Information Theory Perspective",
+      "url": "https://www.youtube.com/watch?v=B3y0RsVCyrw",
+      "kind": "video",
+      "by": "Reducible",
+      "minutes": 29,
+      "origin": "added"
+    },
+    "yt-BA12Z7gQ4P0": {
+      "title": "Using an EEPROM to replace combinational logic",
+      "url": "https://www.youtube.com/watch?v=BA12Z7gQ4P0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 25,
+      "origin": "channel"
+    },
+    "yt-BUTHtNrpwiI": {
+      "title": "World's worst video card gets better?",
+      "url": "https://www.youtube.com/watch?v=BUTHtNrpwiI",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 44,
+      "origin": "channel"
+    },
+    "yt-C8YtdC8mxTU": {
+      "title": "How do Video Game Graphics Work?",
+      "url": "https://www.youtube.com/watch?v=C8YtdC8mxTU",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 21,
+      "origin": "channel"
+    },
+    "yt-Cc33wOBAKDM": {
+      "title": "Bit Shifting: The Hidden Trick Inside Your CPU",
+      "url": "https://www.youtube.com/watch?v=Cc33wOBAKDM",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 13,
+      "origin": "bookmark"
+    },
+    "yt-CiMaWbz_6E8": {
+      "title": "Building an 8-bit register - 8-bit register - Part 4",
+      "url": "https://www.youtube.com/watch?v=CiMaWbz_6E8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-DXvAlwMAxiA": {
+      "title": "How a transistor works",
+      "url": "https://www.youtube.com/watch?v=DXvAlwMAxiA",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt-DlEa8kd7n3Q": {
+      "title": "Hardware interrupts",
+      "url": "https://www.youtube.com/watch?v=DlEa8kd7n3Q",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-F1OC5e7Tn_o": {
+      "title": "JK flip-flop",
+      "url": "https://www.youtube.com/watch?v=F1OC5e7Tn_o",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-F27PLin3TV0": {
+      "title": "TCP connection walkthrough | Networking tutorial (13 of 13)",
+      "url": "https://www.youtube.com/watch?v=F27PLin3TV0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-FCscQGBIL-Y": {
+      "title": "Adding more machine language instructions to the CPU",
+      "url": "https://www.youtube.com/watch?v=FCscQGBIL-Y",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-FY3zTUaykVo": {
+      "title": "Connecting an LCD to our computer — 6502 part 4",
+      "url": "https://www.youtube.com/watch?v=FY3zTUaykVo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-FaILnmUYS_U": {
+      "title": "I made an entire OS that only runs Tetris",
+      "url": "https://www.youtube.com/watch?v=FaILnmUYS_U",
+      "kind": "video",
+      "by": "jdh",
+      "minutes": 23,
+      "origin": "channel"
+    },
+    "yt-FnxPIZR1ybs": {
+      "title": "8-bit computer RAM intro",
+      "url": "https://www.youtube.com/watch?v=FnxPIZR1ybs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-GYlNoAMBY6o": {
+      "title": "CRAFTING A CPU TO RUN PROGRAMS",
+      "url": "https://www.youtube.com/watch?v=GYlNoAMBY6o",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 20,
+      "origin": "bookmark"
+    },
+    "yt-H4SDPLiUnv4": {
+      "title": "How a Single Bit Inside Your Processor Shields Your Operating System's Integrity",
+      "url": "https://www.youtube.com/watch?v=H4SDPLiUnv4",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 21,
+      "origin": "channel"
+    },
+    "yt-HGkuRp5HfH8": {
+      "title": "Simulating 256 Bytes of RAM",
+      "url": "https://www.youtube.com/watch?v=HGkuRp5HfH8",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 26,
+      "origin": "channel"
+    },
+    "yt-HaBMAD-Dr8M": {
+      "title": "Logic gates - From transistors to logic gates NAND, AND, NOR, OR, NOT, XOR how computers work PART 1",
+      "url": "https://www.youtube.com/watch?v=HaBMAD-Dr8M",
+      "kind": "video",
+      "by": "Computer&Electronics",
+      "minutes": 12,
+      "origin": "bookmark"
+    },
+    "yt-HjneAhCy2N4": {
+      "title": "HOW TRANSISTORS RUN CODE?",
+      "url": "https://www.youtube.com/watch?v=HjneAhCy2N4",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 14,
+      "origin": "bookmark"
+    },
+    "yt-HlLCtjJzHVI": {
+      "title": "Running Apple 1 software on a breadboard computer (Wozmon)",
+      "url": "https://www.youtube.com/watch?v=HlLCtjJzHVI",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-I0-izyq6q5s": {
+      "title": "How Do Computers Remember?",
+      "url": "https://www.youtube.com/watch?v=I0-izyq6q5s",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-I3i5cD5fdXI": {
+      "title": "What Happens If You Execute a Random File?",
+      "url": "https://www.youtube.com/watch?v=I3i5cD5fdXI",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-IMceN4_rieo": {
+      "title": "How Hardware Makes Threads Less of a Nightmare",
+      "url": "https://www.youtube.com/watch?v=IMceN4_rieo",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-JP9n5wHyemU": {
+      "title": "Making My Own Programming Language and Coding a Game in It",
+      "url": "https://www.youtube.com/watch?v=JP9n5wHyemU",
+      "kind": "video",
+      "by": "AstroSam",
+      "minutes": 10,
+      "origin": "bookmark"
+    },
+    "yt-JUVt_KYAp-I": {
+      "title": "Reprogramming CPU microcode with an Arduino",
+      "url": "https://www.youtube.com/watch?v=JUVt_KYAp-I",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 31,
+      "origin": "channel"
+    },
+    "yt-JsTptu56GM8": {
+      "title": "How Computers Compress Text: Huffman Coding and Huffman Trees",
+      "url": "https://www.youtube.com/watch?v=JsTptu56GM8",
+      "kind": "video",
+      "by": "Tom Scott",
+      "minutes": 6,
+      "origin": "added"
+    },
+    "yt-K88pgWhEb1M": {
+      "title": "Build an Arduino EEPROM programmer",
+      "url": "https://www.youtube.com/watch?v=K88pgWhEb1M",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 57,
+      "origin": "channel"
+    },
+    "yt-KM0DdEaY5sY": {
+      "title": "SR latch",
+      "url": "https://www.youtube.com/watch?v=KM0DdEaY5sY",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-KNve2LCcSRc": {
+      "title": "RAM module build - part 2",
+      "url": "https://www.youtube.com/watch?v=KNve2LCcSRc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 21,
+      "origin": "channel"
+    },
+    "yt-Kv1Hiv3ox8I": {
+      "title": "How are Images Compressed? [46MB ↘↘ 4.07MB] JPEG In Depth",
+      "url": "https://www.youtube.com/watch?v=Kv1Hiv3ox8I",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-LKnqECcg6Gw": {
+      "title": "Computer Color is Broken",
+      "url": "https://www.youtube.com/watch?v=LKnqECcg6Gw",
+      "kind": "video",
+      "by": "minutephysics",
+      "minutes": 4,
+      "origin": "added"
+    },
+    "yt-LO0JeIoEutA": {
+      "title": "Why Windows Needs Installers and macOS Doesn’t",
+      "url": "https://www.youtube.com/watch?v=LO0JeIoEutA",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-LSMQ3U1Thzw": {
+      "title": "The SID: Classic 8-bit sound",
+      "url": "https://www.youtube.com/watch?v=LSMQ3U1Thzw",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 35,
+      "origin": "channel"
+    },
+    "yt-LnzuMJLZRdU": {
+      "title": "“Hello, world” from scratch on a 6502 — Part 1",
+      "url": "https://www.youtube.com/watch?v=LnzuMJLZRdU",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 27,
+      "origin": "bookmark"
+    },
+    "yt-M9HHWFp84f0": {
+      "title": "Why Are Threads Needed On Single Core Processors",
+      "url": "https://www.youtube.com/watch?v=M9HHWFp84f0",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-MCi7dCBhVpQ": {
+      "title": "SPI: The serial peripheral interface",
+      "url": "https://www.youtube.com/watch?v=MCi7dCBhVpQ",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 33,
+      "origin": "channel"
+    },
+    "yt-MGAaTqFct_I": {
+      "title": "Lower layers of the OSI model | Networking tutorial (7 of 13)",
+      "url": "https://www.youtube.com/watch?v=MGAaTqFct_I",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 2,
+      "origin": "channel"
+    },
+    "yt-MgkhrBSjhag": {
+      "title": "Error detection: Parity checking",
+      "url": "https://www.youtube.com/watch?v=MgkhrBSjhag",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-MijmeoH9LT4": {
+      "title": "Characters, Symbols and the Unicode Miracle - Computerphile",
+      "url": "https://www.youtube.com/watch?v=MijmeoH9LT4",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 10,
+      "origin": "added"
+    },
+    "yt-N0O5Uwc3C0o": {
+      "title": "How does USB device discovery work?",
+      "url": "https://www.youtube.com/watch?v=N0O5Uwc3C0o",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 36,
+      "origin": "channel"
+    },
+    "yt-N3o5yHYLviQ": {
+      "title": "WHY IS THE STACK SO FAST?",
+      "url": "https://www.youtube.com/watch?v=N3o5yHYLviQ",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 14,
+      "origin": "bookmark"
+    },
+    "yt-NKfW8ijmRQ4": {
+      "title": "How do Smartphone CPUs Work? || Inside the System on a Chip",
+      "url": "https://www.youtube.com/watch?v=NKfW8ijmRQ4",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 25,
+      "origin": "channel"
+    },
+    "yt-O2tV9q6784k": {
+      "title": "The Fancy Algorithms That Make Your Computer Feel Smoother",
+      "url": "https://www.youtube.com/watch?v=O2tV9q6784k",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 45,
+      "origin": "channel"
+    },
+    "yt-OW1EmG7b4DU": {
+      "title": "I built my own graphics card",
+      "url": "https://www.youtube.com/watch?v=OW1EmG7b4DU",
+      "kind": "video",
+      "by": "jdh",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-ObnosznZvHY": {
+      "title": "CPU flags register",
+      "url": "https://www.youtube.com/watch?v=ObnosznZvHY",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 29,
+      "origin": "channel"
+    },
+    "yt-OlKvnvZKzcg": {
+      "title": "Can a Game Company Really Sabotage Your PC?",
+      "url": "https://www.youtube.com/watch?v=OlKvnvZKzcg",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 25,
+      "origin": "channel"
+    },
+    "yt-PVNAPWUxZ0g": {
+      "title": "How the Clock Tells the CPU to \"Move Forward\"",
+      "url": "https://www.youtube.com/watch?v=PVNAPWUxZ0g",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-PZRI1IfStY0": {
+      "title": "Floating Point Numbers - Computerphile",
+      "url": "https://www.youtube.com/watch?v=PZRI1IfStY0",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 9,
+      "origin": "added"
+    },
+    "yt-Pwc1b-Y7lm0": {
+      "title": "The Binary Trick Behind Negative Numbers",
+      "url": "https://www.youtube.com/watch?v=Pwc1b-Y7lm0",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-QAzuAn3nFGo": {
+      "title": "The 80’s Algorithm to Avoid Race Conditions (and Why It Failed)",
+      "url": "https://www.youtube.com/watch?v=QAzuAn3nFGo",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-QZwneRb-zqA": {
+      "title": "Exploring How Computers Work",
+      "url": "https://www.youtube.com/watch?v=QZwneRb-zqA",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-Qz0KTGYJtUk": {
+      "title": "Coding Adventure: Ray Tracing",
+      "url": "https://www.youtube.com/watch?v=Qz0KTGYJtUk",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 38,
+      "origin": "channel"
+    },
+    "yt-QzWW-CBugZo": {
+      "title": "Bus architecture and how register transfers work - 8 bit register - Part 1",
+      "url": "https://www.youtube.com/watch?v=QzWW-CBugZo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-RT0mp4f4QIs": {
+      "title": "Making a square wave square: Breadboard clock part 2",
+      "url": "https://www.youtube.com/watch?v=RT0mp4f4QIs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-RnBOOF502p0": {
+      "title": "How Real Projects Mix Compiled and Interpreted Languages",
+      "url": "https://www.youtube.com/watch?v=RnBOOF502p0",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-RuVS7MsQk4Y": {
+      "title": "Speedrunning 30yrs of lithography technology",
+      "url": "https://www.youtube.com/watch?v=RuVS7MsQk4Y",
+      "kind": "video",
+      "by": "Breaking Taps",
+      "minutes": 46,
+      "origin": "bookmark"
+    },
+    "yt-S-3fXU3FZQc": {
+      "title": "Building the ALU",
+      "url": "https://www.youtube.com/watch?v=S-3fXU3FZQc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-SAaESb4wTCM": {
+      "title": "How does a Mouse know when you move it? || How Does a Computer Mouse Work?",
+      "url": "https://www.youtube.com/watch?v=SAaESb4wTCM",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 12,
+      "origin": "channel"
+    },
+    "yt-SO83KQuuZvg": {
+      "title": "Coding Adventure: Rendering Text",
+      "url": "https://www.youtube.com/watch?v=SO83KQuuZvg",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 71,
+      "origin": "channel"
+    },
+    "yt-SmQ5K7UQPMM": {
+      "title": "Clock logic - 8-bit computer clock - part 4",
+      "url": "https://www.youtube.com/watch?v=SmQ5K7UQPMM",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt-SpG8rgI7Hec": {
+      "title": "How Wozniak’s code for the Apple 1 works",
+      "url": "https://www.youtube.com/watch?v=SpG8rgI7Hec",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 37,
+      "origin": "channel"
+    },
+    "yt-SwIPOf2YAgI": {
+      "title": "The Weird Way Linux Creates Processes",
+      "url": "https://www.youtube.com/watch?v=SwIPOf2YAgI",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-TfhL5kBiQVI": {
+      "title": "How does Computer Cache, Memory, and Storage Work? 🖥️💿🛠️",
+      "url": "https://www.youtube.com/watch?v=TfhL5kBiQVI",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 27,
+      "origin": "channel"
+    },
+    "yt-U7Q8-2YZTUU": {
+      "title": "Troubleshooting the ALU",
+      "url": "https://www.youtube.com/watch?v=U7Q8-2YZTUU",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 15,
+      "origin": "channel"
+    },
+    "yt-UXwoAKB-SvE": {
+      "title": "Why Python Is Removing The GIL",
+      "url": "https://www.youtube.com/watch?v=UXwoAKB-SvE",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 14,
+      "origin": "bookmark"
+    },
+    "yt-Ui6QyzcD3_E": {
+      "title": "How computer processors run conditions and loops",
+      "url": "https://www.youtube.com/watch?v=Ui6QyzcD3_E",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 17,
+      "origin": "channel"
+    },
+    "yt-VIi04uD8LtY": {
+      "title": "How Do Noise Canceling Headphones Work?",
+      "url": "https://www.youtube.com/watch?v=VIi04uD8LtY",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 6,
+      "origin": "channel"
+    },
+    "yt-VWJ8GmYnjTs": {
+      "title": "Hop-by-hop routing | Networking tutorial (11 of 13)",
+      "url": "https://www.youtube.com/watch?v=VWJ8GmYnjTs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-WCwJNnx36Rk": {
+      "title": "Bistable 555 - 8-bit computer clock - part 3",
+      "url": "https://www.youtube.com/watch?v=WCwJNnx36Rk",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-WD14ow-1q6k": {
+      "title": "The transistor as a current controlled switch | Digital electronics (7 of 10)",
+      "url": "https://www.youtube.com/watch?v=WD14ow-1q6k",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 4,
+      "origin": "channel"
+    },
+    "yt-WtlGB-YVLOg": {
+      "title": "What Happens When a CPU Receives an Unknown Instruction?",
+      "url": "https://www.youtube.com/watch?v=WtlGB-YVLOg",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-X7rCxs1ppyY": {
+      "title": "8-bit CPU control logic: Part 2",
+      "url": "https://www.youtube.com/watch?v=X7rCxs1ppyY",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-X8jsijhllIA": {
+      "title": "But what are Hamming codes? The origin of error correction",
+      "url": "https://www.youtube.com/watch?v=X8jsijhllIA",
+      "kind": "video",
+      "by": "3Blue1Brown",
+      "minutes": 20,
+      "origin": "added"
+    },
+    "yt-XJC5WB2Bwrc": {
+      "title": "Why Some Projects Use Multiple Programming Languages",
+      "url": "https://www.youtube.com/watch?v=XJC5WB2Bwrc",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-XaGXPObx2Gs": {
+      "title": "Sending digital information over a wire | Networking tutorial (1 of 13)",
+      "url": "https://www.youtube.com/watch?v=XaGXPObx2Gs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 4,
+      "origin": "channel"
+    },
+    "yt-Y2mDwW2pMv4": {
+      "title": "IPC: To Share Memory Or To Send Messages",
+      "url": "https://www.youtube.com/watch?v=Y2mDwW2pMv4",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 14,
+      "origin": "bookmark"
+    },
+    "yt-YW-_GkUguMM": {
+      "title": "D flip-flop",
+      "url": "https://www.youtube.com/watch?v=YW-_GkUguMM",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-YtBysgPOKx4": {
+      "title": "How does NAND Flash Work? Reading from TLC : Triple Level Cells || Exploring Solid State Drives",
+      "url": "https://www.youtube.com/watch?v=YtBysgPOKx4",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-Z2LgmIGE2nI": {
+      "title": "What are PCBs? || How do PCBs Work?",
+      "url": "https://www.youtube.com/watch?v=Z2LgmIGE2nI",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-ZYJIakkcLYw": {
+      "title": "How assembly language loops work",
+      "url": "https://www.youtube.com/watch?v=ZYJIakkcLYw",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 32,
+      "origin": "channel"
+    },
+    "yt-Zg1NdPKoosU": {
+      "title": "Conditional jump instructions",
+      "url": "https://www.youtube.com/watch?v=Zg1NdPKoosU",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 43,
+      "origin": "channel"
+    },
+    "yt-ZmPIxfCggFw": {
+      "title": "The Question Nobody Ever Explains: Where Does the Kernel End?",
+      "url": "https://www.youtube.com/watch?v=ZmPIxfCggFw",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-Zmtxl7LZwjQ": {
+      "title": "Why Can't Programs Access Each Other's Memory?",
+      "url": "https://www.youtube.com/watch?v=Zmtxl7LZwjQ",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 15,
+      "origin": "channel"
+    },
+    "yt-Zt0JfmV7CyI": {
+      "title": "I Designed My Own 16-bit CPU",
+      "url": "https://www.youtube.com/watch?v=Zt0JfmV7CyI",
+      "kind": "video",
+      "by": "AstroSam",
+      "minutes": 16,
+      "origin": "bookmark"
+    },
+    "yt-_2By2ane2I4": {
+      "title": "How a quartz watch works - its heart beats 32,768 times a second",
+      "url": "https://www.youtube.com/watch?v=_2By2ane2I4",
+      "kind": "video",
+      "by": "Steve Mould",
+      "minutes": 18,
+      "origin": "added"
+    },
+    "yt-_3cNcmli6xQ": {
+      "title": "Experimenting with Buses and Three-State Logic",
+      "url": "https://www.youtube.com/watch?v=_3cNcmli6xQ",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-_61YOh7QcP0": {
+      "title": "That One Time I Needed a Linked List",
+      "url": "https://www.youtube.com/watch?v=_61YOh7QcP0",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 10,
+      "origin": "bookmark"
+    },
+    "yt-_JGMgpyCTsY": {
+      "title": "I Tried Coding my own Graphics Library",
+      "url": "https://www.youtube.com/watch?v=_JGMgpyCTsY",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-_Pqfjer8-O4": {
+      "title": "How do Transistors Build into a CPU? 🖥️🤔 How do Transistors Work? 🖥️🤔",
+      "url": "https://www.youtube.com/watch?v=_Pqfjer8-O4",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 27,
+      "origin": "channel"
+    },
+    "yt-_ZKNOKHpqE4": {
+      "title": "The Engineering Inside Wireless Earbuds || How do Wireless Earbuds and Audio Codecs Work?",
+      "url": "https://www.youtube.com/watch?v=_ZKNOKHpqE4",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-a73ZXDJtU48": {
+      "title": "Programming Fibonacci on a breadboard computer",
+      "url": "https://www.youtube.com/watch?v=a73ZXDJtU48",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 7,
+      "origin": "channel"
+    },
+    "yt-aa6YISbAJEA": {
+      "title": "The Incredible Evolution of Computers",
+      "url": "https://www.youtube.com/watch?v=aa6YISbAJEA",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 34,
+      "origin": "channel"
+    },
+    "yt-aamG4-tH_m8": {
+      "title": "ARP: Mapping between IP and Ethernet | Networking tutorial (9 of 13)",
+      "url": "https://www.youtube.com/watch?v=aamG4-tH_m8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-b3NxrZOu_CE": {
+      "title": "Hamming codes part 2: The one-line implementation",
+      "url": "https://www.youtube.com/watch?v=b3NxrZOu_CE",
+      "kind": "video",
+      "by": "3Blue1Brown",
+      "minutes": 17,
+      "origin": "added"
+    },
+    "yt-bSkpMdDe4g4": {
+      "title": "CppCon 2017: Matt Godbolt “What Has My Compiler Done for Me Lately? Unbolting the Compiler's Lid”",
+      "url": "https://www.youtube.com/watch?v=bSkpMdDe4g4",
+      "kind": "video",
+      "by": "CppCon",
+      "minutes": 76,
+      "origin": "added"
+    },
+    "yt-bhpzTWtee2A": {
+      "title": "The Weirdest Bug in Programming - Race Conditions",
+      "url": "https://www.youtube.com/watch?v=bhpzTWtee2A",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-d86ws7mQYIg": {
+      "title": "How does Computer Hardware Work? 💻🛠🔬 [3D Animated Teardown]",
+      "url": "https://www.youtube.com/watch?v=d86ws7mQYIg",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 17,
+      "origin": "channel"
+    },
+    "yt-dHWFpkGsxOs": {
+      "title": "8-bit CPU control logic: Part 3",
+      "url": "https://www.youtube.com/watch?v=dHWFpkGsxOs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 44,
+      "origin": "channel"
+    },
+    "yt-dL0GO9SeBh0": {
+      "title": "Keyboard interface software",
+      "url": "https://www.youtube.com/watch?v=dL0GO9SeBh0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-dNRDvLACg5Q": {
+      "title": "Turing Machines Explained - Computerphile",
+      "url": "https://www.youtube.com/watch?v=dNRDvLACg5Q",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 5,
+      "origin": "added"
+    },
+    "yt-dQhj5RGtag0": {
+      "title": "how floating point works",
+      "url": "https://www.youtube.com/watch?v=dQhj5RGtag0",
+      "kind": "video",
+      "by": "jan Misali",
+      "minutes": 18,
+      "origin": "added"
+    },
+    "yt-dX9CGRZwD-w": {
+      "title": "How are Microchips Made? 🖥️🛠️ CPU Manufacturing Process Steps",
+      "url": "https://www.youtube.com/watch?v=dX9CGRZwD-w",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-dXdoim96v5A": {
+      "title": "8-bit CPU control logic: Part 1",
+      "url": "https://www.youtube.com/watch?v=dXdoim96v5A",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-e5g8eYKEhMw": {
+      "title": "What Happens When a Program Calls Sleeps?",
+      "url": "https://www.youtube.com/watch?v=e5g8eYKEhMw",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-eNtADpJ2EC4": {
+      "title": "The Most Ambiguous Concept in Computer Science",
+      "url": "https://www.youtube.com/watch?v=eNtADpJ2EC4",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-eP_P4KOjwhs": {
+      "title": "Why Applications Are Operating-System Specific",
+      "url": "https://www.youtube.com/watch?v=eP_P4KOjwhs",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-eq5YpKHXJDM": {
+      "title": "Reliable data transmission",
+      "url": "https://www.youtube.com/watch?v=eq5YpKHXJDM",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 44,
+      "origin": "channel"
+    },
+    "yt-exGEmA67dNc": {
+      "title": "Binary counter",
+      "url": "https://www.youtube.com/watch?v=exGEmA67dNc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 5,
+      "origin": "channel"
+    },
+    "yt-fCbAafKLqC8": {
+      "title": "Why build an entire computer on breadboards?",
+      "url": "https://www.youtube.com/watch?v=fCbAafKLqC8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 29,
+      "origin": "channel"
+    },
+    "yt-faAjse109Q8": {
+      "title": "Tri-state logic: Connecting multiple outputs together - 8 bit register - Part 2",
+      "url": "https://www.youtube.com/watch?v=faAjse109Q8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-g_1HyxBzjl0": {
+      "title": "Program counter design",
+      "url": "https://www.youtube.com/watch?v=g_1HyxBzjl0",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-g_koa00MBLg": {
+      "title": "How do hardware timers work?",
+      "url": "https://www.youtube.com/watch?v=g_koa00MBLg",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 31,
+      "origin": "channel"
+    },
+    "yt-gfOD-Qpl6eg": {
+      "title": "Technology Size Comparison 🤯🤯 3D Animation",
+      "url": "https://www.youtube.com/watch?v=gfOD-Qpl6eg",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 4,
+      "origin": "channel"
+    },
+    "yt-gnmrKDpTM7o": {
+      "title": "Dividing a signal by counting: Breadboard clock part 3",
+      "url": "https://www.youtube.com/watch?v=gnmrKDpTM7o",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 15,
+      "origin": "channel"
+    },
+    "yt-goOa3DGezUA": {
+      "title": "Elegant Compression in Text (The LZ 77 Method) - Computerphile",
+      "url": "https://www.youtube.com/watch?v=goOa3DGezUA",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 9,
+      "origin": "added"
+    },
+    "yt-h-NM1xSSzHQ": {
+      "title": "How do Computer Keyboards Work? 🤔⌨⌨🛠",
+      "url": "https://www.youtube.com/watch?v=h-NM1xSSzHQ",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 11,
+      "origin": "channel"
+    },
+    "yt-h0jloehRKas": {
+      "title": "What is error correction? Hamming codes in hardware",
+      "url": "https://www.youtube.com/watch?v=h0jloehRKas",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 37,
+      "origin": "channel"
+    },
+    "yt-h9Z4oGN89MU": {
+      "title": "How do Graphics Cards Work? Exploring GPU Architecture",
+      "url": "https://www.youtube.com/watch?v=h9Z4oGN89MU",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-hEDQpqhY2MA": {
+      "title": "Visualizing Data with 7-Segment Displays",
+      "url": "https://www.youtube.com/watch?v=hEDQpqhY2MA",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 34,
+      "origin": "channel"
+    },
+    "yt-hwyRnHA54lI": {
+      "title": "The size of your variables matters.",
+      "url": "https://www.youtube.com/watch?v=hwyRnHA54lI",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 11,
+      "origin": "bookmark"
+    },
+    "yt-i8CmibhvZ0c": {
+      "title": "Analyzing actual Ethernet encoding | Networking tutorial (4 of 13)",
+      "url": "https://www.youtube.com/watch?v=i8CmibhvZ0c",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-iA6wRgwl7k0": {
+      "title": "Coding Adventure: Sound (and the Fourier Transform)",
+      "url": "https://www.youtube.com/watch?v=iA6wRgwl7k0",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 44,
+      "origin": "channel"
+    },
+    "yt-iOlehM5kNSk": {
+      "title": "How does Ray Tracing Work in Video Games and Movies?",
+      "url": "https://www.youtube.com/watch?v=iOlehM5kNSk",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 29,
+      "origin": "channel"
+    },
+    "yt-i_wrxBdXTgM": {
+      "title": "RAM and bus timing — 6502 part 6",
+      "url": "https://www.youtube.com/watch?v=i_wrxBdXTgM",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 38,
+      "origin": "channel"
+    },
+    "yt-ioJkA7Mw2-U": {
+      "title": "WHY IS THE HEAP SO SLOW?",
+      "url": "https://www.youtube.com/watch?v=ioJkA7Mw2-U",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 18,
+      "origin": "bookmark"
+    },
+    "yt-izG7qT0EpBw": {
+      "title": "How do CRCs work?",
+      "url": "https://www.youtube.com/watch?v=izG7qT0EpBw",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 48,
+      "origin": "channel"
+    },
+    "yt-jJi5EAWgyEM": {
+      "title": "Sound synth with a 6502",
+      "url": "https://www.youtube.com/watch?v=jJi5EAWgyEM",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-jhg90zsjqt4": {
+      "title": "How do speakers work? Incredibly small, yet impressively loud",
+      "url": "https://www.youtube.com/watch?v=jhg90zsjqt4",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 6,
+      "origin": "channel"
+    },
+    "yt-kRlSFm519Bo": {
+      "title": "Astable 555 timer - 8-bit computer clock - part 1",
+      "url": "https://www.youtube.com/watch?v=kRlSFm519Bo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-kYB8IZa5AuE": {
+      "title": "Linear transformations and matrices | Chapter 3, Essence of linear algebra",
+      "url": "https://www.youtube.com/watch?v=kYB8IZa5AuE",
+      "kind": "video",
+      "by": "3Blue1Brown",
+      "minutes": 11,
+      "origin": "added"
+    },
+    "yt-l7rce6IQDWs": {
+      "title": "The world's worst video card?",
+      "url": "https://www.youtube.com/watch?v=l7rce6IQDWs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 33,
+      "origin": "channel"
+    },
+    "yt-lUo45NqPyq8": {
+      "title": "Intro to fiber optics and RF encoding | Networking tutorial (2 of 13)",
+      "url": "https://www.youtube.com/watch?v=lUo45NqPyq8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 4,
+      "origin": "channel"
+    },
+    "yt-m6WXrC9Mxzo": {
+      "title": "Signals: Make Ctrl+C Do Anything You Want",
+      "url": "https://www.youtube.com/watch?v=m6WXrC9Mxzo",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 19,
+      "origin": "bookmark"
+    },
+    "yt-m8v_SRpxyN4": {
+      "title": "HOW COMPUTERS CAST STRINGS TO NUMBERS",
+      "url": "https://www.youtube.com/watch?v=m8v_SRpxyN4",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 12,
+      "origin": "bookmark"
+    },
+    "yt-mOVOS9AjgFs": {
+      "title": "ALU Design",
+      "url": "https://www.youtube.com/watch?v=mOVOS9AjgFs",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 15,
+      "origin": "channel"
+    },
+    "yt-mpIFag8zSWo": {
+      "title": "How input buffering works",
+      "url": "https://www.youtube.com/watch?v=mpIFag8zSWo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-oEC5fIw0bL0": {
+      "title": "How do Digital and Analog Clocks Work?",
+      "url": "https://www.youtube.com/watch?v=oEC5fIw0bL0",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-oLYLnb7kpLg": {
+      "title": "6502 serial interface",
+      "url": "https://www.youtube.com/watch?v=oLYLnb7kpLg",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 20,
+      "origin": "channel"
+    },
+    "yt-oO8_2JJV0B4": {
+      "title": "Assembly language vs. machine code — 6502 part 3",
+      "url": "https://www.youtube.com/watch?v=oO8_2JJV0B4",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 16,
+      "origin": "channel"
+    },
+    "yt-oOYA-jsWTmc": {
+      "title": "Interrupt handling",
+      "url": "https://www.youtube.com/watch?v=oOYA-jsWTmc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 26,
+      "origin": "channel"
+    },
+    "yt-omI0MrTWiMU": {
+      "title": "Subroutine calls, now with RAM — 6502 part 7",
+      "url": "https://www.youtube.com/watch?v=omI0MrTWiMU",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 18,
+      "origin": "channel"
+    },
+    "yt-peCh_859q7Q": {
+      "title": "D latch",
+      "url": "https://www.youtube.com/watch?v=peCh_859q7Q",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-ppU41c15Xho": {
+      "title": "Checksums and Hamming distance",
+      "url": "https://www.youtube.com/watch?v=ppU41c15Xho",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-qgwrt7vYY4U": {
+      "title": "How History Shaped the Programming Terms We Still Use Today",
+      "url": "https://www.youtube.com/watch?v=qgwrt7vYY4U",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 18,
+      "origin": "bookmark"
+    },
+    "yt-qs2QcycggWU": {
+      "title": "How does Starlink Satellite Internet Work?📡☄🖥",
+      "url": "https://www.youtube.com/watch?v=qs2QcycggWU",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-r-SivgEpA1Q": {
+      "title": "How does this SSD store 8TB of Data? || Inside the Engineering of Solid-State Drive Architecture",
+      "url": "https://www.youtube.com/watch?v=r-SivgEpA1Q",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-rM9BjciBLmg": {
+      "title": "HOW TRANSISTORS REMEMBER DATA",
+      "url": "https://www.youtube.com/watch?v=rM9BjciBLmg",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 17,
+      "origin": "bookmark"
+    },
+    "yt-rPoalUa4m8E": {
+      "title": "The Internet Protocol | Networking tutorial (8 of 13)",
+      "url": "https://www.youtube.com/watch?v=rPoalUa4m8E",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-rRnOtKlg4jA": {
+      "title": "Coding Adventure: Additive Synthesis",
+      "url": "https://www.youtube.com/watch?v=rRnOtKlg4jA",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 36,
+      "origin": "channel"
+    },
+    "yt-rXHSB5w7CyE": {
+      "title": "Master-slave JK flip-flop",
+      "url": "https://www.youtube.com/watch?v=rXHSB5w7CyE",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-ryfbBB3pHfI": {
+      "title": "Simple Instructions, Weird Algorithms",
+      "url": "https://www.youtube.com/watch?v=ryfbBB3pHfI",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 22,
+      "origin": "channel"
+    },
+    "yt-sNkERQlK8j8": {
+      "title": "Hardware build: CRC calculation",
+      "url": "https://www.youtube.com/watch?v=sNkERQlK8j8",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 53,
+      "origin": "channel"
+    },
+    "yt-sTu3LwpF6XI": {
+      "title": "Making logic gates from transistors",
+      "url": "https://www.youtube.com/watch?v=sTu3LwpF6XI",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 13,
+      "origin": "channel"
+    },
+    "yt-spUNpyF58BY": {
+      "title": "But what is the Fourier Transform? A visual introduction.",
+      "url": "https://www.youtube.com/watch?v=spUNpyF58BY",
+      "kind": "video",
+      "by": "3Blue1Brown",
+      "minutes": 20,
+      "origin": "added"
+    },
+    "yt-st3mUEub99E": {
+      "title": "JK flip-flop racing",
+      "url": "https://www.youtube.com/watch?v=st3mUEub99E",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 12,
+      "origin": "channel"
+    },
+    "yt-tIOR7kRevPU": {
+      "title": "Computer noises",
+      "url": "https://www.youtube.com/watch?v=tIOR7kRevPU",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 19,
+      "origin": "channel"
+    },
+    "yt-tNwU7pK_3tk": {
+      "title": "Program counter build",
+      "url": "https://www.youtube.com/watch?v=tNwU7pK_3tk",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 8,
+      "origin": "channel"
+    },
+    "yt-tadUeiNe5-g": {
+      "title": "How CPUs Interact with So Many Different Devices",
+      "url": "https://www.youtube.com/watch?v=tadUeiNe5-g",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 23,
+      "origin": "bookmark"
+    },
+    "yt-uYXwCBo40iA": {
+      "title": "RAM module build - part 1",
+      "url": "https://www.youtube.com/watch?v=uYXwCBo40iA",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-uo2KgRN04XI": {
+      "title": "How a transistor amplifies current | Digital electronics (6 of 10)",
+      "url": "https://www.youtube.com/watch?v=uo2KgRN04XI",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-uqY3FMuMuRo": {
+      "title": "World's worst video card? The exciting conclusion",
+      "url": "https://www.youtube.com/watch?v=uqY3FMuMuRo",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 24,
+      "origin": "channel"
+    },
+    "yt-v3-a-zqKfgA": {
+      "title": "Binary to decimal can’t be that hard, right?",
+      "url": "https://www.youtube.com/watch?v=v3-a-zqKfgA",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 42,
+      "origin": "channel"
+    },
+    "yt-v68zYyaEmEA": {
+      "title": "Solving Wordle using information theory",
+      "url": "https://www.youtube.com/watch?v=v68zYyaEmEA",
+      "kind": "video",
+      "by": "3Blue1Brown",
+      "minutes": 31,
+      "origin": "added"
+    },
+    "yt-vaGZapAGvwM": {
+      "title": "I built my own computer. by hand.",
+      "url": "https://www.youtube.com/watch?v=vaGZapAGvwM",
+      "kind": "video",
+      "by": "jdh",
+      "minutes": 13,
+      "origin": "bookmark"
+    },
+    "yt-w1SB9Ry8_Jg": {
+      "title": "Keyboard interface hardware",
+      "url": "https://www.youtube.com/watch?v=w1SB9Ry8_Jg",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 28,
+      "origin": "channel"
+    },
+    "yt-wdgULBpRoXk": {
+      "title": "How does a USB keyboard work?",
+      "url": "https://www.youtube.com/watch?v=wdgULBpRoXk",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 34,
+      "origin": "channel"
+    },
+    "yt-wh4aWZRtTwU": {
+      "title": "Brown; color is weird",
+      "url": "https://www.youtube.com/watch?v=wh4aWZRtTwU",
+      "kind": "video",
+      "by": "Technology Connections",
+      "minutes": 21,
+      "origin": "added"
+    },
+    "yt-wtdnatmVdIg": {
+      "title": "How do Hard Disk Drives Work? 💻💿🛠",
+      "url": "https://www.youtube.com/watch?v=wtdnatmVdIg",
+      "kind": "video",
+      "by": "Branch Education",
+      "minutes": 15,
+      "origin": "channel"
+    },
+    "yt-wvJc9CZcvBc": {
+      "title": "Learn how computers add numbers and build a 4 bit adder circuit",
+      "url": "https://www.youtube.com/watch?v=wvJc9CZcvBc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 14,
+      "origin": "channel"
+    },
+    "yt-xBjQVxVxOxc": {
+      "title": "What is a stack and how does it work? — 6502 part 5",
+      "url": "https://www.youtube.com/watch?v=xBjQVxVxOxc",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 24,
+      "origin": "channel"
+    },
+    "yt-xFMXIgvlgcY": {
+      "title": "ARRAYLIST VS LINKEDLIST",
+      "url": "https://www.youtube.com/watch?v=xFMXIgvlgcY",
+      "kind": "video",
+      "by": "Core Dumped",
+      "minutes": 21,
+      "origin": "bookmark"
+    },
+    "yt-xNbdeyEI-nE": {
+      "title": "Looking at ARP and ping packets | Networking tutorial (10 of 13)",
+      "url": "https://www.youtube.com/watch?v=xNbdeyEI-nE",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-xrVN9jKjIKQ": {
+      "title": "The importance of framing | Networking tutorial (5 of 13)",
+      "url": "https://www.youtube.com/watch?v=xrVN9jKjIKQ",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 9,
+      "origin": "channel"
+    },
+    "yt-yOyaJXpAYZQ": {
+      "title": "Comparing C to machine language",
+      "url": "https://www.youtube.com/watch?v=yOyaJXpAYZQ",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 10,
+      "origin": "channel"
+    },
+    "yt-yl8vPW5hydQ": {
+      "title": "How do CPUs read machine code? — 6502 part 2",
+      "url": "https://www.youtube.com/watch?v=yl8vPW5hydQ",
+      "kind": "video",
+      "by": "Ben Eater",
+      "minutes": 49,
+      "origin": "channel"
+    },
+    "yt-yyJ-hdISgnw": {
+      "title": "Coding Adventure: Software Rasterizer",
+      "url": "https://www.youtube.com/watch?v=yyJ-hdISgnw",
+      "kind": "video",
+      "by": "Sebastian Lague",
+      "minutes": 50,
+      "origin": "channel"
+    },
+    "yt-znxZBWAO2aU": {
+      "title": "BONUS: How I built my own computer, from scratch",
+      "url": "https://www.youtube.com/watch?v=znxZBWAO2aU",
+      "kind": "video",
+      "by": "jdh",
+      "minutes": 51,
+      "origin": "tab"
+    }
+  },
+  "chapters": {
+    "whirlwind-tour": {
+      "core": [
+        {
+          "id": "yt-d86ws7mQYIg",
+          "note": "every part of a desktop PC in one pass; a check on what the tour promises"
+        },
+        {
+          "id": "yt-QZwneRb-zqA",
+          "note": "gates to an adder in 18 minutes; the pacing benchmark"
+        },
+        {
+          "id": "hcaw",
+          "note": "all eleven steps; closest thing to your series in format; click through once as a reader"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-aa6YISbAJEA"
+        }
+      ],
+      "questions": []
+    },
+    "bits-and-encodings": {
+      "core": [
+        {
+          "id": "yt-hwyRnHA54lI",
+          "note": "bookmarked twice; byte sizes, alignment and padding"
+        },
+        {
+          "id": "yt-m8v_SRpxyN4",
+          "note": "the same bytes read as text and as a number; fits \"Eight Bits, One Byte, Many Meanings\""
+        },
+        {
+          "id": "computers-theputhoffs-com-binary"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-word-computer-architecture"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Bit by Bit by Bit\" and \"Bytes and Hexadecimal\"; the book's site has interactive versions of its circuits"
+        }
+      ],
+      "questions": [
+        "Why does the same 32-bit pattern have at least four valid readings (unsigned, signed, float, four characters), and what decides which one applies?",
+        "Big and little endian: which byte lands at the lowest address, and where does the difference show up outside the CPU (files, network packets)?"
+      ],
+      "note": "Nothing in the bookmarks covers endianness. The section is drafted, so no gap filler is listed."
+    },
+    "text-encodings-and-the-magic-that": {
+      "core": [
+        {
+          "id": "wiki-utf-8",
+          "note": "read \"Description\" (the bit-layout table) and \"History\""
+        },
+        {
+          "id": "yt-MijmeoH9LT4",
+          "note": "Tom Scott derives the design from its constraints"
+        },
+        {
+          "id": "joelonsoftware-com-2003-10-08-the-absolute-minimum-every"
+        },
+        {
+          "id": "cl-cam-ac-uk-mgk25-ucs-utf-8-history-txt",
+          "note": "primary source; short"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "utf8everywhere-org",
+          "note": "the argument against UTF-16"
+        },
+        {
+          "id": "wiki-code-page-437",
+          "note": "the world before one standard"
+        },
+        {
+          "id": "wiki-unicode-block"
+        },
+        {
+          "id": "wiki-block-elements"
+        },
+        {
+          "id": "wiki-box-drawing"
+        },
+        {
+          "id": "wiki-symbols-for-legacy-computing"
+        },
+        {
+          "id": "wiki-geometric-shapes-unicode-block"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"From ASCII to Unicode\""
+        }
+      ],
+      "questions": [
+        "Drop a decoder into the middle of a UTF-8 byte stream. How does it find the next character boundary?",
+        "Why is every ASCII file already a valid UTF-8 file, and why did that settle which encoding won?",
+        "Code point, code unit, grapheme: why can one visible character have three different lengths?",
+        "Why does UTF-16 need a byte-order mark and UTF-8 does not? (Ties back to the endianness section of 1.1.)",
+        "What is an overlong encoding, and why must a decoder reject it?"
+      ]
+    },
+    "number-encodings-and-what-floats-mean": {
+      "core": [
+        {
+          "id": "yt-dQhj5RGtag0",
+          "note": "builds the format step by step from the problems it has to solve"
+        },
+        {
+          "id": "float-exposed",
+          "note": "flip bits, watch the value"
+        },
+        {
+          "id": "ciechanow-ski-exposing-floating-point"
+        },
+        {
+          "id": "fabiensanglard-net-floating-point-visually-explained",
+          "note": "the window-and-offset picture; the one that tends to click"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-PZRI1IfStY0"
+        },
+        {
+          "id": "0-30000000000000004-com"
+        },
+        {
+          "id": "docs-oracle-com-cd-e19957-01-806-3568-ncg-goldberg",
+          "note": "the reference; read rounding and the IEEE section only"
+        },
+        {
+          "id": "yt-Pwc1b-Y7lm0",
+          "note": "signed integers; the outline keeps them in 2.4, see structure finding 4"
+        },
+        {
+          "id": "yt-4qH4unVtJkE"
+        }
+      ],
+      "questions": [
+        "Which fractions does binary represent exactly, and why is 0.1 not one of them?",
+        "How many floats lie between 1 and 2, and how many between 1024 and 2048? What follows for precision?",
+        "Why is the exponent stored with a bias instead of as two's complement?",
+        "What are subnormals, signed zero, infinity and NaN each for?",
+        "Why can a 32-bit float not hold every 32-bit integer?"
+      ],
+      "note": "The bookmark folder has nothing on floats. Every item here is an addition."
+    },
+    "compression-and-how-data-compression-works": {
+      "core": [
+        {
+          "id": "yt-JsTptu56GM8",
+          "note": "Huffman: short codes for frequent symbols"
+        },
+        {
+          "id": "yt-goOa3DGezUA",
+          "note": "LZ77: pointers back to repeats"
+        },
+        {
+          "id": "yt-Kv1Hiv3ox8I",
+          "note": "lossy compression end to end"
+        },
+        {
+          "id": "wiki-run-length-encoding",
+          "note": "the simplest scheme; a good first demo"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-B3y0RsVCyrw",
+          "note": "the bridge from Huffman to entropy; watch before 1.1d"
+        },
+        {
+          "id": "yt-0me3guauqOU"
+        },
+        {
+          "id": "parametric-press-issue-01-unraveling-the-jpeg",
+          "note": "edit a JPEG's bytes and see what breaks"
+        },
+        {
+          "id": "wiki-image-compression"
+        },
+        {
+          "id": "wiki-png"
+        },
+        {
+          "id": "wiki-gif"
+        },
+        {
+          "id": "wiki-jpeg"
+        },
+        {
+          "id": "wiki-image-file-format"
+        },
+        {
+          "id": "yt-_ZKNOKHpqE4",
+          "note": "lossy audio; reuse in 3.6"
+        }
+      ],
+      "questions": [
+        "Lossless and lossy: what does each one throw away?",
+        "Why can no compressor shrink every possible file?",
+        "Huffman and LZ77 exploit two different kinds of redundancy. Which, and how do zip and PNG combine them?",
+        "Why does zipping a zip file not make it smaller?",
+        "Why does JPEG work on 8×8 blocks in the frequency domain, and what does the quality slider change?"
+      ]
+    },
+    "shannons-theory-of-information-and-how": {
+      "core": [
+        {
+          "id": "wiki-information-theory",
+          "note": "overview and \"Quantities of information\""
+        },
+        {
+          "id": "khanacademy-org-computing-computer-science-informationth",
+          "note": "Brit Cruise's series; telegraph to Shannon in historical order"
+        },
+        {
+          "id": "yt-v68zYyaEmEA",
+          "note": "a bit as one halving of the possibilities"
+        },
+        {
+          "id": "yt-B3y0RsVCyrw",
+          "note": "entropy as the limit Huffman approaches"
+        },
+        {
+          "id": "people-math-harvard-edu-ctm-home-text-others-shannon-ent",
+          "note": "introduction and Part I, sections 1–7; readable"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-nat-unit"
+        },
+        {
+          "id": "wiki-perplexity"
+        },
+        {
+          "id": "wiki-information-content",
+          "note": "recently closed tab"
+        },
+        {
+          "id": "wiki-coding-theory",
+          "note": "recently closed tab; the link to 5.1d"
+        },
+        {
+          "id": "hartley-nyquist-kolmogorov",
+          "note": "all three were in your recent history: the two papers Shannon builds on, and the algorithmic alternative"
+        },
+        {
+          "id": "wiki-entropy-in-thermodynamics-and-information-theory"
+        },
+        {
+          "id": "wiki-holographic-principle"
+        },
+        {
+          "id": "inference-org-uk-mackay-itila-book",
+          "note": "chapters 1, 2 and 4"
+        },
+        {
+          "id": "wiki-mutual-information",
+          "note": "from your reading notes"
+        },
+        {
+          "id": "wiki-hartley-unit",
+          "note": "from your reading notes"
+        }
+      ],
+      "questions": [
+        "Why is information log(1/p)? Why must surprise add when probabilities multiply?",
+        "\"English carries about one bit per letter.\" What does that mean, and what does it say about how far text can compress?",
+        "Source coding and channel coding are two different theorems. Which one bounds compression (1.1c) and which one bounds sending over noise (5.1d)?",
+        "Bit, nat and hartley: what is the only difference?",
+        "Two bits that depend on each other carry less than two bits. How does mutual information put a number on that?"
+      ],
+      "note": "Scope: five of your own bookmarks here lead away from computers. A bit as a halving, entropy as the limit of compression and channel capacity as the reason error correction works are enough for this aside."
+    },
+    "transistors-into-gates": {
+      "core": [
+        {
+          "id": "yt-33vbFFFn04k"
+        },
+        {
+          "id": "yt-DXvAlwMAxiA"
+        },
+        {
+          "id": "yt-sTu3LwpF6XI",
+          "note": "the three Ben Eater videos are one arc: silicon → switch → gate"
+        },
+        {
+          "id": "yt-HaBMAD-Dr8M"
+        },
+        {
+          "id": "nand2web-logic-nand",
+          "note": "lessons 1–2; /logic/nand, then /logic/not-and-or"
+        },
+        {
+          "id": "hcaw-transistors",
+          "note": "Build a Gate, Logic Gates"
+        },
+        {
+          "id": "wiki-boolean-algebra"
+        },
+        {
+          "id": "wiki-truth-table"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-_Pqfjer8-O4",
+          "note": "transistors as they sit inside a real chip, not on a breadboard"
+        },
+        {
+          "id": "yt-HjneAhCy2N4",
+          "note": "bookmarked as \"How Do Transistors Interpret Instructions and Do Math?\""
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Logic with Switches\", \"Telegraphs and Relays\", \"Relays and Gates\""
+        },
+        {
+          "id": "nandgame",
+          "note": "play the first levels"
+        }
+      ],
+      "questions": [
+        "What property of a transistor lets one gate's output drive the next gate's input? (Without it, logic could not be chained.)",
+        "Real gates are CMOS: a pull-up network of pMOS and a pull-down network of nMOS. Why does that make NAND and NOR the cheap gates and AND the expensive one?",
+        "Ben Eater builds gates from bipolar transistors and resistors; chips use MOSFETs. What is the same and what differs?",
+        "Where does \"0\" or \"1\" live physically? Why is there a forbidden voltage band, and what does it buy?",
+        "Can you go from a truth table to a Boolean expression to a circuit, and back?"
+      ]
+    },
+    "the-universalness-of-some-logic-gates": {
+      "core": [
+        {
+          "id": "cs-n10u-jp-logic-not-and-or"
+        },
+        {
+          "id": "cs-n10u-jp-logic-xor"
+        },
+        {
+          "id": "nandgame",
+          "note": "the first levels build NOT, AND, OR and XOR from NAND; this aside as a game"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "project 1"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Why is NAND alone enough, while AND and OR together are not?",
+        "Build XOR from four NANDs on paper.",
+        "If NAND is enough, why do real chips use dozens of cell types?"
+      ]
+    },
+    "how-does-a-transistor-work": {
+      "core": [
+        {
+          "id": "yt-33vbFFFn04k"
+        },
+        {
+          "id": "yt-DXvAlwMAxiA"
+        },
+        {
+          "id": "yt-_Pqfjer8-O4",
+          "note": "transistors as they sit inside a real chip"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-WD14ow-1q6k"
+        },
+        {
+          "id": "yt-uo2KgRN04XI"
+        },
+        {
+          "id": "hcaw-transistors"
+        }
+      ],
+      "questions": [
+        "What does doping do to silicon, and what are n-type and p-type regions?",
+        "In a MOSFET, what does the voltage on the gate change between source and drain?",
+        "Ben Eater's breadboard transistors are bipolar; a chip uses MOSFETs. What is the practical difference for building logic?"
+      ]
+    },
+    "karnaugh-maps": {
+      "core": [
+        {
+          "id": "wiki-karnaugh-map",
+          "note": "from your reading notes"
+        },
+        {
+          "id": "yt-7zffjsXqATg",
+          "note": "the same job done by hand: from a truth table to a circuit"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Why does a group of two neighbouring 1s remove one variable from the expression?",
+        "What do \"don't care\" cells buy you?",
+        "Karnaugh maps stop being practical at about six variables. What do design tools do instead?"
+      ],
+      "note": "Nothing in the bookmarks covers this; one reference and one worked example."
+    },
+    "gates-to-arithmetic": {
+      "core": [
+        {
+          "id": "yt-wvJc9CZcvBc"
+        },
+        {
+          "id": "cs-n10u-jp-logic-adder"
+        },
+        {
+          "id": "computers-theputhoffs-com-adder"
+        },
+        {
+          "id": "yt-QZwneRb-zqA",
+          "note": "second half builds the adder in a simulator"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-HjneAhCy2N4"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Adding with Logic Gates\""
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapter 2"
+        }
+      ],
+      "questions": [
+        "Why is the sum bit an XOR and the carry bit an AND?",
+        "What does a full adder have that a half adder lacks, and where does that third input come from?",
+        "In a ripple-carry adder the top bit waits for every bit below it. What does that do to the maximum clock speed? (This is the link to 1.4.)",
+        "What happens to the carry out of the eighth bit?"
+      ]
+    },
+    "the-clock": {
+      "core": [
+        {
+          "id": "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele",
+          "note": "new bookmark; race conditions, edges and the slowest path, which are the headings you added"
+        },
+        {
+          "id": "wiki-clock-signal",
+          "note": "new bookmark; distribution networks, multipliers and dividers"
+        },
+        {
+          "id": "yt-PVNAPWUxZ0g"
+        },
+        {
+          "id": "cs-n10u-jp-logic-dff"
+        },
+        {
+          "id": "yt-kRlSFm519Bo"
+        },
+        {
+          "id": "yt-SmQ5K7UQPMM"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-81BgFhm2vz8"
+        },
+        {
+          "id": "yt-WCwJNnx36Rk"
+        },
+        {
+          "id": "yt-g_koa00MBLg"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Let's Build a Clock!\""
+        }
+      ],
+      "questions": [
+        "What goes wrong in a circuit that has feedback and no clock?",
+        "Level-triggered and edge-triggered: why does the edge matter?",
+        "What sets the highest frequency a circuit can run at? (Slowest path between two flip-flops.)",
+        "Where does the tick physically come from, and why is it then divided or multiplied?",
+        "What does \"3 GHz\" not tell you about how fast a computer is?",
+        "What is the clock distribution network for?",
+        "How does a slow part stay in step with a fast clock, and how does a fast clock come out of a slow crystal?"
+      ]
+    },
+    "single-phase-vs-two-and-four-phase-clocks": {
+      "core": [
+        {
+          "id": "wiki-clock-signal",
+          "note": "the sections on single-phase, two-phase and four-phase clocks"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Why would a design want two clock signals that are never high at the same time?",
+        "What does a single-phase design need in its place? (Edge-triggered flip-flops.)"
+      ],
+      "note": "One source so far."
+    },
+    "the-crystal-oscillator": {
+      "core": [
+        {
+          "id": "yt-_2By2ane2I4"
+        },
+        {
+          "id": "yt-3XDH-fZKnQk",
+          "note": "a crystal as the signal source of a clock built on breadboards"
+        },
+        {
+          "id": "yt-RT0mp4f4QIs"
+        },
+        {
+          "id": "yt-gnmrKDpTM7o"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-oEC5fIw0bL0"
+        },
+        {
+          "id": "wiki-crystal-oscillator"
+        },
+        {
+          "id": "yt-kRlSFm519Bo",
+          "note": "the alternative: a resistor and a capacitor set the pace"
+        }
+      ],
+      "questions": [
+        "Why does a piece of quartz vibrate at one frequency?",
+        "Why 32,768 ticks per second in a watch?",
+        "A 555 timer and a crystal both make a clock. Why does a computer use the crystal?"
+      ]
+    },
+    "clock-skew-jitter-and-metastability": {
+      "core": [
+        {
+          "id": "wiki-clock-skew",
+          "note": "from your reading notes"
+        },
+        {
+          "id": "wiki-jitter",
+          "note": "from your reading notes"
+        },
+        {
+          "id": "wiki-metastability-electronics",
+          "note": "from your reading notes"
+        },
+        {
+          "id": "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Skew and jitter both move a clock edge. Which one is fixed and which one changes from tick to tick?",
+        "What are setup time and hold time?",
+        "A flip-flop's input changes inside that window. What can the output do, and how do two flip-flops in a row lower the risk?"
+      ]
+    },
+    "overclocking": {
+      "core": [
+        {
+          "id": "wiki-overclocking",
+          "note": "from your reading notes"
+        },
+        {
+          "id": "wiki-clock-signal"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-bios"
+        }
+      ],
+      "questions": [
+        "What exactly is changed when a CPU is overclocked, and which program changes it?",
+        "Why does a higher voltage allow a higher frequency, and what sets the limit?"
+      ]
+    },
+    "memory": {
+      "core": [
+        {
+          "id": "yt-KM0DdEaY5sY"
+        },
+        {
+          "id": "yt-peCh_859q7Q"
+        },
+        {
+          "id": "yt-YW-_GkUguMM"
+        },
+        {
+          "id": "yt-rM9BjciBLmg"
+        },
+        {
+          "id": "yt-I0-izyq6q5s"
+        },
+        {
+          "id": "cs-n10u-jp-logic-latch"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-7WnbIeMgWYA",
+          "note": "DRAM: one transistor and a leaking capacitor"
+        },
+        {
+          "id": "yt-7J7X7aZvMXQ"
+        },
+        {
+          "id": "yt-TfhL5kBiQVI",
+          "note": "volatile and long-term memory side by side"
+        },
+        {
+          "id": "yt-F1OC5e7Tn_o"
+        },
+        {
+          "id": "yt-st3mUEub99E"
+        },
+        {
+          "id": "yt-rXHSB5w7CyE"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Feedback and Flip-Flops\""
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapter 3"
+        }
+      ],
+      "questions": [
+        "Two cross-coupled NOR gates remember a bit. Trace set, then release, by hand.",
+        "Why is S = R = 1 not allowed on an SR latch?",
+        "What does a D latch add to an SR latch, and what does a flip-flop add to a D latch? Why does a counter need the flip-flop?",
+        "SRAM cell, DRAM cell, flash cell: what holds the bit in each, and what does each give up?",
+        "What physically keeps a bit when the power is off?"
+      ]
+    },
+    "how-does-an-ssd-work": {
+      "core": [
+        {
+          "id": "yt-5Mh3o886qpg"
+        },
+        {
+          "id": "yt-YtBysgPOKx4"
+        },
+        {
+          "id": "yt-r-SivgEpA1Q"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-5f2xOxRGKqk"
+        },
+        {
+          "id": "yt-9kM3mnxrMMM"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-file-ssd",
+          "note": "the software side: flash translation layer, wear leveling"
+        },
+        {
+          "id": "codecapsule-com-2014-02-12-coding-for-ssds-part-1-introd"
+        }
+      ],
+      "questions": [
+        "How does a flash cell hold a bit, and how is it read back?",
+        "Why can flash not overwrite in place, and what does the controller do about it?",
+        "One, two, three bits per cell: what is traded for the extra density?",
+        "Why does an SSD not care how far apart two addresses are, while a disk does?"
+      ]
+    },
+    "how-does-an-hdd-work": {
+      "core": [
+        {
+          "id": "yt-wtdnatmVdIg"
+        },
+        {
+          "id": "wiki-disk-storage"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-file-disks",
+          "note": "seek, rotation, and what a request costs"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-udma"
+        },
+        {
+          "id": "yt-TfhL5kBiQVI"
+        }
+      ],
+      "questions": [
+        "How does one block number become a place on a platter?",
+        "Seek time and rotational delay: why is a random read about a hundred times slower than a sequential one?",
+        "For the \"follow one address\" section: what does the drive's own controller do between the request and the bytes arriving? (Links to DMA in 3.1.)"
+      ]
+    },
+    "rom-read-only-memory": {
+      "core": [
+        {
+          "id": "yt-K88pgWhEb1M"
+        },
+        {
+          "id": "yt-BA12Z7gQ4P0",
+          "note": "a ROM as a lookup table that replaces logic gates"
+        },
+        {
+          "id": "wiki-read-only-memory"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-0q6Ujn_zNH8",
+          "note": "what lives in a ROM: the first program a computer runs"
+        }
+      ],
+      "questions": [
+        "ROM, PROM, EPROM, EEPROM, flash: what changed at each step?",
+        "Why does a computer need memory that survives power-off before it can read any drive?",
+        "A ROM answers every address with a stored value. Why does that make it a replacement for any truth table?"
+      ]
+    },
+    "putting-the-basics-together": {
+      "core": [
+        {
+          "id": "yt-QZwneRb-zqA"
+        },
+        {
+          "id": "hcaw",
+          "note": "all eleven steps"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapters 1–3"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Explain in five sentences how one switch becomes something that adds and something that remembers."
+      ]
+    },
+    "register": {
+      "core": [
+        {
+          "id": "yt-QzWW-CBugZo"
+        },
+        {
+          "id": "yt--arYx_oVIj8"
+        },
+        {
+          "id": "yt-CiMaWbz_6E8"
+        },
+        {
+          "id": "wiki-hardware-register"
+        },
+        {
+          "id": "wiki-word-computer-architecture"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-9WE3Obdjtv0"
+        },
+        {
+          "id": "yt-I0-izyq6q5s",
+          "note": "goes on from latches to a register"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Registers and Busses\""
+        }
+      ],
+      "questions": [
+        "What does the load-enable input do, and why is gating the clock the wrong way to build it?",
+        "Why is register width the \"word size\", and what does \"64-bit CPU\" refer to?",
+        "How does a register differ from a RAM cell?"
+      ]
+    },
+    "ram": {
+      "core": [
+        {
+          "id": "yt-FnxPIZR1ybs"
+        },
+        {
+          "id": "yt-HGkuRp5HfH8"
+        },
+        {
+          "id": "wiki-memory-address"
+        },
+        {
+          "id": "yt-7WnbIeMgWYA",
+          "note": "why the RAM in a real machine is not built from flip-flops"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-uYXwCBo40iA"
+        },
+        {
+          "id": "yt-KNve2LCcSRc"
+        },
+        {
+          "id": "yt-5rl1tEFXKt0"
+        },
+        {
+          "id": "yt-i_wrxBdXTgM"
+        },
+        {
+          "id": "wiki-dynamic-random-access-memory"
+        },
+        {
+          "id": "wiki-memory-controller"
+        },
+        {
+          "id": "yt-7J7X7aZvMXQ"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"An Assemblage of Memory\""
+        }
+      ],
+      "questions": [
+        "How do n address bits select one of 2ⁿ cells? (Decoder on the way in, multiplexer on the way out: the link to 2.3.)",
+        "\"Random access\": every address costs the same. Compared with what?",
+        "Why is real RAM a grid of rows and columns and not one giant decoder?",
+        "What is on the data bus during a read, and during a write?",
+        "Why do both SRAM and DRAM still exist?"
+      ]
+    },
+    "multiplexers-and-decoders": {
+      "core": [
+        {
+          "id": "geeksforgeeks-org-multiplexers-in-digital-logic"
+        },
+        {
+          "id": "what-are-multiplexers-video",
+          "note": "open in your other Chrome window; title only, no address captured"
+        },
+        {
+          "id": "wiki-multiplexer",
+          "note": "the circuit: pick one of N inputs. Not the same article as \"Multiplexing\", which you also have open"
+        },
+        {
+          "id": "yt-7zffjsXqATg",
+          "note": "a decoder derived from its truth table"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "project 1: Mux, DMux, Mux8Way16"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-hEDQpqhY2MA"
+        },
+        {
+          "id": "yt-BA12Z7gQ4P0",
+          "note": "a memory chip as a lookup table for any truth table"
+        },
+        {
+          "id": "nandgame",
+          "note": "the \"Selector\" and \"Switch\" levels"
+        },
+        {
+          "id": "wiki-multiplexing",
+          "note": "the other idea with the same name; it belongs to 5.2"
+        }
+      ],
+      "questions": [
+        "Build a 2-to-1 multiplexer from AND, OR and NOT. Then a 4-to-1 from three of those.",
+        "Multiplexer, demultiplexer, decoder: which has n inputs and 2ⁿ outputs?",
+        "A multiplexer is an if-statement in hardware. Name three places in the CPU where one sits.",
+        "A multiplexer and a tri-state bus both let many sources share one destination. What does each cost? (The link to 2.6.)",
+        "Feed constants into a multiplexer's data inputs and it becomes a lookup table. Why does that mean it can compute any truth table?",
+        "A demultiplexer is the same switch the other way round. Where does the CPU need one?"
+      ],
+      "note": "The bookmark folder has no entry on multiplexers; the tabs from your multiplexer search are the first material."
+    },
+    "the-alu": {
+      "core": [
+        {
+          "id": "yt-4qH4unVtJkE"
+        },
+        {
+          "id": "yt-mOVOS9AjgFs"
+        },
+        {
+          "id": "yt-Pwc1b-Y7lm0"
+        },
+        {
+          "id": "cs-n10u-jp-logic-alu"
+        },
+        {
+          "id": "hcaw-subtract",
+          "note": "Multiplication, Division; three steps: subtract.html, multiply.html, divide.html"
+        },
+        {
+          "id": "yt-Cc33wOBAKDM",
+          "note": "bookmarked as \"Bit Shift Operations: Hardware Implementation and Usage\""
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-S-3fXU3FZQc"
+        },
+        {
+          "id": "yt-U7Q8-2YZTUU"
+        },
+        {
+          "id": "yt-4nCMDvnR2Fg"
+        },
+        {
+          "id": "yt-ObnosznZvHY",
+          "note": "the flags are what the rest of the CPU reads from the ALU"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"But What About Subtraction?\" and \"The Arithmetic Logic Unit\""
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapter 2; an ALU with six control bits"
+        }
+      ],
+      "questions": [
+        "Why does \"invert every bit and add one\" turn an adder into a subtractor? What is the extra hardware?",
+        "The same eight bits can be signed or unsigned. Who decides? What is the difference between the carry flag and the overflow flag?",
+        "How does the ALU choose its operation: compute everything and select, or share one adder?",
+        "Multiplication is shift-and-add. Why is division the slow one?",
+        "Which flags does the ALU produce, and who reads them?"
+      ]
+    },
+    "multiplication": {
+      "core": [
+        {
+          "id": "computers-theputhoffs-com-multiply"
+        },
+        {
+          "id": "yt-Cc33wOBAKDM",
+          "note": "shifts are half of shift-and-add"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Multiply 6 by 5 in binary by shifting and adding.",
+        "Why does multiplying two 8-bit numbers need 16 bits for the result?",
+        "Early CPUs had no multiply instruction. What did programs do?"
+      ]
+    },
+    "division": {
+      "core": [
+        {
+          "id": "computers-theputhoffs-com-divide"
+        },
+        {
+          "id": "yt-v3-a-zqKfgA",
+          "note": "division written in software for a CPU without a divide instruction"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Do a binary long division by hand.",
+        "Why is division the slowest of the four operations?",
+        "What should happen on a division by zero? (The link to 4.3.)"
+      ]
+    },
+    "floating-point-in-hardware": {
+      "core": [
+        {
+          "id": "docs-oracle-com-cd-e19957-01-806-3568-ncg-goldberg",
+          "note": "the rules the hardware has to follow"
+        },
+        {
+          "id": "float-exposed"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Adding two floats takes four steps: align, add, normalise, round. What does each need in hardware?",
+        "Why was this a separate chip for years?"
+      ],
+      "note": "No bookmark covers the hardware side."
+    },
+    "square-roots-and-more-complex-stuff": {
+      "core": [
+        {
+          "id": "wiki-cordic",
+          "note": "roots, sines and logarithms from shifts and adds"
+        }
+      ],
+      "deeper": [],
+      "questions": ["How can a circuit that only shifts and adds produce a square root?"],
+      "note": "Nothing collected yet beyond one reference."
+    },
+    "program-counter": {
+      "core": [
+        {
+          "id": "yt-exGEmA67dNc"
+        },
+        {
+          "id": "yt-g_1HyxBzjl0"
+        },
+        {
+          "id": "yt-Ui6QyzcD3_E"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-F1OC5e7Tn_o"
+        },
+        {
+          "id": "yt-tNwU7pK_3tk"
+        },
+        {
+          "id": "yt-Zg1NdPKoosU"
+        }
+      ],
+      "questions": [
+        "The program counter is a register that can also count. Which control inputs does it need?",
+        "Why is a jump nothing more than loading the program counter?",
+        "How does a conditional jump use a flag from the ALU?",
+        "What does the counter's width say about how much memory the machine can address?"
+      ]
+    },
+    "buses-and-tri-state-logic": {
+      "core": [
+        {
+          "id": "yt-QzWW-CBugZo"
+        },
+        {
+          "id": "yt-faAjse109Q8"
+        },
+        {
+          "id": "yt-_3cNcmli6xQ"
+        },
+        {
+          "id": "wiki-three-state-logic"
+        },
+        {
+          "id": "wiki-bus-contention"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt--6JAgFWCL9w"
+        },
+        {
+          "id": "wiki-bus-mastering",
+          "note": "in Still to Read twice"
+        },
+        {
+          "id": "wiki-arbiter-electronics"
+        },
+        {
+          "id": "wiki-advanced-microcontroller-bus-architecture",
+          "note": "in Still to Read twice"
+        },
+        {
+          "id": "wiki-peripheral-component-interconnect"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Registers and Busses\""
+        },
+        {
+          "id": "wiki-bus-computing",
+          "note": "the system bus"
+        }
+      ],
+      "questions": [
+        "What happens electrically when two outputs drive one wire to different values?",
+        "The third state is \"disconnected\". Who guarantees that only one output is connected at a time?",
+        "Breadboard CPUs use a shared bus; most logic inside a modern chip uses multiplexers instead. Why?",
+        "Address bus, data bus, control lines: what travels on each?"
+      ]
+    },
+    "the-control-unit": {
+      "core": [
+        {
+          "id": "yt-AwUirxi9eBg"
+        },
+        {
+          "id": "yt-dXdoim96v5A"
+        },
+        {
+          "id": "yt-X7rCxs1ppyY"
+        },
+        {
+          "id": "yt-dHWFpkGsxOs"
+        },
+        {
+          "id": "yt-ObnosznZvHY"
+        },
+        {
+          "id": "yt-Zg1NdPKoosU"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-FCscQGBIL-Y"
+        },
+        {
+          "id": "yt-WtlGB-YVLOg"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"CPU Control Signals\" and \"Loops, Jumps, and Calls\""
+        }
+      ],
+      "questions": [
+        "Inputs: the opcode, a step counter, the flags. Output: one bit per control line. Why is the control unit \"just a lookup table\"?",
+        "Walk one instruction, for example \"load the value at address 14\", through every step. Which control lines are on at each?",
+        "What is microcode, and what is the alternative?"
+      ]
+    },
+    "microcode": {
+      "core": [
+        {
+          "id": "yt-JUVt_KYAp-I"
+        },
+        {
+          "id": "wiki-microcode",
+          "note": "from your reading notes"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-WtlGB-YVLOg"
+        },
+        {
+          "id": "yt-eNtADpJ2EC4",
+          "note": "instruction set versus microarchitecture"
+        }
+      ],
+      "questions": [
+        "What does a microcode ROM store for each instruction?",
+        "How can a microcode update fix a CPU bug after the chip has shipped?",
+        "Hardwired control and microcoded control: what does each one cost?"
+      ]
+    },
+    "tying-it-together": {
+      "core": [
+        {
+          "id": "yt-GYlNoAMBY6o"
+        },
+        {
+          "id": "yt-HjneAhCy2N4"
+        },
+        {
+          "id": "djhworld-cpu",
+          "note": "djhworld: I don't know how CPUs work so I simulated one in code; a programmer learning by building, which is your position too"
+        },
+        {
+          "id": "ben-eater-8bit",
+          "note": "Ben Eater: Build an 8-bit computer; read the overview; the individual videos are listed under 2.1–2.6"
+        },
+        {
+          "id": "yt-16zrEPOsIcI"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-7A1SzIIKMho",
+          "note": "jdh designs an instruction set, an emulator and an assembler first; the design half of your open tabs"
+        },
+        {
+          "id": "yt-vaGZapAGvwM",
+          "note": "open in a tab as \"Building a Breadboard Computer\""
+        },
+        {
+          "id": "yt-znxZBWAO2aU",
+          "note": "the long version of the build"
+        },
+        {
+          "id": "github-com-jdah-jdh-8",
+          "note": "the repository for that machine: emulator, assembler, schematics"
+        },
+        {
+          "id": "yt-Zt0JfmV7CyI"
+        },
+        {
+          "id": "cs-n10u-jp-cpu"
+        },
+        {
+          "id": "yt-LnzuMJLZRdU",
+          "note": "also open in a tab; a real CPU chip on a breadboard, watched one clock tick at a time"
+        },
+        {
+          "id": "yt-yl8vPW5hydQ"
+        },
+        {
+          "id": "visual6502-org-jssim",
+          "note": "a real 1975 CPU simulated transistor by transistor in the browser"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Automating Arithmetic\"; the cleanest account of how an adder plus memory becomes a machine that follows a list"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapters 4–5"
+        }
+      ],
+      "questions": [
+        "Instructions and data sit in the same RAM. What tells them apart?",
+        "Name every register one fetch touches, and what moves where on each clock tick.",
+        "What is the difference between the datapath (where bits can flow) and control (which paths are open now)?",
+        "What is the smallest set of instructions that makes the machine useful?"
+      ]
+    },
+    "caches-why-they-are-useful-what": {
+      "core": [
+        {
+          "id": "yt-TfhL5kBiQVI"
+        },
+        {
+          "id": "yt-xFMXIgvlgcY",
+          "note": "bookmarked as \"Linear Data Structures: Arrays, Linked Lists and Vectors\"; it is a video about cache locality"
+        },
+        {
+          "id": "yt-_61YOh7QcP0"
+        },
+        {
+          "id": "en-algorithmica-org-hpc-cpu-cache",
+          "note": "measured experiments for every effect"
+        },
+        {
+          "id": "nand2web-arch"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-cache-coherence",
+          "note": "also in Still to Read; the multi-core problem"
+        },
+        {
+          "id": "fgiesen-wordpress-com-2016-08-07-why-do-cpus-have-multip"
+        },
+        {
+          "id": "people-freebsd-org-lstewart-articles-cpumemory",
+          "note": "section 3 only"
+        }
+      ],
+      "questions": [
+        "Why is there a speed gap between CPU and RAM at all?",
+        "What is a cache line, and why does asking for one byte fetch 64?",
+        "How does a cache know whether it holds an address? (Tag, index, offset.)",
+        "Why three levels instead of one large cache?",
+        "Why does walking a linked list cost more than walking an array of the same length?"
+      ]
+    },
+    "machine-code-and-assembly": {
+      "core": [
+        {
+          "id": "yt-eNtADpJ2EC4",
+          "note": "instruction set versus microarchitecture"
+        },
+        {
+          "id": "yt-yl8vPW5hydQ"
+        },
+        {
+          "id": "yt-oO8_2JJV0B4"
+        },
+        {
+          "id": "yt-yOyaJXpAYZQ"
+        },
+        {
+          "id": "yt-9PPrrSyubG0"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-7A1SzIIKMho",
+          "note": "jdh designs an instruction set and an assembler for his own machine"
+        },
+        {
+          "id": "wiki-x86-64"
+        },
+        {
+          "id": "nand2tetris-book",
+          "note": "chapters 4 and 6: machine language and the assembler"
+        }
+      ],
+      "questions": [
+        "An instruction set is a contract; a microarchitecture is one way to keep it. Give one example of each.",
+        "Encode one instruction of your toy CPU by hand: which bits are the operation, which are the operand?",
+        "An assembler translates one line to one instruction. What does it do beyond looking up opcodes? (Labels.)",
+        "What do \"8-bit\" and \"64-bit\" refer to: the instruction length, the register width or the address width?"
+      ],
+      "note": "Your toy-CPU questions in random-notes (why two bytes, what the operand is, 8-bit against 16-bit) are answered in the vault plan under \"Reader questions from the current toy CPU\"."
+    },
+    "how-does-a-program-get-turned": {
+      "core": [
+        {
+          "id": "crafting-interpreters",
+          "note": "\"A Map of the Territory\", then the scanning and parsing chapters"
+        },
+        {
+          "id": "yt-0c8b7YfsBKs"
+        },
+        {
+          "id": "cs-n10u-jp-lang"
+        },
+        {
+          "id": "yt-RnBOOF502p0"
+        },
+        {
+          "id": "yt-XJC5WB2Bwrc",
+          "note": "several compiled languages linked into one executable"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "engineering-a-compiler",
+          "note": "also open in a tab; chapter 1 for the shape, the rest as reference"
+        },
+        {
+          "id": "dragon-book",
+          "note": "bookmarked as an Amazon page; reference only"
+        },
+        {
+          "id": "github-com-aalhour-awesome-compilers"
+        },
+        {
+          "id": "wiki-concepts-techniques-and-models-of-computer-programming",
+          "note": "for \"What even is a Programming Language?\""
+        },
+        {
+          "id": "yt-qgwrt7vYY4U"
+        },
+        {
+          "id": "nand2tetris-book",
+          "note": "chapters 7–8 (virtual machine) and 10–11 (compiler)"
+        }
+      ],
+      "questions": [
+        "What does the parser's tree give you that a flat list of tokens does not?",
+        "Turn a = b + c 2 into toy-CPU instructions. Where do the intermediate values live?",
+        "Compiler, interpreter, JIT: where does each one do the translation?",
+        "Two source files become one program. What does the linker have to fix up?"
+      ]
+    },
+    "our-toy-language-and-its-compiler": {
+      "core": [
+        {
+          "id": "yt-JP9n5wHyemU"
+        },
+        {
+          "id": "crafting-interpreters",
+          "note": "a complete small language built twice; the template for a toy"
+        },
+        {
+          "id": "nand2tetris-book",
+          "note": "chapters 10–11: a compiler for a small language"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "compilers-iecc-com-crenshaw"
+        },
+        {
+          "id": "yt-7A1SzIIKMho"
+        }
+      ],
+      "questions": [
+        "What is the smallest language that still shows a variable, arithmetic, a condition and a loop?",
+        "For each of those four, which instructions of your CPU does it compile to?"
+      ]
+    },
+    "functions-and-the-stack": {
+      "core": [
+        {
+          "id": "yt-7YyALikxAlU"
+        },
+        {
+          "id": "yt-N3o5yHYLviQ",
+          "note": "bookmarked twice"
+        },
+        {
+          "id": "yt-xBjQVxVxOxc"
+        },
+        {
+          "id": "yt-omI0MrTWiMU"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-ioJkA7Mw2-U",
+          "note": "bookmarked as \"How the Heap Works\""
+        },
+        {
+          "id": "yt-ZYJIakkcLYw"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Loops, Jumps, and Calls\""
+        }
+      ],
+      "questions": [
+        "The CPU only has jumps. How does a function call return to the right place?",
+        "What does the stack pointer point at, and what happens to it on a call and on a return?",
+        "What is in a stack frame?",
+        "Why is asking the heap for memory slower than using the stack?",
+        "What is a stack overflow, physically?"
+      ]
+    },
+    "putting-it-all-together": {
+      "core": [
+        {
+          "id": "yt-9PPrrSyubG0"
+        },
+        {
+          "id": "yt-35zLnS3fXeA"
+        },
+        {
+          "id": "yt-a73ZXDJtU48"
+        },
+        {
+          "id": "yt-LnzuMJLZRdU",
+          "note": "also open in a tab"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-fCbAafKLqC8"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapter 5"
+        },
+        {
+          "id": "djhworld-cpu",
+          "note": "djhworld: I don't know how CPUs work so I simulated one in code; second read, now as a check on your own version"
+        }
+      ],
+      "questions": [
+        "Take one line of your toy language down to transistors. At each layer, what is the representation, and what translates it to the next?"
+      ]
+    },
+    "pipelining": {
+      "core": [
+        {
+          "id": "nand2web-arch",
+          "note": "Pipelining & Hazards"
+        },
+        {
+          "id": "en-algorithmica-org-hpc-pipelining"
+        },
+        {
+          "id": "wiki-instruction-pipelining"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "A pipeline makes no single instruction faster. What does it make faster?",
+        "What is a hazard, and what does the pipeline do when it meets one?"
+      ]
+    },
+    "predictive-branching": {
+      "core": [
+        {
+          "id": "en-algorithmica-org-hpc-pipelining-branching"
+        },
+        {
+          "id": "danluu-com-branch-prediction",
+          "note": "predictors from simplest to modern, each with its accuracy"
+        },
+        {
+          "id": "stackoverflow-com-questions-11227809-why-is-processing-a",
+          "note": "the demo your readers can run"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Why does a pipelined CPU have to guess at all?",
+        "What does a wrong guess cost?",
+        "How does a two-bit counter predict a loop correctly on all but the first and last pass?"
+      ],
+      "note": "No bookmark covers this."
+    },
+    "compiler-optimizations-leaving-out-stuff-that": {
+      "core": [
+        {
+          "id": "godbolt-org",
+          "note": "type C on the left, read assembly on the right, toggle -O0 and -O2"
+        },
+        {
+          "id": "yt-bSkpMdDe4g4",
+          "note": "long; the first half is enough"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "engineering-a-compiler",
+          "note": "the optimization chapters"
+        },
+        {
+          "id": "gcc-gimple-and-rtl",
+          "note": "both in your Compilers folder; what an optimizer's working format looks like"
+        }
+      ],
+      "questions": [
+        "Do constant folding, dead-code elimination and inlining by hand on five lines of code.",
+        "Why do optimizers work on an intermediate form and not on source text or on assembly?",
+        "The compiler may change anything as long as the visible behaviour stays the same. What counts as visible?"
+      ],
+      "note": "No bookmark in the Computer from Scratch folder covers this."
+    },
+    "crazy-compilers-how-they-are-hardware": {
+      "core": [
+        {
+          "id": "aosabook-org-en-v1-llvm",
+          "note": "the M-languages × N-machines argument from the person who built it"
+        },
+        {
+          "id": "yt-eP_P4KOjwhs",
+          "note": "the other half of portability: the operating system"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Five languages and four CPU families: how many translators without a shared intermediate form, how many with one?",
+        "What must a backend know about its target? (Instructions, registers, calling convention.)",
+        "WebAssembly and Java bytecode are instruction sets for machines that do not exist. What problem does that solve?"
+      ]
+    },
+    "simd-stuff": {
+      "core": [
+        {
+          "id": "yt-ryfbBB3pHfI",
+          "note": "Core Dumped's video on SIMD"
+        },
+        {
+          "id": "en-algorithmica-org-hpc-simd"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-single-instruction-multiple-data"
+        },
+        {
+          "id": "wiki-cell-processor"
+        }
+      ],
+      "questions": [
+        "One instruction, many lanes: what does a 256-bit register hold?",
+        "Why are if-statements awkward in SIMD code, and what replaces them?",
+        "How is SIMD related to what a GPU does? (The bridge to 3.3.)"
+      ]
+    },
+    "more-than-one-core": {
+      "core": [
+        {
+          "id": "yt-5sw9XJokAqw"
+        },
+        {
+          "id": "yt-3X93PnKRNUo"
+        },
+        {
+          "id": "wiki-cache-coherence",
+          "note": "two cores, one piece of memory"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-IMceN4_rieo"
+        },
+        {
+          "id": "yt-UXwoAKB-SvE"
+        },
+        {
+          "id": "wiki-multi-core-processor"
+        }
+      ],
+      "questions": [
+        "Clock speeds stopped rising around 2005 and core counts started to. Why?",
+        "What does a program have to do before a second core helps it?",
+        "Two cores write to the same cache line. What goes wrong?"
+      ]
+    },
+    "turing-machines-and-turing-completeness": {
+      "core": [
+        {
+          "id": "yt-AqNDk_UJW4k",
+          "note": "the moment the breadboard computer gets a conditional jump"
+        },
+        {
+          "id": "yt-dNRDvLACg5Q"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "petzold-annotated-turing",
+          "note": "Turing's 1936 paper with a guide"
+        }
+      ],
+      "questions": [
+        "What is the least a machine needs to be Turing complete?",
+        "Your toy CPU and a laptop can compute the same things. What is the one thing that differs?",
+        "The halting problem in one paragraph."
+      ]
+    },
+    "how-a-device-talks-to-the": {
+      "core": [
+        {
+          "id": "yt-tadUeiNe5-g"
+        },
+        {
+          "id": "wiki-memory-mapped-i-o-and-port-mapped-i-o"
+        },
+        {
+          "id": "yt-FY3zTUaykVo",
+          "note": "an LCD attached through an interface chip; the CPU reaches it by writing to addresses"
+        },
+        {
+          "id": "wiki-direct-memory-access"
+        },
+        {
+          "id": "cs-n10u-jp-docs-io",
+          "note": "the docs section is the tab you have open"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-file-devices",
+          "note": "status, command and data registers; polling, interrupts and DMA"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-peripheral-component-interconnect"
+        },
+        {
+          "id": "wiki-bus-mastering"
+        },
+        {
+          "id": "wiki-channel-i-o"
+        },
+        {
+          "id": "wiki-input-output-memory-management-unit"
+        },
+        {
+          "id": "wiki-direct-media-interface"
+        },
+        {
+          "id": "wiki-i-o-acceleration-technology"
+        },
+        {
+          "id": "wiki-remote-direct-memory-access"
+        },
+        {
+          "id": "wiki-system-on-a-chip"
+        },
+        {
+          "id": "docs-kernel-org-driver-api-usb-dma"
+        },
+        {
+          "id": "dma-fundamentals-pdf"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Peripherals\""
+        }
+      ],
+      "questions": [
+        "The CPU writes to an address where there is no RAM. What happens, and which circuit decides?",
+        "A device is a few registers: status, command, data. Write the polling loop for a keyboard in pseudocode.",
+        "With DMA, who copies the bytes, and how does the CPU learn the copy is done?",
+        "USB, SATA and PCIe are all serial. Why did one fast wire beat many parallel ones?"
+      ],
+      "note": "Your Still to Read folder goes much deeper here than the outline did: DMA, bus mastering, PCI and the IOMMU are all in it."
+    },
+    "operating-systems-polling-vs-interrupts": {
+      "core": [
+        {
+          "id": "yt-DlEa8kd7n3Q"
+        },
+        {
+          "id": "yt-oOYA-jsWTmc"
+        },
+        {
+          "id": "wiki-polling-computer-science"
+        },
+        {
+          "id": "yt-1HHeyUVz43k"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-e5g8eYKEhMw"
+        },
+        {
+          "id": "yt-g_koa00MBLg"
+        },
+        {
+          "id": "yt-mpIFag8zSWo"
+        }
+      ],
+      "questions": [
+        "What does the CPU do between two instructions to notice an interrupt, and what must it save before jumping?",
+        "How does the CPU find the right handler?",
+        "When is polling the better choice?",
+        "One mechanism, three uses: a device has data, a timer fires, a program asks the kernel for something. What is the same in all three?"
+      ]
+    },
+    "ports-and-cables": {
+      "core": [
+        {
+          "id": "yt-AHYNxpqKqwo"
+        },
+        {
+          "id": "yt-MCi7dCBhVpQ"
+        },
+        {
+          "id": "yt-N0O5Uwc3C0o"
+        },
+        {
+          "id": "yt-l7rce6IQDWs",
+          "note": "what a VGA cable carries, signal by signal"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-oLYLnb7kpLg"
+        },
+        {
+          "id": "wiki-usb"
+        },
+        {
+          "id": "wiki-hdmi"
+        },
+        {
+          "id": "wiki-digital-visual-interface"
+        },
+        {
+          "id": "wiki-video-graphics-array"
+        }
+      ],
+      "questions": [
+        "One wire sending bits in a row beat many wires sending them side by side. Why?",
+        "What does a protocol on a cable have to fix? (Voltages, timing, where a message starts.)",
+        "VGA is analog and HDMI is digital. What actually differs on the wire?",
+        "You plug something in. How does the computer find out what it is?"
+      ]
+    },
+    "how-does-a-keyboard-work": {
+      "core": [
+        {
+          "id": "yt-h-NM1xSSzHQ"
+        },
+        {
+          "id": "yt-7aXbh9VUB3U"
+        },
+        {
+          "id": "yt-w1SB9Ry8_Jg"
+        },
+        {
+          "id": "yt-dL0GO9SeBh0"
+        },
+        {
+          "id": "yt-wdgULBpRoXk"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-2lPzTU-3ONI"
+        },
+        {
+          "id": "yt-mpIFag8zSWo"
+        },
+        {
+          "id": "wiki-charlieplexing",
+          "note": "many LEDs on few pins; a relative of the key matrix that leans on the third state from 2.6"
+        }
+      ],
+      "questions": [
+        "A hundred keys, far fewer wires: how does matrix scanning work, and what is ghosting?",
+        "The keyboard sends a scan code, not a letter. Where does \"A\" come from? (The link to 1.1a.)",
+        "The old PS/2 keyboard interrupts; a USB keyboard is polled. What changed and why?"
+      ]
+    },
+    "how-does-a-mouse-work": {
+      "core": [
+        {
+          "id": "yt-SAaESb4wTCM"
+        },
+        {
+          "id": "yt--HVKm5fIUA8"
+        },
+        {
+          "id": "yt-N0O5Uwc3C0o"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "An optical mouse is a small camera. What does it compare, and how often?",
+        "A mouse reports movement, not position. Who keeps the position, and who draws the cursor?",
+        "A USB mouse is polled by the computer. How does that square with 3.1a?"
+      ]
+    },
+    "getting-pixels-onto-a-screen": {
+      "core": [
+        {
+          "id": "yt-l7rce6IQDWs"
+        },
+        {
+          "id": "yt-uqY3FMuMuRo"
+        },
+        {
+          "id": "computers-theputhoffs-com-bits-to-pixels"
+        },
+        {
+          "id": "wiki-framebuffer"
+        },
+        {
+          "id": "wiki-raster-graphics"
+        },
+        {
+          "id": "yt-3BJU2drrtCM",
+          "note": "scanning and subpixels filmed at high speed"
+        },
+        {
+          "id": "wiki-color-depth"
+        },
+        {
+          "id": "wiki-rgb-color-model"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-OW1EmG7b4DU",
+          "note": "jdh builds a video card"
+        },
+        {
+          "id": "wiki-semigraphics"
+        },
+        {
+          "id": "wiki-ibm-monochrome-display-adapter"
+        },
+        {
+          "id": "wiki-video-graphics-array"
+        },
+        {
+          "id": "wiki-video-bios"
+        },
+        {
+          "id": "wiki-code-page-437"
+        },
+        {
+          "id": "wiki-box-drawing"
+        },
+        {
+          "id": "wiki-block-elements"
+        },
+        {
+          "id": "wiki-multiple-buffering"
+        },
+        {
+          "id": "wiki-palette-computing"
+        },
+        {
+          "id": "wiki-binary-image"
+        },
+        {
+          "id": "wiki-grayscale"
+        },
+        {
+          "id": "wiki-pixel-density"
+        },
+        {
+          "id": "wiki-display-device"
+        },
+        {
+          "id": "wiki-vector-graphics"
+        },
+        {
+          "id": "yt-2iURr3NBprc"
+        },
+        {
+          "id": "yt-BUTHtNrpwiI"
+        }
+      ],
+      "questions": [
+        "1920 × 1080 pixels, three bytes each, sixty times a second: how many bytes per second, and how does that compare with your toy CPU?",
+        "What does the cable to a monitor carry besides colour values?",
+        "What is tearing, and how does a second buffer fix it?",
+        "In 1981 a framebuffer was too expensive and an 80 × 25 text screen was not. What made text mode cheap?",
+        "Refresh rate and frame rate: which belongs to the screen and which to the program?"
+      ]
+    },
+    "color-encodings-and-the-vagaries-of": {
+      "core": [
+        {
+          "id": "ciechanow-ski-color-spaces",
+          "note": "interactive; the reference for this aside"
+        },
+        {
+          "id": "yt-LKnqECcg6Gw",
+          "note": "gamma in four minutes"
+        },
+        {
+          "id": "yt-wh4aWZRtTwU"
+        },
+        {
+          "id": "wiki-color-space"
+        },
+        {
+          "id": "wiki-channel-digital-image"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "bottosson-github-io-posts-oklab"
+        },
+        {
+          "id": "wiki-rgb-color-model"
+        },
+        {
+          "id": "wiki-palette-computing"
+        }
+      ],
+      "questions": [
+        "Mixing light and mixing paint give different results. Why?",
+        "Why three primaries? (Three kinds of cone.)",
+        "What is gamma, and why is averaging two sRGB values the wrong way to blend them?",
+        "What is a gamut, and why can a screen not show every colour you can see?"
+      ],
+      "note": "The Still to Read folder has the Wikipedia basics; the explanations are additions."
+    },
+    "typesetting-and-text-rendering": {
+      "core": [
+        {
+          "id": "yt-SO83KQuuZvg",
+          "note": "from a font file to pixels"
+        },
+        {
+          "id": "wiki-font-rasterization"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-texture-atlas"
+        },
+        {
+          "id": "wiki-vector-graphics"
+        },
+        {
+          "id": "wiki-code-page-437",
+          "note": "the bitmap-font world before outlines"
+        }
+      ],
+      "questions": [
+        "A bitmap font and an outline font: what does each store?",
+        "How does a curve become pixels, and what is anti-aliasing for?",
+        "Drawing a glyph and laying out a line are separate problems. What belongs to layout? (Kerning, ligatures, line breaks.)"
+      ]
+    },
+    "video-encoding": {
+      "core": [
+        {
+          "id": "yt-Kv1Hiv3ox8I",
+          "note": "one frame first: JPEG"
+        },
+        {
+          "id": "sidbala-com-h-264-is-magic"
+        },
+        {
+          "id": "github-com-leandromoreira-digital-video-introduction",
+          "note": "from pixels to codecs to containers"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-0me3guauqOU"
+        },
+        {
+          "id": "wiki-ffmpeg"
+        },
+        {
+          "id": "wiki-video-coding-format"
+        }
+      ],
+      "questions": [
+        "A container and a codec are different things. Which one is \"mp4\" and which one is \"H.264\"?",
+        "I, P and B frames: what does each store?",
+        "Why does seeking in a video jump to certain moments?",
+        "What does ffmpeg do, in one sentence?"
+      ],
+      "note": "From your reading notes; nothing in the bookmarks yet."
+    },
+    "what-is-a-gpu": {
+      "core": [
+        {
+          "id": "yt-h9Z4oGN89MU"
+        },
+        {
+          "id": "computers-theputhoffs-com-cpu-vs-gpu"
+        },
+        {
+          "id": "wiki-graphics-processing-unit",
+          "note": "the history section"
+        },
+        {
+          "id": "wiki-blitter"
+        },
+        {
+          "id": "yt-9RHGLZLUuwc"
+        },
+        {
+          "id": "yt-_JGMgpyCTsY",
+          "note": "shown on the channel page as \"Using Vulkan to Make a 3D Graphics and Compute Library\""
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-hardware-acceleration"
+        },
+        {
+          "id": "yt-ryfbBB3pHfI",
+          "note": "SIMD, the CPU's small-scale version of the same idea"
+        },
+        {
+          "id": "webgpufundamentals-org",
+          "note": "for the \"edit a tiny shader\" demo"
+        }
+      ],
+      "questions": [
+        "Why do thousands of weak cores beat eight strong ones at filling pixels?",
+        "What does the CPU still do in every frame?",
+        "What is a draw call?",
+        "Why are branches expensive on a GPU?"
+      ]
+    },
+    "exploration-of-the-3d-pipeline": {
+      "core": [
+        {
+          "id": "yt-C8YtdC8mxTU"
+        },
+        {
+          "id": "yt-yyJ-hdISgnw",
+          "note": "the whole pipeline written on the CPU; the best match for this aside's headings"
+        },
+        {
+          "id": "yt-kYB8IZa5AuE",
+          "note": "for \"Affine Matrix Transformations\""
+        }
+      ],
+      "deeper": [
+        {
+          "id": "github-com-ssloy-tinyrenderer-wiki",
+          "note": "a software renderer in about 500 lines, as lessons"
+        },
+        {
+          "id": "scratchapixel-com"
+        },
+        {
+          "id": "thebookofshaders-com"
+        },
+        {
+          "id": "wiki-texture-atlas"
+        },
+        {
+          "id": "yt-Qz0KTGYJtUk",
+          "note": "the alternative to rasterization"
+        },
+        {
+          "id": "yt-iOlehM5kNSk"
+        }
+      ],
+      "questions": [
+        "Why are 3D transforms 4 × 4 matrices and not 3 × 3?",
+        "Name the spaces a vertex passes through between the model file and the screen.",
+        "How do you test whether a pixel is inside a triangle?",
+        "What does the depth buffer store, and what goes wrong without it?",
+        "Vertex shader and fragment shader: how often does each run?"
+      ]
+    },
+    "sound": {
+      "core": [
+        {
+          "id": "yt-24yESm63tSY"
+        },
+        {
+          "id": "yt-jhg90zsjqt4"
+        },
+        {
+          "id": "xiph-org-video-vid2",
+          "note": "sampling shown on real analog equipment; removes the \"staircase\" misconception"
+        },
+        {
+          "id": "yt-iA6wRgwl7k0"
+        },
+        {
+          "id": "wiki-analog-to-digital-converter"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-_ZKNOKHpqE4"
+        },
+        {
+          "id": "yt-VIi04uD8LtY"
+        },
+        {
+          "id": "yt-rRnOtKlg4jA"
+        },
+        {
+          "id": "yt-08mmKNLQVHU"
+        },
+        {
+          "id": "yt-tIOR7kRevPU"
+        },
+        {
+          "id": "yt-jJi5EAWgyEM"
+        },
+        {
+          "id": "yt-LSMQ3U1Thzw"
+        },
+        {
+          "id": "yt-spUNpyF58BY"
+        }
+      ],
+      "questions": [
+        "Sample rate and bit depth: what does each one limit?",
+        "Why 44,100 samples per second?",
+        "Follow a number from a file to moving air: which parts does it pass?",
+        "A speaker and a microphone are the same device run in opposite directions. Explain.",
+        "Why does audio need a buffer and an interrupt? (The link to 3.1.)"
+      ]
+    },
+    "putting-input-and-output-together": {
+      "core": [
+        {
+          "id": "yt-tadUeiNe5-g"
+        },
+        {
+          "id": "what-happens-when",
+          "note": "alex/what-happens-when; the key-press section"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Follow one key press to one changed pixel in ten steps, naming the part that handles each."
+      ]
+    },
+    "operating-systems": {
+      "core": [
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-intro"
+        },
+        {
+          "id": "yt-tadUeiNe5-g",
+          "note": "drivers"
+        },
+        {
+          "id": "yt-H4SDPLiUnv4",
+          "note": "kernel mode and user mode"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "petzold-code",
+          "note": "\"The Operating System\""
+        },
+        {
+          "id": "github-com-jdvillal-corestats",
+          "note": "a resource monitor by the Core Dumped author; watch your own scheduler"
+        },
+        {
+          "id": "nand2web-os"
+        }
+      ],
+      "questions": [
+        "Which three problems does an operating system solve that a single program on bare hardware does not have?",
+        "What is a driver, and why does it run inside the kernel?",
+        "How does a program get something onto the screen without touching the hardware?"
+      ]
+    },
+    "the-kernel": {
+      "core": [
+        {
+          "id": "yt-H4SDPLiUnv4",
+          "note": "kernel mode and user mode"
+        },
+        {
+          "id": "yt-ZmPIxfCggFw"
+        },
+        {
+          "id": "yt-OlKvnvZKzcg",
+          "note": "kernel-level anti-cheat: a concrete case of what kernel access means"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "What can a normal program not do, and what enforces that? (Hardware, not software.)",
+        "The kernel is the code that runs in privileged mode. Is the shell part of it? The window system? A driver?",
+        "Monolithic kernel and microkernel: what is the one real difference?",
+        "Why does a bug in a driver take the whole machine down?"
+      ]
+    },
+    "syscalls-or-how-programs-ask-the": {
+      "core": [
+        {
+          "id": "yt-H4SDPLiUnv4"
+        },
+        {
+          "id": "yt-e5g8eYKEhMw"
+        },
+        {
+          "id": "cpu-land",
+          "note": "chapter 1"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-cpu-mechanisms"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-m6WXrC9Mxzo",
+          "note": "the opposite direction: the kernel calling into a program"
+        },
+        {
+          "id": "yt-WtlGB-YVLOg"
+        }
+      ],
+      "questions": [
+        "Why can a program not simply call a function inside the kernel?",
+        "What does the syscall instruction do in hardware?",
+        "Trace write(1, \"hi\", 2) from the program to a character on the screen.",
+        "Why is a syscall slower than a function call?"
+      ]
+    },
+    "processes-and-scheduling": {
+      "core": [
+        {
+          "id": "yt-7ge7u5VUSbE"
+        },
+        {
+          "id": "yt-1HHeyUVz43k"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-cpu-intro"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-cpu-mechanisms",
+          "note": "the chapter that explains how the OS stays in control"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-cpu-sched"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-O2tV9q6784k"
+        },
+        {
+          "id": "yt-M9HHWFp84f0"
+        },
+        {
+          "id": "yt-5sw9XJokAqw"
+        },
+        {
+          "id": "yt-3X93PnKRNUo"
+        },
+        {
+          "id": "yt-bhpzTWtee2A"
+        },
+        {
+          "id": "yt-QAzuAn3nFGo"
+        },
+        {
+          "id": "yt-IMceN4_rieo"
+        },
+        {
+          "id": "yt-UXwoAKB-SvE"
+        },
+        {
+          "id": "yt-Y2mDwW2pMv4"
+        },
+        {
+          "id": "yt-m6WXrC9Mxzo",
+          "note": "bookmarked as \"Signals Explained\""
+        },
+        {
+          "id": "nand2web-os"
+        }
+      ],
+      "questions": [
+        "A program is a file; a process is what?",
+        "A program runs an endless loop. How does the operating system get the CPU back?",
+        "What is saved and restored in a context switch?",
+        "A thread and a process: what do two threads share that two processes do not?"
+      ]
+    },
+    "virtual-memory": {
+      "core": [
+        {
+          "id": "yt-A9WLYbE0p-I"
+        },
+        {
+          "id": "yt-Zmtxl7LZwjQ"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-vm-paging"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-physical-address-extension"
+        },
+        {
+          "id": "cpu-land",
+          "note": "chapter 5"
+        },
+        {
+          "id": "nand2web-os"
+        }
+      ],
+      "questions": [
+        "Follow a virtual address to a physical one: page table, TLB, page fault.",
+        "Why can every process believe it starts at address zero and owns all the memory?",
+        "What does the TLB remember, and why is it needed?"
+      ]
+    },
+    "files-and-file-systems": {
+      "core": [
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-file-intro"
+        },
+        {
+          "id": "pages-cs-wisc-edu-remzi-ostep-file-implementation"
+        },
+        {
+          "id": "yt-I3i5cD5fdXI"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-file-system"
+        },
+        {
+          "id": "wiki-disk-storage"
+        }
+      ],
+      "questions": [
+        "A path is a string. How does the operating system get from it to blocks on a drive?",
+        "What does a directory actually contain?",
+        "Why is deleting a large file fast?",
+        "What does a file extension tell the operating system, and what does it not?"
+      ]
+    },
+    "saving-and-loading-programs": {
+      "core": [
+        {
+          "id": "yt-7ge7u5VUSbE"
+        },
+        {
+          "id": "yt-SwIPOf2YAgI"
+        },
+        {
+          "id": "cpu-land",
+          "note": "chapters 3–4: how a file becomes a running process"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "lwn-net-articles-631631"
+        },
+        {
+          "id": "yt-XJC5WB2Bwrc"
+        },
+        {
+          "id": "yt-N3o5yHYLviQ"
+        },
+        {
+          "id": "yt-ioJkA7Mw2-U"
+        }
+      ],
+      "questions": [
+        "What is in an executable file besides instructions?",
+        "What does the loader do? (It maps; it does not copy everything.)",
+        "What exists in a running process that is not in the file on disk?"
+      ]
+    },
+    "but-how-does-the-operating-system": {
+      "core": [
+        {
+          "id": "yt-yl8vPW5hydQ",
+          "note": "watch for the reset vector: the first thing any CPU does"
+        },
+        {
+          "id": "yt-0q6Ujn_zNH8"
+        },
+        {
+          "id": "wiki-osdev-org-boot-sequence"
+        },
+        {
+          "id": "wiki-video-bios"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-FaILnmUYS_U",
+          "note": "jdh writes a boot sector and a kernel from nothing"
+        },
+        {
+          "id": "yt-HlLCtjJzHVI"
+        },
+        {
+          "id": "yt-SpG8rgI7Hec",
+          "note": "a 256-byte monitor: a tiny program that lets a person inspect memory and start code"
+        },
+        {
+          "id": "os-phil-opp-com",
+          "note": "the first two posts"
+        },
+        {
+          "id": "wiki-bios"
+        },
+        {
+          "id": "wiki-uefi"
+        },
+        {
+          "id": "wiki-power-on-self-test"
+        },
+        {
+          "id": "wiki-booting"
+        }
+      ],
+      "questions": [
+        "What is the very first instruction a CPU runs after power-on, and where is it stored?",
+        "Firmware, boot loader, kernel: what does each stage know that the one before it did not?",
+        "Why can a computer start from a USB stick?",
+        "BIOS and UEFI in two sentences.",
+        "What does the power-on self-test check, and what happens when it fails?",
+        "Cold boot and warm boot: what is skipped the second time?"
+      ],
+      "note": "Nothing in the bookmark folder covers booting; the Wikipedia pages are from your reading notes."
+    },
+    "differences-between-operating-systems": {
+      "core": [
+        {
+          "id": "yt-eP_P4KOjwhs"
+        },
+        {
+          "id": "yt-LO0JeIoEutA"
+        },
+        {
+          "id": "yt-SwIPOf2YAgI"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Same CPU, different operating system: why does the program not run? Name three reasons.",
+        "What is the difference between a kernel and a distribution?",
+        "What is POSIX, and which of the systems in this chapter follow it?"
+      ],
+      "note": "Thin coverage."
+    },
+    "putting-it-all-together-what-happens": {
+      "core": [
+        {
+          "id": "cpu-land",
+          "note": "the whole thing, now as a check"
+        },
+        {
+          "id": "yt-d86ws7mQYIg"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "what-happens-when",
+          "note": "alex/what-happens-when; the same exercise for one key press and one URL"
+        }
+      ],
+      "questions": ["Tell the story in ten sentences, one per layer, without notes."]
+    },
+    "what-even-is-networking": {
+      "core": [
+        {
+          "id": "yt-MGAaTqFct_I"
+        },
+        {
+          "id": "explained-from-first-principles-com-internet"
+        },
+        {
+          "id": "nand2web-net"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "hpbn",
+          "note": "the TCP, TLS and HTTP chapters"
+        },
+        {
+          "id": "what-happens-when",
+          "note": "alex/what-happens-when"
+        }
+      ],
+      "questions": [
+        "Why is networking built in layers, and what does each layer hide from the one above?",
+        "What is encapsulation? Draw one message with all its headers.",
+        "A server is a program, not a machine. What does it spend most of its time doing?"
+      ]
+    },
+    "what-is-a-database": {
+      "core": [
+        {
+          "id": "cstack-github-io-db-tutorial",
+          "note": "an SQLite clone from scratch; the early parts and the B-tree introduction"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Why is a folder of files not enough? Name three things a database adds.",
+        "Why is a B-tree node the size of one disk block? (The link to 1.5a and 1.5b.)"
+      ],
+      "note": "Nothing in the bookmark folder covers databases."
+    },
+    "bits-on-a-wire": {
+      "core": [
+        {
+          "id": "yt-XaGXPObx2Gs"
+        },
+        {
+          "id": "yt-lUo45NqPyq8"
+        },
+        {
+          "id": "yt-8BhjXqw9MqI"
+        },
+        {
+          "id": "yt-i8CmibhvZ0c"
+        },
+        {
+          "id": "wiki-modem"
+        },
+        {
+          "id": "wiki-multiplexing"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "wiki-time-division-multiplexing"
+        },
+        {
+          "id": "wiki-frequency-division-multiplexing"
+        },
+        {
+          "id": "wiki-wavelength-division-multiplexing"
+        },
+        {
+          "id": "wiki-code-division-multiple-access"
+        },
+        {
+          "id": "wiki-statistical-time-division-multiplexing"
+        },
+        {
+          "id": "yt-qs2QcycggWU"
+        },
+        {
+          "id": "yt-1I1vxu5qIUM"
+        }
+      ],
+      "questions": [
+        "Sender and receiver share no clock. How does the receiver find where one bit ends?",
+        "What does a modem do, and why is the handoff between digital and analog needed at all?",
+        "Many phones share one radio band, many conversations share one fibre. Name three ways to share.",
+        "Why does light stay inside a glass fibre?"
+      ]
+    },
+    "error-correcting-codes-especially-hamming": {
+      "core": [
+        {
+          "id": "yt-eq5YpKHXJDM"
+        },
+        {
+          "id": "yt-MgkhrBSjhag"
+        },
+        {
+          "id": "yt-ppU41c15Xho"
+        },
+        {
+          "id": "yt-izG7qT0EpBw"
+        },
+        {
+          "id": "yt-h0jloehRKas"
+        },
+        {
+          "id": "yt-X8jsijhllIA"
+        },
+        {
+          "id": "yt-b3NxrZOu_CE"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-sNkERQlK8j8"
+        },
+        {
+          "id": "wiki-coding-theory",
+          "note": "recently closed tab"
+        }
+      ],
+      "questions": [
+        "Detecting an error and correcting it: what extra information does correction need?",
+        "What is Hamming distance, and how far apart must valid codewords be to fix one flipped bit?",
+        "Place the parity bits of a (7,4) Hamming code and correct one error by hand.",
+        "Networks mostly detect and resend; RAM, SSDs and space probes correct. Why the difference?"
+      ]
+    },
+    "ethernet-and-wifi": {
+      "core": [
+        {
+          "id": "yt-xrVN9jKjIKQ"
+        },
+        {
+          "id": "yt-1XrRT0CmzYw"
+        },
+        {
+          "id": "wiki-wi-fi"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "What is a frame, and how does a receiver know where one starts?",
+        "What is a hardware (MAC) address for?",
+        "Two stations talk at the same moment on a shared medium. What does Ethernet do, and what does Wi-Fi do instead?"
+      ]
+    },
+    "ip-and-routing": {
+      "core": [
+        {
+          "id": "yt-rPoalUa4m8E"
+        },
+        {
+          "id": "yt-aamG4-tH_m8"
+        },
+        {
+          "id": "yt-xNbdeyEI-nE"
+        },
+        {
+          "id": "yt-VWJ8GmYnjTs"
+        },
+        {
+          "id": "wiki-network-address-translation",
+          "note": "what a home router does; not named in the outline"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt--wMU8vmfaYo",
+          "note": "routing between networks and DNS, told through one outage"
+        }
+      ],
+      "questions": [
+        "Why does a machine have both a hardware address and an IP address?",
+        "What does a router do with one packet?",
+        "Ten devices at home, one public address. How?",
+        "What ran out with IPv4, and what does IPv6 change?"
+      ]
+    },
+    "what-is-an-isp-and-what": {
+      "core": [
+        {
+          "id": "yt--wMU8vmfaYo"
+        },
+        {
+          "id": "wiki-modem"
+        },
+        {
+          "id": "arstechnica-com-information-technology-2016-05-how-the-i"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "submarinecablemap-com"
+        }
+      ],
+      "questions": [
+        "What does a modem modulate, and why is it needed at all?",
+        "Your provider does not reach every network itself. How does your packet get to one it does not reach?"
+      ]
+    },
+    "what-is-a-vpn": {
+      "core": [
+        {
+          "id": "wireguard-com"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "A VPN puts a packet inside a packet. Draw both headers.",
+        "With a VPN on, what does your internet provider still see, and what does the VPN provider see?"
+      ],
+      "note": "Nothing in the bookmark folder covers VPNs. A full answer to \"what does it protect\" needs encryption, which the series leaves out."
+    },
+    "tcp-and-udp": {
+      "core": [
+        {
+          "id": "yt-4IMc3CaMhyY"
+        },
+        {
+          "id": "yt-F27PLin3TV0"
+        },
+        {
+          "id": "beej-us-guide-bgnet",
+          "note": "for \"What is a socket?\""
+        }
+      ],
+      "deeper": [
+        {
+          "id": "nand2web-net"
+        },
+        {
+          "id": "hpbn",
+          "note": "the TCP and UDP chapters"
+        }
+      ],
+      "questions": [
+        "Packets get lost and reordered. How does TCP build a reliable stream on top of that?",
+        "What is a port, and what is a socket?",
+        "When is UDP the better choice?"
+      ]
+    },
+    "dns": {
+      "core": [
+        {
+          "id": "howdns-works"
+        },
+        {
+          "id": "nand2web-net",
+          "note": "the DNS resolution simulator"
+        },
+        {
+          "id": "yt--wMU8vmfaYo",
+          "note": "what happens when DNS disappears"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "implement-dns-wizardzines-com"
+        }
+      ],
+      "questions": [
+        "Follow one name lookup from your laptop to an answer.",
+        "Who remembers the answer, and for how long?",
+        "Why are the root servers not overwhelmed?"
+      ]
+    },
+    "http-https-and-tls": {
+      "core": [
+        {
+          "id": "hpbn",
+          "note": "the HTTP and TLS chapters"
+        },
+        {
+          "id": "tls13-xargs-org",
+          "note": "every byte of one handshake"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "What is in an HTTP request? Write one by hand.",
+        "What three things does TLS add to a connection? (Who the other side is, that nobody reads along, that nobody changes anything.)",
+        "What does a certificate claim, and who vouches for it?"
+      ],
+      "note": "TLS needs encryption, which the series leaves out; the questions treat it as a sealed tube."
+    },
+    "putting-the-internet-together": {
+      "core": [
+        {
+          "id": "what-happens-when",
+          "note": "alex/what-happens-when"
+        },
+        {
+          "id": "explained-from-first-principles-com-internet"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Tell the journey from your laptop to google.com and back in ten sentences, one per hop or layer."
+      ]
+    },
+    "how-chips-are-made": {
+      "core": [
+        {
+          "id": "yt-dX9CGRZwD-w"
+        },
+        {
+          "id": "yt-B2482h_TNwg"
+        },
+        {
+          "id": "yt-_Pqfjer8-O4"
+        },
+        {
+          "id": "yt-RuVS7MsQk4Y",
+          "note": "bookmarked as \"Building a $2,000,000 machine in 2 months\""
+        },
+        {
+          "id": "hackerfab-ece-cmu-edu",
+          "note": "with its documentation and GitHub organisation, also bookmarked"
+        },
+        {
+          "id": "yt-33vbFFFn04k"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "sam-zeloof-xyz",
+          "note": "integrated circuits made in a garage"
+        },
+        {
+          "id": "tinytapeout-com",
+          "note": "get your own small design onto a real chip"
+        },
+        {
+          "id": "yt-Z2LgmIGE2nI"
+        },
+        {
+          "id": "yt-gfOD-Qpl6eg"
+        },
+        {
+          "id": "yt-NKfW8ijmRQ4"
+        },
+        {
+          "id": "wiki-system-on-a-chip"
+        },
+        {
+          "id": "wiki-network-on-a-chip"
+        }
+      ],
+      "questions": [
+        "What does doping change in silicon, and how do n-type and p-type regions make a switch?",
+        "One layer is: deposit, coat, expose, develop, etch, strip. Which step sets the smallest feature?",
+        "Why did the industry need EUV light?",
+        "Transistors are built first, wiring after. How many layers of wiring sit on top?"
+      ]
+    }
+  }
+}

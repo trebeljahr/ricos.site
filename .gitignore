@@ -95,3 +95,6 @@ venv/
 
 # Daily word totals for /dev/writing
 .writing-progress.json
+
+# Which study resources are done, for /dev/writing
+.study-progress.json

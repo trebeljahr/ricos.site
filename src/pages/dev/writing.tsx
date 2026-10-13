@@ -28,19 +28,35 @@ import {
   tallyByKind,
 } from "src/lib/computerSeries";
 import { CHAPTER_FILE } from "src/lib/computerSeriesLinks";
+import {
+  type Catalog,
+  formatMinutes,
+  type ResourceKind,
+  type StudyDone,
+  type StudyItem,
+  type StudyPlan,
+  setStudied,
+  studyPlan,
+  withDone,
+} from "src/lib/computerSeriesResources";
+import { readStudyDone } from "src/lib/computerSeriesStudyStore";
 
 // A dev-only writing dashboard for the "how computers work" series: what to
 // write next, how far each chapter is, and whether the deadline still holds.
 // Reads the chapter files in src/content/Notes/computer/ on every request
 // (getStaticProps reruns per request under `next dev`) and keeps one word
 // total per day in .writing-progress.json, which is gitignored. An open tab
-// follows the files: see trackChapterEdits below.
+// follows the files: see trackChapterEdits below. Each chapter also shows what
+// to read and watch before writing it, from src/content/computer/resources.json
+// (keyed by the chapter's slug); ticks go to .study-progress.json through
+// /api/dev/study.
 
 // Server-only: computed inside getStaticProps, because `path` is an empty stub
 // in the browser bundle and calling it at module level stops hydration.
 const seriesDir = () =>
   process.env.COMPUTER_SERIES_DIR ?? path.join("src", "content", "Notes", "computer");
 const HISTORY_FILE = ".writing-progress.json";
+const CATALOG_FILE = path.join("src", "content", "computer", "resources.json");
 
 type Props = {
   chapters: ChapterProgress[];
@@ -53,7 +69,12 @@ type Props = {
   todayKey: string;
   indexPath: string;
   seriesDir: string;
+  /** Study lists by chapter slug, without ticks; `done` carries those. */
+  plans: Record<string, StudyPlan>;
+  done: StudyDone;
 };
+
+type Toggle = (id: string, studied: boolean) => void;
 
 const obsidianLink = (file: string) => `obsidian://open?path=${encodeURIComponent(file)}`;
 const siteLink = (chapter: ChapterProgress) =>
@@ -174,7 +195,113 @@ function Stat({
   );
 }
 
-function NextUpCard({ next }: { next: NextUp | null }) {
+const KIND_VERB: Record<ResourceKind, string> = {
+  video: "Watch",
+  article: "Read",
+  book: "Book",
+  paper: "Paper",
+  reference: "Look up",
+  interactive: "Play",
+  course: "Course",
+  tool: "Tool",
+  code: "Code",
+};
+
+function StudyRow({ item, onToggle }: { item: StudyItem; onToggle: Toggle }) {
+  const meta = [item.by, item.minutes ? formatMinutes(item.minutes) : undefined].filter(Boolean);
+  return (
+    <li className="grid grid-cols-[1rem_4.5rem_1fr] items-baseline gap-tight text-sm">
+      <input
+        type="checkbox"
+        checked={Boolean(item.done)}
+        onChange={(event) => onToggle(item.id, event.target.checked)}
+        aria-label={`Done: ${item.title}`}
+        className="size-4 translate-y-0.5 cursor-pointer accent-accent"
+      />
+      <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        {KIND_VERB[item.kind]}
+      </span>
+      <span className={clsx("min-w-0", item.done && "opacity-50")}>
+        {item.url ? (
+          <a href={item.url} target="_blank" rel="noreferrer" className="font-medium">
+            {item.title}
+          </a>
+        ) : (
+          <span className="font-medium">{item.title}</span>
+        )}
+        {meta.length > 0 && <span className="text-gray-500"> · {meta.join(" · ")}</span>}
+        {item.note && <span className="block text-xs text-gray-500">{item.note}</span>}
+      </span>
+    </li>
+  );
+}
+
+/** "3 of 7 core items done · 54 min of video left". */
+function studySummary(plan: StudyPlan) {
+  const left = plan.minutesLeft ? ` · ${formatMinutes(plan.minutesLeft)} of video left` : "";
+  return `${plan.coreDone} of ${plan.core.length} core items done${left}`;
+}
+
+/** What to read and watch before writing a chapter, and the questions to try cold afterwards. */
+function StudyPanel({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) {
+  const [deeper, setDeeper] = useState(false);
+  return (
+    <div className="mt-para border-t border-gray-200 pt-label dark:border-gray-800">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Study first{plan.core.length > 0 && ` · ${studySummary(plan)}`}
+      </p>
+      {plan.note && <p className="mt-hair text-xs text-gray-500">{plan.note}</p>}
+      {plan.core.length > 0 && (
+        <ul className="mt-label grid gap-tight">
+          {plan.core.map((item) => (
+            <StudyRow key={item.id} item={item} onToggle={onToggle} />
+          ))}
+        </ul>
+      )}
+      {plan.deeper.length > 0 && (
+        <>
+          <button
+            type="button"
+            aria-expanded={deeper}
+            onClick={() => setDeeper((d) => !d)}
+            className="mt-label cursor-pointer text-xs font-semibold uppercase tracking-wide text-gray-500 hover:text-accent"
+          >
+            {deeper ? "▾" : "▸"} Deeper, if stuck or curious ({plan.deeper.length})
+          </button>
+          {deeper && (
+            <ul className="mt-label grid gap-tight">
+              {plan.deeper.map((item) => (
+                <StudyRow key={item.id} item={item} onToggle={onToggle} />
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+      {plan.questions.length > 0 && (
+        <>
+          <p className="mt-para text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Can you answer these without looking?
+          </p>
+          <ul className="mt-label grid list-disc gap-hair pl-5 text-sm">
+            {plan.questions.map((question) => (
+              <li key={question}>{question}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+function NextUpCard({
+  next,
+  plan,
+  onToggle,
+}: {
+  next: NextUp | null;
+  plan?: StudyPlan;
+  onToggle: Toggle;
+}) {
   if (!next) {
     return (
       <p className="text-lg font-semibold">Every section has reached its target. Time to revise.</p>
@@ -196,6 +323,32 @@ function NextUpCard({ next }: { next: NextUp | null }) {
       <div className="mt-para">
         <OpenLinks chapter={chapter} size="big" />
       </div>
+      {plan && plan.core.length > 0 && <NextUpStudy plan={plan} onToggle={onToggle} />}
+    </div>
+  );
+}
+
+/** The core items still open for the chapter that is written next. */
+function NextUpStudy({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) {
+  const open = plan.core.filter((item) => !item.done);
+  const shown = open.slice(0, 4);
+  return (
+    <div className="mt-para border-t border-gray-200 pt-label dark:border-gray-700">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Study first · {studySummary(plan)}
+      </p>
+      {shown.length > 0 && (
+        <ul className="mt-label grid gap-tight">
+          {shown.map((item) => (
+            <StudyRow key={item.id} item={item} onToggle={onToggle} />
+          ))}
+        </ul>
+      )}
+      {open.length > shown.length && (
+        <p className="mt-label text-xs text-gray-500">
+          {open.length - shown.length} more, with the questions, in the chapter's row below.
+        </p>
+      )}
     </div>
   );
 }
@@ -425,7 +578,15 @@ function StreakGrid({
   );
 }
 
-function ChapterRow({ chapter }: { chapter: ChapterProgress }) {
+function ChapterRow({
+  chapter,
+  plan,
+  onToggle,
+}: {
+  chapter: ChapterProgress;
+  plan?: StudyPlan;
+  onToggle: Toggle;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div
@@ -459,7 +620,10 @@ function ChapterRow({ chapter }: { chapter: ChapterProgress }) {
         </span>
         <span className="text-right text-sm tabular-nums text-gray-600 dark:text-gray-300">
           {fmt(chapter.words)} / {fmt(chapter.target)}
-          <span className="block text-xs text-gray-500">{chapter.status}</span>
+          <span className="block text-xs text-gray-500">
+            {chapter.status}
+            {plan && plan.core.length > 0 && ` · study ${plan.coreDone}/${plan.core.length}`}
+          </span>
         </span>
       </button>
       <div
@@ -487,6 +651,7 @@ function ChapterRow({ chapter }: { chapter: ChapterProgress }) {
                 </li>
               ))}
             </ul>
+            {plan && <StudyPanel plan={plan} onToggle={onToggle} />}
           </div>
         </div>
       </div>
@@ -496,6 +661,28 @@ function ChapterRow({ chapter }: { chapter: ChapterProgress }) {
 
 export default function WritingDevPage(props: Props) {
   const { chapters, pace: p, next, today, indexPath } = props;
+  const [done, setDone] = useState(props.done);
+  const planFor = (chapter: ChapterProgress) => {
+    const plan = chapter.slug ? props.plans[chapter.slug] : undefined;
+    return plan && withDone(plan, done);
+  };
+  // Tick at once, then save; a failed save takes the tick back.
+  const toggle: Toggle = (id, studied) => {
+    const before = done;
+    setDone(setStudied(done, id, studied, props.todayKey));
+    fetch("/api/dev/study", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, done: studied }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`${response.status}`);
+      })
+      .catch((error) => {
+        console.warn("Could not save the study tick:", error);
+        setDone(before);
+      });
+  };
   const parts = [...new Set(chapters.map((c) => c.part))].map((part) => {
     const inPart = chapters.filter((c) => c.part === part);
     return { part, title: inPart[0].partTitle, chapters: inPart, tally: tallyByKind(inPart) };
@@ -525,7 +712,11 @@ export default function WritingDevPage(props: Props) {
           ) : (
             <div className="not-prose">
               <section className="mt-section grid gap-para lg:grid-cols-[3fr_2fr]">
-                <NextUpCard next={next} />
+                <NextUpCard
+                  next={next}
+                  plan={next ? planFor(next.chapter) : undefined}
+                  onToggle={toggle}
+                />
                 <DailyMeter today={today} needed={p.neededPerDay} streak={props.streak} />
               </section>
 
@@ -583,7 +774,12 @@ export default function WritingDevPage(props: Props) {
                     thick
                   />
                   {part.chapters.map((chapter) => (
-                    <ChapterRow key={chapter.path} chapter={chapter} />
+                    <ChapterRow
+                      key={chapter.path}
+                      chapter={chapter}
+                      plan={planFor(chapter)}
+                      onToggle={toggle}
+                    />
                   ))}
                 </section>
               ))}
@@ -594,7 +790,9 @@ export default function WritingDevPage(props: Props) {
                 follows the chapters and the asides are counted apart. Set{" "}
                 <code>status: draft-done</code> (or <code>revising</code>, <code>done</code>) to
                 count a chapter as finished: each section short of its estimate then takes its own
-                word count, rounded down to {LOCK_STEP}, as its target.{" "}
+                word count, rounded down to {LOCK_STEP}, as its target. The study lists come from{" "}
+                <code>src/content/computer/resources.json</code>, by chapter slug; ticks are saved
+                in <code>.study-progress.json</code>.{" "}
                 <a href={obsidianLink(indexPath)}>Open the index in Obsidian</a>.
               </p>
             </div>
@@ -617,6 +815,15 @@ function readChapters(dir: string): ChapterProgress[] {
       return chapterProgress(data as ChapterMeta, content, full);
     })
     .sort((a, b) => a.order - b.order);
+}
+
+function readCatalog(): Catalog {
+  try {
+    return JSON.parse(fs.readFileSync(CATALOG_FILE, "utf8")) as Catalog;
+  } catch (error) {
+    console.warn(`Could not read ${CATALOG_FILE}:`, error);
+    return { resources: {}, chapters: {} };
+  }
 }
 
 function readHistory(): History {
@@ -659,6 +866,12 @@ export async function getStaticProps() {
     }
   }
   const daily = dailyWords(history);
+  const catalog = readCatalog();
+  const plans: Props["plans"] = {};
+  for (const chapter of chapters) {
+    const plan = studyPlan(chapter.slug, catalog);
+    if (plan && chapter.slug) plans[chapter.slug] = plan;
+  }
   const props: Props = {
     chapters,
     pace: pace(chapters, todayKey),
@@ -670,6 +883,8 @@ export async function getStaticProps() {
     todayKey,
     indexPath: path.resolve(dir, "Index.md"),
     seriesDir: dir,
+    plans,
+    done: readStudyDone(),
   };
   return { props };
 }

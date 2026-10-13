@@ -49,15 +49,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Construction of a Half Bit Adder": 600,
     "Construction of a Full Bit Adder and the Concept of the Carry Bit": 900,
     "Construction of an 8-Bit Full Bit Adder (or one byte adder)": 650,
-    "The ALU.": 400,
-    "How do we get to the other operations?": 150,
-    Subtraction: 250,
-    "Signed Integers": 500,
-    "Two's Complement": 700,
-    Multiplication: 650,
-    Division: 600,
-    "Floating Point Numbers and how Arithmetic works on them *in hardware* should link to the floating point representations from the encoding schemes from part I": 700,
-    "What about square roots and more complex stuff?": 450,
   },
   "1.4": {
     "The Clock": 150,
@@ -73,12 +64,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "D-Latch": 650,
     "Flip Flop": 800,
     "Read and write enable signals.": 400,
-    "How RAM works.": 200,
-    'Combining memory cells for one bytes into a "single 8-bit register"': 500,
-    "Combining those 8-bit registers into RAM.": 200,
-    "Why RAM is so fast and easily accessible.": 450,
-    "Addressing schemes for RAM.": 600,
-    'A multiplexer to select memory locations and how you could have a set of output wires and something that "selects" from the set of stored memory locations (this would be a super cool demo for the circuit board) and decoders': 700,
   },
   "1.5a": {
     "How does an SSD work?": 800,
@@ -91,12 +76,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Tying it together": 300,
     "The basic idea:": 200,
     "The components that need to be there to hang together:": 150,
-    RAM: 200,
-    ALU: 200,
-    Register: 250,
-    "Program Counter": 300,
-    "Buses and Tri State logic": 700,
-    "Multiplexers (link to earlier section) and Decoders": 350,
     "How do these hang together?": 150,
     "What is the fetch decode execute cycle?": 1000,
     "Assuming you have this set of 0s and 1s that correspond to instructions of a program, how do you get to the next level": 500,
@@ -105,6 +84,37 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
   },
   "2.1": {
+    Register: 250,
+    'Combining memory cells for one bytes into a "single 8-bit register"': 500,
+  },
+  "2.2": {
+    RAM: 200,
+    "Combining those 8-bit registers into RAM.": 200,
+    "Why RAM is so fast and easily accessible.": 450,
+    "Addressing schemes for RAM.": 600,
+  },
+  "2.3": {
+    "Multiplexers and Decoders": 150,
+    'A multiplexer to select memory locations and how you could have a set of output wires and something that "selects" from the set of stored memory locations (this would be a super cool demo for the circuit board) and decoders': 700,
+  },
+  "2.4": {
+    "The ALU": 400,
+    "How do we get to the other operations?": 150,
+    Subtraction: 250,
+    "Signed Integers": 500,
+    "Two's Complement": 700,
+    Multiplication: 650,
+    Division: 600,
+    "Floating Point Numbers and how Arithmetic works on them *in hardware* should link to the floating point representations from the encoding schemes from part I": 700,
+    "What about square roots and more complex stuff?": 450,
+  },
+  "2.5": {
+    "Program Counter": 700,
+  },
+  "2.6": {
+    "Buses and Tri State logic": 900,
+  },
+  "2.7": {
     "How does a program get turned into these instructions for the CPU?": 200,
     "Instruction Set Architectures (or Why Every CPU is *slightly* different, again the importance of protocols)": 700,
     Compilers: 200,
@@ -117,23 +127,23 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Frontend vs. Backend": 400,
     "Our Toy Language + It's Very Simple Compiler": 1100,
   },
-  "2.2": {
+  "2.8": {
     "Putting it All Together": 150,
     "From Transistors to a Simple Program.": 1200,
   },
-  "2.3a": {
+  "2.9a": {
     "Predictive Branching": 800,
   },
-  "2.3b": {
+  "2.9b": {
     "Compiler Optimizations => leaving out stuff that is unnecessary": 800,
   },
-  "2.3c": {
+  "2.9c": {
     "Crazy Compilers (how they are Hardware Agnostic)": 700,
   },
-  "2.3d": {
+  "2.9d": {
     "SIMD stuff": 700,
   },
-  "2.3e": {
+  "2.9e": {
     "Turing Machines, and Turing Completeness": 1000,
   },
   "3.1": {

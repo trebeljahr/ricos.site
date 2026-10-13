@@ -41,6 +41,9 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
   "1.2a": {
     "The universalness of some logic gates": 700,
   },
+  "1.2b": {
+    "How does a transistor work?": 900,
+  },
   "1.3": {
     "Gates to arithmetic": 150,
     "How do we calculate with this?": 250,

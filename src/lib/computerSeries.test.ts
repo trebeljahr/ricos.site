@@ -14,6 +14,7 @@ import {
   recordDay,
   splitSections,
   streak,
+  tallyByKind,
   writingOrder,
 } from "./computerSeries";
 
@@ -146,6 +147,23 @@ describe("nextUp", () => {
     expect(nextUp([aside, lateAside, chapter])?.chapter.path).toBe("chapter.md");
     const drafted = { ...chapter, status: "draft-done" as const };
     expect(nextUp([aside, lateAside, drafted])?.chapter.path).toBe("aside.md");
+  });
+});
+
+describe("tallyByKind", () => {
+  it("counts chapters and asides apart", () => {
+    const body = `${words(300)}\n## Next\n${words(100)}`;
+    const chapter = chapterProgress(meta(), body, "a.md");
+    const aside = chapterProgress(meta({ kind: "aside" }), "", "b.md");
+    expect(tallyByKind([chapter, aside, aside])).toEqual({
+      chapter: {
+        count: 1,
+        credited: DEFAULT_PARENT_WORDS + 100,
+        target: DEFAULT_PARENT_WORDS + DEFAULT_LEAF_WORDS,
+      },
+      aside: { count: 2, credited: 0, target: 2 * DEFAULT_LEAF_WORDS },
+    });
+    expect(tallyByKind([chapter]).aside).toEqual({ count: 0, credited: 0, target: 0 });
   });
 });
 

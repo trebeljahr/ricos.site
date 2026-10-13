@@ -24,6 +24,8 @@ import {
   recordDay,
   SERIES_DEADLINE,
   streak,
+  type Tally,
+  tallyByKind,
 } from "src/lib/computerSeries";
 import { CHAPTER_FILE } from "src/lib/computerSeriesLinks";
 
@@ -58,6 +60,21 @@ const siteLink = (chapter: ChapterProgress) =>
   chapter.slug ? `/computer/${chapter.slug}` : undefined;
 const fmt = (n: number) => n.toLocaleString("en-US");
 const percent = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0);
+
+type KindTally = Record<ChapterMeta["kind"], Tally>;
+
+/** What a bar follows: the chapters, which are written first, or the asides where there are none. */
+const leading = (tally: KindTally) => (tally.chapter.count > 0 ? tally.chapter : tally.aside);
+const tallyColor = (tally: Tally) =>
+  progressColor(tally.target ? tally.credited / tally.target : 0);
+
+/** "chapters 40% · asides 0%", or one number where only one kind exists. */
+function splitPercent({ chapter, aside }: KindTally) {
+  const of = (tally: Tally) => `${percent(tally.credited, tally.target)}%`;
+  if (aside.count === 0) return of(chapter);
+  if (chapter.count === 0) return `asides ${of(aside)}`;
+  return `chapters ${of(chapter)} · asides ${of(aside)}`;
+}
 
 function Bar({
   value,
@@ -238,52 +255,65 @@ function DailyMeter({ today, needed, streak }: { today: number; needed: number; 
   );
 }
 
-type PartSummary = { part: number; title: string; credited: number; target: number };
+type PartSummary = { part: number; title: string; tally: KindTally };
 
-/** The whole series as one track: a segment per part, as wide as its share of the target. */
+/**
+ * The whole series as one track in writing order: a segment for each part's
+ * chapters, then one for all the asides, each as wide as its share of the target.
+ */
 function GlobalTrack({
   parts,
+  tally,
   credited,
   target,
 }: {
   parts: PartSummary[];
+  tally: KindTally;
   credited: number;
   target: number;
 }) {
+  const segments = parts
+    .filter((p) => p.tally.chapter.count > 0)
+    .map((p) => ({
+      key: `part-${p.part}`,
+      name: `Part ${p.part}: ${p.title}`,
+      short: `${p.part}. ${p.title}`,
+      tally: p.tally.chapter,
+    }));
+  if (tally.aside.count > 0) {
+    segments.push({ key: "asides", name: "Asides", short: "Asides", tally: tally.aside });
+  }
   return (
     <section className="mt-para rounded-lg border border-gray-200 p-4 dark:border-gray-700">
       <div className="mb-label flex items-baseline justify-between gap-tight">
         <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Whole series</p>
         <p className="text-sm tabular-nums text-gray-600 dark:text-gray-300">
-          <span
-            className="font-bold"
-            style={{ color: progressColor(target ? credited / target : 0) }}
-          >
-            {percent(credited, target)}%
+          <span className="font-bold" style={{ color: tallyColor(leading(tally)) }}>
+            {splitPercent(tally)}
           </span>{" "}
           · {fmt(credited)} of {fmt(target)} words
         </p>
       </div>
       <div className="flex gap-hair">
-        {parts.map((p) => (
+        {segments.map((s) => (
           <div
-            key={p.part}
+            key={s.key}
             className="min-w-0"
-            style={{ flex: `${p.target} 1 0` }}
-            title={`Part ${p.part}: ${p.title} · ${percent(p.credited, p.target)}%`}
+            style={{ flex: `${s.tally.target} 1 0` }}
+            title={`${s.name} · ${percent(s.tally.credited, s.tally.target)}%`}
           >
-            <Bar value={p.credited} max={p.target} thick />
+            <Bar value={s.tally.credited} max={s.tally.target} thick />
           </div>
         ))}
       </div>
       <ul className="mt-label flex flex-wrap gap-x-para gap-y-hair text-xs text-gray-500">
-        {parts.map((p) => (
-          <li key={p.part} className="flex items-center gap-hair">
+        {segments.map((s) => (
+          <li key={s.key} className="flex items-center gap-hair">
             <span
               className="size-2 rounded-full"
-              style={{ backgroundColor: progressColor(p.target ? p.credited / p.target : 0) }}
+              style={{ backgroundColor: tallyColor(s.tally) }}
             />
-            {p.part}. {p.title} · {percent(p.credited, p.target)}%
+            {s.short} · {percent(s.tally.credited, s.tally.target)}%
           </li>
         ))}
       </ul>
@@ -468,14 +498,9 @@ export default function WritingDevPage(props: Props) {
   const { chapters, pace: p, next, today, indexPath } = props;
   const parts = [...new Set(chapters.map((c) => c.part))].map((part) => {
     const inPart = chapters.filter((c) => c.part === part);
-    return {
-      part,
-      title: inPart[0].partTitle,
-      chapters: inPart,
-      credited: inPart.reduce((sum, c) => sum + c.credited, 0),
-      target: inPart.reduce((sum, c) => sum + c.target, 0),
-    };
+    return { part, title: inPart[0].partTitle, chapters: inPart, tally: tallyByKind(inPart) };
   });
+  const tally = tallyByKind(chapters);
 
   return (
     <Layout
@@ -525,13 +550,13 @@ export default function WritingDevPage(props: Props) {
                 <Stat
                   label="Done"
                   value={`${percent(p.credited, p.target)}%`}
-                  note="against per-section estimates"
+                  note="chapters and asides, against per-section estimates"
                 >
                   <Bar value={p.credited} max={p.target} className="mt-label" />
                 </Stat>
               </section>
 
-              <GlobalTrack parts={parts} credited={p.credited} target={p.target} />
+              <GlobalTrack parts={parts} tally={tally} credited={p.credited} target={p.target} />
 
               <StreakGrid
                 days={props.days}
@@ -543,15 +568,20 @@ export default function WritingDevPage(props: Props) {
 
               {parts.map((part) => (
                 <section key={part.part} className="mt-section">
-                  <div className="mb-label flex items-baseline justify-between gap-tight">
+                  <div className="mb-label flex flex-wrap items-baseline justify-between gap-tight">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                       Part {part.part}: {part.title}
                     </h2>
                     <span className="text-sm tabular-nums text-gray-500">
-                      {percent(part.credited, part.target)}%
+                      {splitPercent(part.tally)}
                     </span>
                   </div>
-                  <Bar value={part.credited} max={part.target} className="mb-label" thick />
+                  <Bar
+                    value={leading(part.tally).credited}
+                    max={leading(part.tally).target}
+                    className="mb-label"
+                    thick
+                  />
                   {part.chapters.map((chapter) => (
                     <ChapterRow key={chapter.path} chapter={chapter} />
                   ))}
@@ -560,7 +590,8 @@ export default function WritingDevPage(props: Props) {
 
               <p className="mt-section text-sm text-gray-500">
                 Order, titles and status come from each file's frontmatter. "Write next" takes the
-                chapters first, in that order, and the asides after the last chapter. Set{" "}
+                chapters first, in that order, and the asides after the last chapter, so each bar
+                follows the chapters and the asides are counted apart. Set{" "}
                 <code>status: draft-done</code> (or <code>revising</code>, <code>done</code>) to
                 count a chapter as finished: each section short of its estimate then takes its own
                 word count, rounded down to {LOCK_STEP}, as its target.{" "}

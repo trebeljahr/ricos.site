@@ -167,6 +167,26 @@ export function pace(
   };
 }
 
+export type Tally = { count: number; credited: number; target: number };
+
+/**
+ * Chapters and asides counted apart. Asides are written last, so a part whose
+ * chapters are drafted is where it should be, whatever its asides say.
+ */
+export function tallyByKind(
+  chapters: Pick<ChapterProgress, "kind" | "credited" | "target">[],
+): Record<ChapterMeta["kind"], Tally> {
+  const tally = (kind: ChapterMeta["kind"]): Tally => {
+    const ofKind = chapters.filter((c) => c.kind === kind);
+    return {
+      count: ofKind.length,
+      credited: ofKind.reduce((sum, c) => sum + c.credited, 0),
+      target: ofKind.reduce((sum, c) => sum + c.target, 0),
+    };
+  };
+  return { chapter: tally("chapter"), aside: tally("aside") };
+}
+
 export type NextUp = { chapter: ChapterProgress; section: Section };
 
 /**

@@ -92,14 +92,24 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     Subtraction: 250,
     "Signed Integers": 500,
     "Two's Complement": 700,
-    Multiplication: 650,
-    Division: 600,
-    "Floating Point Numbers and how Arithmetic works on them *in hardware* should link to the floating point representations from the encoding schemes from part I": 700,
-    "What about square roots and more complex stuff?": 450,
     "The ALU itself: the box": 150,
     "Two numbers and an operation code in, a result and flags out": 450,
     "Picking the operation": 600,
     Flags: 450,
+  },
+  "2.4a": {
+    Multiplication: 650,
+    "This used to be software, or a different chip entirely": 300,
+  },
+  "2.4b": {
+    Division: 600,
+  },
+  "2.4c": {
+    "Floating Point Numbers and how Arithmetic works on them *in hardware*": 700,
+    "This used to be a different chip entirely": 350,
+  },
+  "2.4d": {
+    "What about square roots and more complex stuff?": 450,
   },
   "2.5": {
     "Program Counter": 700,

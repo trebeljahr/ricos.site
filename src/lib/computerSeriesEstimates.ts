@@ -72,17 +72,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "How does an HDD work?": 600,
     "Follow one address of long term storage request through the toy RAM and into the magnetic disk": 600,
   },
-  "2.0": {
-    "Tying it together": 300,
-    "The basic idea:": 200,
-    "The components that need to be there to hang together:": 150,
-    "How do these hang together?": 150,
-    "What is the fetch decode execute cycle?": 1000,
-    "Assuming you have this set of 0s and 1s that correspond to instructions of a program, how do you get to the next level": 500,
-  },
-  "2.0a": {
-    'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
-  },
   "2.1": {
     Register: 250,
     'Combining memory cells for one bytes into a "single 8-bit register"': 500,
@@ -115,6 +104,17 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Buses and Tri State logic": 900,
   },
   "2.7": {
+    "Tying it together": 300,
+    "The basic idea:": 200,
+    "The components that need to be there to hang together:": 150,
+    "How do these hang together?": 150,
+    "What is the fetch decode execute cycle?": 1000,
+    "Assuming you have this set of 0s and 1s that correspond to instructions of a program, how do you get to the next level": 500,
+  },
+  "2.7a": {
+    'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
+  },
+  "2.8": {
     "How does a program get turned into these instructions for the CPU?": 200,
     "Instruction Set Architectures (or Why Every CPU is *slightly* different, again the importance of protocols)": 700,
     Compilers: 200,
@@ -127,23 +127,23 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Frontend vs. Backend": 400,
     "Our Toy Language + It's Very Simple Compiler": 1100,
   },
-  "2.8": {
+  "2.9": {
     "Putting it All Together": 150,
     "From Transistors to a Simple Program.": 1200,
   },
-  "2.9a": {
+  "2.10a": {
     "Predictive Branching": 800,
   },
-  "2.9b": {
+  "2.10b": {
     "Compiler Optimizations => leaving out stuff that is unnecessary": 800,
   },
-  "2.9c": {
+  "2.10c": {
     "Crazy Compilers (how they are Hardware Agnostic)": 700,
   },
-  "2.9d": {
+  "2.10d": {
     "SIMD stuff": 700,
   },
-  "2.9e": {
+  "2.10e": {
     "Turing Machines, and Turing Completeness": 1000,
   },
   "3.1": {

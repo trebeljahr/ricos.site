@@ -87,7 +87,7 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     'A multiplexer to select memory locations and how you could have a set of output wires and something that "selects" from the set of stored memory locations (this would be a super cool demo for the circuit board) and decoders': 700,
   },
   "2.4": {
-    "The ALU": 400,
+    "The ALU": 250,
     "How do we get to the other operations?": 150,
     Subtraction: 250,
     "Signed Integers": 500,
@@ -96,6 +96,10 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     Division: 600,
     "Floating Point Numbers and how Arithmetic works on them *in hardware* should link to the floating point representations from the encoding schemes from part I": 700,
     "What about square roots and more complex stuff?": 450,
+    "The ALU itself: the box": 150,
+    "Two numbers and an operation code in, a result and flags out": 450,
+    "Picking the operation": 600,
+    Flags: 450,
   },
   "2.5": {
     "Program Counter": 700,

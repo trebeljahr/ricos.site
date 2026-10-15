@@ -46,6 +46,8 @@ export type Node = {
   module?: Circuit;
   /** Name of a registered behavioural block this module runs as while folded. */
   behaviour?: string;
+  /** Id of the tutorial part a module implements, e.g. "xor" for a reader-built XOR. */
+  part?: string;
 };
 export const WIRE_COLORS = {
   cyan: "#69e2e0",
@@ -1878,6 +1880,9 @@ export function validateCircuit(
       ...(n.probe ? { probe: n.probe } : {}),
       module: validatedModules.get(n.id),
       ...(behaviours.has(n.id) ? { behaviour: behaviours.get(n.id) } : {}),
+      ...(n.type === "module" && typeof n.part === "string" && /^[a-z0-9-]{1,40}$/.test(n.part)
+        ? { part: n.part }
+        : {}),
     })),
     wires: item.wires.map((w) => ({
       id: w.id,

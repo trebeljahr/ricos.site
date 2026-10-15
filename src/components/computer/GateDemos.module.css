@@ -1,0 +1,164 @@
+/* Shared by the truth table, switch logic and adder demos. The frame comes from
+   ByteExplorer.module.css and Codebook.module.css (DemoMachine); rules here that
+   change one of their classes carry two classes, so they win whichever sheet
+   loads first. Layout follows the demo's own width, not the viewport. Each
+   demo passes `.demo` to DemoMachine as its className. */
+.demo { container-type: inline-size; }
+
+/* A dark phosphor board for circuit diagrams: unlit wires are dim, lit wires glow. */
+.board {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  border: 6px solid #3c5042;
+  border-radius: 9px;
+  background:
+    repeating-linear-gradient(0deg, #ffffff05 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, #243c29, #122518);
+  box-shadow: inset 0 4px 10px #0009, 0 2px 0 #dce5d4;
+}
+.board svg { display: block; width: 100%; height: auto; overflow: visible; }
+.board text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.wire { fill: none; stroke: #4c6750; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke .15s; }
+.wireOn { stroke: #c9f2aa; filter: drop-shadow(0 0 3px #a9e987); }
+.junction { fill: #4c6750; }
+.junctionOn { fill: #c9f2aa; }
+.gateBody { fill: #16291c; stroke: #8fb894; stroke-width: 2; stroke-linejoin: round; transition: stroke .15s, fill .15s; }
+.gateBodyOn { fill: #1f3d28; stroke: #d9f6c0; }
+.gateLine { fill: none; stroke: #8fb894; stroke-width: 2; stroke-linecap: round; }
+.gateLabel { fill: #a8c9a6; font-weight: 700; text-anchor: middle; dominant-baseline: central; letter-spacing: .04em; }
+.portName { fill: #a8c9a6; font-size: 11px; font-weight: 700; dominant-baseline: central; letter-spacing: .06em; }
+.lampMark { fill: #2e4434; stroke: #6e8a72; stroke-width: 2; transition: fill .15s; }
+.lampMarkOn { fill: #d9f6c0; stroke: #f1ffe4; filter: drop-shadow(0 0 6px #c5ee8b); }
+.boxOutline { fill: #ffffff06; stroke: #6e8a72; stroke-width: 1.5; stroke-dasharray: 5 4; }
+.boxSolid { fill: #1a3020; stroke: #8fb894; stroke-width: 2; }
+.boxSolidOn { stroke: #d9f6c0; }
+.boxName { fill: #a8c9a6; font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+.boxNameBig { fill: #d1ecc8; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-anchor: middle; dominant-baseline: central; }
+.valueTag { fill: #c9f2aa; font-size: 10px; font-weight: 700; dominant-baseline: central; }
+.valueTagOff { fill: #6e8a72; }
+
+/* Input keys under a diagram, one per input, with the output lamps after them. */
+.keys { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 10px 14px; margin-top: 14px; }
+.key { display: grid; justify-items: center; gap: 5px; font-size: 11px; letter-spacing: .06em; }
+.demo .key button { width: 46px; height: 44px; }
+.arrow { align-self: center; padding-bottom: 14px; font-size: 18px; opacity: .7; }
+.lampOut { display: grid; justify-items: center; gap: 5px; min-width: 46px; font-size: 11px; letter-spacing: .06em; }
+.lampOut i {
+  width: 30px;
+  height: 30px;
+  margin: 7px 0;
+  border: 3px solid #405e37;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #7f8d7c, #556352);
+  box-shadow: inset 0 2px 4px #1e3324;
+}
+.lampOut i[data-on="true"] { background: radial-gradient(circle at 35% 35%, #f1ffe4, #a7d46b 70%); box-shadow: 0 0 14px #c5ee8b, 0 0 3px #f1ffe4; }
+
+/* The truth table: one button per row, the current row lit. */
+.table { display: grid; gap: 4px; margin: 12px 0 0; padding: 0; list-style: none; }
+.tableHead, .row {
+  display: grid;
+  grid-template-columns: var(--columns);
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 14px;
+  letter-spacing: .06em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.tableHead { padding-block: 0; font-size: 10px; letter-spacing: .08em; }
+.row {
+  width: 100%;
+  border: 1px solid #748273;
+  border-radius: 4px;
+  background: linear-gradient(#879587, #a5b1a1);
+  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
+  color: inherit;
+  font-family: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+}
+.row:hover { filter: brightness(1.06); }
+.row[aria-current="true"] {
+  border-color: #2c4031;
+  background: #354d39;
+  box-shadow: inset 0 2px 3px #14281a;
+  color: #d9f2c0;
+  text-shadow: 0 0 6px #a9e987;
+}
+.split { border-left: 2px solid #5f6e60; }
+.row[aria-current="true"] .split { border-left-color: #8fb894; }
+.hidden { opacity: .45; }
+.mark { font-size: 12px; }
+.mark[data-ok="false"] { color: #7d261a; }
+.row[aria-current="true"] .mark[data-ok="false"] { color: #ffb4a2; }
+.out1 { font-weight: 800; }
+
+/* The same table as a 2 × 2 grid: A down the side, B across the top. */
+.quad { display: grid; grid-template-columns: auto repeat(2, minmax(0, 1fr)); gap: 4px; margin-top: 12px; font-size: 11px; letter-spacing: .06em; text-align: center; }
+.quad > span { align-self: center; }
+.quad button {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1.6;
+  border: 1px solid #748273;
+  border-radius: 4px;
+  background: linear-gradient(#879587, #a5b1a1);
+  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
+  color: inherit;
+  font: inherit;
+  font-size: 22px;
+  cursor: pointer;
+}
+.quad button[data-out="true"] { border-color: #3d5a3f; background: radial-gradient(ellipse at center, #c9f2aa, #8fbf7d); text-shadow: 0 0 6px #e8ffd8; }
+.quad button[aria-current="true"] { outline: 3px solid #26362a; outline-offset: -3px; }
+
+.rule { margin: 10px 0 0; font-size: 12px; line-height: 1.45; letter-spacing: .01em; }
+.note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; letter-spacing: .01em; opacity: .85; }
+
+/* Section heads that hold a row of small keys wrap below their title when narrow. */
+.demo .headWrap { flex-wrap: wrap; row-gap: 6px; }
+.demo .headWrap > div { flex-wrap: wrap; }
+
+/* The LCD sum line: "1 + 1 = 10". */
+.sumLine { padding: 4px 0 2px; font-size: 30px; line-height: 1.1; letter-spacing: .08em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sumLine small { font-size: 14px; letter-spacing: .04em; }
+
+/* Bytes typed as bits, for the 8-bit adder. */
+.byteRow { display: grid; grid-template-columns: 34px repeat(8, minmax(0, 1fr)) minmax(44px, auto); align-items: center; gap: 4px; margin-top: 8px; }
+.byteRow > span:first-child { font-size: 12px; letter-spacing: .06em; }
+.demo .byteRow button { width: 100%; max-width: 40px; height: 36px; justify-self: center; font-size: 16px; }
+.byteValue { font-size: 15px; text-align: right; font-variant-numeric: tabular-nums; }
+.byteWeights { display: grid; grid-template-columns: 34px repeat(8, minmax(0, 1fr)) minmax(44px, auto); gap: 4px; margin-top: 10px; font-size: 9px; text-align: center; opacity: .7; }
+.sumBits { display: grid; grid-template-columns: 34px repeat(8, minmax(0, 1fr)) minmax(44px, auto); align-items: center; gap: 4px; margin-top: 8px; }
+.sumBits > i {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 40px;
+  height: 36px;
+  border: 3px solid #3c5042;
+  border-radius: 4px;
+  background: #2e4434;
+  color: #6e8a72;
+  font: 700 16px/1 ui-monospace, monospace;
+  font-style: normal;
+}
+.sumBits > i[data-on="true"] { background: radial-gradient(ellipse at center, #e1fbcf, #a7d46b); color: #1e3b25; box-shadow: 0 0 10px #c5ee8b; }
+.sumBits > span:first-child { font-size: 12px; letter-spacing: .06em; }
+
+@container (max-width: 600px) {
+  .sumLine { font-size: 24px; }
+  .byteRow, .byteWeights, .sumBits { grid-template-columns: 26px repeat(8, minmax(0, 1fr)) minmax(34px, auto); gap: 3px; }
+  .demo .byteRow button { height: 32px; font-size: 14px; }
+  .sumBits > i { height: 32px; font-size: 14px; }
+  .byteValue { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wire, .gateBody, .lampMark { transition: none; }
+}

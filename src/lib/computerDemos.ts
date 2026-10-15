@@ -1,4 +1,9 @@
 export const computerDemos = [
+  // Chapter 1.0: the layers a computer is made of.
+  {
+    slug: "abstraction-layers",
+    title: "Open a computer, layer by layer",
+  },
   {
     slug: "byte-explorer",
     title: "One byte, many meanings",
@@ -22,6 +27,27 @@ export const computerDemos = [
   {
     slug: "endian-reader",
     title: "Two bytes, four reading orders",
+  },
+  // Chapters 1.2 to 1.4: switches, gates, adders and the clock.
+  {
+    slug: "switch-logic",
+    title: "Two switches, one lamp",
+  },
+  {
+    slug: "truth-tables",
+    title: "Truth tables",
+  },
+  {
+    slug: "transistor-gates",
+    title: "Gates wired from transistors",
+  },
+  {
+    slug: "adders",
+    title: "Add bits with gates",
+  },
+  {
+    slug: "clock",
+    title: "Watch a clock tick",
   },
   {
     slug: "logic-builder",

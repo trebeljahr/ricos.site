@@ -1,0 +1,30 @@
+/* The battery, switch and lamp drawing of SwitchLogic. Board, wires and labels
+   come from GateDemos.module.css. */
+.board svg { max-height: 240px; }
+.blade { stroke: #8fb894; stroke-width: 3.5; stroke-linecap: round; transition: all .18s ease-out; }
+.bladeClosed { stroke: #d9f6c0; }
+.contact { fill: #16291c; stroke: #a8c9a6; stroke-width: 2; }
+.plate { stroke: #d1ecc8; stroke-width: 3; stroke-linecap: round; }
+.plateShort { stroke: #d1ecc8; stroke-width: 6; stroke-linecap: round; }
+.bulb { fill: #1f3324; stroke: #8fb894; stroke-width: 2; transition: fill .15s; }
+.bulbOn { fill: #f4ffe0; stroke: #ffffff; }
+.halo { fill: #d9ffb0; opacity: .22; filter: blur(4px); }
+.filament { fill: none; stroke: #6e8a72; stroke-width: 1.6; stroke-linejoin: round; }
+.filamentOn { stroke: #b9822a; }
+/* Dashes that run along a lit wire, in the direction the current flows. */
+.flow {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1.5 11;
+  opacity: .75;
+  animation: flow .6s linear infinite;
+}
+@keyframes flow { from { stroke-dashoffset: 12.5; } to { stroke-dashoffset: 0; } }
+.revealRow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 12px; }
+.revealRow > span { margin: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .flow { display: none; }
+  .blade, .bulb { transition: none; }
+}

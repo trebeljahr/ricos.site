@@ -1,0 +1,84 @@
+/* HalfAdder, FullAdder and EightBitAdder. Board, keys and tables come from
+   GateDemos.module.css; the frame from DemoMachine. */
+.single { display: grid; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
+
+/* The half adder stays a figure, not a poster, in a wide column. */
+.compact svg { max-height: 230px; }
+/* The full adder has too much detail to shrink to a phone: it scrolls sideways instead. */
+.wide { overflow-x: auto; overscroll-behavior-x: contain; }
+.wide svg { min-width: 500px; }
+
+/* Keys and the result LCD side by side when there is room. */
+.controls { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 0 18px; }
+.controls > div:first-child { justify-content: flex-start; }
+.controls .lcd { align-self: center; margin-top: 14px; }
+
+/* The chain of full adders: same columns as the byte rows, bit 7 on the left. */
+.chain { display: grid; grid-template-columns: 34px repeat(8, minmax(0, 1fr)) minmax(44px, auto); align-items: center; gap: 4px; margin: 14px 0 0; padding: 0; list-style: none; }
+.faCell { position: relative; display: grid; }
+/* Each full adder's carry out leaves on its left, into the gap before its neighbour. */
+.faCell::before, .carryStart::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  width: 8px;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 2px;
+  background: #4c6750;
+}
+.faCell[data-carry-out="true"]::before, .carryStart[data-on="true"]::before { background: #c9f2aa; box-shadow: 0 0 6px #a9e987; }
+.fa {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 1px;
+  width: 100%;
+  height: 48px;
+  padding: 0;
+  border: 3px solid #3c5042;
+  border-radius: 5px;
+  background: radial-gradient(ellipse at center, #243c29, #122518);
+  box-shadow: inset 0 2px 6px #0008, 0 2px 0 #dce5d4;
+  color: #a8c9a6;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.fa b { font-size: 12px; letter-spacing: .06em; }
+.fa small { font-size: 10px; opacity: .8; }
+.fa:hover { border-color: #5d7a5f; }
+.fa[aria-pressed="true"] { border-color: #d9f6c0; color: #e1fbcf; box-shadow: inset 0 2px 6px #0008, 0 0 0 2px #26362a, 0 0 12px #a9e98799; }
+.carryEnd { display: grid; justify-items: center; gap: 3px; font-size: 9px; letter-spacing: .04em; }
+.carryEnd i { width: 14px; height: 14px; border: 2px solid #405e37; border-radius: 50%; background: #677565; box-shadow: inset 0 1px 2px #1e3324; }
+.carryEnd i[data-on="true"] { background: #c9f2aa; box-shadow: 0 0 8px #c5ee8b; }
+.carryStart { position: relative; padding-left: 6px; font-size: 10px; letter-spacing: .04em; }
+
+.rippleToggle {
+  padding: 1px 6px;
+  border: 1px solid #1d4625;
+  border-radius: 3px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 10px;
+  letter-spacing: .06em;
+  cursor: pointer;
+}
+.rippleToggle[aria-pressed="true"] { background: #1d46251f; box-shadow: inset 0 1px 2px #1d462566; }
+.detail { margin-top: 14px; }
+.detailKeys { display: flex; align-items: center; gap: 6px; }
+.detail a { color: inherit; text-decoration: underline; }
+
+@container (max-width: 560px) {
+  .controls { grid-template-columns: minmax(0, 1fr); }
+  .controls > div:first-child { justify-content: center; }
+}
+@container (max-width: 600px) {
+  .chain { grid-template-columns: 26px repeat(8, minmax(0, 1fr)) minmax(34px, auto); gap: 3px; }
+  .fa { height: 42px; border-width: 2px; }
+  .fa b { font-size: 10px; }
+  .faCell::before, .carryStart::before { left: -5px; width: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .fa { transition: none; } }

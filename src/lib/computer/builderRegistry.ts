@@ -18,16 +18,32 @@ export function registerBuilder(id: symbol) {
   };
 }
 
-/** Marks the builder the reader pointed at or focused last. */
-export function activateBuilder(id: symbol) {
+/**
+ * Marks the builder the reader pointed at or focused last. Focus left in
+ * another builder is dropped: panning the canvas keeps the browser from
+ * moving it, and a key press would then go to the wrong builder.
+ */
+export function activateBuilder(id: symbol, root?: HTMLElement | null) {
   active = id;
+  const focused = typeof document === "undefined" ? null : document.activeElement;
+  if (
+    root &&
+    focused instanceof HTMLElement &&
+    !root.contains(focused) &&
+    focused.closest("[data-logic-builder]")
+  )
+    focused.blur();
 }
 
-/** Whether a window key event belongs to builder `id`, whose root element is `root`. */
+/**
+ * Whether a window key event belongs to builder `id`, whose root element is
+ * `root`: the builder pointed at or focused last wins, then the builder that
+ * holds the focus, then the only builder on the page.
+ */
 export function ownsKeyEvent(id: symbol, root: HTMLElement | null, target: EventTarget | null) {
+  if (active && mounted.has(active)) return active === id;
   if (root && target instanceof Node && root.contains(target)) return true;
   if (target instanceof Element && target.closest("[data-logic-builder]")) return false;
-  if (active && mounted.has(active)) return active === id;
   return mounted.size === 1 && mounted.has(id);
 }
 

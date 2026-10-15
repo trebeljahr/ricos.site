@@ -1,5 +1,7 @@
 .panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: 10px;
   padding: 16px 16px 22px;
   color: #dfe7f7;
@@ -60,6 +62,7 @@
 
 .picker select {
   flex: 1;
+  width: 0;
   min-width: 0;
   padding: 5px 6px;
 }

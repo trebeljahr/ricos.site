@@ -260,6 +260,6 @@
 .sidebar p.ownPartsNote{margin:0 0 10px;font-size:10.5px}
 .ownPartsNote a{color:#b7a1ff}
 .layoutWithCoach{grid-template-columns:264px minmax(0,1fr) 320px}
-.coach{min-height:0;overflow-y:auto;overscroll-behavior:contain;border-left:1px solid #405071;background:#1a2440}
+.coach{min-width:0;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-left:1px solid #405071;background:#1a2440}
 @media(max-width:1100px){.layoutWithCoach{grid-template-columns:228px minmax(0,1fr) 280px}}
 @media(max-width:900px){.layoutWithCoach{display:flex;flex-direction:column}.coach{border-left:0;border-top:1px solid #405071}}

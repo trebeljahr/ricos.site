@@ -2544,7 +2544,7 @@ export function LogicBuilder({
       ref={shellRef}
       className={clsx(styles.shell, locked && styles.locked)}
       data-logic-builder=""
-      onPointerDownCapture={() => activateBuilder(instanceId)}
+      onPointerDownCapture={() => activateBuilder(instanceId, shellRef.current)}
       onFocusCapture={() => activateBuilder(instanceId)}
     >
       {!locked && <CircuitToolbar

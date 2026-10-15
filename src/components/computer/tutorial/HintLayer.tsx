@@ -141,9 +141,12 @@ export function HintLayer({ callout, rings }: { callout?: Callout; rings: readon
 
   const root = layer.current?.getBoundingClientRect();
   const width = root?.width ?? 0;
-  // The card sits right of its target when there is room, else left of it.
+  // The card sits beside its target: left of an input port, so it does not
+  // cover the part, else right when there is room.
   const cardWidth = 250;
-  const placeRight = target ? target.left + target.width + 16 + cardWidth < width : true;
+  const roomLeft = target ? target.left - cardWidth - 16 > 0 : false;
+  const roomRight = target ? target.left + target.width + 16 + cardWidth < width : true;
+  const placeRight = callout?.anchor?.kind === "input" && roomLeft ? false : roomRight || !roomLeft;
   const cardLeft = target
     ? placeRight
       ? target.left + target.width + 14

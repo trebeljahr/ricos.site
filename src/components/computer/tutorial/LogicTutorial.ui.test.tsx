@@ -104,6 +104,17 @@ describe("several builders on one page", () => {
     expect(boardParts(second)).toHaveLength(3);
     expect(boardParts(first)).toHaveLength(3);
 
+    // Focus left on a button of the first builder does not pull undo back there.
+    first.getByRole("button", { name: "Show me" }).focus();
+    fireEvent.pointerDown(second.getByRole("application", { name: "Circuit canvas" }));
+    expect(document.activeElement).toBe(document.body);
+    fireEvent.click(second.getByRole("button", { name: "Show me" }));
+    expect(boardParts(second)).toHaveLength(4);
+    fireEvent.pointerDown(second.getByRole("application", { name: "Circuit canvas" }));
+    fireEvent.keyDown(window, { key: "z", ctrlKey: true });
+    expect(boardParts(second)).toHaveLength(3);
+    expect(boardParts(first)).toHaveLength(3);
+
     // Pointing at the first builder moves undo there.
     fireEvent.pointerDown(first.getByRole("application", { name: "Circuit canvas" }));
     fireEvent.keyDown(window, { key: "z", ctrlKey: true });

@@ -150,6 +150,10 @@ export type Level = {
   rules?: (circuit: Circuit) => string[];
   /** Off the main path: the next level opens without it. */
   optional?: boolean;
+  /** A compact form of unfinished work, for big circuits. Default: the circuit itself. */
+  save?: (circuit: Circuit) => unknown;
+  /** The circuit from a saved draft, or undefined when it is unusable. */
+  restore?: (saved: unknown) => Circuit | undefined;
 };
 
 /** A boxed part on the board: a module node, tagged with the part it implements. */

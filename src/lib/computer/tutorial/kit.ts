@@ -224,15 +224,21 @@ export function defaultStart(level: Level): { circuit: Circuit; locked: string[]
   };
 }
 
+export type LevelStart = {
+  circuit: Circuit;
+  locked: string[];
+  enforce: (circuit: Circuit) => Circuit;
+};
+
 /** The level's start circuit, locked ids and lock rule. */
-export function levelStart(level: Level) {
-  const start = level.start?.() ?? defaultStart(level);
+export function levelStart(level: Level): LevelStart {
+  const start: { circuit: Circuit; locked: string[]; enforce?: (circuit: Circuit) => Circuit } =
+    level.start?.() ?? defaultStart(level);
   return {
     circuit: start.circuit,
     locked: start.locked,
     enforce:
-      ("enforce" in start && start.enforce) ||
-      ((circuit: Circuit) => enforceStart(circuit, start.circuit, start.locked)),
+      start.enforce ?? ((circuit: Circuit) => enforceStart(circuit, start.circuit, start.locked)),
   };
 }
 

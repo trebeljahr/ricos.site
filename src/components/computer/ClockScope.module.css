@@ -1,0 +1,188 @@
+/* ClockScope. The frame comes from ByteExplorer.module.css and the plates from
+   Codebook.module.css; rules that change one of their classes carry two classes.
+   Layout follows the demo's own width (its .demo container), not the viewport. */
+.bench { display: grid; gap: 8px; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
+
+.lampLabel { display: inline-flex; align-items: center; gap: 8px; }
+.lamp {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #405e37;
+  border-radius: 50%;
+  background: #677565;
+  box-shadow: inset 0 1px 2px #1e3324;
+}
+.lamp[data-state="on"] { background: #d4f59a; box-shadow: 0 0 6px #c5ee8b, 0 0 14px #a7d46b; }
+/* Past the eye's limit the blinks smear into a steady, half-bright glow. */
+.lamp[data-state="blur"] { background: #a2c27a; box-shadow: 0 0 5px #a7d46b99; }
+
+/* A dark phosphor scope, the dark sibling of the green LCD. */
+.scope {
+  margin-top: 12px;
+  padding: 7px 10px 6px;
+  border: 6px solid #3c5042;
+  border-radius: 12px / 9px;
+  background: radial-gradient(ellipse at center, #1c3521, #0c1a10 82%);
+  box-shadow: inset 0 0 22px #000b, inset 0 2px 7px #0009, 0 2px 1px #dce5d4;
+  color: #bdeea0;
+  text-shadow: 0 0 6px #7fd36080;
+}
+.scopeLine { display: flex; justify-content: space-between; gap: 8px; font-size: 10px; letter-spacing: .08em; opacity: .8; font-variant-numeric: tabular-nums; }
+.plot { position: relative; aspect-ratio: 2 / 1; max-height: 300px; margin: 6px 0; }
+.plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; }
+.plot path { fill: none; vector-effect: non-scaling-stroke; }
+.grid { stroke: #5d9a66; stroke-opacity: .26; stroke-width: 1; }
+.gridTicks { stroke: #5d9a66; stroke-opacity: .32; stroke-width: 1; }
+.glow { stroke: #8fea6c; stroke-opacity: .24; stroke-width: 7; stroke-linecap: round; }
+.trace { stroke: #d2f8b8; stroke-width: 2; stroke-linecap: round; }
+/* The beam races through an edge, so a real scope draws it faint. */
+.edgeGlow { stroke: #8fea6c; stroke-opacity: .1; stroke-width: 6; }
+.edge { stroke: #d2f8b8; stroke-opacity: .42; stroke-width: 1.2; }
+.beam {
+  position: absolute;
+  top: 75%;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: #f4ffe9;
+  box-shadow: 0 0 6px 2px #a9f58b, 0 0 16px 4px #8fea6c88;
+  pointer-events: none;
+}
+.beam[data-hidden] { display: none; }
+
+.note { min-height: 2.9em; margin: 10px 0 0; font-size: 12px; font-weight: 500; line-height: 1.45; letter-spacing: 0; }
+
+.frequencyHead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 14px; font-size: 12px; letter-spacing: .08em; }
+.frequencyHead strong { font-size: 20px; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+
+/* A slot in the panel with a beige key riding in it. */
+.slider { display: block; width: 100%; height: 32px; margin: 6px 0 0; background: transparent; cursor: pointer; appearance: none; -webkit-appearance: none; }
+.slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border: 1px solid #2c4031;
+  border-radius: 4px;
+  background: #2f4034;
+  box-shadow: inset 0 2px 3px #14281a, 0 1px #dce2d5;
+}
+.slider::-moz-range-track {
+  height: 8px;
+  border: 1px solid #2c4031;
+  border-radius: 4px;
+  background: #2f4034;
+  box-shadow: inset 0 2px 3px #14281a, 0 1px #dce2d5;
+}
+.slider::-webkit-slider-thumb {
+  width: 22px;
+  height: 30px;
+  margin-top: -12px;
+  border: 2px solid #435247;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #a8b2a0, #e9ead9 45%, #a8b2a0);
+  box-shadow: inset 0 1px #f7f7eb, 0 3px 0 #405044;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 26px;
+  border: 2px solid #435247;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #a8b2a0, #e9ead9 45%, #a8b2a0);
+  box-shadow: inset 0 1px #f7f7eb, 0 3px 0 #405044;
+}
+.slider:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
+
+/* Decade marks under the slider; the thumb's centre runs 11px in from each end. */
+.scale { position: relative; height: 16px; margin: 2px 11px 0; font-size: 10px; letter-spacing: .04em; }
+.scale span { position: absolute; left: calc(var(--at) * 100%); transform: translateX(-50%); white-space: nowrap; }
+.scale span::before { content: ''; position: absolute; top: -5px; left: 50%; width: 1px; height: 4px; background: #3e4c40; }
+.scale span:first-child { transform: translateX(-11px); }
+.scale span:first-child::before { left: 11px; }
+
+.presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; min-width: 0; margin: 14px 0 0; padding: 0; border: 0; }
+.preset {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 6px 7px;
+  border: 2px solid #4a594d;
+  border-radius: 4px;
+  background: linear-gradient(#e3e5d4, #9ba898);
+  box-shadow: inset 0 1px #f4f4e8, 0 3px 1px #485649;
+  color: #243329;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-align: center;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+}
+.preset > span, .presetDetail span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.presetDetail { display: flex; justify-content: center; min-width: 0; font-size: 10px; font-weight: 500; opacity: .8; }
+.presetDetail .presetDot { flex: 0 0 auto; padding: 0 4px; overflow: visible; }
+.preset:not([aria-pressed="true"]):hover { background: linear-gradient(#f1f3e6, #b7c5ae); }
+.preset:active { transform: translateY(3px); box-shadow: inset 0 2px 4px #566352; }
+.preset[aria-pressed="true"] {
+  transform: translateY(2px);
+  border-color: #2c4031;
+  background: #354d39;
+  box-shadow: inset 0 2px 4px #14281a;
+  color: #d9f2c0;
+  text-shadow: 0 0 6px #a9e98799;
+}
+
+/* Two classes, so these win over ByteExplorer's .screen in either load order. */
+.bench .lcd { margin-top: 12px; padding: 9px 14px 10px; border-width: 6px; cursor: default; }
+.bigNumber {
+  padding: 6px 0 4px;
+  font-size: clamp(24px, 7.4cqi, 46px);
+  line-height: 1;
+  letter-spacing: .03em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.counter {
+  min-height: 1.15em;
+  padding: 6px 0 4px;
+  font-size: clamp(19px, 5.4cqi, 34px);
+  line-height: 1.1;
+  letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.lcdLine { font-size: 11px; letter-spacing: .06em; }
+
+.meters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 12px 0 0; }
+.meter {
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px 9px;
+  border: 1px solid #748273;
+  border-radius: 4px;
+  background: linear-gradient(#879587, #a5b1a1);
+  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
+}
+.meter dt { color: #334537; font-size: 10px; letter-spacing: .06em; }
+.meter dd { margin: 3px 0 0; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.meter .meterDetail { margin-top: 3px; color: #334537; font-size: 10px; font-weight: 500; letter-spacing: .04em; line-height: 1.3; }
+
+@container (min-width: 620px) {
+  .presets { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+/* Narrow: the year and the speed of a preset stack instead of getting cut. */
+@container (max-width: 460px) {
+  .presetDetail { flex-direction: column; align-items: center; }
+  .presetDetail .presetDot { display: none; }
+}
+@container (max-width: 400px) {
+  .scope { padding-inline: 6px; border-width: 5px; }
+  .meter { padding-inline: 8px; }
+  .meter dd { font-size: 18px; }
+}
+@container (max-width: 320px) {
+  .meters { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .preset { transition: none; } }

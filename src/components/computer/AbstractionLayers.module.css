@@ -1,0 +1,147 @@
+/* The nesting doll demo. The frame, plates and LCD come from ByteExplorer and
+   Codebook; rules that change one of their classes carry two classes, so they
+   win whichever sheet loads first. Layout follows the demo's own width. */
+.demo { container-type: inline-size; }
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "stage stage" "info rail";
+  gap: 8px;
+  padding: 8px 0 0;
+  background: linear-gradient(#3c4a3f, #566457);
+}
+.stagePlate { grid-area: stage; }
+.infoPlate { grid-area: info; display: flex; flex-direction: column; }
+.railPlate { grid-area: rail; }
+
+.lamps { display: flex; gap: 4px; }
+.lamps i { width: 8px; height: 8px; border: 1px solid #405e37; border-radius: 50%; background: #677565; box-shadow: inset 0 1px 2px #1e3324; }
+.lamps i[data-on="true"] { background: #a7d46b; box-shadow: 0 0 6px #c5ee8b; }
+
+/* The recess the dolls stand in: a dark display case behind glass. */
+.stage {
+  --move: 620ms;
+  --ease: cubic-bezier(.45, .05, .2, 1);
+  position: relative;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 6px solid #415045;
+  border-radius: 14px / 10px;
+  background: radial-gradient(ellipse 75% 85% at 42% 28%, #4d634f, #2d3d31 58%, #19241c);
+  box-shadow: inset 0 0 22px #0b140dcc, inset 0 2px 7px #0009, 0 2px 1px #e1e8da;
+}
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, #ffffff07 0 1px, transparent 1px 3px), linear-gradient(160deg, #ffffff12, transparent 40%);
+  pointer-events: none;
+}
+.stage svg { display: block; width: 100%; height: auto; aspect-ratio: 400 / 220; }
+
+.camera, .zoom, .doll, .lidLift { transition: transform var(--move) var(--ease); }
+/* A lid that is no longer the parent's fades out fast, before the next lid swings past it. */
+.lidAside { transition: transform var(--move) var(--ease), opacity 280ms ease; }
+/* Opening: the lid lifts, moves aside, and the doll inside rises into view. */
+[data-direction="open"] .zoom { transition-delay: 60ms; }
+[data-direction="open"] .doll { transition-delay: 140ms; }
+[data-direction="open"] .lidAside { transition-delay: 180ms, 0ms; }
+/* Closing: the doll sinks back, then the lid comes down on it. */
+[data-direction="close"] .lidLift { transition-delay: 200ms; }
+[data-direction="close"] .lidAside { transition-delay: 0ms, 340ms; }
+
+.apron { fill: #f1e7ca; stroke: #2a2f2950; stroke-width: .8; }
+.stitch { fill: none; stroke-width: 1.2; stroke-dasharray: .1 2.7; stroke-linecap: round; }
+.paint { fill: #2a2f29; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 800; }
+.flowerHeart { fill: #e9bb4c; }
+.scarf { fill: #ffffff30; }
+.face { fill: #f4dec4; stroke: #2a2f2960; stroke-width: .6; }
+.hair { fill: #4a3426; }
+.eye { fill: #2a2622; }
+.cheek { fill: #e2786a; opacity: .7; }
+.mouth { fill: #c0443a; }
+.outline, .seam { fill: none; stroke: #1f261f; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.seam { stroke-width: 1.2; }
+.hollow { fill: #2a1d16; }
+.shelf { fill: #4f3f2e; }
+.shelfEdge { fill: #8a7254; }
+.shadow { fill: #0008; }
+/* The innermost doll is the electricity itself: it glows like the LCD. */
+.live { animation: hum 2.4s ease-in-out infinite; }
+@keyframes hum {
+  0%, 100% { filter: drop-shadow(0 0 2px #c5ee8b); }
+  50% { filter: drop-shadow(0 0 8px #c5ee8b); }
+}
+
+.keys { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; margin-top: 14px; }
+.demo .key { width: 100%; height: 42px; font-size: 14px; letter-spacing: .1em; }
+.demo .key[aria-disabled="true"] { cursor: not-allowed; opacity: .45; transform: none; box-shadow: inset 0 1px #f7f7eb, 0 4px 0 #405044, 0 5px 4px #26342866; }
+.counter { font-size: 12px; letter-spacing: .06em; text-align: center; white-space: nowrap; }
+
+.demo .lcd { display: flex; flex: 1 0 auto; flex-direction: column; }
+.lcdName { margin: 8px 0 0; font-size: 20px; line-height: 1.15; letter-spacing: .04em; text-transform: uppercase; overflow-wrap: anywhere; }
+.lcdText { margin: 8px 0 0; font-size: 14px; font-weight: 500; line-height: 1.45; letter-spacing: 0; }
+.lcdRule { margin: 11px 0 0; border-top: 1px dashed #1d462570; }
+.lcdSub { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; margin-top: 9px; font-size: 11px; letter-spacing: .06em; }
+.lcdSub span:last-child { text-transform: uppercase; }
+/* Pinned to the foot of the screen when the screen is taller than its text. */
+.lcdPrompt { margin: auto 0 0; padding-top: 14px; font-size: 11px; letter-spacing: .06em; }
+.caret { display: inline-block; width: .65em; height: 1.05em; margin-left: 4px; vertical-align: -2px; background: currentColor; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.note { margin: 12px 0 0; font-size: 12px; font-weight: 600; line-height: 1.45; letter-spacing: 0; }
+
+.rail { display: grid; gap: 4px; margin: 12px 0 0; padding: 0; list-style: none; }
+.rail li { display: grid; gap: 4px; }
+.railPart { margin-top: 6px; font-size: 10px; letter-spacing: .08em; }
+.rail li:first-child .railPart { margin-top: 0; }
+.railButton {
+  display: grid;
+  grid-template-columns: 2ch 13px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 30px;
+  padding: 3px 8px;
+  border: 1px solid #748273;
+  border-radius: 4px;
+  background: linear-gradient(#879587, #a5b1a1);
+  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.railButton:hover { background: linear-gradient(#93a193, #b3beaf); }
+.railButton[aria-current="true"] {
+  border-color: #2c4031;
+  background: #354d39;
+  box-shadow: inset 0 2px 3px #14281a;
+  color: #d9f2c0;
+  text-shadow: 0 0 6px #a9e987;
+}
+.railNumber { font-size: 11px; opacity: .75; font-variant-numeric: tabular-nums; }
+.railName { line-height: 1.2; letter-spacing: .04em; text-transform: uppercase; }
+.miniDoll { display: block; width: 13px; height: 21px; overflow: visible; }
+.miniOutline { fill: none; stroke: #1f261f; stroke-width: 5; stroke-linejoin: round; }
+.railButton[aria-current="true"] .miniOutline { stroke: #0d1a10; }
+
+@container (max-width: 600px) {
+  .body { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "info" "rail"; }
+}
+/* On a phone the stage is drawn taller and its empty sides are cropped. */
+@container (max-width: 440px) {
+  .stage svg { aspect-ratio: 400 / 268; }
+}
+@container (max-width: 380px) {
+  .keys { gap: 8px; }
+  .demo .key { font-size: 12px; letter-spacing: .06em; }
+  .lamps { gap: 3px; }
+  .lamps i { width: 7px; height: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage * { transition: none; }
+  .live { animation: none; filter: drop-shadow(0 0 4px #c5ee8b); }
+  .caret { animation: none; }
+}

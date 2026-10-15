@@ -190,7 +190,15 @@ export function HintLayer({ callout, rings }: { callout?: Callout; rings: readon
             style={{ left: cardLeft, top: cardTop, width: cardWidth }}
             role="status"
           >
-            {target.clipped && <strong>Scroll the board to see it. </strong>}
+            {target.clipped && (
+              <strong>
+                {callout.anchor?.kind === "palette"
+                  ? "Scroll the parts list to see it. "
+                  : callout.anchor?.kind === "check"
+                    ? "Scroll the level panel to see it. "
+                    : "Scroll the board to see it. "}
+              </strong>
+            )}
             {callout.text}
           </div>
         </>

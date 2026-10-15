@@ -1,0 +1,246 @@
+/* TransistorGates. The frame, plates and keys come from ByteExplorer.module.css and
+   Codebook.module.css; the layout follows the demo's own width (DemoMachine is the
+   container), so it works in a chapter column and on a phone alike. */
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 224px;
+  gap: 8px;
+  padding: 8px 0 0;
+  background: linear-gradient(#3c4a3f, #566457);
+}
+.keyPlate { grid-column: 1 / -1; }
+
+.head { flex-wrap: wrap; row-gap: 6px; }
+.picker, .table { min-width: 0; margin: 0; padding: 0; border: 0; }
+.picker { display: flex; flex-wrap: wrap; gap: 4px; }
+.picker button {
+  min-width: 42px;
+  height: 26px;
+  padding: 0 7px;
+  border: 2px solid #4a594d;
+  border-radius: 4px;
+  background: linear-gradient(#e3e5d4, #9ba898);
+  box-shadow: inset 0 1px #f4f4e8, 0 2px 1px #485649;
+  color: #243329;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: .06em;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+}
+.picker button:hover { background: linear-gradient(#f1f3e6, #b7c5ae); }
+.picker button[aria-pressed="true"] {
+  transform: translateY(2px);
+  border-color: #2c4031;
+  background: #354d39;
+  box-shadow: inset 0 2px 3px #14281a;
+  color: #d9f2c0;
+  text-shadow: 0 0 6px #a9e987;
+}
+
+/* The schematic sits in a dark phosphor recess. */
+.screen {
+  --one: #d6ffb5;
+  --one-dim: #618c5a;
+  --zero: #ffc471;
+  --zero-dim: #9b7340;
+  --open: #36523e;
+  --off: #7c9a80;
+  --phosphor: #c9f2aa;
+  min-width: 0;
+  margin-top: 12px;
+  padding: 8px 10px 10px;
+  border: 6px solid #3c5042;
+  border-radius: 12px / 9px;
+  background:
+    repeating-linear-gradient(0deg, #ffffff06 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, #213d29, #10241a 70%, #0b1a11);
+  box-shadow: inset 0 4px 12px #000a, 0 2px 0 #dce5d4;
+  color: var(--phosphor);
+}
+.screenTop {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  color: #9fcf8a;
+  font-size: 11px;
+  letter-spacing: .06em;
+}
+.screenTop strong { color: var(--phosphor); font-size: 13px; letter-spacing: .1em; text-shadow: 0 0 6px #a9e98799; }
+.symbol { display: inline-flex; color: var(--phosphor); }
+.symbol svg { width: 34px; height: 22px; }
+
+.schematic { display: block; width: 100%; max-height: 360px; margin: 4px auto 0; overflow: visible; }
+.schematic text { font-family: inherit; }
+
+.rail { fill: none; stroke-width: 4; stroke-linecap: round; }
+.rail[data-level="1"] { stroke: var(--one); }
+.rail[data-level="0"] { stroke: var(--zero); }
+.railValue { font-size: 19px; font-weight: 700; text-anchor: middle; }
+.railValue[data-level="1"] { fill: var(--one); }
+.railValue[data-level="0"] { fill: var(--zero); }
+.railName { fill: #8fbf80; font-size: 11px; letter-spacing: .08em; }
+
+.wire {
+  fill: none;
+  stroke: var(--open);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke .15s;
+}
+.wire[data-level="1"] { stroke: var(--one-dim); }
+.wire[data-level="0"] { stroke: var(--zero-dim); }
+.wire[data-lit="true"] { stroke-width: 3; }
+.wire[data-lit="true"][data-level="1"] { stroke: var(--one); }
+.wire[data-lit="true"][data-level="0"] { stroke: var(--zero); }
+.halo { fill: none; stroke-width: 10; stroke-linecap: butt; stroke-linejoin: round; opacity: .2; }
+.halo[data-level="1"] { stroke: var(--one); }
+.halo[data-level="0"] { stroke: var(--zero); }
+
+/* A transistor that conducts gets a lit box and a solid channel; an open one a broken channel. */
+.fetBox { fill: transparent; stroke: transparent; stroke-width: 1.5; transition: fill .15s, stroke .15s; }
+.fetBox[data-on="true"][data-level="1"] { fill: #d6ffb51a; stroke: #d6ffb566; }
+.fetBox[data-on="true"][data-level="0"] { fill: #ffc4711a; stroke: #ffc47166; }
+.channel { fill: none; stroke: var(--off); stroke-width: 3; stroke-dasharray: 8 5; stroke-linecap: butt; }
+.fet[data-on="true"] .channel { stroke-dasharray: none; stroke-width: 3.5; }
+.fet[data-on="true"][data-level="1"] .channel { stroke: var(--one-dim); }
+.fet[data-on="true"][data-level="0"] .channel { stroke: var(--zero-dim); }
+.fet[data-lit="true"][data-level="1"] .channel { stroke: var(--one); }
+.fet[data-lit="true"][data-level="0"] .channel { stroke: var(--zero); }
+.gatePlate { fill: none; stroke: var(--open); stroke-width: 3; stroke-linecap: round; }
+.gatePlate[data-level="1"] { stroke: var(--one); }
+.gatePlate[data-level="0"] { stroke: var(--zero); }
+.bubble { fill: #10241a; stroke: var(--open); stroke-width: 2.5; }
+.bubble[data-level="1"] { stroke: var(--one); }
+.bubble[data-level="0"] { stroke: var(--zero); }
+
+.dot { fill: var(--open); }
+.dot[data-level="1"] { fill: var(--one-dim); }
+.dot[data-level="0"] { fill: var(--zero-dim); }
+.dot[data-lit="true"][data-level="1"] { fill: var(--one); }
+.dot[data-lit="true"][data-level="0"] { fill: var(--zero); }
+.tag { font-size: 17px; font-weight: 700; fill: var(--phosphor); }
+.tag[data-level="1"] { fill: var(--one); }
+.tag[data-level="0"] { fill: var(--zero); }
+
+.lampHalo { fill: transparent; transition: fill .15s; }
+.lampBulb { fill: #142a1c; stroke: var(--zero); stroke-width: 2.5; transition: fill .15s; }
+.lampValue { fill: var(--zero); font-size: 15px; font-weight: 700; }
+.lamp[data-on="true"] .lampHalo { fill: #d6ffb540; }
+.lamp[data-on="true"] .lampBulb { fill: var(--one); stroke: #f1ffe4; }
+.lamp[data-on="true"] .lampValue { fill: #18361f; }
+
+.explain {
+  display: grid;
+  gap: 2px;
+  min-height: 3.1em;
+  margin: 6px 0 0;
+  padding: 6px 2px 0;
+  border-top: 1px solid #36523e;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-shadow: 0 0 5px #a9e98755;
+}
+.explain li { display: flex; gap: 1ch; }
+.explain b { flex: 0 0 5ch; color: #9fcf8a; font-weight: 600; letter-spacing: .06em; }
+
+/* Inputs, output and truth table. */
+.controls { display: grid; align-content: start; gap: 16px; }
+.io { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin-top: 12px; }
+.ioUnit { display: grid; justify-items: center; gap: 6px; }
+.ioLabel { font-size: 12px; letter-spacing: .08em; }
+.controls .key { width: 42px; }
+.arrow { padding-bottom: 12px; font-size: 16px; }
+.outLamp {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 3px solid #435247;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #6d7c6a, #3a4a3d);
+  box-shadow: inset 0 3px 6px #1e3324, 0 1px #dce2d5;
+  color: #c3d1bc;
+  font-size: 19px;
+  font-weight: 700;
+  transition: background .15s, box-shadow .15s;
+}
+.outLamp[data-on="true"] {
+  background: radial-gradient(circle at 40% 35%, #f2ffe0, #b9e891 55%, #8cc66a);
+  box-shadow: 0 0 14px #c5ee8b, inset 0 -2px 4px #5d8f48;
+  color: #1e3b25;
+}
+
+.table { display: grid; gap: 4px; margin-top: 12px; }
+.tableHead, .row {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.tableHead { padding: 0 0 2px; font-size: 11px; letter-spacing: .08em; }
+.tableHead span:last-child, .rowOut { border-left: 1px solid #6f7e70; }
+.row {
+  padding: 4px 0;
+  border: 1px solid #748273;
+  border-radius: 3px;
+  background: linear-gradient(#879587, #a5b1a1);
+  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  letter-spacing: .1em;
+  cursor: pointer;
+}
+.row:hover { filter: brightness(1.06); }
+.rowOut { font-weight: 700; }
+.row[aria-current="true"] {
+  border-color: #2c4031;
+  background: #354d39;
+  box-shadow: inset 0 2px 3px #14281a;
+  color: #d9f2c0;
+  text-shadow: 0 0 6px #a9e987;
+}
+.row[aria-current="true"] .rowOut { border-color: #5d7a5f; }
+
+/* The key at the bottom. */
+.legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; margin: 12px 0 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; line-height: 1.35; letter-spacing: 0; }
+.legend b { font-weight: 700; }
+.keySymbol, .swatch {
+  --one: #d6ffb5;
+  --zero: #ffc471;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border: 2px solid #3c5042;
+  border-radius: 4px;
+  background: #142a1c;
+  box-shadow: inset 0 2px 4px #000a, 0 1px #dce2d5;
+}
+.keySymbol path, .keySymbol circle { fill: none; stroke: #c9f2aa; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.keySymbol circle { fill: #142a1c; }
+.swatch { position: relative; display: block; }
+.swatch::after { content: ""; position: absolute; inset: 14px 4px auto; height: 3px; border-radius: 2px; }
+.swatch[data-level="1"]::after { background: var(--one); box-shadow: 0 0 6px var(--one); }
+.swatch[data-level="0"]::after { background: var(--zero); box-shadow: 0 0 6px var(--zero); }
+.rule { margin: 10px 0 0; font-size: 12px; line-height: 1.4; letter-spacing: 0; }
+
+@container (max-width: 620px) {
+  .body { grid-template-columns: minmax(0, 1fr); }
+  .controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+}
+@container (max-width: 520px) {
+  .legend { grid-template-columns: minmax(0, 1fr); }
+  .screen { padding: 6px 6px 8px; border-width: 5px; }
+}
+@container (max-width: 400px) {
+  .controls { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .picker button, .wire, .fetBox, .lampHalo, .lampBulb, .outLamp { transition: none; }
+}

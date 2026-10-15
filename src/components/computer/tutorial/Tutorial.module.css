@@ -1,0 +1,473 @@
+.panel {
+  display: grid;
+  gap: 10px;
+  padding: 16px 16px 22px;
+  color: #dfe7f7;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+}
+
+.eyebrow {
+  color: #aab6ff;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.title {
+  margin: 0;
+  color: #f4f1ff;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.badge {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #1f4a3d;
+  color: #b9f7dd;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.picker {
+  display: flex;
+  gap: 4px;
+}
+
+.picker select,
+.picker button {
+  border: 1px solid #485b80;
+  border-radius: 5px;
+  background: #141e34;
+  color: #e7edf3;
+  font: 600 12px ui-sans-serif, system-ui, sans-serif;
+}
+
+.picker select {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 6px;
+}
+
+.picker button {
+  width: 28px;
+  cursor: pointer;
+}
+
+.picker button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.goal {
+  margin: 0;
+  color: #f4f1ff;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.muted {
+  margin: 0;
+  color: #aebbd3;
+}
+
+.chapter {
+  margin: 0;
+  color: #aebbd3;
+}
+
+.chapter a {
+  color: #b7a1ff;
+}
+
+.notice {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #283456;
+  color: #dfe7f7;
+}
+
+.steps {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 20px;
+  color: #aebbd3;
+}
+
+.steps li {
+  padding: 3px 6px;
+  border-radius: 5px;
+}
+
+.stepDone {
+  color: #87a49a;
+  text-decoration: line-through;
+  text-decoration-color: #5e7d71;
+}
+
+.stepCurrent {
+  background: #33305a;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: inset 2px 0 #b7a1ff;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actions button,
+.result button,
+.nextButton {
+  padding: 6px 10px;
+  border: 1px solid #5b6e95;
+  border-radius: 6px;
+  background: #263454;
+  color: #e7edf3;
+  font: 650 12px ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.actions button:hover,
+.result button:hover {
+  border-color: #b7a1ff;
+}
+
+.hints {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hints li {
+  padding: 8px 10px;
+  border-left: 3px solid #ffc76a;
+  border-radius: 4px;
+  background: #2b2f45;
+}
+
+.subhead {
+  margin: 6px 0 0;
+  color: #aebbd3;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.spec {
+  display: grid;
+  gap: 4px;
+}
+
+.tableScroll {
+  max-height: 320px;
+  overflow: auto;
+  border: 1px solid #36466a;
+  border-radius: 6px;
+}
+
+.truth {
+  width: 100%;
+  border-collapse: collapse;
+  font: 600 12px ui-monospace, SFMono-Regular, monospace;
+  text-align: center;
+}
+
+.truth th {
+  position: sticky;
+  top: 0;
+  padding: 4px 5px;
+  background: #222d4c;
+  color: #c8d3ee;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.truth td {
+  padding: 3px 5px;
+  border-top: 1px solid #2c3858;
+}
+
+.outputHead,
+.outputCell {
+  color: #b9e976;
+}
+
+.outputHead {
+  border-left: 1px solid #3c4b70;
+}
+
+.yours {
+  white-space: nowrap;
+}
+
+.rowPass .yours {
+  color: #8ff0c6;
+}
+
+.rowFail {
+  background: #3d2433;
+}
+
+.rowFail .yours {
+  color: #ffaaa1;
+}
+
+.rowFirst {
+  outline: 2px solid #ff8f87;
+  outline-offset: -2px;
+}
+
+.ticks {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding-left: 22px;
+  color: #c8d3ee;
+}
+
+.ticks li {
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.ticks small {
+  display: block;
+  color: #b9e976;
+  font: 600 11px ui-monospace, SFMono-Regular, monospace;
+}
+
+.linkButton {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #b7a1ff;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.check {
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: #8eeae8;
+  color: #17233a;
+  font: 800 13px ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.check:hover {
+  background: #b0faf2;
+}
+
+.result {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  border: 1px solid;
+}
+
+.result p,
+.result ul {
+  margin: 0;
+}
+
+.result ul {
+  padding-left: 18px;
+}
+
+.resultPass {
+  border-color: #3f8f6f;
+  background: #183a33;
+}
+
+.resultFail {
+  border-color: #9a4b52;
+  background: #3a2230;
+}
+
+.resultWarn {
+  border-color: #a0813f;
+  background: #3a3222;
+}
+
+.stats {
+  color: #b9cbe3;
+  font: 600 11px ui-monospace, SFMono-Regular, monospace;
+}
+
+.result .notes {
+  display: grid;
+  gap: 5px;
+  padding: 0;
+  list-style: none;
+}
+
+.notes li > button {
+  width: 100%;
+  padding: 6px 8px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.notes li > button[aria-pressed="true"] {
+  border-color: #ffc76a;
+}
+
+.nextButton {
+  justify-self: start;
+  background: #2f6f57;
+  border-color: #4f9d80;
+}
+
+.compare {
+  width: 100%;
+  font: 600 11px ui-monospace, SFMono-Regular, monospace;
+}
+
+.compare th {
+  text-align: left;
+}
+
+/* Hint layer: drawn over the builder, never catching the pointer. */
+.hintLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ring {
+  position: absolute;
+  border: 2px solid #ffc76a;
+  border-radius: 10px;
+  box-shadow: 0 0 0 4px #ffc76a33;
+}
+
+.targetRing {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.callout {
+  position: absolute;
+  padding: 9px 11px;
+  border-radius: 8px;
+  background: #fff8e6;
+  color: #2a2338;
+  font: 600 12px/1.45 ui-sans-serif, system-ui, sans-serif;
+  box-shadow: 0 12px 30px #0008;
+}
+
+.callout::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.calloutLeft::before {
+  left: auto;
+  right: -6px;
+}
+
+.step.ring,
+.step.callout {
+  border-color: #b7a1ff;
+}
+
+.step.callout {
+  background: #efeaff;
+}
+
+.warn.ring {
+  border-color: #ff8f87;
+  box-shadow: 0 0 0 4px #ff8f8733;
+}
+
+.warn.callout {
+  background: #ffe9e7;
+}
+
+.tip.callout {
+  background: #fff8e6;
+}
+
+.good.callout {
+  background: #e3fbef;
+}
+
+.notes .good {
+  color: #b9f7dd;
+}
+
+.notes .warn > button {
+  border-color: #9a4b52;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 8px #ffc76a22;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .targetRing {
+    animation: none;
+  }
+}
+
+/* Lazy mount: a light placeholder until the builder scrolls near. */
+.placeholder {
+  display: grid;
+  place-items: center;
+  border: 1px solid #36466a;
+  border-radius: 12px;
+  background: #111a2d;
+  color: #aebbd3;
+  font: 600 13px ui-sans-serif, system-ui, sans-serif;
+}
+
+.runner {
+  display: grid;
+  gap: 8px;
+}
+
+.runner textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid #485b80;
+  border-radius: 6px;
+  background: #141e34;
+  color: #e7edf3;
+  font: 12px/1.5 ui-monospace, SFMono-Regular, monospace;
+}

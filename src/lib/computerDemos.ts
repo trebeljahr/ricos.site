@@ -120,6 +120,14 @@ export const computerDemos = [
     slug: "build-a-cpu",
     title: "Build your own CPU",
   },
+  {
+    slug: "build-from-nand",
+    title: "Build a computer from NAND",
+  },
+  {
+    slug: "builders-on-one-page",
+    title: "Several circuit builders on one page",
+  },
 ] as const;
 
 export type ComputerDemoSlug = (typeof computerDemos)[number]["slug"];

@@ -114,6 +114,7 @@ export function LogicTutorial({
   const progress = useTutorialProgress();
   const start = useMemo(() => levelStart(level), [level]);
   const allowed = useMemo(() => CATALOG.allowed(level), [level]);
+  const gatePalette = useMemo(() => [...allowed.gates], [allowed]);
   const reference = useMemo(() => level.reference?.(), [level]);
   const rows = useMemo(() => levelRows(CATALOG, level.palette, progress), [level, progress]);
   // The board's first circuit, read once per level opening (later saves come from the board).
@@ -462,7 +463,7 @@ export function LogicTutorial({
       challenge={{
         circuit: initial,
         enforce: start.enforce,
-        palette: [...allowed.gates],
+        palette: gatePalette,
         rows,
         highlight: customHighlight,
         onChange,

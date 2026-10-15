@@ -2495,25 +2495,31 @@ export function LogicBuilder({
     addModule(placement.circuit, position && { x: position.x - MODULE_WIDTH / 2, y: position.y - height / 2 },
       inlineTarget, placement.extra);
   };
-  const paletteRows: PaletteRow[] = challenge?.rows ?? partsPalette.map((type) => {
+  // Rows depend on the palette, the reader's progress and the search, not on every render.
+  const challengeRows = challenge?.rows;
+  const freeMode = !challenge && !locked;
+  const paletteRows: PaletteRow[] = useMemo(() => challengeRows ?? partsPalette.map((type) => {
     const entry = entryFor(CATALOG, progress, { gate: type });
-    return entry ? partRow(entry, ownMode, { key: type, label: LABELS[type], icon: { type },
+    return entry ? partRow(entry, progress.settings.ownParts, { key: type, label: LABELS[type], icon: { type },
       builtInTitle: gateRow(type).title }) : gateRow(type);
-  });
+  }), [challengeRows, partsPalette, progress]);
   const searchText = search.toLowerCase().trim();
-  const visibleRows = paletteRows.filter((row) => `${row.key} ${row.label}`.toLowerCase().includes(searchText));
-  const exampleRows = new Map(challenge ? [] : visibleExamples.flatMap((example) => {
+  const visibleRows = useMemo(() => paletteRows.filter((row) =>
+    `${row.key} ${row.label}`.toLowerCase().includes(searchText)), [paletteRows, searchText]);
+  const exampleRows = useMemo(() => new Map(challenge ? [] : Object.values(PRESETS).flatMap((example) => {
     const entry = entryFor(CATALOG, progress, { preset: example.name });
     if (!entry) return [];
-    const row = partRow(entry, ownMode, { key: `preset:${example.name}`, label: example.name,
+    const row = partRow(entry, progress.settings.ownParts, { key: `preset:${example.name}`, label: example.name,
       icon: { circuitName: example.name }, builtIn: { circuit: example, extra: {} },
       builtInTitle: circuitHints[example.name] || `Drag ${example.name} black box onto canvas or click to add` });
     return [[example.name, row] as const];
-  }));
-  const ownRows = challenge || locked ? [] : extraOwnRows(CATALOG, progress)
-    .filter((row) => row.label.toLowerCase().includes(searchText));
-  const ownCount = Object.keys(progress.solved).filter((id) => CATALOG.level(id)?.makes).length;
-  const rowsByKey = new Map([...paletteRows, ...exampleRows.values(), ...ownRows].map((row) => [row.key, row]));
+  })), [Boolean(challenge), progress]);
+  const ownRows = useMemo(() => freeMode ? extraOwnRows(CATALOG, progress)
+    .filter((row) => row.label.toLowerCase().includes(searchText)) : [], [freeMode, progress, searchText]);
+  const ownCount = useMemo(() =>
+    Object.keys(progress.solved).filter((id) => CATALOG.level(id)?.makes).length, [progress.solved]);
+  const rowsByKey = useMemo(() => new Map([...paletteRows, ...exampleRows.values(), ...ownRows]
+    .map((row) => [row.key, row])), [paletteRows, exampleRows, ownRows]);
   const rowAccent = (row: PaletteRow) => "type" in row.icon ? partColors[row.icon.type] : partColors.module;
   const renderParts = () =>
     visibleRows.map((row) => (

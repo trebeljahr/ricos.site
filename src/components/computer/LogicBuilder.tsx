@@ -1,12 +1,17 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { type MutableRefObject, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type MutableRefObject, type ReactNode, memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ViewportContextMenu } from "./ViewportContextMenu";
 import { CircuitToolbar } from "./CircuitToolbar";
 import { ToolbarMenu } from "./ToolbarMenu";
 import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { usePortWiring } from "../../hooks/usePortWiring";
+import { useTutorialProgress } from "../../hooks/useTutorialProgress";
+import { activateBuilder, claimStorage, ownsKeyEvent, registerBuilder } from "../../lib/computer/builderRegistry";
+import { CATALOG } from "../../lib/computer/tutorial/levels";
+import { entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
+import { type OwnPartsMode, setOwnPartsMode } from "../../lib/computer/tutorial/progress";
 import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
 import { type Timeline, type TimelineFrame, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
 import {
@@ -70,6 +75,7 @@ import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { GateSymbol } from "./GateSymbol";
+import { PaletteRowView, ROW_DRAG_TYPE } from "./PaletteRow";
 import { BlockScreen } from "./BlockScreen";
 import styles from "./LogicBuilder.module.css";
 
@@ -864,6 +870,10 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
 export type LogicBuilderHandle = {
   /** Loads `circuit` and simulates `halfCycles` clock half cycles from reset. */
   show: (circuit: Circuit, halfCycles: number) => void;
+  /** Applies an edit to the top-level circuit as one undoable change, e.g. a tutorial's "Show me". */
+  apply: (edit: (circuit: Circuit) => Circuit, message?: string) => void;
+  /** Loads a circuit as a fresh start, e.g. a level's reset. */
+  load: (circuit: Circuit) => void;
 };
 
 /**
@@ -880,6 +890,12 @@ export type LogicBuilderChallenge = {
   /** Called with the top-level circuit after every change. */
   onChange?: (circuit: Circuit) => void;
   handleRef?: React.MutableRefObject<LogicBuilderHandle | null>;
+  /** Parts list rows in place of `palette`'s plain entries, e.g. a level's parts with their versions. */
+  rows?: PaletteRow[];
+  /** A column beside the canvas, e.g. a tutorial level's goal, checks and feedback. */
+  panel?: ReactNode;
+  /** Drawn over the whole builder, e.g. hint callouts anchored to parts and ports. */
+  overlay?: ReactNode;
 };
 
 /** Clock controls of a locked builder, for the page that embeds it. */
@@ -920,14 +936,28 @@ export type LogicBuilderProps = {
     /** A line of text under a part, e.g. which part drives a bus. */
     note?: (node: Node, snapshot: Snapshot) => string | null;
   };
+  /**
+   * Browser storage key for the free builder's circuits. Builders on one page
+   * need their own keys; a second builder asking for a key in use does not
+   * save. Null turns saving off.
+   */
+  storageKey?: string | null;
 };
 
 export function LogicBuilder({
   challenge,
   locked,
+  storageKey = STORAGE,
 }: { challenge?: LogicBuilderChallenge } & LogicBuilderProps = {}) {
   const lockedRef = useRef(locked);
   lockedRef.current = locked;
+  // Several builders may share a page: key presses, storage and element ids stay per builder.
+  const [instanceId] = useState(() => Symbol("logic-builder"));
+  const shellRef = useRef<HTMLDivElement>(null);
+  useEffect(() => registerBuilder(instanceId), [instanceId]);
+  const domId = useId();
+  const persist = useRef(false);
+  const progress = useTutorialProgress();
   const history = useHistoryState<BuilderDocument>(() => ({
     circuit: clone(locked?.circuit ?? challenge?.circuit ?? PRESETS["Half adder"]),
     saved: {},
@@ -1273,6 +1303,8 @@ export function LogicBuilder({
   const inputFile = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
+  const viewPathRef = useRef(viewPath);
+  viewPathRef.current = viewPath;
   const unfoldedRef = useRef(unfolded);
   const snapshotRef = useRef(snapshot);
   const timelineRef = useRef(timeline);
@@ -1397,6 +1429,7 @@ export function LogicBuilder({
       if (event.touches.length > 1) event.preventDefault();
     };
     const onKeyDown = (event: KeyboardEvent) => {
+      if (!ownsKeyEvent(instanceId, shellRef.current, event.target)) return;
       if (
         event.code === "Space" &&
         !(event.target instanceof HTMLInputElement) &&
@@ -1447,8 +1480,14 @@ export function LogicBuilder({
       setReady(true);
       return;
     }
+    persist.current = Boolean(storageKey) && claimStorage(storageKey!, instanceId);
+    if (!persist.current) {
+      if (storageKey) setMessage("Another builder on this page saves to browser storage, so this one does not.");
+      setReady(true);
+      return;
+    }
     try {
-      const raw = localStorage.getItem(STORAGE);
+      const raw = localStorage.getItem(storageKey!);
       if (raw) {
         const parsed = JSON.parse(raw) as { current?: unknown; saved?: Record<string, unknown> };
         const restored = validateCircuit(parsed.current);
@@ -1469,18 +1508,18 @@ export function LogicBuilder({
     setReady(true);
   }, []);
   useEffect(() => {
-    if (!ready || challenge || lockedRef.current) return;
+    if (!ready || challenge || lockedRef.current || !persist.current || !storageKey) return;
     try {
       const root = viewPath.reduceRight(
         (inner, level) =>
           level.moduleId ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent,
         circuit,
       );
-      localStorage.setItem(STORAGE, JSON.stringify({ current: root, saved }));
+      localStorage.setItem(storageKey, JSON.stringify({ current: root, saved }));
     } catch {
       setMessage("Browser storage is full. Export this circuit to keep it.");
     }
-  }, [circuit, saved, ready, viewPath]);
+  }, [circuit, saved, ready, viewPath, storageKey]);
   useEffect(() => {
     if (dialog) dialogRef.current?.querySelector<HTMLElement>("input, button")?.focus();
   }, [dialog]);
@@ -1622,6 +1661,17 @@ export function LogicBuilder({
         setTimeline(recorded);
         setMessage(`Showing cycle ${Math.floor(halfCycles / 2)}. Step back and forward to compare.`);
       },
+      apply: (edit, note) => {
+        if (viewPathRef.current.length) {
+          setMessage("Go back to the top level first, then try again.");
+          return;
+        }
+        portWiring.clear();
+        setPending(null);
+        setCircuit((current) => edit(current));
+        if (note) setMessage(note);
+      },
+      load: (next) => load(next),
     };
     return () => {
       handleRef.current = null;
@@ -2134,6 +2184,7 @@ export function LogicBuilder({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (lockedRef.current) return;
+      if (!ownsKeyEvent(instanceId, shellRef.current, event.target)) return;
       const editingText =
         event.target instanceof HTMLElement &&
         Boolean(event.target.closest("input, textarea, [contenteditable='true']"));
@@ -2408,9 +2459,6 @@ export function LogicBuilder({
     setDrag(null);
   };
   const partsPalette = challenge?.palette ?? palette;
-  const visibleParts = partsPalette.filter((type) =>
-    `${type} ${LABELS[type]}`.toLowerCase().includes(search.toLowerCase().trim()),
-  );
   const visibleBlocks = challenge ? [] : DATAPATH_KINDS.filter((kind) =>
     `${kind} ${DATAPATH_BLOCKS[kind].label}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
@@ -2433,25 +2481,43 @@ export function LogicBuilder({
   const hasTransistors = circuit.nodes.some((item) => item.type === "nmos" || item.type === "pmos");
   const powerVisible = (node: Node) =>
     (node.type !== "high" || showVdd) && (node.type !== "ground" || showGround);
+  // Parts made by tutorial levels come in two versions: built-in, and the reader's own.
+  const ownMode = progress.settings.ownParts;
+  const placeRow = (placement: Placement, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+    if ("type" in placement) {
+      addNode(placement.type, position && {
+        x: position.x - NODE_WIDTH / 2,
+        y: position.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
+      }, inlineTarget);
+      return;
+    }
+    const height = nodeHeight({ id: "drop", type: "module", module: placement.circuit, x: 0, y: 0 });
+    addModule(placement.circuit, position && { x: position.x - MODULE_WIDTH / 2, y: position.y - height / 2 },
+      inlineTarget, placement.extra);
+  };
+  const paletteRows: PaletteRow[] = challenge?.rows ?? partsPalette.map((type) => {
+    const entry = entryFor(CATALOG, progress, { gate: type });
+    return entry ? partRow(entry, ownMode, { key: type, label: LABELS[type], icon: { type },
+      builtInTitle: gateRow(type).title }) : gateRow(type);
+  });
+  const searchText = search.toLowerCase().trim();
+  const visibleRows = paletteRows.filter((row) => `${row.key} ${row.label}`.toLowerCase().includes(searchText));
+  const exampleRows = new Map(challenge ? [] : visibleExamples.flatMap((example) => {
+    const entry = entryFor(CATALOG, progress, { preset: example.name });
+    if (!entry) return [];
+    const row = partRow(entry, ownMode, { key: `preset:${example.name}`, label: example.name,
+      icon: { circuitName: example.name }, builtIn: { circuit: example, extra: {} },
+      builtInTitle: circuitHints[example.name] || `Drag ${example.name} black box onto canvas or click to add` });
+    return [[example.name, row] as const];
+  }));
+  const ownRows = challenge || locked ? [] : extraOwnRows(CATALOG, progress)
+    .filter((row) => row.label.toLowerCase().includes(searchText));
+  const ownCount = Object.keys(progress.solved).filter((id) => CATALOG.level(id)?.makes).length;
+  const rowsByKey = new Map([...paletteRows, ...exampleRows.values(), ...ownRows].map((row) => [row.key, row]));
+  const rowAccent = (row: PaletteRow) => "type" in row.icon ? partColors[row.icon.type] : partColors.module;
   const renderParts = () =>
-    visibleParts.map((type) => (
-      <button
-        type="button"
-        key={type}
-        draggable
-        onDragStart={(event) => {
-          event.dataTransfer.setData("application/x-logic-gate", type);
-          event.dataTransfer.effectAllowed = "copy";
-        }}
-        onClick={() => addNode(type)}
-        title={`Drag ${LABELS[type]} onto canvas or click to add`}
-        style={{ "--part-accent": partColors[type] } as React.CSSProperties}
-      >
-        <span className={styles.partIcon}>
-          <GateSymbol type={type} />
-        </span>
-        <span>{LABELS[type]}</span>
-      </button>
+    visibleRows.map((row) => (
+      <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => placeRow(placement)} />
     ));
   const menuNode = menu?.kind === "node"
     ? circuit.nodes.find((node) => node.id === menu.id)
@@ -2474,7 +2540,13 @@ export function LogicBuilder({
       ? portPoint(targetNode, draftTarget.input, "input")
       : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
   return (
-    <div className={clsx(styles.shell, locked && styles.locked)}>
+    <div
+      ref={shellRef}
+      className={clsx(styles.shell, locked && styles.locked)}
+      data-logic-builder=""
+      onPointerDownCapture={() => activateBuilder(instanceId)}
+      onFocusCapture={() => activateBuilder(instanceId)}
+    >
       {!locked && <CircuitToolbar
         hasClock={hasClock}
         identity={
@@ -2792,7 +2864,7 @@ export function LogicBuilder({
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
-      <div className={clsx(styles.layout, locked && styles.lockedLayout)}>
+      <div className={clsx(styles.layout, locked && styles.lockedLayout, challenge?.panel && styles.layoutWithCoach)}>
         {!locked && <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
@@ -2804,6 +2876,20 @@ export function LogicBuilder({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
+          <label className={styles.ownParts} title="Parts you built in the tutorial pass every row of their level. Pick which version a click places.">
+            <span>My parts</span>
+            <select value={ownMode} onChange={(event) => setOwnPartsMode(event.target.value as OwnPartsMode)}>
+              <option value="mine">Mine when built</option>
+              <option value="built-in">Built-in</option>
+              <option value="only-mine">Only mine</option>
+            </select>
+          </label>
+          {!challenge && (
+            <p className={styles.ownPartsNote}>
+              {ownCount ? `You built ${ownCount} part${ownCount === 1 ? "" : "s"}. ` : "Build parts yourself, from NAND up. "}
+              <Link href={TUTORIAL_PATH}>{ownCount ? "Build more" : "Start"} →</Link>
+            </p>
+          )}
           <div className={styles.parts}>
             {visibleSaved.length > 0 && <h3 className={styles.partsSection}>Saved circuits</h3>}
             {visibleSaved.map((item) => (
@@ -2838,6 +2924,10 @@ export function LogicBuilder({
                 >×</button>
               </div>
             ))}
+            {ownRows.length > 0 && <h3 className={styles.partsSection}>Your parts</h3>}
+            {ownRows.map((row) => (
+              <PaletteRowView key={row.key} row={row} accent={partColors.module} onPlace={(placement) => placeRow(placement)} />
+            ))}
             <h3 className={styles.partsSection}>Parts</h3>
             {renderParts()}
             {visibleBlocks.length > 0 && <h3 className={styles.partsSection}>CPU blocks</h3>}
@@ -2861,7 +2951,12 @@ export function LogicBuilder({
               </button>
             ))}
             {visibleExamples.length > 0 && <h3 className={styles.partsSection}>Examples and storage</h3>}
-            {visibleExamples.map((example) => (
+            {visibleExamples.map((example) => exampleRows.has(example.name) ? (
+              <PaletteRowView key={example.name} row={exampleRows.get(example.name)!} accent={partColors.module}
+                onPlace={(placement) => placeRow(placement)}>
+                <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
+              </PaletteRowView>
+            ) : (
               <div className={styles.savedPart} key={example.name}>
                 <button
                   type="button"
@@ -2885,7 +2980,7 @@ export function LogicBuilder({
                 <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
               </div>
             ))}
-            {visibleParts.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && <p>No matching parts</p>}
+            {visibleRows.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && ownRows.length === 0 && <p>No matching parts</p>}
           </div>
         </aside>}
         <div ref={workspace} className={styles.workspace}>
@@ -2947,6 +3042,14 @@ export function LogicBuilder({
                 x: (event.clientX - rect.left) / scale - Number(inlineDiagram.dataset.originX),
                 y: (event.clientY - rect.top) / scale - Number(inlineDiagram.dataset.originY),
               } : boardPoint(event.clientX, event.clientY);
+              const rowData = event.dataTransfer.getData(ROW_DRAG_TYPE);
+              if (rowData) {
+                const split = rowData.indexOf(":");
+                const row = rowsByKey.get(rowData.slice(split + 1));
+                const placement = rowData.slice(0, split) === "secondary" ? row?.secondary?.placement : row?.primary;
+                if (placement) placeRow(placement, point, inlinePath);
+                return;
+              }
               const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
               if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
                 insertCircuit(
@@ -3291,6 +3394,7 @@ export function LogicBuilder({
                   .map((node) => (
                     <div
                       key={node.id}
+                      data-node-id={node.id}
                       role="group"
                       aria-label={`${node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
                       onKeyDown={(event) => {
@@ -3663,6 +3767,8 @@ export function LogicBuilder({
                                 styles.pending,
                             )}
                             style={{ top: 0 }}
+                            data-node-id={node.id}
+                            data-output={output}
                             aria-pressed={portWiring.isSelected({ nodeId: node.id, kind: "output", index: output })}
                             data-port-selected={portWiring.isSelected({ nodeId: node.id, kind: "output", index: output })}
                             data-port-invalid={portWiring.invalid && portWiring.isTarget({ nodeId: node.id, kind: "output", index: output })}
@@ -3725,7 +3831,9 @@ export function LogicBuilder({
             </span>
           </div>
         </div>
+        {challenge?.panel && <aside className={styles.coach} aria-label="Level">{challenge.panel}</aside>}
       </div>
+      {challenge?.overlay}
       {dialog && (
         <div className={styles.dialogBackdrop} onMouseDown={(event) => {
           if (event.target === event.currentTarget) setDialog(null);
@@ -3735,7 +3843,7 @@ export function LogicBuilder({
             className={styles.dialog}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="circuit-dialog-title"
+            aria-labelledby={`${domId}-dialog-title`}
             onKeyDown={(event) => {
               if (event.key === "Escape") setDialog(null);
               if (event.key === "Tab") {
@@ -3754,11 +3862,11 @@ export function LogicBuilder({
           >
             {dialog === "save" ? (
               <form onSubmit={(event) => { event.preventDefault(); save(); }}>
-                <h2 id="circuit-dialog-title">Save circuit</h2>
+                <h2 id={`${domId}-dialog-title`}>Save circuit</h2>
                 <p>Saved circuits appear in Parts and can be placed as black boxes.</p>
-                <label htmlFor="saved-circuit-name">Name</label>
+                <label htmlFor={`${domId}-saved-name`}>Name</label>
                 <input
-                  id="saved-circuit-name"
+                  id={`${domId}-saved-name`}
                   required
                   maxLength={80}
                   value={saveName}
@@ -3772,7 +3880,7 @@ export function LogicBuilder({
               </form>
             ) : (
               <div>
-                <h2 id="circuit-dialog-title">Clear canvas?</h2>
+                <h2 id={`${domId}-dialog-title`}>Clear canvas?</h2>
                 <p>Remove {canvasCounts.parts} parts and {canvasCounts.wires} wires from this canvas?</p>
                 <div className={styles.dialogActions}>
                   <button type="button" onClick={() => setDialog(null)}>Cancel</button>
@@ -3823,7 +3931,7 @@ export function LogicBuilder({
                   <input
                     value={menuNode.probe || ""}
                     maxLength={12}
-                    list="probe-names"
+                    list={`${domId}-probe-names`}
                     placeholder="e.g. ACC, PC"
                     onFocus={beginTransaction}
                     onBlur={endTransaction}
@@ -3837,7 +3945,7 @@ export function LogicBuilder({
                       }));
                     }}
                   />
-                  <datalist id="probe-names">
+                  <datalist id={`${domId}-probe-names`}>
                     {PROBE_NAMES.map((name) => <option key={name} value={name} />)}
                   </datalist>
                   {menuNode.probe && duplicateProbes(circuit).includes(menuNode.probe) && (

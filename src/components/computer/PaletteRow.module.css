@@ -1,0 +1,76 @@
+.mine {
+  flex: none;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #2f6f57;
+  color: #c9ffe6;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+[data-palette-part] > .chip {
+  width: auto;
+  border-left-width: 1px;
+  transform: none;
+  flex: none;
+  min-height: 0;
+  margin: 0 3px;
+  padding: 2px 6px;
+  border: 1px solid #5b6e95;
+  border-radius: 999px;
+  background: #222d4c;
+  color: #c8d3ee;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+[data-palette-part] > .chip[data-own] {
+  border-color: #4f9d80;
+  background: #1f3d39;
+  color: #b7f5dc;
+}
+
+[data-palette-part] > .chip:hover {
+  background: #2b3960;
+  transform: none;
+  border-color: #b7a1ff;
+  color: #fff;
+}
+
+.lockedEntry {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 39px;
+  padding: 3px 5px;
+  color: #8592ad;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.build {
+  flex: none;
+  margin: 0 3px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #3a3150;
+  color: #e3d8ff;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.build:hover {
+  background: #4b3f69;
+}

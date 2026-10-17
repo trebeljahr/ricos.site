@@ -54,6 +54,10 @@ export const computerDemos = [
     title: "Build a logic circuit",
   },
   {
+    slug: "decoders-and-multiplexers",
+    title: "Choose signals and address memory",
+  },
+  {
     slug: "instruction-encoder",
     title: "From instruction to bytes",
   },

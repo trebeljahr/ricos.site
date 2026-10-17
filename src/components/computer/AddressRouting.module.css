@@ -1,0 +1,28 @@
+.readout { margin: 16px 0; font-size: 14px; text-align: center; font-variant-numeric: tabular-nums; }
+.note, .reveal p { margin: 12px 0 0; font-size: 13px; line-height: 1.6; letter-spacing: 0; }
+.reveal { margin-top: 20px; border-top: 1px solid #657766; }
+.reveal summary { padding: 16px 0 8px; cursor: pointer; font-size: 13px; }
+.reveal summary:focus-visible, .cell:focus-visible { outline: 3px solid #243c29; outline-offset: 3px; }
+.selectedRoute { fill: none; stroke: #91b77c; stroke-width: 10; stroke-opacity: .38; stroke-linejoin: round; }
+.memory { display: grid; grid-template-columns: 48px repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.corner { align-self: center; font-size: 9px; line-height: 1.6; }
+.axis { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; }
+.axis[data-selected="true"] { font-weight: 800; }
+.cell { display: grid; justify-items: center; gap: 6px; padding: 10px 2px; border: 2px solid #647565; border-radius: 4px; background: #a3b09b; color: #243c29; font-family: inherit; cursor: pointer; transition: background .15s; }
+.cell[data-row="true"], .cell[data-column="true"] { background: #bfceb3; }
+.cell[aria-pressed="true"] { background: #243c29; color: #e1f9ca; border-color: #e1f9ca; box-shadow: 0 0 0 2px #243c29; }
+.cell small { font-size: 10px; }
+.cell strong { font-size: 22px; line-height: 1; }
+.cell:hover { filter: brightness(1.08); }
+@container (max-width: 400px) {
+  .memory { grid-template-columns: 32px repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .axis { flex-direction: column; gap: 4px; font-size: 10px; }
+  .cell small { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) { .cell { transition: none; } }
+
+.fieldset { min-width: 0; padding: 0; border: 0; margin-inline: 0; }
+
+.body.body { grid-template-columns: minmax(0, 1fr); }
+
+.diagram text { font-size: 15px; letter-spacing: 0; }

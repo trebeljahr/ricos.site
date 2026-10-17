@@ -38,6 +38,8 @@ export type Node = {
   y: number;
   inputSide?: "left" | "top" | "right" | "bottom";
   outputSide?: "left" | "top" | "right" | "bottom";
+  /** Internal wire splice, rendered as a dot rather than a part. */
+  splice?: true;
   label?: string;
   value?: boolean;
   numberValue?: number;
@@ -65,6 +67,8 @@ export type Wire = {
   input: number;
   output?: number;
   color?: WireColor;
+  /** Explicit route created when a wire is split. Endpoints follow their nodes. */
+  points?: { x: number; y: number }[];
 };
 export type CircuitGroup = {
   id: string;
@@ -169,7 +173,7 @@ export const moduleInputs = (circuit: Circuit) =>
 export const moduleOutputs = (circuit: Circuit) =>
   circuit.nodes.filter((node) => node.type === "lamp");
 export const inputCount = (node: Node) =>
-  node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
+  node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
 export const outputCount = (node: Node) =>
   node.type === "module"
     ? moduleOutputs(node.module!).length
@@ -1785,6 +1789,7 @@ export function validateCircuit(
         Number.isFinite(n.y) &&
         (n.inputSide === undefined || ["left", "top", "right", "bottom"].includes(n.inputSide)) &&
         (n.outputSide === undefined || ["left", "top", "right", "bottom"].includes(n.outputSide)) &&
+        (n.splice === undefined || (n.splice === true && ["junction", "bus"].includes(n.type))) &&
         validProbe(n),
     )
   )
@@ -1861,6 +1866,13 @@ export function validateCircuit(
         w.input < ports.get(w.to)!.inputs &&
         (w.output === undefined || (Number.isInteger(w.output) && w.output >= 0)) &&
         (w.output ?? 0) < ports.get(w.from)!.outputs &&
+        (w.points === undefined ||
+          (Array.isArray(w.points) &&
+            w.points.length >= 2 &&
+            w.points.length <= 2048 &&
+            w.points.every(
+              (point) => point && Number.isFinite(point.x) && Number.isFinite(point.y),
+            ))) &&
         wireFits(ports.get(w.from)!.node, w.output ?? 0, ports.get(w.to)!.node, w.input),
     )
   )
@@ -1874,6 +1886,7 @@ export function validateCircuit(
       y: n.y,
       inputSide: n.inputSide,
       outputSide: n.outputSide,
+      ...(n.splice ? { splice: true as const } : {}),
       label: typeof n.label === "string" ? n.label.slice(0, 30) : undefined,
       value: Boolean(n.value),
       numberValue: n.numberValue,
@@ -1890,6 +1903,7 @@ export function validateCircuit(
       to: w.to,
       input: w.input,
       output: w.output,
+      ...(w.points ? { points: w.points.map((point) => ({ x: point.x, y: point.y })) } : {}),
       color:
         typeof w.color === "string" && Object.hasOwn(WIRE_COLORS, w.color)
           ? (w.color as WireColor)

@@ -267,3 +267,9 @@
 .shell:has(.layoutWithCoach){container-type:inline-size}
 @container (max-width:1180px){.layoutWithCoach{grid-template-columns:200px minmax(0,1fr) 280px}}
 @container (max-width:860px){.layoutWithCoach{display:flex;flex-direction:column}.layoutWithCoach>.sidebar{flex:0 0 auto;max-height:240px;padding:12px 14px;border-right:0;border-bottom:1px solid #405071}.layoutWithCoach>.sidebar>p{display:none}.layoutWithCoach>.sidebar .parts{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}.layoutWithCoach>.sidebar .partsSection{grid-column:1/-1}.layoutWithCoach>.workspace{flex:1 0 360px}.coach{flex:0 0 auto;max-height:none;border-left:0;border-top:1px solid #405071}}
+
+/* Internal wire joins keep all topology in the saved circuit. */
+.node.wireJoin{border-radius:50%;background:#a2b7c6;border:1px solid #101a22;box-shadow:none;z-index:2;min-width:0;min-height:0}
+.node.wireJoin.active{background:#75e6d4;border-color:#101a22}
+.node.wireJoin.joinConflict{background:#ff8f87}
+.node.wireJoin> *{display:none}

@@ -2,6 +2,7 @@
 // the reader's parts plays which reference part. Steps use the match to know
 // when they are done, and "Show me" uses it to place the next part or wire.
 import { type Circuit, type GateType, LABELS, type Node, type Wire } from "../logic";
+import { withoutWireSplices } from "../wireTopology";
 import type { Source } from "./kit";
 import type { HintAnchor, PaletteRef, PartId, TutorialContext, TutorialStep } from "./types";
 
@@ -45,11 +46,12 @@ const wiresInto = (circuit: Circuit, id: string) => circuit.wires.filter((wire) 
  * input wires agree best with the reference; ties go to the part placed first.
  */
 export function matchReference(
-  reader: Circuit,
+  source: Circuit,
   reference: Circuit,
   locked: readonly string[],
   gateParts: ReadonlyMap<GateType, PartId>,
 ): Map<string, string> {
+  const reader = withoutWireSplices(source);
   const match = new Map<string, string>();
   const taken = new Set<string>();
   const readerIds = new Set(reader.nodes.map((node) => node.id));
@@ -62,7 +64,7 @@ export function matchReference(
     if (match.has(ref.id)) continue;
     const kind = kindOf(ref, gateParts);
     const candidates = reader.nodes.filter(
-      (node) => !taken.has(node.id) && kindOf(node, gateParts) === kind,
+      (node) => !node.splice && !taken.has(node.id) && kindOf(node, gateParts) === kind,
     );
     if (!candidates.length) continue;
     const refWires = wiresInto(reference, ref.id);
@@ -147,10 +149,11 @@ function satisfiedInputs(
  * not placed, or the first reference wire they lack, in build order.
  */
 export function nextAction(
-  reader: Circuit,
+  source: Circuit,
   reference: Circuit,
   match: ReadonlyMap<string, string>,
 ): ShowAction | undefined {
+  const reader = withoutWireSplices(source);
   const readerNodes = new Map(reader.nodes.map((node) => [node.id, node]));
   const deferred: Wire[] = [];
   const wireAction = (wire: Wire): ShowAction | undefined => {
@@ -246,7 +249,7 @@ export function hasWires(
   if (!target) return false;
   const node = context.circuit.nodes.find((item) => item.id === target);
   const have = new Map(
-    context.circuit.wires
+    withoutWireSplices(context.circuit).wires
       .filter((wire) => wire.to === target)
       .map((wire) => [wire.input, `${wire.from}:${wire.output ?? 0}`] as const),
   );

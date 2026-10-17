@@ -3,7 +3,7 @@ import { inputCount, type Node, outputCount } from "./logic";
 export type DisplayNode = Node & { displayWidth?: number; displayHeight?: number };
 
 export const nodeWidth = (node: DisplayNode) =>
-  node.displayWidth ??
+  node.splice ? 10 : node.displayWidth ??
   (node.type === "module"
     ? 300
     : ["input8", "display8"].includes(node.type)
@@ -13,7 +13,7 @@ export const nodeWidth = (node: DisplayNode) =>
         : 132);
 
 export const nodeHeight = (node: DisplayNode) =>
-  node.displayHeight ??
+  node.splice ? 10 : node.displayHeight ??
   (node.type === "module"
     ? Math.max(
         116,

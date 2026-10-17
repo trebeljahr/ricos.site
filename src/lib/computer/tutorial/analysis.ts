@@ -1,6 +1,7 @@
 // Feedback on a working circuit: how big and how deep it is next to the
 // reference solution, which parts do nothing, and which groups of gates
 // compute something a part from an earlier level already does.
+import { withoutWireSplices } from "../wireTopology";
 import {
   type Circuit,
   type GateType,
@@ -51,7 +52,8 @@ const net = (path: string, output: number) => `${path}#${output}`;
  * with its input and output nets. Module ports and lamps become aliases of
  * the net that drives them.
  */
-export function flatten(circuit: Circuit) {
+export function flatten(source: Circuit) {
+  const circuit = withoutWireSplices(source);
   const gates: FlatGate[] = [];
   const alias = new Map<string, string | undefined>();
   const inputNets: string[] = [];
@@ -124,9 +126,10 @@ export type Stats = {
   usedParts: Record<PartId, number>;
 };
 
-export function circuitStats(circuit: Circuit, locked: readonly string[]): Stats {
+export function circuitStats(source: Circuit, locked: readonly string[]): Stats {
+  const circuit = withoutWireSplices(source);
   const lockedIds = new Set(locked);
-  const placed = circuit.nodes.filter((node) => !lockedIds.has(node.id));
+  const placed = circuit.nodes.filter((node) => !node.splice && !lockedIds.has(node.id));
   const usedParts: Record<PartId, number> = {};
   for (const node of placed) if (node.part) usedParts[node.part] = (usedParts[node.part] ?? 0) + 1;
   const flat = flatten(circuit);
@@ -415,11 +418,12 @@ const plural = (count: number, word: string) => `${count} ${word}${count === 1 ?
 
 /** Notes for a circuit that passes: size and depth against the reference, and simpler wiring. */
 export function feedback(
-  circuit: Circuit,
+  source: Circuit,
   level: Level,
   locked: readonly string[],
   options: { reference?: Circuit; known?: KnownPart[] } = {},
 ): { stats: Stats; reference?: Stats; notes: Note[] } {
+  const circuit = withoutWireSplices(source);
   const lockedIds = new Set(locked);
   const stats = circuitStats(circuit, locked);
   const reference = options.reference ? circuitStats(options.reference, locked) : undefined;

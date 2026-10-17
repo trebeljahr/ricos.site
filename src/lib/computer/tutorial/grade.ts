@@ -12,6 +12,7 @@ import {
   type Snapshot,
   step,
 } from "../logic";
+import { withoutWireSplices } from "../wireTopology";
 import { allRows } from "./kit";
 import type {
   CustomGrade,
@@ -104,18 +105,19 @@ const isAllowed = (node: Node, allowed: Allowed) =>
 
 /** Why the circuit cannot be checked yet, with anchors; empty when it can. */
 export function structureProblems(
-  circuit: Circuit,
+  source: Circuit,
   level: Level,
   locked: readonly string[],
   allowed: Allowed,
 ): Problem[] {
+  const circuit = withoutWireSplices(source);
   if (level.spec.kind === "custom") return level.rules?.(circuit).map((text) => ({ text })) ?? [];
   const spec = level.spec;
   const problems: Problem[] = [];
   const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
   const lockedIds = new Set(locked);
   const banned = circuit.nodes.filter(
-    (node) => !lockedIds.has(node.id) && !isAllowed(node, allowed),
+    (node) => !node.splice && !lockedIds.has(node.id) && !isAllowed(node, allowed),
   );
   if (banned.length) {
     const names = [...new Set(banned.map(partName))].join(", ");
@@ -139,6 +141,7 @@ export function structureProblems(
     const node = byId.get(id);
     if (!node || lockedIds.has(id)) continue;
     const wired = new Set(circuit.wires.filter((wire) => wire.to === id).map((wire) => wire.input));
+    if (node.splice && node.type === "bus" && wired.size) continue;
     for (let input = 0; input < inputCount(node); input++) {
       if (wired.has(input)) continue;
       const empty = Array.from({ length: inputCount(node) }, (_, index) => index).filter(
@@ -298,7 +301,7 @@ export function wiringKey(circuit: Circuit): string {
   const nodes = circuit.nodes
     .map(
       (node) =>
-        `${node.id}:${node.type}:${node.part ?? ""}:${node.module ? wiringKey(node.module) : ""}`,
+        `${node.id}:${node.type}:${node.splice ? "splice" : ""}:${node.part ?? ""}:${node.module ? wiringKey(node.module) : ""}`,
     )
     .sort();
   const wires = circuit.wires

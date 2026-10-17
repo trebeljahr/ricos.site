@@ -6,6 +6,10 @@ import { CircuitToolbar } from "./CircuitToolbar";
 import { ToolbarMenu } from "./ToolbarMenu";
 import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
+import { useCircuitClipboard } from "../../hooks/useCircuitClipboard";
+import { type CircuitClip, copyCircuit, insertCircuitCopy, remapCircuitPath } from "../../lib/computer/circuitClipboard";
+import { bridgeWirePaths, closestPathPoint, explicitWirePath, pathPoints, polylinePath } from "../../lib/computer/wireGeometry";
+import { connectWireEnds, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
 import { activateBuilder, claimStorage, ownsKeyEvent, registerBuilder } from "../../lib/computer/builderRegistry";
@@ -165,6 +169,7 @@ const partColors: Record<GateType, string> = {
   module: "#ffc76a",
 };
 type WireDraft = {
+  anchor?: WireAnchor;
   from?: string;
   output?: number;
   to?: string;
@@ -286,6 +291,7 @@ const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: 
   return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
 };
 const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") => {
+  if (node.splice) return { x: node.x + 5, y: node.y + 5 };
   const side = kind === "input" ? inputSide(node) : outputSide(node);
   const sharedSide = inputSide(node) === outputSide(node);
   const count = sharedSide
@@ -413,7 +419,7 @@ const layoutInlineCircuit = (
   const visible = circuit.nodes.filter((node) => !boundary.has(node.id));
   const minX = Math.min(0, ...visible.map((node) => node.x));
   const minY = Math.min(0, ...visible.map((node) => node.y));
-  const sizes = visible.map((node) => {
+  const sizes = visible.filter((node) => !node.splice).map((node) => {
     const path = `${prefix}${node.id}`;
     const inner = unfolded.has(path) && depth < 6 ? innerCircuit(node) : undefined;
     const child = inner ? layoutInlineCircuit(inner, `${path}/`, unfolded, depth + 1) : undefined;
@@ -421,13 +427,16 @@ const layoutInlineCircuit = (
       width: Math.max(nodeWidth(node), child ? child.width + INLINE_X * 2 : 0),
       height: Math.max(nodeHeight(node), child ? child.height + INLINE_Y + 12 : 148) };
   });
-  const parts = spaceExpandedNodes<InlinePart>(sizes.map((item) => ({
+  const parts = [...spaceExpandedNodes<InlinePart>(sizes.map((item) => ({
     ...item.node, x: item.node.x - minX + 72, y: item.node.y - minY + 52,
     path: item.path, inner: item.inner, child: item.child,
     expandable: isUnfoldable(item.node), expanded: Boolean(item.child),
     displayWidth: item.width, displayHeight: item.height,
   })), visible.map((node) => ({ ...node, displayHeight: Math.max(nodeHeight(node), 148) })),
-    28, circuit.wires, portPoint);
+    28, circuit.wires, portPoint), ...visible.filter((node) => node.splice).map((node): InlinePart => ({
+      ...node, x: node.x - minX + 72, y: node.y - minY + 52,
+      path: `${prefix}${node.id}`, expandable: false,
+    }))];
   return {
     width: Math.max(560, ...parts.map((part) => part.x + nodeWidth(part) + 72)),
     height: Math.max(200, Math.max(inputs.length, outputs.length) * 60 + 140,
@@ -452,6 +461,9 @@ type InlineCircuitProps = {
   activePath: string | null;
   zoom: number;
   path: string;
+  editable: boolean;
+  ownsClipboard: (target: EventTarget | null) => boolean;
+  onPaste: (clip: CircuitClip, point: { x: number; y: number }, path: string) => string[] | null;
 };
 
 type InlineEndpoint = {
@@ -461,11 +473,14 @@ type InlineEndpoint = {
 };
 
 const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
-  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path }: InlineCircuitProps) {
+  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path, editable, ownsClipboard, onPaste }: InlineCircuitProps) {
   const root = useRef<HTMLDivElement>(null);
   const diagram = useRef<HTMLDivElement>(null);
-  const [selectedPart, setSelectedPart] = useState<string | null>(null);
-  const [selectedWire, setSelectedWire] = useState<string | null>(null);
+  const [selectedParts, setSelectedParts] = useState<string[]>([]);
+  const [selectedWireIds, setSelectedWireIds] = useState<string[]>([]);
+  const selectedPart = selectedParts[0] ?? null, selectedWire = selectedWireIds[0] ?? null;
+  const setSelectedPart = (id: string | null) => setSelectedParts(id ? [id] : []);
+  const setSelectedWire = (id: string | null) => setSelectedWireIds(id ? [id] : []);
   const [pendingPort, setPendingPort] = useState<InlineEndpoint | null>(null);
   const [editingPart, setEditingPart] = useState<string | null>(null);
   const [draftLabel, setDraftLabel] = useState("");
@@ -474,7 +489,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   const [preview, setPreview] = useState<{ port: InlineEndpoint; point: { x: number; y: number } } | null>(null);
   const interaction = useRef<{
     pointer: number; x: number; y: number; scale: number;
-    part?: string; port?: InlineEndpoint; rect: DOMRect;
+    part?: string; port?: InlineEndpoint; wire?: WireAnchor; rect: DOMRect;
   } | null>(null);
   const frame = useRef<number | null>(null);
   useEffect(() => () => { if (frame.current !== null) cancelAnimationFrame(frame.current); }, []);
@@ -526,7 +541,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       .filter((port) => port.boundary && port.kind === kind)
       .map((port) => ({ nodeId: port.id, kind, index: port.port, ...port.point,
         bank: `boundary-${kind}-${portLabelBank(port.label)}`, label: port.label, width: 1 as const }));
-    return [...boundaryPorts("output"), ...wiringPorts(layout.parts, portPoint), ...boundaryPorts("input")];
+    return [...boundaryPorts("output"), ...wiringPorts(layout.parts.filter((part) => !part.splice), portPoint), ...boundaryPorts("input")];
   }, [endpoints, layout.parts]);
   const portWiring = usePortWiring({
     ports: inlinePorts, wires: circuit.wires, zoom,
@@ -544,6 +559,17 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     ] })),
     onMessage: setPortMessage,
   });
+  const clipboard = useCircuitClipboard({
+    enabled: editable && activePath === path, scope: path, ownsEvent: ownsClipboard,
+    circuit, nodes: selectedParts, wires: selectedWireIds,
+    unfolded: [...unfolded].filter((id) => id.startsWith(`${path}/`)).map((id) => id.slice(path.length + 1)),
+    center: () => ({ x: layout.width / 2 - layout.originX, y: layout.height / 2 - layout.originY }),
+    insert: (clip, point) => {
+      const ids = onPaste(clip, point, path);
+      if (ids) { setSelectedParts(ids); setSelectedWire(null); setMenu(null); }
+      return Boolean(ids);
+    }, message: setPortMessage,
+  });
   const clearPortSelection = portWiring.clear;
   useEffect(() => { if (activePath !== path) clearPortSelection(); }, [activePath, path, clearPortSelection]);
   const routes = useMemo(() => routeCircuitWires(circuit.wires.flatMap((wire) => {
@@ -556,6 +582,42 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   const movedPoint = (port: InlineEndpoint, wire = false) => {
     const point = wire ? port.wirePoint : port.point;
     return drag?.id === port.id ? { x: point.x + drag.dx, y: point.y + drag.dy } : point;
+  };
+  const wirePaths = useMemo(() => bridgeWirePaths(circuit.wires.flatMap((wire) => {
+    const from = endpointMap.get(`output:${wire.from}:${wire.output ?? 0}`), to = endpointMap.get(`input:${wire.to}:${wire.input}`);
+    if (!from || !to) return [];
+    const start = movedPoint(from, true), end = movedPoint(to, true);
+    return [{ id: wire.id, path: wire.points ? explicitWirePath(wire.points.map((point) => ({
+      x: point.x + layout.originX, y: point.y + layout.originY })), start, end) :
+      drag && (drag.id === from.id || drag.id === to.id) ? orientedWirePath(start, end, from.side, to.side) :
+      routes.paths[wire.id] ?? orientedWirePath(start, end, from.side, to.side) }];
+  })), [circuit.wires, endpointMap, routes, drag, layout.originX, layout.originY]);
+  const localAnchor = (anchor: WireAnchor): WireAnchor => ({ ...anchor,
+    point: { x: anchor.point.x - layout.originX, y: anchor.point.y - layout.originY },
+    path: pathPoints(anchor.path).map((points) => polylinePath(points.map((point) => ({
+      x: point.x - layout.originX, y: point.y - layout.originY })))).join(" "),
+  });
+  const nearestWire = (point: { x: number; y: number }, exclude?: string): WireAnchor | null => {
+    let best: WireAnchor | null = null, distance = 12 / zoom;
+    for (const wire of circuit.wires) {
+      if (wire.id === exclude || !wirePaths[wire.id]) continue;
+      const hit = closestPathPoint(wirePaths[wire.id], point);
+      if (hit.distance < distance) { best = { wire: wire.id, point: hit.point, path: wirePaths[wire.id] }; distance = hit.distance; }
+    }
+    return best;
+  };
+  const startBranch = (event: React.PointerEvent<SVGPathElement>, wire: Wire) => {
+    event.stopPropagation(); activate();
+    if (!editable || event.button !== 0 || event.shiftKey || event.metaKey || event.ctrlKey) return;
+    const rect = diagram.current!.getBoundingClientRect(), scale = rect.width / layout.width || zoom;
+    const point = { x: (event.clientX - rect.left) / scale, y: (event.clientY - rect.top) / scale };
+    const hit = closestPathPoint(wirePaths[wire.id], point);
+    const anchor: WireAnchor = { wire: wire.id, point: hit.point, path: wirePaths[wire.id] };
+    const port: InlineEndpoint = { id: wire.from, port: wire.output ?? 0, kind: "output", point: hit.point,
+      wirePoint: hit.point, side: "right", label: "Wire join" };
+    portWiring.clear();
+    interaction.current = { pointer: event.pointerId, x: event.clientX, y: event.clientY, scale, rect, wire: anchor, port };
+    diagram.current!.setPointerCapture(event.pointerId); setPreview({ port, point: hit.point });
   };
   const connectPorts = (first: InlineEndpoint, second: InlineEndpoint) => {
     if (first.kind === second.kind || first.id === second.id) return;
@@ -589,6 +651,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     let nearest: InlineEndpoint | undefined;
     let distance = Math.max(18, 12 / scale);
     for (const port of endpoints) {
+      if (circuit.nodes.find((node) => node.id === port.id)?.splice) continue;
       if (port.kind === source.kind || port.id === source.id) continue;
       const next = Math.hypot(port.point.x - point.x, port.point.y - point.y);
       if (next < distance) { nearest = port; distance = next; }
@@ -648,24 +711,40 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       }) }));
     }
     if (action.port) {
-      if (!moved) choosePort(action.port);
+      if (!moved) { if (!action.wire) choosePort(action.port); }
       else {
         const point = { x: (event.clientX - action.rect.left) / action.scale,
           y: (event.clientY - action.rect.top) / action.scale };
         const target = nearestPort(action.port, point, action.scale);
-        if (target) connectPorts(action.port, target);
+        const wireTarget = !target ? nearestWire(point, action.wire?.wire) : null;
+        if (action.wire || wireTarget) {
+          const first: WireEnd = action.wire ? localAnchor(action.wire) : {
+            node: action.port.id, port: action.port.port, kind: action.port.kind };
+          const second: WireEnd | null = wireTarget ? localAnchor(wireTarget) : target ? {
+            node: target.id, port: target.port, kind: target.kind } : null;
+          if (second) {
+            const result = connectWireEnds(circuit, first, second);
+            if (result.circuit) { onEdit(path, () => result.circuit!); setPortMessage("Wire joined. Undo restores the previous net."); }
+            else setPortMessage(result.error ?? "Could not join wires.");
+          }
+        } else if (target) connectPorts(action.port, target);
         else setPendingPort(null);
       }
     }
   };
-  const removeSelected = (partId = selectedPart, wireId = selectedWire) => {
-    if (!partId && !wireId) return;
-    if (partId && layout.outputs.length === 1 && layout.outputs[0].id === partId) return;
+  const removeSelected = (partId: string | null = selectedPart, wireId: string | null = selectedWire) => {
+    const parts = new Set(partId === selectedPart ? selectedParts : partId ? [partId] : []);
+    const wires = new Set(wireId === selectedWire ? selectedWireIds : wireId ? [wireId] : []);
+    if (!parts.size && !wires.size) return;
+    if (layout.outputs.every((node) => parts.has(node.id))) {
+      setPortMessage("A module must keep at least one output."); return;
+    }
     onEdit(path, (inner) => ({ ...inner,
-      nodes: partId ? inner.nodes.filter((node) => node.id !== partId) : inner.nodes,
-      wires: inner.wires.filter((wire) => wire.id !== wireId && wire.from !== partId && wire.to !== partId),
-      groups: inner.groups?.map((group) => ({ ...group, nodeIds: group.nodeIds.filter((id) => id !== partId) }))
-        .filter((group) => group.nodeIds.length),
+      nodes: inner.nodes.filter((node) => !parts.has(node.id)),
+      wires: inner.wires.filter((wire) => !wires.has(wire.id) && !parts.has(wire.from) && !parts.has(wire.to)),
+      groups: inner.groups?.map((group) => ({ ...group, nodeIds: group.nodeIds.filter((id) => !parts.has(id)),
+        activeWhen: group.activeWhen && parts.has(group.activeWhen) ? undefined : group.activeWhen,
+      })).filter((group) => group.nodeIds.length),
     }));
     setSelectedPart(null); setSelectedWire(null); setPendingPort(null); setMenu(null);
   };
@@ -731,7 +810,10 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       onKeyDown={(event) => {
         if (event.target instanceof Element && event.target.closest("input,select,textarea")) return;
         if (event.key === "Escape") { event.stopPropagation(); cancelInteraction(); portWiring.clear(); setPendingPort(null); setMenu(null); }
-        if (activePath !== path) return;
+        if (activePath !== path || !editable) return;
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "a") {
+          event.preventDefault(); event.stopPropagation(); setSelectedParts(circuit.nodes.map((node) => node.id)); setSelectedWire(null); return;
+        }
         if (event.key === "Delete" || event.key === "Backspace") {
           event.preventDefault(); event.stopPropagation(); removeSelected();
         }
@@ -766,18 +848,20 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             const from = endpointMap.get(`output:${wire.from}:${wire.output ?? 0}`);
             const to = endpointMap.get(`input:${wire.to}:${wire.input}`);
             if (!from || !to) return null;
-            const d = drag && (drag.id === from.id || drag.id === to.id)
-              ? orientedWirePath(movedPoint(from, true), movedPoint(to, true), from.side, to.side)
-              : routes.paths[wire.id] ?? orientedWirePath(from.wirePoint, to.wirePoint, from.side, to.side);
+            const d = wirePaths[wire.id];
             return <g key={wire.id} style={{ "--wire-color": WIRE_COLORS[wire.color ?? sourceColor(wire.from, wire.output)] } as React.CSSProperties}>
               <path d={d} className={styles.wireHit} role="button" tabIndex={0}
                 aria-label={`Select internal wire from ${from.label} to ${to.label}`}
-                onPointerDown={(event) => event.stopPropagation()}
-                onClick={(event) => { event.stopPropagation(); activate(); setSelectedWire(wire.id); setSelectedPart(null); }}
+                onPointerDown={(event) => startBranch(event, wire)}
+                onClick={(event) => { event.stopPropagation(); activate();
+                  setSelectedWireIds((ids) => event.shiftKey || event.metaKey || event.ctrlKey
+                    ? ids.includes(wire.id) ? ids.filter((id) => id !== wire.id) : [...ids, wire.id] : [wire.id]);
+                  if (!event.shiftKey && !event.metaKey && !event.ctrlKey) setSelectedPart(null);
+                }}
                 onContextMenu={(event) => contextMenu(event, { wire: wire.id })}
                 onKeyDown={(event) => { if (event.key === "Enter") { setSelectedWire(wire.id); setSelectedPart(null); } }} />
               <path d={d} data-inline-wire={wire.id}
-                className={clsx(styles.wire, selectedWire === wire.id && styles.wireSelected)} />
+                className={clsx(styles.wire, selectedWireIds.includes(wire.id) && styles.wireSelected)} />
             </g>;
           })}
           {preview && <path className={styles.wirePreview} style={{ "--wire-color": WIRE_COLORS[
@@ -795,8 +879,9 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         })}
         {layout.parts.map((part) => (
           <div key={part.id} data-inline-part={part.path}
-            className={clsx(styles.node, styles.inlinePart, part.child && styles.expandedNode,
-              selectedPart === part.id && styles.inlineSelectedPart, drag?.id === part.id && styles.inlineDragging)}
+            className={clsx(styles.node, styles.inlinePart, part.splice && styles.wireJoin,
+              part.splice && snapshot.buses?.[part.id] === "X" && styles.joinConflict, part.child && styles.expandedNode,
+              selectedParts.includes(part.id) && styles.inlineSelectedPart, drag?.id === part.id && styles.inlineDragging)}
             style={{ "--part-accent": partColors[part.type], left: part.x, top: part.y,
               width: nodeWidth(part), height: nodeHeight(part),
               transform: drag?.id === part.id ? `translate(${drag.dx}px, ${drag.dy}px)` : undefined } as React.CSSProperties}
@@ -804,7 +889,12 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             onPointerDown={(event) => {
               if (event.button !== 0 || event.target instanceof Element &&
                 event.target.closest("button,input,select,[role=button]")) return;
-              event.stopPropagation(); activate(); portWiring.clear(); setSelectedPart(part.id); setSelectedWire(null); setMenu(null);
+              event.stopPropagation(); activate(); portWiring.clear();
+              setSelectedParts((ids) => event.shiftKey || event.metaKey || event.ctrlKey
+                ? ids.includes(part.id) ? ids.filter((id) => id !== part.id) : [...ids, part.id]
+                : ids.includes(part.id) ? ids : [part.id]);
+              if (!event.shiftKey && !event.metaKey && !event.ctrlKey) setSelectedWire(null);
+              setMenu(null);
               const rect = diagram.current!.getBoundingClientRect();
               interaction.current = { pointer: event.pointerId, x: event.clientX, y: event.clientY,
                 scale: rect.width / layout.width || zoom, rect, part: part.id };
@@ -842,7 +932,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             {part.child && part.inner && <InlineCircuit host={part} circuit={part.inner} layout={part.child}
               unfolded={unfolded} snapshot={snapshot.modules[part.id] ?? EMPTY_SNAPSHOT}
               onToggle={onToggle} onExpandLevel={onExpandLevel} onRefoldLevel={onRefoldLevel}
-              onEnter={onEnter} onEdit={onEdit} onActivate={onActivate} activePath={activePath} zoom={zoom} path={part.path} />}
+              onEnter={onEnter} onEdit={onEdit} onActivate={onActivate} activePath={activePath} zoom={zoom} path={part.path}
+              editable={editable} ownsClipboard={ownsClipboard} onPaste={onPaste} />}
             {Array.from({ length: outputCount(part) }, (_, index) => (
               <div key={`output-${index}`} className={styles.portRow} style={portStyle(part, index, "output")}>
                 {part.type === "module" && !part.child && <span className={styles.outputPortLabel}>{outputLabel(part, index)}</span>}
@@ -856,6 +947,10 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       {menu && <ViewportContextMenu x={menu.x} y={menu.y}
         aria-label="Expanded circuit actions"
         onPointerDown={(event) => event.stopPropagation()}>
+        {editable && <>
+          <button role="menuitem" type="button" onClick={() => { void clipboard.copy(); setMenu(null); }}>Copy selection</button>
+          <button role="menuitem" type="button" onClick={() => { void clipboard.paste(); setMenu(null); }}>Paste circuit</button>
+        </>}
         {menu.part && <button role="menuitem" type="button" onClick={() => beginLabel(menu.part!)}>Rename part</button>}
         <button role="menuitem" type="button"
           onClick={() => removeSelected(menu.part?.id ?? null, menu.wire ?? null)}>
@@ -1053,7 +1148,15 @@ export function LogicBuilder({
   };
   const updateInline = (path: string, edit: (inner: Circuit) => Circuit) => {
     if (lockedRef.current) return;
-    setCircuit((current) => editInlineCircuit(current, path, edit));
+    const current = history.current();
+    const next = editInlineCircuit(current.circuit, path, edit);
+    const root = current.viewPath.reduceRight((inner, level) => level.moduleId
+      ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent, next);
+    if (!validateCircuit(root)) { setMessage("Edit exceeds circuit parser or module limits."); return; }
+    if (challenge && challenge.enforce(root) !== root) {
+      setMessage("Pre-placed parts and wires are locked in this level."); return;
+    }
+    setCircuit(next);
     setSelected([]);
     setMessage("Expanded circuit updated.");
   };
@@ -1121,7 +1224,8 @@ export function LogicBuilder({
       const detail = expandedDetails.get(node.id);
       return { ...node, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height };
     });
-    return expandedDetails.size ? spaceExpandedNodes(nodes, circuit.nodes, 36, circuit.wires, portPoint) : nodes;
+    return expandedDetails.size ? [...spaceExpandedNodes(nodes.filter((node) => !node.splice),
+      circuit.nodes.filter((node) => !node.splice), 36, circuit.wires, portPoint), ...nodes.filter((node) => node.splice)] : nodes;
   }, [circuit.nodes, circuit.wires, expandedDetails]);
   const foldBoxes = useMemo(() => {
     const boxes = new Map<string, FoldBox>();
@@ -1185,6 +1289,7 @@ export function LogicBuilder({
           height: nodeHeight(node),
         })),
         busWiring && circuit.wires.every((wire) => {
+          if (wire.points) return false;
           const from = displayNodes.find((node) => node.id === wire.from);
           const to = displayNodes.find((node) => node.id === wire.to);
           return from && to && outputSide(from) === "right" && inputSide(to) === "left";
@@ -1995,69 +2100,43 @@ export function LogicBuilder({
     setSelected([next.id]);
     setMessage(`${source.name} added as a black box.`);
   };
-  const insertCircuit = (source: Circuit, position: { x: number; y: number }, inlinePath?: string | null) => {
-    if (!source.nodes.length) return;
-    if (inlinePath) {
-      updateInline(inlinePath, (inner) => {
-        if (inner.nodes.length + source.nodes.length > 300 ||
-          moduleInputs(inner).length + moduleInputs(source).length > 24 ||
-          moduleOutputs(inner).length + moduleOutputs(source).length > 24) return inner;
-        const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
-        const minX = Math.min(...source.nodes.map((node) => node.x));
-        const minY = Math.min(...source.nodes.map((node) => node.y));
-        const left = position.x - (Math.max(...source.nodes.map((node) => node.x + nodeWidth(node))) - minX) / 2;
-        const top = position.y - (Math.max(...source.nodes.map((node) => node.y + nodeHeight(node))) - minY) / 2;
-        return { ...inner,
-          nodes: [...inner.nodes, ...source.nodes.map((node) => ({ ...node,
-            id: ids.get(node.id)!, x: left + node.x - minX, y: top + node.y - minY }))],
-          wires: [...inner.wires, ...source.wires.map((wire) => ({ ...wire,
-            id: crypto.randomUUID(), from: ids.get(wire.from)!, to: ids.get(wire.to)! }))],
-          groups: [...(inner.groups ?? []), ...(source.groups ?? []).map((group) => ({
-            ...group, id: crypto.randomUUID(), nodeIds: group.nodeIds.map((id) => ids.get(id)!),
-          }))],
-        };
-      });
-      return;
+  const pasteCircuit = (clip: CircuitClip, position: { x: number; y: number }, inlinePath?: string | null): string[] | null => {
+    if (lockedRef.current) return null;
+    const current = history.current();
+    let result: ReturnType<typeof insertCircuitCopy> = null;
+    const apply = (target: Circuit) => {
+      result = insertCircuitCopy(target, clip.circuit, position, Boolean(inlinePath) || current.viewPath.length > 0);
+      return result?.circuit ?? target;
+    };
+    const next = inlinePath ? editInlineCircuit(current.circuit, inlinePath, apply) : apply(current.circuit);
+    const inserted = result as ReturnType<typeof insertCircuitCopy>;
+    const root = current.viewPath.reduceRight((inner, level) => level.moduleId
+      ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent, next);
+    if (!inserted || !validateCircuit(root)) {
+      setMessage("Cannot paste: circuit size, module ports, or parser depth limit reached."); return null;
     }
-    const minX = Math.min(...source.nodes.map((node) => node.x));
-    const minY = Math.min(...source.nodes.map((node) => node.y));
-    const width = Math.max(...source.nodes.map((node) => node.x)) - minX + NODE_WIDTH;
-    const height = Math.max(...source.nodes.map((node) => node.y + nodeHeight(node))) - minY;
-    const left = position.x - width / 2;
-    const top = position.y - height / 2;
-    const ids = new Map(source.nodes.map((node) => [node.id, crypto.randomUUID()]));
-    setCircuit((current) => ({
-      ...current,
-      nodes: [
-        ...current.nodes,
-        ...source.nodes.map((node) => ({
-          ...node,
-          id: ids.get(node.id)!,
-          x: left + node.x - minX,
-          y: top + node.y - minY,
-        })),
-      ],
-      wires: [
-        ...current.wires,
-        ...source.wires.map((wire) => ({
-          ...wire,
-          id: crypto.randomUUID(),
-          from: ids.get(wire.from)!,
-          to: ids.get(wire.to)!,
-        })),
-      ],
-      groups: [
-        ...(current.groups ?? []),
-        ...(source.groups ?? []).map((group) => ({
-          ...group,
-          id: crypto.randomUUID(),
-          nodeIds: group.nodeIds.map((id) => ids.get(id)!),
-        })),
-      ],
-    }));
-    setSelected([...ids.values()]);
-    setMessage(`${source.name} added. Drag the selected circuit to move it.`);
+    if (challenge && challenge.enforce(root) !== root) {
+      setMessage("Cannot paste into a pre-placed locked part."); return null;
+    }
+    const prefix = inlinePath ? `${inlinePath}/` : "";
+    const copiedUnfolded = clip.unfolded.flatMap((path) => {
+      const mapped = remapCircuitPath(inserted.paths, path); return mapped ? [prefix + mapped] : [];
+    });
+    publish({ ...current, circuit: next, unfolded: [...current.unfolded, ...copiedUnfolded] });
+    setSelected(inlinePath ? [] : inserted.selected); setSelectedWires([]); setMenu(null);
+    setMessage(`Pasted ${inserted.selected.length} parts. Undo removes this paste.`);
+    return inserted.selected;
   };
+  const insertCircuit = (source: Circuit, position: { x: number; y: number }, inlinePath?: string | null) => {
+    if (pasteCircuit(copyCircuit(source, [], []), position, inlinePath))
+      setMessage(`${source.name} added. Drag the selected circuit to move it.`);
+  };
+  const clipboard = useCircuitClipboard({
+    enabled: !locked && !activeInlinePath, scope: `${instanceId.description}:${viewPath.map((level) => level.moduleId).join("/")}`,
+    ownsEvent: (target) => ownsKeyEvent(instanceId, shellRef.current, target),
+    circuit, nodes: selected, wires: selectedWires, unfolded: [...unfolded], center: insertionCenter,
+    insert: (clip, point) => Boolean(pasteCircuit(clip, point)), message: setMessage,
+  });
   const connect = (from: string | null, to: string, input: number, output = 0) => {
     if (!from) {
       setMessage("Choose an output first.");
@@ -2112,7 +2191,7 @@ export function LogicBuilder({
     }));
     setMessage(`Connected bits 0–7 to ${target.label || target.module?.name || LABELS[target.type]}.`);
   };
-  const availablePorts = useMemo(() => wiringPorts(displayNodes.filter((node) =>
+  const availablePorts = useMemo(() => wiringPorts(displayNodes.filter((node) => !node.splice &&
     (showVdd || node.type !== "high") && (showGround || node.type !== "ground")), portPoint),
     [displayNodes, showVdd, showGround]);
   const portWiring = usePortWiring({
@@ -2133,6 +2212,7 @@ export function LogicBuilder({
   useEffect(() => { if (activeInlinePath) clearPortSelection(); }, [activeInlinePath, clearPortSelection]);
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
     if (lockedRef.current) return;
+    setActiveInlinePath(null);
     if (portWiring.pointerDown(event, draftPort(draft))) return;
     if (event.button !== 0 || event.pointerType === "touch") return;
     event.stopPropagation();
@@ -2145,11 +2225,12 @@ export function LogicBuilder({
   const nearestConnector = (point: { x: number; y: number }, draft: WireDraft) => {
     let best: { id: string; input?: number; output?: number; distance: number } | null = null;
     for (const node of displayNodes) {
+      if (node.splice) continue;
       if (draft.from && node.id !== draft.from) {
         for (let input = 0; input < inputCount(node); input++) {
           const port = portPoint(node, input, "input");
           const distance = Math.hypot(point.x - port.x, point.y - port.y);
-          if (distance < 20 && (!best || distance < best.distance))
+          if (distance < 20 / zoom && (!best || distance < best.distance))
             best = { id: node.id, input, distance };
         }
       }
@@ -2157,7 +2238,7 @@ export function LogicBuilder({
         for (let output = 0; output < outputCount(node); output++) {
           const port = portPoint(node, output, "output");
           const distance = Math.hypot(point.x - port.x, point.y - port.y);
-          if (distance < 20 && (!best || distance < best.distance))
+          if (distance < 20 / zoom && (!best || distance < best.distance))
             best = { id: node.id, output, distance };
         }
       }
@@ -2175,6 +2256,7 @@ export function LogicBuilder({
         ?.map((group) => ({
           ...group,
           nodeIds: group.nodeIds.filter((id) => !removed.has(id)),
+          activeWhen: group.activeWhen && removed.has(group.activeWhen) ? undefined : group.activeWhen,
         }))
         .filter((group) => group.nodeIds.length),
     }));
@@ -2190,6 +2272,7 @@ export function LogicBuilder({
         Boolean(event.target.closest("input, textarea, [contenteditable='true']"));
       if (editingText) return;
       if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "a") {
+        if (activeInlinePath) return;
         event.preventDefault();
         setSelected(circuit.nodes.map((node) => node.id));
         setSelectedWires([]);
@@ -2215,6 +2298,7 @@ export function LogicBuilder({
         setSelectedWires([]);
       }
       if (
+        !activeInlinePath &&
         (event.key === "Delete" || event.key === "Backspace") &&
         (selected.length || selectedWires.length) &&
         !(event.target instanceof HTMLInputElement) &&
@@ -2235,6 +2319,7 @@ export function LogicBuilder({
             ?.map((group) => ({
               ...group,
               nodeIds: group.nodeIds.filter((id) => !removed.has(id)),
+          activeWhen: group.activeWhen && removed.has(group.activeWhen) ? undefined : group.activeWhen,
             }))
             .filter((group) => group.nodeIds.length),
         }));
@@ -2245,7 +2330,7 @@ export function LogicBuilder({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selected, selectedWires, circuit, saved, viewPath]);
+  }, [selected, selectedWires, circuit, saved, viewPath, activeInlinePath]);
   const save = () => {
     const name = saveName.trim();
     if (!name) return;
@@ -2374,8 +2459,8 @@ export function LogicBuilder({
   const boardPoint = (clientX: number, clientY: number) => {
     const rect = board.current!.getBoundingClientRect();
     return {
-      x: bounds.left + ((clientX - rect.left) * canvasWidth) / rect.width,
-      y: bounds.top + ((clientY - rect.top) * canvasHeight) / rect.height,
+      x: bounds.left + (Number.isFinite(clientX) ? ((clientX - rect.left) * canvasWidth) / (rect.width || canvasWidth) : canvasWidth / 2),
+      y: bounds.top + (Number.isFinite(clientY) ? ((clientY - rect.top) * canvasHeight) / (rect.height || canvasHeight) : canvasHeight / 2),
     };
   };
   const pointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -2419,7 +2504,26 @@ export function LogicBuilder({
       const point = boardPoint(event.clientX, event.clientY);
       const moved = Math.hypot(point.x - draft.originX, point.y - draft.originY) > 8;
       const connector = moved ? nearestConnector(point, draft) : null;
-      if (draft.from && connector?.input !== undefined)
+      const wireTarget = moved && !connector ? nearestWire(point, draft.anchor?.wire) : null;
+      if (moved && (draft.anchor || wireTarget)) {
+        const first: WireEnd = draft.anchor ?? (draft.from
+          ? { node: draft.from, port: draft.output ?? 0, kind: "output" }
+          : { node: draft.to!, port: draft.input!, kind: "input" });
+        const second: WireEnd | null = wireTarget ?? (connector ? { node: connector.id,
+          port: connector.input ?? connector.output ?? 0, kind: connector.input !== undefined ? "input" : "output" } : null);
+        if (second) {
+          const result = connectWireEnds(circuit, first, second);
+          if (result.circuit) {
+            const current = history.current();
+            const root = current.viewPath.reduceRight((inner, level) => level.moduleId
+              ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent, result.circuit);
+            if (challenge && challenge.enforce(root) !== root) setMessage("Pre-placed parts and wires are locked in this level. Branch from an unlocked wire or output port.");
+            else if (validateCircuit(root)) { setCircuit(result.circuit); setMessage("Wire joined. Undo restores the previous net."); }
+            else setMessage("Circuit size or parser limit reached.");
+          }
+          else setMessage(result.error ?? "Could not join wires.");
+        } else setMessage("Wire cancelled. Drop on an input or wire.");
+      } else if (draft.from && connector?.input !== undefined)
         connect(draft.from, connector.id, connector.input, draft.output);
       else if (draft.to && connector)
         connect(connector.id, draft.to, draft.input!, connector.output);
@@ -2525,6 +2629,45 @@ export function LogicBuilder({
     visibleRows.map((row) => (
       <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => placeRow(placement)} />
     ));
+  const wirePaths = useMemo(() => {
+    const paths = circuit.wires.flatMap((wire) => {
+      const from = displayNodes.find((node) => node.id === wire.from), to = displayNodes.find((node) => node.id === wire.to);
+      if (!from || !to || hasTransistors && (!powerVisible(from) || !powerVisible(to))) return [];
+      const start = portPoint(from, wire.output ?? 0, "output"), end = portPoint(to, wire.input, "input");
+      const standard = outputSide(from) === "right" && inputSide(to) === "left";
+      const path = wire.points ? explicitWirePath(wire.points, start, end) : standard
+        ? tidyWiring || busWiring || end.x <= start.x ? routes.paths[wire.id] : simpleWirePath(start, end)
+        : orientedWirePath(start, end, outputSide(from), inputSide(to));
+      return path ? [{ id: wire.id, path }] : [];
+    });
+    return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path }))]);
+  }, [circuit.wires, displayNodes, tidyWiring, busWiring, routes, showVdd, showGround]);
+  const anchorPath = (wire: Wire) => {
+    const bus = routes.buses.find((bus) => bus.taps.some((tap) => tap.wireId === wire.id));
+    if (!bus || wire.points) return wirePaths[wire.id];
+    const tap = bus.taps.find((tap) => tap.wireId === wire.id)!;
+    return polylinePath([bus.source, { x: bus.x, y: bus.source.y }, { x: bus.x, y: tap.y },
+      ...(pathPoints(wirePaths[wire.id])[0] ?? [])]);
+  };
+  const nearestWire = (point: { x: number; y: number }, exclude?: string): WireAnchor | null => {
+    let best: WireAnchor | null = null, distance = 12 / zoom;
+    for (const wire of circuit.wires) {
+      if (wire.id === exclude || !wirePaths[wire.id]) continue;
+      const path = anchorPath(wire), hit = closestPathPoint(path, point);
+      if (hit.distance < distance) { distance = hit.distance; best = { wire: wire.id, point: hit.point, path }; }
+    }
+    return best;
+  };
+  const startWireBranch = (event: React.PointerEvent<SVGPathElement>, wire: Wire, path = anchorPath(wire)) => {
+    if (lockedRef.current || event.button !== 0 || event.shiftKey || event.metaKey || event.ctrlKey || selectMode || spaceHeld.current) return;
+    event.stopPropagation();
+    const point = closestPathPoint(path, boardPoint(event.clientX, event.clientY)).point;
+    const draft: WireDraft = { from: wire.from, output: wire.output ?? 0, anchor: { wire: wire.id, point, path },
+      ...point, originX: point.x, originY: point.y };
+    portWiring.clear(); setActiveInlinePath(null);
+    board.current?.setPointerCapture(event.pointerId);
+    wireDraftRef.current = draft; setWireDraft(draft); suppressBoardClick.current = true; setMenu(null);
+  };
   const menuNode = menu?.kind === "node"
     ? circuit.nodes.find((node) => node.id === menu.id)
     : undefined;
@@ -2535,7 +2678,7 @@ export function LogicBuilder({
     : null;
   const draftEnd = wireDraft?.to ? circuit.nodes.find((node) => node.id === wireDraft.to) : null;
   const targetNode = draftTarget ? circuit.nodes.find((node) => node.id === draftTarget.id) : null;
-  const previewStart = draftStart
+  const previewStart = wireDraft?.anchor ? wireDraft.anchor.point : draftStart
     ? portPoint(draftStart, wireDraft!.output ?? 0, "output")
     : targetNode && draftTarget?.output !== undefined
       ? portPoint(targetNode, draftTarget.output, "output")
@@ -3135,6 +3278,7 @@ export function LogicBuilder({
                 }}
                 role="application"
                 aria-label="Circuit canvas"
+                onFocus={() => setActiveInlinePath(null)}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") {
                     setPending(null);
@@ -3145,6 +3289,7 @@ export function LogicBuilder({
                 }}
                 onPointerMove={pointerMove}
                 onPointerDown={(event) => {
+                  setActiveInlinePath(null);
                   if (
                     event.pointerType === "touch" ||
                     event.button !== 0 ||
@@ -3215,7 +3360,11 @@ export function LogicBuilder({
                       return (
                         <g key={bus.key} style={{ "--wire-color": color } as React.CSSProperties}>
                           <path
-                            d={bus.path}
+                            d={wirePaths[`bus:${bus.key}`]}
+                            onPointerDown={(event) => {
+                              const wire = circuit.wires.find((wire) => bus.taps.some((tap) => tap.wireId === wire.id));
+                              if (wire) startWireBranch(event, wire);
+                            }}
                             className={styles.busHit}
                             role="button"
                             tabIndex={0}
@@ -3234,18 +3383,9 @@ export function LogicBuilder({
                             }}
                           />
                           <path
-                            d={bus.path}
+                            d={wirePaths[`bus:${bus.key}`]}
                             className={clsx(styles.busWire, live && styles.live)}
                           />
-                          {bus.crossings.map((crossing) => (
-                            <circle
-                              key={`${crossing.x}:${crossing.y}`}
-                              cx={crossing.x}
-                              cy={crossing.y}
-                              r={7}
-                              className={styles.busCrossing}
-                            />
-                          ))}
                           {bus.taps.map((tap) => (
                             <circle
                               key={tap.wireId}
@@ -3265,12 +3405,7 @@ export function LogicBuilder({
                     if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
                     const { x: x1, y: y1 } = portPoint(from, wire.output ?? 0, "output");
                     const { x: x2, y: y2 } = portPoint(to, wire.input, "input");
-                    const standardPorts = outputSide(from) === "right" && inputSide(to) === "left";
-                    const d = standardPorts
-                      ? tidyWiring || busWiring || x2 <= x1
-                        ? routes.paths[wire.id]
-                        : simpleWirePath({ x: x1, y: y1 }, { x: x2, y: y2 })
-                      : orientedWirePath({ x: x1, y: y1 }, { x: x2, y: y2 }, outputSide(from), inputSide(to));
+                    const d = wirePaths[wire.id];
                     const isBus = outputWidth(from, wire.output ?? 0) === 8;
                     const wireColor = wire.color ?? defaultWireColor(wire.from, circuit.nodes);
                     // Red on a bus means a conflict, so a driven bus never uses the coral wire colour.
@@ -3281,6 +3416,7 @@ export function LogicBuilder({
                         <path
                           d={d}
                           className={styles.wireHit}
+                          onPointerDown={(event) => startWireBranch(event, wire)}
                           role="button"
                           tabIndex={0}
                           aria-pressed={selectedWires.includes(wire.id)}
@@ -3319,6 +3455,7 @@ export function LogicBuilder({
                           }}
                           onClick={(event) => {
                             event.stopPropagation();
+                            setActiveInlinePath(null);
                             setSelectedWires((current) =>
                               event.shiftKey || event.metaKey || event.ctrlKey
                                 ? current.includes(wire.id)
@@ -3402,15 +3539,18 @@ export function LogicBuilder({
                       key={node.id}
                       data-node-id={node.id}
                       role="group"
-                      aria-label={`${node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
+                      aria-label={`${node.splice ? "Wire join" : node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
                       onKeyDown={(event) => {
                         if (event.key === "Enter" && event.target === event.currentTarget) {
                           event.stopPropagation();
+                          setActiveInlinePath(null);
                           setSelected([node.id]);
                         }
                       }}
                       className={clsx(
                         styles.node,
+                        node.splice && styles.wireJoin,
+                        node.splice && boardSnapshot.buses?.[node.id] === "X" && styles.joinConflict,
                         expandedDetails.has(node.id) && styles.expandedNode,
                         selected.includes(node.id) && styles.selected,
                         challenge?.highlight === node.id && styles.challengeHighlight,
@@ -3746,7 +3886,8 @@ export function LogicBuilder({
                           layout={expandedDetails.get(node.id)!.layout} unfolded={unfolded}
                           snapshot={boardSnapshot.modules[node.id] ?? EMPTY_SNAPSHOT}
                           {...inlineActions} onActivate={setActiveInlinePath}
-                          activePath={activeInlinePath} zoom={zoom} path={node.id} />
+                          activePath={activeInlinePath} zoom={zoom} path={node.id}
+                          editable={!locked} ownsClipboard={(target) => ownsKeyEvent(instanceId, shellRef.current, target)} onPaste={pasteCircuit} />
                       )}
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div
@@ -3899,6 +4040,10 @@ export function LogicBuilder({
       )}
       {menu && (
         <ViewportContextMenu menuRef={menuRef} x={menu.x} y={menu.y}>
+          {!locked && <>
+            <button role="menuitem" type="button" onClick={() => { void clipboard.copy(); setMenu(null); }}>Copy {selected.length || selectedWires.length ? "selection" : "circuit"}</button>
+            <button role="menuitem" type="button" onClick={() => { void clipboard.paste(); setMenu(null); }}>Paste circuit</button>
+          </>}
           {menu.kind === "node" && (
             <>
               {menuNode && (

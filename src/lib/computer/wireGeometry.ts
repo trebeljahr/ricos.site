@@ -206,3 +206,30 @@ export function bridgeWirePaths(wires: { id: string; path: string }[]) {
   }
   return result;
 }
+
+/** Follow the rendered trunk from its source to a tap, including any crossing arches. */
+export function fanOutBranchPath(trunkPath: string, tap: Point, branchPath: string) {
+  const parts = pathPoints(trunkPath);
+  if (!parts.length) return branchPath;
+  const hits = parts.map((points) => closestPathPoint(polylinePath(points), tap));
+  const index = hits.reduce((best, hit, i) => (hit.distance < hits[best].distance ? i : best), 0);
+  const points = parts[index],
+    first = parts[0];
+  const start = closestPathPoint(
+    polylinePath(points),
+    index === 0 ? first[0] : first[first.length - 1],
+  );
+  const end = hits[index];
+  const at = (hit: typeof start) =>
+    points.slice(1, hit.index).reduce((sum, point, i) => sum + length(points[i], point), 0) +
+    length(points[hit.index - 1], hit.point);
+  const section =
+    at(start) <= at(end)
+      ? [start.point, ...points.slice(start.index, end.index), end.point]
+      : [start.point, ...points.slice(end.index, start.index).reverse(), end.point];
+  return polylinePath([
+    ...(index === 0 ? [] : first),
+    ...section,
+    ...pathPoints(branchPath).flat(),
+  ]);
+}

@@ -6,6 +6,13 @@ import {
   parseCircuitClip,
   remapCircuitPath,
 } from "./circuitClipboard";
+import {
+  datapathCircuit,
+  foldBlockState,
+  romBytes,
+  toNumber,
+  unfoldBlockState,
+} from "./datapathBlocks";
 import { type Circuit, initialSnapshot, step } from "./logic";
 
 const circuit: Circuit = {
@@ -59,6 +66,44 @@ describe("circuit clipboard", () => {
     expect(remapCircuitPath(copy.paths, "box/gate/transistor")).toBe(
       `${box.id}/${inner.nodes[1].id}/transistor`,
     );
+  });
+  it("preserves ROM bytes and behavioral block state across fold/unfold in new scopes", () => {
+    const source: Circuit = {
+      name: "Hardware",
+      nodes: [
+        {
+          id: "rom",
+          type: "module",
+          behaviour: "rom256",
+          module: datapathCircuit("rom256", [0xa5, 0x5a]),
+          x: 0,
+          y: 0,
+        },
+        {
+          id: "register",
+          type: "module",
+          behaviour: "register8",
+          module: datapathCircuit("register8"),
+          x: 300,
+          y: 0,
+        },
+      ],
+      wires: [],
+    };
+    const copied = cloneCircuit(source, 24, 24),
+      [rom, register] = copied.circuit.nodes;
+    expect(rom.id).not.toBe("rom");
+    expect(register.id).not.toBe("register");
+    expect(romBytes(rom.module!)).toEqual(romBytes(source.nodes[0].module!));
+    expect(toNumber(step(copied.circuit, initialSnapshot(), false).outputs[rom.id])).toBe(0xa5);
+    const gates = step(
+      register.module!,
+      unfoldBlockState(register, { q: 0xa5, clock: false }),
+      false,
+    );
+    expect(foldBlockState(register, gates)).toMatchObject({ q: 0xa5 });
+    expect(copied.paths.get("rom/page0")).toBe(`${rom.id}/page0`);
+    expect(register.module!.wires[0].id).not.toBe(source.nodes[1].module!.wires[0].id);
   });
   it("pastes an independent working circuit and translates route geometry", () => {
     const source = structuredClone(circuit);

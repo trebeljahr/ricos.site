@@ -179,7 +179,10 @@ describe("circuit clipboard and pointer editing", () => {
     fireEvent.keyDown(canvas, { key: "z", ctrlKey: true });
     expect(current().wires).toHaveLength(3);
   });
-  it("branches from generated fan-out trunks using the same visible and hit geometry", () => {
+  it.each([
+    "source",
+    "vertical",
+  ])("branches from generated fan-out %s sections at the actual pointer", (section) => {
     const fan: Circuit = {
       ...base,
       nodes: [...base.nodes, { id: "other", type: "lamp", x: 400, y: 400 }],
@@ -196,7 +199,8 @@ describe("circuit clipboard and pointer editing", () => {
     } as DOMRect);
     const trunk = within(canvas).getByRole("button", { name: /^Add branch from/ });
     expect(trunk.getAttribute("d")).toBe(trunk.nextElementSibling?.getAttribute("d"));
-    const [a, b] = pathPoints(trunk.getAttribute("d")!)[0];
+    const points = pathPoints(trunk.getAttribute("d")!).flat();
+    const [a, b] = section === "source" ? points.slice(0, 2) : points.slice(-2);
     fireEvent.pointerDown(trunk, {
       pointerId: 1,
       button: 0,
@@ -207,6 +211,10 @@ describe("circuit clipboard and pointer editing", () => {
     fireEvent.pointerUp(canvas, { pointerId: 1, button: 0, clientX: 2400, clientY: 2263 });
     const next = current();
     expect(next.nodes.filter((node) => node.splice)).toHaveLength(1);
+    expect(next.nodes.find((node) => node.splice)).toMatchObject({
+      x: (a.x + b.x) / 2 - 5,
+      y: (a.y + b.y) / 2 - 5,
+    });
     const state = step(next, initialSnapshot(), false);
     expect([state.values.lamp, state.values.other, state.values.branch]).toEqual([
       true,

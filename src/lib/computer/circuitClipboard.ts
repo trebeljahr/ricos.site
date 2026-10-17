@@ -1,4 +1,11 @@
-import { type Circuit, type Wire, validateCircuit, moduleInputs, moduleOutputs } from "./logic";
+import {
+  type Circuit,
+  type Wire,
+  activeBlock,
+  validateCircuit,
+  moduleInputs,
+  moduleOutputs,
+} from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
 
 export const CIRCUIT_CLIPBOARD_LIMIT = 2_000_000;
@@ -89,7 +96,7 @@ export function parseCircuitClip(text: string): CircuitClip | null {
   }
 }
 
-/** Remap every scope, including nested module IDs and group activation references. */
+/** Remap scoped IDs and group references; registered blocks keep their internal hardware names. */
 export function cloneCircuit(
   source: Circuit,
   dx: number,
@@ -97,8 +104,13 @@ export function cloneCircuit(
   id = () => crypto.randomUUID(),
 ) {
   const paths = new Map<string, string>();
-  const clone = (circuit: Circuit, prefix = "", nextPrefix = ""): Circuit => {
-    const ids = new Map(circuit.nodes.map((node) => [node.id, id()]));
+  const clone = (
+    circuit: Circuit,
+    prefix = "",
+    nextPrefix = "",
+    hardwareNames = false,
+  ): Circuit => {
+    const ids = new Map(circuit.nodes.map((node) => [node.id, hardwareNames ? node.id : id()]));
     return {
       ...circuit,
       nodes: circuit.nodes.map((node) => {
@@ -110,7 +122,12 @@ export function cloneCircuit(
           x: node.x + (prefix ? 0 : dx),
           y: node.y + (prefix ? 0 : dy),
           module: node.module
-            ? clone(node.module, `${prefix}${node.id}/`, `${nextPrefix}${nextId}/`)
+            ? clone(
+                node.module,
+                `${prefix}${node.id}/`,
+                `${nextPrefix}${nextId}/`,
+                hardwareNames || Boolean(activeBlock(node)),
+              )
             : undefined,
         };
       }),

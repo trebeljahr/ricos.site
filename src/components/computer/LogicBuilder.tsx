@@ -8,7 +8,7 @@ import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { useCircuitClipboard } from "../../hooks/useCircuitClipboard";
 import { type CircuitClip, copyCircuit, insertCircuitCopy, remapCircuitPath } from "../../lib/computer/circuitClipboard";
-import { bridgeWirePaths, closestPathPoint, explicitWirePath, pathPoints, polylinePath } from "../../lib/computer/wireGeometry";
+import { bridgeWirePaths, closestPathPoint, explicitWirePath, fanOutBranchPath, pathPoints, polylinePath } from "../../lib/computer/wireGeometry";
 import { connectWireEnds, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
@@ -2646,8 +2646,7 @@ export function LogicBuilder({
     const bus = routes.buses.find((bus) => bus.taps.some((tap) => tap.wireId === wire.id));
     if (!bus || wire.points) return wirePaths[wire.id];
     const tap = bus.taps.find((tap) => tap.wireId === wire.id)!;
-    return polylinePath([bus.source, { x: bus.x, y: bus.source.y }, { x: bus.x, y: tap.y },
-      ...(pathPoints(wirePaths[wire.id])[0] ?? [])]);
+    return fanOutBranchPath(wirePaths[`bus:${bus.key}`], tap, wirePaths[wire.id]);
   };
   const nearestWire = (point: { x: number; y: number }, exclude?: string): WireAnchor | null => {
     let best: WireAnchor | null = null, distance = 12 / zoom;
@@ -3362,8 +3361,11 @@ export function LogicBuilder({
                           <path
                             d={wirePaths[`bus:${bus.key}`]}
                             onPointerDown={(event) => {
-                              const wire = circuit.wires.find((wire) => bus.taps.some((tap) => tap.wireId === wire.id));
-                              if (wire) startWireBranch(event, wire);
+                              const point = boardPoint(event.clientX, event.clientY);
+                              const candidates = circuit.wires.filter((wire) => bus.taps.some((tap) => tap.wireId === wire.id))
+                                .map((wire) => ({ wire, path: anchorPath(wire) }));
+                              const nearest = candidates.sort((a, b) => closestPathPoint(a.path, point).distance - closestPathPoint(b.path, point).distance)[0];
+                              if (nearest) startWireBranch(event, nearest.wire, nearest.path);
                             }}
                             className={styles.busHit}
                             role="button"

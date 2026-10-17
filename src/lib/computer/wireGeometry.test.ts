@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { bridgeWirePaths, closestPathPoint, explicitWirePath, pathPoints } from "./wireGeometry";
+import {
+  bridgeWirePaths,
+  closestPathPoint,
+  explicitWirePath,
+  fanOutBranchPath,
+  pathPoints,
+} from "./wireGeometry";
 
 describe("wire drawing and hit geometry", () => {
   it("adds one arch for a crossing and keeps its hit shape identical", () => {
@@ -25,6 +31,23 @@ describe("wire drawing and hit geometry", () => {
       { id: "c", path: "M 50 0 L 50 100" },
     ]);
     expect(many.c.match(/ Q /g)).toHaveLength(1);
+  });
+  it("follows vertical fan-out trunks through rendered arches", () => {
+    const route = fanOutBranchPath(
+      "M 0 0 L 50 0 M 50 -50 L 50 44 Q 38 50 50 56 L 50 100",
+      { x: 50, y: 100 },
+      "M 50 100 L 200 100",
+    );
+    expect(closestPathPoint(route, { x: 44, y: 50 }).distance).toBeLessThan(1);
+    expect(pathPoints(route)[0][0]).toEqual({ x: 0, y: 0 });
+    expect(pathPoints(route)[0].at(-1)).toEqual({ x: 200, y: 100 });
+    const upward = fanOutBranchPath(
+      "M 0 0 L 50 0 M 50 -100 L 50 100",
+      { x: 50, y: -100 },
+      "M 50 -100 L 200 -100",
+    );
+    expect(pathPoints(upward)[0]).toContainEqual({ x: 50, y: -100 });
+    expect(pathPoints(upward)[0]).not.toContainEqual({ x: 50, y: 100 });
   });
   it("joins contiguous SVG subpaths emitted for rotated ports", () => {
     const parts = pathPoints("M 0 0 L 0 24 M 0 24 L 100 24 L 100 50");

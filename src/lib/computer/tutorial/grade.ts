@@ -301,7 +301,7 @@ export function wiringKey(circuit: Circuit): string {
   const nodes = circuit.nodes
     .map(
       (node) =>
-        `${node.id}:${node.type}:${node.splice ? "splice" : ""}:${node.part ?? ""}:${node.module ? wiringKey(node.module) : ""}`,
+        `${node.id}:${node.type}:${node.resettable ? "reset" : ""}:${node.splice ? "splice" : ""}:${node.part ?? ""}:${node.module ? wiringKey(node.module) : ""}`,
     )
     .sort();
   const wires = circuit.wires

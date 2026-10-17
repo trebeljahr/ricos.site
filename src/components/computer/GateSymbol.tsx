@@ -210,7 +210,7 @@ export const GateSymbol = memo(function GateSymbol({
                 fill="currentColor"
                 fontSize="12"
               >
-                {type === "counter" ? "+1" : "→"}
+                {type === "counter" ? identity?.component.counterMode === "down" ? "−1" : identity?.component.counterMode === "up-down" ? "±1" : "+1" : "→"}
               </text>
             )}
           </>

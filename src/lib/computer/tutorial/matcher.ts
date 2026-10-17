@@ -12,6 +12,7 @@ const COMMUTATIVE = new Set<GateType>(["and", "or", "xor", "xnor", "nand", "nor"
 export function kindOf(node: Node, gateParts: ReadonlyMap<GateType, PartId>): string {
   if (node.type === "module")
     return node.part ? `part:${node.part}` : `module:${node.module?.name}`;
+  if (node.type === "dff" && node.resettable) return "resettable-dff";
   const part = gateParts.get(node.type);
   return part ? `part:${part}` : node.type;
 }

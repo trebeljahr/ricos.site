@@ -87,7 +87,7 @@ export type Netlist = {
   /** Op ranges [start, end) in `code` (in ints); cyclic ones repeat until stable. */
   segments: { start: number; end: number; cyclic: boolean }[];
   /** D flip-flops: data, clock and output nets. */
-  dff: { d: Int32Array; clock: Int32Array; q: Int32Array };
+  dff: { d: Int32Array; clock: Int32Array; q: Int32Array; reset: Int32Array };
   /** D latches: data, enable and output nets. */
   dlatch: { d: Int32Array; enable: Int32Array; q: Int32Array };
   /** SR latches: set, reset and output nets. */
@@ -162,6 +162,7 @@ export function compileNetlist(circuit: Circuit): Netlist {
   type Op = { type: number; out: number; a: number; b: number; args?: number[] };
   const ops: Op[] = [];
   const dff: [number, number, number][] = [];
+  const dffReset: number[] = [];
   const dlatch: [number, number, number][] = [];
   const srlatch: [number, number, number][] = [];
   const nodes = new Map<string, number[]>();
@@ -264,6 +265,7 @@ export function compileNetlist(circuit: Circuit): Netlist {
           break;
         case "dff":
           dff.push([bit(i, 0), bit(i, 1), out[i][0]]);
+          dffReset.push(node.resettable ? bit(i, 2) : ZERO);
           break;
         case "dlatch":
           dlatch.push([bit(i, 0), bit(i, 1), out[i][0]]);
@@ -452,7 +454,7 @@ export function compileNetlist(circuit: Circuit): Netlist {
     code: Int32Array.from(code),
     args: Int32Array.from(args),
     segments,
-    dff: { d: triples(dff, 0), clock: triples(dff, 1), q: triples(dff, 2) },
+    dff: { d: triples(dff, 0), clock: triples(dff, 1), q: triples(dff, 2), reset: Int32Array.from(dffReset, n) },
     dlatch: { d: triples(dlatch, 0), enable: triples(dlatch, 1), q: triples(dlatch, 2) },
     srlatch: { set: triples(srlatch, 0), reset: triples(srlatch, 1), q: triples(srlatch, 2) },
     constants: Int32Array.from(constants.flatMap(([net, value]) => [n(net), value])),
@@ -581,7 +583,7 @@ export class NetlistSim {
     for (let i = 0; i < ffs; i++) {
       const clock = values[dff.clock[i]];
       const rise = clock & ~lastClock[i];
-      stored[i] = (values[dff.d[i]] & rise) | (stored[i] & ~rise);
+      stored[i] = ((values[dff.d[i]] & rise) | (stored[i] & ~rise)) & ~values[dff.reset[i]];
       lastClock[i] = clock;
     }
     let offset = ffs;

@@ -8,7 +8,7 @@ export const nodeWidth = (node: DisplayNode) =>
     ? 300
     : ["input8", "display8"].includes(node.type)
       ? 212
-      : ["input4", "display4"].includes(node.type)
+      : ["input4", "display4", "pulse"].includes(node.type)
         ? 156
         : 132);
 
@@ -29,6 +29,6 @@ export const nodeHeight = (node: DisplayNode) =>
           node.type.startsWith("display") ? 142 : 116,
           92 + Math.max(inputCount(node), outputCount(node)) * 24,
         )
-      : ["lamp", "switch", "pulse"].includes(node.type)
+      : node.type === "pulse" ? 164 : ["lamp", "switch"].includes(node.type)
         ? 126
         : 116);

@@ -25,6 +25,8 @@ export type RecognitionComponent = {
   inputs: readonly string[];
   outputs: readonly string[];
   symbol: SymbolIdentity;
+  /** Direction marking for a registered counter schematic. */
+  counterMode?: "up" | "down" | "up-down";
   /** A total combinational function, in the declared order. Never a sampled table. */
   evaluate?: (inputs: boolean[]) => boolean[];
 };
@@ -145,6 +147,7 @@ export function circuitImplementation(circuit: Circuit): string {
       source.nodes.map((n) => [
         n.type,
         n.splice ?? false,
+        n.resettable ?? false,
         n.numberValue ?? 0,
         n.behaviour ?? "",
         n.module ? visit(n.module, depth + 1) : null,

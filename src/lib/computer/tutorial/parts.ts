@@ -58,6 +58,7 @@ export class PartCatalog {
         const symbol = recognitionComponent(info.part)?.symbol ?? symbols[info.part] ??
           ("gate" in info.builtIn ? info.builtIn.gate : "module");
         registerRecognitionComponent({ id: info.part, label: info.label, symbol,
+          ...(recognitionComponent(info.part)?.counterMode ? { counterMode: recognitionComponent(info.part)!.counterMode } : {}),
           inputs: level.spec.inputs.map((port) => port.label), outputs: level.spec.outputs.map((port) => port.label),
           ...(level.spec.kind === "truth" ? { evaluate: level.spec.fn } : {}) });
       }

@@ -58,7 +58,7 @@ import {
   wireFits,
 } from "../../lib/computer/logic";
 import { type BusValue, formatBus } from "../../lib/computer/bus";
-import { collectUnfoldableIds, storageCircuit } from "../../lib/computer/circuitHierarchy";
+import { collectUnfoldableIds, storageNodeCircuit } from "../../lib/computer/circuitHierarchy";
 import {
   enteredSnapshot,
   gateStructure,
@@ -80,6 +80,8 @@ import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { builtinCircuit, remapModulePins, type SymbolIdentity } from "../../lib/computer/recognition";
+import { COUNTER_CONTRACT, COUNTER_MODES, COUNTER_WIDTHS, counterComponent, counterDemo, counterTitle, type CounterMode, type CounterWidth } from "../../lib/computer/counterCircuits";
+import { DecimalInput, ManualButton } from "./ManualInputs";
 import { RecognitionPanel } from "./RecognitionPanel";
 import { GateSymbol } from "./GateSymbol";
 import { PaletteRowView, ROW_DRAG_TYPE } from "./PaletteRow";
@@ -353,7 +355,7 @@ const makeInnerCircuit = (node: Node): Circuit | undefined => {
       { id: "cell-out", from: "cell", to: "out", input: 0 },
     ] };
   if (node.type === "dff" || node.type === "srlatch" || node.type === "dlatch")
-    return layoutCircuit(storageCircuit(node.type));
+    return layoutCircuit(storageNodeCircuit(node));
   if (node.type === "dramcell")
     return { name: "DRAM cell", nodes: [
       { id: "data", type: "switch", x: 0, y: 50, label: "DATA" },
@@ -372,7 +374,7 @@ const makeInnerCircuit = (node: Node): Circuit | undefined => {
 const innerCircuit = (node: Node): Circuit | undefined => {
   if (node.type === "module") return node.module;
   if (!isUnfoldable(node)) return undefined;
-  const key = node.label?.startsWith("FLOATING GATE") ? "floating-gate" : node.type;
+  const key = node.label?.startsWith("FLOATING GATE") ? "floating-gate" : `${node.type}:${node.resettable ? "reset" : "plain"}`;
   if (!intrinsicCircuits.has(key)) {
     const inner = makeInnerCircuit(node);
     if (inner) intrinsicCircuits.set(key, inner);
@@ -1083,7 +1085,7 @@ export function LogicBuilder({
     createTimeline({ tick: 0, clockHigh: false, pulses: {}, snapshot: initialSnapshot() }));
   const { snapshot, clockHigh, tick } = currentFrame(timeline);
   const [running, setRunning] = useState(false);
-  const hasClock = circuit.nodes.some((node) => node.type === "clock");
+  const hasClock = circuit.nodes.some((node) => node.type === "clock" || node.type === "pulse");
   useEffect(() => setNameDraft(circuit.name), [circuit.name]);
   useEffect(() => {
     if (!hasClock) setRunning(false);
@@ -1106,6 +1108,8 @@ export function LogicBuilder({
   const [busSource, setBusSource] = useState("");
   const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
+  const [counterWidth, setCounterWidth] = useState<CounterWidth>(4);
+  const [counterMode, setCounterMode] = useState<CounterMode>("up");
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily>("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
@@ -1552,7 +1556,8 @@ export function LogicBuilder({
         event.code === "Space" &&
         !(event.target instanceof HTMLInputElement) &&
         !(event.target instanceof HTMLTextAreaElement) &&
-        !(event.target instanceof HTMLButtonElement)
+        !(event.target instanceof HTMLButtonElement) &&
+        !(event.target instanceof HTMLSelectElement)
       )
         spaceHeld.current = true;
     };
@@ -1651,10 +1656,13 @@ export function LogicBuilder({
     setReplay(null);
   }, []);
   /** One tick from `from`. With ripple on, the result is the same and is replayed in delay order. */
+  const heldManual = useRef<Record<string, boolean>>({});
+  const [manualEpoch, setManualEpoch] = useState(0);
   const settleTick = useCallback(
     (source: Circuit, previous: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {},
       overrides: Record<string, boolean> = {}) => {
       // Blocks unfolded in place run as gates, carrying their stored state.
+      pulseIds = { ...heldManual.current, ...pulseIds };
       const target = simulationCircuit(source, unfoldedRef.current);
       const from = syncBlockStates(source, previous, unfoldedRef.current);
       if (!rippleRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
@@ -1671,10 +1679,22 @@ export function LogicBuilder({
   const advance = useCallback((pulseIds: Record<string, boolean> = {}, forcedClock?: boolean) => {
     const from = currentFrame(timelineRef.current);
     const high = forcedClock ?? !from.clockHigh;
+    pulseIds = { ...heldManual.current, ...pulseIds };
     const { next, replay } = settleTick(circuitRef.current, from.snapshot, high, pulseIds);
     setTimeline(push(timelineRef.current, { tick: from.tick + 1, clockHigh: high, pulses: pulseIds, snapshot: next }));
     setReplay(replay);
   }, [setTimeline, settleTick]);
+  // Simulation events are synchronous; the visual flash never controls the signal.
+  const pulseOnce = (id: string) => {
+    advance({ [id]: false }, clockRef.current);
+    advance({ [id]: true }, clockRef.current);
+    advance({ [id]: false }, clockRef.current);
+  };
+  const holdManual = (id: string, high: boolean) => {
+    if (high) heldManual.current[id] = true;
+    else delete heldManual.current[id];
+    advance({}, clockRef.current);
+  };
   /** Replays the next recorded tick if the reader stepped back, else simulates one. */
   const stepForward = useCallback(() => {
     const current = timelineRef.current;
@@ -1737,6 +1757,8 @@ export function LogicBuilder({
   }, [unfolded, setTimeline]);
 
   const resetRuntime = () => {
+    heldManual.current = {};
+    setManualEpoch(epoch => epoch + 1);
     setRunning(false);
     setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
       snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) }));
@@ -2282,7 +2304,7 @@ export function LogicBuilder({
       if (!ownsKeyEvent(instanceId, shellRef.current, event.target)) return;
       const editingText =
         event.target instanceof HTMLElement &&
-        Boolean(event.target.closest("input, textarea, [contenteditable='true']"));
+        Boolean(event.target.closest("input, textarea, select, [contenteditable='true']"));
       if (editingText) return;
       if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "a") {
         if (activeInlinePath) return;
@@ -2576,6 +2598,7 @@ export function LogicBuilder({
     setDrag(null);
   };
   const partsPalette = challenge?.palette ?? palette;
+  const showCounters = !challenge && `counter counting increment decrement up down up/down manual ${counterTitle(counterWidth, counterMode)}`.includes(search.toLowerCase().trim());
   const visibleBlocks = challenge ? [] : DATAPATH_KINDS.filter((kind) =>
     `${kind} ${DATAPATH_BLOCKS[kind].label}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
@@ -3053,6 +3076,22 @@ export function LogicBuilder({
             </p>
           )}
           <div className={styles.parts}>
+            {showCounters && <fieldset className={styles.counterControls}>
+              <legend>Counter</legend>
+              <label>Width <select aria-label="Counter width" value={counterWidth} onChange={event => setCounterWidth(Number(event.target.value) as CounterWidth)}>
+                {COUNTER_WIDTHS.map(width => <option key={width} value={width}>{width} bits</option>)}
+              </select></label>
+              <label>Mode <select aria-label="Counter mode" value={counterMode} onChange={event => setCounterMode(event.target.value as CounterMode)}>
+                {COUNTER_MODES.map(mode => <option key={mode} value={mode}>{mode === "up-down" ? "Up / down" : mode === "up" ? "Up" : "Down"}</option>)}
+              </select></label>
+              <button type="button" aria-label={`Add ${counterTitle(counterWidth, counterMode)}`} onClick={() => addModule(counterComponent(counterWidth, counterMode))}>
+                <span className={styles.partIcon}><GateSymbol type="module" circuit={counterComponent(counterWidth, counterMode)} /></span>
+                Add {counterTitle(counterWidth, counterMode)}
+              </button>
+              <button type="button" onClick={() => load(counterDemo(counterWidth, counterMode))}>Open wired counter demo</button>
+              <small>{COUNTER_CONTRACT}</small>
+            </fieldset>}
+
             {visibleSaved.length > 0 && <h3 className={styles.partsSection}>Saved circuits</h3>}
             {visibleSaved.map((item) => (
               <div className={styles.savedPart} key={item.name}>
@@ -3142,7 +3181,7 @@ export function LogicBuilder({
                 <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
               </div>
             ))}
-            {visibleRows.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && ownRows.length === 0 && <p>No matching parts</p>}
+            {visibleRows.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && ownRows.length === 0 && !showCounters && <p>No matching parts</p>}
           </div>
         </aside>}
         <div ref={workspace} className={styles.workspace}>
@@ -3588,7 +3627,7 @@ export function LogicBuilder({
                           locked ||
                           event.pointerType === "touch" ||
                           event.button !== 0 ||
-                          (event.target as HTMLElement).closest("button, input")
+                          (event.target as HTMLElement).closest("button, input, select, label")
                         )
                           return;
                         portWiring.clear();
@@ -3673,7 +3712,7 @@ export function LogicBuilder({
                                 : node.type === "dff"
                                   ? input === 0
                                     ? "D: data"
-                                    : "CLK: rising edge"
+                                    : input === 1 ? "CLK: rising edge" : "RESET: asynchronous active-high reset"
                                   : node.type === "nmos" || node.type === "pmos"
                                     ? input === 0
                                       ? "Gate control"
@@ -3768,9 +3807,10 @@ export function LogicBuilder({
                           </span>
                         )}
                         <strong className={styles.nodePartName}>
-                          {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
+                          {node.type === "module" ? node.module?.name || "Module" : node.type === "pulse" ? "BUTTON" : LABELS[node.type]}
                         </strong>
                         {node.type === "input4" || node.type === "input8" ? (
+                          <div className={styles.numberInput}>
                           <div
                             className={styles.numberBits}
                             aria-label={`${node.label || LABELS[node.type]} binary input`}
@@ -3803,6 +3843,11 @@ export function LogicBuilder({
                                 </button>
                               );
                             })}
+                          </div>
+                          <DecimalInput value={node.numberValue ?? 0} width={node.type === "input4" ? 4 : 8}
+                            label={node.label || LABELS[node.type]} onChange={numberValue => setCircuit(current => ({
+                              ...current, nodes: current.nodes.map(item => item.id === node.id ? { ...item, numberValue } : item),
+                            }))} />
                           </div>
                         ) : node.type === "display4" || node.type === "display8" ? (
                           <div
@@ -3853,16 +3898,11 @@ export function LogicBuilder({
                             {node.value ? "ON" : "OFF"}
                           </button>
                         ) : node.type === "pulse" ? (
-                          <button
-                            type="button"
-                            className={styles.toggle}
-                            onClick={() => {
-                              advance({ [node.id]: true }, clockRef.current);
-                              window.setTimeout(() => advance({}, clockRef.current), 180);
-                            }}
-                          >
-                            SEND
-                          </button>
+                          <ManualButton key={`${node.id}:${manualEpoch}`} label={node.label || "Manual clock"} mode={node.manualMode ?? "pulse"}
+                            onPulse={() => pulseOnce(node.id)} onHeldChange={high => holdManual(node.id, high)}
+                            onModeChange={manualMode => setCircuit(current => ({ ...current,
+                              nodes: current.nodes.map(item => item.id === node.id ? { ...item, manualMode } : item),
+                            }))} />
                         ) : BUS_TYPES.has(node.type) ? (
                           <BusReadout
                             value={
@@ -4132,6 +4172,15 @@ export function LogicBuilder({
                   )}
                 </label>
               )}
+              {menuNode.type === "dff" && <label>
+                <input type="checkbox" checked={Boolean(menuNode.resettable)} onChange={event => {
+                  const resettable = event.target.checked;
+                  setCircuit(current => ({ ...current,
+                    nodes: current.nodes.map(item => item.id === menuNode.id ? { ...item, resettable } : item),
+                    wires: resettable ? current.wires : current.wires.filter(wire => wire.to !== menuNode.id || wire.input !== 2),
+                  }));
+                }} /> Asynchronous RESET pin
+              </label>}
               {menuNode.type === "module" && (
                 <div className={styles.modulePorts}>
                   {circuitHints[menuNode.module!.name] && (

@@ -43,6 +43,10 @@ export type Node = {
   label?: string;
   value?: boolean;
   numberValue?: number;
+  /** A pulse source can emit a complete click or follow physical press/release. */
+  manualMode?: "pulse" | "held";
+  /** Optional asynchronous, active-high reset pin 2 on a D flip-flop. */
+  resettable?: boolean;
   /** Probe name on a display4/display8, read by `readProbes` (e.g. ACC, PC). */
   probe?: string;
   module?: Circuit;
@@ -134,7 +138,7 @@ export const INPUTS: Record<GateType, number> = {
 export const LABELS: Record<GateType, string> = {
   switch: "SWITCH",
   clock: "CLOCK",
-  pulse: "PULSE",
+  pulse: "BUTTON / MANUAL CLOCK",
   lamp: "LAMP",
   input4: "4-BIT INPUT",
   input8: "8-BIT INPUT",
@@ -197,7 +201,7 @@ export function pruneCircuitPorts(circuit: Circuit): Circuit {
     ? circuit : { ...circuit, nodes, ports };
 }
 export const inputCount = (node: Node) =>
-  node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
+  node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : node.type === "dff" && node.resettable ? 3 : INPUTS[node.type];
 export const outputCount = (node: Node) =>
   node.type === "module"
     ? moduleOutputs(node.module!).length
@@ -220,6 +224,7 @@ export const outputWidth = (node: Node, _index = 0): 1 | 8 =>
 export const wireFits = (from: Node, output: number, to: Node, input: number) =>
   outputWidth(from, output) === inputWidth(to, input);
 export const inputLabel = (node: Node, index: number) =>
+  node.type === "dff" ? ["D", "CLK", "RESET"][index] :
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
     : node.type === "display4" || node.type === "display8" || node.type === "merger"
@@ -732,7 +737,8 @@ export function step(
     const node = nodes[i];
     if (node.type !== "dff" && node.type !== "dramcell") continue;
     const [data, clock] = inputs(i);
-    if (clock && !previous.lastClock[node.id]) {
+    if (node.type === "dff" && node.resettable && signal(i, 2)) memory[node.id] = false;
+    else if (clock && !previous.lastClock[node.id]) {
       memory[node.id] = data;
       if (node.type === "dramcell") age[node.id] = 0;
     } else if (node.type === "dramcell" && clockHigh && !previous.lastClock.__dramTick) {
@@ -1851,10 +1857,12 @@ export function validateCircuit(
   if (
     !item.nodes.every(
       (n) =>
-        n.numberValue === undefined ||
+        (n.resettable === undefined || (n.type === "dff" && typeof n.resettable === "boolean")) &&
+        (n.manualMode === undefined || (n.type === "pulse" && ["pulse", "held"].includes(n.manualMode))) &&
+        (n.numberValue === undefined ||
         (Number.isInteger(n.numberValue) &&
           n.numberValue >= 0 &&
-          n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : 1)),
+          n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : 1))),
     )
   )
     return null;
@@ -1925,6 +1933,8 @@ export function validateCircuit(
       label: typeof n.label === "string" ? n.label.slice(0, 30) : undefined,
       value: Boolean(n.value),
       numberValue: n.numberValue,
+      ...(n.type === "dff" && n.resettable ? { resettable: true } : {}),
+      ...(n.type === "pulse" && n.manualMode ? { manualMode: n.manualMode } : {}),
       ...(n.probe ? { probe: n.probe } : {}),
       module: validatedModules.get(n.id),
       ...(behaviours.has(n.id) ? { behaviour: behaviours.get(n.id) } : {}),

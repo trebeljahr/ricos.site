@@ -1,6 +1,6 @@
 import { type Circuit, GATE_NAMES, type LogicGate, type Node, type Wire } from "./logic";
 
-function dffCircuit(): Circuit {
+function dffCircuit(resettable = false): Circuit {
   const names = [
     "data",
     "clock",
@@ -74,7 +74,26 @@ function dffCircuit(): Circuit {
   link("slave-reset", "qbar");
   link("q", "qbar", 1);
   link("q", "out");
-  return { name: "Positive-edge master-slave D flip-flop", nodes, wires };
+  if (resettable) {
+    nodes.push({ id: "reset", type: "switch", x: 40, y: 740, label: "RESET" },
+      { id: "not-reset", type: "not", x: 280, y: 740, label: "NOT RESET" });
+    link("reset", "not-reset");
+    for (const [prefix, x] of [["master", 520], ["slave", 1000]] as const) {
+      const setTarget = prefix === "master" ? "master-q" : "q";
+      const resetTarget = prefix === "master" ? "master-qbar" : "qbar";
+      for (const [signal, target, type, control, y] of [
+        [`${prefix}-set`, setTarget, "or", "reset", 520],
+        [`${prefix}-reset`, resetTarget, "and", "not-reset", 740],
+      ] as const) {
+        const safe = `${signal}-safe`;
+        nodes.push({ id: safe, type, x, y, label: `RESET PRIORITY ${type.toUpperCase()}` });
+        const index = wires.findIndex(w => w.from === signal && w.to === target && w.input === 0);
+        wires.splice(index, 1);
+        link(signal, safe); link(control, safe, 1); link(safe, target);
+      }
+    }
+  }
+  return { name: resettable ? "D flip-flop with asynchronous reset" : "Positive-edge master-slave D flip-flop", nodes, wires };
 }
 
 function srLatchCircuit(): Circuit {
@@ -121,6 +140,8 @@ function dLatchCircuit(): Circuit {
 export const storageCircuit = (type: "dff" | "srlatch" | "dlatch") =>
   type === "dff" ? dffCircuit() : type === "srlatch" ? srLatchCircuit() : dLatchCircuit();
 
+export const storageNodeCircuit = (node: Node) => node.type === "dff" ? dffCircuit(node.resettable) : storageCircuit(node.type as "srlatch" | "dlatch");
+
 export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {
   return circuit.nodes.flatMap((item) => {
     const id = `${prefix}${item.id}`;
@@ -131,7 +152,7 @@ export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {
       return [
         id,
         ...collectUnfoldableIds(
-          storageCircuit(item.type as "dff" | "srlatch" | "dlatch"),
+          storageNodeCircuit(item),
           `${id}/`,
         ),
       ];

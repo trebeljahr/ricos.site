@@ -109,10 +109,11 @@ export function returnedSnapshot(moduleId: string, parent: Snapshot, child: Snap
 /** Node types and wiring only, ignoring layout, labels and input switch levels. */
 export function gateStructure(circuit: Circuit): string {
   return JSON.stringify({
-    nodes: circuit.nodes.map(({ id, type, numberValue, behaviour, module }) => [
+    nodes: circuit.nodes.map(({ id, type, numberValue, resettable, behaviour, module }) => [
       id,
       type,
       numberValue ?? null,
+      resettable ?? false,
       behaviour ?? null,
       module ? gateStructure(module) : null,
     ]),

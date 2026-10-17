@@ -77,7 +77,15 @@ export type CircuitGroup = {
   /** Node whose value lights the group up while it is on, e.g. a CPU's INT latch. */
   activeWhen?: string;
 };
-export type Circuit = { name: string; nodes: Node[]; wires: Wire[]; groups?: CircuitGroup[] };
+export type CircuitPorts = { inputs: string[]; outputs: string[] };
+/** Persisted claims are untrusted; resolve through verifiedCircuitIdentity before display. */
+export type CircuitIdentity = {
+  componentId: string;
+  fingerprint: string;
+  ownership: "builtin" | "user";
+};
+export type Circuit = { name: string; nodes: Node[]; wires: Wire[]; groups?: CircuitGroup[];
+  ports?: CircuitPorts; identity?: CircuitIdentity };
 export type Snapshot = {
   values: Record<string, boolean>;
   memory: Record<string, boolean>;
@@ -169,9 +177,25 @@ const validProbe = (n: Partial<Node>) =>
     isProbeDisplay(n.type as GateType) &&
     (n.probe === "" || normalizeProbeName(n.probe) === n.probe));
 export const moduleInputs = (circuit: Circuit) =>
+  circuit.ports ? circuit.ports.inputs.flatMap((id) => circuit.nodes.find((node) => node.id === id) ?? []) :
   circuit.nodes.filter((node) => ["switch", "clock", "pulse"].includes(node.type));
 export const moduleOutputs = (circuit: Circuit) =>
+  circuit.ports ? circuit.ports.outputs.flatMap((id) => circuit.nodes.find((node) => node.id === id) ?? []) :
   circuit.nodes.filter((node) => node.type === "lamp");
+/** Keep explicit interfaces valid after deleting terminals, including inside boxes. */
+export function pruneCircuitPorts(circuit: Circuit): Circuit {
+  const nodes = circuit.nodes.map((node) => {
+    const module = node.module ? pruneCircuitPorts(node.module) : undefined;
+    return module === node.module ? node : { ...node, module };
+  });
+  const ports = circuit.ports && {
+    inputs: circuit.ports.inputs.filter((id) => nodes.some((n) => n.id === id && ["switch", "clock", "pulse"].includes(n.type))),
+    outputs: circuit.ports.outputs.filter((id) => nodes.some((n) => n.id === id && n.type === "lamp")),
+  };
+  return nodes.every((node, i) => node === circuit.nodes[i]) && (!ports ||
+    ports.inputs.length === circuit.ports!.inputs.length && ports.outputs.length === circuit.ports!.outputs.length)
+    ? circuit : { ...circuit, nodes, ports };
+}
 export const inputCount = (node: Node) =>
   node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : INPUTS[node.type];
 export const outputCount = (node: Node) =>
@@ -1816,6 +1840,13 @@ export function validateCircuit(
       new Set(item.groups.map((group) => group.id)).size !== item.groups.length)
   )
     return null;
+  if (item.ports !== undefined) {
+    const validPorts = (value: unknown, types: string[]) => Array.isArray(value) &&
+      value.length <= MAX_MODULE_PORTS && new Set(value).size === value.length &&
+      value.every((id) => typeof id === "string" && item.nodes!.some((node) => node.id === id && types.includes(node.type)));
+    if (!item.ports || !validPorts(item.ports.inputs, ["switch", "clock", "pulse"]) ||
+      !validPorts(item.ports.outputs, ["lamp"])) return null;
+  }
   const validatedModules = new Map<string, Circuit>();
   if (
     !item.nodes.every(
@@ -1879,6 +1910,10 @@ export function validateCircuit(
     return null;
   return {
     name: item.name.slice(0, 80),
+    ...(item.ports ? { ports: { inputs: [...item.ports.inputs], outputs: [...item.ports.outputs] } } : {}),
+    ...(item.identity && typeof item.identity.componentId === "string" && item.identity.componentId.length <= 80 &&
+      typeof item.identity.fingerprint === "string" && item.identity.fingerprint.length <= 80 &&
+      ["builtin", "user"].includes(item.identity.ownership) ? { identity: { componentId: item.identity.componentId, fingerprint: item.identity.fingerprint, ownership: item.identity.ownership } } : {}),
     nodes: item.nodes.map((n) => ({
       id: n.id,
       type: n.type,

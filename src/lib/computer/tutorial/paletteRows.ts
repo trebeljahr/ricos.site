@@ -13,7 +13,7 @@ export type PaletteRow = {
   /** Unique within one palette; also the hint anchor, e.g. "part:xor" or "nand". */
   key: string;
   label: string;
-  icon: { type: GateType } | { circuitName: string };
+  icon: { type: GateType } | { circuit: Circuit };
   title: string;
   /** Undefined while the part is locked. */
   primary?: Placement;
@@ -63,8 +63,8 @@ export function partRow(
   const own = entry.own ? placementOf(partNode(entry, "own")) : undefined;
   const builtIn = options.builtIn ?? placementOf(partNode(entry, "built-in"));
   const icon =
-    options.icon ??
-    ("gate" in entry.builtIn ? { type: entry.builtIn.gate } : { circuitName: label });
+    (version === "own" && entry.own ? { circuit: entry.own } : undefined) ?? options.icon ??
+    ("gate" in entry.builtIn ? { type: entry.builtIn.gate } : { circuit: entry.builtIn.circuit });
   const ownTitle = `Your ${label}, checked against every row of “${entry.level.title}”. Click to add or drag onto the board.`;
   const builtInTitle =
     options.builtInTitle ?? `The built-in ${label}. Click to add or drag onto the board.`;

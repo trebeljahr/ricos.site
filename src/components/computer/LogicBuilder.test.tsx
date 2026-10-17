@@ -419,11 +419,11 @@ describe("circuit depth", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
     const aluPart = within(parts).getByRole("button", { name: "8-bit ALU" });
-    expect(aluPart.querySelector("svg")?.textContent).toBe("ALU");
+    expect(aluPart.querySelector("[data-symbol]")?.getAttribute("data-symbol")).toBe("alu");
     expect(
-      within(parts).getByRole("button", { name: "8-bit binary counter" }).querySelector("svg")
-        ?.textContent,
-    ).toBe("CTR");
+      within(parts).getByRole("button", { name: "8-bit binary counter" }).querySelector("[data-symbol]")
+        ?.getAttribute("data-symbol"),
+    ).toBe("counter");
     fireEvent.click(aluPart);
     const alu = screen.getByRole("group", { name: "8-bit ALU — 8-bit ALU part" });
     expect(within(alu).getByText("OP0")).toBeTruthy();

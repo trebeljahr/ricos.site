@@ -1,0 +1,15 @@
+.backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 1rem; background: #080d1cbb; }
+.panel { width: min(42rem, 100%); max-height: 90vh; overflow: auto; padding: 1.5rem; border: 1px solid #59677e; border-radius: .75rem; background: #141d30; color: #e7edf9; box-shadow: 0 1rem 4rem #0008; font-size: .9rem; }
+.panel h2 { margin: 0 0 .6rem; font-size: 1.2rem; }
+.panel p { margin: .6rem 0; line-height: 1.5; }
+.panel label { display: flex; gap: .5rem; align-items: center; margin: .5rem 0; }
+.panel select, .panel input:not([type=checkbox]) { min-width: 0; flex: 1; padding: .4rem; background: #0a1222; border: 1px solid #59677e; color: inherit; border-radius: .25rem; }
+.panel fieldset { margin: 1rem 0; border: 1px solid #59677e; padding: .75rem; }
+.panel ol { margin: .75rem 0 0; padding-left: 1.5rem; }
+.panel li { margin: .4rem 0; }
+.panel button { border: 1px solid #627590; padding: .35rem .6rem; border-radius: .3rem; background: #263650; color: inherit; cursor: pointer; }
+.panel button:disabled { opacity: .4; cursor: default; }
+.panel li button { margin-left: .5rem; }
+.panel button:focus-visible, .panel input:focus-visible, .panel select:focus-visible { outline: 2px solid #69e2e0; outline-offset: 2px; }
+.actions { display: flex; justify-content: flex-end; gap: .75rem; margin: 1rem 0; }
+.match { border-left: 3px solid #69e2e0; padding: .5rem 1rem; margin: .75rem 0; }

@@ -3,6 +3,7 @@
 // level, their own circuit, boxed. A boxed part keeps the reader's gates inside,
 // so unfolding it shows their own work, down to the parts it is built from.
 import { type Circuit, type GateType, type Node, PRESETS } from "../logic";
+import { builtinCircuit, recognitionComponent, registerRecognitionComponent, verifyCircuitIdentity, type SymbolIdentity } from "../recognition";
 import type { KnownPart } from "./analysis";
 import { type Allowed, gradeLevel, gradePassed } from "./grade";
 import { levelStart } from "./kit";
@@ -47,6 +48,19 @@ export class PartCatalog {
       if (!level.makes) continue;
       const info = { ...level.makes, level };
       this.parts.set(level.makes.part, info);
+      if (level.spec.kind !== "custom") {
+        const symbols: Record<string, SymbolIdentity> = {
+          selector8: "mux", adder4: "adder", adder8: "adder", increment4: "adder", subtract4: "adder",
+          "logic-unit": "alu", "alu-slice": "alu", alu8: "alu", "sr-latch": "srlatch",
+          "d-latch": "dlatch", "d-flip-flop": "dff", register1: "register", register8: "register",
+          counter8: "counter", ram: "memory",
+        };
+        const symbol = recognitionComponent(info.part)?.symbol ?? symbols[info.part] ??
+          ("gate" in info.builtIn ? info.builtIn.gate : "module");
+        registerRecognitionComponent({ id: info.part, label: info.label, symbol,
+          inputs: level.spec.inputs.map((port) => port.label), outputs: level.spec.outputs.map((port) => port.label),
+          ...(level.spec.kind === "truth" ? { evaluate: level.spec.fn } : {}) });
+      }
       const builtIn = level.makes.builtIn;
       if ("gate" in builtIn) this.gateParts.set(builtIn.gate, level.makes.part);
       if ("preset" in builtIn) this.presetParts.set(builtIn.preset, level.makes.part);
@@ -67,6 +81,7 @@ export class PartCatalog {
         "preset" in info.builtIn
           ? PRESETS[info.builtIn.preset]
           : { ...info.level.reference!(), name: info.label };
+      circuit = builtinCircuit(part, circuit);
       this.builtInCache.set(part, circuit);
     }
     return circuit;
@@ -139,7 +154,9 @@ export class PartCatalog {
       if (own) return { ...node, module: own };
       return this.builtInNode(node.part, node) ?? node;
     });
-    const module: Circuit = { ...solution, name: ownName(info.label), nodes };
+    const raw: Circuit = { ...solution, name: ownName(info.label), nodes, identity: undefined };
+    const spec = info.level.spec;
+    const module = spec.kind === "truth" ? verifyCircuitIdentity(raw, { inputs: spec.inputs.map((port) => port.id), outputs: spec.outputs.map((port) => port.id) }, part) ?? raw : raw;
     byDepth.set(key, module);
     return module;
   }

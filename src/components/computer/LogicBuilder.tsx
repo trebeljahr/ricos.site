@@ -45,6 +45,7 @@ import {
   outputWidth,
   PRESETS as sourcePresets,
   PROBE_NAMES,
+  pruneCircuitPorts,
   type Ripple,
   rippleFrame,
   type Snapshot,
@@ -78,6 +79,8 @@ import { SHADER_HINTS, SHADER_PRESETS } from "../../lib/computer/shaderPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
+import { builtinCircuit, remapModulePins, type SymbolIdentity } from "../../lib/computer/recognition";
+import { RecognitionPanel } from "./RecognitionPanel";
 import { GateSymbol } from "./GateSymbol";
 import { PaletteRowView, ROW_DRAG_TYPE } from "./PaletteRow";
 import { BlockScreen } from "./BlockScreen";
@@ -89,9 +92,17 @@ const HEIGHT = 520;
 const NODE_WIDTH = 132;
 const NODE_HEIGHT = 116;
 const MODULE_WIDTH = 300;
-const PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...CPU_PRESETS, ...SHADER_PRESETS }).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
+const PRESET_SYMBOLS: Record<string, SymbolIdentity> = {
+  "Half adder": "adder", "Full adder": "adder", "8-bit half adder": "adder", "8-bit full adder": "adder",
+  "8-bit 2:1 multiplexer": "mux", "8-bit magnitude comparator": "comparator", "8-bit ALU": "alu",
+  "8-bit binary counter": "counter", "8-bit shift register": "register", "Clocked memory": "dff",
+  "D flip-flop": "dff", "D latch": "dlatch", "SR latch": "srlatch",
+  "4 × 4 SRAM": "memory", "4 × 4 DRAM": "memory", "4 × 4 flash memory": "memory",
+};
+const PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...CPU_PRESETS, ...SHADER_PRESETS }).map(([name, circuit]) =>
+  [name, layoutCircuit(builtinCircuit(`preset:${name}`, circuit, PRESET_SYMBOLS[name] ?? "module"))]));
 const BLUEPRINTS = Object.fromEntries(Object.entries(sourceBlueprints).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
-const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(sourceGateBlueprint(gate, family));
+const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(builtinCircuit(gate, sourceGateBlueprint(gate, family)));
 type DisplayNode = GeometryNode & { expanded?: boolean };
 const circuitHints: Record<string, string> = {
   ...MEMORY_HINTS,
@@ -249,10 +260,11 @@ type BuilderDocument = { circuit: Circuit; saved: Record<string, Circuit>; viewP
 // An edited gate form no longer matches its block's behaviour, so it runs as gates.
 const withUpdatedModule = (parent: Circuit, moduleId: string, inner: Circuit): Circuit => ({
   ...parent,
+  wires: remapModulePins(parent, moduleId, inner),
   nodes: parent.nodes.map((item) =>
     item.id === moduleId
       ? { ...item, module: clone(inner),
-          ...(item.behaviour && item.module && gateStructure(item.module) !== gateStructure(inner)
+          ...(item.behaviour && item.module && (gateStructure(item.module) !== gateStructure(inner) || JSON.stringify([moduleInputs(item.module).map((n) => n.id), moduleOutputs(item.module).map((n) => n.id)]) !== JSON.stringify([moduleInputs(inner).map((n) => n.id), moduleOutputs(inner).map((n) => n.id)]))
             ? { behaviour: undefined } : {}) }
       : item,
   ),
@@ -916,7 +928,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
               </div>
               {isScreenBlock(part.behaviour)
                 ? <BlockScreen behaviour={part.behaviour} state={snapshot.blocks?.[part.id]} label={part.label} />
-                : <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuitName={part.module?.name} /></span>}
+                : <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuit={part.module} /></span>}
               <strong className={styles.nodePartName}>{part.type === "module" ? part.module?.name : LABELS[part.type]}</strong>
               {isScreenBlock(part.behaviour) ? null : part.type === "module" ? <span className={styles.moduleBits}>
                 {inputCount(part)} IN · {outputCount(part)} OUT
@@ -1143,13 +1155,13 @@ export function LogicBuilder({
     if (lockedRef.current) return;
     history.update((current) => ({
       ...current,
-      circuit: typeof change === "function" ? change(current.circuit) : change,
+      circuit: pruneCircuitPorts(typeof change === "function" ? change(current.circuit) : change),
     }));
   };
   const updateInline = (path: string, edit: (inner: Circuit) => Circuit) => {
     if (lockedRef.current) return;
     const current = history.current();
-    const next = editInlineCircuit(current.circuit, path, edit);
+    const next = pruneCircuitPorts(editInlineCircuit(current.circuit, path, edit));
     const root = current.viewPath.reduceRight((inner, level) => level.moduleId
       ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent, next);
     if (!validateCircuit(root)) { setMessage("Edit exceeds circuit parser or module limits."); return; }
@@ -1189,6 +1201,7 @@ export function LogicBuilder({
     resetRuntime();
     setMessage(direction === "undo" ? "Undid change." : "Redid change.");
   };
+  const [recognizing, setRecognizing] = useState(false);
   const [dialog, setDialog] = useState<"save" | "clear" | null>(null);
   const [saveName, setSaveName] = useState("");
   const [message, setMessage] = useState(
@@ -2614,7 +2627,7 @@ export function LogicBuilder({
     const entry = entryFor(CATALOG, progress, { preset: example.name });
     if (!entry) return [];
     const row = partRow(entry, progress.settings.ownParts, { key: `preset:${example.name}`, label: example.name,
-      icon: { circuitName: example.name }, builtIn: { circuit: example, extra: {} },
+      icon: { circuit: example }, builtIn: { circuit: example, extra: {} },
       builtInTitle: circuitHints[example.name] || `Drag ${example.name} black box onto canvas or click to add` });
     return [[example.name, row] as const];
   })), [Boolean(challenge), progress]);
@@ -2861,6 +2874,7 @@ export function LogicBuilder({
             >
               <ActionIcon name="save" /> Save
             </button>
+            {!locked && <button type="button" onClick={() => setRecognizing(true)}>Recognize circuit</button>}
           </>
         }
         learning={
@@ -3054,7 +3068,7 @@ export function LogicBuilder({
                   style={{ "--part-accent": partColors.module } as React.CSSProperties}
                 >
                   <span className={styles.partIcon}>
-                    <GateSymbol type="module" circuitName={item.name} />
+                    <GateSymbol type="module" circuit={item} />
                   </span>
                   <span>{item.name}</span>
                 </button>
@@ -3093,7 +3107,7 @@ export function LogicBuilder({
                 style={{ "--part-accent": partColors.module } as React.CSSProperties}
               >
                 <span className={styles.partIcon}>
-                  <GateSymbol type="module" circuitName={datapathSource(kind).name} />
+                  <GateSymbol type="module" circuit={datapathSource(kind)} />
                 </span>
                 <span>{DATAPATH_BLOCKS[kind].label}</span>
               </button>
@@ -3121,7 +3135,7 @@ export function LogicBuilder({
                   style={{ "--part-accent": partColors.module } as React.CSSProperties}
                 >
                   <span className={styles.partIcon}>
-                    <GateSymbol type="module" circuitName={example.name} />
+                    <GateSymbol type="module" circuit={example} />
                   </span>
                   <span>{example.name}</span>
                 </button>
@@ -3750,7 +3764,7 @@ export function LogicBuilder({
                           node.type,
                         ) && (
                           <span className={styles.nodeSymbol}>
-                            <GateSymbol type={node.type} circuitName={node.module?.name} />
+                            <GateSymbol type={node.type} circuit={node.module} />
                           </span>
                         )}
                         <strong className={styles.nodePartName}>
@@ -3983,6 +3997,16 @@ export function LogicBuilder({
         {challenge?.panel && <aside className={styles.coach} aria-label="Level">{challenge.panel}</aside>}
       </div>
       {challenge?.overlay}
+      {recognizing && <RecognitionPanel
+        circuit={circuit} selection={selected} wireSelection={selectedWires}
+        onClose={() => setRecognizing(false)}
+        onVerified={(verified, selectionOnly) => {
+          if (selectionOnly) {
+            publish({ ...history.current(), saved: { ...saved, [verified.name]: clone(verified) } });
+            setMessage(`Saved verified construction “${verified.name}”. Place it from Saved circuits.`);
+          } else setCircuit(verified);
+          setRecognizing(false);
+        }} />}
       {dialog && (
         <div className={styles.dialogBackdrop} onMouseDown={(event) => {
           if (event.target === event.currentTarget) setDialog(null);

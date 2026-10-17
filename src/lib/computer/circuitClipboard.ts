@@ -59,6 +59,7 @@ export function copyCircuit(
     version: 1,
     circuit: structuredClone({
       ...circuit,
+      ...(circuit.ports ? { ports: { inputs: circuit.ports.inputs.filter((id) => ids.has(id)), outputs: circuit.ports.outputs.filter((id) => ids.has(id)) } } : {}),
       nodes: circuit.nodes.filter((node) => ids.has(node.id)),
       wires: circuit.wires.filter((wire) => ids.has(wire.from) && ids.has(wire.to)),
       groups: circuit.groups
@@ -113,6 +114,8 @@ export function cloneCircuit(
     const ids = new Map(circuit.nodes.map((node) => [node.id, hardwareNames ? node.id : id()]));
     return {
       ...circuit,
+      ...(circuit.ports ? { ports: { inputs: circuit.ports.inputs.map((id) => ids.get(id)!),
+        outputs: circuit.ports.outputs.map((id) => ids.get(id)!) } } : {}),
       nodes: circuit.nodes.map((node) => {
         const nextId = ids.get(node.id)!;
         paths.set(prefix + node.id, nextPrefix + nextId);

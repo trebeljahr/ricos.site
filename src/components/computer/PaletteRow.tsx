@@ -33,7 +33,7 @@ export function PaletteRowView({
       {"type" in row.icon ? (
         <GateSymbol type={row.icon.type} />
       ) : (
-        <GateSymbol type="module" circuitName={row.icon.circuitName} />
+        <GateSymbol type="module" circuit={row.icon.circuit} />
       )}
     </span>
   );

@@ -16,14 +16,10 @@ export default function AbstractionLayersDemoPage() {
         <ComputerDemoNav current="abstraction-layers" />
         <header className="mb-4 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            LAYERS OF ABSTRACTION
+            Layers of abstraction
           </h1>
         </header>
-        {/* The width of a chapter column, where the demo is embedded. */}
-        <div className="mx-auto max-w-prose">
-          <h2>
-            <code>{"<AbstractionLayers />"}</code>
-          </h2>
+        <div className="mx-auto max-w-5xl">
           <AbstractionLayers />
         </div>
         <ComputerDemoNav current="abstraction-layers" bottom />

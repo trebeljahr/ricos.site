@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { ABSTRACTION_LAYERS, INNERMOST, INNERMOST_NOTE } from "src/lib/computer/abstractionLayers";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AbstractionLayers } from "./AbstractionLayers";
 
@@ -9,6 +10,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const total = ABSTRACTION_LAYERS.length;
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
 const key = (name: RegExp) => screen.getByRole("button", { name });
 const summary = (container: HTMLElement) => container.querySelector("p[aria-live]")?.textContent;
@@ -19,96 +21,94 @@ const current = () =>
     ?.getAttribute("aria-label");
 const doll = (container: HTMLElement, id: string) =>
   container.querySelector<SVGGElement>(`[data-layer="${id}"]`);
+const select = (index: number) => click(new RegExp(`^Layer ${index + 1} of ${total}:`));
 
 describe("abstraction layers demo", () => {
-  it("opens the doll one layer at a time and closes it again", () => {
+  it("walks through every explanation and returns to the outermost doll", () => {
     const { container } = render(<AbstractionLayers />);
-    expect(summary(container)).toContain("Layer 1 of 10: The app you are using.");
+    expect(summary(container)).toContain(`Layer 1 of ${total}: The app you are using.`);
     expect(screen.getByRole("img").getAttribute("aria-label")).toBe(
       "A closed nesting doll: the app you are using.",
     );
     expect(key(/^Close the doll/).getAttribute("aria-disabled")).toBe("true");
-
-    click(/^Open the doll/);
-    expect(summary(container)).toContain("Layer 2 of 10: Operating system.");
-    expect(summary(container)).toContain("Built from: Programming languages.");
-    expect(current()).toMatch(/^Layer 2 of 10: Operating system, part 4/);
-    expect(container.textContent).toContain("LAYER 02/10");
-    expect(screen.getByRole("img").getAttribute("aria-label")).toContain("opened 1 time.");
-
-    click(/^Open the doll/);
-    expect(current()).toMatch(/^Layer 3 of 10: Programming languages, part 2/);
-
     click(/^Close the doll/);
-    click(/^Close the doll/);
-    expect(summary(container)).toContain("Layer 1 of 10");
-    // Closing the outermost doll does nothing.
-    click(/^Close the doll/);
-    expect(summary(container)).toContain("Layer 1 of 10");
-  });
+    expect(current()).toContain(`Layer 1 of ${total}`);
 
-  it("raises the opened dolls out of their parents and keeps the rest inside", () => {
-    const { container } = render(<AbstractionLayers />);
-    click(/^Layer 3 of 10/);
-    expect(doll(container, "operating-system")?.style.transform).toContain("translate(0px, -29px)");
-    expect(doll(container, "programming-languages")?.style.transform).toContain(
-      "translate(0px, -29px)",
-    );
-    expect(doll(container, "machine-code")?.style.transform).toContain("translate(0px, 0px)");
-  });
-
-  it("jumps to any layer and closes every doll from the innermost", () => {
-    const { container } = render(<AbstractionLayers />);
-    click(/^Layer 10 of 10: Voltages on wires/);
-    expect(current()).toMatch(/^Layer 10 of 10/);
-    expect(summary(container)).toContain("voltages on tiny wires");
-    expect(container.textContent).toContain("THE REST IS PHYSICS");
+    for (let index = 1; index < total; index++) {
+      click(/^Open the doll/);
+      const layer = ABSTRACTION_LAYERS[index];
+      expect(current()).toContain(`Layer ${index + 1} of ${total}: ${layer.name}`);
+      expect(screen.getByRole("heading", { name: layer.name })).toBeTruthy();
+      expect(screen.getByText(layer.example)).toBeTruthy();
+      expect(summary(container)).toContain(layer.does);
+    }
     expect(key(/^Open the doll/).getAttribute("aria-disabled")).toBe("true");
-    // The innermost doll does not open.
     click(/^Open the doll/);
-    expect(summary(container)).toContain("Layer 10 of 10");
+    expect(summary(container)).toContain(INNERMOST_NOTE);
+
+    for (let index = INNERMOST; index > 0; index--) click(/^Close the doll/);
+    expect(summary(container)).toContain(`Layer 1 of ${total}`);
+  });
+
+  it("raises opened dolls out of their parents and keeps later dolls inside", () => {
+    const { container } = render(<AbstractionLayers />);
+    select(2);
+    for (const layer of ABSTRACTION_LAYERS.slice(1, 3)) {
+      expect(doll(container, layer.id)?.style.transform).toContain("translate(0px, -29px)");
+    }
+    expect(doll(container, ABSTRACTION_LAYERS[3].id)?.style.transform).toContain(
+      "translate(0px, 0px)",
+    );
+  });
+
+  it("jumps directly with reduced motion and resets focus to the open control", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", (query: string) => ({ matches: true, media: query }));
+    const { container } = render(<AbstractionLayers />);
+    select(INNERMOST);
+    expect(document.activeElement).toBe(key(/^Open the doll/));
+    expect(screen.getByRole("img").getAttribute("data-depth")).toBe(String(INNERMOST));
+    expect(summary(container)).toContain(INNERMOST_NOTE);
+    act(() => vi.runAllTimers());
+    expect(screen.getByRole("img").getAttribute("data-depth")).toBe(String(INNERMOST));
 
     click("Close every doll and go back to the app");
-    expect(summary(container)).toContain("Layer 1 of 10");
+    expect(summary(container)).toContain(`Layer 1 of ${total}`);
     expect(document.activeElement).toBe(key(/^Open the doll/));
-    expect(screen.queryByRole("button", { name: "Close every doll and go back to the app" })).toBe(
-      null,
-    );
-
-    click(/^Layer 5 of 10: CPU/);
-    expect(current()).toMatch(/^Layer 5 of 10: CPU, part 2 of the series\. In view\.$/);
-    expect(container.textContent).toContain("Built from: ALU, registers, RAM and buses.");
+    expect(
+      screen.queryByRole("button", { name: "Close every doll and go back to the app" }),
+    ).toBeNull();
   });
 
-  it("opens a long jump one doll after another when motion is allowed", () => {
+  it("follows the next-connection link and keeps keyboard focus in the explorer", () => {
+    render(<AbstractionLayers />);
+    click("Explore operating system");
+    expect(current()).toContain("Operating system");
+    expect(document.activeElement).toBe(key(/^Open the doll/));
+    expect(screen.getByRole("button", { name: "Explore input and output" })).toBeTruthy();
+  });
+
+  it("animates a long jump in steps and can reverse before it finishes", () => {
     vi.useFakeTimers();
     vi.stubGlobal("matchMedia", (query: string) => ({ matches: false, media: query }));
-    const { container } = render(<AbstractionLayers />);
-    const lit = () => container.querySelectorAll('[data-on="true"]').length;
-    const risen = (id: string) => doll(container, id)?.style.transform.includes("-29px");
-    // Each act lets the stage take one step and schedule the next.
+    render(<AbstractionLayers />);
+    const shown = () => Number(screen.getByRole("img").getAttribute("data-depth"));
     const wait = (steps: number) => {
-      for (let step = 0; step < steps; step++) act(() => vi.advanceTimersByTime(150));
+      for (let step = 0; step < steps; step++) act(() => vi.advanceTimersByTime(210));
     };
 
-    click(/^Layer 4 of 10/);
-    // The panel names the target at once; the stage has taken its first step.
-    expect(current()).toMatch(/^Layer 4 of 10/);
-    expect(lit()).toBe(2);
-    expect(risen("operating-system")).toBe(true);
-    expect(risen("programming-languages")).toBe(false);
+    select(INNERMOST);
+    expect(current()).toContain(`Layer ${total} of ${total}`);
+    expect(shown()).toBe(1);
+    // The accessible image describes the visible doll, even while moving to another stop.
+    expect(screen.getByRole("img").getAttribute("aria-label")).toContain("Operating system");
+    wait(2);
+    expect(shown()).toBe(3);
 
-    wait(1);
-    expect(lit()).toBe(3);
-    wait(5);
-    expect(lit()).toBe(4);
-    expect(risen("machine-code")).toBe(true);
-    expect(risen("cpu")).toBe(false);
-
-    click("Layer 1 of 10: The app you are using, part 4 of the series.");
-    expect(lit()).toBe(3);
-    wait(5);
-    expect(lit()).toBe(1);
-    expect(risen("operating-system")).toBe(false);
+    select(0);
+    expect(shown()).toBe(2);
+    wait(total);
+    expect(shown()).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
   });
 });

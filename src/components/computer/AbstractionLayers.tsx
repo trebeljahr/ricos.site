@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useId, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   ABSTRACTION_LAYERS,
   type AbstractionLayer,
@@ -12,9 +11,6 @@ import {
   PART_TITLES,
 } from "src/lib/computer/abstractionLayers";
 import styles from "./AbstractionLayers.module.css";
-import panel from "./ByteExplorer.module.css";
-import codebook from "./Codebook.module.css";
-import { DemoMachine, MiniButton } from "./CodebookParts";
 
 /*
  * Every doll is drawn in the same local units: 100 tall, standing on y = 0,
@@ -34,7 +30,7 @@ const LID_CENTRE = -70;
 const LID_LIFTED = -88;
 const LID_TILT = 14;
 // A jump of several layers takes one step in or out every STEP_MS.
-const STEP_MS = 150;
+const STEP_MS = 210;
 
 const DOLL_PATH =
   "M0 -100C14 -100 23 -91 23 -79C23 -70 20 -66 21 -62C27 -56 35 -44 35 -27C35 -10 30 0 22 0" +
@@ -45,10 +41,10 @@ const BOTTOM_CLIP = `M-60 ${SEAM_Y}H${-SEAM_RX}A${SEAM_RX} ${SEAM_RY} 0 0 0 ${SE
 
 /** Where the doll in view stands on the stage, and how tall it is drawn. */
 function placement(depth: number) {
-  if (depth === 0) return { x: 200, y: 206, size: 172 };
+  if (depth === 0) return { x: 200, y: 244, size: 208 };
   // Each layer in is drawn a little smaller, so the dolls visibly shrink.
-  const size = 142 * 0.965 ** (depth - 1);
-  return { x: 168, y: 22 + size, size };
+  const size = Math.max(150, 174 * 0.985 ** (depth - 1));
+  return { x: 155, y: 40 + size, size };
 }
 
 /** No animation when the reader asks for less motion, or the browser cannot say. */
@@ -77,6 +73,8 @@ function DollArt({ layer, shade }: { layer: AbstractionLayer; shade: string }) {
     <>
       <path d={DOLL_PATH} fill={layer.color} />
       <path d={DOLL_PATH} fill={`url(#${shade})`} />
+      <path d="M-21 -60Q0 -42 21 -60M-27 -51Q0 -32 27 -51" className={styles.collar} />
+      <path d="M-28 -27Q-32 -16 -25 -8M28 -27Q32 -16 25 -8" className={styles.collar} />
       <ellipse cx="0" cy="-24" rx="25" ry="21" className={styles.apron} />
       <ellipse cx="0" cy="-24" rx="22.2" ry="18.2" className={styles.stitch} stroke={layer.color} />
       {layer.label.map((line, index) => (
@@ -207,12 +205,11 @@ function DollStage({
   return (
     <div className={styles.stage}>
       <svg
-        viewBox="0 0 400 220"
-        // A narrow demo draws the stage taller and crops its sides.
-        preserveAspectRatio="xMidYMid slice"
+        viewBox="0 0 400 280"
         role="img"
         aria-label={label}
         data-direction={depth >= from ? "open" : "close"}
+        data-depth={depth}
       >
         <defs>
           <clipPath id={ids.top} clipPathUnits="userSpaceOnUse">
@@ -271,16 +268,17 @@ const pad = (value: number) => String(value).padStart(2, "0");
  * using down to voltages on wires, or jump to any layer. Usable in MDX articles.
  */
 export function AbstractionLayers() {
-  // The panel shows the layer asked for at once; the stage steps to it one doll at a time.
+  // The explanation updates at once; the illustration opens one doll at a time.
   const [depth, setDepth] = useState(0);
   const [stage, setStage] = useState({ shown: 0, from: 0 });
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const openKey = useRef<HTMLButtonElement>(null);
+  const explorer = useRef<HTMLDivElement>(null);
   const base = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const ids: StageIds = { top: `${base}-top`, bottom: `${base}-bottom`, shade: `${base}-shade` };
   const layer = ABSTRACTION_LAYERS[depth];
   const inner = depth < INNERMOST ? ABSTRACTION_LAYERS[depth + 1] : null;
   const total = ABSTRACTION_LAYERS.length;
+  const shownLayer = ABSTRACTION_LAYERS[stage.shown];
 
   useEffect(() => {
     if (stage.shown === depth) return;
@@ -305,145 +303,152 @@ export function AbstractionLayers() {
   }
 
   return (
-    <DemoMachine
-      title="MATRYOSHKA"
-      label="A computer as a nesting doll of layers"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-      className={styles.demo}
-    >
-      <div className={styles.body}>
-        <div className={clsx(codebook.plate, styles.stagePlate)}>
-          <div className={panel.sectionHead}>
-            <span>DOLL</span>
-            <span className={styles.lamps} aria-hidden="true">
-              {ABSTRACTION_LAYERS.map((entry, index) => (
-                <i key={entry.id} data-on={index <= stage.shown} />
-              ))}
+    <section className={styles.demo} aria-label="A computer as a nesting doll of layers">
+      <header className={styles.header}>
+        <div>
+          <p className={styles.eyebrow}>The computer, layer by layer</p>
+          <h2 className={styles.title}>There is more inside.</h2>
+          <p className={styles.intro}>
+            Open the dolls. Follow a route from the app on your screen to the voltages in its
+            circuits.
+          </p>
+        </div>
+        <span className={styles.edition} aria-hidden="true">
+          {total} layers
+          <br />
+          one computer
+        </span>
+      </header>
+      <div ref={explorer} className={styles.explorer}>
+        <div className={styles.illustration}>
+          <div className={styles.stageHeading}>
+            <span className={styles.counter}>
+              Layer {pad(depth + 1)} <span>/ {total}</span>
             </span>
+            {depth > 0 && (
+              <button
+                type="button"
+                className={styles.reset}
+                onClick={() => {
+                  goTo(0);
+                  openKey.current?.focus();
+                }}
+                aria-label="Close every doll and go back to the app"
+              >
+                Start again ↺
+              </button>
+            )}
           </div>
           <DollStage
             depth={stage.shown}
             from={stage.from}
             label={
-              depth === 0
-                ? `A closed nesting doll: ${layer.name.toLowerCase()}.`
-                : `A nesting doll opened ${depth} ${depth === 1 ? "time" : "times"}. The doll in view: ${layer.name}.`
+              stage.shown === 0
+                ? `A closed nesting doll: ${shownLayer.name.toLowerCase()}.`
+                : `A nesting doll opened ${stage.shown} ${stage.shown === 1 ? "time" : "times"}. The doll in view: ${shownLayer.name}.`
             }
             ids={ids}
           />
-          <div className={styles.keys}>
+          <p className={styles.stageCaption} aria-hidden="true">
+            {shownLayer.name}
+          </p>
+          <div className={styles.controls}>
             <button
               type="button"
-              className={clsx(panel.bitButton, styles.key)}
-              onClick={() => goTo(depth - 1) && playSwitch()}
+              className={styles.back}
+              onClick={() => goTo(depth - 1)}
               aria-disabled={depth === 0 || undefined}
               aria-label="Close the doll: go one layer out"
             >
-              ▲ CLOSE
+              ← Close doll
             </button>
-            {/* Screen readers hear the layer from the live summary below. */}
-            <span className={styles.counter} aria-hidden="true">
-              LAYER {pad(depth + 1)}/{total}
-            </span>
             <button
               ref={openKey}
               type="button"
-              className={clsx(panel.bitButton, styles.key)}
-              onClick={() => goTo(depth + 1) && playSwitch()}
+              className={styles.open}
+              onClick={() => goTo(depth + 1)}
               aria-disabled={depth === INNERMOST || undefined}
               aria-label="Open the doll: go one layer in"
             >
-              OPEN ▼
+              {inner ? "Open doll" : "At the centre"} <span aria-hidden="true">→</span>
             </button>
           </div>
         </div>
-        <div className={clsx(codebook.plate, styles.infoPlate)}>
-          <div className={panel.sectionHead}>
-            <span>THIS LAYER</span>
-          </div>
-          <div className={clsx(panel.screen, codebook.lcd, styles.lcd)}>
-            <div className={panel.screenTop}>
-              <span>PART {layer.part}</span>
-              <span>{PART_TITLES[layer.part].toUpperCase()}</span>
+        <div className={styles.explanation}>
+          <div key={layer.id} className={styles.chapter}>
+            <p className={styles.eyebrow}>
+              Part {layer.part} · {PART_TITLES[layer.part]}
+            </p>
+            <h3 className={styles.layerName}>{layer.name}</h3>
+            <p className={styles.description}>{layer.does}</p>
+            <div className={styles.example}>
+              <span className={styles.smallLabel}>For example</span>
+              <p>{layer.example}</p>
             </div>
-            <p className={styles.lcdName}>{layer.name}</p>
-            <p className={styles.lcdText}>{layer.does}</p>
-            <div className={styles.lcdRule} />
-            {inner ? (
-              <>
-                <div className={styles.lcdSub}>
-                  <span>BUILT FROM</span>
-                  <span>▼ {inner.name}</span>
-                </div>
-                <p className={styles.lcdText}>{layer.builtFrom}</p>
-                <p className={styles.lcdPrompt}>
-                  &gt; PRESS OPEN TO LOOK INSIDE
-                  <i className={styles.caret} aria-hidden="true" />
-                </p>
-              </>
-            ) : (
-              <>
-                <div className={styles.lcdSub}>
-                  <span>NOTHING INSIDE</span>
-                  <span>THE REST IS PHYSICS</span>
-                </div>
-                <p className={styles.lcdText}>{INNERMOST_NOTE}</p>
-                <div className={styles.lcdPrompt}>
-                  <MiniButton
-                    onClick={() => {
-                      goTo(0);
-                      playSwitch();
-                      openKey.current?.focus();
-                    }}
-                    label="Close every doll and go back to the app"
-                  >
-                    ▲ CLOSE ALL
-                  </MiniButton>
-                </div>
-              </>
-            )}
+            <div className={styles.connection}>
+              <span className={styles.smallLabel}>
+                {inner ? "The next connection" : "From here, physics"}
+              </span>
+              <p>{inner ? layer.builtFrom : INNERMOST_NOTE}</p>
+              {inner && (
+                <button
+                  type="button"
+                  className={styles.nextLink}
+                  onClick={() => {
+                    goTo(depth + 1);
+                    openKey.current?.focus();
+                  }}
+                >
+                  Explore{" "}
+                  {inner.name === "CPU" || inner.name === "RAM"
+                    ? inner.name
+                    : inner.name.toLowerCase()}{" "}
+                  <span aria-hidden="true">↗</span>
+                </button>
+              )}
+            </div>
           </div>
-          <p className={styles.note}>{KEY_IDEA}</p>
-        </div>
-        <div className={clsx(codebook.plate, styles.railPlate)}>
-          <div className={panel.sectionHead}>
-            <span>ALL LAYERS</span>
-            <span>OUTSIDE → IN</span>
-          </div>
-          <ol className={styles.rail} aria-label="All layers, from the outside in">
-            {ABSTRACTION_LAYERS.map((entry, index) => {
-              const firstOfPart = index === 0 || ABSTRACTION_LAYERS[index - 1].part !== entry.part;
-              const current = index === depth;
-              return (
-                <li key={entry.id}>
-                  {firstOfPart && (
-                    <span className={styles.railPart} aria-hidden="true">
-                      PART {entry.part} · {PART_TITLES[entry.part].toUpperCase()}
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    className={styles.railButton}
-                    aria-current={current ? "true" : undefined}
-                    data-state={index < depth ? "open" : current ? "current" : "inside"}
-                    onClick={() => goTo(index) && playButton()}
-                    aria-label={`Layer ${index + 1} of ${total}: ${entry.name}, part ${entry.part} of the series.${current ? " In view." : ""}`}
-                  >
-                    <span className={styles.railNumber}>{pad(index + 1)}</span>
-                    <MiniDoll color={entry.color} open={index < depth} ids={ids} />
-                    <span className={styles.railName}>{entry.name}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
         </div>
       </div>
+      <div className={styles.journey}>
+        <div className={styles.journeyHeading}>
+          <h3>The whole journey</h3>
+          <span>Choose any layer to explore</span>
+        </div>
+        <ol className={styles.rail} aria-label="All layers, from the outside in">
+          {ABSTRACTION_LAYERS.map((entry, index) => {
+            const current = index === depth;
+            return (
+              <li key={entry.id}>
+                <button
+                  type="button"
+                  className={styles.railButton}
+                  aria-current={current ? "true" : undefined}
+                  data-state={index < depth ? "open" : current ? "current" : "inside"}
+                  onClick={() => {
+                    goTo(index);
+                    openKey.current?.focus({ preventScroll: true });
+                    explorer.current?.scrollIntoView?.({
+                      block: "start",
+                      behavior: prefersInstant() ? "instant" : "smooth",
+                    });
+                  }}
+                  aria-label={`Layer ${index + 1} of ${total}: ${entry.name}, part ${entry.part} of the series.${current ? " In view." : ""}`}
+                >
+                  <span className={styles.railNumber}>{pad(index + 1)}</span>
+                  <MiniDoll color={entry.color} open={index < depth} ids={ids} />
+                  <span className={styles.railName}>{entry.name}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+      <p className={styles.note}>{KEY_IDEA}</p>
       <p className="sr-only" aria-live="polite">
         Layer {depth + 1} of {total}: {layer.name}. {layer.does}{" "}
-        {inner ? `Built from: ${inner.name}. ${layer.builtFrom}` : INNERMOST_NOTE}
+        {inner ? `Next: ${inner.name}. ${layer.builtFrom}` : INNERMOST_NOTE}
       </p>
-    </DemoMachine>
+    </section>
   );
 }

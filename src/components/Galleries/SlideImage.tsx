@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { resolveAlt } from "src/lib/imageAlt";
 import {
   type ContainerRect,
   isImageFitCover,
@@ -44,7 +45,7 @@ export default function NextJsSlideImage({
     <div style={{ position: "relative", width, height }}>
       <Image
         fill
-        alt={slide.src}
+        alt={resolveAlt(slide.src, isImageSlide(slide) ? slide.alt : undefined)}
         src={slide.src}
         loading="eager"
         draggable={false}

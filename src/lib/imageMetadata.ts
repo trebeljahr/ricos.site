@@ -7,6 +7,7 @@ export interface ImageMetadata {
   height: number;
   aspectRatio: number;
   existsInS3: boolean;
+  alt?: string;
 }
 
 let _localMetadata: Record<string, ImageMetadata | undefined> | null = null;
@@ -42,6 +43,8 @@ export function getDataFromMetadata(prefix: string) {
       src: key,
       width: meta!.width,
       height: meta!.height,
+      // Without this the gallery falls back to the filename as alt text.
+      ...(meta!.alt ? { alt: meta!.alt } : {}),
     }));
 }
 
@@ -58,6 +61,7 @@ export function getFirstImageFromMetadata(prefix: string) {
     src: key,
     width: meta!.width,
     height: meta!.height,
+    ...(meta!.alt ? { alt: meta!.alt } : {}),
   };
 }
 

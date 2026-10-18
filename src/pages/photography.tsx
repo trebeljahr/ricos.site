@@ -209,6 +209,34 @@ export const trips = [
     description:
       "The hills of the coffee triangle, the old streets of Cartagena and the jungle trail to Ciudad Perdida.",
   },
+  {
+    src: "/assets/photography/bolivia-2025/PXL_20250419_222130404.LONG_EXPOSURE-01.COVER.jpg",
+    alt: "snow-capped volcano in Sajama National Park, Bolivia, lit pink at dusk and reflected in a still pool",
+    name: "bolivia-2025",
+    description:
+      "Four weeks in Bolivia. La Paz from its cable cars, then the flooded Salar de Uyuni at sunset and the train graveyard outside Uyuni. Later llamas below the volcano in Sajama National Park, Lake Titicaca, and the red canyons and caves of Torotoro.",
+  },
+  {
+    src: "/assets/photography/ecuador-2025/PXL_20250628_211953806~2.jpg",
+    alt: "Quilotoa crater lake in Ecuador seen through tall grass with purple lupins and yellow wildflowers",
+    name: "ecuador-2025",
+    description:
+      "Bikepacking south through the Ecuadorian Andes, from Carchi near the Colombian border down to Cuenca. Misty páramo with frailejones, the Quilotoa crater lake and the snow on Chimborazo.",
+  },
+  {
+    src: "/assets/photography/pai-2026/PXL_20260211_104635103~2.jpg",
+    alt: "dirt path over a hillside above green fields and distant mountains at sunset near Pai, northern Thailand",
+    name: "pai-2026",
+    description:
+      "A month in the Pai valley in northern Thailand. Hazy sunrises over green fields, forest waterfalls, close-ups of flowers and fungi, and a raft through a limestone cave north-west of town.",
+  },
+  {
+    src: "/assets/photography/vietnam-2026/PXL_20260220_095907320~2.jpg",
+    alt: "viewpoint over forested limestone islands and calm blue water near Cat Ba island, Vietnam",
+    name: "vietnam-2026",
+    description:
+      "Hanoi during Lunar New Year, then the floating fishing villages of Lan Ha Bay off Cat Ba island. Further north, the karst valley of Bac Son and the Ban Gioc waterfall on the Chinese border.",
+  },
 ];
 
 type Props = {

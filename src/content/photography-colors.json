@@ -1,7 +1,7 @@
 {
   "version": 1,
   "measuredOn": "2026-09-27",
-  "sample": { "images": 1117, "trips": 28 },
+  "sample": { "images": 1277, "trips": 32 },
   "priors": {
     "red": 0.064,
     "orange": 0.147,
@@ -5572,6 +5572,1478 @@
       "hue": 122.3,
       "lightness": 0.438,
       "chroma": 0.02881
+    },
+    "assets/photography/bolivia-2025/20250422_144906_6822eb07~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.56634 },
+      "familyHue": { "blue": 251.8 },
+      "hue": 251.8,
+      "lightness": 0.581,
+      "chroma": 0.07622
+    },
+    "assets/photography/bolivia-2025/20250422_150736_8130ee6d~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.30691 },
+      "familyHue": { "blue": 261.4 },
+      "hue": 244.9,
+      "lightness": 0.565,
+      "chroma": 0.08171
+    },
+    "assets/photography/bolivia-2025/IMG-20250428-WA0179~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.03179 },
+      "familyHue": { "orange": 51.9 },
+      "hue": 52.7,
+      "lightness": 0.387,
+      "chroma": 0.02295
+    },
+    "assets/photography/bolivia-2025/IMG-20250428-WA0185~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.03938 },
+      "familyHue": { "green": 131.7 },
+      "hue": 100,
+      "lightness": 0.283,
+      "chroma": 0.02191
+    },
+    "assets/photography/bolivia-2025/IMG-20250428-WA0210~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.25463 },
+      "familyHue": { "orange": 53.8 },
+      "hue": 58.4,
+      "lightness": 0.5,
+      "chroma": 0.06058
+    },
+    "assets/photography/bolivia-2025/PXL_20250402_225145955~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.04115, "gold": 0.04944 },
+      "familyHue": { "orange": 54.2, "gold": 69.2 },
+      "hue": 60.7,
+      "lightness": 0.559,
+      "chroma": 0.02991
+    },
+    "assets/photography/bolivia-2025/PXL_20250403_162313894~2.jpg": {
+      "buckets": ["red", "blue"],
+      "strength": { "red": 0.05006, "blue": 0.19819 },
+      "familyHue": { "red": 27.5, "blue": 252.5 },
+      "hue": 287.4,
+      "lightness": 0.629,
+      "chroma": 0.06021
+    },
+    "assets/photography/bolivia-2025/PXL_20250403_163015168~2.jpg": {
+      "buckets": ["teal", "orange"],
+      "strength": { "teal": 0.0439, "orange": 0.11314 },
+      "familyHue": { "teal": 175, "orange": 43.3 },
+      "hue": 58.3,
+      "lightness": 0.553,
+      "chroma": 0.03455
+    },
+    "assets/photography/bolivia-2025/PXL_20250403_165359585~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.07092, "orange": 0.03585 },
+      "familyHue": { "blue": 250.5, "orange": 49.1 },
+      "hue": 285.2,
+      "lightness": 0.635,
+      "chroma": 0.03336
+    },
+    "assets/photography/bolivia-2025/PXL_20250403_200019484~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.06109, "orange": 0.03155 },
+      "familyHue": { "blue": 237.3, "orange": 50.5 },
+      "hue": 97.5,
+      "lightness": 0.659,
+      "chroma": 0.03627
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_213015661~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.39192, "red": 0.07872 },
+      "familyHue": { "orange": 47, "red": 28 },
+      "hue": 46.2,
+      "lightness": 0.49,
+      "chroma": 0.0719
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_215807115~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.32999, "blue": 0.29633 },
+      "familyHue": { "orange": 53.3, "blue": 248.8 },
+      "hue": 46,
+      "lightness": 0.6,
+      "chroma": 0.11112
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_215932034~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.64635, "orange": 0.22208 },
+      "familyHue": { "gold": 66.5, "orange": 60.3 },
+      "hue": 64.9,
+      "lightness": 0.667,
+      "chroma": 0.10466
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_220449525~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.39545 },
+      "familyHue": { "blue": 243.6 },
+      "hue": 242.4,
+      "lightness": 0.559,
+      "chroma": 0.0696
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_220621888~2.jpg": {
+      "buckets": ["orange", "gold", "blue"],
+      "strength": { "orange": 0.13697, "gold": 0.20025, "blue": 0.17557 },
+      "familyHue": { "orange": 55.5, "gold": 68.4, "blue": 245.2 },
+      "hue": 61.6,
+      "lightness": 0.523,
+      "chroma": 0.06947
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_221909512~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.22813 },
+      "familyHue": { "orange": 49.8 },
+      "hue": 40.9,
+      "lightness": 0.568,
+      "chroma": 0.06289
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_222759578~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.17546 },
+      "familyHue": { "blue": 254.2 },
+      "hue": 262.3,
+      "lightness": 0.65,
+      "chroma": 0.04369
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_223230174~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.06572 },
+      "familyHue": { "gold": 89.4 },
+      "hue": 89.4,
+      "lightness": 0.592,
+      "chroma": 0.02573
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_223438451~2.jpg": {
+      "buckets": ["purple", "orange"],
+      "strength": { "purple": 0.04131, "orange": 0.14106 },
+      "familyHue": { "purple": 308.5, "orange": 48 },
+      "hue": 34.2,
+      "lightness": 0.533,
+      "chroma": 0.04388
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_223537104~2.jpg": {
+      "buckets": ["red", "purple", "orange"],
+      "strength": { "red": 0.14685, "purple": 0.04981, "orange": 0.06183 },
+      "familyHue": { "red": 17.7, "purple": 283, "orange": 44.4 },
+      "hue": 5.6,
+      "lightness": 0.609,
+      "chroma": 0.0474
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_223601842~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.03437, "blue": 0.023 },
+      "familyHue": { "orange": 51.6, "blue": 253.6 },
+      "hue": 26.6,
+      "lightness": 0.709,
+      "chroma": 0.04009
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_224514905~2.jpg": {
+      "buckets": ["purple", "pink", "red"],
+      "strength": { "purple": 0.18092, "pink": 0.05192, "red": 0.0526 },
+      "familyHue": { "purple": 300.4, "pink": 338.1, "red": 22.2 },
+      "hue": 335.5,
+      "lightness": 0.38,
+      "chroma": 0.0535
+    },
+    "assets/photography/bolivia-2025/PXL_20250407_225426905~2.jpg": {
+      "buckets": ["pink", "purple", "red"],
+      "strength": { "pink": 0.06585, "purple": 0.02475, "red": 0.02792 },
+      "familyHue": { "pink": 338.3, "purple": 317.6, "red": 21.2 },
+      "hue": 4.3,
+      "lightness": 0.381,
+      "chroma": 0.04242
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_144611118~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.08277 },
+      "familyHue": { "orange": 52.3 },
+      "hue": 52.7,
+      "lightness": 0.675,
+      "chroma": 0.02586
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_162159842~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.4907 },
+      "familyHue": { "blue": 253.4 },
+      "hue": 253.4,
+      "lightness": 0.745,
+      "chroma": 0.07836
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_162549790.LONG_EXPOSURE-01.COVER.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.24396 },
+      "familyHue": { "blue": 253.6 },
+      "hue": 253.6,
+      "lightness": 0.746,
+      "chroma": 0.03896
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_170617150~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.44882 },
+      "familyHue": { "blue": 251.1 },
+      "hue": 251.3,
+      "lightness": 0.743,
+      "chroma": 0.05976
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_170947739~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.59633 },
+      "familyHue": { "blue": 255 },
+      "hue": 254.6,
+      "lightness": 0.674,
+      "chroma": 0.08102
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_200951070~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.17874, "gold": 0.15166 },
+      "familyHue": { "orange": 51, "gold": 69.2 },
+      "hue": 56.8,
+      "lightness": 0.571,
+      "chroma": 0.05624
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_215510023~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.44748, "gold": 0.27061 },
+      "familyHue": { "orange": 54.3, "gold": 70.5 },
+      "hue": 58.8,
+      "lightness": 0.57,
+      "chroma": 0.0993
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_221014259~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.23262 },
+      "familyHue": { "gold": 76.1 },
+      "hue": 74.7,
+      "lightness": 0.541,
+      "chroma": 0.04281
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_221633568.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.24257 },
+      "familyHue": { "blue": 258.5 },
+      "hue": 260.7,
+      "lightness": 0.556,
+      "chroma": 0.05226
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_223423240.LONG_EXPOSURE-01.COVER~3.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.08537, "red": 0.02369 },
+      "familyHue": { "orange": 50.8, "red": 32.6 },
+      "hue": 52.4,
+      "lightness": 0.555,
+      "chroma": 0.03644
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_223444778.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.12428, "orange": 0.04108 },
+      "familyHue": { "gold": 83.5, "orange": 43.1 },
+      "hue": 73.1,
+      "lightness": 0.656,
+      "chroma": 0.03592
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_224114201~2.jpg": {
+      "buckets": ["pink", "purple", "red"],
+      "strength": { "pink": 0.13091, "purple": 0.11956, "red": 0.0668 },
+      "familyHue": { "pink": 341.9, "purple": 311.1, "red": 14.2 },
+      "hue": 3.1,
+      "lightness": 0.487,
+      "chroma": 0.06161
+    },
+    "assets/photography/bolivia-2025/PXL_20250408_224905042~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.08252, "gold": 0.13174 },
+      "familyHue": { "orange": 59.1, "gold": 68.5 },
+      "hue": 64.8,
+      "lightness": 0.469,
+      "chroma": 0.04207
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_085152784.NIGHT~2.jpg": {
+      "buckets": ["black"],
+      "strength": { "black": 0.63607 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.302,
+      "chroma": 0.01322
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_090357447.NIGHT~2.jpg": {
+      "buckets": ["purple", "black"],
+      "strength": { "purple": 0.01301, "black": 0.57031 },
+      "familyHue": { "purple": 291 },
+      "hue": 290.2,
+      "lightness": 0.325,
+      "chroma": 0.01843
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_092415024.NIGHT~2.jpg": {
+      "buckets": ["black"],
+      "strength": { "black": 0.5612 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.34,
+      "chroma": 0.01916
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_101909037.RAW-01.COVER~2.jpg": {
+      "buckets": ["white"],
+      "strength": { "white": 0.6569 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.724,
+      "chroma": 0.03154
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_104129452.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.01607, "gold": 0.02808 },
+      "familyHue": { "orange": 54.4, "gold": 73.7 },
+      "hue": 59.1,
+      "lightness": 0.573,
+      "chroma": 0.03342
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_104915751.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.29584 },
+      "familyHue": { "blue": 242.8 },
+      "hue": 241.8,
+      "lightness": 0.54,
+      "chroma": 0.04734
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_194953283~3.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.89021 },
+      "familyHue": { "blue": 249.7 },
+      "hue": 249.7,
+      "lightness": 0.755,
+      "chroma": 0.11766
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_201549475~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.41038 },
+      "familyHue": { "blue": 251.2 },
+      "hue": 250.9,
+      "lightness": 0.561,
+      "chroma": 0.07281
+    },
+    "assets/photography/bolivia-2025/PXL_20250409_201744238~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.48964 },
+      "familyHue": { "blue": 252.9 },
+      "hue": 252.2,
+      "lightness": 0.598,
+      "chroma": 0.0815
+    },
+    "assets/photography/bolivia-2025/PXL_20250410_220547677~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.27343 },
+      "familyHue": { "blue": 240.2 },
+      "hue": 230.6,
+      "lightness": 0.598,
+      "chroma": 0.05543
+    },
+    "assets/photography/bolivia-2025/PXL_20250410_220944061~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.13652 },
+      "familyHue": { "blue": 252.8 },
+      "hue": 247.7,
+      "lightness": 0.595,
+      "chroma": 0.03407
+    },
+    "assets/photography/bolivia-2025/PXL_20250413_143243739~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.36595 },
+      "familyHue": { "blue": 249.8 },
+      "hue": 246.9,
+      "lightness": 0.566,
+      "chroma": 0.0892
+    },
+    "assets/photography/bolivia-2025/PXL_20250413_143642989~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.42635 },
+      "familyHue": { "blue": 251 },
+      "hue": 258.6,
+      "lightness": 0.578,
+      "chroma": 0.0992
+    },
+    "assets/photography/bolivia-2025/PXL_20250413_145817057~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.35613, "orange": 0.12845 },
+      "familyHue": { "blue": 253.1, "orange": 54.4 },
+      "hue": 270.8,
+      "lightness": 0.594,
+      "chroma": 0.08756
+    },
+    "assets/photography/bolivia-2025/PXL_20250413_162144523~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.36578 },
+      "familyHue": { "blue": 249.5 },
+      "hue": 248.6,
+      "lightness": 0.664,
+      "chroma": 0.0772
+    },
+    "assets/photography/bolivia-2025/PXL_20250413_181456638~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.36092, "gold": 0.21009 },
+      "familyHue": { "blue": 251.1, "gold": 89.5 },
+      "hue": 229.2,
+      "lightness": 0.616,
+      "chroma": 0.09255
+    },
+    "assets/photography/bolivia-2025/PXL_20250414_123246666~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.22924, "gold": 0.24219 },
+      "familyHue": { "blue": 261.3, "gold": 90.1 },
+      "hue": 93.7,
+      "lightness": 0.592,
+      "chroma": 0.08033
+    },
+    "assets/photography/bolivia-2025/PXL_20250414_180522418~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.18905 },
+      "familyHue": { "blue": 254.9 },
+      "hue": 259.8,
+      "lightness": 0.612,
+      "chroma": 0.03839
+    },
+    "assets/photography/bolivia-2025/PXL_20250414_184845620~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.28709 },
+      "familyHue": { "blue": 258.7 },
+      "hue": 268.8,
+      "lightness": 0.714,
+      "chroma": 0.05577
+    },
+    "assets/photography/bolivia-2025/PXL_20250414_185725765~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.07469, "orange": 0.0223 },
+      "familyHue": { "blue": 245.7, "orange": 45.1 },
+      "hue": 264.1,
+      "lightness": 0.636,
+      "chroma": 0.03006
+    },
+    "assets/photography/bolivia-2025/PXL_20250414_190359673~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.11524 },
+      "familyHue": { "blue": 248.4 },
+      "hue": 257.2,
+      "lightness": 0.625,
+      "chroma": 0.03381
+    },
+    "assets/photography/bolivia-2025/PXL_20250414_193421445~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.20414 },
+      "familyHue": { "blue": 249.3 },
+      "hue": 252.4,
+      "lightness": 0.666,
+      "chroma": 0.04993
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_151300877~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.34792 },
+      "familyHue": { "blue": 253.9 },
+      "hue": 253.3,
+      "lightness": 0.626,
+      "chroma": 0.05573
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_153546930~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.38195 },
+      "familyHue": { "blue": 245.9 },
+      "hue": 241.7,
+      "lightness": 0.621,
+      "chroma": 0.06917
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_154320843~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.2803 },
+      "familyHue": { "blue": 249.1 },
+      "hue": 242.1,
+      "lightness": 0.621,
+      "chroma": 0.06098
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_170421518~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.14721 },
+      "familyHue": { "gold": 95.7 },
+      "hue": 100.1,
+      "lightness": 0.549,
+      "chroma": 0.03283
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_180159116~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.32644, "blue": 0.16252 },
+      "familyHue": { "gold": 95.1, "blue": 244.8 },
+      "hue": 118.7,
+      "lightness": 0.609,
+      "chroma": 0.06974
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_180745588~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.28531, "green": 0.09784 },
+      "familyHue": { "gold": 100.5, "green": 117.8 },
+      "hue": 104.9,
+      "lightness": 0.635,
+      "chroma": 0.05464
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_181158240~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.37603 },
+      "familyHue": { "gold": 86.4 },
+      "hue": 96.5,
+      "lightness": 0.663,
+      "chroma": 0.07402
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_183154190~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.3773, "blue": 0.19332 },
+      "familyHue": { "gold": 95.1, "blue": 238.3 },
+      "hue": 122.6,
+      "lightness": 0.579,
+      "chroma": 0.07957
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_190921573~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.45173 },
+      "familyHue": { "gold": 95.6 },
+      "hue": 103.6,
+      "lightness": 0.576,
+      "chroma": 0.07586
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_194805133~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.46389, "blue": 0.27564 },
+      "familyHue": { "gold": 88.7, "blue": 257.7 },
+      "hue": 103.9,
+      "lightness": 0.65,
+      "chroma": 0.11087
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_204936134~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.25422, "gold": 0.1587 },
+      "familyHue": { "blue": 244.6, "gold": 88.1 },
+      "hue": 213.3,
+      "lightness": 0.538,
+      "chroma": 0.06065
+    },
+    "assets/photography/bolivia-2025/PXL_20250415_210153275~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.04863 },
+      "familyHue": { "gold": 74.1 },
+      "hue": 72.7,
+      "lightness": 0.536,
+      "chroma": 0.02518
+    },
+    "assets/photography/bolivia-2025/PXL_20250416_165228953~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.19718 },
+      "familyHue": { "gold": 78.2 },
+      "hue": 76.5,
+      "lightness": 0.54,
+      "chroma": 0.04474
+    },
+    "assets/photography/bolivia-2025/PXL_20250416_180602895~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.12223 },
+      "familyHue": { "blue": 256.3 },
+      "hue": 249.9,
+      "lightness": 0.598,
+      "chroma": 0.034
+    },
+    "assets/photography/bolivia-2025/PXL_20250416_184609711.PANO~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.24319, "blue": 0.19104 },
+      "familyHue": { "gold": 95.8, "blue": 248.2 },
+      "hue": 139.2,
+      "lightness": 0.631,
+      "chroma": 0.06835
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_195309920~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.30291 },
+      "familyHue": { "blue": 249.6 },
+      "hue": 249.6,
+      "lightness": 0.599,
+      "chroma": 0.04586
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_213016542.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.56179 },
+      "familyHue": { "blue": 249.7 },
+      "hue": 248.6,
+      "lightness": 0.504,
+      "chroma": 0.0862
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_213903219.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.52114 },
+      "familyHue": { "blue": 255 },
+      "hue": 255,
+      "lightness": 0.505,
+      "chroma": 0.08461
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_221028977~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.25042 },
+      "familyHue": { "blue": 253.5 },
+      "hue": 256.5,
+      "lightness": 0.537,
+      "chroma": 0.0433
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_221851577.RAW-01.COVER~2.jpg": {
+      "buckets": ["purple", "blue"],
+      "strength": { "purple": 0.04577, "blue": 0.04693 },
+      "familyHue": { "purple": 277.9, "blue": 270.1 },
+      "hue": 286.5,
+      "lightness": 0.495,
+      "chroma": 0.03032
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_223320231.RAW-01.COVER~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.03675, "red": 0.00993 },
+      "familyHue": { "orange": 48.1, "red": 28.4 },
+      "hue": 51.7,
+      "lightness": 0.463,
+      "chroma": 0.03141
+    },
+    "assets/photography/bolivia-2025/PXL_20250417_224314836.RAW-01.COVER~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.15102, "blue": 0.16621 },
+      "familyHue": { "orange": 52.3, "blue": 251.9 },
+      "hue": 343.3,
+      "lightness": 0.475,
+      "chroma": 0.05404
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_010535296.NIGHT.RAW-01.COVER~2.jpg": {
+      "buckets": ["pink", "red", "blue", "black"],
+      "strength": { "pink": 0.00624, "red": 0.00461, "blue": 0.00916, "black": 0.6377 },
+      "familyHue": { "pink": 356.7, "red": 13.5, "blue": 262.1 },
+      "hue": 319.9,
+      "lightness": 0.297,
+      "chroma": 0.01518
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_014239570.NIGHT.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.24351 },
+      "familyHue": { "blue": 264.5 },
+      "hue": 268.5,
+      "lightness": 0.295,
+      "chroma": 0.04425
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_161437127.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.22165, "blue": 0.16914 },
+      "familyHue": { "gold": 93.5, "blue": 257 },
+      "hue": 126.7,
+      "lightness": 0.563,
+      "chroma": 0.06975
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_164945017~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.34059, "orange": 0.10864 },
+      "familyHue": { "blue": 256.7, "orange": 50.5 },
+      "hue": 277.3,
+      "lightness": 0.599,
+      "chroma": 0.08764
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_171722799.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.59666 },
+      "familyHue": { "blue": 254.7 },
+      "hue": 256.3,
+      "lightness": 0.535,
+      "chroma": 0.09973
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_172302664.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.27275, "orange": 0.12364 },
+      "familyHue": { "blue": 255.5, "orange": 47.6 },
+      "hue": 8.2,
+      "lightness": 0.57,
+      "chroma": 0.08861
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_192359089.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.26145, "gold": 0.29285 },
+      "familyHue": { "blue": 253.8, "gold": 86.3 },
+      "hue": 138.2,
+      "lightness": 0.644,
+      "chroma": 0.08235
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_193011290.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.26439 },
+      "familyHue": { "blue": 255.5 },
+      "hue": 244.7,
+      "lightness": 0.622,
+      "chroma": 0.06169
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_193036232.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.18691 },
+      "familyHue": { "blue": 248.6 },
+      "hue": 232.3,
+      "lightness": 0.612,
+      "chroma": 0.04637
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_194602122.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.28629 },
+      "familyHue": { "blue": 258.6 },
+      "hue": 257,
+      "lightness": 0.577,
+      "chroma": 0.06759
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_195209847.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.1946 },
+      "familyHue": { "blue": 258.4 },
+      "hue": 256.6,
+      "lightness": 0.507,
+      "chroma": 0.04526
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_202155349.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.19566 },
+      "familyHue": { "blue": 254.9 },
+      "hue": 260.3,
+      "lightness": 0.596,
+      "chroma": 0.04933
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_215535846.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.38515 },
+      "familyHue": { "gold": 74 },
+      "hue": 72.6,
+      "lightness": 0.588,
+      "chroma": 0.08293
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_220636327.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.08939, "blue": 0.11324 },
+      "familyHue": { "orange": 58.1, "blue": 254.3 },
+      "hue": 43.3,
+      "lightness": 0.458,
+      "chroma": 0.04827
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_222433579~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.13564 },
+      "familyHue": { "orange": 46.7 },
+      "hue": 45.7,
+      "lightness": 0.606,
+      "chroma": 0.04189
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_222714616~3.jpg": {
+      "buckets": ["pink", "red"],
+      "strength": { "pink": 0.10982, "red": 0.10273 },
+      "familyHue": { "pink": 0.5, "red": 11.4 },
+      "hue": 18.1,
+      "lightness": 0.653,
+      "chroma": 0.05
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_223055619~2.jpg": {
+      "buckets": ["purple", "pink"],
+      "strength": { "purple": 0.25153, "pink": 0.07079 },
+      "familyHue": { "purple": 288.7, "pink": 343 },
+      "hue": 300.9,
+      "lightness": 0.669,
+      "chroma": 0.0546
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_224131310~2.jpg": {
+      "buckets": ["purple", "pink"],
+      "strength": { "purple": 0.4062, "pink": 0.17401 },
+      "familyHue": { "purple": 297.8, "pink": 338.5 },
+      "hue": 309.6,
+      "lightness": 0.46,
+      "chroma": 0.08725
+    },
+    "assets/photography/bolivia-2025/PXL_20250418_224830810.NIGHT~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.0592, "orange": 0.06681 },
+      "familyHue": { "red": 26.6, "orange": 45.4 },
+      "hue": 37.3,
+      "lightness": 0.392,
+      "chroma": 0.02737
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_145333399~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.09165, "gold": 0.09269 },
+      "familyHue": { "orange": 54.5, "gold": 69.1 },
+      "hue": 55.3,
+      "lightness": 0.419,
+      "chroma": 0.04921
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_150529860~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.20965 },
+      "familyHue": { "blue": 253.2 },
+      "hue": 257.3,
+      "lightness": 0.566,
+      "chroma": 0.04759
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_153748649~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.75591 },
+      "familyHue": { "blue": 257.8 },
+      "hue": 257.8,
+      "lightness": 0.492,
+      "chroma": 0.09658
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_163326420~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.3651 },
+      "familyHue": { "blue": 257.7 },
+      "hue": 263.2,
+      "lightness": 0.535,
+      "chroma": 0.07601
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_164555507~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.35031 },
+      "familyHue": { "blue": 255.5 },
+      "hue": 273.6,
+      "lightness": 0.598,
+      "chroma": 0.0828
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_165704559.PANO~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.21054, "gold": 0.21501 },
+      "familyHue": { "blue": 248.1, "gold": 78.2 },
+      "hue": 116.1,
+      "lightness": 0.619,
+      "chroma": 0.06588
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_171903906~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.20705 },
+      "familyHue": { "blue": 253.2 },
+      "hue": 253.4,
+      "lightness": 0.666,
+      "chroma": 0.04448
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_174924236~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.134 },
+      "familyHue": { "blue": 260.7 },
+      "hue": 254.9,
+      "lightness": 0.519,
+      "chroma": 0.03841
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_174955537~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.03436 },
+      "familyHue": { "green": 121.3 },
+      "hue": 114.2,
+      "lightness": 0.627,
+      "chroma": 0.02657
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_182406238~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.04198 },
+      "familyHue": { "gold": 92.8 },
+      "hue": 92.3,
+      "lightness": 0.545,
+      "chroma": 0.0264
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_184724723~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.22724 },
+      "familyHue": { "blue": 251.8 },
+      "hue": 249.1,
+      "lightness": 0.687,
+      "chroma": 0.04733
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_185254771~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.03091, "gold": 0.03129 },
+      "familyHue": { "blue": 256.2, "gold": 73.6 },
+      "hue": 37.2,
+      "lightness": 0.642,
+      "chroma": 0.0346
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_185630853~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.08071 },
+      "familyHue": { "gold": 89.8 },
+      "hue": 89.9,
+      "lightness": 0.582,
+      "chroma": 0.02894
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_194151122~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.20652 },
+      "familyHue": { "blue": 256.1 },
+      "hue": 255.6,
+      "lightness": 0.684,
+      "chroma": 0.03992
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_195603993~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.05372 },
+      "familyHue": { "blue": 252.8 },
+      "hue": 246.3,
+      "lightness": 0.639,
+      "chroma": 0.0319
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_195917179~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.02745 },
+      "familyHue": { "gold": 82.3 },
+      "hue": 81.4,
+      "lightness": 0.604,
+      "chroma": 0.02736
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_201032847~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.12666, "blue": 0.06704 },
+      "familyHue": { "gold": 88.2, "blue": 256.7 },
+      "hue": 99.8,
+      "lightness": 0.583,
+      "chroma": 0.04349
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_201839925~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.10578, "gold": 0.17791 },
+      "familyHue": { "orange": 56.8, "gold": 74.4 },
+      "hue": 67.3,
+      "lightness": 0.573,
+      "chroma": 0.05082
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_202026318~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.20385 },
+      "familyHue": { "blue": 250.5 },
+      "hue": 245.5,
+      "lightness": 0.602,
+      "chroma": 0.04994
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_203906481~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.35296 },
+      "familyHue": { "blue": 254.6 },
+      "hue": 255.4,
+      "lightness": 0.675,
+      "chroma": 0.06651
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_204341137~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.43497 },
+      "familyHue": { "blue": 256.3 },
+      "hue": 259,
+      "lightness": 0.653,
+      "chroma": 0.08402
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_221248394.PANO~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.21238, "gold": 0.12158 },
+      "familyHue": { "blue": 248.4, "gold": 100.9 },
+      "hue": 217,
+      "lightness": 0.631,
+      "chroma": 0.05164
+    },
+    "assets/photography/bolivia-2025/PXL_20250419_222130404.LONG_EXPOSURE-01.COVER.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.04937, "blue": 0.03088 },
+      "familyHue": { "orange": 51.8, "blue": 260.9 },
+      "hue": 22.6,
+      "lightness": 0.562,
+      "chroma": 0.02823
+    },
+    "assets/photography/bolivia-2025/PXL_20250420_124302738~2.jpg": {
+      "buckets": ["red", "green", "orange", "grey"],
+      "strength": { "red": 0.00445, "green": 0.00894, "orange": 0.00408, "grey": 0.60091 },
+      "familyHue": { "red": 32.5, "green": 143.3, "orange": 41.9 },
+      "hue": 88,
+      "lightness": 0.613,
+      "chroma": 0.02584
+    },
+    "assets/photography/bolivia-2025/PXL_20250420_124808194~2.jpg": {
+      "buckets": ["orange", "gold", "grey"],
+      "strength": { "orange": 0.00753, "gold": 0.01393, "grey": 0.52441 },
+      "familyHue": { "orange": 51, "gold": 75.6 },
+      "hue": 65.3,
+      "lightness": 0.622,
+      "chroma": 0.02317
+    },
+    "assets/photography/bolivia-2025/PXL_20250420_154352726~2.jpg": {
+      "buckets": ["red", "blue", "grey"],
+      "strength": { "red": 0.01032, "blue": 0.01232, "grey": 0.27637 },
+      "familyHue": { "red": 31.3, "blue": 250.2 },
+      "hue": 9.3,
+      "lightness": 0.698,
+      "chroma": 0.02699
+    },
+    "assets/photography/bolivia-2025/PXL_20250420_154818769~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.06121, "gold": 0.04234 },
+      "familyHue": { "blue": 251.7, "gold": 89.4 },
+      "hue": 224.2,
+      "lightness": 0.62,
+      "chroma": 0.03618
+    },
+    "assets/photography/bolivia-2025/PXL_20250420_202134070~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.39167 },
+      "familyHue": { "gold": 89.1 },
+      "hue": 90.4,
+      "lightness": 0.607,
+      "chroma": 0.0641
+    },
+    "assets/photography/bolivia-2025/PXL_20250421_115848719~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.30029 },
+      "familyHue": { "blue": 263 },
+      "hue": 275.7,
+      "lightness": 0.678,
+      "chroma": 0.06159
+    },
+    "assets/photography/bolivia-2025/PXL_20250421_115907985.PANO~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.28072 },
+      "familyHue": { "blue": 247.5 },
+      "hue": 238.7,
+      "lightness": 0.678,
+      "chroma": 0.06082
+    },
+    "assets/photography/bolivia-2025/PXL_20250421_120040204~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.3894 },
+      "familyHue": { "blue": 256.1 },
+      "hue": 254.7,
+      "lightness": 0.629,
+      "chroma": 0.06192
+    },
+    "assets/photography/bolivia-2025/PXL_20250421_120302579~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.2004 },
+      "familyHue": { "blue": 259.5 },
+      "hue": 259.5,
+      "lightness": 0.632,
+      "chroma": 0.04919
+    },
+    "assets/photography/bolivia-2025/PXL_20250421_120551426~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.24089 },
+      "familyHue": { "blue": 252.6 },
+      "hue": 250.3,
+      "lightness": 0.589,
+      "chroma": 0.0498
+    },
+    "assets/photography/bolivia-2025/PXL_20250422_150014629~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.25196 },
+      "familyHue": { "blue": 252.3 },
+      "hue": 240.8,
+      "lightness": 0.664,
+      "chroma": 0.05227
+    },
+    "assets/photography/bolivia-2025/PXL_20250422_184540484~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.71249 },
+      "familyHue": { "blue": 254.6 },
+      "hue": 254.5,
+      "lightness": 0.674,
+      "chroma": 0.0903
+    },
+    "assets/photography/bolivia-2025/PXL_20250422_191919377~2.jpg": {
+      "buckets": ["blue", "green"],
+      "strength": { "blue": 0.36166, "green": 0.18074 },
+      "familyHue": { "blue": 252.7, "green": 123.4 },
+      "hue": 207.3,
+      "lightness": 0.564,
+      "chroma": 0.0892
+    },
+    "assets/photography/bolivia-2025/PXL_20250422_220830387~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.41963 },
+      "familyHue": { "blue": 254.3 },
+      "hue": 256.3,
+      "lightness": 0.591,
+      "chroma": 0.07491
+    },
+    "assets/photography/bolivia-2025/PXL_20250423_123026446~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.35553 },
+      "familyHue": { "blue": 255.6 },
+      "hue": 253.5,
+      "lightness": 0.589,
+      "chroma": 0.06095
+    },
+    "assets/photography/bolivia-2025/PXL_20250423_173954046~2.jpg": {
+      "buckets": ["teal", "blue"],
+      "strength": { "teal": 0.07842, "blue": 0.25589 },
+      "familyHue": { "teal": 201.4, "blue": 241.6 },
+      "hue": 207.7,
+      "lightness": 0.649,
+      "chroma": 0.06961
+    },
+    "assets/photography/bolivia-2025/PXL_20250424_110926731~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.2926 },
+      "familyHue": { "gold": 90.9 },
+      "hue": 90.1,
+      "lightness": 0.547,
+      "chroma": 0.06789
+    },
+    "assets/photography/bolivia-2025/PXL_20250424_215515380~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.58862 },
+      "familyHue": { "blue": 252 },
+      "hue": 255.9,
+      "lightness": 0.682,
+      "chroma": 0.07931
+    },
+    "assets/photography/bolivia-2025/PXL_20250425_203442898~2.jpg": {
+      "buckets": ["pink", "red"],
+      "strength": { "pink": 0.03518, "red": 0.01719 },
+      "familyHue": { "pink": 329.5, "red": 22.2 },
+      "hue": 5.6,
+      "lightness": 0.619,
+      "chroma": 0.02474
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_161015138~2.jpg": {
+      "buckets": ["orange", "green"],
+      "strength": { "orange": 0.07775, "green": 0.0827 },
+      "familyHue": { "orange": 50.5, "green": 125.1 },
+      "hue": 84.4,
+      "lightness": 0.477,
+      "chroma": 0.05111
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_182618383~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.14994, "green": 0.05607 },
+      "familyHue": { "gold": 103.9, "green": 117 },
+      "hue": 101.4,
+      "lightness": 0.519,
+      "chroma": 0.04236
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_182623552.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.11085, "gold": 0.13479 },
+      "familyHue": { "green": 116.6, "gold": 100.1 },
+      "hue": 105.7,
+      "lightness": 0.49,
+      "chroma": 0.04511
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_185633213~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.17687, "gold": 0.13165 },
+      "familyHue": { "orange": 56.7, "gold": 69 },
+      "hue": 60.4,
+      "lightness": 0.553,
+      "chroma": 0.05475
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_194059255.PANO~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.06978 },
+      "familyHue": { "blue": 249.6 },
+      "hue": 127.1,
+      "lightness": 0.567,
+      "chroma": 0.04133
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_194135259.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue", "green"],
+      "strength": { "blue": 0.04201, "green": 0.02903 },
+      "familyHue": { "blue": 251, "green": 143.2 },
+      "hue": 162.7,
+      "lightness": 0.493,
+      "chroma": 0.02943
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_194356965.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.16635 },
+      "familyHue": { "orange": 51.5 },
+      "hue": 58.3,
+      "lightness": 0.519,
+      "chroma": 0.04393
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_195351100~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.03863, "blue": 0.02523 },
+      "familyHue": { "green": 137, "blue": 258.8 },
+      "hue": 175,
+      "lightness": 0.489,
+      "chroma": 0.02523
+    },
+    "assets/photography/bolivia-2025/PXL_20250426_200744287.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.1209 },
+      "familyHue": { "blue": 257.2 },
+      "hue": 251.8,
+      "lightness": 0.447,
+      "chroma": 0.03201
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_121715802~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.06131, "gold": 0.0625 },
+      "familyHue": { "blue": 249.3, "gold": 88.7 },
+      "hue": 143.3,
+      "lightness": 0.64,
+      "chroma": 0.02959
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_123312394~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.06202 },
+      "familyHue": { "blue": 250.4 },
+      "hue": 255.9,
+      "lightness": 0.738,
+      "chroma": 0.02721
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_131212365.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.12664 },
+      "familyHue": { "orange": 53.8 },
+      "hue": 58.3,
+      "lightness": 0.572,
+      "chroma": 0.03672
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_131541883~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.01664, "orange": 0.03171 },
+      "familyHue": { "red": 34.5, "orange": 47.3 },
+      "hue": 42.9,
+      "lightness": 0.669,
+      "chroma": 0.01866
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_132931530~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.10667 },
+      "familyHue": { "blue": 256.5 },
+      "hue": 254.8,
+      "lightness": 0.638,
+      "chroma": 0.03917
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_132954130.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.20494 },
+      "familyHue": { "orange": 52 },
+      "hue": 58.4,
+      "lightness": 0.565,
+      "chroma": 0.05231
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_134544027~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.20911, "blue": 0.14723 },
+      "familyHue": { "orange": 51.2, "blue": 255.2 },
+      "hue": 23.8,
+      "lightness": 0.642,
+      "chroma": 0.05786
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_135354555~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.19784, "red": 0.05013 },
+      "familyHue": { "orange": 41.7, "red": 31.9 },
+      "hue": 46.7,
+      "lightness": 0.546,
+      "chroma": 0.04469
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_143712097~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.0767, "orange": 0.03784 },
+      "familyHue": { "blue": 256.4, "orange": 44.6 },
+      "hue": 292.9,
+      "lightness": 0.628,
+      "chroma": 0.03397
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_144527031~2.jpg": {
+      "buckets": ["red", "blue", "orange", "grey"],
+      "strength": { "red": 0.0054, "blue": 0.0191, "orange": 0.00852, "grey": 0.31803 },
+      "familyHue": { "red": 31.4, "blue": 253.9, "orange": 43 },
+      "hue": 298.5,
+      "lightness": 0.582,
+      "chroma": 0.02266
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_150135901~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.02367 },
+      "familyHue": { "orange": 49.1 },
+      "hue": 78.4,
+      "lightness": 0.415,
+      "chroma": 0.03236
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_150150530~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.06205, "gold": 0.07969 },
+      "familyHue": { "orange": 52.5, "gold": 73.7 },
+      "hue": 70.2,
+      "lightness": 0.42,
+      "chroma": 0.03566
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_152114174~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.04971, "orange": 0.11315 },
+      "familyHue": { "red": 27.2, "orange": 44 },
+      "hue": 37.5,
+      "lightness": 0.388,
+      "chroma": 0.03768
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_152151193~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.02842, "orange": 0.05257 },
+      "familyHue": { "red": 28.6, "orange": 45.3 },
+      "hue": 34.5,
+      "lightness": 0.538,
+      "chroma": 0.03574
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_153531466~2.jpg": {
+      "buckets": ["orange", "red", "green"],
+      "strength": { "orange": 0.02998, "red": 0.01299, "green": 0.03413 },
+      "familyHue": { "orange": 45.8, "red": 26.8, "green": 137.5 },
+      "hue": 76.4,
+      "lightness": 0.549,
+      "chroma": 0.03033
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_154528090.PANO~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.18399, "gold": 0.14691 },
+      "familyHue": { "blue": 248.8, "gold": 88 },
+      "hue": 199.3,
+      "lightness": 0.618,
+      "chroma": 0.05362
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_155529181.PANO~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.23117 },
+      "familyHue": { "blue": 249.4 },
+      "hue": 242.7,
+      "lightness": 0.601,
+      "chroma": 0.05265
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_161049120~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.3459 },
+      "familyHue": { "orange": 47.4 },
+      "hue": 47.4,
+      "lightness": 0.587,
+      "chroma": 0.05977
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_161239164~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.08277, "blue": 0.12657 },
+      "familyHue": { "orange": 41.9, "blue": 255.2 },
+      "hue": 339.8,
+      "lightness": 0.621,
+      "chroma": 0.04666
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_161612003~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.56293 },
+      "familyHue": { "blue": 258.3 },
+      "hue": 258.3,
+      "lightness": 0.757,
+      "chroma": 0.06889
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_183531479~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.46481 },
+      "familyHue": { "orange": 44.4 },
+      "hue": 52.6,
+      "lightness": 0.561,
+      "chroma": 0.07516
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_184823260~2.jpg": {
+      "buckets": ["grey"],
+      "strength": { "grey": 0.56576 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.504,
+      "chroma": 0.01921
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_185555477~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.03676 },
+      "familyHue": { "gold": 94.6 },
+      "hue": 113.1,
+      "lightness": 0.365,
+      "chroma": 0.02287
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_191302626~2.jpg": {
+      "buckets": ["gold", "grey"],
+      "strength": { "gold": 0.01287, "grey": 0.3444 },
+      "familyHue": { "gold": 101 },
+      "hue": 107.7,
+      "lightness": 0.416,
+      "chroma": 0.01622
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_192520380~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.09101 },
+      "familyHue": { "gold": 99.1 },
+      "hue": 116.7,
+      "lightness": 0.484,
+      "chroma": 0.02677
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_201537417~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.24551 },
+      "familyHue": { "blue": 248.9 },
+      "hue": 223.6,
+      "lightness": 0.638,
+      "chroma": 0.06106
+    },
+    "assets/photography/bolivia-2025/PXL_20250427_202609080~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.33112 },
+      "familyHue": { "blue": 252.3 },
+      "hue": 240.9,
+      "lightness": 0.637,
+      "chroma": 0.06591
+    },
+    "assets/photography/bolivia-2025/PXL_20250430_144515280~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.34211 },
+      "familyHue": { "blue": 259.2 },
+      "hue": 259.4,
+      "lightness": 0.74,
+      "chroma": 0.05288
+    },
+    "assets/photography/bolivia-2025/dji_fly_20250402_182952_604_1743633017084_photo_optimized~2.jpg": {
+      "buckets": ["blue", "grey"],
+      "strength": { "blue": 0.01531, "grey": 0.4579 },
+      "familyHue": { "blue": 248.6 },
+      "hue": 228.2,
+      "lightness": 0.561,
+      "chroma": 0.02265
+    },
+    "assets/photography/bolivia-2025/dji_fly_20250408_132136_659_1744133295379_photo~2.jpg": {
+      "buckets": ["teal", "blue"],
+      "strength": { "teal": 0.09463, "blue": 0.54014 },
+      "familyHue": { "teal": 197.2, "blue": 244.7 },
+      "hue": 238,
+      "lightness": 0.691,
+      "chroma": 0.09904
+    },
+    "assets/photography/bolivia-2025/dji_fly_20250410_174350_815_1744321634989_photo~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.22297 },
+      "familyHue": { "blue": 237.6 },
+      "hue": 214.4,
+      "lightness": 0.559,
+      "chroma": 0.05777
+    },
+    "assets/photography/bolivia-2025/dji_fly_20250413_101128_838_1744553521455_photo~2.jpg": {
+      "buckets": ["teal", "blue"],
+      "strength": { "teal": 0.04985, "blue": 0.24244 },
+      "familyHue": { "teal": 206.4, "blue": 239 },
+      "hue": 228.1,
+      "lightness": 0.648,
+      "chroma": 0.05971
+    },
+    "assets/photography/bolivia-2025/dji_fly_20250413_122752_848_1744561945946_photo~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.40748 },
+      "familyHue": { "blue": 248.2 },
+      "hue": 246.7,
+      "lightness": 0.575,
+      "chroma": 0.07784
+    },
+    "assets/photography/bolivia-2025/dji_fly_20250427_082312_226_1745756614911_photo_optimized~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.12938 },
+      "familyHue": { "blue": 238.3 },
+      "hue": 223.8,
+      "lightness": 0.635,
+      "chroma": 0.03906
     },
     "assets/photography/central-india/DSC02304.webp": {
       "buckets": ["blue", "green"],
@@ -14292,6 +15764,1374 @@
       "hue": 31.8,
       "lightness": 0.321,
       "chroma": 0.02941
+    },
+    "assets/photography/ecuador-2025/PXL_20250603_154444466~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.73747 },
+      "familyHue": { "green": 126.5 },
+      "hue": 128.4,
+      "lightness": 0.618,
+      "chroma": 0.11923
+    },
+    "assets/photography/ecuador-2025/PXL_20250604_125223562~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.16823 },
+      "familyHue": { "gold": 89.1 },
+      "hue": 89.5,
+      "lightness": 0.561,
+      "chroma": 0.03946
+    },
+    "assets/photography/ecuador-2025/PXL_20250604_183808249~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.16709, "blue": 0.12792 },
+      "familyHue": { "gold": 97.1, "blue": 256.6 },
+      "hue": 115.1,
+      "lightness": 0.604,
+      "chroma": 0.05188
+    },
+    "assets/photography/ecuador-2025/PXL_20250607_144153438~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.49576 },
+      "familyHue": { "green": 124.4 },
+      "hue": 124,
+      "lightness": 0.56,
+      "chroma": 0.07237
+    },
+    "assets/photography/ecuador-2025/PXL_20250607_144449581~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.18211, "blue": 0.12669 },
+      "familyHue": { "green": 123.8, "blue": 240.5 },
+      "hue": 166.1,
+      "lightness": 0.681,
+      "chroma": 0.05251
+    },
+    "assets/photography/ecuador-2025/PXL_20250607_144544200~2.jpg": {
+      "buckets": ["teal", "green"],
+      "strength": { "teal": 0.12435, "green": 0.49504 },
+      "familyHue": { "teal": 188.4, "green": 133 },
+      "hue": 144.9,
+      "lightness": 0.553,
+      "chroma": 0.08192
+    },
+    "assets/photography/ecuador-2025/PXL_20250607_215818019~2.jpg": {
+      "buckets": ["blue", "green"],
+      "strength": { "blue": 0.37127, "green": 0.15285 },
+      "familyHue": { "blue": 254.1, "green": 120.4 },
+      "hue": 220.1,
+      "lightness": 0.526,
+      "chroma": 0.08491
+    },
+    "assets/photography/ecuador-2025/PXL_20250609_143725729~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.05367, "orange": 0.06777 },
+      "familyHue": { "red": 21.7, "orange": 51 },
+      "hue": 45.5,
+      "lightness": 0.532,
+      "chroma": 0.03648
+    },
+    "assets/photography/ecuador-2025/PXL_20250617_193534131~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.23778 },
+      "familyHue": { "green": 118.9 },
+      "hue": 125.8,
+      "lightness": 0.556,
+      "chroma": 0.06591
+    },
+    "assets/photography/ecuador-2025/PXL_20250617_200242536~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.31804 },
+      "familyHue": { "green": 123.4 },
+      "hue": 129.2,
+      "lightness": 0.595,
+      "chroma": 0.05645
+    },
+    "assets/photography/ecuador-2025/PXL_20250617_201512976~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.57044 },
+      "familyHue": { "green": 127.4 },
+      "hue": 126.9,
+      "lightness": 0.598,
+      "chroma": 0.08179
+    },
+    "assets/photography/ecuador-2025/PXL_20250617_214106234~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.11567, "blue": 0.08152 },
+      "familyHue": { "green": 124.9, "blue": 256.5 },
+      "hue": 144,
+      "lightness": 0.605,
+      "chroma": 0.04434
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_050211856.NIGHT.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.48955 },
+      "familyHue": { "blue": 263.3 },
+      "hue": 263.5,
+      "lightness": 0.333,
+      "chroma": 0.06118
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_112948468.RAW-01.COVER.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.25455 },
+      "familyHue": { "gold": 83.3 },
+      "hue": 89.9,
+      "lightness": 0.536,
+      "chroma": 0.05064
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_150419939.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.1776, "green": 0.06675 },
+      "familyHue": { "gold": 101.4, "green": 118.2 },
+      "hue": 106,
+      "lightness": 0.807,
+      "chroma": 0.0489
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_152603954.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.1874 },
+      "familyHue": { "gold": 90.4 },
+      "hue": 93.1,
+      "lightness": 0.618,
+      "chroma": 0.04112
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_152646786.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.14178 },
+      "familyHue": { "gold": 79.5 },
+      "hue": 79.5,
+      "lightness": 0.64,
+      "chroma": 0.03099
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_153231137.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.18058 },
+      "familyHue": { "gold": 96.5 },
+      "hue": 98.4,
+      "lightness": 0.623,
+      "chroma": 0.04174
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_170535390.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.15197 },
+      "familyHue": { "gold": 85.4 },
+      "hue": 89.3,
+      "lightness": 0.727,
+      "chroma": 0.03816
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_171125612.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.33397 },
+      "familyHue": { "blue": 235.3 },
+      "hue": 217.4,
+      "lightness": 0.688,
+      "chroma": 0.06348
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_171709341.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.34756, "gold": 0.20576 },
+      "familyHue": { "blue": 251.5, "gold": 76.1 },
+      "hue": 245.4,
+      "lightness": 0.66,
+      "chroma": 0.08222
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_173000962.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.17442, "gold": 0.12399 },
+      "familyHue": { "blue": 239.7, "gold": 87.7 },
+      "hue": 197.9,
+      "lightness": 0.731,
+      "chroma": 0.05024
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_194349625.RAW-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.16079 },
+      "familyHue": { "green": 127.1 },
+      "hue": 144,
+      "lightness": 0.564,
+      "chroma": 0.04786
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_200517202.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.2898 },
+      "familyHue": { "blue": 243.8 },
+      "hue": 174.5,
+      "lightness": 0.665,
+      "chroma": 0.08144
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_210338748.RAW-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.33793 },
+      "familyHue": { "green": 126.7 },
+      "hue": 148.6,
+      "lightness": 0.558,
+      "chroma": 0.07876
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_213739457.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.23856 },
+      "familyHue": { "gold": 101.2 },
+      "hue": 128.6,
+      "lightness": 0.544,
+      "chroma": 0.06246
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_214835869.RAW-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.20329, "gold": 0.2978 },
+      "familyHue": { "green": 125.5, "gold": 104 },
+      "hue": 116.9,
+      "lightness": 0.488,
+      "chroma": 0.07436
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_224828828.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.31047 },
+      "familyHue": { "blue": 249.3 },
+      "hue": 249.2,
+      "lightness": 0.558,
+      "chroma": 0.0472
+    },
+    "assets/photography/ecuador-2025/PXL_20250618_225411166.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.63123 },
+      "familyHue": { "blue": 246.3 },
+      "hue": 247,
+      "lightness": 0.604,
+      "chroma": 0.08788
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_120908154~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.4118, "green": 0.19481 },
+      "familyHue": { "gold": 81, "green": 142.1 },
+      "hue": 95.7,
+      "lightness": 0.635,
+      "chroma": 0.08175
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_120934954~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.15572 },
+      "familyHue": { "gold": 87.8 },
+      "hue": 104.3,
+      "lightness": 0.607,
+      "chroma": 0.0413
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_121134900~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.39695 },
+      "familyHue": { "blue": 247.5 },
+      "hue": 246.1,
+      "lightness": 0.643,
+      "chroma": 0.0579
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_170351397~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.0405 },
+      "familyHue": { "orange": 44.2 },
+      "hue": 47.7,
+      "lightness": 0.569,
+      "chroma": 0.03373
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_172822962~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.07368, "blue": 0.11813 },
+      "familyHue": { "orange": 45.3, "blue": 258.8 },
+      "hue": 356.3,
+      "lightness": 0.664,
+      "chroma": 0.04994
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_190029018.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.42411 },
+      "familyHue": { "green": 129.3 },
+      "hue": 127.4,
+      "lightness": 0.463,
+      "chroma": 0.0625
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_190053215~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.34679, "green": 0.19868 },
+      "familyHue": { "gold": 103.2, "green": 116.3 },
+      "hue": 109.5,
+      "lightness": 0.645,
+      "chroma": 0.0769
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_190845267~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.16715, "gold": 0.26306 },
+      "familyHue": { "green": 120.9, "gold": 99.5 },
+      "hue": 112,
+      "lightness": 0.564,
+      "chroma": 0.06785
+    },
+    "assets/photography/ecuador-2025/PXL_20250619_192959692~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.1265, "blue": 0.17264 },
+      "familyHue": { "green": 135.1, "blue": 248.5 },
+      "hue": 205.1,
+      "lightness": 0.659,
+      "chroma": 0.04625
+    },
+    "assets/photography/ecuador-2025/PXL_20250620_161616920~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.18751, "blue": 0.14073 },
+      "familyHue": { "green": 126.7, "blue": 256.7 },
+      "hue": 164,
+      "lightness": 0.527,
+      "chroma": 0.05736
+    },
+    "assets/photography/ecuador-2025/PXL_20250620_162014490~2.jpg": {
+      "buckets": ["red"],
+      "strength": { "red": 0.07727 },
+      "familyHue": { "red": 21.8 },
+      "hue": 74.4,
+      "lightness": 0.589,
+      "chroma": 0.06806
+    },
+    "assets/photography/ecuador-2025/PXL_20250620_180745884~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.13848 },
+      "familyHue": { "blue": 247.6 },
+      "hue": 247.2,
+      "lightness": 0.72,
+      "chroma": 0.02837
+    },
+    "assets/photography/ecuador-2025/PXL_20250620_183524007~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.09595 },
+      "familyHue": { "green": 122.8 },
+      "hue": 133.9,
+      "lightness": 0.565,
+      "chroma": 0.03467
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_202359865~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.10285 },
+      "familyHue": { "gold": 92 },
+      "hue": 103.3,
+      "lightness": 0.629,
+      "chroma": 0.02854
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_202808969~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.27502, "gold": 0.23286 },
+      "familyHue": { "blue": 251.2, "gold": 89.4 },
+      "hue": 193.4,
+      "lightness": 0.598,
+      "chroma": 0.07418
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_214533959~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.11254 },
+      "familyHue": { "gold": 91.2 },
+      "hue": 94.2,
+      "lightness": 0.538,
+      "chroma": 0.03013
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_214555112~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.09088 },
+      "familyHue": { "green": 128.9 },
+      "hue": 115.6,
+      "lightness": 0.571,
+      "chroma": 0.03318
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_220537000~2.jpg": {
+      "buckets": ["blue", "white"],
+      "strength": { "blue": 0.02601, "white": 0.75228 },
+      "familyHue": { "blue": 229 },
+      "hue": 219.6,
+      "lightness": 0.765,
+      "chroma": 0.02428
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_221535489~2.jpg": {
+      "buckets": ["blue", "grey"],
+      "strength": { "blue": 0.02427, "grey": 0.08171 },
+      "familyHue": { "blue": 243.1 },
+      "hue": 243.1,
+      "lightness": 0.683,
+      "chroma": 0.02209
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_221548745~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.07763, "gold": 0.06076 },
+      "familyHue": { "blue": 242.4, "gold": 99 },
+      "hue": 161.7,
+      "lightness": 0.717,
+      "chroma": 0.03442
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_223208763~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.20768, "gold": 0.14552 },
+      "familyHue": { "blue": 247, "gold": 95.3 },
+      "hue": 188,
+      "lightness": 0.621,
+      "chroma": 0.05681
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_223222515~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.07784 },
+      "familyHue": { "gold": 86.1 },
+      "hue": 86.1,
+      "lightness": 0.66,
+      "chroma": 0.02887
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_223230695~2.jpg": {
+      "buckets": ["grey"],
+      "strength": { "grey": 0.19173 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.675,
+      "chroma": 0.0198
+    },
+    "assets/photography/ecuador-2025/PXL_20250621_223325251~2.jpg": {
+      "buckets": ["green", "blue", "gold"],
+      "strength": { "green": 0.14316, "blue": 0.16593, "gold": 0.18733 },
+      "familyHue": { "green": 122.5, "blue": 237.1, "gold": 101 },
+      "hue": 141,
+      "lightness": 0.634,
+      "chroma": 0.06781
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_182538803~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.20298, "gold": 0.27514 },
+      "familyHue": { "green": 119.5, "gold": 101 },
+      "hue": 107.2,
+      "lightness": 0.56,
+      "chroma": 0.06881
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_185827379~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.28765 },
+      "familyHue": { "green": 124.3 },
+      "hue": 122.1,
+      "lightness": 0.576,
+      "chroma": 0.05317
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_193803971~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.13979, "gold": 0.23497 },
+      "familyHue": { "orange": 52.9, "gold": 79.7 },
+      "hue": 69.9,
+      "lightness": 0.552,
+      "chroma": 0.06408
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_213911221~2.jpg": {
+      "buckets": ["teal", "green", "black"],
+      "strength": { "teal": 0.00575, "green": 0.01925, "black": 0.78678 },
+      "familyHue": { "teal": 170.8, "green": 145.7 },
+      "hue": 149.7,
+      "lightness": 0.236,
+      "chroma": 0.01326
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_215233429.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.1589 },
+      "familyHue": { "green": 124.6 },
+      "hue": 116.5,
+      "lightness": 0.496,
+      "chroma": 0.04347
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_215614077~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.54054 },
+      "familyHue": { "green": 125 },
+      "hue": 120.9,
+      "lightness": 0.564,
+      "chroma": 0.09102
+    },
+    "assets/photography/ecuador-2025/PXL_20250622_215725775~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.45913 },
+      "familyHue": { "green": 126.2 },
+      "hue": 121.3,
+      "lightness": 0.476,
+      "chroma": 0.07318
+    },
+    "assets/photography/ecuador-2025/PXL_20250623_214339813~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.12032 },
+      "familyHue": { "gold": 86.2 },
+      "hue": 83.1,
+      "lightness": 0.653,
+      "chroma": 0.03465
+    },
+    "assets/photography/ecuador-2025/PXL_20250623_214947972~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.38788 },
+      "familyHue": { "blue": 250 },
+      "hue": 249.9,
+      "lightness": 0.603,
+      "chroma": 0.06516
+    },
+    "assets/photography/ecuador-2025/PXL_20250623_224231690~2.jpg": {
+      "buckets": ["orange", "grey"],
+      "strength": { "orange": 0.00902, "grey": 0.22624 },
+      "familyHue": { "orange": 49 },
+      "hue": 54.4,
+      "lightness": 0.668,
+      "chroma": 0.02007
+    },
+    "assets/photography/ecuador-2025/PXL_20250624_163048870.LONG_EXPOSURE-01.COVER~3.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.28618 },
+      "familyHue": { "green": 129.8 },
+      "hue": 129.1,
+      "lightness": 0.444,
+      "chroma": 0.04832
+    },
+    "assets/photography/ecuador-2025/PXL_20250624_163627687.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.08512 },
+      "familyHue": { "green": 123.2 },
+      "hue": 145.5,
+      "lightness": 0.509,
+      "chroma": 0.03278
+    },
+    "assets/photography/ecuador-2025/PXL_20250624_163746443.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.03403, "blue": 0.03062 },
+      "familyHue": { "green": 137.2, "blue": 255.4 },
+      "hue": 188.9,
+      "lightness": 0.641,
+      "chroma": 0.02302
+    },
+    "assets/photography/ecuador-2025/PXL_20250626_213445822~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.27152, "gold": 0.23977 },
+      "familyHue": { "orange": 50.7, "gold": 76.6 },
+      "hue": 62.5,
+      "lightness": 0.522,
+      "chroma": 0.07496
+    },
+    "assets/photography/ecuador-2025/PXL_20250626_221539949~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.12066 },
+      "familyHue": { "blue": 243.9 },
+      "hue": 238.2,
+      "lightness": 0.677,
+      "chroma": 0.03355
+    },
+    "assets/photography/ecuador-2025/PXL_20250626_225344335~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.19487 },
+      "familyHue": { "blue": 250.7 },
+      "hue": 248.3,
+      "lightness": 0.65,
+      "chroma": 0.04403
+    },
+    "assets/photography/ecuador-2025/PXL_20250626_230036446~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.24061, "blue": 0.20118 },
+      "familyHue": { "gold": 76.7, "blue": 260.8 },
+      "hue": 50.9,
+      "lightness": 0.553,
+      "chroma": 0.06797
+    },
+    "assets/photography/ecuador-2025/PXL_20250627_111542093~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.30187 },
+      "familyHue": { "blue": 260.4 },
+      "hue": 267.7,
+      "lightness": 0.528,
+      "chroma": 0.05722
+    },
+    "assets/photography/ecuador-2025/PXL_20250627_112331371.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.25971 },
+      "familyHue": { "blue": 251.8 },
+      "hue": 249.1,
+      "lightness": 0.598,
+      "chroma": 0.0537
+    },
+    "assets/photography/ecuador-2025/PXL_20250627_215638306~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.14535 },
+      "familyHue": { "blue": 253.8 },
+      "hue": 252.2,
+      "lightness": 0.509,
+      "chroma": 0.03466
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_185111128~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.08403 },
+      "familyHue": { "blue": 244.9 },
+      "hue": 223.4,
+      "lightness": 0.619,
+      "chroma": 0.03042
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_202129317~2.jpg": {
+      "buckets": ["teal"],
+      "strength": { "teal": 0.30376 },
+      "familyHue": { "teal": 183.4 },
+      "hue": 196.9,
+      "lightness": 0.572,
+      "chroma": 0.0589
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_205644124~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.09989 },
+      "familyHue": { "gold": 96.3 },
+      "hue": 138.1,
+      "lightness": 0.687,
+      "chroma": 0.04032
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_210536078~2.jpg": {
+      "buckets": ["teal"],
+      "strength": { "teal": 0.47978 },
+      "familyHue": { "teal": 176.3 },
+      "hue": 180.2,
+      "lightness": 0.662,
+      "chroma": 0.07337
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_210848031~2.jpg": {
+      "buckets": ["teal", "green"],
+      "strength": { "teal": 0.028, "green": 0.04287 },
+      "familyHue": { "teal": 181.2, "green": 148.8 },
+      "hue": 150.5,
+      "lightness": 0.567,
+      "chroma": 0.03646
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_211624849~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.23601, "gold": 0.19546 },
+      "familyHue": { "blue": 245.1, "gold": 90.7 },
+      "hue": 167.3,
+      "lightness": 0.562,
+      "chroma": 0.07379
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_211800624.PANO~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.26197 },
+      "familyHue": { "blue": 244.6 },
+      "hue": 197.1,
+      "lightness": 0.588,
+      "chroma": 0.06929
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_211953806~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.21785 },
+      "familyHue": { "gold": 96.2 },
+      "hue": 137.6,
+      "lightness": 0.648,
+      "chroma": 0.06807
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_213820607~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.32603, "blue": 0.27954 },
+      "familyHue": { "gold": 88.7, "blue": 239.1 },
+      "hue": 154.9,
+      "lightness": 0.673,
+      "chroma": 0.08704
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_222113322~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.29046 },
+      "familyHue": { "green": 135.3 },
+      "hue": 146.6,
+      "lightness": 0.569,
+      "chroma": 0.0742
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_222608294~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.13312, "gold": 0.1447 },
+      "familyHue": { "blue": 253.2, "gold": 100.6 },
+      "hue": 145.7,
+      "lightness": 0.525,
+      "chroma": 0.05438
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_224314772~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.28583 },
+      "familyHue": { "blue": 245.6 },
+      "hue": 233.2,
+      "lightness": 0.642,
+      "chroma": 0.06383
+    },
+    "assets/photography/ecuador-2025/PXL_20250628_230118223~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.15955, "gold": 0.17657 },
+      "familyHue": { "orange": 51.9, "gold": 83.3 },
+      "hue": 66.8,
+      "lightness": 0.563,
+      "chroma": 0.05824
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_150510887~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.21476 },
+      "familyHue": { "gold": 94 },
+      "hue": 98.7,
+      "lightness": 0.679,
+      "chroma": 0.04321
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_151022987~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.16933, "green": 0.0504 },
+      "familyHue": { "gold": 95.8, "green": 121 },
+      "hue": 102.8,
+      "lightness": 0.656,
+      "chroma": 0.0434
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_151131003~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.705 },
+      "familyHue": { "gold": 92.7 },
+      "hue": 93.1,
+      "lightness": 0.593,
+      "chroma": 0.08803
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_151404475~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.12285 },
+      "familyHue": { "gold": 98.7 },
+      "hue": 116.8,
+      "lightness": 0.667,
+      "chroma": 0.04127
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_163014125~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.40803 },
+      "familyHue": { "gold": 98.2 },
+      "hue": 102.5,
+      "lightness": 0.635,
+      "chroma": 0.06929
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_164811606~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.04405 },
+      "familyHue": { "gold": 88.6 },
+      "hue": 92.3,
+      "lightness": 0.633,
+      "chroma": 0.02661
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_165450437~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.63949 },
+      "familyHue": { "gold": 91.6 },
+      "hue": 93.4,
+      "lightness": 0.624,
+      "chroma": 0.08669
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_170824532~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.46707 },
+      "familyHue": { "gold": 95.2 },
+      "hue": 99.1,
+      "lightness": 0.625,
+      "chroma": 0.07475
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_172117142~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.2614 },
+      "familyHue": { "gold": 96.5 },
+      "hue": 98.9,
+      "lightness": 0.604,
+      "chroma": 0.04586
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_173744335~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.38759 },
+      "familyHue": { "gold": 100.7 },
+      "hue": 106.4,
+      "lightness": 0.602,
+      "chroma": 0.06845
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_175132462~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.24127 },
+      "familyHue": { "gold": 98.2 },
+      "hue": 99.2,
+      "lightness": 0.649,
+      "chroma": 0.04469
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_175335416~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.15713 },
+      "familyHue": { "blue": 251.4 },
+      "hue": 248.2,
+      "lightness": 0.663,
+      "chroma": 0.0349
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_175619903~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.21762 },
+      "familyHue": { "gold": 95.6 },
+      "hue": 92.4,
+      "lightness": 0.642,
+      "chroma": 0.05231
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_175740221~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.0562, "blue": 0.04365 },
+      "familyHue": { "gold": 85.1, "blue": 256.6 },
+      "hue": 93.1,
+      "lightness": 0.656,
+      "chroma": 0.02189
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_180318019~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.13255, "gold": 0.12445 },
+      "familyHue": { "blue": 254.3, "gold": 96.6 },
+      "hue": 165.5,
+      "lightness": 0.596,
+      "chroma": 0.04585
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_180400450~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.19989 },
+      "familyHue": { "blue": 250.1 },
+      "hue": 247.1,
+      "lightness": 0.702,
+      "chroma": 0.03854
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_182012803~2.jpg": {
+      "buckets": ["white"],
+      "strength": { "white": 0.72819 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.753,
+      "chroma": 0.02436
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_182634302~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.3332 },
+      "familyHue": { "gold": 93.6 },
+      "hue": 102.4,
+      "lightness": 0.634,
+      "chroma": 0.05882
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_182642900~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.22794 },
+      "familyHue": { "blue": 251 },
+      "hue": 245.8,
+      "lightness": 0.671,
+      "chroma": 0.04256
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_191953907~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.13132 },
+      "familyHue": { "gold": 101.6 },
+      "hue": 119.3,
+      "lightness": 0.613,
+      "chroma": 0.04383
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_205526069~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.2292, "blue": 0.13884 },
+      "familyHue": { "green": 127.6, "blue": 235.9 },
+      "hue": 162.2,
+      "lightness": 0.523,
+      "chroma": 0.06021
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_210745780~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.12219, "gold": 0.07655 },
+      "familyHue": { "green": 125.9, "gold": 100.9 },
+      "hue": 118.8,
+      "lightness": 0.688,
+      "chroma": 0.04153
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_210838681~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.31598 },
+      "familyHue": { "green": 126.7 },
+      "hue": 146.1,
+      "lightness": 0.548,
+      "chroma": 0.07461
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_212131384~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.22406, "blue": 0.14492 },
+      "familyHue": { "green": 130, "blue": 235.8 },
+      "hue": 162.9,
+      "lightness": 0.573,
+      "chroma": 0.05953
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_212344198~2.jpg": {
+      "buckets": ["blue", "green"],
+      "strength": { "blue": 0.25787, "green": 0.09724 },
+      "familyHue": { "blue": 245.3, "green": 125.9 },
+      "hue": 220.4,
+      "lightness": 0.58,
+      "chroma": 0.06106
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_220158054~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.39165 },
+      "familyHue": { "blue": 253.7 },
+      "hue": 256.1,
+      "lightness": 0.646,
+      "chroma": 0.08242
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_220208770~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.04101 },
+      "familyHue": { "orange": 43.7 },
+      "hue": 70.2,
+      "lightness": 0.671,
+      "chroma": 0.0336
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_223650760~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.1672 },
+      "familyHue": { "blue": 245.7 },
+      "hue": 236.5,
+      "lightness": 0.756,
+      "chroma": 0.03742
+    },
+    "assets/photography/ecuador-2025/PXL_20250630_223928187~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.05462 },
+      "familyHue": { "blue": 255.1 },
+      "hue": 252.5,
+      "lightness": 0.6,
+      "chroma": 0.0236
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_140120208~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.29144 },
+      "familyHue": { "green": 126.5 },
+      "hue": 123,
+      "lightness": 0.538,
+      "chroma": 0.05416
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_145858125~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.19443, "blue": 0.16819 },
+      "familyHue": { "green": 119.6, "blue": 256.6 },
+      "hue": 139.3,
+      "lightness": 0.6,
+      "chroma": 0.07029
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_145917016.PANO~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.34736 },
+      "familyHue": { "green": 120.7 },
+      "hue": 129.2,
+      "lightness": 0.648,
+      "chroma": 0.089
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_150532548~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.51126 },
+      "familyHue": { "green": 123.5 },
+      "hue": 118.5,
+      "lightness": 0.531,
+      "chroma": 0.08764
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_153224532~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.27583 },
+      "familyHue": { "green": 123.6 },
+      "hue": 122.3,
+      "lightness": 0.627,
+      "chroma": 0.05227
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_153617841~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.2492 },
+      "familyHue": { "green": 121.6 },
+      "hue": 117.1,
+      "lightness": 0.621,
+      "chroma": 0.05768
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_153645195~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.58343 },
+      "familyHue": { "green": 129.8 },
+      "hue": 128.9,
+      "lightness": 0.633,
+      "chroma": 0.07883
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_153719505~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.12355 },
+      "familyHue": { "green": 124.7 },
+      "hue": 124.6,
+      "lightness": 0.676,
+      "chroma": 0.03322
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_173032730~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.19253 },
+      "familyHue": { "gold": 91.2 },
+      "hue": 92.3,
+      "lightness": 0.733,
+      "chroma": 0.0385
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_181720180~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.30429 },
+      "familyHue": { "gold": 98.3 },
+      "hue": 100.7,
+      "lightness": 0.557,
+      "chroma": 0.05219
+    },
+    "assets/photography/ecuador-2025/PXL_20250701_220722748~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.07876, "gold": 0.07664 },
+      "familyHue": { "blue": 248.7, "gold": 94.9 },
+      "hue": 129.7,
+      "lightness": 0.658,
+      "chroma": 0.03898
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_181423972~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.08656 },
+      "familyHue": { "blue": 251.1 },
+      "hue": 211.7,
+      "lightness": 0.751,
+      "chroma": 0.04094
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_182851203~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.22117 },
+      "familyHue": { "blue": 255.2 },
+      "hue": 253.4,
+      "lightness": 0.633,
+      "chroma": 0.05314
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_192439530~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.19029 },
+      "familyHue": { "blue": 257.1 },
+      "hue": 267.7,
+      "lightness": 0.651,
+      "chroma": 0.05199
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_230005523~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.13975, "blue": 0.15837 },
+      "familyHue": { "orange": 51.6, "blue": 264.1 },
+      "hue": 339.7,
+      "lightness": 0.627,
+      "chroma": 0.05054
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_231858609~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.47081 },
+      "familyHue": { "blue": 258.6 },
+      "hue": 258.6,
+      "lightness": 0.628,
+      "chroma": 0.06671
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_232924764~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.07002, "red": 0.01323 },
+      "familyHue": { "orange": 46.4, "red": 31.1 },
+      "hue": 44,
+      "lightness": 0.674,
+      "chroma": 0.02566
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_233036587~2.jpg": {
+      "buckets": ["pink", "red"],
+      "strength": { "pink": 0.11594, "red": 0.1812 },
+      "familyHue": { "pink": 359.1, "red": 13 },
+      "hue": 12.1,
+      "lightness": 0.458,
+      "chroma": 0.05153
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_233401742~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.31154, "orange": 0.14261 },
+      "familyHue": { "blue": 248.9, "orange": 53 },
+      "hue": 264.2,
+      "lightness": 0.562,
+      "chroma": 0.06655
+    },
+    "assets/photography/ecuador-2025/PXL_20250704_234400742~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.26815, "orange": 0.12116 },
+      "familyHue": { "gold": 70.8, "orange": 56.9 },
+      "hue": 68.4,
+      "lightness": 0.614,
+      "chroma": 0.06055
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_101441814.NIGHT~2.jpg": {
+      "buckets": ["purple", "blue"],
+      "strength": { "purple": 0.08195, "blue": 0.48348 },
+      "familyHue": { "purple": 279.1, "blue": 269.9 },
+      "hue": 271.2,
+      "lightness": 0.382,
+      "chroma": 0.07254
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_105530714.NIGHT~2.jpg": {
+      "buckets": ["teal", "orange"],
+      "strength": { "teal": 0.0199, "orange": 0.01393 },
+      "familyHue": { "teal": 200.7, "orange": 48.1 },
+      "hue": 143.4,
+      "lightness": 0.618,
+      "chroma": 0.02423
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_110145019~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.09745, "orange": 0.08209 },
+      "familyHue": { "red": 29.2, "orange": 41 },
+      "hue": 34.3,
+      "lightness": 0.611,
+      "chroma": 0.04063
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_110830381~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.31778, "orange": 0.09229 },
+      "familyHue": { "red": 24.8, "orange": 46.2 },
+      "hue": 29.3,
+      "lightness": 0.482,
+      "chroma": 0.05965
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_114641814~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.3242 },
+      "familyHue": { "blue": 238.9 },
+      "hue": 238.6,
+      "lightness": 0.595,
+      "chroma": 0.04903
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_133912546~2.jpg": {
+      "buckets": ["blue", "grey"],
+      "strength": { "blue": 0.0309, "grey": 0.3265 },
+      "familyHue": { "blue": 244.8 },
+      "hue": 244.8,
+      "lightness": 0.644,
+      "chroma": 0.03341
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_142147848~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.15074 },
+      "familyHue": { "blue": 255.6 },
+      "hue": 256.4,
+      "lightness": 0.643,
+      "chroma": 0.03541
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_142838228~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.23623 },
+      "familyHue": { "blue": 243.8 },
+      "hue": 243.8,
+      "lightness": 0.586,
+      "chroma": 0.03925
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_143720789~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.31598 },
+      "familyHue": { "blue": 255.8 },
+      "hue": 255.8,
+      "lightness": 0.658,
+      "chroma": 0.04837
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_145948317~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.1566, "blue": 0.17129 },
+      "familyHue": { "green": 125.4, "blue": 239.4 },
+      "hue": 181.3,
+      "lightness": 0.602,
+      "chroma": 0.05727
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_150813317~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.1243, "blue": 0.11058 },
+      "familyHue": { "green": 119.3, "blue": 241.5 },
+      "hue": 155.2,
+      "lightness": 0.645,
+      "chroma": 0.05103
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_151918245~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.3297, "blue": 0.23457 },
+      "familyHue": { "green": 124.9, "blue": 259.4 },
+      "hue": 166.7,
+      "lightness": 0.675,
+      "chroma": 0.07598
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_152040650~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.24654 },
+      "familyHue": { "green": 123.2 },
+      "hue": 145.2,
+      "lightness": 0.674,
+      "chroma": 0.05846
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_152127033~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.44106 },
+      "familyHue": { "green": 125.9 },
+      "hue": 146.3,
+      "lightness": 0.563,
+      "chroma": 0.08421
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_182953284~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.14107 },
+      "familyHue": { "blue": 249.3 },
+      "hue": 145.3,
+      "lightness": 0.624,
+      "chroma": 0.0521
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_183749606.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.13836 },
+      "familyHue": { "blue": 258.6 },
+      "hue": 225.6,
+      "lightness": 0.738,
+      "chroma": 0.04082
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_184248070~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.08869 },
+      "familyHue": { "blue": 243.4 },
+      "hue": 197.1,
+      "lightness": 0.771,
+      "chroma": 0.03445
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_195618715~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.20079, "gold": 0.17828 },
+      "familyHue": { "green": 119.2, "gold": 103.1 },
+      "hue": 115.4,
+      "lightness": 0.587,
+      "chroma": 0.06455
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_204219989~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.43784 },
+      "familyHue": { "gold": 86.5 },
+      "hue": 87.2,
+      "lightness": 0.671,
+      "chroma": 0.06474
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_205950487~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.44021 },
+      "familyHue": { "green": 124.8 },
+      "hue": 128.8,
+      "lightness": 0.623,
+      "chroma": 0.0804
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_210618327~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.06512, "gold": 0.11135 },
+      "familyHue": { "orange": 50.3, "gold": 92.3 },
+      "hue": 85.6,
+      "lightness": 0.557,
+      "chroma": 0.04218
+    },
+    "assets/photography/ecuador-2025/PXL_20250705_210951453~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.45507 },
+      "familyHue": { "green": 122.9 },
+      "hue": 120.1,
+      "lightness": 0.599,
+      "chroma": 0.08253
+    },
+    "assets/photography/ecuador-2025/PXL_20250706_125904230~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.39591 },
+      "familyHue": { "orange": 50.8 },
+      "hue": 52.1,
+      "lightness": 0.59,
+      "chroma": 0.07511
+    },
+    "assets/photography/ecuador-2025/PXL_20250706_181422534~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.44297 },
+      "familyHue": { "gold": 84.8 },
+      "hue": 87.4,
+      "lightness": 0.648,
+      "chroma": 0.07031
+    },
+    "assets/photography/ecuador-2025/PXL_20250707_133833134~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.36326 },
+      "familyHue": { "gold": 85.5 },
+      "hue": 94.4,
+      "lightness": 0.624,
+      "chroma": 0.06451
+    },
+    "assets/photography/ecuador-2025/PXL_20250707_140703514~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.51365 },
+      "familyHue": { "gold": 80.7 },
+      "hue": 80.9,
+      "lightness": 0.712,
+      "chroma": 0.06899
+    },
+    "assets/photography/ecuador-2025/PXL_20250707_142200501~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.74515 },
+      "familyHue": { "gold": 83.5 },
+      "hue": 84.8,
+      "lightness": 0.654,
+      "chroma": 0.09596
+    },
+    "assets/photography/ecuador-2025/PXL_20250707_143231859~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.35334 },
+      "familyHue": { "gold": 77.4 },
+      "hue": 80.7,
+      "lightness": 0.548,
+      "chroma": 0.06911
+    },
+    "assets/photography/ecuador-2025/PXL_20250710_145148367~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.03868, "blue": 0.06312 },
+      "familyHue": { "orange": 54.6, "blue": 243 },
+      "hue": 34.3,
+      "lightness": 0.779,
+      "chroma": 0.03537
+    },
+    "assets/photography/ecuador-2025/PXL_20250710_150538143~2.jpg": {
+      "buckets": ["red"],
+      "strength": { "red": 0.03669 },
+      "familyHue": { "red": 23.1 },
+      "hue": 38.1,
+      "lightness": 0.663,
+      "chroma": 0.0221
+    },
+    "assets/photography/ecuador-2025/PXL_20250710_171141655~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.08867 },
+      "familyHue": { "orange": 50.7 },
+      "hue": 49.2,
+      "lightness": 0.601,
+      "chroma": 0.03304
+    },
+    "assets/photography/ecuador-2025/PXL_20250710_171150597~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.11966 },
+      "familyHue": { "orange": 50.7 },
+      "hue": 53.7,
+      "lightness": 0.571,
+      "chroma": 0.03587
+    },
+    "assets/photography/ecuador-2025/PXL_20250710_231222174~2.jpg": {
+      "buckets": ["red", "orange", "gold"],
+      "strength": { "red": 0.0593, "orange": 0.09899, "gold": 0.16712 },
+      "familyHue": { "red": 21.3, "orange": 48.6, "gold": 80.1 },
+      "hue": 54,
+      "lightness": 0.569,
+      "chroma": 0.06529
+    },
+    "assets/photography/ecuador-2025/dji_fly_20250606_145548_465_1749239932633_photo~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.53747 },
+      "familyHue": { "green": 131.5 },
+      "hue": 131,
+      "lightness": 0.55,
+      "chroma": 0.07596
+    },
+    "assets/photography/ecuador-2025/dji_fly_20250621_153848_518_1750538935724_photo_optimized~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.31743 },
+      "familyHue": { "gold": 98.8 },
+      "hue": 106.2,
+      "lightness": 0.591,
+      "chroma": 0.06363
+    },
+    "assets/photography/ecuador-2025/dji_fly_20250621_154146_526_1750539049052_photo_optimized~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.18969, "green": 0.11311 },
+      "familyHue": { "gold": 104, "green": 121.1 },
+      "hue": 119.4,
+      "lightness": 0.618,
+      "chroma": 0.0535
     },
     "assets/photography/egypt/IMG_8457.webp": {
       "buckets": ["gold"],
@@ -28533,6 +31373,1038 @@
       "lightness": 0.687,
       "chroma": 0.06147
     },
+    "assets/photography/pai-2026/PXL_20260113_140442717.NIGHT~2.jpg": {
+      "buckets": ["teal", "green"],
+      "strength": { "teal": 0.18129, "green": 0.06718 },
+      "familyHue": { "teal": 181.1, "green": 156.8 },
+      "hue": 175.4,
+      "lightness": 0.389,
+      "chroma": 0.04479
+    },
+    "assets/photography/pai-2026/PXL_20260114_031051593~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.24656, "green": 0.15229 },
+      "familyHue": { "gold": 90.3, "green": 118.7 },
+      "hue": 99.2,
+      "lightness": 0.566,
+      "chroma": 0.06137
+    },
+    "assets/photography/pai-2026/PXL_20260114_052147096~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.15971 },
+      "familyHue": { "gold": 85.2 },
+      "hue": 74.4,
+      "lightness": 0.564,
+      "chroma": 0.05059
+    },
+    "assets/photography/pai-2026/PXL_20260115_070432186~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.82537 },
+      "familyHue": { "green": 131.8 },
+      "hue": 131.4,
+      "lightness": 0.475,
+      "chroma": 0.11913
+    },
+    "assets/photography/pai-2026/PXL_20260115_081530360~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.18475 },
+      "familyHue": { "green": 121.6 },
+      "hue": 100.2,
+      "lightness": 0.416,
+      "chroma": 0.05651
+    },
+    "assets/photography/pai-2026/PXL_20260115_094637341~2.jpg": {
+      "buckets": ["pink", "red", "gold"],
+      "strength": { "pink": 0.13937, "red": 0.11178, "gold": 0.28989 },
+      "familyHue": { "pink": 350.7, "red": 10.3, "gold": 101.8 },
+      "hue": 75.1,
+      "lightness": 0.614,
+      "chroma": 0.09429
+    },
+    "assets/photography/pai-2026/PXL_20260115_103832930~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.29673, "orange": 0.10361 },
+      "familyHue": { "gold": 86.9, "orange": 45.1 },
+      "hue": 76.5,
+      "lightness": 0.489,
+      "chroma": 0.06067
+    },
+    "assets/photography/pai-2026/PXL_20260115_112050670.jpg": {
+      "buckets": ["red", "orange", "gold"],
+      "strength": { "red": 0.03838, "orange": 0.06156, "gold": 0.11854 },
+      "familyHue": { "red": 13.9, "orange": 51.4, "gold": 72.7 },
+      "hue": 61.3,
+      "lightness": 0.444,
+      "chroma": 0.04332
+    },
+    "assets/photography/pai-2026/PXL_20260116_003402127~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.10622 },
+      "familyHue": { "orange": 50.6 },
+      "hue": 62.9,
+      "lightness": 0.463,
+      "chroma": 0.04002
+    },
+    "assets/photography/pai-2026/PXL_20260116_004349639~2.jpg": {
+      "buckets": ["green", "orange"],
+      "strength": { "green": 0.17608, "orange": 0.07245 },
+      "familyHue": { "green": 123.8, "orange": 48.3 },
+      "hue": 94,
+      "lightness": 0.599,
+      "chroma": 0.05612
+    },
+    "assets/photography/pai-2026/PXL_20260116_073253558~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.198 },
+      "familyHue": { "orange": 53.7 },
+      "hue": 68.5,
+      "lightness": 0.565,
+      "chroma": 0.06679
+    },
+    "assets/photography/pai-2026/PXL_20260116_082416426~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.19183 },
+      "familyHue": { "gold": 90.9 },
+      "hue": 89.4,
+      "lightness": 0.541,
+      "chroma": 0.04115
+    },
+    "assets/photography/pai-2026/PXL_20260116_111750128~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.10001, "orange": 0.04835 },
+      "familyHue": { "gold": 82.7, "orange": 48.8 },
+      "hue": 70.6,
+      "lightness": 0.663,
+      "chroma": 0.0322
+    },
+    "assets/photography/pai-2026/PXL_20260118_033720714~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.1767, "gold": 0.14058 },
+      "familyHue": { "orange": 50.7, "gold": 85.6 },
+      "hue": 66.8,
+      "lightness": 0.581,
+      "chroma": 0.053
+    },
+    "assets/photography/pai-2026/PXL_20260118_034419353~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.12572, "gold": 0.11369 },
+      "familyHue": { "orange": 48.7, "gold": 85.6 },
+      "hue": 72,
+      "lightness": 0.415,
+      "chroma": 0.04883
+    },
+    "assets/photography/pai-2026/PXL_20260118_053734936~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.46975, "gold": 0.2825 },
+      "familyHue": { "orange": 54.7, "gold": 67.3 },
+      "hue": 59.1,
+      "lightness": 0.482,
+      "chroma": 0.09543
+    },
+    "assets/photography/pai-2026/PXL_20260118_103330094~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.41105 },
+      "familyHue": { "blue": 256.2 },
+      "hue": 258.7,
+      "lightness": 0.6,
+      "chroma": 0.06349
+    },
+    "assets/photography/pai-2026/PXL_20260118_151739999~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.19519 },
+      "familyHue": { "gold": 77.4 },
+      "hue": 76,
+      "lightness": 0.396,
+      "chroma": 0.03897
+    },
+    "assets/photography/pai-2026/PXL_20260118_151743714~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.12396, "gold": 0.12182 },
+      "familyHue": { "orange": 54, "gold": 68.1 },
+      "hue": 58.8,
+      "lightness": 0.398,
+      "chroma": 0.04599
+    },
+    "assets/photography/pai-2026/PXL_20260119_011141916~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.13189 },
+      "familyHue": { "gold": 89.2 },
+      "hue": 87.7,
+      "lightness": 0.431,
+      "chroma": 0.03736
+    },
+    "assets/photography/pai-2026/PXL_20260119_011436286.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.2366 },
+      "familyHue": { "gold": 82.9 },
+      "hue": 81.8,
+      "lightness": 0.426,
+      "chroma": 0.04589
+    },
+    "assets/photography/pai-2026/PXL_20260120_004921249~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.13556 },
+      "familyHue": { "gold": 73.5 },
+      "hue": 73.2,
+      "lightness": 0.419,
+      "chroma": 0.03035
+    },
+    "assets/photography/pai-2026/PXL_20260120_011013342~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.05407 },
+      "familyHue": { "gold": 92.6 },
+      "hue": 94.1,
+      "lightness": 0.683,
+      "chroma": 0.02241
+    },
+    "assets/photography/pai-2026/PXL_20260120_011726551~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.40337 },
+      "familyHue": { "green": 139.6 },
+      "hue": 138.5,
+      "lightness": 0.458,
+      "chroma": 0.06202
+    },
+    "assets/photography/pai-2026/PXL_20260120_012253946~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.09877, "green": 0.03534 },
+      "familyHue": { "gold": 87.3, "green": 132.4 },
+      "hue": 96,
+      "lightness": 0.466,
+      "chroma": 0.03444
+    },
+    "assets/photography/pai-2026/PXL_20260120_014755187~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.20308 },
+      "familyHue": { "gold": 84.9 },
+      "hue": 87.4,
+      "lightness": 0.529,
+      "chroma": 0.04539
+    },
+    "assets/photography/pai-2026/PXL_20260120_020615511~2.jpg": {
+      "buckets": ["purple", "orange"],
+      "strength": { "purple": 0.07816, "orange": 0.05732 },
+      "familyHue": { "purple": 286.3, "orange": 50.9 },
+      "hue": 55.7,
+      "lightness": 0.582,
+      "chroma": 0.04741
+    },
+    "assets/photography/pai-2026/PXL_20260120_023350676.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.11671 },
+      "familyHue": { "gold": 89.2 },
+      "hue": 91.5,
+      "lightness": 0.476,
+      "chroma": 0.03783
+    },
+    "assets/photography/pai-2026/PXL_20260120_095300834.RAW-01.COVER~2.jpg": {
+      "buckets": ["blue", "green"],
+      "strength": { "blue": 0.25436, "green": 0.12084 },
+      "familyHue": { "blue": 246.7, "green": 132.2 },
+      "hue": 185.2,
+      "lightness": 0.486,
+      "chroma": 0.07082
+    },
+    "assets/photography/pai-2026/PXL_20260120_113730157.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["purple", "blue"],
+      "strength": { "purple": 0.02939, "blue": 0.08524 },
+      "familyHue": { "purple": 280.9, "blue": 267 },
+      "hue": 271.6,
+      "lightness": 0.355,
+      "chroma": 0.0299
+    },
+    "assets/photography/pai-2026/PXL_20260120_114900794.RAW-01.COVER~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.29083, "orange": 0.12998 },
+      "familyHue": { "red": 27.4, "orange": 42.5 },
+      "hue": 33.1,
+      "lightness": 0.231,
+      "chroma": 0.06307
+    },
+    "assets/photography/pai-2026/PXL_20260121_084526585.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.27812, "orange": 0.13283 },
+      "familyHue": { "gold": 91.1, "orange": 49.7 },
+      "hue": 81.5,
+      "lightness": 0.496,
+      "chroma": 0.06885
+    },
+    "assets/photography/pai-2026/PXL_20260122_004656303.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.17958 },
+      "familyHue": { "gold": 95 },
+      "hue": 93.9,
+      "lightness": 0.617,
+      "chroma": 0.03746
+    },
+    "assets/photography/pai-2026/PXL_20260122_004715505.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.0968, "orange": 0.03353 },
+      "familyHue": { "gold": 87.5, "orange": 58 },
+      "hue": 82.8,
+      "lightness": 0.659,
+      "chroma": 0.03347
+    },
+    "assets/photography/pai-2026/PXL_20260122_011156223.RAW-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.13602, "gold": 0.17287 },
+      "familyHue": { "green": 116.5, "gold": 105.4 },
+      "hue": 110.3,
+      "lightness": 0.651,
+      "chroma": 0.04641
+    },
+    "assets/photography/pai-2026/PXL_20260122_011919371.RAW-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.41919 },
+      "familyHue": { "green": 123.1 },
+      "hue": 120.2,
+      "lightness": 0.475,
+      "chroma": 0.06892
+    },
+    "assets/photography/pai-2026/PXL_20260122_011932618.RAW-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.26347 },
+      "familyHue": { "green": 120.9 },
+      "hue": 116,
+      "lightness": 0.546,
+      "chroma": 0.05648
+    },
+    "assets/photography/pai-2026/PXL_20260122_102509073~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.17379, "orange": 0.05433 },
+      "familyHue": { "gold": 71.2, "orange": 57.6 },
+      "hue": 70.2,
+      "lightness": 0.447,
+      "chroma": 0.04389
+    },
+    "assets/photography/pai-2026/PXL_20260122_102712854~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.61066 },
+      "familyHue": { "gold": 86.4 },
+      "hue": 84.8,
+      "lightness": 0.462,
+      "chroma": 0.08612
+    },
+    "assets/photography/pai-2026/PXL_20260123_104819632~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.42679 },
+      "familyHue": { "orange": 47.7 },
+      "hue": 52.4,
+      "lightness": 0.482,
+      "chroma": 0.07268
+    },
+    "assets/photography/pai-2026/PXL_20260123_234052582~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.49572, "orange": 0.15943 },
+      "familyHue": { "blue": 260.2, "orange": 46.4 },
+      "hue": 276.6,
+      "lightness": 0.567,
+      "chroma": 0.09081
+    },
+    "assets/photography/pai-2026/PXL_20260124_000043049~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.05395, "blue": 0.04439 },
+      "familyHue": { "green": 145.5, "blue": 254 },
+      "hue": 190.8,
+      "lightness": 0.452,
+      "chroma": 0.03487
+    },
+    "assets/photography/pai-2026/PXL_20260124_004338019~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.4036 },
+      "familyHue": { "orange": 54.9 },
+      "hue": 58,
+      "lightness": 0.545,
+      "chroma": 0.06795
+    },
+    "assets/photography/pai-2026/PXL_20260124_012548110~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.24912 },
+      "familyHue": { "gold": 85.5 },
+      "hue": 92.7,
+      "lightness": 0.546,
+      "chroma": 0.05612
+    },
+    "assets/photography/pai-2026/PXL_20260124_070517688.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.22981 },
+      "familyHue": { "green": 123.8 },
+      "hue": 114.9,
+      "lightness": 0.4,
+      "chroma": 0.0566
+    },
+    "assets/photography/pai-2026/PXL_20260124_070702924~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.32102 },
+      "familyHue": { "gold": 100.9 },
+      "hue": 107.6,
+      "lightness": 0.527,
+      "chroma": 0.06311
+    },
+    "assets/photography/pai-2026/PXL_20260124_072449960~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.26665 },
+      "familyHue": { "green": 117.5 },
+      "hue": 113.6,
+      "lightness": 0.515,
+      "chroma": 0.05985
+    },
+    "assets/photography/pai-2026/PXL_20260124_073148431~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.22239, "gold": 0.15592 },
+      "familyHue": { "green": 118.3, "gold": 108.2 },
+      "hue": 115.2,
+      "lightness": 0.394,
+      "chroma": 0.05754
+    },
+    "assets/photography/pai-2026/PXL_20260124_113248471~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.2859 },
+      "familyHue": { "orange": 48.8 },
+      "hue": 49.5,
+      "lightness": 0.539,
+      "chroma": 0.05471
+    },
+    "assets/photography/pai-2026/PXL_20260124_113653286~2.jpg": {
+      "buckets": ["orange", "blue"],
+      "strength": { "orange": 0.04741, "blue": 0.04652 },
+      "familyHue": { "orange": 56.1, "blue": 253.6 },
+      "hue": 57,
+      "lightness": 0.418,
+      "chroma": 0.02881
+    },
+    "assets/photography/pai-2026/PXL_20260125_010004425~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.20329, "orange": 0.06979 },
+      "familyHue": { "gold": 87.7, "orange": 55.6 },
+      "hue": 79.9,
+      "lightness": 0.44,
+      "chroma": 0.04809
+    },
+    "assets/photography/pai-2026/PXL_20260125_053530064~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.18061 },
+      "familyHue": { "gold": 89.8 },
+      "hue": 75.4,
+      "lightness": 0.458,
+      "chroma": 0.05457
+    },
+    "assets/photography/pai-2026/PXL_20260125_053539874~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.06457 },
+      "familyHue": { "orange": 48.3 },
+      "hue": 71.7,
+      "lightness": 0.456,
+      "chroma": 0.04673
+    },
+    "assets/photography/pai-2026/PXL_20260126_010230331~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.2556, "green": 0.09089 },
+      "familyHue": { "gold": 92.5, "green": 122.3 },
+      "hue": 98.9,
+      "lightness": 0.421,
+      "chroma": 0.05162
+    },
+    "assets/photography/pai-2026/PXL_20260126_083733586~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.08136, "gold": 0.14746 },
+      "familyHue": { "orange": 54.4, "gold": 75.2 },
+      "hue": 79.6,
+      "lightness": 0.522,
+      "chroma": 0.05144
+    },
+    "assets/photography/pai-2026/PXL_20260126_100005551~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.49687 },
+      "familyHue": { "orange": 46.8 },
+      "hue": 50,
+      "lightness": 0.417,
+      "chroma": 0.08577
+    },
+    "assets/photography/pai-2026/PXL_20260126_110347409~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.40159 },
+      "familyHue": { "orange": 50.6 },
+      "hue": 56.6,
+      "lightness": 0.515,
+      "chroma": 0.08995
+    },
+    "assets/photography/pai-2026/PXL_20260127_003715163~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.21782, "orange": 0.06962 },
+      "familyHue": { "gold": 76.5, "orange": 53.9 },
+      "hue": 71,
+      "lightness": 0.447,
+      "chroma": 0.0489
+    },
+    "assets/photography/pai-2026/PXL_20260127_113232010~2.jpg": {
+      "buckets": ["gold", "black"],
+      "strength": { "gold": 0.0293, "black": 0.77832 },
+      "familyHue": { "gold": 70.4 },
+      "hue": 68.8,
+      "lightness": 0.262,
+      "chroma": 0.01419
+    },
+    "assets/photography/pai-2026/PXL_20260128_011244780~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.19755, "orange": 0.05216 },
+      "familyHue": { "gold": 78.2, "orange": 55.4 },
+      "hue": 80.5,
+      "lightness": 0.609,
+      "chroma": 0.04802
+    },
+    "assets/photography/pai-2026/PXL_20260128_012507859~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.15442, "gold": 0.13685 },
+      "familyHue": { "orange": 52.2, "gold": 85.3 },
+      "hue": 67.3,
+      "lightness": 0.53,
+      "chroma": 0.0487
+    },
+    "assets/photography/pai-2026/PXL_20260128_012906961~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.14863, "green": 0.07773 },
+      "familyHue": { "gold": 101.6, "green": 122.6 },
+      "hue": 110.5,
+      "lightness": 0.416,
+      "chroma": 0.0463
+    },
+    "assets/photography/pai-2026/PXL_20260128_103130329~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.272, "gold": 0.15378 },
+      "familyHue": { "orange": 54.6, "gold": 78.7 },
+      "hue": 63,
+      "lightness": 0.459,
+      "chroma": 0.06188
+    },
+    "assets/photography/pai-2026/PXL_20260128_112557473~2.jpg": {
+      "buckets": ["purple", "pink", "orange"],
+      "strength": { "purple": 0.13579, "pink": 0.05138, "orange": 0.04659 },
+      "familyHue": { "purple": 287.7, "pink": 15.1, "orange": 50.1 },
+      "hue": 329.3,
+      "lightness": 0.672,
+      "chroma": 0.04486
+    },
+    "assets/photography/pai-2026/PXL_20260129_104832697~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.11603 },
+      "familyHue": { "gold": 77.2 },
+      "hue": 74.3,
+      "lightness": 0.42,
+      "chroma": 0.03473
+    },
+    "assets/photography/pai-2026/PXL_20260130_034259679~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.60382, "red": 0.21699 },
+      "familyHue": { "orange": 42.8, "red": 32.3 },
+      "hue": 41.5,
+      "lightness": 0.444,
+      "chroma": 0.12401
+    },
+    "assets/photography/pai-2026/PXL_20260130_034305219~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.30493, "orange": 0.37023 },
+      "familyHue": { "red": 30.5, "orange": 43.4 },
+      "hue": 41.7,
+      "lightness": 0.469,
+      "chroma": 0.12094
+    },
+    "assets/photography/pai-2026/PXL_20260130_035608819~2.jpg": {
+      "buckets": ["pink"],
+      "strength": { "pink": 0.38104 },
+      "familyHue": { "pink": 340.6 },
+      "hue": 0.3,
+      "lightness": 0.448,
+      "chroma": 0.09396
+    },
+    "assets/photography/pai-2026/PXL_20260130_035712103~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.27187 },
+      "familyHue": { "green": 125 },
+      "hue": 116.4,
+      "lightness": 0.528,
+      "chroma": 0.05578
+    },
+    "assets/photography/pai-2026/PXL_20260130_035743678~2.jpg": {
+      "buckets": ["red", "gold"],
+      "strength": { "red": 0.23973, "gold": 0.27673 },
+      "familyHue": { "red": 13.5, "gold": 95.2 },
+      "hue": 58.7,
+      "lightness": 0.476,
+      "chroma": 0.09262
+    },
+    "assets/photography/pai-2026/PXL_20260130_035956653~2.jpg": {
+      "buckets": ["pink", "green"],
+      "strength": { "pink": 0.19635, "green": 0.10825 },
+      "familyHue": { "pink": 344.6, "green": 126.6 },
+      "hue": 37.6,
+      "lightness": 0.509,
+      "chroma": 0.062
+    },
+    "assets/photography/pai-2026/PXL_20260131_002252989~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.15842, "gold": 0.13865 },
+      "familyHue": { "orange": 49.3, "gold": 79.1 },
+      "hue": 68.5,
+      "lightness": 0.494,
+      "chroma": 0.05431
+    },
+    "assets/photography/pai-2026/PXL_20260201_175409777~2.jpg": {
+      "buckets": ["red", "gold"],
+      "strength": { "red": 0.05919, "gold": 0.07359 },
+      "familyHue": { "red": 23.2, "gold": 75.2 },
+      "hue": 51.1,
+      "lightness": 0.538,
+      "chroma": 0.04282
+    },
+    "assets/photography/pai-2026/PXL_20260202_231013559.NIGHT~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.25647, "red": 0.10147 },
+      "familyHue": { "orange": 41.6, "red": 30.3 },
+      "hue": 39.1,
+      "lightness": 0.23,
+      "chroma": 0.0534
+    },
+    "assets/photography/pai-2026/PXL_20260203_001930144~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.0728, "gold": 0.13904 },
+      "familyHue": { "orange": 53.3, "gold": 70.9 },
+      "hue": 63.7,
+      "lightness": 0.652,
+      "chroma": 0.04601
+    },
+    "assets/photography/pai-2026/PXL_20260203_002132180~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.37236 },
+      "familyHue": { "gold": 84.8 },
+      "hue": 83.8,
+      "lightness": 0.592,
+      "chroma": 0.06122
+    },
+    "assets/photography/pai-2026/PXL_20260203_002605200~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.23582 },
+      "familyHue": { "gold": 86.4 },
+      "hue": 83,
+      "lightness": 0.55,
+      "chroma": 0.04659
+    },
+    "assets/photography/pai-2026/PXL_20260203_011004013~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.40616 },
+      "familyHue": { "gold": 71.9 },
+      "hue": 69.9,
+      "lightness": 0.578,
+      "chroma": 0.06389
+    },
+    "assets/photography/pai-2026/PXL_20260203_011142313~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.1976, "orange": 0.11154 },
+      "familyHue": { "red": 20.1, "orange": 47.7 },
+      "hue": 24.4,
+      "lightness": 0.448,
+      "chroma": 0.06227
+    },
+    "assets/photography/pai-2026/PXL_20260203_012351621~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.1796, "gold": 0.13827 },
+      "familyHue": { "green": 122.8, "gold": 84.5 },
+      "hue": 101.9,
+      "lightness": 0.42,
+      "chroma": 0.05649
+    },
+    "assets/photography/pai-2026/PXL_20260203_012411703~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.39448 },
+      "familyHue": { "green": 122.9 },
+      "hue": 104.9,
+      "lightness": 0.489,
+      "chroma": 0.09086
+    },
+    "assets/photography/pai-2026/PXL_20260203_013141150~2.jpg": {
+      "buckets": ["purple", "gold", "orange"],
+      "strength": { "purple": 0.05447, "gold": 0.12113, "orange": 0.05193 },
+      "familyHue": { "purple": 290.8, "gold": 86.3, "orange": 48.1 },
+      "hue": 61.7,
+      "lightness": 0.4,
+      "chroma": 0.04935
+    },
+    "assets/photography/pai-2026/PXL_20260203_015535464~2.jpg": {
+      "buckets": ["red", "orange", "gold"],
+      "strength": { "red": 0.05141, "orange": 0.09539, "gold": 0.1231 },
+      "familyHue": { "red": 20.9, "orange": 51.8, "gold": 74.8 },
+      "hue": 56.4,
+      "lightness": 0.551,
+      "chroma": 0.04994
+    },
+    "assets/photography/pai-2026/PXL_20260203_050946898~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.74929 },
+      "familyHue": { "green": 128.1 },
+      "hue": 127.8,
+      "lightness": 0.462,
+      "chroma": 0.10075
+    },
+    "assets/photography/pai-2026/PXL_20260203_051012104~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.96294 },
+      "familyHue": { "green": 131.6 },
+      "hue": 131.6,
+      "lightness": 0.59,
+      "chroma": 0.14427
+    },
+    "assets/photography/pai-2026/PXL_20260203_094321796.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.08679 },
+      "familyHue": { "green": 121.4 },
+      "hue": 143.9,
+      "lightness": 0.449,
+      "chroma": 0.03777
+    },
+    "assets/photography/pai-2026/PXL_20260203_101531332~2.jpg": {
+      "buckets": ["gold", "orange", "grey"],
+      "strength": { "gold": 0.01092, "orange": 0.00321, "grey": 0.42078 },
+      "familyHue": { "gold": 77.3, "orange": 54.4 },
+      "hue": 76.8,
+      "lightness": 0.678,
+      "chroma": 0.02167
+    },
+    "assets/photography/pai-2026/PXL_20260203_105308413~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.1038 },
+      "familyHue": { "gold": 77 },
+      "hue": 72.8,
+      "lightness": 0.526,
+      "chroma": 0.0315
+    },
+    "assets/photography/pai-2026/PXL_20260203_111547621~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.12474 },
+      "familyHue": { "orange": 51.2 },
+      "hue": 46.3,
+      "lightness": 0.676,
+      "chroma": 0.03089
+    },
+    "assets/photography/pai-2026/PXL_20260204_051431638~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.52122 },
+      "familyHue": { "blue": 255 },
+      "hue": 254.7,
+      "lightness": 0.629,
+      "chroma": 0.07807
+    },
+    "assets/photography/pai-2026/PXL_20260205_005331946~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.10406 },
+      "familyHue": { "gold": 77.7 },
+      "hue": 68,
+      "lightness": 0.48,
+      "chroma": 0.03167
+    },
+    "assets/photography/pai-2026/PXL_20260205_041020179~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.58993 },
+      "familyHue": { "green": 123.7 },
+      "hue": 121.7,
+      "lightness": 0.496,
+      "chroma": 0.09487
+    },
+    "assets/photography/pai-2026/PXL_20260205_041426118~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.31363, "orange": 0.12087 },
+      "familyHue": { "gold": 91.4, "orange": 47.8 },
+      "hue": 79.5,
+      "lightness": 0.469,
+      "chroma": 0.07496
+    },
+    "assets/photography/pai-2026/PXL_20260205_043346378~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.14025, "green": 0.07961 },
+      "familyHue": { "gold": 101.8, "green": 118.3 },
+      "hue": 107.9,
+      "lightness": 0.42,
+      "chroma": 0.04174
+    },
+    "assets/photography/pai-2026/PXL_20260205_043603822~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.40239, "green": 0.23485 },
+      "familyHue": { "gold": 81.9, "green": 134.7 },
+      "hue": 99.9,
+      "lightness": 0.568,
+      "chroma": 0.0827
+    },
+    "assets/photography/pai-2026/PXL_20260205_050246757~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.40455, "orange": 0.13013 },
+      "familyHue": { "gold": 72.3, "orange": 55.1 },
+      "hue": 67.8,
+      "lightness": 0.508,
+      "chroma": 0.06995
+    },
+    "assets/photography/pai-2026/PXL_20260205_051300863~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.23873, "gold": 0.40263 },
+      "familyHue": { "orange": 58.5, "gold": 68.3 },
+      "hue": 64.7,
+      "lightness": 0.654,
+      "chroma": 0.07722
+    },
+    "assets/photography/pai-2026/PXL_20260205_051459960~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.26228 },
+      "familyHue": { "green": 122.4 },
+      "hue": 116.6,
+      "lightness": 0.425,
+      "chroma": 0.05844
+    },
+    "assets/photography/pai-2026/PXL_20260205_052222377~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.38449 },
+      "familyHue": { "gold": 79.5 },
+      "hue": 78.6,
+      "lightness": 0.473,
+      "chroma": 0.05982
+    },
+    "assets/photography/pai-2026/PXL_20260205_052653068~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.56125, "orange": 0.1728 },
+      "familyHue": { "gold": 70.3, "orange": 54.9 },
+      "hue": 66.7,
+      "lightness": 0.604,
+      "chroma": 0.08866
+    },
+    "assets/photography/pai-2026/PXL_20260205_052803267~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.29108, "gold": 0.31861 },
+      "familyHue": { "green": 115, "gold": 103.8 },
+      "hue": 108.9,
+      "lightness": 0.499,
+      "chroma": 0.09346
+    },
+    "assets/photography/pai-2026/PXL_20260205_060708405.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.08751 },
+      "familyHue": { "gold": 89.3 },
+      "hue": 93.9,
+      "lightness": 0.428,
+      "chroma": 0.03727
+    },
+    "assets/photography/pai-2026/PXL_20260205_070622819.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.12581 },
+      "familyHue": { "gold": 94.5 },
+      "hue": 94.7,
+      "lightness": 0.513,
+      "chroma": 0.03672
+    },
+    "assets/photography/pai-2026/PXL_20260205_071331581.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.05325, "gold": 0.07642 },
+      "familyHue": { "green": 122.6, "gold": 94 },
+      "hue": 103.8,
+      "lightness": 0.446,
+      "chroma": 0.03542
+    },
+    "assets/photography/pai-2026/PXL_20260205_071741485.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.09867, "gold": 0.05914 },
+      "familyHue": { "green": 124, "gold": 93.8 },
+      "hue": 112.7,
+      "lightness": 0.522,
+      "chroma": 0.03227
+    },
+    "assets/photography/pai-2026/PXL_20260205_072241047~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.52933 },
+      "familyHue": { "green": 136 },
+      "hue": 136.4,
+      "lightness": 0.608,
+      "chroma": 0.07278
+    },
+    "assets/photography/pai-2026/PXL_20260205_072935849~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.4486 },
+      "familyHue": { "gold": 77.2 },
+      "hue": 87.8,
+      "lightness": 0.561,
+      "chroma": 0.07473
+    },
+    "assets/photography/pai-2026/PXL_20260205_073738324~2.jpg": {
+      "buckets": ["grey"],
+      "strength": { "grey": 0.71029 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.558,
+      "chroma": 0.00942
+    },
+    "assets/photography/pai-2026/PXL_20260205_074940544~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.08993 },
+      "familyHue": { "gold": 74.7 },
+      "hue": 72,
+      "lightness": 0.502,
+      "chroma": 0.0316
+    },
+    "assets/photography/pai-2026/PXL_20260205_075734317~2.jpg": {
+      "buckets": ["grey"],
+      "strength": { "grey": 0.65853 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.476,
+      "chroma": 0.018
+    },
+    "assets/photography/pai-2026/PXL_20260205_075816324~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.20234, "orange": 0.06337 },
+      "familyHue": { "gold": 92.7, "orange": 55.3 },
+      "hue": 84.6,
+      "lightness": 0.463,
+      "chroma": 0.048
+    },
+    "assets/photography/pai-2026/PXL_20260205_080324543~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.44613 },
+      "familyHue": { "green": 131 },
+      "hue": 131.4,
+      "lightness": 0.526,
+      "chroma": 0.06467
+    },
+    "assets/photography/pai-2026/PXL_20260205_083952686~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.36155, "green": 0.18955 },
+      "familyHue": { "gold": 102.6, "green": 118.5 },
+      "hue": 108.4,
+      "lightness": 0.484,
+      "chroma": 0.07446
+    },
+    "assets/photography/pai-2026/PXL_20260205_084324954~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.35336 },
+      "familyHue": { "gold": 88.9 },
+      "hue": 87.5,
+      "lightness": 0.488,
+      "chroma": 0.05852
+    },
+    "assets/photography/pai-2026/PXL_20260205_101309412.RAW-01.COVER~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.13088, "gold": 0.11958 },
+      "familyHue": { "orange": 54.4, "gold": 84.8 },
+      "hue": 69,
+      "lightness": 0.587,
+      "chroma": 0.04335
+    },
+    "assets/photography/pai-2026/PXL_20260205_101313328.RAW-01.COVER~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.04345, "gold": 0.06722 },
+      "familyHue": { "orange": 54.4, "gold": 81.2 },
+      "hue": 70.5,
+      "lightness": 0.573,
+      "chroma": 0.03074
+    },
+    "assets/photography/pai-2026/PXL_20260205_120617888.RAW-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.1102 },
+      "familyHue": { "gold": 80.1 },
+      "hue": 80.6,
+      "lightness": 0.299,
+      "chroma": 0.02889
+    },
+    "assets/photography/pai-2026/PXL_20260208_234101365.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.27571 },
+      "familyHue": { "gold": 70.4 },
+      "hue": 69,
+      "lightness": 0.45,
+      "chroma": 0.04994
+    },
+    "assets/photography/pai-2026/PXL_20260209_000828593.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["purple", "orange", "grey"],
+      "strength": { "purple": 0.01349, "orange": 0.00698, "grey": 0.35091 },
+      "familyHue": { "purple": 284.3, "orange": 55 },
+      "hue": 333.9,
+      "lightness": 0.538,
+      "chroma": 0.02803
+    },
+    "assets/photography/pai-2026/PXL_20260209_002337773.RAW-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.50117 },
+      "familyHue": { "green": 128.5 },
+      "hue": 132.7,
+      "lightness": 0.542,
+      "chroma": 0.07333
+    },
+    "assets/photography/pai-2026/PXL_20260209_004954600.RAW-01.COVER~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.1048, "gold": 0.06696 },
+      "familyHue": { "orange": 52.6, "gold": 72.8 },
+      "hue": 60.8,
+      "lightness": 0.546,
+      "chroma": 0.03699
+    },
+    "assets/photography/pai-2026/PXL_20260209_012911677~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.03382 },
+      "familyHue": { "orange": 51.6 },
+      "hue": 62.6,
+      "lightness": 0.566,
+      "chroma": 0.02655
+    },
+    "assets/photography/pai-2026/PXL_20260210_082725892~2.jpg": {
+      "buckets": ["purple", "gold"],
+      "strength": { "purple": 0.02228, "gold": 0.04706 },
+      "familyHue": { "purple": 282.3, "gold": 97.9 },
+      "hue": 92,
+      "lightness": 0.234,
+      "chroma": 0.023
+    },
+    "assets/photography/pai-2026/PXL_20260210_084549653~2.jpg": {
+      "buckets": ["green", "black"],
+      "strength": { "green": 0.01083, "black": 0.82389 },
+      "familyHue": { "green": 128.8 },
+      "hue": 136.7,
+      "lightness": 0.226,
+      "chroma": 0.01644
+    },
+    "assets/photography/pai-2026/PXL_20260210_085552012.NIGHT~2.jpg": {
+      "buckets": ["gold", "blue"],
+      "strength": { "gold": 0.08054, "blue": 0.05731 },
+      "familyHue": { "gold": 78.7, "blue": 248.6 },
+      "hue": 73.4,
+      "lightness": 0.312,
+      "chroma": 0.03291
+    },
+    "assets/photography/pai-2026/PXL_20260210_102920626~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.16804 },
+      "familyHue": { "gold": 92.2 },
+      "hue": 95.8,
+      "lightness": 0.45,
+      "chroma": 0.04533
+    },
+    "assets/photography/pai-2026/PXL_20260210_104230434~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.03726 },
+      "familyHue": { "gold": 78.1 },
+      "hue": 80.8,
+      "lightness": 0.492,
+      "chroma": 0.02691
+    },
+    "assets/photography/pai-2026/PXL_20260210_114446548.NIGHT~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.11671 },
+      "familyHue": { "blue": 259.2 },
+      "hue": 259.6,
+      "lightness": 0.417,
+      "chroma": 0.02667
+    },
+    "assets/photography/pai-2026/PXL_20260211_104635103~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.12589 },
+      "familyHue": { "gold": 83.7 },
+      "hue": 93,
+      "lightness": 0.571,
+      "chroma": 0.03931
+    },
     "assets/photography/portugal-2024/PXL_20240529_171012327~2.jpg": {
       "buckets": ["blue"],
       "strength": { "blue": 0.55279 },
@@ -38820,6 +42692,918 @@
       "hue": 8.6,
       "lightness": 0.502,
       "chroma": 0.0459
+    },
+    "assets/photography/vietnam-2026/DJI_0553~2.JPG": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.14299, "orange": 0.06443 },
+      "familyHue": { "gold": 72.2, "orange": 59.2 },
+      "hue": 68.2,
+      "lightness": 0.467,
+      "chroma": 0.04202
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_060626158~2.jpg": {
+      "buckets": ["grey"],
+      "strength": { "grey": 0.78092 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.522,
+      "chroma": 0.01557
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_072028384~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.04672 },
+      "familyHue": { "gold": 77.6 },
+      "hue": 72.7,
+      "lightness": 0.463,
+      "chroma": 0.02467
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_090253149~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.3111 },
+      "familyHue": { "blue": 258.5 },
+      "hue": 259.2,
+      "lightness": 0.685,
+      "chroma": 0.04971
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_095358976~3.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.09887 },
+      "familyHue": { "blue": 252.9 },
+      "hue": 252.9,
+      "lightness": 0.77,
+      "chroma": 0.03092
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_100449751~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.02593 },
+      "familyHue": { "gold": 94.1 },
+      "hue": 103.8,
+      "lightness": 0.602,
+      "chroma": 0.02868
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_130415120~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.39671 },
+      "familyHue": { "gold": 80.9 },
+      "hue": 84.3,
+      "lightness": 0.562,
+      "chroma": 0.06806
+    },
+    "assets/photography/vietnam-2026/PXL_20260213_134934124.NIGHT.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.10668, "orange": 0.03371 },
+      "familyHue": { "gold": 76.6, "orange": 56.4 },
+      "hue": 71.3,
+      "lightness": 0.33,
+      "chroma": 0.03168
+    },
+    "assets/photography/vietnam-2026/PXL_20260214_074201413~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.31998, "orange": 0.1207 },
+      "familyHue": { "red": 23.3, "orange": 47.3 },
+      "hue": 37.2,
+      "lightness": 0.542,
+      "chroma": 0.08354
+    },
+    "assets/photography/vietnam-2026/PXL_20260215_144046912~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.06953, "orange": 0.09324 },
+      "familyHue": { "red": 23.7, "orange": 48.5 },
+      "hue": 51.6,
+      "lightness": 0.402,
+      "chroma": 0.04961
+    },
+    "assets/photography/vietnam-2026/PXL_20260216_054247985~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.1276 },
+      "familyHue": { "gold": 88.1 },
+      "hue": 90.9,
+      "lightness": 0.488,
+      "chroma": 0.04204
+    },
+    "assets/photography/vietnam-2026/PXL_20260216_111812627~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.13741, "gold": 0.14798 },
+      "familyHue": { "orange": 49.9, "gold": 84.1 },
+      "hue": 66.6,
+      "lightness": 0.495,
+      "chroma": 0.05893
+    },
+    "assets/photography/vietnam-2026/PXL_20260217_050321182~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.38833, "orange": 0.14796 },
+      "familyHue": { "red": 21.9, "orange": 45.6 },
+      "hue": 33,
+      "lightness": 0.446,
+      "chroma": 0.0896
+    },
+    "assets/photography/vietnam-2026/PXL_20260217_050703316~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.53608 },
+      "familyHue": { "gold": 96.2 },
+      "hue": 102.5,
+      "lightness": 0.518,
+      "chroma": 0.10687
+    },
+    "assets/photography/vietnam-2026/PXL_20260217_104654801~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.09407, "orange": 0.07969 },
+      "familyHue": { "red": 22.2, "orange": 46.9 },
+      "hue": 15.6,
+      "lightness": 0.475,
+      "chroma": 0.05495
+    },
+    "assets/photography/vietnam-2026/PXL_20260217_112729559~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.36452, "gold": 0.27984 },
+      "familyHue": { "orange": 48.2, "gold": 75.2 },
+      "hue": 58.6,
+      "lightness": 0.562,
+      "chroma": 0.09643
+    },
+    "assets/photography/vietnam-2026/PXL_20260217_113355272~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.1776, "gold": 0.21176 },
+      "familyHue": { "orange": 51.9, "gold": 76.2 },
+      "hue": 64.3,
+      "lightness": 0.443,
+      "chroma": 0.05795
+    },
+    "assets/photography/vietnam-2026/PXL_20260217_114309918~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.22748, "red": 0.07946 },
+      "familyHue": { "orange": 47.5, "red": 29.7 },
+      "hue": 53.7,
+      "lightness": 0.387,
+      "chroma": 0.06599
+    },
+    "assets/photography/vietnam-2026/PXL_20260218_034346416~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.46393 },
+      "familyHue": { "gold": 84.5 },
+      "hue": 83.2,
+      "lightness": 0.569,
+      "chroma": 0.08477
+    },
+    "assets/photography/vietnam-2026/PXL_20260218_035545546~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.52095 },
+      "familyHue": { "green": 141.7 },
+      "hue": 140.9,
+      "lightness": 0.302,
+      "chroma": 0.07177
+    },
+    "assets/photography/vietnam-2026/PXL_20260218_142130966~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.21361 },
+      "familyHue": { "gold": 81.3 },
+      "hue": 80.7,
+      "lightness": 0.52,
+      "chroma": 0.04971
+    },
+    "assets/photography/vietnam-2026/PXL_20260219_102321220~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.07048, "gold": 0.09256 },
+      "familyHue": { "orange": 58.1, "gold": 70.2 },
+      "hue": 65,
+      "lightness": 0.487,
+      "chroma": 0.0333
+    },
+    "assets/photography/vietnam-2026/PXL_20260219_105249093.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.4202 },
+      "familyHue": { "blue": 236 },
+      "hue": 235.2,
+      "lightness": 0.642,
+      "chroma": 0.06458
+    },
+    "assets/photography/vietnam-2026/PXL_20260219_110714304~2.jpg": {
+      "buckets": ["red", "teal", "orange"],
+      "strength": { "red": 0.14548, "teal": 0.06533, "orange": 0.11131 },
+      "familyHue": { "red": 29.5, "teal": 198, "orange": 38.7 },
+      "hue": 54.2,
+      "lightness": 0.423,
+      "chroma": 0.06937
+    },
+    "assets/photography/vietnam-2026/PXL_20260219_114937783~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.0535, "gold": 0.06372 },
+      "familyHue": { "green": 122.5, "gold": 88.5 },
+      "hue": 98.4,
+      "lightness": 0.462,
+      "chroma": 0.03525
+    },
+    "assets/photography/vietnam-2026/PXL_20260220_095907320~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.15812 },
+      "familyHue": { "blue": 240.1 },
+      "hue": 195.8,
+      "lightness": 0.58,
+      "chroma": 0.04928
+    },
+    "assets/photography/vietnam-2026/PXL_20260220_095940530~2.jpg": {
+      "buckets": ["blue", "orange"],
+      "strength": { "blue": 0.14806, "orange": 0.06423 },
+      "familyHue": { "blue": 247.1, "orange": 56.1 },
+      "hue": 287.5,
+      "lightness": 0.609,
+      "chroma": 0.04781
+    },
+    "assets/photography/vietnam-2026/PXL_20260220_230131066~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.07087 },
+      "familyHue": { "blue": 247.7 },
+      "hue": 246.8,
+      "lightness": 0.645,
+      "chroma": 0.02421
+    },
+    "assets/photography/vietnam-2026/PXL_20260221_050758904~2.jpg": {
+      "buckets": ["teal"],
+      "strength": { "teal": 0.09137 },
+      "familyHue": { "teal": 203.9 },
+      "hue": 208,
+      "lightness": 0.587,
+      "chroma": 0.03589
+    },
+    "assets/photography/vietnam-2026/PXL_20260221_103209558~2.jpg": {
+      "buckets": ["gold", "orange", "grey"],
+      "strength": { "gold": 0.02075, "orange": 0.00684, "grey": 0.08105 },
+      "familyHue": { "gold": 81.9, "orange": 53.7 },
+      "hue": 78,
+      "lightness": 0.682,
+      "chroma": 0.01862
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_021719381~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.09597 },
+      "familyHue": { "blue": 236.8 },
+      "hue": 236.8,
+      "lightness": 0.497,
+      "chroma": 0.02295
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_041220004~2.jpg": {
+      "buckets": ["white"],
+      "strength": { "white": 0.65137 },
+      "familyHue": {},
+      "hue": null,
+      "lightness": 0.727,
+      "chroma": 0.01772
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_064939327~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.39105 },
+      "familyHue": { "green": 131.8 },
+      "hue": 131.8,
+      "lightness": 0.496,
+      "chroma": 0.06897
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_070606571~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.19533, "gold": 0.14506 },
+      "familyHue": { "green": 121.6, "gold": 101.1 },
+      "hue": 109,
+      "lightness": 0.584,
+      "chroma": 0.0607
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_071736346.LONG_EXPOSURE-01.COVER~3.jpg": {
+      "buckets": ["teal", "blue"],
+      "strength": { "teal": 0.07503, "blue": 0.25104 },
+      "familyHue": { "teal": 187.8, "blue": 233.3 },
+      "hue": 223.2,
+      "lightness": 0.535,
+      "chroma": 0.05163
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_075141448~2.jpg": {
+      "buckets": ["blue", "grey"],
+      "strength": { "blue": 0.03114, "grey": 0.12174 },
+      "familyHue": { "blue": 241.5 },
+      "hue": 234.8,
+      "lightness": 0.641,
+      "chroma": 0.02538
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_094814182~2.jpg": {
+      "buckets": ["teal", "blue"],
+      "strength": { "teal": 0.06558, "blue": 0.03692 },
+      "familyHue": { "teal": 184.2, "blue": 243.8 },
+      "hue": 204.4,
+      "lightness": 0.535,
+      "chroma": 0.03138
+    },
+    "assets/photography/vietnam-2026/PXL_20260222_094915706~2.jpg": {
+      "buckets": ["teal", "red", "blue"],
+      "strength": { "teal": 0.0089, "red": 0.00975, "blue": 0.02611 },
+      "familyHue": { "teal": 186.7, "red": 14.6, "blue": 253 },
+      "hue": 255.7,
+      "lightness": 0.637,
+      "chroma": 0.02585
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_040736315~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.17917 },
+      "familyHue": { "green": 122.7 },
+      "hue": 114.1,
+      "lightness": 0.441,
+      "chroma": 0.04212
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_041007025~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.14379 },
+      "familyHue": { "green": 125.6 },
+      "hue": 101.2,
+      "lightness": 0.491,
+      "chroma": 0.0451
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_041150527~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.08444 },
+      "familyHue": { "green": 124.2 },
+      "hue": 120,
+      "lightness": 0.635,
+      "chroma": 0.02486
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_041621422~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.83859 },
+      "familyHue": { "green": 130 },
+      "hue": 129.4,
+      "lightness": 0.632,
+      "chroma": 0.1258
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_045036017~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.96119 },
+      "familyHue": { "green": 118.7 },
+      "hue": 118.7,
+      "lightness": 0.614,
+      "chroma": 0.14224
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_045125444~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.376 },
+      "familyHue": { "green": 123.4 },
+      "hue": 122.5,
+      "lightness": 0.459,
+      "chroma": 0.05698
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_051122131~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.10762, "gold": 0.08127 },
+      "familyHue": { "green": 119.1, "gold": 105.4 },
+      "hue": 111.3,
+      "lightness": 0.632,
+      "chroma": 0.04001
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_051326226~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.0952 },
+      "familyHue": { "blue": 245.9 },
+      "hue": 243.4,
+      "lightness": 0.646,
+      "chroma": 0.02134
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_052108706~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.07697, "gold": 0.08109 },
+      "familyHue": { "green": 119.6, "gold": 103.9 },
+      "hue": 110.9,
+      "lightness": 0.675,
+      "chroma": 0.03307
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_064211697~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.39966 },
+      "familyHue": { "gold": 79.1 },
+      "hue": 76.8,
+      "lightness": 0.604,
+      "chroma": 0.05899
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_064844914~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.52119 },
+      "familyHue": { "green": 133.5 },
+      "hue": 133.9,
+      "lightness": 0.462,
+      "chroma": 0.07521
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_074057280~2.jpg": {
+      "buckets": ["red"],
+      "strength": { "red": 0.90599 },
+      "familyHue": { "red": 28.9 },
+      "hue": 32.2,
+      "lightness": 0.505,
+      "chroma": 0.18983
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_074658366~2.jpg": {
+      "buckets": ["green", "white"],
+      "strength": { "green": 0.01912, "white": 0.81803 },
+      "familyHue": { "green": 125.7 },
+      "hue": 115,
+      "lightness": 0.801,
+      "chroma": 0.01341
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_081227205~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.19005 },
+      "familyHue": { "green": 130.1 },
+      "hue": 128.3,
+      "lightness": 0.47,
+      "chroma": 0.03772
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_081440286~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.25695 },
+      "familyHue": { "gold": 75.7 },
+      "hue": 73.9,
+      "lightness": 0.454,
+      "chroma": 0.04768
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_081733709~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.54038 },
+      "familyHue": { "green": 128.4 },
+      "hue": 128,
+      "lightness": 0.443,
+      "chroma": 0.08433
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_082030540~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.35362 },
+      "familyHue": { "gold": 75.8 },
+      "hue": 78.7,
+      "lightness": 0.418,
+      "chroma": 0.05779
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_100643055~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.14062 },
+      "familyHue": { "gold": 101.9 },
+      "hue": 109.5,
+      "lightness": 0.673,
+      "chroma": 0.03908
+    },
+    "assets/photography/vietnam-2026/PXL_20260223_112533954.NIGHT~2.jpg": {
+      "buckets": ["gold", "orange"],
+      "strength": { "gold": 0.0554, "orange": 0.02152 },
+      "familyHue": { "gold": 81.5, "orange": 51 },
+      "hue": 66,
+      "lightness": 0.252,
+      "chroma": 0.02793
+    },
+    "assets/photography/vietnam-2026/PXL_20260225_085142527~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.07778, "orange": 0.03425 },
+      "familyHue": { "red": 24, "orange": 48.2 },
+      "hue": 44.7,
+      "lightness": 0.55,
+      "chroma": 0.03231
+    },
+    "assets/photography/vietnam-2026/PXL_20260225_101259644~2.jpg": {
+      "buckets": ["pink"],
+      "strength": { "pink": 0.11809 },
+      "familyHue": { "pink": 339.1 },
+      "hue": 44.9,
+      "lightness": 0.538,
+      "chroma": 0.04512
+    },
+    "assets/photography/vietnam-2026/PXL_20260225_130251881.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.21334 },
+      "familyHue": { "blue": 257.7 },
+      "hue": 259.3,
+      "lightness": 0.253,
+      "chroma": 0.03853
+    },
+    "assets/photography/vietnam-2026/PXL_20260225_130442284.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["red", "gold"],
+      "strength": { "red": 0.02007, "gold": 0.02349 },
+      "familyHue": { "red": 14.7, "gold": 89.7 },
+      "hue": 44.1,
+      "lightness": 0.336,
+      "chroma": 0.02133
+    },
+    "assets/photography/vietnam-2026/PXL_20260225_134443273.LONG_EXPOSURE-02.ORIGINAL~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.06472 },
+      "familyHue": { "gold": 85.2 },
+      "hue": 97.9,
+      "lightness": 0.33,
+      "chroma": 0.02971
+    },
+    "assets/photography/vietnam-2026/PXL_20260225_135855306.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.06846 },
+      "familyHue": { "gold": 90.7 },
+      "hue": 108.3,
+      "lightness": 0.306,
+      "chroma": 0.02405
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_012909210~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.18425 },
+      "familyHue": { "green": 138.1 },
+      "hue": 130.8,
+      "lightness": 0.368,
+      "chroma": 0.04401
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_031338199~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.14521 },
+      "familyHue": { "green": 123.4 },
+      "hue": 101.7,
+      "lightness": 0.521,
+      "chroma": 0.04301
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_074122729~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.02997 },
+      "familyHue": { "green": 131.8 },
+      "hue": 125.9,
+      "lightness": 0.689,
+      "chroma": 0.02392
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_074355416.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.15662 },
+      "familyHue": { "gold": 92 },
+      "hue": 91.9,
+      "lightness": 0.584,
+      "chroma": 0.03586
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_074419094~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.01222, "orange": 0.02075 },
+      "familyHue": { "red": 28.1, "orange": 43.7 },
+      "hue": 53.2,
+      "lightness": 0.6,
+      "chroma": 0.02284
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_074611274.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.27716 },
+      "familyHue": { "gold": 93 },
+      "hue": 94.3,
+      "lightness": 0.585,
+      "chroma": 0.04893
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_075242176~2.jpg": {
+      "buckets": ["pink", "red"],
+      "strength": { "pink": 0.42992, "red": 0.09301 },
+      "familyHue": { "pink": 341.7, "red": 4.7 },
+      "hue": 350.8,
+      "lightness": 0.547,
+      "chroma": 0.09343
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_075513760.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["orange", "red"],
+      "strength": { "orange": 0.10067, "red": 0.02669 },
+      "familyHue": { "orange": 46, "red": 27.4 },
+      "hue": 53.2,
+      "lightness": 0.509,
+      "chroma": 0.03588
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_081148300~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.14971 },
+      "familyHue": { "green": 129.2 },
+      "hue": 110.4,
+      "lightness": 0.518,
+      "chroma": 0.04365
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_090054432.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["red", "green", "gold"],
+      "strength": { "red": 0.01811, "green": 0.04063, "gold": 0.05842 },
+      "familyHue": { "red": 17.7, "green": 128.6, "gold": 88.8 },
+      "hue": 99.4,
+      "lightness": 0.648,
+      "chroma": 0.03339
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_091048695~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.15224, "gold": 0.09354 },
+      "familyHue": { "green": 123.9, "gold": 85.4 },
+      "hue": 109,
+      "lightness": 0.683,
+      "chroma": 0.0421
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_091425392~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.41156 },
+      "familyHue": { "green": 122.9 },
+      "hue": 124.2,
+      "lightness": 0.685,
+      "chroma": 0.06853
+    },
+    "assets/photography/vietnam-2026/PXL_20260226_091550180~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.197 },
+      "familyHue": { "green": 122.3 },
+      "hue": 114.3,
+      "lightness": 0.747,
+      "chroma": 0.04942
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_052022461~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.41724 },
+      "familyHue": { "green": 126.9 },
+      "hue": 132.4,
+      "lightness": 0.545,
+      "chroma": 0.07792
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_054658042~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.075, "blue": 0.06087 },
+      "familyHue": { "green": 127, "blue": 253.1 },
+      "hue": 173.1,
+      "lightness": 0.716,
+      "chroma": 0.03897
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_073857875~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.04715, "orange": 0.06291 },
+      "familyHue": { "red": 26.2, "orange": 46.4 },
+      "hue": 51.4,
+      "lightness": 0.554,
+      "chroma": 0.04281
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_083610140~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.05516, "orange": 0.02899 },
+      "familyHue": { "red": 27.5, "orange": 42.5 },
+      "hue": 35.9,
+      "lightness": 0.459,
+      "chroma": 0.02956
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_084803318~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.28436, "gold": 0.20238 },
+      "familyHue": { "green": 124.4, "gold": 79.9 },
+      "hue": 111.3,
+      "lightness": 0.615,
+      "chroma": 0.07463
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_084928706~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.39996 },
+      "familyHue": { "green": 124.2 },
+      "hue": 120.9,
+      "lightness": 0.58,
+      "chroma": 0.06537
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_091807011~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.07751, "gold": 0.07441 },
+      "familyHue": { "green": 120.6, "gold": 95.9 },
+      "hue": 106.8,
+      "lightness": 0.636,
+      "chroma": 0.02954
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_092026467~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.05684 },
+      "familyHue": { "green": 127 },
+      "hue": 123.1,
+      "lightness": 0.592,
+      "chroma": 0.03109
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_092348149~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.11605 },
+      "familyHue": { "green": 122.3 },
+      "hue": 119.8,
+      "lightness": 0.629,
+      "chroma": 0.04017
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_102040427~2.jpg": {
+      "buckets": ["green", "red"],
+      "strength": { "green": 0.03976, "red": 0.01202 },
+      "familyHue": { "green": 125, "red": 26.8 },
+      "hue": 100.7,
+      "lightness": 0.583,
+      "chroma": 0.02563
+    },
+    "assets/photography/vietnam-2026/PXL_20260227_102429745~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.05748, "orange": 0.03891 },
+      "familyHue": { "red": 25, "orange": 47.4 },
+      "hue": 49.8,
+      "lightness": 0.489,
+      "chroma": 0.03404
+    },
+    "assets/photography/vietnam-2026/PXL_20260228_062417422~2.jpg": {
+      "buckets": ["purple"],
+      "strength": { "purple": 0.01942 },
+      "familyHue": { "purple": 293.4 },
+      "hue": 348,
+      "lightness": 0.659,
+      "chroma": 0.02724
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_064116778~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.18367, "gold": 0.14038 },
+      "familyHue": { "green": 123.3, "gold": 101.1 },
+      "hue": 121.6,
+      "lightness": 0.496,
+      "chroma": 0.05748
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_081424968.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.1782, "gold": 0.17208 },
+      "familyHue": { "blue": 251.8, "gold": 85 },
+      "hue": 161.3,
+      "lightness": 0.66,
+      "chroma": 0.05516
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_093018612~2.jpg": {
+      "buckets": ["green", "blue"],
+      "strength": { "green": 0.13584, "blue": 0.17988 },
+      "familyHue": { "green": 130.7, "blue": 240.3 },
+      "hue": 174.2,
+      "lightness": 0.528,
+      "chroma": 0.05671
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_093057919~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.82261 },
+      "familyHue": { "green": 139 },
+      "hue": 138.2,
+      "lightness": 0.516,
+      "chroma": 0.12813
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_094823192~2.jpg": {
+      "buckets": ["blue", "gold"],
+      "strength": { "blue": 0.06304, "gold": 0.07083 },
+      "familyHue": { "blue": 246.5, "gold": 85.3 },
+      "hue": 142.1,
+      "lightness": 0.68,
+      "chroma": 0.03126
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_125416042~2.jpg": {
+      "buckets": ["gold"],
+      "strength": { "gold": 0.13179 },
+      "familyHue": { "gold": 75.9 },
+      "hue": 62.7,
+      "lightness": 0.484,
+      "chroma": 0.03508
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_233920686~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.0432 },
+      "familyHue": { "orange": 45.4 },
+      "hue": 60.1,
+      "lightness": 0.701,
+      "chroma": 0.02368
+    },
+    "assets/photography/vietnam-2026/PXL_20260301_234228594~2.jpg": {
+      "buckets": ["orange"],
+      "strength": { "orange": 0.04032 },
+      "familyHue": { "orange": 48.5 },
+      "hue": 54.8,
+      "lightness": 0.595,
+      "chroma": 0.02614
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_004629596.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.14149, "gold": 0.11608 },
+      "familyHue": { "green": 128.9, "gold": 87.6 },
+      "hue": 110.1,
+      "lightness": 0.464,
+      "chroma": 0.04415
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_004656822.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.12272 },
+      "familyHue": { "green": 128.6 },
+      "hue": 121.5,
+      "lightness": 0.422,
+      "chroma": 0.03527
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_005943582.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.12738, "gold": 0.15007 },
+      "familyHue": { "green": 128.9, "gold": 89.4 },
+      "hue": 107.3,
+      "lightness": 0.486,
+      "chroma": 0.04598
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_012214689.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.03114, "gold": 0.04076 },
+      "familyHue": { "green": 127.6, "gold": 90.4 },
+      "hue": 108,
+      "lightness": 0.595,
+      "chroma": 0.02876
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_013954992.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["teal", "gold", "green"],
+      "strength": { "teal": 0.04822, "gold": 0.07818, "green": 0.04079 },
+      "familyHue": { "teal": 182.3, "gold": 87.1, "green": 129.3 },
+      "hue": 123.1,
+      "lightness": 0.563,
+      "chroma": 0.03849
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_014158873.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["teal", "green"],
+      "strength": { "teal": 0.06098, "green": 0.0469 },
+      "familyHue": { "teal": 180, "green": 127.2 },
+      "hue": 142.9,
+      "lightness": 0.603,
+      "chroma": 0.03426
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_014752648~2.jpg": {
+      "buckets": ["green"],
+      "strength": { "green": 0.65073 },
+      "familyHue": { "green": 138.2 },
+      "hue": 133.6,
+      "lightness": 0.426,
+      "chroma": 0.09867
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_020403396~2.jpg": {
+      "buckets": ["gold", "green"],
+      "strength": { "gold": 0.26616, "green": 0.11536 },
+      "familyHue": { "gold": 87.4, "green": 119.5 },
+      "hue": 92.2,
+      "lightness": 0.533,
+      "chroma": 0.06064
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_022951015.LONG_EXPOSURE-01.COVER~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.2665, "gold": 0.16538 },
+      "familyHue": { "green": 129.2, "gold": 91.3 },
+      "hue": 114.9,
+      "lightness": 0.449,
+      "chroma": 0.06113
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_025934124~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.21649, "gold": 0.24313 },
+      "familyHue": { "orange": 49.6, "gold": 78.8 },
+      "hue": 65.1,
+      "lightness": 0.556,
+      "chroma": 0.06504
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_025941554~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.05245, "orange": 0.09577 },
+      "familyHue": { "red": 29.5, "orange": 45.7 },
+      "hue": 58,
+      "lightness": 0.535,
+      "chroma": 0.05336
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_030021866~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.30511, "gold": 0.39798 },
+      "familyHue": { "orange": 50.1, "gold": 78.2 },
+      "hue": 66.6,
+      "lightness": 0.525,
+      "chroma": 0.09098
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_054345212.NIGHT~2.jpg": {
+      "buckets": ["orange", "gold"],
+      "strength": { "orange": 0.06141, "gold": 0.09036 },
+      "familyHue": { "orange": 54.2, "gold": 75.3 },
+      "hue": 64.5,
+      "lightness": 0.329,
+      "chroma": 0.03069
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_060058989.NIGHT~2.jpg": {
+      "buckets": ["blue"],
+      "strength": { "blue": 0.47654 },
+      "familyHue": { "blue": 258.3 },
+      "hue": 260.5,
+      "lightness": 0.29,
+      "chroma": 0.08144
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_100942672~2.jpg": {
+      "buckets": ["green", "gold"],
+      "strength": { "green": 0.08705, "gold": 0.11666 },
+      "familyHue": { "green": 124.3, "gold": 85.6 },
+      "hue": 104.6,
+      "lightness": 0.55,
+      "chroma": 0.04181
+    },
+    "assets/photography/vietnam-2026/PXL_20260302_105447008~2.jpg": {
+      "buckets": ["gold", "grey"],
+      "strength": { "gold": 0.02472, "grey": 0.21257 },
+      "familyHue": { "gold": 73.4 },
+      "hue": 70.4,
+      "lightness": 0.596,
+      "chroma": 0.02392
+    },
+    "assets/photography/vietnam-2026/PXL_20260303_073011906~2.jpg": {
+      "buckets": ["red", "green", "gold"],
+      "strength": { "red": 0.04004, "green": 0.07277, "gold": 0.09857 },
+      "familyHue": { "red": 19.3, "green": 141.6, "gold": 86 },
+      "hue": 95.2,
+      "lightness": 0.568,
+      "chroma": 0.04657
+    },
+    "assets/photography/vietnam-2026/PXL_20260303_122230873.NIGHT~2.jpg": {
+      "buckets": ["red", "orange"],
+      "strength": { "red": 0.12389, "orange": 0.0558 },
+      "familyHue": { "red": 22.8, "orange": 46.4 },
+      "hue": 32.5,
+      "lightness": 0.475,
+      "chroma": 0.04386
     },
     "assets/photography/vietnam/DSC03090.webp": {
       "buckets": ["orange", "gold"],

@@ -83,6 +83,10 @@ const photographyTimelineDates: Record<string, Pick<TimelineEntry, "date" | "dat
   guadeloupe: { date: "2024-03-01", datePrecision: "year" },
   transat: { date: "2024-01-15", datePrecision: "year" },
   martinique: { date: "2024-04-25", datePrecision: "year" },
+  "bolivia-2025": { date: "2025-04-02", datePrecision: "month" },
+  "ecuador-2025": { date: "2025-06-03", datePrecision: "month" },
+  "pai-2026": { date: "2026-01-13", datePrecision: "month" },
+  "vietnam-2026": { date: "2026-02-13", datePrecision: "month" },
 };
 
 const pageExcludeList = new Set(["privacy", "imprint", "support"]);

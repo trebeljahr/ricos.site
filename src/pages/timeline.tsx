@@ -88,7 +88,9 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { getImgWidthAndHeightDuringBuild } = await import(
     "src/lib/getImgWidthAndHeightDuringBuild"
   );
-  const { getFirstImageFromMetadata, photographyFolder } = await import("src/lib/imageMetadata");
+  const { getFirstImageFromMetadata, getPhotographyTripNames, photographyFolder } = await import(
+    "src/lib/imageMetadata"
+  );
 
   const posts: CommonMetadata[] = loadVeliteData("posts.json");
   const newsletters: CommonMetadata[] = loadVeliteData("newsletters.json");
@@ -96,15 +98,20 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const booknotes: CommonMetadata[] = loadVeliteData("booknotes.json");
   const pages: CommonMetadata[] = loadVeliteData("pages.json");
 
+  // Same rule as the /photography index: a curated trip whose folder is not in
+  // the metadata (yet) is skipped instead of throwing in getFirstImageFromMetadata.
+  const galleryNames = getPhotographyTripNames();
   const tripsMeta = await Promise.all(
-    trips.map(async ({ name, src, alt, description }) => {
-      if (src === "") {
-        const image = getFirstImageFromMetadata(photographyFolder + name);
-        return { image, tripName: name, description };
-      }
-      const { width, height } = await getImgWidthAndHeightDuringBuild(src);
-      return { image: { width, height, src, alt }, tripName: name, description };
-    }),
+    trips
+      .filter(({ name }) => galleryNames.includes(name))
+      .map(async ({ name, src, alt, description }) => {
+        if (src === "") {
+          const image = getFirstImageFromMetadata(photographyFolder + name);
+          return { image, tripName: name, description };
+        }
+        const { width, height } = await getImgWidthAndHeightDuringBuild(src);
+        return { image: { width, height, src, alt }, tripName: name, description };
+      }),
   );
 
   const writingEntries = [

@@ -4,7 +4,6 @@ import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   COINS,
   type Coin,
-  CSS_PIXELS_PER_MM,
   coinPlacement,
   type DieShot,
   dieSizeMm,
@@ -109,10 +108,9 @@ export function DieZoom({
   const bounds = useMemo(() => worldBounds(shot, coin), [shot, coin]);
   const perPixel = mmPerPixel(shot);
   const die = dieSizeMm(shot);
-  const realSizeScale = perPixel * CSS_PIXELS_PER_MM;
 
   const fitScale = size ? fitView(bounds, size).scale : 0;
-  const minScale = Math.min(fitScale * 0.6, realSizeScale * 0.8);
+  const minScale = fitScale * 0.6;
 
   const clamp = useCallback(
     (next: View): View => {
@@ -352,7 +350,8 @@ export function DieZoom({
 
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
   const bar = scaleBar(micronsPerScreenPixel);
-  const magnification = view ? view.scale / realSizeScale : 1;
+  // How much closer than the first view, where the whole die and the coin fit.
+  const magnification = view && fitScale ? view.scale / fitScale : 1;
   const screenWidthMm = view && size ? (size.width / view.scale) * perPixel : 0;
 
   return (
@@ -475,20 +474,6 @@ export function DieZoom({
               +
             </MiniButton>
             <MiniButton onClick={() => goTo(bounds, null, 0.08)}>ALL</MiniButton>
-            <MiniButton
-              onClick={() => {
-                if (!size) return;
-                setSpotId(null);
-                animateTo({
-                  x: bounds.x + bounds.width / 2,
-                  y: bounds.y + bounds.height / 2,
-                  scale: realSizeScale,
-                });
-                playButton();
-              }}
-            >
-              REAL SIZE
-            </MiniButton>
             <span className={own.keyGap} aria-hidden="true" />
             {shot.spots.map((item) => (
               <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
@@ -523,8 +508,7 @@ export function DieZoom({
           </div>
           <p className={own.note}>
             At full zoom one photo pixel is about {formatLength(perPixel)}. The transistors on this
-            chip are 0.25 µm, smaller than one pixel. REAL SIZE assumes a standard screen, so it is
-            close, not exact.
+            chip are 0.25 µm, smaller than one pixel.
           </p>
           <p className={own.credit}>
             Photo:{" "}

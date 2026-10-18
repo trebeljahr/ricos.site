@@ -257,9 +257,3 @@ export function formatLength(mm: number) {
 }
 
 const formatNumber = (value: number) => value.toLocaleString("en-US", { maximumFractionDigits: 1 });
-
-/**
- * CSS pixels per millimetre if a CSS pixel were its nominal 1/96 inch. Screens
- * differ, so a "real size" view is only close to real.
- */
-export const CSS_PIXELS_PER_MM = 96 / 25.4;

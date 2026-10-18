@@ -42,6 +42,7 @@ describe("die zoom", () => {
       "The nickel beside it is drawn to the same scale: 21.21 mm across.",
     );
     const whole = zoomTag(container);
+    expect(whole).toBe("×1.0");
     expect(container.querySelectorAll("img").length).toBeGreaterThan(0);
 
     click("ALIGNMENT MARK");
@@ -54,7 +55,7 @@ describe("die zoom", () => {
       true,
     );
 
-    click("REAL SIZE");
+    click("ALL");
     expect(zoomTag(container)).toBe("×1.0");
   });
 

@@ -1,0 +1,83 @@
+/* DieZoom: a tiled chip photo that pans and zooms, with a coin to scale. The
+   frame comes from DemoMachine; plates, LCD and keys from ByteExplorer and
+   Codebook styles. Layout follows the demo's own width. */
+.demo { container-type: inline-size; }
+.body { display: grid; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
+.demo .head { flex-wrap: wrap; row-gap: 6px; }
+.demo .head > div { flex-wrap: wrap; }
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  min-height: 240px;
+  max-height: 72vh;
+  margin-top: 12px;
+  border: 6px solid #3c5042;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at center, #1b2a1e, #0b140e);
+  box-shadow: inset 0 4px 10px #0009, 0 2px 0 #dce5d4;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.screen:active { cursor: grabbing; }
+.screen:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
+.engaged { border-color: #5d7a5f; }
+
+.dieClip { position: absolute; z-index: 1; overflow: hidden; background: #2a1d0c; box-shadow: 0 6px 18px #000a; }
+.tile {
+  position: absolute;
+  z-index: 1;
+  max-width: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.tile[data-loaded="true"] { opacity: 1; }
+.coarse { z-index: 0; }
+
+.coin { position: absolute; z-index: 3; filter: drop-shadow(0 4px 8px #000b); pointer-events: none; }
+.coin svg { display: block; width: 100%; height: 100%; }
+.coinFace { fill: #00000059; font: 700 26px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: central; }
+.coinNote { fill: #0000004d; font: 600 7px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: central; }
+
+.spot {
+  position: absolute;
+  z-index: 3;
+  border: 2px dashed #e1fbcf;
+  border-radius: 3px;
+  box-shadow: 0 0 0 100vmax #00000052;
+  pointer-events: none;
+}
+
+.scaleBar, .zoomTag, .hint {
+  position: absolute;
+  z-index: 4;
+  color: #e1fbcf;
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-shadow: 0 1px 2px #000;
+  pointer-events: none;
+}
+.scaleBar { left: 12px; bottom: 10px; display: grid; justify-items: start; gap: 4px; }
+.scaleBar i { display: block; height: 5px; border: 2px solid #e1fbcf; border-top: 0; box-shadow: 0 1px 2px #000; }
+.zoomTag { top: 9px; right: 10px; padding: 2px 7px; border-radius: 3px; background: #000a; }
+.hint { right: 10px; bottom: 9px; max-width: 60%; padding: 3px 7px; border-radius: 3px; background: #000b; font-size: 10px; text-align: right; }
+
+.keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.keyGap { flex: 0 0 4px; }
+.demo .lcd { margin-top: 12px; }
+.lcdText { min-height: 2.7em; margin: 5px 0 0; font-size: 13px; line-height: 1.35; letter-spacing: .01em; }
+.lcdFacts { display: flex; flex-wrap: wrap; gap: 2px 16px; margin-top: 6px; font-size: 11px; }
+.note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; letter-spacing: .01em; }
+.credit { margin: 6px 0 0; font-size: 10px; letter-spacing: .02em; opacity: .85; }
+.credit a { color: inherit; text-decoration: underline; }
+
+@container (max-width: 520px) {
+  .screen { aspect-ratio: 4 / 3; }
+  .hint { max-width: 70%; }
+}
+@media (prefers-reduced-motion: reduce) { .tile { transition: none; } }

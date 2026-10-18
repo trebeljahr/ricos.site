@@ -8,6 +8,10 @@ export const computerDemos = [
     title: "Open a computer, layer by layer",
   },
   {
+    slug: "die-zoom",
+    title: "Zoom into a real chip",
+  },
+  {
     slug: "byte-explorer",
     title: "One byte, many meanings",
   },

@@ -50,18 +50,37 @@ type Metadata = Record<
   }
 >;
 
-async function loadMetadata(): Promise<Metadata> {
+/** `null` when the file exists but does not parse, e.g. read mid-write by another tool. */
+async function loadMetadata(): Promise<Metadata | null> {
   try {
     const txt = await readFile(METADATA_PATH, "utf8");
     return JSON.parse(txt) as Metadata;
-  } catch {
-    return {};
+  } catch (e) {
+    return (e as NodeJS.ErrnoException).code === "ENOENT" ? {} : null;
   }
 }
 
-async function saveMetadata(meta: Metadata): Promise<void> {
-  await mkdir(dirname(METADATA_PATH), { recursive: true });
-  await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2));
+// Keys this watcher added or changed since its last save.
+const dirtyKeys = new Set<string>();
+
+// Merge only this watcher's own changes into a fresh read of metadata.json.
+// Writing back the snapshot loaded at startup would revert everything other
+// tools wrote while `pnpm dev` ran: backfillLocalMetadata entries, alt text
+// from syncImageAlt, metadata from a pulled Notes commit.
+async function saveMetadata(): Promise<void> {
+  const onDisk = await loadMetadata();
+  if (!onDisk) throw new Error("metadata.json does not parse right now");
+  const keys = [...dirtyKeys];
+  dirtyKeys.clear();
+  for (const key of keys) onDisk[key] = { ...onDisk[key], ...metadata[key] };
+  metadata = onDisk;
+  try {
+    await mkdir(dirname(METADATA_PATH), { recursive: true });
+    await writeFile(METADATA_PATH, JSON.stringify(onDisk, null, 2));
+  } catch (e) {
+    for (const key of keys) dirtyKeys.add(key);
+    throw e;
+  }
 }
 
 function keyFor(absPath: string): string {
@@ -126,12 +145,16 @@ function schedule(absPath: string, handler: () => Promise<void>) {
 
 let metadata: Metadata = {};
 let metaSaveTimer: NodeJS.Timeout | null = null;
-function queueMetaSave() {
+function queueMetaSave(key?: string, delayMs = 200) {
+  if (key) dirtyKeys.add(key);
   if (metaSaveTimer) clearTimeout(metaSaveTimer);
   metaSaveTimer = setTimeout(() => {
     metaSaveTimer = null;
-    saveMetadata(metadata).catch((e) => console.error("  [watch] metadata save failed:", e));
-  }, 200);
+    saveMetadata().catch((e) => {
+      console.error("  [watch] metadata save failed, retrying:", (e as Error).message);
+      queueMetaSave(undefined, 2000);
+    });
+  }, delayMs);
 }
 
 async function handleUpsert(absPath: string) {
@@ -153,7 +176,7 @@ async function handleUpsert(absPath: string) {
         aspectRatio: dims.width / dims.height,
         existsInS3: Boolean(existing?.existsInS3),
       };
-      queueMetaSave();
+      queueMetaSave(key);
       console.log(`  [watch] updated metadata for ${key}`);
     }
     return;
@@ -169,7 +192,7 @@ async function handleUpsert(absPath: string) {
     aspectRatio: dims.width / dims.height,
     existsInS3: uploaded,
   };
-  queueMetaSave();
+  queueMetaSave(key);
   if (uploaded) console.log(`  [watch] uploaded ${key}`);
 }
 
@@ -177,7 +200,7 @@ async function main() {
   // Throws with setup instructions when the Notes submodule is missing;
   // concurrently's --kill-others-on-fail then stops the rest of `pnpm dev`.
   ensureLocalS3Layout();
-  metadata = await loadMetadata();
+  metadata = (await loadMetadata()) ?? {};
   const mode = IS_LOCAL ? "local (metadata only, no uploads)" : "cloud (S3 uploads enabled)";
   console.log(`Watching ${ASSETS_ROOT}  [${mode}]`);
 

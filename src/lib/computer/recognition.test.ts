@@ -11,6 +11,7 @@ import {
   initialSnapshot,
 } from "./logic";
 import {
+  RECOGNITION_LIMITS,
   builtinCircuit,
   circuitFingerprint,
   recognizeCircuit,
@@ -208,7 +209,12 @@ describe("behavioral recognition", () => {
         },
         level.makes.part,
       );
-      expect(result.status, level.id).toBe("equivalent");
+      const size = (c: Circuit): number =>
+        c.nodes.reduce((n, node) => n + 1 + (node.module ? size(node.module) : 0), 0);
+      const bounded =
+        size(source) <= RECOGNITION_LIMITS.nodes &&
+        size(source) * 2 ** level.spec.inputs.length <= RECOGNITION_LIMITS.evaluations;
+      expect(result.status, level.id).toBe(bounded ? "equivalent" : "unsupported");
     }
     const builtin = builtinCircuit("and", and);
     expect(verifiedCircuitIdentity(validateCircuit(builtin)!)?.yours).toBe(false);

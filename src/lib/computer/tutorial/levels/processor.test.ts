@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { gradeLevel } from "../grade";
 import { levelStart } from "../kit";
 import { applyAction, matchReference, nextAction } from "../matcher";
 import { PartCatalog } from "../parts";
@@ -26,8 +27,10 @@ describe("processor levels", () => {
     }
     expect(count).toBeGreaterThan(0);
     expect(count).toBeLessThan(400);
-    const result = level.spec.grade(start.enforce(circuit));
-    expect(result.summary).toMatch(/Pass/);
+    const checked = gradeLevel(start.enforce(circuit), level, start.locked, catalog.allowed(level));
+    expect(checked.kind).toBe("custom");
+    if (checked.kind !== "custom") throw new Error(JSON.stringify(checked));
+    expect(checked.result.summary).toMatch(/Pass/);
   }, 120_000);
 
   it("keeps drafts in the compact saved form", () => {

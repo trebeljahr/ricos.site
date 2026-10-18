@@ -7,6 +7,7 @@ import {
   type GateType,
   initialSnapshot,
   inputCount,
+  outputCount,
   LABELS,
   type Node,
   type Snapshot,
@@ -25,7 +26,11 @@ import type {
 } from "./types";
 
 /** What a level lets on the board besides its locked parts. */
-export type Allowed = { gates: ReadonlySet<GateType>; parts: ReadonlySet<PartId> };
+export type Allowed = {
+  gates: ReadonlySet<GateType>;
+  parts: ReadonlySet<PartId>;
+  verifyPart?: (node: Node) => boolean;
+};
 
 /** A problem in plain words, and where to point at it. */
 export type Problem = { text: string; anchor?: HintAnchor };
@@ -100,7 +105,12 @@ export function loopNode(circuit: Circuit, parts: ReadonlySet<string>): string |
 
 const isAllowed = (node: Node, allowed: Allowed) =>
   node.type === "module"
-    ? Boolean(node.part && allowed.parts.has(node.part))
+    ? Boolean(
+        node.part &&
+          node.module &&
+          allowed.parts.has(node.part) &&
+          (!allowed.verifyPart || allowed.verifyPart(node)),
+      )
     : allowed.gates.has(node.type);
 
 /** Why the circuit cannot be checked yet, with anchors; empty when it can. */
@@ -111,7 +121,6 @@ export function structureProblems(
   allowed: Allowed,
 ): Problem[] {
   const circuit = withoutWireSplices(source);
-  if (level.spec.kind === "custom") return level.rules?.(circuit).map((text) => ({ text })) ?? [];
   const spec = level.spec;
   const problems: Problem[] = [];
   const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
@@ -126,10 +135,44 @@ export function structureProblems(
       anchor: { kind: "node", id: banned[0].id },
     });
   }
+  for (const wire of circuit.wires) {
+    const from = byId.get(wire.from),
+      to = byId.get(wire.to);
+    if (
+      !from ||
+      !to ||
+      wire.input < 0 ||
+      wire.input >= inputCount(to) ||
+      (wire.output ?? 0) < 0 ||
+      (wire.output ?? 0) >= outputCount(from)
+    )
+      problems.push({ text: "A wire refers to a missing part or an invalid port." });
+  }
+  const targets = new Set<string>();
+  for (const wire of circuit.wires) {
+    const key = `${wire.to}:${wire.input}`;
+    if (targets.has(key))
+      problems.push({
+        text: "An input has multiple drivers. Use a junction where the model supports combined paths.",
+      });
+    targets.add(key);
+  }
+  if (spec.kind === "custom")
+    return [...problems, ...(level.rules?.(circuit) ?? []).map((text) => ({ text }))];
+  for (const port of [...spec.inputs, ...spec.outputs]) {
+    const node = byId.get(port.id);
+    if (
+      !node ||
+      (spec.outputs.includes(port)
+        ? node.type !== "lamp"
+        : !["switch", "clock", "pulse"].includes(node.type))
+    )
+      problems.push({ text: `The designated ${port.label} port is missing or changed.` });
+  }
   for (const port of spec.outputs) {
     if (!circuit.wires.some((wire) => wire.to === port.id))
       problems.push({
-        text: `Nothing drives ${port.label} yet. Wire a part's output into it.`,
+        text: `Nothing drives ${port.label} yet. Which signal should determine this output?`,
         anchor: { kind: "input", node: port.id, index: 0 },
       });
   }
@@ -158,7 +201,7 @@ export function structureProblems(
     const loop = loopNode(circuit, used);
     if (loop)
       problems.push({
-        text: "A wire runs from a part's output back into its own inputs. This level needs no loop: remove it.",
+        text: "A wire runs from a part's output back into its own inputs. This truth-table exercise requires a settling combinational circuit.",
         anchor: { kind: "node", id: loop },
       });
   }

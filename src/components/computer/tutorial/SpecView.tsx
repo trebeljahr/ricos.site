@@ -94,38 +94,62 @@ function TruthTable({ spec, grade }: { spec: TruthSpec; grade?: Grade }) {
 }
 
 function TickList({ spec, grade }: { spec: SequenceSpec; grade?: Grade }) {
+  const [all, setAll] = useState(false);
   const results = grade?.kind === "sequence" ? grade.ticks : undefined;
   const first = grade?.kind === "sequence" ? grade.first : -1;
+  const indices =
+    all || spec.ticks.length <= 24
+      ? spec.ticks.map((_, i) => i)
+      : [
+          ...new Set([
+            0,
+            1,
+            2,
+            ...(first >= 0 ? [Math.max(0, first - 1), first] : []),
+            spec.ticks.length - 1,
+          ]),
+        ];
   return (
-    <ol className={styles.ticks}>
-      {spec.ticks.map((tick, index) => {
-        const result = results?.[index];
-        const expect = Object.entries(tick.expect ?? {});
-        return (
-          <li
-            // biome-ignore lint/suspicious/noArrayIndexKey: ticks are a fixed list
-            key={index}
-            className={clsx(
-              result && expect.length && (result.pass ? styles.rowPass : styles.rowFail),
-              index === first && styles.rowFirst,
-            )}
-          >
-            <span>{tick.note}</span>
-            {expect.length > 0 && (
-              <small>
-                {expect
-                  .map(([id, value]) => {
-                    const port = spec.outputs.find((item) => item.id === id);
-                    return `${port?.short ?? port?.label ?? id}=${bit(value)}`;
-                  })
-                  .join(" ")}
-                {result && (result.pass ? " ✓" : " ✗")}
-              </small>
-            )}
-          </li>
-        );
-      })}
-    </ol>
+    <div>
+      {spec.ticks.length > 24 && (
+        <button
+          type="button"
+          className={styles.linkButton}
+          onClick={() => setAll((value) => !value)}
+        >
+          {all ? "Show fewer ticks" : `Show all ${spec.ticks.length} test ticks`}
+        </button>
+      )}
+      <ol className={styles.ticks}>
+        {indices.map((index) => {
+          const tick = spec.ticks[index];
+          const result = results?.[index];
+          const expect = Object.entries(tick.expect ?? {});
+          return (
+            <li
+              key={index}
+              className={clsx(
+                result && expect.length && (result.pass ? styles.rowPass : styles.rowFail),
+                index === first && styles.rowFirst,
+              )}
+            >
+              <span>{tick.note}</span>
+              {expect.length > 0 && (
+                <small>
+                  {expect
+                    .map(([id, value]) => {
+                      const port = spec.outputs.find((item) => item.id === id);
+                      return `${port?.short ?? port?.label ?? id}=${bit(value)}`;
+                    })
+                    .join(" ")}
+                  {result && (result.pass ? " ✓" : " ✗")}
+                </small>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 

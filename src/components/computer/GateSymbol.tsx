@@ -18,7 +18,7 @@ export const GateSymbol = memo(function GateSymbol({
     <span
       role="img"
       aria-hidden={!identity?.yours || undefined}
-      aria-label={`${identity?.component.label || type}${identity?.yours ? " — Yours, exhaustively verified" : ""}`}
+      aria-label={`${identity?.component.label || type}${identity?.yours ? ` — Yours, ${identity.component.verificationLabel ?? "exhaustively verified"}` : ""}`}
       data-symbol={type}
       style={{ display: "inline-flex", position: "relative", verticalAlign: "middle" }}
     >
@@ -54,7 +54,11 @@ export const GateSymbol = memo(function GateSymbol({
             <circle cx="42" cy="21" r="2" />
           </>
         )}
-        {type === "sevensegment" && <><path d="M23 5 H42 M45 8 V19 M45 24 V35 M23 38 H42 M19 24 V35 M19 8 V19 M23 21 H42" /></>}
+        {type === "sevensegment" && (
+          <>
+            <path d="M23 5 H42 M45 8 V19 M45 24 V35 M23 38 H42 M19 24 V35 M19 8 V19 M23 21 H42" />
+          </>
+        )}
         {type === "pulse" && <path d="M5 29 H18 V12 H34 V29 H59" />}
         {type === "clock" && (
           <>
@@ -211,7 +215,13 @@ export const GateSymbol = memo(function GateSymbol({
                 fill="currentColor"
                 fontSize="12"
               >
-                {type === "counter" ? identity?.component.counterMode === "down" ? "−1" : identity?.component.counterMode === "up-down" ? "±1" : "+1" : "→"}
+                {type === "counter"
+                  ? identity?.component.counterMode === "down"
+                    ? "−1"
+                    : identity?.component.counterMode === "up-down"
+                      ? "±1"
+                      : "+1"
+                  : "→"}
               </text>
             )}
           </>

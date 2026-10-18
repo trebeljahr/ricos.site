@@ -474,3 +474,20 @@
   color: #e7edf3;
   font: 12px/1.5 ui-monospace, SFMono-Regular, monospace;
 }
+
+.parameter {
+  display: grid;
+  gap: 5px;
+  color: #aebbd3;
+}
+
+.parameter select {
+  min-width: 0;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #485b80;
+  border-radius: 5px;
+  background: #141e34;
+  color: #e7edf3;
+  font: inherit;
+}

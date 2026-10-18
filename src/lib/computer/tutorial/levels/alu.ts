@@ -2,8 +2,7 @@
 // slice that adds a sum to it, eight slices chained into an 8-bit ALU, and
 // the condition test that decides a jump, as in NandGame's ALU section.
 import { bitsOf, busPorts, CircuitKit, numberOf, type Source } from "../kit";
-import { checkStep, hasWires, placeStep, wireStep } from "../matcher";
-import type { HintAnchor, Level, PaletteRef, TutorialContext } from "../types";
+import type { Level } from "../types";
 import { A, B, boxed, CHAPTERS, OUT, once, port } from "./shared";
 
 const SECTION = "Arithmetic logic unit";
@@ -146,21 +145,6 @@ const condition = once(() => {
   return kit.out("jump", jump).build();
 });
 
-/** The logic unit's four gates, in reference order, with their palette entries and inputs. */
-const LOGIC_GATES: { id: string; part: PaletteRef; inputs: Source[] }[] = [
-  { id: "n1", part: "part:and", inputs: ["a", "b"] },
-  { id: "n2", part: "part:or", inputs: ["a", "b"] },
-  { id: "n3", part: "part:xor", inputs: ["a", "b"] },
-  { id: "n4", part: "part:not", inputs: ["a"] },
-];
-
-const gateWired = (context: TutorialContext, gate: (typeof LOGIC_GATES)[number]) =>
-  hasWires(
-    context,
-    gate.id,
-    gate.inputs.map((from, input) => ({ from, input })),
-  );
-
 export const logicUnitLevel: Level = {
   id: "logic-unit",
   title: "Logic unit",
@@ -179,64 +163,12 @@ export const logicUnitLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor", "part:selector"],
   makes: { part: "logic-unit", label: "LOGIC UNIT", builtIn: { reference: true } },
   reference: logicUnit,
-  steps: [
-    {
-      text: "Compute all four results at once. Place an AND, an OR, an XOR and a NOT.",
-      anchor: (context): HintAnchor => ({
-        kind: "palette",
-        part: (LOGIC_GATES.find((gate) => !context.match.has(gate.id)) ?? LOGIC_GATES[0]).part,
-      }),
-      done: (context) => LOGIC_GATES.every((gate) => context.match.has(gate.id)),
-    },
-    {
-      text: "Wire A and B into the AND, the OR and the XOR. Wire A into the NOT.",
-      anchor: (context): HintAnchor | undefined => {
-        const open = LOGIC_GATES.find((gate) => !gateWired(context, gate));
-        const node = open && context.match.get(open.id);
-        return node ? { kind: "input", node, index: 0 } : undefined;
-      },
-      done: (context) => LOGIC_GATES.every((gate) => gateWired(context, gate)),
-    },
-    placeStep(
-      "n5",
-      "part:selector",
-      "Place a SELECTOR. With OP0 on its SELECT input, it passes AND when OP0 is 0 and OR when OP0 is 1.",
-    ),
-    wireStep(
-      ["op0", "n1", "n2"],
-      "n5",
-      [0, 1, 2],
-      "Wire OP0 into SELECT, the AND output into A and the OR output into B.",
-    ),
-    placeStep(
-      "n6",
-      "part:selector",
-      "Place a second SELECTOR. It passes XOR when OP0 is 0 and NOT A when OP0 is 1.",
-    ),
-    wireStep(
-      ["op0", "n3", "n4"],
-      "n6",
-      [0, 1, 2],
-      "Wire OP0 into SELECT, the XOR output into A and the NOT output into B.",
-    ),
-    placeStep(
-      "n7",
-      "part:selector",
-      "Place a third SELECTOR. OP1 picks which of the first two reaches OUT.",
-    ),
-    wireStep(
-      ["op1", "n5", "n6"],
-      "n7",
-      [0, 1, 2],
-      "Wire OP1 into SELECT, the first selector into A and the second selector into B.",
-    ),
-    wireStep("n7", "out", 0, "Wire the third selector's output into OUT."),
-    checkStep("Try each op code with a few values of A and B. Then press Check."),
-  ],
   hints: [
-    { text: "Compute all four results at the same time. Then let the op code pick one of them." },
     {
-      text: "A SELECTOR picks one of two signals. OP0 picks within each pair: AND or OR, XOR or NOT A. OP1 then picks the pair.",
+      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
+    },
+    {
+      text: "Which signals describe data, and which signals decide what operation the output represents?",
     },
   ],
 };
@@ -273,13 +205,10 @@ export const aluSliceLevel: Level = {
   reference: aluSlice,
   hints: [
     {
-      text: "Your LOGIC UNIT already handles op codes 00, 01 and 10. Only op code 11 needs something new.",
+      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
     },
     {
-      text: "A FULL ADDER gives the sum bit and the carry. Its CARRY goes straight to CARRY OUT, whatever the op code.",
-    },
-    {
-      text: "A SELECTOR swaps the sum bit in for the logic unit's output. Its SELECT input must be 1 only when OP1 and OP0 are both 1.",
+      text: "Which signals describe data, and which signals decide what operation the output represents?",
     },
   ],
 };
@@ -303,11 +232,10 @@ export const alu8Level: Level = {
   reference: alu8,
   hints: [
     {
-      text: "Each bit gets its own ALU slice. The slice for bit 3 takes A3 and B3 and drives OUT3.",
+      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
     },
-    { text: "Wire OP0 and OP1 into every slice, so all eight do the same operation." },
     {
-      text: "Chain the carries as in an adder. CARRY IN goes into the slice for bit 0, each CARRY OUT into the next slice's CARRY IN, and the last one into CARRY OUT.",
+      text: "Which signals describe data, and which signals decide what operation the output represents?",
     },
   ],
 };
@@ -344,10 +272,10 @@ export const conditionLevel: Level = {
   reference: condition,
   hints: [
     {
-      text: "IS ZERO and IS NEGATIVE cover two of the three cases. X is above zero when it is neither zero nor negative.",
+      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
     },
     {
-      text: "Join each flag with its case through an AND: LT with negative, EQ with zero, GT with above zero. Then OR the three results together.",
+      text: "Which signals describe data, and which signals decide what operation the output represents?",
     },
   ],
 };

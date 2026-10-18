@@ -2,16 +2,26 @@
 // type or one of the site's preset circuits) and, once the reader solves the
 // level, their own circuit, boxed. A boxed part keeps the reader's gates inside,
 // so unfolding it shows their own work, down to the parts it is built from.
-import { type Circuit, type GateType, type Node, PRESETS } from "../logic";
-import { builtinCircuit, recognitionComponent, registerRecognitionComponent, verifyCircuitIdentity, type SymbolIdentity } from "../recognition";
+import {
+  type Circuit,
+  type GateType,
+  type Node,
+  PRESETS,
+  moduleInputs,
+  moduleOutputs,
+} from "../logic";
+import {
+  builtinCircuit,
+  recognitionComponent,
+  registerRecognitionComponent,
+  verifyCircuitIdentity,
+  type SymbolIdentity,
+} from "../recognition";
 import type { KnownPart } from "./analysis";
-import { type Allowed, gradeLevel, gradePassed } from "./grade";
+import { type Allowed, gradeLevel, gradePassed, gradeTruth, gradeSequence } from "./grade";
 import { levelStart } from "./kit";
 import type { OwnPartsMode, Progress } from "./progress";
 import type { BuiltIn, Level, PaletteRef, PartId } from "./types";
-
-/** Own parts open this many boxes deep; deeper ones use the built-in version. */
-const OWN_DEPTH = 4;
 
 export const ownName = (label: string) => `${label} (yours)`;
 export const isPartRef = (ref: PaletteRef): ref is `part:${string}` => ref.startsWith("part:");
@@ -32,7 +42,7 @@ export type PaletteEntry =
       builtIn: { gate: GateType } | { circuit: Circuit };
     };
 
-const verified = new WeakMap<Circuit, boolean>();
+const verified = new WeakMap<Circuit, Map<string, boolean>>();
 
 export class PartCatalog {
   readonly parts = new Map<PartId, PartInfo>();
@@ -40,6 +50,7 @@ export class PartCatalog {
   readonly gateParts = new Map<GateType, PartId>();
   /** Preset name → the part it stands for, e.g. "Half adder" → "half-adder". */
   readonly presetParts = new Map<string, PartId>();
+  private moduleChecks = new WeakMap<Circuit, Map<PartId, boolean>>();
   private builtInCache = new Map<PartId, Circuit>();
   private ownCache = new WeakMap<Circuit, Map<string, Circuit>>();
 
@@ -50,17 +61,44 @@ export class PartCatalog {
       this.parts.set(level.makes.part, info);
       if (level.spec.kind !== "custom") {
         const symbols: Record<string, SymbolIdentity> = {
-          selector8: "mux", adder4: "adder", adder8: "adder", increment4: "adder", subtract4: "adder",
-          "logic-unit": "alu", "alu-slice": "alu", alu8: "alu", "sr-latch": "srlatch",
-          "d-latch": "dlatch", "d-flip-flop": "dff", register1: "register", register8: "register",
-          counter8: "counter", ram: "memory",
+          selector8: "mux",
+          adder4: "adder",
+          adder8: "adder",
+          increment4: "adder",
+          subtract4: "adder",
+          "logic-unit": "alu",
+          "alu-slice": "alu",
+          alu8: "alu",
+          "sr-latch": "srlatch",
+          "d-latch": "dlatch",
+          "d-flip-flop": "dff",
+          register1: "register",
+          register8: "register",
+          counter8: "counter",
+          ram: "memory",
         };
-        const symbol = recognitionComponent(info.part)?.symbol ?? symbols[info.part] ??
+        const symbol =
+          recognitionComponent(info.part)?.symbol ??
+          symbols[info.part] ??
           ("gate" in info.builtIn ? info.builtIn.gate : "module");
-        registerRecognitionComponent({ id: info.part, label: info.label, symbol,
-          ...(recognitionComponent(info.part)?.counterMode ? { counterMode: recognitionComponent(info.part)!.counterMode } : {}),
-          inputs: level.spec.inputs.map((port) => port.label), outputs: level.spec.outputs.map((port) => port.label),
-          ...(level.spec.kind === "truth" ? { evaluate: level.spec.fn } : {}) });
+        registerRecognitionComponent({
+          id: info.part,
+          label: info.label,
+          symbol,
+          ...(recognitionComponent(info.part)?.counterMode
+            ? { counterMode: recognitionComponent(info.part)!.counterMode }
+            : {}),
+          inputs: level.spec.inputs.map((port) => port.label),
+          outputs: level.spec.outputs.map((port) => port.label),
+          ...(level.spec.kind === "truth" ? { evaluate: level.spec.fn } : {}),
+          checkConstruction: (circuit: Circuit) => this.passes(level, circuit),
+          ...(level.spec.kind === "sequence" || (level.spec.kind === "truth" && level.spec.rows)
+            ? {
+                verificationLabel:
+                  level.spec.kind === "sequence" ? "sequence checked" : "sample checked",
+              }
+            : {}),
+        });
       }
       const builtIn = level.makes.builtIn;
       if ("gate" in builtIn) this.gateParts.set(builtIn.gate, level.makes.part);
@@ -102,12 +140,70 @@ export class PartCatalog {
       const builtIn = this.parts.get(part)?.builtIn;
       if (builtIn && "gate" in builtIn) gates.add(builtIn.gate);
     }
-    return { gates, parts };
+    return {
+      gates,
+      parts,
+      verifyPart: (node) => {
+        const inner = node.module;
+        const info = node.part && this.parts.get(node.part);
+        if (!inner || !info || info.level.spec.kind === "custom") return false;
+        let checks = this.moduleChecks.get(inner);
+        if (!checks) {
+          checks = new Map();
+          this.moduleChecks.set(inner, checks);
+        }
+        const cached = checks.get(info.part);
+        if (cached !== undefined) return cached;
+        const spec = info.level.spec;
+        const ins = moduleInputs(inner),
+          outs = moduleOutputs(inner);
+        if (ins.length !== spec.inputs.length || outs.length !== spec.outputs.length) return false;
+        // A label is no proof. Check the boxed implementation through its real port order.
+        const mapped = {
+          ...spec,
+          inputs: spec.inputs.map((p, i) => ({ ...p, id: ins[i].id })),
+          outputs: spec.outputs.map((p, i) => ({ ...p, id: outs[i].id })),
+        };
+        let pass = false;
+        if (spec.kind === "truth")
+          pass = gradeTruth(inner, {
+            ...spec,
+            inputs: mapped.inputs,
+            outputs: mapped.outputs,
+          }).pass;
+        else {
+          const ids = new Map([
+            ...spec.inputs.map((p, i) => [p.id, ins[i].id] as const),
+            ...spec.outputs.map((p, i) => [p.id, outs[i].id] as const),
+          ]);
+          const rename = (values?: Record<string, boolean>) =>
+            values &&
+            Object.fromEntries(Object.entries(values).map(([id, bit]) => [ids.get(id) ?? id, bit]));
+          pass = gradeSequence(inner, {
+            ...spec,
+            inputs: mapped.inputs,
+            outputs: mapped.outputs,
+            ticks: spec.ticks.map((tick) => ({
+              ...tick,
+              set: rename(tick.set),
+              expect: rename(tick.expect),
+            })),
+          }).pass;
+        }
+        checks.set(info.part, pass);
+        return pass;
+      },
+    };
   }
 
   /** Whether a stored solution still passes its level. Cached per circuit object. */
   passes(level: Level, circuit: Circuit): boolean {
-    let result = verified.get(circuit);
+    let results = verified.get(circuit);
+    if (!results) {
+      results = new Map();
+      verified.set(circuit, results);
+    }
+    let result = results.get(level.id);
     if (result === undefined) {
       try {
         const start = levelStart(level);
@@ -115,7 +211,7 @@ export class PartCatalog {
       } catch {
         result = false;
       }
-      verified.set(circuit, result);
+      results.set(level.id, result);
     }
     return result;
   }
@@ -127,49 +223,33 @@ export class PartCatalog {
     return circuit && this.passes(info.level, circuit) ? circuit : undefined;
   }
 
-  /**
-   * The reader's part, boxed: their solution with every own part inside it
-   * opened from the latest solutions too, up to OWN_DEPTH boxes deep.
-   */
-  ownModule(part: PartId, progress: Progress, depth = 1): Circuit | undefined {
+  /** The exact checked implementation, including nested learner-built modules. */
+  ownModule(part: PartId, progress: Progress): Circuit | undefined {
     const info = this.parts.get(part);
     const solution = this.solution(part, progress);
     if (!info || !solution) return undefined;
-    let byDepth = this.ownCache.get(solution);
-    if (!byDepth) {
-      byDepth = new Map();
-      this.ownCache.set(solution, byDepth);
+    let cachedParts = this.ownCache.get(solution);
+    if (!cachedParts) {
+      cachedParts = new Map();
+      this.ownCache.set(solution, cachedParts);
     }
-    // Nested parts are rebuilt from the current solutions, so cache per set of them.
-    const key = `${depth}|${Object.entries(progress.solved)
-      .map(([id, item]) => `${id}:${item.at}`)
-      .join(",")}`;
-    const cached = byDepth.get(key);
+    const cached = cachedParts.get(part);
     if (cached) return cached;
-    const nodes = solution.nodes.map((node): Node => {
-      if (node.type !== "module" || !node.part) return node;
-      const own =
-        node.module?.name === ownName(this.parts.get(node.part)?.label ?? "") && depth < OWN_DEPTH
-          ? this.ownModule(node.part, progress, depth + 1)
-          : undefined;
-      if (own) return { ...node, module: own };
-      return this.builtInNode(node.part, node) ?? node;
-    });
-    const raw: Circuit = { ...solution, name: ownName(info.label), nodes, identity: undefined };
+    const raw: Circuit = { ...solution, name: ownName(info.label), identity: undefined };
     const spec = info.level.spec;
-    const module = spec.kind === "truth" ? verifyCircuitIdentity(raw, { inputs: spec.inputs.map((port) => port.id), outputs: spec.outputs.map((port) => port.id) }, part) ?? raw : raw;
-    byDepth.set(key, module);
+    const module =
+      spec.kind !== "custom"
+        ? (verifyCircuitIdentity(
+            raw,
+            {
+              inputs: spec.inputs.map((port) => port.id),
+              outputs: spec.outputs.map((port) => port.id),
+            },
+            part,
+          ) ?? raw)
+        : raw;
+    cachedParts.set(part, module);
     return module;
-  }
-
-  /** `node` turned into the built-in version of `part`, keeping its id, place and label. */
-  private builtInNode(part: PartId, node: Node): Node | undefined {
-    const info = this.parts.get(part);
-    if (!info) return undefined;
-    if ("gate" in info.builtIn)
-      return { id: node.id, type: info.builtIn.gate, x: node.x, y: node.y, value: false };
-    const module = this.builtInModule(part);
-    return module ? { ...node, module } : undefined;
   }
 
   /** Palette entries for a level, or for any list of refs. */

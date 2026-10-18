@@ -3,7 +3,6 @@
 // 8-bit selector picks one of two bytes. These are the parts that route data
 // inside a processor.
 import { bitsOf, busPorts, CircuitKit } from "../kit";
-import { checkStep, placeStep, wireStep } from "../matcher";
 import type { Level, LevelPort } from "../types";
 import { A, B, boxed, CHAPTERS, OUT, once, port } from "./shared";
 
@@ -117,35 +116,9 @@ export const selectorLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor"],
   makes: { part: "selector", label: "SELECTOR", builtIn: { reference: true } },
   reference: selector,
-  steps: [
-    placeStep(
-      "n1",
-      "part:not",
-      "Place a NOT. Its output is 1 while SELECT is 0, which is when A should pass.",
-    ),
-    wireStep("sel", "n1", 0, "Wire SELECT into the NOT."),
-    placeStep("n2", "part:and", "Place an AND. It will let A through only while SELECT is 0."),
-    wireStep(["a", "n1"], "n2", [0, 1], "Wire A and the NOT's output into the AND."),
-    placeStep(
-      "n3",
-      "part:and",
-      "Place a second AND. It will let B through only while SELECT is 1.",
-    ),
-    wireStep(["b", "sel"], "n3", [0, 1], "Wire B and SELECT into the second AND."),
-    placeStep(
-      "n4",
-      "part:or",
-      "Place an OR to join the two ANDs. At most one of them is 1 at a time.",
-    ),
-    wireStep(["n2", "n3"], "n4", [0, 1], "Wire both AND outputs into the OR."),
-    wireStep("n4", "out", 0, "Wire the OR's output into OUT."),
-    checkStep("Flip SELECT and watch OUT follow A or B. Then press Check."),
-  ],
   hints: [
-    {
-      text: "Split the job in two. One AND passes A while SELECT is 0. Another AND passes B while SELECT is 1.",
-    },
-    { text: "An OR joins the two AND outputs. Only one of them can be 1 at a time." },
+    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
+    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
   ],
 };
 
@@ -167,10 +140,8 @@ export const switchLevel: Level = {
   makes: { part: "switch", label: "SWITCH", builtIn: { reference: true } },
   reference: switchPart,
   hints: [
-    { text: "Each output is DATA joined by AND with a condition on SELECT." },
-    {
-      text: "TO A needs SELECT to be 0, so it gets SELECT through a NOT. TO B gets SELECT as it is.",
-    },
+    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
+    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
   ],
 };
 
@@ -195,12 +166,8 @@ export const decoderLevel: Level = {
   makes: { part: "decoder", label: "DECODER", builtIn: { reference: true } },
   reference: decoder,
   hints: [
-    {
-      text: "Y0 and Y1 are the rows where A1 is 0. Y2 and Y3 are the rows where A1 is 1. In each pair, A0 picks the line.",
-    },
-    {
-      text: "A SWITCH with A0 on SELECT sends its DATA to one of two lines. Use two switches: one gets the opposite of A1 as DATA, the other gets A1.",
-    },
+    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
+    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
   ],
 };
 
@@ -228,10 +195,8 @@ export const selector8Level: Level = {
   },
   reference: selector8,
   hints: [
-    { text: "Each bit is its own 1-bit selector. Place eight of them." },
-    {
-      text: "Wire SELECT into the SELECT input of all eight selectors. The selector for bit 3 takes A3 and B3 and drives OUT3.",
-    },
+    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
+    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
   ],
 };
 

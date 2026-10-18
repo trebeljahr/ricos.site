@@ -125,7 +125,14 @@ export const PROCESSOR_LEVELS: Level[] = CPU_LEVEL_SPECS.map((spec, index): Leve
       };
     },
     reference: once(() => solvedLevel(setup())),
-    hints: spec.steps.map((text) => ({ text, when: () => true })),
+    hints: [
+      {
+        text: "Choose one instruction and track its address, control signals, and stored values across the failing ticks.",
+      },
+      {
+        text: "Which values must survive a clock edge? Which control signals allow those values to change?",
+      },
+    ],
     save: (circuit) => saveLevel(circuit, setup()),
     restore: (saved) => restoreLevel(saved, setup()),
   };

@@ -1,21 +1,14 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTutorialProgress } from "../../../hooks/useTutorialProgress";
-import { type Circuit, type Node, validateCircuit } from "../../../lib/computer/logic";
+import { type Circuit, LABELS, validateCircuit } from "../../../lib/computer/logic";
 import { feedback, type Note } from "../../../lib/computer/tutorial/analysis";
 import { type Grade, gradeLevel, gradePassed } from "../../../lib/computer/tutorial/grade";
 import { levelStart } from "../../../lib/computer/tutorial/kit";
-import { CATALOG, LEVELS, levelById } from "../../../lib/computer/tutorial/levels";
-import {
-  applyAction,
-  describeAction,
-  kindOf,
-  matchReference,
-  nextAction,
-} from "../../../lib/computer/tutorial/matcher";
+import { CATALOG, LEARNING_LEVELS, LEVELS, levelById } from "../../../lib/computer/tutorial/levels";
 import { levelRows } from "../../../lib/computer/tutorial/paletteRows";
-import { chosenVersion, partNode } from "../../../lib/computer/tutorial/parts";
+import { requestedHints } from "../../../lib/computer/tutorial/hints";
 import {
   markSkipped,
   markSolved,
@@ -23,13 +16,7 @@ import {
   progressStore,
   saveDraft,
 } from "../../../lib/computer/tutorial/progress";
-import type {
-  HintAnchor,
-  Level,
-  PaletteRef,
-  TutorialContext,
-  TutorialStep,
-} from "../../../lib/computer/tutorial/types";
+import type { Level } from "../../../lib/computer/tutorial/types";
 import { LogicBuilder, type LogicBuilderHandle } from "../LogicBuilder";
 import { type Callout, HintLayer } from "./HintLayer";
 import { failureSentence, SpecView } from "./SpecView";
@@ -87,7 +74,7 @@ const statusOf = (level: Level, progress: Progress) =>
   progress.solved[level.id] ? "✓" : progress.skipped.includes(level.id) ? "↷" : "";
 
 /**
- * A tutorial in one circuit builder: the level's goal, steps, spec and check
+ * A tutorial in one circuit builder: the level's goal, context, spec and check
  * sit in a column beside the canvas, hints point at parts in it, and solved
  * levels become parts in the palettes of later levels.
  */
@@ -98,11 +85,12 @@ export function LogicTutorial({
   onLevelChange,
   extra,
 }: LogicTutorialProps) {
+  const hintId = useId();
   const ladder = useMemo(
     () =>
       ids
         ? ids.map((id) => levelById(id)).filter((level): level is Level => Boolean(level))
-        : LEVELS,
+        : LEARNING_LEVELS,
     [ids],
   );
   const [levelId, setLevelId] = useState(() => levelById(requested)?.id ?? ladder[0]?.id);
@@ -110,7 +98,10 @@ export function LogicTutorial({
     if (requested && levelById(requested)) setLevelId(requested);
   }, [requested]);
   const level = levelById(levelId) ?? ladder[0];
-  const index = ladder.indexOf(level);
+  const index = ladder.findIndex(
+    (item) =>
+      item.id === level.id || (item.practice && item.practice.family === level.practice?.family),
+  );
   const progress = useTutorialProgress();
   const start = useMemo(() => levelStart(level), [level]);
   const allowed = useMemo(() => CATALOG.allowed(level), [level]);
@@ -128,20 +119,16 @@ export function LogicTutorial({
   const circuitRef = useRef(initial);
   const handle = useRef<LogicBuilderHandle | null>(null);
   const [checked, setChecked] = useState<Checked | null>(null);
-  const [checks, setChecks] = useState(0);
   const [hints, setHints] = useState(0);
   const [focus, setFocus] = useState<number | null>(null);
-  const [notice, setNotice] = useState("");
   const saveTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     circuitRef.current = initial;
     setCircuit(initial);
     setChecked(null);
-    setChecks(0);
     setHints(0);
     setFocus(null);
-    setNotice("");
   }, [initial]);
   useEffect(() => () => window.clearTimeout(saveTimer.current), []);
 
@@ -166,18 +153,6 @@ export function LogicTutorial({
   }, [circuit, level, start, allowed]);
   const fresh = checked && checked.circuit === circuit ? checked : null;
   const grade = fresh?.grade ?? (live?.kind === "structure" ? undefined : live);
-  const passing = Boolean((live && gradePassed(live)) || (fresh && gradePassed(fresh.grade)));
-  const match = useMemo(
-    () =>
-      reference
-        ? matchReference(circuit, reference, start.locked, CATALOG.gateParts)
-        : new Map<string, string>(),
-    [circuit, reference, start],
-  );
-  const context: TutorialContext = { circuit, match, passing, reference };
-  const steps = level.steps ?? [];
-  const stepDone = steps.map((step) => step.done(context));
-  const current = stepDone.indexOf(false);
   const solved = Boolean(progress.solved[level.id]);
   const open = !sequential || isOpen(ladder, index, progress);
 
@@ -187,44 +162,6 @@ export function LogicTutorial({
     onLevelChange?.(id);
   };
   const next = ladder[index + 1];
-
-  const makeNode = (ref: Node): Node => {
-    const id = crypto.randomUUID();
-    const kind = kindOf(ref, CATALOG.gateParts);
-    // A part on the palette goes in as the version the reader's setting picks.
-    if (kind.startsWith("part:") && level.palette.includes(kind as PaletteRef)) {
-      const [entry] = CATALOG.entries([kind as PaletteRef], progressStore.get());
-      if (entry?.kind === "part") {
-        const version = chosenVersion(entry, progress.settings.ownParts);
-        return {
-          ...partNode(entry, version === "own" ? "own" : "built-in"),
-          id,
-          x: ref.x,
-          y: ref.y,
-        } as Node;
-      }
-    }
-    return { ...ref, id, module: ref.module, value: false };
-  };
-
-  const showMe = () => {
-    if (!reference) return;
-    const now = circuitRef.current;
-    const action = nextAction(
-      now,
-      reference,
-      matchReference(now, reference, start.locked, CATALOG.gateParts),
-    );
-    if (!action) {
-      setNotice("Your wiring matches the reference. Press Check.");
-      return;
-    }
-    setNotice("");
-    handle.current?.apply(
-      (board) => applyAction(board, action, makeNode),
-      describeAction(action, now),
-    );
-  };
 
   const check = () => {
     const now = circuitRef.current;
@@ -249,7 +186,6 @@ export function LogicTutorial({
       }
     }
     setChecked({ circuit: now, grade: result, notes, stats });
-    setChecks((value) => value + 1);
     setFocus(null);
   };
 
@@ -258,17 +194,16 @@ export function LogicTutorial({
     if (next) openLevel(next.id);
   };
   const reset = () => {
+    setHints(0);
+    setFocus(null);
+    setChecked(null);
     saveDraft(level.id, null);
     handle.current?.load(start.circuit);
   };
 
   // One callout at a time: a problem from the last check, the current step, a note, or a hint.
   const problems = fresh?.grade.kind === "structure" ? fresh.grade.problems : [];
-  const shownHints = (level.hints ?? []).filter(
-    (hint, position) => position < hints || hint.when?.({ ...context, checks }),
-  );
-  const anchorOf = (anchor: TutorialStep["anchor"]) =>
-    typeof anchor === "function" ? anchor(context) : anchor;
+  const shownHints = hints ? requestedHints(level, circuit, fresh?.grade ?? live, hints) : [];
   const focused = focus !== null ? fresh?.notes[focus] : undefined;
   let callout: Callout | undefined;
   let rings: string[] = [];
@@ -280,11 +215,9 @@ export function LogicTutorial({
   } else if (focused) {
     callout = { text: focused.text, anchor: focused.anchor, tone: focused.tone };
     rings = focused.nodes ?? [];
-  } else if (current >= 0 && !passing) {
-    callout = { text: steps[current].text, anchor: anchorOf(steps[current].anchor), tone: "step" };
-  } else if (!passing && shownHints.length && shownHints[shownHints.length - 1].anchor) {
+  } else if (shownHints.length) {
     const hint = shownHints[shownHints.length - 1];
-    callout = { text: hint.text, anchor: hint.anchor as HintAnchor, tone: "tip" };
+    if (hint.anchor) callout = { text: hint.text, anchor: hint.anchor, tone: "tip" };
   }
   const customHighlight = fresh?.grade.kind === "custom" ? fresh.grade.result.highlight : undefined;
 
@@ -310,7 +243,7 @@ export function LogicTutorial({
               ‹
             </button>
             <select
-              value={level.id}
+              value={ladder[index]?.id ?? level.id}
               onChange={(event) => openLevel(event.target.value)}
               aria-label="Level"
             >
@@ -358,36 +291,53 @@ export function LogicTutorial({
             </p>
           )}
 
-          {steps.length > 0 && (
-            <ol className={styles.steps} aria-label="Steps">
-              {steps.map((step, position) => (
-                <li
-                  key={step.text}
-                  className={clsx(
-                    stepDone[position] && styles.stepDone,
-                    position === current && styles.stepCurrent,
-                  )}
-                  aria-current={position === current ? "step" : undefined}
-                >
-                  {step.text}
-                </li>
-              ))}
-            </ol>
-          )}
-
-          <div className={styles.actions}>
-            {reference && (
-              <button
-                type="button"
-                onClick={showMe}
-                title="Place the next part or wire of the reference solution"
+          {level.practice && (
+            <label className={styles.parameter}>
+              Challenge parameters
+              <select
+                aria-label="Counter challenge"
+                value={level.id}
+                onChange={(event) => openLevel(event.target.value)}
               >
-                Show me
-              </button>
-            )}
-            {shownHints.length < (level.hints?.length ?? 0) && (
-              <button type="button" onClick={() => setHints((value) => value + 1)}>
-                Hint
+                {LEVELS.filter((item) => item.practice?.family === level.practice?.family).map(
+                  (item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.practice?.label} {statusOf(item, progress)}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+          )}
+          <p className={styles.muted}>
+            Available blocks:{" "}
+            {level.palette.length
+              ? level.palette
+                  .map((ref) =>
+                    ref.startsWith("part:")
+                      ? CATALOG.parts.get(ref.slice(5))?.label
+                      : LABELS[ref as keyof typeof LABELS],
+                  )
+                  .join(", ")
+              : "the designated inputs and outputs"}
+            .
+            {level.makes &&
+              " Build the behavior from these blocks; the finished target part is excluded."}
+          </p>
+          <div className={styles.actions}>
+            <button
+              type="button"
+              disabled={hints >= (level.hints?.length ?? 0) + 1}
+              data-tutorial-hint=""
+              aria-controls={hintId}
+              aria-expanded={hints > 0}
+              onClick={() => setHints((value) => value + 1)}
+            >
+              {hints ? "Another hint" : "Hint"}
+            </button>
+            {hints > 0 && (
+              <button type="button" onClick={() => setHints(0)}>
+                Dismiss hints
               </button>
             )}
             <button
@@ -398,23 +348,20 @@ export function LogicTutorial({
               Reset
             </button>
             {next && !solved && (
-              <button
-                type="button"
-                onClick={skip}
-                title="Mark this level skipped and open the next one"
-              >
+              <button type="button" onClick={skip}>
                 Skip
               </button>
             )}
           </div>
-          {notice && <p className={styles.notice}>{notice}</p>}
-          {shownHints.length > 0 && (
-            <ul className={styles.hints} aria-label="Hints">
-              {shownHints.map((hint) => (
-                <li key={hint.text}>{hint.text}</li>
-              ))}
-            </ul>
-          )}
+          <div id={hintId} aria-live="polite">
+            {shownHints.length > 0 && (
+              <ul className={styles.hints} aria-label="Hints">
+                {shownHints.map((hint) => (
+                  <li key={hint.text}>{hint.text}</li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <h3 className={styles.subhead}>
             {level.spec.kind === "truth"
@@ -539,7 +486,7 @@ function Result({
         )}
         {result.replay && (
           <button type="button" onClick={() => onReplay(result.replay!)}>
-            Show me
+            Replay failing test
           </button>
         )}
         {result.pass && onNext && (

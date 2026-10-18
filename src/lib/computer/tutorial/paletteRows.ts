@@ -63,9 +63,16 @@ export function partRow(
   const own = entry.own ? placementOf(partNode(entry, "own")) : undefined;
   const builtIn = options.builtIn ?? placementOf(partNode(entry, "built-in"));
   const icon =
-    (version === "own" && entry.own ? { circuit: entry.own } : undefined) ?? options.icon ??
+    (version === "own" && entry.own ? { circuit: entry.own } : undefined) ??
+    options.icon ??
     ("gate" in entry.builtIn ? { type: entry.builtIn.gate } : { circuit: entry.builtIn.circuit });
-  const ownTitle = `Your ${label}, checked against every row of “${entry.level.title}”. Click to add or drag onto the board.`;
+  const scope =
+    entry.level.spec.kind === "sequence"
+      ? "the test sequence"
+      : entry.level.spec.kind === "truth" && entry.level.spec.rows
+        ? "the sampled rows"
+        : "every row";
+  const ownTitle = `Your ${label}, checked against ${scope} of “${entry.level.title}”. Click to add or drag onto the board.`;
   const builtInTitle =
     options.builtInTitle ?? `The built-in ${label}. Click to add or drag onto the board.`;
   if (version === "locked")

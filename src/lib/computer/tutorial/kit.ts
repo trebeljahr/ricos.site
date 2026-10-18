@@ -33,7 +33,7 @@ export function portNodes(inputs: LevelPort[], outputs: LevelPort[]): Node[] {
     ...inputs.map(
       (port): Node => ({
         id: port.id,
-        type: port.clock ? "clock" : "switch",
+        type: port.clock ? "clock" : port.button ? "pulse" : "switch",
         x: 0,
         y: 0,
         label: port.label,
@@ -193,30 +193,36 @@ export function levelPorts(level: Level): { inputs: LevelPort[]; outputs: LevelP
 }
 
 /**
- * The start circuit: the locked ports where the reference solution has them,
- * or in two columns with room between them.
+ * Designated ports with room to construct a circuit. The learner's initial
+ * workspace must not inherit the reference topology's size or placement.
  */
 export function defaultStart(level: Level): { circuit: Circuit; locked: string[] } {
   const { inputs, outputs } = levelPorts(level);
   const ports = portNodes(inputs, outputs);
-  const reference = level.reference?.();
-  const placed = new Map(reference?.nodes.map((node) => [node.id, node]));
-  const outputX = Math.max(
-    INPUT_X + 132 + spaceForParts,
-    ...ports.filter((node) => node.type === "lamp").map((node) => placed.get(node.id)?.x ?? 0),
-  );
+  const portRows = 8;
+  const portColumn = 200;
+  const outputX =
+    INPUT_X +
+    132 +
+    spaceForParts +
+    Math.floor(Math.max(0, inputs.length - 1) / portRows) * portColumn;
   let inputY = 40;
   let outputY = 40;
+  let inputIndex = 0;
+  let outputIndex = 0;
   const nodes = ports.map((node) => {
-    const at = placed.get(node.id);
     if (node.type === "lamp") {
-      const y = at?.y ?? outputY;
+      if (outputIndex % portRows === 0) outputY = 40;
+      const y = outputY;
+      const x = outputX + Math.floor(outputIndex++ / portRows) * portColumn;
       outputY = y + nodeHeight(node) + ROW_GAP;
-      return { ...node, x: outputX, y };
+      return { ...node, x, y };
     }
-    const y = at?.y ?? inputY;
+    if (inputIndex % portRows === 0) inputY = 40;
+    const y = inputY;
+    const x = INPUT_X + Math.floor(inputIndex++ / portRows) * portColumn;
     inputY = y + nodeHeight(node) + ROW_GAP;
-    return { ...node, x: INPUT_X, y };
+    return { ...node, x, y };
   });
   return {
     circuit: { name: level.title, nodes, wires: [] },

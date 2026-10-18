@@ -19,6 +19,8 @@ export type LevelPort = {
   short?: string;
   /** Inputs only: a clock instead of a switch. */
   clock?: boolean;
+  /** A manual button, with pulse and held interaction modes. */
+  button?: boolean;
 };
 
 export type TruthSpec = {
@@ -107,12 +109,12 @@ export type TutorialStep = {
   show?: (context: TutorialContext) => Circuit | undefined;
 };
 
-/** A hint shown on request ("Hint"), or by itself when `when` is true. */
+/** A reasoning hint shown only after an explicit request. */
 export type LevelHint = {
+  /** Automatic hint triggers are forbidden; retained for compatibility checks. */
+  when?: never;
   text: string;
   anchor?: HintAnchor;
-  /** Show it without being asked, e.g. after two failed checks. */
-  when?: (context: TutorialContext & { checks: number }) => boolean;
 };
 
 export type ChapterLink = { number: string; title: string; href: string };
@@ -141,15 +143,17 @@ export type Level = {
    * ports, laid out left and right, with nothing between them.
    */
   start?: () => { circuit: Circuit; locked: string[]; enforce?: (circuit: Circuit) => Circuit };
-  /** A working solution from palette parts: for "Show me", the feedback and the built-in part. */
+  /** Internal validation asset; never exposed as an editing action. */
   reference?: () => Circuit;
-  /** Guided steps. Early levels have them; later levels give only the goal and the spec. */
+  /** @deprecated Internal reference-fixture steps only. Never shown in construction lessons. */
   steps?: TutorialStep[];
   hints?: LevelHint[];
   /** Extra structure rules, one sentence per problem; the check stops on them. */
   rules?: (circuit: Circuit) => string[];
   /** Off the main path: the next level opens without it. */
   optional?: boolean;
+  /** One core construction with parameterized mastery challenges. Stable ids retain progress. */
+  practice?: { family: string; core?: boolean; label: string };
   /** A compact form of unfinished work, for big circuits. Default: the circuit itself. */
   save?: (circuit: Circuit) => unknown;
   /** The circuit from a saved draft, or undefined when it is unusable. */

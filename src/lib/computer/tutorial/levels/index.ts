@@ -6,6 +6,7 @@ import { ARITHMETIC_LEVELS } from "./arithmetic";
 import { DISPLAY_LEVELS } from "./displays";
 import { GATE_LEVELS } from "./gates";
 import { COUNTER_LEVELS } from "./counters";
+import { INPUT_LEVELS } from "./inputs";
 import { MEMORY_LEVELS } from "./memory";
 import { PROCESSOR_LEVELS } from "./processor";
 import { registerCatalog } from "./shared";
@@ -17,10 +18,14 @@ export const LEVELS: readonly Level[] = [
   ...SWITCHING_LEVELS,
   ...ALU_LEVELS,
   ...MEMORY_LEVELS,
+  ...INPUT_LEVELS,
   ...COUNTER_LEVELS,
   ...DISPLAY_LEVELS,
   ...PROCESSOR_LEVELS,
 ];
+
+/** The counter family has one core lesson; variants remain addressable and saved independently. */
+export const LEARNING_LEVELS = LEVELS.filter((level) => !level.practice || level.practice.core);
 
 export const CATALOG = new PartCatalog(LEVELS);
 registerCatalog(CATALOG);

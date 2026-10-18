@@ -1,5 +1,6 @@
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import { TransistorGates } from "@components/computer/TransistorGates";
+import Link from "next/link";
 import Layout from "@components/Layout";
 
 export default function TransistorGatesPage() {
@@ -24,6 +25,15 @@ export default function TransistorGatesPage() {
           <h2>
             <code>{"<TransistorGates />"}</code>
           </h2>
+          <p>
+            This viewer explains completed circuits. To design your own circuit from a behavior
+            goal, open the construction challenge.
+          </p>
+          <p>
+            <Link href="/computer/build-from-nand?level=cmos-not">
+              Design a transistor inverter →
+            </Link>
+          </p>
           <TransistorGates />
           <h2>
             <code>{'<TransistorGates gate="nand" fixed />'}</code>

@@ -2,7 +2,6 @@
 // small number tests an ALU needs, as in NandGame's arithmetic section. Each
 // adder the reader builds joins the parts list of the levels after it.
 import { bitsOf, busPorts, CircuitKit, numberOf, type Source } from "../kit";
-import { checkStep, placeStep, wireStep } from "../matcher";
 import type { Level } from "../types";
 import { A, B, boxed, CHAPTERS, once, port } from "./shared";
 
@@ -154,27 +153,12 @@ export const halfAdderLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor"],
   makes: { part: "half-adder", label: "HALF ADDER", builtIn: { preset: "Half adder" } },
   reference: halfAdder,
-  steps: [
-    placeStep(
-      "n1",
-      "part:xor",
-      "SUM is 1 when exactly one input is 1. That is what XOR does. Place an XOR.",
-    ),
-    wireStep(["a", "b"], "n1", [0, 1], "Wire A and B into the XOR."),
-    placeStep("n2", "part:and", "CARRY is 1 only when A and B are both 1. Place an AND."),
-    wireStep(
-      ["a", "b"],
-      "n2",
-      [0, 1],
-      "Wire A and B into the AND too. One output can feed many inputs.",
-    ),
-    wireStep("n1", "sum", 0, "Wire the XOR's output into SUM."),
-    wireStep("n2", "carry", 0, "Wire the AND's output into CARRY."),
-    checkStep("Try all four input pairs. Then press Check."),
-  ],
   hints: [
     {
-      text: "Look at the SUM column next to the XOR table, and the CARRY column next to the AND table.",
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
+    },
+    {
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
     },
   ],
 };
@@ -201,12 +185,11 @@ export const fullAdderLevel: Level = {
   makes: { part: "full-adder", label: "FULL ADDER", builtIn: { preset: "Full adder" } },
   reference: fullAdder,
   hints: [
-    { text: "Add two of the bits first. Then add the third bit to that result." },
     {
-      text: "A half adder adds two bits. Use one for A and B. Use a second one for the first SUM and CARRY IN.",
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
     },
     {
-      text: "Each half adder gives a carry. They are never both 1, so an OR of the two carries is CARRY.",
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
     },
   ],
 };
@@ -229,10 +212,10 @@ export const adder4Level: Level = {
   reference: adder4,
   hints: [
     {
-      text: "Add the numbers the way you add on paper: one column at a time, from bit 0 up. Each column is one full adder.",
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
     },
     {
-      text: "Wire CARRY IN into the full adder for bit 0. Wire each full adder's CARRY into the CARRY IN of the next one. The last CARRY is CARRY OUT.",
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
     },
   ],
 };
@@ -255,10 +238,10 @@ export const adder8Level: Level = {
   reference: adder8,
   hints: [
     {
-      text: "Two 4-bit adders make an 8-bit adder. One adds bits 0 to 3, the other bits 4 to 7.",
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
     },
     {
-      text: "The CARRY OUT of the low adder goes into the CARRY IN of the high adder.",
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
     },
   ],
 };
@@ -283,13 +266,10 @@ export const increment4Level: Level = {
   reference: increment4,
   hints: [
     {
-      text: "The 1 goes into bit 0. A carry from bit 0 moves into bit 1, and so on up.",
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
     },
     {
-      text: "Your 4-bit adder works: GROUND into every B input, HIGH into CARRY IN.",
-    },
-    {
-      text: "A chain of half adders needs fewer gates. Add HIGH to A0, then add each CARRY to the next bit of A.",
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
     },
   ],
 };
@@ -312,12 +292,11 @@ export const subtract4Level: Level = {
   reference: subtract4,
   hints: [
     {
-      text: "Subtracting B is the same as adding −B. In two's complement, −B is NOT B plus 1.",
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
     },
     {
-      text: "Flip each bit of B with a NOT. Then add A and the flipped B with your 4-bit adder.",
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
     },
-    { text: "The extra 1 needs no second adder: wire HIGH into CARRY IN." },
   ],
 };
 
@@ -338,8 +317,12 @@ export const isZero4Level: Level = {
   makes: { part: "is-zero4", label: "IS ZERO", builtIn: { reference: true } },
   reference: isZero4,
   hints: [
-    { text: "ZERO is 0 as soon as any bit is 1. Which gate is 1 when any input is 1?" },
-    { text: "OR the four bits together, two at a time. Then flip the result with a NOT." },
+    {
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
+    },
+    {
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
+    },
   ],
 };
 
@@ -362,7 +345,12 @@ export const isNegative4Level: Level = {
   makes: { part: "is-negative4", label: "IS NEGATIVE", builtIn: { reference: true } },
   reference: isNegative4,
   hints: [
-    { text: "Which bit is 1 in every number from −8 to −1, and 0 in every number from 0 to 7?" },
+    {
+      text: "Work one output column at a time. Which input cases produce a carry rather than a sum bit?",
+    },
+    {
+      text: "Compare a boundary case with its neighbor. Which information must move to the next bit position?",
+    },
   ],
 };
 

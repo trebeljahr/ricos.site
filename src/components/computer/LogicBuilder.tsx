@@ -3077,7 +3077,7 @@ export function LogicBuilder({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <label className={styles.ownParts} title="Parts you built in the tutorial pass every row of their level. Pick which version a click places.">
+          <label className={styles.ownParts} title="Parts you built pass their level’s behavior checks. Pick which version a click places.">
             <span>My parts</span>
             <select value={ownMode} onChange={(event) => setOwnPartsMode(event.target.value as OwnPartsMode)}>
               <option value="mine">Mine when built</option>

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { levelById } from "../../../lib/computer/tutorial/levels";
 import {
   PROGRESS_KEY,
   progressStore,
@@ -15,72 +16,104 @@ beforeEach(() => {
   Element.prototype.setPointerCapture = () => {};
 });
 afterEach(cleanup);
-
-/** The builders on the page, each as a scope for queries. */
 const builders = () =>
   Array.from(document.querySelectorAll<HTMLElement>("[data-logic-builder]")).map((element) =>
     within(element),
   );
-
-const boardParts = (builder: ReturnType<typeof within>) =>
-  within(builder.getByRole("application", { name: "Circuit canvas" })).queryAllByRole("group", {
+const boardParts = (b: ReturnType<typeof within>) =>
+  within(b.getByRole("application", { name: "Circuit canvas" })).queryAllByRole("group", {
     name: / part$/,
   });
+function buildNot(b: ReturnType<typeof within>) {
+  fireEvent.click(b.getByTitle("Drag NAND onto canvas or click to add"));
+  const targets = b.getAllByRole("button", { name: /^Connect to NAND/ });
+  for (const target of targets) {
+    fireEvent.click(b.getByRole("button", { name: "Wire from A Output" }));
+    fireEvent.click(target);
+  }
+  fireEvent.click(b.getByRole("button", { name: "Wire from NAND Output" }));
+  fireEvent.click(b.getByRole("button", { name: /^Connect to OUT/ }));
+}
 
-describe("LogicTutorial", () => {
-  it("guides the NOT level step by step and turns the solution into a part", () => {
-    render(<LogicTutorial levels={["not", "and"]} level="not" />);
-    const [builder] = builders();
-    expect(builder.getByText(/OUT is the opposite of A/)).toBeTruthy();
-    const steps = builder.getByRole("list", { name: "Steps" });
-    expect(within(steps).getAllByRole("listitem")[0].getAttribute("aria-current")).toBe("step");
-    expect(boardParts(builder)).toHaveLength(2);
-
-    // Show me places the reference's NAND, then wires it, one action per press.
-    fireEvent.click(builder.getByRole("button", { name: "Show me" }));
-    expect(boardParts(builder)).toHaveLength(3);
-    expect(within(steps).getAllByRole("listitem")[1].getAttribute("aria-current")).toBe("step");
-    for (let press = 0; press < 3; press++)
-      fireEvent.click(builder.getByRole("button", { name: "Show me" }));
-
-    fireEvent.click(builder.getByRole("button", { name: "Check" }));
-    expect(builder.getByText(/Pass: all 2 rows match/)).toBeTruthy();
-    expect(builder.getByText(/Same size as the reference/)).toBeTruthy();
-    const stored = JSON.parse(localStorage.getItem(PROGRESS_KEY) ?? "{}");
-    expect(
-      stored.solved.not.circuit.nodes.some((node: { type: string }) => node.type === "nand"),
-    ).toBe(true);
-
-    // The AND level offers the reader's own NOT, with the built-in one as a chip.
-    fireEvent.click(builder.getByRole("button", { name: /Next: AND/ }));
-    // A new level mounts a fresh board.
-    const [andBuilder] = builders();
-    const own = andBuilder.getByTitle(/Your NOT, checked against every row/);
-    expect(own.closest("[data-palette-part]")?.getAttribute("data-palette-part")).toBe("part:not");
-    expect(andBuilder.getByRole("button", { name: "Add the built-in NOT" })).toBeTruthy();
-    fireEvent.click(own);
-    const placed = boardParts(andBuilder).find((part) =>
-      /NOT \(yours\)/.test(part.getAttribute("aria-label") ?? ""),
-    );
-    expect(placed).toBeTruthy();
+describe("independent tutorials", () => {
+  it("starts with goal, context, table and available blocks; hints never edit the board", () => {
+    render(<LogicTutorial levels={["not", "and"]} />);
+    const [b] = builders();
+    expect(b.getByText(/OUT is the opposite of A/)).toBeTruthy();
+    expect(b.getByRole("heading", { name: "Truth table" })).toBeTruthy();
+    expect(b.getByText(/Available blocks: NAND/)).toBeTruthy();
+    expect(b.queryByRole("list", { name: "Steps" })).toBeNull();
+    expect(b.queryByRole("button", { name: "Show me" })).toBeNull();
+    expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
+    const before = boardParts(b).length;
+    fireEvent.click(b.getByRole("button", { name: "Check" }));
+    expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
+    const hint = b.getByRole("button", { name: "Hint" });
+    hint.focus();
+    fireEvent.click(hint);
+    expect(hint.getAttribute("aria-expanded")).toBe("true");
+    expect(b.getByRole("list", { name: "Hints" }).textContent).toMatch(/Nothing drives OUT/);
+    fireEvent.click(b.getByRole("button", { name: "Another hint" }));
+    expect(boardParts(b)).toHaveLength(before);
+    fireEvent.click(b.getByRole("button", { name: "Dismiss hints" }));
+    expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
   });
-
-  it("names the first failing row", () => {
-    render(<LogicTutorial levels={["and"]} />);
-    const [builder] = builders();
-    fireEvent.click(builder.getByRole("button", { name: "Show me" }));
-    fireEvent.click(builder.getByRole("button", { name: "Show me" }));
-    fireEvent.click(builder.getByRole("button", { name: "Show me" }));
-    // A NAND wired straight to OUT: every row is the opposite of AND.
-    act(() => {
-      fireEvent.click(builder.getByRole("button", { name: "Check" }));
-    });
-    expect(builder.getByText(/cannot run yet|Row 1 fails/)).toBeTruthy();
+  it("checks a manually wired circuit, saves it, and offers a verified Yours part", () => {
+    render(<LogicTutorial levels={["not", "and"]} />);
+    const [b] = builders();
+    buildNot(b);
+    fireEvent.click(b.getByRole("button", { name: "Check" }));
+    expect(b.getByText(/Pass: all 2 rows match/)).toBeTruthy();
+    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).solved.not.circuit.wires).toHaveLength(
+      3,
+    );
+    fireEvent.click(b.getByRole("button", { name: /Next: AND/ }));
+    const [next] = builders();
+    fireEvent.click(next.getByTitle(/Your NOT, checked against every row/));
+    expect(
+      next.getAllByRole("img", { name: /Yours, exhaustively verified/ }).length,
+    ).toBeGreaterThan(0);
+  });
+  it("restores v1 solutions, drafts, skips and settings without changing their keys", () => {
+    const circuit = levelById("not")!.reference!();
+    localStorage.setItem(
+      PROGRESS_KEY,
+      JSON.stringify({
+        solved: { not: { at: 1, circuit } },
+        drafts: { not: circuit },
+        skipped: ["or"],
+        settings: { ownParts: "only-mine" },
+      }),
+    );
+    progressStore.reset();
+    render(<LogicTutorial levels={["not"]} />);
+    const [b] = builders();
+    expect(boardParts(b)).toHaveLength(3);
+    expect(progressStore.get().settings.ownParts).toBe("only-mine");
+    expect(progressStore.get().skipped).toContain("or");
+    fireEvent.click(b.getByRole("button", { name: "Hint" }));
+    fireEvent.click(b.getByRole("button", { name: "Reset" }));
+    expect(boardParts(b)).toHaveLength(2);
+    expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
+    expect(progressStore.get().solved.not.at).toBe(1);
+  });
+  it("uses one counter core with parameterized mastery and resets hint state on change", () => {
+    render(<LogicTutorial level="manual-counter-2-up" />);
+    const [b] = builders();
+    const selector = b.getByRole("combobox", { name: "Counter challenge" });
+    expect(within(selector).getAllByRole("option")).toHaveLength(21);
+    fireEvent.click(b.getByRole("button", { name: "Hint" }));
+    const options = within(selector).getAllByRole("option");
+    fireEvent.change(selector, { target: { value: options[20].getAttribute("value") } });
+    expect(builders()[0].queryByRole("list", { name: "Hints" })).toBeNull();
+    expect(
+      builders()[0].getByRole("combobox", { name: "Counter challenge" }).getAttribute("value"),
+    ).not.toBe("manual-counter-2-up");
   });
 });
 
-describe("several builders on one page", () => {
-  it("keeps boards, checks and keyboard shortcuts apart", () => {
+describe("several builders", () => {
+  it("keeps hint state and active-builder undo apart", () => {
     render(
       <>
         <LogicTutorial levels={["not"]} />
@@ -88,108 +121,33 @@ describe("several builders on one page", () => {
       </>,
     );
     const [first, second] = builders();
-    expect(first.getByRole("heading", { name: "NOT" })).toBeTruthy();
-    expect(second.getByRole("heading", { name: "XOR" })).toBeTruthy();
-
-    fireEvent.click(first.getByRole("button", { name: "Show me" }));
+    fireEvent.click(first.getByRole("button", { name: "Hint" }));
+    expect(second.queryByRole("list", { name: "Hints" })).toBeNull();
+    fireEvent.click(first.getByTitle("Drag NAND onto canvas or click to add"));
+    fireEvent.click(second.getByTitle("Drag NAND onto canvas or click to add"));
     expect(boardParts(first)).toHaveLength(3);
-    expect(boardParts(second)).toHaveLength(3);
-
-    fireEvent.click(second.getByRole("button", { name: "Show me" }));
-    expect(boardParts(second)).toHaveLength(4);
-
-    // Undo goes to the builder used last, the second one.
-    fireEvent.pointerDown(second.getByRole("application", { name: "Circuit canvas" }));
-    fireEvent.keyDown(window, { key: "z", ctrlKey: true });
-    expect(boardParts(second)).toHaveLength(3);
-    expect(boardParts(first)).toHaveLength(3);
-
-    // Focus left on a button of the first builder does not pull undo back there.
-    first.getByRole("button", { name: "Show me" }).focus();
-    fireEvent.pointerDown(second.getByRole("application", { name: "Circuit canvas" }));
-    expect(document.activeElement).toBe(document.body);
-    fireEvent.click(second.getByRole("button", { name: "Show me" }));
     expect(boardParts(second)).toHaveLength(4);
     fireEvent.pointerDown(second.getByRole("application", { name: "Circuit canvas" }));
     fireEvent.keyDown(window, { key: "z", ctrlKey: true });
-    expect(boardParts(second)).toHaveLength(3);
     expect(boardParts(first)).toHaveLength(3);
-
-    // Pointing at the first builder moves undo there.
-    fireEvent.pointerDown(first.getByRole("application", { name: "Circuit canvas" }));
-    fireEvent.keyDown(window, { key: "z", ctrlKey: true });
-    expect(boardParts(first)).toHaveLength(2);
     expect(boardParts(second)).toHaveLength(3);
-
-    fireEvent.click(first.getByRole("button", { name: "Check" }));
-    expect(first.queryByText(/cannot run yet/)).toBeTruthy();
-    expect(second.queryByText(/cannot run yet/)).toBeNull();
+    const ids = Array.from(document.querySelectorAll("[id]")).map((el) => el.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
-
-  it("shows a part solved in one builder in the other's palette at once", () => {
-    render(
+  it("shares newly earned parts between builders and free-builder modes", () => {
+    const { unmount } = render(
       <>
         <LogicTutorial levels={["not"]} />
         <LogicTutorial levels={["and"]} />
       </>,
     );
     const [first, second] = builders();
-    expect(second.queryByTitle(/Your NOT/)).toBeNull();
-    // NOT from NAND: place the NAND, wire A in twice, wire it to OUT.
-    for (let press = 0; press < 4; press++)
-      fireEvent.click(first.getByRole("button", { name: "Show me" }));
+    buildNot(first);
     fireEvent.click(first.getByRole("button", { name: "Check" }));
     expect(second.getByTitle(/Your NOT, checked against every row/)).toBeTruthy();
-  });
-
-  it("gives every builder its own dialog ids", () => {
-    render(
-      <>
-        <LogicBuilder storageKey="first" />
-        <LogicBuilder storageKey="second" />
-      </>,
-    );
-    const ids = Array.from(document.querySelectorAll("[id]")).map((element) => element.id);
-    expect(new Set(ids).size).toBe(ids.length);
-  });
-
-  it("lets only one free builder save to a storage key", () => {
-    render(
-      <>
-        <LogicBuilder storageKey="shared" />
-        <LogicBuilder storageKey="shared" />
-      </>,
-    );
-    expect(
-      screen.getAllByText(/Another builder on this page saves to browser storage/),
-    ).toHaveLength(1);
-  });
-});
-
-describe("own parts in the free builder", () => {
-  it("marks a built part, offers both versions, and locks unbuilt parts in only-mine mode", () => {
-    const { unmount } = render(<LogicTutorial levels={["not"]} />);
-    const [tutorial] = builders();
-    for (let press = 0; press < 4; press++)
-      fireEvent.click(tutorial.getByRole("button", { name: "Show me" }));
-    fireEvent.click(tutorial.getByRole("button", { name: "Check" }));
     unmount();
-
     render(<LogicBuilder storageKey={null} />);
-    const palette = screen.getByLabelText("Gate palette");
-    const notRow = palette.querySelector('[data-palette-part="not"]') as HTMLElement;
-    expect(within(notRow).getByTitle(/Your NOT, checked against every row/)).toBeTruthy();
-    expect(within(notRow).getByRole("button", { name: "Add the built-in NOT" })).toBeTruthy();
-
     act(() => setOwnPartsMode("only-mine"));
-    const andRow = palette.querySelector('[data-palette-part="and"]') as HTMLElement;
-    const build = within(andRow).getByRole("link", { name: /Build it/ });
-    expect(build.getAttribute("href")).toBe("/computer/build-from-nand?level=and");
-    // NAND comes from an optional level, so it is never locked.
-    const nandRow = palette.querySelector('[data-palette-part="nand"]') as HTMLElement;
-    expect(within(nandRow).queryByRole("link")).toBeNull();
-
-    act(() => setOwnPartsMode("built-in"));
-    expect(within(notRow).getByRole("button", { name: "Add your NOT" })).toBeTruthy();
+    expect(screen.getAllByRole("link", { name: /Build it/ }).length).toBeGreaterThan(0);
   });
 });

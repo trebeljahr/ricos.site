@@ -29,6 +29,9 @@ export type RecognitionComponent = {
   counterMode?: "up" | "down" | "up-down";
   /** A total combinational function, in the declared order. Never a sampled table. */
   evaluate?: (inputs: boolean[]) => boolean[];
+  /** Trusted lesson contract for stateful or larger constructions. Never called exhaustive. */
+  checkConstruction?: (circuit: Circuit) => boolean;
+  verificationLabel?: string;
 };
 const registry = new Map<string, RecognitionComponent>();
 let revision = 0;
@@ -459,8 +462,12 @@ export function verifyCircuitIdentity(
   componentId: string,
 ): Circuit | null {
   const next = { ...circuit, ports: { inputs: [...ports.inputs], outputs: [...ports.outputs] } };
+  const contract = registry.get(componentId)?.checkConstruction;
   const result = recognizeCircuitSync(next, ports, componentId);
-  return result.matches.some((m) => m.componentId === componentId)
+  const valid =
+    result.matches.some((m) => m.componentId === componentId) ||
+    (result.status === "unsupported" && Boolean(contract?.(next)));
+  return valid
     ? {
         ...next,
         identity: { componentId, fingerprint: circuitFingerprint(next), ownership: "user" },
@@ -482,8 +489,12 @@ export function verifiedCircuitIdentity(
   const key = `${revision}|${component.id}|${implementation}`;
   let valid = identityCache.get(key);
   if (valid === undefined) {
+    const result = circuit.ports
+      ? recognizeCircuitSync(circuit, circuit.ports, component.id)
+      : undefined;
     valid = Boolean(
-      circuit.ports && recognizeCircuitSync(circuit, circuit.ports, component.id).matches.length,
+      result?.matches.length ||
+        (result?.status === "unsupported" && component.checkConstruction?.(circuit)),
     );
     if (identityCache.size > 128) identityCache.clear();
     identityCache.set(key, valid);

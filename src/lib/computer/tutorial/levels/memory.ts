@@ -3,7 +3,6 @@
 // NandGame's memory section. These are sequence levels: the check sets inputs
 // and the clock tick by tick and reads the lamps after each tick settles.
 import { bitsOf, busPorts, CircuitKit, type Source } from "../kit";
-import { checkStep, hasWire, placeStep, wireStep } from "../matcher";
 import type { Level, LevelPort, SequenceTick } from "../types";
 import { boxed, CHAPTERS, once, port } from "./shared";
 
@@ -326,53 +325,10 @@ export const srLatchLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or"],
   makes: { part: "sr-latch", label: "SR LATCH", builtIn: { preset: "SR latch" } },
   reference: srLatch,
-  steps: [
-    placeStep(
-      "join",
-      "part:or",
-      "Place an OR. Its output will be Q. SET goes into it, so SET can turn Q on.",
-    ),
-    wireStep("set", "join", 0, "Wire SET into the OR's top input."),
-    placeStep("unreset", "part:not", "Place a NOT. Its output is 1 while RESET is off."),
-    wireStep("reset", "unreset", 0, "Wire RESET into the NOT."),
-    placeStep("keep", "part:and", "Place an AND. It will pass Q on for as long as RESET is off."),
-    wireStep(
-      ["join", "unreset"],
-      "keep",
-      [0, 1],
-      "Wire the OR's output and the NOT's output into the AND.",
-    ),
-    placeStep("flip", "part:not", "Place a second NOT. Its output is Q̅, the opposite of Q."),
-    wireStep("join", "flip", 0, "Wire the OR's output into the second NOT."),
-    {
-      text: "Wire the OR's output into Q, and the second NOT's output into Q̅.",
-      anchor: (context) => ({
-        kind: "input",
-        node: hasWire(context, "join", "q") ? "nq" : "q",
-        index: 0,
-      }),
-      done: (context) => hasWire(context, "join", "q") && hasWire(context, "flip", "nq"),
-    },
-    wireStep(
-      "keep",
-      "join",
-      1,
-      "Now close the loop. Wire the AND's output into the OR's free input, so Q feeds back into itself.",
-    ),
-    checkStep(
-      "Turn SET on and off, then RESET on and off. Q keeps the value of the last one you used. Then press Check.",
-    ),
-  ],
   hints: [
+    { text: "Separate the value that is stored from the condition that permits it to change." },
     {
-      text: "Say the rule as a sentence: Q is 1 when SET is on, or when Q is already 1 and RESET is off.",
-    },
-    {
-      text: "'Q is already 1' is a wire from Q back into the gate that makes Q. That loop is what remembers.",
-    },
-    {
-      text: "Another way: two NAND gates, each wired into an input of the other. Put a NOT before each NAND, so SET and RESET act when they are 1.",
-      anchor: { kind: "palette", part: "nand" },
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
     },
   ],
 };
@@ -391,12 +347,9 @@ export const dLatchLevel: Level = {
   makes: { part: "d-latch", label: "D LATCH", builtIn: { preset: "D latch" } },
   reference: dLatch,
   hints: [
+    { text: "Separate the value that is stored from the condition that permits it to change." },
     {
-      text: "Let your SR latch hold the bit. SET it when ENABLE is on and DATA is 1. RESET it when ENABLE is on and DATA is 0.",
-      anchor: { kind: "palette", part: "part:sr-latch" },
-    },
-    {
-      text: "One AND makes SET from ENABLE and DATA. A second AND makes RESET from ENABLE and the opposite of DATA.",
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
     },
   ],
 };
@@ -415,12 +368,9 @@ export const dFlipFlopLevel: Level = {
   makes: { part: "d-flip-flop", label: "D FLIP-FLOP", builtIn: { preset: "D flip-flop" } },
   reference: dFlipFlop,
   hints: [
+    { text: "Separate the value that is stored from the condition that permits it to change." },
     {
-      text: "Use two D latches in a row. The first one takes DATA while CLOCK is low. The second one passes the first one's Q on while CLOCK is high.",
-      anchor: { kind: "palette", part: "part:d-latch" },
-    },
-    {
-      text: "Give the first latch the opposite of CLOCK as ENABLE. Give the second latch CLOCK itself. The two latches are never open at the same time.",
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
     },
   ],
 };
@@ -443,12 +393,9 @@ export const register1Level: Level = {
   makes: { part: "register1", label: "REGISTER BIT", builtIn: { reference: true } },
   reference: register1,
   hints: [
+    { text: "Separate the value that is stored from the condition that permits it to change." },
     {
-      text: "The flip-flop stores something on every rising edge. Choose what it stores: DATA when LOAD is 1, its own Q when LOAD is 0.",
-    },
-    {
-      text: "A SELECTOR picks between Q and DATA. Wire LOAD into SELECT, Q into A and DATA into B.",
-      anchor: { kind: "palette", part: "part:selector" },
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
     },
   ],
 };
@@ -475,8 +422,10 @@ export const register8Level: Level = {
   },
   reference: register8,
   hints: [
-    { text: "Place eight register bits. Each one stores one bit: D3 goes in and Q3 comes out." },
-    { text: "Wire CLOCK and LOAD into all eight register bits." },
+    { text: "Separate the value that is stored from the condition that permits it to change." },
+    {
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
+    },
   ],
 };
 
@@ -494,12 +443,9 @@ export const counter8Level: Level = {
   makes: { part: "counter8", label: "COUNTER", builtIn: { preset: "8-bit binary counter" } },
   reference: counter8,
   hints: [
+    { text: "Separate the value that is stored from the condition that permits it to change." },
     {
-      text: "Keep LOAD on with a HIGH source, so the register stores on every rising edge. What it stores is its own output plus one.",
-    },
-    {
-      text: "Wire Q0–Q7 into A of the 8-bit adder. Set B to 0 with GROUND and CARRY IN to 1 with HIGH. Wire the sum back into D0–D7.",
-      anchor: { kind: "palette", part: "part:adder8" },
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
     },
   ],
 };
@@ -523,15 +469,9 @@ export const ramLevel: Level = {
   makes: { part: "ram", label: "RAM", builtIn: { preset: "4 × 4 SRAM" } },
   reference: ram,
   hints: [
+    { text: "Separate the value that is stored from the condition that permits it to change." },
     {
-      text: "Wire ADDRESS 0 and ADDRESS 1 into a decoder. Its Y output with the address number is 1, and that picks the row.",
-      anchor: { kind: "palette", part: "part:decoder" },
-    },
-    {
-      text: "Each address is a row of four D latches. An AND of the row's Y output and WRITE ENABLE is ENABLE for all four, and DATA IN 0–3 go into their DATA inputs.",
-    },
-    {
-      text: "To read, AND each latch's Q with its row's Y output and READ ENABLE. Then join the four rows with OR gates for each DATA OUT bit.",
+      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
     },
   ],
 };

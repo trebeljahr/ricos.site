@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { decimalInput } from "../../lib/computer/manualInputs";
 import { DecimalInput, ManualButton } from "./ManualInputs";
+
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
@@ -51,35 +52,19 @@ describe("decimal input", () => {
 describe("manual input", () => {
   it("clicks emit complete pulses; holding is an explicit separate mode", () => {
     const pulse = vi.fn(),
-      held = vi.fn(),
-      mode = vi.fn();
-    render(
-      <ManualButton
-        label="INC"
-        mode="pulse"
-        onPulse={pulse}
-        onHeldChange={held}
-        onModeChange={mode}
-      />,
-    );
+      held = vi.fn();
+    render(<ManualButton label="INC" mode="pulse" onPulse={pulse} onHeldChange={held} />);
     const button = screen.getByRole("button");
     fireEvent.click(button);
     fireEvent.click(button);
     expect(pulse).toHaveBeenCalledTimes(2);
     expect(held).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "held" } });
-    expect(mode).toHaveBeenCalledWith("held");
+    expect(screen.queryByRole("combobox")).toBeNull();
   });
   it("keyboard repeats never retrigger; blur/cancel/unmount always release", () => {
     const change = vi.fn();
     const { unmount } = render(
-      <ManualButton
-        label="KEY"
-        mode="held"
-        onPulse={vi.fn()}
-        onHeldChange={change}
-        onModeChange={vi.fn()}
-      />,
+      <ManualButton label="KEY" mode="held" onPulse={vi.fn()} onHeldChange={change} />,
     );
     const button = screen.getByRole("button");
     fireEvent.keyDown(button, { key: " ", repeat: false });
@@ -105,7 +90,7 @@ describe("manual input", () => {
 it("a prior pulse flash cannot clear or fake a subsequent held state", () => {
   vi.useFakeTimers();
   const change = vi.fn();
-  const props = { label: "CLOCK", onPulse: vi.fn(), onHeldChange: change, onModeChange: vi.fn() };
+  const props = { label: "CLOCK", onPulse: vi.fn(), onHeldChange: change };
   const { rerender } = render(<ManualButton {...props} mode="pulse" />);
   fireEvent.click(screen.getByRole("button"));
   rerender(<ManualButton {...props} mode="held" />);

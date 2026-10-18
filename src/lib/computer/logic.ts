@@ -144,7 +144,7 @@ export const INPUTS: Record<GateType, number> = {
 export const LABELS: Record<GateType, string> = {
   switch: "SWITCH",
   clock: "CLOCK",
-  pulse: "BUTTON / MANUAL CLOCK",
+  pulse: "BUTTON",
   lamp: "LAMP",
   input4: "4-BIT INPUT",
   input8: "8-BIT INPUT",

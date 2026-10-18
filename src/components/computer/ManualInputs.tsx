@@ -62,19 +62,20 @@ export function DecimalInput({
   );
 }
 
-/** Physical holding is explicit; click mode delivers a complete simulation pulse. */
+/**
+ * Physical holding is explicit; click mode delivers a complete simulation pulse.
+ * The owner sets the mode: the builder in a part's properties menu, a demo with its own control.
+ */
 export function ManualButton({
   label,
   mode,
   onPulse,
   onHeldChange,
-  onModeChange,
 }: {
   label: string;
   mode: "pulse" | "held";
   onPulse: () => void;
   onHeldChange: (high: boolean) => void;
-  onModeChange: (mode: "pulse" | "held") => void;
 }) {
   const held = useRef(false);
   const pointer = useRef<number | null>(null);
@@ -178,17 +179,6 @@ export function ManualButton({
       >
         {mode === "held" ? (active ? "RELEASE TO END" : "HOLD") : "PULSE"}
       </button>
-      <select
-        aria-label={`${label} button mode`}
-        value={mode}
-        onChange={(event) => {
-          change(false);
-          onModeChange(event.target.value as "pulse" | "held");
-        }}
-      >
-        <option value="pulse">Click pulse</option>
-        <option value="held">While held</option>
-      </select>
     </div>
   );
 }

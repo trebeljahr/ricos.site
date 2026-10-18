@@ -3723,7 +3723,7 @@ export function LogicBuilder({
                           </span>
                         )}
                         <strong className={styles.nodePartName}>
-                          {node.type === "module" ? node.module?.name || "Module" : node.type === "pulse" ? "BUTTON" : LABELS[node.type]}
+                          {node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]}
                         </strong>
                         {node.type === "input4" || node.type === "input8" || node.type === "input14" ? (
                           <div className={styles.numberInput}>
@@ -3819,10 +3819,7 @@ export function LogicBuilder({
                           </button>
                         ) : node.type === "pulse" ? (
                           <ManualButton key={`${node.id}:${manualEpoch}`} label={node.label || "Manual clock"} mode={node.manualMode ?? "pulse"}
-                            onPulse={() => pulseOnce(node.id)} onHeldChange={high => holdManual(node.id, high)}
-                            onModeChange={manualMode => setCircuit(current => ({ ...current,
-                              nodes: current.nodes.map(item => item.id === node.id ? { ...item, manualMode } : item),
-                            }))} />
+                            onPulse={() => pulseOnce(node.id)} onHeldChange={high => holdManual(node.id, high)} />
                         ) : BUS_TYPES.has(node.type) ? (
                           <BusReadout
                             value={
@@ -4100,6 +4097,30 @@ export function LogicBuilder({
                     wires: resettable ? current.wires : current.wires.filter(wire => wire.to !== menuNode.id || wire.input !== 2),
                   }));
                 }} /> Asynchronous RESET pin
+              </label>}
+              {menuNode.type === "pulse" && <label>
+                Button mode
+                <select value={menuNode.manualMode ?? "pulse"} onChange={event => {
+                  const manualMode = event.target.value as "pulse" | "held";
+                  setCircuit(current => ({ ...current,
+                    nodes: current.nodes.map(item => item.id === menuNode.id ? { ...item, manualMode } : item),
+                  }));
+                }}>
+                  <option value="pulse">Click pulse</option>
+                  <option value="held">While held</option>
+                </select>
+              </label>}
+              {menuNode.type === "sevensegment" && <label>
+                Digits
+                <select value={menuNode.digits ?? 1} onChange={event => {
+                  const digits = Number(event.target.value) as 1 | 2 | 3 | 4;
+                  setCircuit(current => ({ ...current,
+                    nodes: current.nodes.map(item => item.id === menuNode.id ? { ...item, digits } : item),
+                    wires: current.wires.filter(wire => wire.to !== menuNode.id || wire.input < 7 * digits),
+                  }));
+                }}>
+                  {[1, 2, 3, 4].map(digits => <option key={digits} value={digits}>{digits}</option>)}
+                </select>
               </label>}
               {menuNode.type === "module" && (
                 <div className={styles.modulePorts}>

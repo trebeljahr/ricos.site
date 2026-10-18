@@ -10,6 +10,12 @@ export const captionClass = "text-sm font-semibold text-gray-800 dark:text-gray-
 export const hintClass = "max-w-72 text-xs text-gray-600 dark:text-gray-400";
 export const readoutClass = "font-mono text-sm text-gray-800 dark:text-gray-200";
 export const noteClass = "text-sm text-gray-600 dark:text-gray-400";
+/** A LogicBuilder shown inside a demo, usually in a `<details>`. */
+export const builderClass = "not-prose mt-label h-[75svh] min-h-[600px]";
+/** The summary of a `<details>` that a demo opens on request. */
+export const summaryClass = `${captionClass} cursor-pointer underline underline-offset-4`;
+/** A row of buttons and other controls. */
+export const controlsClass = "not-prose flex flex-wrap items-center gap-tight";
 
 /**
  * LED size of an 8×8 screen that is the subject of its demo. Put the class on
@@ -113,6 +119,26 @@ export function Slider({
   );
 }
 
+/** Named readings of a running device, one large value under each name. */
+export function Readings({
+  label,
+  items,
+}: {
+  label: string;
+  items: readonly (readonly [name: string, value: ReactNode])[];
+}) {
+  return (
+    <dl aria-label={label} className="not-prose flex flex-wrap gap-label font-mono">
+      {items.map(([name, value]) => (
+        <div key={name} className="min-w-20 border-b-2 border-gray-400 p-hair dark:border-gray-600">
+          <dt className="text-xs text-gray-600 dark:text-gray-400">{name}</dt>
+          <dd className="m-0 text-2xl text-gray-900 dark:text-gray-100">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 /** The instruction the last action stands for. */
 export function LastStore({ children }: { children: string }) {
   return (
@@ -147,7 +173,7 @@ export function ClockControls({
   onReset: () => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-tight">
+    <div className={controlsClass}>
       <button type="button" className={buttonClass} disabled={playing} onClick={onStep}>
         Step 1 tick
       </button>

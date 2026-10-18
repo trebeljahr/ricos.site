@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -13,7 +14,15 @@ import {
 import { CPU_PARTS } from "../../lib/computer/cpuPreset";
 import { readProbes } from "../../lib/computer/probes";
 import { type CompiledProgram, hex, SIGNALS } from "../../lib/computerStepper";
-import styles from "./InputDevices.module.css";
+import {
+  builderClass,
+  buttonClass,
+  captionClass,
+  controlsClass,
+  noteClass,
+  Readings,
+  summaryClass,
+} from "./DeviceDemoParts";
 import { type LockedClock, type LockedView, LogicBuilder } from "./LogicBuilder";
 import { ManualButton } from "./ManualInputs";
 import { ScreenGrid } from "./ScreenGrid";
@@ -70,8 +79,8 @@ export function ButtonInterruptDemo() {
     }
   };
   return (
-    <div className={styles.devices}>
-      <section>
+    <div className="flex flex-col gap-section">
+      <section className="flow-para">
         <h2>Count presses through the shared circuit parts</h2>
         <p>
           Start with a direct button → 8-bit counter → binary-to-BCD converter → three seven-segment
@@ -79,14 +88,14 @@ export function ButtonInterruptDemo() {
           255 to 0.
         </p>
         <details>
-          <summary>Run and unfold the button-to-display circuit</summary>
-          <div className={styles.builder}>
+          <summary className={summaryClass}>Run and unfold the button-to-display circuit</summary>
+          <div className={builderClass}>
             <CircuitView initialCircuit={countDisplay} storageKey={null} />
           </div>
         </details>
         <h2>Catch a press while the CPU is busy</h2>
         <p>{BUTTON_POLICY}</p>
-        <p>
+        <p className={noteClass}>
           Physical switches need conditioning before this ideal capture input. See{" "}
           <a href="https://www.ti.com/document-viewer/lit/html/scea094">TI on contact bounce</a> and{" "}
           <a href="https://www.intel.com/content/www/us/en/docs/programmable/683068/18-1/metastability-analysis.html">
@@ -100,8 +109,10 @@ export function ButtonInterruptDemo() {
           module to inspect its flip-flops.
         </p>
         <details>
-          <summary>Experiment with capture, acknowledge and reset wiring</summary>
-          <div className={styles.builder}>
+          <summary className={summaryClass}>
+            Experiment with capture, acknowledge and reset wiring
+          </summary>
+          <div className={builderClass}>
             <CircuitView initialCircuit={bench} storageKey={null} />
           </div>
         </details>
@@ -111,7 +122,7 @@ export function ButtonInterruptDemo() {
           </Link>
         </p>
       </section>
-      <section aria-label="Button interrupt CPU">
+      <section className="flow-para" aria-label="Button interrupt CPU">
         <h2>Let a real CPU service the request</h2>
         <p>
           One ideal input supplies code 1. The CPU executes its background loop. Between
@@ -119,12 +130,11 @@ export function ButtonInterruptDemo() {
           interrupts. The handler reads IN, acknowledges the mailbox, writes screen row 3 and OUT,
           restores ACC and carry, then RETI resumes the saved PC.
         </p>
-        <div className={styles.controls}>
+        <div className={controlsClass}>
           <ManualButton
             key={epoch}
             label="CPU input"
             mode={mode}
-            onModeChange={setMode}
             onHeldChange={input}
             onPulse={() => {
               input(false);
@@ -132,26 +142,45 @@ export function ButtonInterruptDemo() {
               input(false);
             }}
           />
-          <button type="button" onClick={() => clock.current?.cycle()}>
+          <label className={clsx("flex items-center gap-tight", captionClass)}>
+            Button mode
+            <select
+              aria-label="CPU input button mode"
+              className={buttonClass}
+              value={mode}
+              onChange={(event) => setMode(event.target.value as "pulse" | "held")}
+            >
+              <option value="pulse">Click pulse</option>
+              <option value="held">While held</option>
+            </select>
+          </label>
+          <button type="button" className={buttonClass} onClick={() => clock.current?.cycle()}>
             CPU tick
           </button>
           <button
             type="button"
+            className={buttonClass}
             onClick={() => {
               for (let i = 0; i < 200; i++) clock.current?.cycle();
             }}
           >
             Advance 200 ticks
           </button>
-          <button type="button" aria-pressed={running} onClick={() => setRunning((on) => !on)}>
+          <button
+            type="button"
+            className={buttonClass}
+            aria-pressed={running}
+            onClick={() => setRunning((on) => !on)}
+          >
             {running ? "Pause CPU" : "Run CPU"}
           </button>
-          <button type="button" onClick={reset}>
+          <button type="button" className={buttonClass} onClick={reset}>
             Reset CPU
           </button>
         </div>
-        <dl className={styles.readings} aria-label="Interrupt signals">
-          {[
+        <Readings
+          label="Interrupt signals"
+          items={[
             ["RAW", snapshot?.values["button-raw"] ? 1 : 0],
             ["CAPTURED", snapshot?.outputs["button-interface"]?.[0] ? 1 : 0],
             ["SAMPLED HOLD", snapshot?.outputs["button-interface"]?.[1] ? 1 : 0],
@@ -163,13 +192,8 @@ export function ButtonInterruptDemo() {
             ["PC", hex(probes.PC ?? 0)],
             ["OUT", probes.OUT ?? 0],
             ["FLAGS", probes.FLAGS ?? 0],
-          ].map(([label, value]) => (
-            <div key={label}>
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-            </div>
-          ))}
-        </dl>
+          ]}
+        />
         <ScreenGrid rows={screen} label="CPU screen" />
         <p role="status">
           Active control lines: {lines.join(" · ") || "reset"}. OUT counts serviced events; a held
@@ -181,18 +205,19 @@ export function ButtonInterruptDemo() {
           masked. The existing key-interrupt stepper also lets you compare polling with key().
         </p>
         <details>
-          <summary>Inspect the running CPU and unfold its blocks</summary>
-          <div className={styles.builder}>
+          <summary className={summaryClass}>Inspect the running CPU and unfold its blocks</summary>
+          <div className={builderClass}>
             <CircuitView locked={locked} />
           </div>
         </details>
-        <p>
+        <p className={noteClass}>
           This demo uses explicit interrupt enabling: initialize shared variables, then execute
           interrupts_on(). A request arriving during initialization stays pending.
         </p>
-        <div className={styles.controls}>
+        <div className={controlsClass}>
           <button
             type="button"
+            className={buttonClass}
             onClick={() => {
               setSource(
                 "let presses = 0;\nfn on_key(k) {\n}\nlet work = 0;\ninterrupts_on();\nloop {\n  work = work + 1;\n}",
@@ -205,7 +230,7 @@ export function ButtonInterruptDemo() {
           >
             Start handler construction task
           </button>
-          <button type="button" onClick={() => setHint(true)}>
+          <button type="button" className={buttonClass} onClick={() => setHint(true)}>
             Request program hint
           </button>
         </div>
@@ -216,27 +241,32 @@ export function ButtonInterruptDemo() {
             state before enabling interrupts.
           </p>
         )}
-        <label className={styles.codeLabel}>
+        <label className={clsx("not-prose grid gap-label", captionClass)}>
           Handler program
           <textarea
+            className="min-h-[19rem] w-full rounded border border-gray-300 bg-gray-100 p-label font-mono text-sm font-normal leading-relaxed text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
             aria-label="Button handler program"
             spellCheck={false}
             value={source}
             onChange={(e) => setSource(e.target.value)}
           />
         </label>
-        <div className={styles.controls}>
-          <button type="button" onClick={load}>
+        <div className={controlsClass}>
+          <button type="button" className={buttonClass} onClick={load}>
             Compile and reset
           </button>
-          <button type="button" onClick={programCheck}>
+          <button type="button" className={buttonClass} onClick={programCheck}>
             Check handler behavior
           </button>
-          <Link href="/computer/key-interrupts">Compare polling and interrupt traces →</Link>
         </div>
+        <p>
+          <Link href="/computer/key-interrupts">Compare polling and interrupt traces →</Link>
+        </p>
         {error && <p role="status">{error}</p>}
         <details>
-          <summary>Inspect the compiled handler and return instructions</summary>
+          <summary className={summaryClass}>
+            Inspect the compiled handler and return instructions
+          </summary>
           <pre>{assembly(compiled)}</pre>
         </details>
       </section>

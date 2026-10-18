@@ -297,6 +297,27 @@ describe("circuit depth", () => {
     render(<LogicBuilder />);
     expect(screen.getByLabelText("ACC probe value")).toBeTruthy();
   });
+  it("sets the digits of a seven-segment display in its properties and drops wires to removed pins", () => {
+    const circuit = {
+      name: "Digits",
+      nodes: [
+        { id: "on", type: "switch" as const, x: 0, y: 0, value: true },
+        { id: "seg", type: "sevensegment" as const, x: 300, y: 0, digits: 2 as const },
+      ],
+      wires: [
+        { id: "units", from: "on", to: "seg", input: 0 },
+        { id: "tens", from: "on", to: "seg", input: 7 },
+      ],
+    };
+    let current = circuit;
+    render(<LogicBuilder challenge={{ circuit, palette: [], enforce: (c) => c, onChange: (next) => { current = next as typeof circuit; } }} />);
+    fireEvent.contextMenu(screen.getByRole("group", { name: "SEVEN SEGMENTS — SEVEN SEGMENTS part" }), { clientX: 100, clientY: 100 });
+    const digits = screen.getByLabelText("Digits") as HTMLSelectElement;
+    expect(digits.value).toBe("2");
+    fireEvent.change(digits, { target: { value: "1" } });
+    expect(current.nodes[1].digits).toBe(1);
+    expect(current.wires.map((wire) => wire.id)).toEqual(["units"]);
+  });
   it("edits a part from its context menu and closes on an outside pointer down", () => {
     render(<LogicBuilder />);
     const part = screen.getByRole("group", { name: "SUM — XOR part" });

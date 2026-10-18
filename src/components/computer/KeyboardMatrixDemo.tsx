@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -12,10 +13,19 @@ import {
   scanRow,
   senseMatrix,
 } from "../../lib/computer/keyboardMatrix";
-import styles from "./InputDevices.module.css";
+import {
+  builderClass,
+  buttonClass,
+  captionClass,
+  controlsClass,
+  noteClass,
+  Readings,
+  summaryClass,
+} from "./DeviceDemoParts";
 import { LogicBuilder } from "./LogicBuilder";
 
 const CircuitView = memo(LogicBuilder);
+const labelClass = clsx("flex items-center gap-tight", captionClass);
 
 export function KeyboardMatrixDemo() {
   const [size, setSize] = useState<MatrixSize>({ rows: 2, columns: 2 });
@@ -85,18 +95,19 @@ export function KeyboardMatrixDemo() {
     replaceHeld(next);
   };
   return (
-    <div className={styles.devices}>
-      <section>
+    <div className="flex flex-col gap-section">
+      <section className="flow-para">
         <h2>A switch connects two wires</h2>
         <p>
           Start with four keys, then expand the grid. Select one row at a time: it drives 0; every
           other row is high impedance (Z). Column pull-ups produce 1 until a closed switch pulls a
           column low. SENSE LOW in the circuit is the inverted electrical reading.
         </p>
-        <div className={styles.controls}>
-          <label>
-            Rows{" "}
+        <div className={controlsClass}>
+          <label className={labelClass}>
+            Rows
             <select
+              className={buttonClass}
               aria-label="Matrix rows"
               value={size.rows}
               onChange={(e) => configure({ ...size, rows: Number(e.target.value) })}
@@ -106,9 +117,10 @@ export function KeyboardMatrixDemo() {
               ))}
             </select>
           </label>
-          <label>
-            Columns{" "}
+          <label className={labelClass}>
+            Columns
             <select
+              className={buttonClass}
               aria-label="Matrix columns"
               value={size.columns}
               onChange={(e) => configure({ ...size, columns: Number(e.target.value) })}
@@ -118,10 +130,18 @@ export function KeyboardMatrixDemo() {
               ))}
             </select>
           </label>
-          <button type="button" onClick={() => configure({ rows: 2, columns: 2 })}>
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => configure({ rows: 2, columns: 2 })}
+          >
             2 × 2 experiment
           </button>
-          <button type="button" onClick={() => configure({ rows: 6, columns: 15 }, true)}>
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => configure({ rows: 6, columns: 15 }, true)}
+          >
             US QWERTY preset
           </button>
         </div>
@@ -130,8 +150,8 @@ export function KeyboardMatrixDemo() {
             ? "US ANSI key legends occupy a 6 × 15 electrical grid; this is not the physical staggered plate layout. Blank slots have no switch. Letters, number-row punctuation and Space map to characters; other controls report position codes only. Caps Lock and host protocols are outside this controller."
             : "Generic matrix: row 1, column 0 is Shift. All other positions are letter keys."}
         </p>
-        <div className={styles.controls}>
-          <label>
+        <div className={controlsClass}>
+          <label className={labelClass}>
             <input
               type="checkbox"
               checked={diodes}
@@ -141,10 +161,10 @@ export function KeyboardMatrixDemo() {
                 current.current = next;
                 setScanner(next);
               }}
-            />{" "}
+            />
             Per-key COL→ROW diodes
           </label>
-          <label>
+          <label className={labelClass}>
             <input
               type="checkbox"
               checked={latch}
@@ -152,32 +172,36 @@ export function KeyboardMatrixDemo() {
                 setLatch(e.target.checked);
                 replaceHeld(Array(held.length).fill(false));
               }}
-            />{" "}
+            />
             Latch keys for accessible chords
           </label>
-          <button type="button" onClick={() => replaceHeld(Array(held.length).fill(false))}>
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => replaceHeld(Array(held.length).fill(false))}
+          >
             Release all keys
           </button>
           {!ansi && (
             <>
-              <button type="button" onClick={() => chord(false)}>
+              <button type="button" className={buttonClass} onClick={() => chord(false)}>
                 Hold Shift + A
               </button>
-              <button type="button" onClick={() => chord(true)}>
+              <button type="button" className={buttonClass} onClick={() => chord(true)}>
                 Hold three ghosting corners
               </button>
             </>
           )}
         </div>
-        <p>
+        <p className={noteClass}>
           {latch
             ? "Activate a key to hold its contact closed; activate it again to release. This lets keyboard and single-pointer users create simultaneous chords."
             : "Hold with pointer, Space or Enter; release, cancel or blur opens the contact. Multiple pointers can hold multiple contacts."}{" "}
           Contact controls are ideal, with no simulated bounce waveform.
         </p>
-        <div className={styles.matrixScroll}>
+        <div className="not-prose overflow-x-auto p-hair">
           <div
-            className={styles.matrix}
+            className="grid min-w-min gap-tight"
             style={{
               gridTemplateColumns: `5rem repeat(${size.columns}, minmax(3.7rem, 1fr))`,
               width: size.columns >= 8 ? "100%" : `${5 + size.columns * 4.4}rem`,
@@ -187,7 +211,7 @@ export function KeyboardMatrixDemo() {
           >
             {Array.from({ length: size.rows }, (_, r) => (
               <Fragment key={r}>
-                <span className={styles.rowLabel}>
+                <span className="min-w-16 self-center font-mono text-xs">
                   R{r} {scanner.row === r ? "0 ← scan" : "Z"}
                 </span>
                 {keys.slice(r * size.columns, (r + 1) * size.columns).map((key, c) => {
@@ -196,6 +220,10 @@ export function KeyboardMatrixDemo() {
                     <button
                       type="button"
                       key={index}
+                      className={clsx(
+                        buttonClass,
+                        "min-h-12 min-w-[3.7rem] touch-none font-mono data-[ghost=true]:border-2 data-[ghost=true]:border-dashed data-[ghost=true]:border-red-500",
+                      )}
                       disabled={!key.label}
                       aria-label={`${key.label || "No switch"} R${r} C${c}`}
                       aria-pressed={Boolean(held[index])}
@@ -244,9 +272,17 @@ export function KeyboardMatrixDemo() {
             ))}
           </div>
         </div>
-        <div role="group" className={styles.sense} aria-label="Column electrical levels">
+        <div
+          role="group"
+          className="not-prose flex flex-wrap gap-tight font-mono text-sm"
+          aria-label="Column electrical levels"
+        >
           {sensed.map((low, c) => (
-            <span key={c} data-low={low}>
+            <span
+              key={c}
+              data-low={low}
+              className="border-b-2 border-gray-400 p-hair data-[low=true]:border-cyan-600 data-[low=true]:font-bold dark:border-gray-600"
+            >
               C{c} = {low ? "0 (closed path)" : "1 (pull-up)"}
             </span>
           ))}
@@ -259,26 +295,33 @@ export function KeyboardMatrixDemo() {
           one-row-at-a-time scan.
         </p>
       </section>
-      <section>
+      <section className="flow-para">
         <h2>Scan, remember, then interpret</h2>
-        <div className={styles.controls}>
-          <button type="button" onClick={tick}>
+        <div className={controlsClass}>
+          <button type="button" className={buttonClass} onClick={tick}>
             Scan next row
           </button>
           <button
             type="button"
+            className={buttonClass}
             onClick={() => {
               for (let i = 0; i < size.rows; i++) tick();
             }}
           >
             Scan one frame
           </button>
-          <button type="button" aria-pressed={running} onClick={() => setRunning((on) => !on)}>
+          <button
+            type="button"
+            className={buttonClass}
+            aria-pressed={running}
+            onClick={() => setRunning((on) => !on)}
+          >
             {running ? "Pause scanning" : "Run scanner"}
           </button>
-          <label>
-            Stable frames{" "}
+          <label className={labelClass}>
+            Stable frames
             <select
+              className={buttonClass}
               aria-label="Debounce frames"
               value={debounce}
               onChange={(e) => {
@@ -291,36 +334,21 @@ export function KeyboardMatrixDemo() {
               ))}
             </select>
           </label>
-          <button type="button" onClick={() => reset()}>
+          <button type="button" className={buttonClass} onClick={() => reset()}>
             Reset scanner
           </button>
         </div>
-        <dl className={styles.readings}>
-          <div>
-            <dt>NEXT ROW</dt>
-            <dd>{scanner.row}</dd>
-          </div>
-          <div>
-            <dt>FRAMES</dt>
-            <dd>{scanner.frames}</dd>
-          </div>
-          <div>
-            <dt>HELD CONTACTS</dt>
-            <dd>{held.filter(Boolean).length}</dd>
-          </div>
-          <div>
-            <dt>SAMPLED</dt>
-            <dd>{scanner.sampled.filter(Boolean).length}</dd>
-          </div>
-          <div>
-            <dt>STABLE KEYS</dt>
-            <dd>{scanner.stable.filter(Boolean).length}</dd>
-          </div>
-          <div>
-            <dt>SHIFT STATE</dt>
-            <dd>{Number(shift)}</dd>
-          </div>
-        </dl>
+        <Readings
+          label="Scanner state"
+          items={[
+            ["NEXT ROW", scanner.row],
+            ["FRAMES", scanner.frames],
+            ["HELD CONTACTS", held.filter(Boolean).length],
+            ["SAMPLED", scanner.sampled.filter(Boolean).length],
+            ["STABLE KEYS", scanner.stable.filter(Boolean).length],
+            ["SHIFT STATE", Number(shift)],
+          ]}
+        />
         <p>
           Each frame samples every row once. The controller accepts a key change after {debounce}{" "}
           equal complete-frame samples. This is sample-count debounce, not a physical time
@@ -332,7 +360,10 @@ export function KeyboardMatrixDemo() {
           commits all modifier states before mapping the frame’s presses. Shift + A maps to A; A
           alone maps to a. Shift alone emits no character. A held key creates no repeat characters.
         </p>
-        <output aria-label="Mapped text" className={styles.output}>
+        <output
+          aria-label="Mapped text"
+          className="block min-h-12 whitespace-pre-wrap rounded bg-gray-900 p-label font-mono text-xl text-lime-300"
+        >
           {scanner.text || "(no characters yet)"}
         </output>
         <p aria-live="polite">
@@ -340,9 +371,10 @@ export function KeyboardMatrixDemo() {
           transition records press or release and the sampled Shift state. The log is bounded;
           character mapping consumes transitions directly, independently of this optional log.
         </p>
-        <div className={styles.controls}>
+        <div className={controlsClass}>
           <button
             type="button"
+            className={buttonClass}
             onClick={() => {
               const next = { ...current.current, events: [] };
               current.current = next;
@@ -352,7 +384,10 @@ export function KeyboardMatrixDemo() {
             Acknowledge event log
           </button>
         </div>
-        <ol className={styles.events} aria-label="Key transitions">
+        <ol
+          className="not-prose max-h-48 list-decimal overflow-auto pl-para font-mono text-sm leading-relaxed"
+          aria-label="Key transitions"
+        >
           {scanner.events.map((event, i) => (
             <li key={i}>
               code {event.code} · {event.down ? "press" : "release"} · Shift {Number(event.shift)}
@@ -361,7 +396,7 @@ export function KeyboardMatrixDemo() {
           ))}
         </ol>
         <details>
-          <summary>Inspect the scanning and mapping controller</summary>
+          <summary className={summaryClass}>Inspect the scanning and mapping controller</summary>
           <pre>{SCANNER_SOURCE}</pre>
           <p>
             The controller above is the explicit software layer over the circuit’s column signals.
@@ -370,14 +405,16 @@ export function KeyboardMatrixDemo() {
           </p>
         </details>
         <details>
-          <summary>Inspect and edit one reusable isolated row</summary>
-          <div className={styles.builder}>
+          <summary className={summaryClass}>Inspect and edit one reusable isolated row</summary>
+          <div className={builderClass}>
             <CircuitView key={size.columns} storageKey={null} initialCircuit={inspect} />
           </div>
         </details>
         <details>
-          <summary>Inspect the 2 × 2 ghosting paths without diodes</summary>
-          <div className={styles.builder}>
+          <summary className={summaryClass}>
+            Inspect the 2 × 2 ghosting paths without diodes
+          </summary>
+          <div className={builderClass}>
             <CircuitView storageKey={null} initialCircuit={ghostMatrixCircuit()} />
           </div>
         </details>
@@ -386,7 +423,7 @@ export function KeyboardMatrixDemo() {
             Construct matrix sensing, sampled events and Shift mapping →
           </Link>
         </p>
-        <p>
+        <p className={noteClass}>
           Primary references:{" "}
           <a href="https://github.com/qmk/qmk_firmware/blob/master/quantum/matrix.c">
             QMK active-low scanner

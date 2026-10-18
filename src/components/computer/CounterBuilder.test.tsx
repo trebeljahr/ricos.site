@@ -2,8 +2,9 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { counterDemo } from "../../lib/computer/counterCircuits";
-import { type Circuit } from "../../lib/computer/logic";
+import type { Circuit } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
+
 beforeEach(() => {
   localStorage.clear();
   Element.prototype.setPointerCapture = () => {};
@@ -19,6 +20,14 @@ const demo = (width: 2 | 4 | 8): Circuit => ({
 const challenge = (circuit: Circuit) => ({ circuit, palette: [], enforce: (c: Circuit) => c });
 const value = (root: HTMLElement = document.body) =>
   within(root).getByLabelText("COUNT value").querySelector("span")!.textContent;
+/** Switches a button part to held mode in its properties menu. */
+const holdMode = (label: string) => {
+  fireEvent.contextMenu(screen.getByRole("group", { name: `${label} — BUTTON part` }), {
+    clientX: 100,
+    clientY: 100,
+  });
+  fireEvent.change(screen.getByLabelText("Button mode"), { target: { value: "held" } });
+};
 
 it.each([
   2, 4, 8,
@@ -52,7 +61,7 @@ it("running does not repeat clicks or swallow rapid pulses; held mode persists t
   });
   expect(value()).toBe("1");
   fireEvent.click(screen.getByRole("button", { name: "Pause" }));
-  fireEvent.change(screen.getByLabelText("INCREMENT button mode"), { target: { value: "held" } });
+  holdMode("INCREMENT");
   const held = screen.getByRole("button", { name: "INCREMENT held button" });
   fireEvent.keyDown(held, { key: "Enter" });
   expect(value()).toBe("2");
@@ -118,7 +127,7 @@ it("manual events belong to the activated builder only", () => {
 
 it("undoing held mode releases its transient signal and redo keeps the configuration", () => {
   render(<LogicBuilder challenge={challenge(demo(4))} />);
-  fireEvent.change(screen.getByLabelText("INCREMENT button mode"), { target: { value: "held" } });
+  holdMode("INCREMENT");
   fireEvent.keyDown(screen.getByRole("button", { name: "INCREMENT held button" }), {
     key: "Enter",
   });

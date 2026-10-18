@@ -9,7 +9,7 @@ export function DecimalInput({
   onChange,
 }: {
   value: number;
-  width: 4 | 8;
+  width: 4 | 8 | 14;
   label: string;
   onChange: (value: number) => void;
 }) {

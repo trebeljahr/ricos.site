@@ -8,6 +8,8 @@ export type GateType =
   | "lamp"
   | "input4"
   | "input8"
+  | "input14"
+  | "sevensegment"
   | "display4"
   | "display8"
   | "high"
@@ -43,6 +45,8 @@ export type Node = {
   label?: string;
   value?: boolean;
   numberValue?: number;
+  /** Raw active-high a–g pin banks, units first. */
+  digits?: 1 | 2 | 3 | 4;
   /** A pulse source can emit a complete click or follow physical press/release. */
   manualMode?: "pulse" | "held";
   /** Optional asynchronous, active-high reset pin 2 on a D flip-flop. */
@@ -111,6 +115,8 @@ export const INPUTS: Record<GateType, number> = {
   lamp: 1,
   input4: 0,
   input8: 0,
+  input14: 0,
+  sevensegment: 7,
   display4: 4,
   display8: 8,
   high: 0,
@@ -142,6 +148,8 @@ export const LABELS: Record<GateType, string> = {
   lamp: "LAMP",
   input4: "4-BIT INPUT",
   input8: "8-BIT INPUT",
+  input14: "14-BIT INPUT",
+  sevensegment: "SEVEN SEGMENTS",
   display4: "4-BIT DISPLAY",
   display8: "8-BIT DISPLAY",
   high: "HIGH (1)",
@@ -201,13 +209,13 @@ export function pruneCircuitPorts(circuit: Circuit): Circuit {
     ? circuit : { ...circuit, nodes, ports };
 }
 export const inputCount = (node: Node) =>
-  node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : node.type === "dff" && node.resettable ? 3 : INPUTS[node.type];
+  node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : node.type === "dff" && node.resettable ? 3 : node.type === "sevensegment" ? 7 * (node.digits ?? 1) : INPUTS[node.type];
 export const outputCount = (node: Node) =>
   node.type === "module"
     ? moduleOutputs(node.module!).length
-    : node.type === "lamp" || node.type === "display4" || node.type === "display8"
+    : node.type === "sevensegment" || node.type === "lamp" || node.type === "display4" || node.type === "display8"
       ? 0
-      : node.type === "input4"
+      : node.type === "input14" ? 14 : node.type === "input4"
         ? 4
         : node.type === "input8" || node.type === "splitter"
           ? 8
@@ -227,7 +235,7 @@ export const inputLabel = (node: Node, index: number) =>
   node.type === "dff" ? ["D", "CLK", "RESET"][index] :
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
-    : node.type === "display4" || node.type === "display8" || node.type === "merger"
+    : node.type === "sevensegment" ? (node.digits ?? 1) === 1 ? ["a", "b", "c", "d", "e", "f", "g"][index] : `${["units", "tens", "hundreds", "thousands"][Math.floor(index / 7)]} ${["a", "b", "c", "d", "e", "f", "g"][index % 7]}` : node.type === "display4" || node.type === "display8" || node.type === "merger"
       ? `Bit ${index}`
       : node.type === "splitter"
         ? "Bus"
@@ -241,7 +249,7 @@ export const inputLabel = (node: Node, index: number) =>
 export const outputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-    : node.type === "input4" || node.type === "input8" || node.type === "splitter"
+    : node.type === "input4" || node.type === "input8" || node.type === "input14" || node.type === "splitter"
       ? `Bit ${index}`
       : outputWidth(node, index) === 8
         ? "Bus"
@@ -294,13 +302,14 @@ export function activeBlock(node: Node): BlockDefinition | undefined {
 }
 
 const MEMORY_TYPES = new Set<GateType>(["dff", "srlatch", "dlatch", "dramcell"]);
-const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", "input4", "input8", "splitter"]);
+const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", "input4", "input8", "input14", "splitter"]);
 const SETTLED_TYPES = new Set<GateType>([
   ...BUS_TYPES,
   "module",
   "lamp",
   "display4",
   "display8",
+  "sevensegment",
   "nmos",
   "pmos",
   "junction",
@@ -312,7 +321,7 @@ const SETTLED_TYPES = new Set<GateType>([
   "nand",
   "nor",
 ]);
-const ZERO_DELAY_TYPES = new Set<GateType>(["lamp", "display4", "display8", "junction"]);
+const ZERO_DELAY_TYPES = new Set<GateType>(["lamp", "display4", "display8", "sevensegment", "junction"]);
 
 /**
  * Everything step() needs that depends only on the circuit's structure: who
@@ -501,8 +510,8 @@ export function step(
       values[node.id] = overrides[node.id] ?? Boolean(pulses[node.id]);
     else if (node.type === "high") values[node.id] = true;
     else if (node.type === "ground") values[node.id] = false;
-    else if (node.type === "input4" || node.type === "input8") {
-      const bits = node.type === "input4" ? 4 : 8;
+    else if (node.type === "input4" || node.type === "input8" || node.type === "input14") {
+      const bits = node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8;
       outputs[node.id] = Array.from({ length: bits }, (_, bit) =>
         Boolean(((node.numberValue ?? 0) >> bit) & 1),
       );
@@ -635,6 +644,7 @@ export function step(
       case "lamp":
         next = a;
         break;
+      case "sevensegment":
       case "display4":
       case "display8": {
         const signals = inputs(i);
@@ -1857,12 +1867,13 @@ export function validateCircuit(
   if (
     !item.nodes.every(
       (n) =>
+        (n.digits === undefined || (n.type === "sevensegment" && [1, 2, 3, 4].includes(n.digits))) &&
         (n.resettable === undefined || (n.type === "dff" && typeof n.resettable === "boolean")) &&
         (n.manualMode === undefined || (n.type === "pulse" && ["pulse", "held"].includes(n.manualMode))) &&
         (n.numberValue === undefined ||
         (Number.isInteger(n.numberValue) &&
           n.numberValue >= 0 &&
-          n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : 1))),
+          n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : n.type === "input14" ? 16384 : 1))),
     )
   )
     return null;
@@ -1874,7 +1885,7 @@ export function validateCircuit(
     if (
       !inner ||
       moduleInputs(inner).length > MAX_MODULE_PORTS ||
-      moduleOutputs(inner).length < 1 ||
+      (moduleOutputs(inner).length < 1 && !inner.nodes.some(node => node.type === "sevensegment")) ||
       moduleOutputs(inner).length > MAX_MODULE_PORTS
     )
       return null;

@@ -1,4 +1,5 @@
 export const computerDemos = [
+  { slug: "seven-segment", title: "Wire seven-segment decimal displays" },
   // Chapter 1.0: the layers a computer is made of.
   {
     slug: "abstraction-layers",

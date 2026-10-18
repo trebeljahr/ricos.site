@@ -54,6 +54,7 @@ export const GateSymbol = memo(function GateSymbol({
             <circle cx="42" cy="21" r="2" />
           </>
         )}
+        {type === "sevensegment" && <><path d="M23 5 H42 M45 8 V19 M45 24 V35 M23 38 H42 M19 24 V35 M19 8 V19 M23 21 H42" /></>}
         {type === "pulse" && <path d="M5 29 H18 V12 H34 V29 H59" />}
         {type === "clock" && (
           <>
@@ -68,7 +69,7 @@ export const GateSymbol = memo(function GateSymbol({
             <path d="M21 10 L43 32 M43 10 L21 32" />
           </>
         )}
-        {(type === "input4" || type === "input8") && (
+        {(type === "input4" || type === "input8" || type === "input14") && (
           <>
             <rect x="4" y="7" width="56" height="28" rx="4" />
             <text

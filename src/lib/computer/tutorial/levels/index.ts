@@ -3,6 +3,7 @@ import { PartCatalog } from "../parts";
 import type { Level } from "../types";
 import { ALU_LEVELS } from "./alu";
 import { ARITHMETIC_LEVELS } from "./arithmetic";
+import { DISPLAY_LEVELS } from "./displays";
 import { GATE_LEVELS } from "./gates";
 import { COUNTER_LEVELS } from "./counters";
 import { MEMORY_LEVELS } from "./memory";
@@ -17,6 +18,7 @@ export const LEVELS: readonly Level[] = [
   ...ALU_LEVELS,
   ...MEMORY_LEVELS,
   ...COUNTER_LEVELS,
+  ...DISPLAY_LEVELS,
   ...PROCESSOR_LEVELS,
 ];
 

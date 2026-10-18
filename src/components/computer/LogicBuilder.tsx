@@ -79,8 +79,10 @@ import { SHADER_HINTS, SHADER_PRESETS } from "../../lib/computer/shaderPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
-import { builtinCircuit, remapModulePins, type SymbolIdentity } from "../../lib/computer/recognition";
+import { builtinCircuit, remapModulePins, verifiedCircuitIdentity, type SymbolIdentity } from "../../lib/computer/recognition";
 import { COUNTER_CONTRACT, COUNTER_MODES, COUNTER_WIDTHS, counterComponent, counterDemo, counterTitle, type CounterMode, type CounterWidth } from "../../lib/computer/counterCircuits";
+import { SevenSegment } from "./SevenSegment";
+import { BCD_DECODER, ADD3, DIGIT_COUNTS, SEGMENT_CONTRACT, bcdSegmentDemo, decimalSegmentDemo, decimalConverter, rawSegmentDemo, decodedDisplayCircuit, type DigitCount } from "../../lib/computer/sevenSegment";
 import { DecimalInput, ManualButton } from "./ManualInputs";
 import { RecognitionPanel } from "./RecognitionPanel";
 import { GateSymbol } from "./GateSymbol";
@@ -157,6 +159,8 @@ const partColors: Record<GateType, string> = {
   lamp: "#b9e976",
   input4: "#ffc76a",
   input8: "#ffc76a",
+  input14: "#ffc76a",
+  sevensegment: "#ff6b67",
   display4: "#ff6b67",
   display8: "#ff6b67",
   high: "#ffc76a",
@@ -234,6 +238,8 @@ const palette: GateType[] = [
   "lamp",
   "input4",
   "input8",
+  "input14",
+  "sevensegment",
   "display4",
   "display8",
   "high",
@@ -304,17 +310,18 @@ const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: 
   const entry = { x: end.x + to.x * 24, y: end.y + to.y * 24 };
   return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
 };
+const segmentPinVisible = (node: Node | undefined, index: number, banks: Record<string, number>) => !node || node.type !== "sevensegment" || Math.floor(index / 7) === (banks[node.id] ?? 0) % (node.digits ?? 1);
 const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") => {
   if (node.splice) return { x: node.x + 5, y: node.y + 5 };
   const side = kind === "input" ? inputSide(node) : outputSide(node);
   const sharedSide = inputSide(node) === outputSide(node);
-  const count = sharedSide
+  const count = node.type === "sevensegment" ? 7 : sharedSide
     ? inputCount(node) + outputCount(node)
     : kind === "input" ? inputCount(node) : outputCount(node);
-  const portIndex = sharedSide && kind === "output" ? inputCount(node) + index : index;
+  const portIndex = node.type === "sevensegment" ? index % 7 : sharedSide && kind === "output" ? inputCount(node) + index : index;
   const horizontal = side === "top" || side === "bottom";
   const length = horizontal ? nodeWidth(node) : nodeHeight(node);
-  const bitRow = ["input4", "input8", "display4", "display8"].includes(node.type);
+  const bitRow = ["input4", "input8", "input14", "display4", "display8"].includes(node.type);
   const orderedIndex = horizontal && bitRow ? count - portIndex - 1 : portIndex;
   const edge = horizontal ? 16 : node.expanded ? 88 : node.type === "module" ? 42 : 40;
   const offset = count === 1 ? length / 2 : edge + orderedIndex * ((length - edge - 24) / (count - 1));
@@ -490,6 +497,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path, editable, ownsClipboard, onPaste }: InlineCircuitProps) {
   const root = useRef<HTMLDivElement>(null);
   const diagram = useRef<HTMLDivElement>(null);
+  const [segmentBanks, setSegmentBanks] = useState<Record<string, number>>({});
   const [selectedParts, setSelectedParts] = useState<string[]>([]);
   const [selectedWireIds, setSelectedWireIds] = useState<string[]>([]);
   const selectedPart = selectedParts[0] ?? null, selectedWire = selectedWireIds[0] ?? null;
@@ -526,6 +534,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       for (const kind of ["input", "output"] as const) {
         const count = kind === "input" ? inputCount(part) : outputCount(part);
         for (let port = 0; port < count; port++) {
+          if (kind === "input" && !segmentPinVisible(part, port, segmentBanks)) continue;
           const point = portPoint(part, port, kind);
           result.push({ id: part.id, port, kind, point, wirePoint: point,
             side: kind === "input" ? inputSide(part) : outputSide(part),
@@ -534,7 +543,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       }
     });
     return result;
-  }, [layout, host.displayWidth, host.displayHeight, host.expanded, host.type, host.module, host.inputSide, host.outputSide]);
+  }, [segmentBanks, layout, host.displayWidth, host.displayHeight, host.expanded, host.type, host.module, host.inputSide, host.outputSide]);
   const endpointMap = useMemo(() => new Map(endpoints.map((port) =>
     [`${port.kind}:${port.id}:${port.port}`, port])), [endpoints]);
   const signalColors = useMemo(() => {
@@ -555,8 +564,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       .filter((port) => port.boundary && port.kind === kind)
       .map((port) => ({ nodeId: port.id, kind, index: port.port, ...port.point,
         bank: `boundary-${kind}-${portLabelBank(port.label)}`, label: port.label, width: 1 as const }));
-    return [...boundaryPorts("output"), ...wiringPorts(layout.parts.filter((part) => !part.splice), portPoint), ...boundaryPorts("input")];
-  }, [endpoints, layout.parts]);
+    return [...boundaryPorts("output"), ...wiringPorts(layout.parts.filter((part) => !part.splice), portPoint).filter(port => port.kind !== "input" || segmentPinVisible(layout.parts.find(n => n.id === port.nodeId), port.index, segmentBanks)), ...boundaryPorts("input")];
+  }, [endpoints, layout.parts, segmentBanks]);
   const portWiring = usePortWiring({
     ports: inlinePorts, wires: circuit.wires, zoom,
     toPoint: (x, y) => {
@@ -915,10 +924,10 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
               event.currentTarget.setPointerCapture(event.pointerId);
             }}
             onContextMenu={(event) => contextMenu(event, { part })}>
-            {Array.from({ length: inputCount(part) }, (_, index) => (
+            {Array.from({ length: inputCount(part) }, (_, index) => index).filter(index => segmentPinVisible(part, index, segmentBanks)).map(index => (
               <div key={`input-${index}`} className={styles.portRow} style={portStyle(part, index, "input")}>
                 {portButton(endpointMap.get(`input:${part.id}:${index}`)!, styles.input)}
-                {part.type === "module" && !part.child && <span className={styles.inputPortLabel}>{inputLabel(part, index)}</span>}
+                {(part.type === "module" || part.type === "sevensegment") && !part.child && <span className={styles.inputPortLabel}>{inputLabel(part, index)}</span>}
               </div>
             ))}
             {!part.child && <div className={clsx(styles.nodeBody, styles.inlinePartBody,
@@ -932,7 +941,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
                 ? <BlockScreen behaviour={part.behaviour} state={snapshot.blocks?.[part.id]} label={part.label} />
                 : <span className={styles.nodeSymbol}><GateSymbol type={part.type} circuit={part.module} /></span>}
               <strong className={styles.nodePartName}>{part.type === "module" ? part.module?.name : LABELS[part.type]}</strong>
-              {isScreenBlock(part.behaviour) ? null : part.type === "module" ? <span className={styles.moduleBits}>
+              {isScreenBlock(part.behaviour) ? null : part.type === "sevensegment" ? <SevenSegment raw bits={snapshot.outputs[part.id] ?? []} digits={part.digits ?? 1} label={part.label} bank={(segmentBanks[part.id] ?? 0) % (part.digits ?? 1)} onBank={bank => { portWiring.clear(); setSegmentBanks(current => ({ ...current, [part.id]: bank })); }} /> : part.type === "module" ?  <span className={styles.moduleBits}>
                 {inputCount(part)} IN · {outputCount(part)} OUT
               </span> : <span className={styles.bit}>{snapshot.values[part.id] ? "1" : "0"}</span>}
             </div>}
@@ -1028,6 +1037,8 @@ export type LockedView = {
 };
 
 export type LogicBuilderProps = {
+  /** Editable starting circuit; storageKey null keeps standalone demos isolated. */
+  initialCircuit?: Circuit;
   /**
    * Constrained mode for a demo page: shows `circuit` with no toolbar, palette,
    * storage or editing. The page drives the clock through `clockRef`. Clicking a
@@ -1055,6 +1066,7 @@ export type LogicBuilderProps = {
 
 export function LogicBuilder({
   challenge,
+  initialCircuit,
   locked,
   storageKey = STORAGE,
 }: { challenge?: LogicBuilderChallenge } & LogicBuilderProps = {}) {
@@ -1068,7 +1080,7 @@ export function LogicBuilder({
   const persist = useRef(false);
   const progress = useTutorialProgress();
   const history = useHistoryState<BuilderDocument>(() => ({
-    circuit: clone(locked?.circuit ?? challenge?.circuit ?? PRESETS["Half adder"]),
+    circuit: clone(locked?.circuit ?? challenge?.circuit ?? initialCircuit ?? PRESETS["Half adder"]),
     saved: {},
     viewPath: [],
     unfolded: [],
@@ -1108,6 +1120,8 @@ export function LogicBuilder({
   const [busSource, setBusSource] = useState("");
   const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
+  const [segmentBanks, setSegmentBanks] = useState<Record<string, number>>({});
+  const [segmentDigits, setSegmentDigits] = useState<DigitCount>(4);
   const [counterWidth, setCounterWidth] = useState<CounterWidth>(4);
   const [counterMode, setCounterMode] = useState<CounterMode>("up");
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily>("transistor");
@@ -1285,7 +1299,7 @@ export function LogicBuilder({
         circuit.wires.flatMap((wire) => {
           const from = displayNodes.find((node) => node.id === wire.from);
           const to = displayNodes.find((node) => node.id === wire.to);
-          return from && to
+          return from && to && segmentPinVisible(to, wire.input, segmentBanks)
             ? [
                 {
                   id: wire.id,
@@ -1312,7 +1326,7 @@ export function LogicBuilder({
           return from && to && outputSide(from) === "right" && inputSide(to) === "left";
         }),
       ),
-    [displayNodes, circuit.wires, busWiring],
+    [displayNodes, circuit.wires, busWiring, segmentBanks],
   );
   const [drag, setDrag] = useState<{
     x: number;
@@ -2069,7 +2083,8 @@ export function LogicBuilder({
       x: position?.x ?? 110 + (index % 5) * 155,
       y: position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90,
       value: false,
-      ...(type === "input4" || type === "input8" ? { numberValue: 0 } : {}),
+      ...(type === "input4" || type === "input8" || type === "input14" ? { numberValue: 0 } : {}),
+      ...(type === "sevensegment" ? { digits: segmentDigits } : {}),
     };
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
@@ -2227,8 +2242,8 @@ export function LogicBuilder({
     setMessage(`Connected bits 0–7 to ${target.label || target.module?.name || LABELS[target.type]}.`);
   };
   const availablePorts = useMemo(() => wiringPorts(displayNodes.filter((node) => !node.splice &&
-    (showVdd || node.type !== "high") && (showGround || node.type !== "ground")), portPoint),
-    [displayNodes, showVdd, showGround]);
+    (showVdd || node.type !== "high") && (showGround || node.type !== "ground")), portPoint).filter(port => port.kind !== "input" || segmentPinVisible(displayNodes.find(n => n.id === port.nodeId), port.index, segmentBanks)),
+    [displayNodes, showVdd, showGround, segmentBanks]);
   const portWiring = usePortWiring({
     ports: availablePorts, wires: circuit.wires, zoom,
     toPoint: (x, y) => boardPoint(x, y),
@@ -2263,6 +2278,7 @@ export function LogicBuilder({
       if (node.splice) continue;
       if (draft.from && node.id !== draft.from) {
         for (let input = 0; input < inputCount(node); input++) {
+          if (!segmentPinVisible(node, input, segmentBanks)) continue;
           const port = portPoint(node, input, "input");
           const distance = Math.hypot(point.x - port.x, point.y - port.y);
           if (distance < 20 / zoom && (!best || distance < best.distance))
@@ -2668,7 +2684,7 @@ export function LogicBuilder({
   const wirePaths = useMemo(() => {
     const paths = circuit.wires.flatMap((wire) => {
       const from = displayNodes.find((node) => node.id === wire.from), to = displayNodes.find((node) => node.id === wire.to);
-      if (!from || !to || hasTransistors && (!powerVisible(from) || !powerVisible(to))) return [];
+      if (!from || !to || !segmentPinVisible(to, wire.input, segmentBanks) || hasTransistors && (!powerVisible(from) || !powerVisible(to))) return [];
       const start = portPoint(from, wire.output ?? 0, "output"), end = portPoint(to, wire.input, "input");
       const standard = outputSide(from) === "right" && inputSide(to) === "left";
       const path = wire.points ? explicitWirePath(wire.points, start, end) : standard
@@ -2677,7 +2693,7 @@ export function LogicBuilder({
       return path ? [{ id: wire.id, path }] : [];
     });
     return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path }))]);
-  }, [circuit.wires, displayNodes, tidyWiring, busWiring, routes, showVdd, showGround]);
+  }, [circuit.wires, displayNodes, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks]);
   const anchorPath = (wire: Wire) => {
     const bus = routes.buses.find((bus) => bus.taps.some((tap) => tap.wireId === wire.id));
     if (!bus || wire.points) return wirePaths[wire.id];
@@ -3076,6 +3092,19 @@ export function LogicBuilder({
             </p>
           )}
           <div className={styles.parts}>
+            {!challenge && "seven segment display bcd decimal converter".includes(search.toLowerCase().trim()) && <fieldset className={styles.counterControls}>
+              <legend>Seven-segment displays</legend>
+              <label>Digits <select aria-label="Display digits" value={segmentDigits} onChange={event => setSegmentDigits(Number(event.target.value) as DigitCount)}>{DIGIT_COUNTS.map(n => <option key={n} value={n}>{n}</option>)}</select></label>
+              <button type="button" onClick={() => { addNode("sevensegment"); }}>Add raw {segmentDigits}-digit display</button>
+              <button type="button" onClick={() => addModule(decodedDisplayCircuit(segmentDigits))}>Add decoded {segmentDigits}-digit display</button>
+              <button type="button" onClick={() => addModule(BCD_DECODER)}>Add BCD decoder</button>
+              <button type="button" onClick={() => addModule(ADD3)}>Add correction gates</button>
+              <button type="button" onClick={() => addModule(decimalConverter(14, segmentDigits))}>Add binary to decimal converter</button>
+              <button type="button" onClick={() => load(rawSegmentDemo())}>Open raw segment demo</button>
+              <button type="button" onClick={() => load(bcdSegmentDemo())}>Open BCD decoder demo</button>
+              <button type="button" onClick={() => load(decimalSegmentDemo(segmentDigits))}>Open decimal display demo</button>
+              <small>{SEGMENT_CONTRACT}</small>
+            </fieldset>}
             {showCounters && <fieldset className={styles.counterControls}>
               <legend>Counter</legend>
               <label>Width <select aria-label="Counter width" value={counterWidth} onChange={event => setCounterWidth(Number(event.target.value) as CounterWidth)}>
@@ -3457,6 +3486,7 @@ export function LogicBuilder({
                     const from = displayNodes.find((node) => node.id === wire.from);
                     const to = displayNodes.find((node) => node.id === wire.to);
                     if (!from || !to) return null;
+                    if (to.type === "sevensegment" && Math.floor(wire.input / 7) !== (segmentBanks[to.id] ?? 0) % (to.digits ?? 1)) return null;
                     if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
                     const { x: x1, y: y1 } = portPoint(from, wire.output ?? 0, "output");
                     const { x: x2, y: y2 } = portPoint(to, wire.input, "input");
@@ -3669,7 +3699,7 @@ export function LogicBuilder({
                           enterCircuit(node.module, node.label || node.module.name, node.id);
                       }}
                     >
-                      {Array.from({ length: inputCount(node) }, (_, input) => (
+                      {Array.from({ length: inputCount(node) }, (_, input) => input).filter(input => node.type !== "sevensegment" || Math.floor(input / 7) === (segmentBanks[node.id] ?? 0) % (node.digits ?? 1)).map(input => (
                         <div
                           key={`${node.id}-input-${input}`}
                           className={clsx(styles.portRow, inputSide(node) === "right" && styles.portOnRight)}
@@ -3717,10 +3747,10 @@ export function LogicBuilder({
                                     ? input === 0
                                       ? "Gate control"
                                       : "Source signal"
-                                    : `Input ${input + 1}`
+                                    : inputLabel(node, input)
                             }
                           />
-                          {node.type === "module" && !node.expanded && ["left", "right"].includes(inputSide(node)) && (
+                          {(node.type === "sevensegment" || node.type === "module") && !node.expanded && ["left", "right"].includes(inputSide(node)) && (
                             <span className={styles.inputPortLabel} title={inputLabel(node, input)}>
                               {inputLabel(node, input)}
                             </span>
@@ -3799,7 +3829,7 @@ export function LogicBuilder({
                             state={boardSnapshot.blocks?.[node.id]}
                             label={node.label}
                           />
-                        ) : !["input4", "input8", "display4", "display8"].includes(
+                        ) : !["input4", "input8", "input14", "sevensegment", "display4", "display8"].includes(
                           node.type,
                         ) && (
                           <span className={styles.nodeSymbol}>
@@ -3809,14 +3839,14 @@ export function LogicBuilder({
                         <strong className={styles.nodePartName}>
                           {node.type === "module" ? node.module?.name || "Module" : node.type === "pulse" ? "BUTTON" : LABELS[node.type]}
                         </strong>
-                        {node.type === "input4" || node.type === "input8" ? (
+                        {node.type === "input4" || node.type === "input8" || node.type === "input14" ? (
                           <div className={styles.numberInput}>
                           <div
                             className={styles.numberBits}
                             aria-label={`${node.label || LABELS[node.type]} binary input`}
                           >
-                            {Array.from({ length: node.type === "input4" ? 4 : 8 }, (_, index) => {
-                              const bit = (node.type === "input4" ? 4 : 8) - index - 1;
+                            {Array.from({ length: node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8 }, (_, index) => {
+                              const bit = (node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8) - index - 1;
                               const on = Boolean(((node.numberValue ?? 0) >> bit) & 1);
                               return (
                                 <button
@@ -3844,11 +3874,13 @@ export function LogicBuilder({
                               );
                             })}
                           </div>
-                          <DecimalInput value={node.numberValue ?? 0} width={node.type === "input4" ? 4 : 8}
+                          <DecimalInput value={node.numberValue ?? 0} width={node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8}
                             label={node.label || LABELS[node.type]} onChange={numberValue => setCircuit(current => ({
                               ...current, nodes: current.nodes.map(item => item.id === node.id ? { ...item, numberValue } : item),
                             }))} />
                           </div>
+                        ) : node.type === "sevensegment" ? (
+                          <SevenSegment raw bits={boardSnapshot.outputs[node.id] ?? []} digits={node.digits ?? 1} label={node.label} bank={(segmentBanks[node.id] ?? 0) % (node.digits ?? 1)} onBank={bank => { portWiring.clear(); setSegmentBanks(current => ({ ...current, [node.id]: bank })); }} />
                         ) : node.type === "display4" || node.type === "display8" ? (
                           <div
                             className={clsx(styles.digitalScreen, node.probe && styles.probeScreen)}
@@ -3873,6 +3905,8 @@ export function LogicBuilder({
                               ).join("")}
                             </span>
                           </div>
+                        ) : node.type === "module" && verifiedCircuitIdentity(node.module)?.component.id.startsWith("bcd-display-package-") ? (
+                          <SevenSegment bits={Array.from({ length: moduleInputs(node.module!).length / 4 }, (_, d) => boardSnapshot.modules[node.id]?.outputs[`raw${d}`] ?? Array(7).fill(false)).flat()} digits={moduleInputs(node.module!).length / 4} label={node.label} />
                         ) : node.type === "lamp" ? (
                           <span className={styles.lampState}>
                             <span

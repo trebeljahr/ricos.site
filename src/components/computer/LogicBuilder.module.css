@@ -286,3 +286,11 @@
 .decimalInput small{grid-column:1/-1;font-size:8px;line-height:1.3;white-space:normal}
 .manualInput{display:flex;flex-direction:column;align-items:center;gap:5px;max-width:100%}
 .manualInput .toggle[data-active]{background:#ffc76a;color:#10192a;box-shadow:0 0 9px #ffc76a66}
+
+.segmentDisplay{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;background:#100e1a;border-radius:7px;max-width:100%;box-sizing:border-box}.segmentDigit{min-width:0;flex:1;text-align:center}.segmentDigit svg{width:100%;max-width:80px;display:block}.segmentDigit small{display:block;font:10px ui-monospace,monospace;color:#c9b6c4;line-height:1.5}.numberInput:has(input[aria-label*="14-BIT"]) .numberBits{flex-wrap:wrap}
+
+.segmentPanel{max-width:100%;min-width:0}.segmentBanks{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-bottom:8px}.segmentBanks button{font:10px ui-monospace,monospace;padding:4px;border:1px solid #64789b;border-radius:3px;background:#15223c;color:#c5d5f0;cursor:pointer}.segmentBanks button[aria-pressed=true]{border-color:#ff8f87;color:#fff}.nodeBody:has(.segmentPanel) .nodeSymbol{display:none}.moduleBody:has(.segmentPanel){padding-left:100px;padding-right:20px}
+
+.segmentBanks,.segmentDisplay{border:0;margin:0;min-inline-size:0}.segmentBanks{margin-bottom:8px;padding:0}
+
+.nodeBody:has(.segmentPanel){padding-left:96px;padding-right:16px}

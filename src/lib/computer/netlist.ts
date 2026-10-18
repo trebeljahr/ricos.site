@@ -199,9 +199,10 @@ export function compileNetlist(circuit: Circuit): Netlist {
         case "ground":
           out[i] = [ZERO];
           break;
+        case "input14":
         case "input4":
         case "input8":
-          out[i] = Array.from({ length: node.type === "input4" ? 4 : 8 }, (_, bit) =>
+          out[i] = Array.from({ length: node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8 }, (_, bit) =>
             constant(Boolean(((node.numberValue ?? 0) >> bit) & 1)),
           );
           break;
@@ -213,6 +214,7 @@ export function compileNetlist(circuit: Circuit): Netlist {
           break;
         case "dramcell":
           throw new Error("The gate netlist does not model DRAM capacitors.");
+        case "sevensegment":
         case "display4":
         case "display8":
           break;
@@ -256,6 +258,7 @@ export function compileNetlist(circuit: Circuit): Netlist {
         case "lamp":
           alias(out[i][0], bit(i, 0));
           break;
+        case "sevensegment":
         case "display4":
         case "display8":
           displays.set(

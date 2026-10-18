@@ -350,3 +350,17 @@ for each changed key:
   emit(position_code, stable[key], shift)
   if pressed: append(character_map(position_code, shift))
 previous = stable`;
+
+const ROW_PRESET = "Matrix row (2 columns)";
+const GHOST_PRESET = "Matrix ghosting (2 × 2)";
+/** Builder examples for the keyboard-matrix lessons. */
+export const MATRIX_PRESETS: Record<string, Circuit> = {
+  [ROW_PRESET]: matrixRowCircuit(2),
+  [GHOST_PRESET]: ghostMatrixCircuit(),
+};
+export const MATRIX_HINTS: Record<string, string> = {
+  [ROW_PRESET]:
+    "ROW ACTIVE enables a low driver. A closed isolated contact produces SENSE LOW. These are logical connectivity signals; column electrical 0 is represented by SENSE LOW 1.",
+  [GHOST_PRESET]:
+    "One row drives low and the other releases to Z. Close three rectangle corners: without diodes, the fourth can appear sensed through an indirect path. Each gate stage extends the low-reachability path.",
+};

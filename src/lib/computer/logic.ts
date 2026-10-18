@@ -1,5 +1,6 @@
 import { type BusValue, bitsFromBus, busFromBits, resolveBus } from "./bus";
 import { MEMORY_PRESETS } from "./memoryCircuits";
+import { PLACES, SEGMENTS } from "./segmentNames";
 
 export type GateType =
   | "switch"
@@ -108,6 +109,12 @@ export type Snapshot = {
   unstable: boolean;
 };
 
+/** Bit width of each number-input part; every per-width rule derives from this table. */
+export const NUMBER_INPUT_BITS = { input4: 4, input8: 8, input14: 14 } as const;
+export type NumberInputType = keyof typeof NUMBER_INPUT_BITS;
+export type NumberInputWidth = (typeof NUMBER_INPUT_BITS)[NumberInputType];
+export const NUMBER_INPUT_TYPES = Object.keys(NUMBER_INPUT_BITS) as NumberInputType[];
+export const isNumberInput = (type: string): type is NumberInputType => Object.hasOwn(NUMBER_INPUT_BITS, type);
 export const INPUTS: Record<GateType, number> = {
   switch: 0,
   clock: 0,
@@ -215,9 +222,9 @@ export const outputCount = (node: Node) =>
     ? moduleOutputs(node.module!).length
     : node.type === "sevensegment" || node.type === "lamp" || node.type === "display4" || node.type === "display8"
       ? 0
-      : node.type === "input14" ? 14 : node.type === "input4"
-        ? 4
-        : node.type === "input8" || node.type === "splitter"
+      : isNumberInput(node.type)
+        ? NUMBER_INPUT_BITS[node.type]
+        : node.type === "splitter"
           ? 8
           : 1;
 /** Bus ports carry 8 lanes on one wire; every other port carries one bit. */
@@ -235,7 +242,7 @@ export const inputLabel = (node: Node, index: number) =>
   node.type === "dff" ? ["D", "CLK", "RESET"][index] :
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
-    : node.type === "sevensegment" ? (node.digits ?? 1) === 1 ? ["a", "b", "c", "d", "e", "f", "g"][index] : `${["units", "tens", "hundreds", "thousands"][Math.floor(index / 7)]} ${["a", "b", "c", "d", "e", "f", "g"][index % 7]}` : node.type === "display4" || node.type === "display8" || node.type === "merger"
+    : node.type === "sevensegment" ? (node.digits ?? 1) === 1 ? SEGMENTS[index] : `${PLACES[Math.floor(index / 7)]} ${SEGMENTS[index % 7]}` : node.type === "display4" || node.type === "display8" || node.type === "merger"
       ? `Bit ${index}`
       : node.type === "splitter"
         ? "Bus"
@@ -249,7 +256,7 @@ export const inputLabel = (node: Node, index: number) =>
 export const outputLabel = (node: Node, index: number) =>
   node.type === "module"
     ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-    : node.type === "input4" || node.type === "input8" || node.type === "input14" || node.type === "splitter"
+    : isNumberInput(node.type) || node.type === "splitter"
       ? `Bit ${index}`
       : outputWidth(node, index) === 8
         ? "Bus"
@@ -302,7 +309,7 @@ export function activeBlock(node: Node): BlockDefinition | undefined {
 }
 
 const MEMORY_TYPES = new Set<GateType>(["dff", "srlatch", "dlatch", "dramcell"]);
-const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", "input4", "input8", "input14", "splitter"]);
+const MULTI_OUTPUT_TYPES = new Set<GateType>(["module", ...NUMBER_INPUT_TYPES, "splitter"]);
 const SETTLED_TYPES = new Set<GateType>([
   ...BUS_TYPES,
   "module",
@@ -510,9 +517,8 @@ export function step(
       values[node.id] = overrides[node.id] ?? Boolean(pulses[node.id]);
     else if (node.type === "high") values[node.id] = true;
     else if (node.type === "ground") values[node.id] = false;
-    else if (node.type === "input4" || node.type === "input8" || node.type === "input14") {
-      const bits = node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8;
-      outputs[node.id] = Array.from({ length: bits }, (_, bit) =>
+    else if (isNumberInput(node.type)) {
+      outputs[node.id] = Array.from({ length: NUMBER_INPUT_BITS[node.type] }, (_, bit) =>
         Boolean(((node.numberValue ?? 0) >> bit) & 1),
       );
     } else if (MEMORY_TYPES.has(node.type)) values[node.id] = Boolean(previous.memory[node.id]);
@@ -1873,7 +1879,7 @@ export function validateCircuit(
         (n.numberValue === undefined ||
         (Number.isInteger(n.numberValue) &&
           n.numberValue >= 0 &&
-          n.numberValue < (n.type === "input4" ? 16 : n.type === "input8" ? 256 : n.type === "input14" ? 16384 : 1))),
+          n.numberValue < (isNumberInput(n.type) ? 2 ** NUMBER_INPUT_BITS[n.type] : 1))),
     )
   )
     return null;

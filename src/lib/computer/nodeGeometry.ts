@@ -1,16 +1,19 @@
-import { inputCount, type Node, outputCount } from "./logic";
+import { inputCount, isNumberInput, type Node, type NumberInputType, outputCount } from "./logic";
+import { isBcdDisplayPackage } from "./sevenSegment";
 
 export type DisplayNode = Node & { displayWidth?: number; displayHeight?: number };
+
+const NUMBER_INPUT_WIDTHS: Record<NumberInputType, number> = { input4: 156, input8: 212, input14: 370 };
 
 export function nodeWidth(node: DisplayNode): number {
   if (node.splice) return 10;
   if (node.displayWidth !== undefined) return node.displayWidth;
-  if (node.type === "input14") return 370;
+  if (isNumberInput(node.type)) return NUMBER_INPUT_WIDTHS[node.type];
   if (node.type === "sevensegment") return 230 + 65 * ((node.digits ?? 1) - 1);
   if (node.type === "module")
-    return node.module?.identity?.componentId.startsWith("bcd-display-package-") ? 550 : 300;
-  if (["input8", "display8"].includes(node.type)) return 212;
-  if (["input4", "display4", "pulse"].includes(node.type)) return 156;
+    return isBcdDisplayPackage(node.module?.identity?.componentId) ? 550 : 300;
+  if (node.type === "display8") return 212;
+  if (["display4", "pulse"].includes(node.type)) return 156;
   return 132;
 }
 
@@ -30,9 +33,8 @@ export function nodeHeight(node: DisplayNode): number {
           25,
     );
   if (
-    ["input4", "input8", "input14", "display4", "display8", "merger", "splitter", "bus"].includes(
-      node.type,
-    )
+    isNumberInput(node.type) ||
+    ["display4", "display8", "merger", "splitter", "bus"].includes(node.type)
   )
     return Math.max(
       node.type.startsWith("display") ? 142 : 116,

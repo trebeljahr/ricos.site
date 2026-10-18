@@ -167,6 +167,14 @@ export function buttonCounterDisplay(): Circuit {
   };
 }
 
+const CAPTURE_PRESET = "Button request capture";
+/** Builder examples for the button lessons. */
+export const BUTTON_PRESETS: Record<string, Circuit> = {
+  [CAPTURE_PRESET]: buttonBench(),
+  "Button counter display": buttonCounterDisplay(),
+};
+export const BUTTON_HINTS: Record<string, string> = { [CAPTURE_PRESET]: BUTTON_POLICY };
+
 /** Behavioral program exercise: the same ISA interpreter used by the CPU lockstep tests. */
 export function checkButtonProgram(source: string): string {
   const ticks = traceTicks(compileButtonProgram(source), 200, { 40: 1, 500: 1 });

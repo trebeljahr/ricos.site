@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { verifiedCircuitIdentity } from "../../lib/computer/recognition";
-import type { Circuit, GateType } from "../../lib/computer/logic";
+import { type Circuit, type GateType, isNumberInput, NUMBER_INPUT_BITS } from "../../lib/computer/logic";
 
 /** One renderer for primitive, registered, and verified reader-built identities. */
 export const GateSymbol = memo(function GateSymbol({
@@ -73,7 +73,7 @@ export const GateSymbol = memo(function GateSymbol({
             <path d="M21 10 L43 32 M43 10 L21 32" />
           </>
         )}
-        {(type === "input4" || type === "input8" || type === "input14") && (
+        {isNumberInput(type) && (
           <>
             <rect x="4" y="7" width="56" height="28" rx="4" />
             <text
@@ -82,10 +82,10 @@ export const GateSymbol = memo(function GateSymbol({
               textAnchor="middle"
               stroke="none"
               fill="currentColor"
-              fontSize="14"
+              fontSize={Math.min(14, 112 / NUMBER_INPUT_BITS[type])}
               fontFamily="monospace"
             >
-              {type === "input4" ? "0101" : "10101010"}
+              {"10".repeat(NUMBER_INPUT_BITS[type] / 2)}
             </text>
           </>
         )}

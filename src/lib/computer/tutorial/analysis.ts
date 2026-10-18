@@ -7,6 +7,7 @@ import {
   type GateType,
   INPUTS,
   moduleInputs,
+  NUMBER_INPUT_TYPES,
   moduleOutputs,
   type Node,
 } from "../logic";
@@ -35,8 +36,8 @@ const PASSIVE = new Set<GateType>([
   "high",
   "ground",
   "junction",
-  "input4",
-  "input8",
+  ...NUMBER_INPUT_TYPES,
+  "sevensegment",
   "display4",
   "display8",
   "splitter",

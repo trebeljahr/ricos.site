@@ -17,8 +17,10 @@ import {
   type Circuit,
   type GateType,
   inputCount,
+  isNumberInput,
   moduleInputs,
   moduleOutputs,
+  NUMBER_INPUT_BITS,
   outputCount,
   wireFits,
 } from "./logic";
@@ -178,6 +180,12 @@ export function compileNetlist(circuit: Circuit): Netlist {
     const out: number[][] = level.nodes.map(() => []);
     const busOut: number[] = level.nodes.map(() => -1);
     level.nodes.forEach((node, i) => {
+      if (isNumberInput(node.type)) {
+        out[i] = Array.from({ length: NUMBER_INPUT_BITS[node.type] }, (_, bit) =>
+          constant(Boolean(((node.numberValue ?? 0) >> bit) & 1)),
+        );
+        return;
+      }
       switch (node.type) {
         case "switch":
         case "clock":
@@ -198,13 +206,6 @@ export function compileNetlist(circuit: Circuit): Netlist {
           break;
         case "ground":
           out[i] = [ZERO];
-          break;
-        case "input14":
-        case "input4":
-        case "input8":
-          out[i] = Array.from({ length: node.type === "input14" ? 14 : node.type === "input4" ? 4 : 8 }, (_, bit) =>
-            constant(Boolean(((node.numberValue ?? 0) >> bit) & 1)),
-          );
           break;
         case "merger":
         case "busdriver":

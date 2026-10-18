@@ -5,6 +5,7 @@ import {
   type Circuit,
   type GateType,
   inputCount,
+  isNumberInput,
   type Node,
   outputCount,
   type Wire,
@@ -58,7 +59,7 @@ export function layoutColumns(circuit: Circuit, minOutputX = 0): Circuit {
   for (const wire of circuit.wires)
     sources.set(wire.to, [...(sources.get(wire.to) ?? []), wire.from]);
   const isInput = (node: Node) =>
-    ["switch", "clock", "pulse", "input4", "input8"].includes(node.type);
+    ["switch", "clock", "pulse"].includes(node.type) || isNumberInput(node.type);
   const column = new Map<string, number>();
   const visiting = new Set<string>();
   const depth = (id: string): number => {

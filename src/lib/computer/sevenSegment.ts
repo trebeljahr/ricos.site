@@ -1,10 +1,8 @@
-import { type Circuit, type Node, type Wire, moduleInputs, moduleOutputs } from "./logic";
+import { type Circuit, inputCount, type Node, type Wire, moduleInputs, moduleOutputs } from "./logic";
 import { builtinCircuit, registerRecognitionComponent } from "./recognition";
+import { type DigitCount, PLACES, SEGMENTS } from "./segmentNames";
 
-export const SEGMENTS = ["a", "b", "c", "d", "e", "f", "g"] as const;
-export const DIGIT_COUNTS = [1, 2, 3, 4] as const;
-export type DigitCount = (typeof DIGIT_COUNTS)[number];
-export const PLACES = ["units", "tens", "hundreds", "thousands"] as const;
+export { DIGIT_COUNTS, type DigitCount, PLACES, SEGMENTS } from "./segmentNames";
 const GLYPHS = [
   "abcdef",
   "bc",
@@ -29,6 +27,21 @@ export const decimalBits = (n: number, digits: DigitCount): boolean[] => [
   ).flat(),
   n >= 10 ** digits,
 ];
+const BCD_DISPLAY_PACKAGE = "bcd-display-package-";
+/** Whether a recognition component id names one of the decoded BCD display packages. */
+export const isBcdDisplayPackage = (componentId?: string) =>
+  Boolean(componentId?.startsWith(BCD_DISPLAY_PACKAGE));
+/** The place bank whose seven pins a raw multi-digit display currently exposes. */
+export const segmentBank = (node: Node, banks: Record<string, number>) =>
+  (banks[node.id] ?? 0) % (node.digits ?? 1);
+/** A raw display shows one seven-pin bank at a time; every other part shows all its inputs. */
+export const segmentPinVisible = (node: Node | undefined, index: number, banks: Record<string, number>) =>
+  !node || node.type !== "sevensegment" || Math.floor(index / 7) === segmentBank(node, banks);
+/** Indices of the input ports drawn for a part. */
+export const visibleInputs = (node: Node, banks: Record<string, number>) =>
+  Array.from({ length: inputCount(node) }, (_, index) => index).filter((index) =>
+    segmentPinVisible(node, index, banks),
+  );
 export const SEGMENT_CONTRACT =
   "Active high: 1 lights its named a–g bar. BCD 10–15 blanks all bars. Decimal digits keep leading zeroes, units at right. Overflow lights OVERFLOW and keeps the least-significant digits. 8 bits: 0–255; 14 bits: 0–16383.";
 
@@ -319,7 +332,7 @@ export function decodedDisplayCircuit(digits: DigitCount): Circuit {
     });
   }
   return builtinCircuit(
-    `bcd-display-package-${digits}`,
+    `${BCD_DISPLAY_PACKAGE}${digits}`,
     g.finish(`${digits}-digit BCD display · open for a–g`),
     "decoder",
   );

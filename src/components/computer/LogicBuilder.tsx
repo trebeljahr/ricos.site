@@ -14,7 +14,7 @@ import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
 import { activateBuilder, claimStorage, ownsKeyEvent, registerBuilder } from "../../lib/computer/builderRegistry";
 import { CATALOG } from "../../lib/computer/tutorial/levels";
-import { entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
+import { circuitRow, entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, rowMatches, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
 import { type OwnPartsMode, setOwnPartsMode } from "../../lib/computer/tutorial/progress";
 import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
 import { type Timeline, type TimelineFrame, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
@@ -82,9 +82,8 @@ import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { builtinCircuit, remapModulePins, verifiedCircuitIdentity, type SymbolIdentity } from "../../lib/computer/recognition";
-import { COUNTER_CONTRACT, COUNTER_MODES, COUNTER_WIDTHS, counterComponent, counterDemo, counterTitle, type CounterMode, type CounterWidth } from "../../lib/computer/counterCircuits";
 import { SevenSegment } from "./SevenSegment";
-import { BCD_DECODER, ADD3, DIGIT_COUNTS, SEGMENT_CONTRACT, bcdSegmentDemo, decimalSegmentDemo, decimalConverter, rawSegmentDemo, decodedDisplayCircuit, type DigitCount } from "../../lib/computer/sevenSegment";
+import { diagram, LIBRARY_SECTIONS, PART_LIBRARY, type RowOpen } from "../../lib/computer/partLibrary";
 import { DecimalInput, ManualButton } from "./ManualInputs";
 import { RecognitionPanel } from "./RecognitionPanel";
 import { GateSymbol } from "./GateSymbol";
@@ -244,7 +243,7 @@ const palette: GateType[] = [
   "input4",
   "input8",
   "input14",
-  "sevensegment",
+  // Seven-segment displays are listed per digit count with the other display parts.
   "display4",
   "display8",
   "high",
@@ -295,6 +294,10 @@ const datapathSource = (kind: DatapathKind) => {
       datapathCircuit(kind, kind === "rom256" ? compileProgram(SAMPLE_PROGRAMS.EXAMPLE).bytes : []));
   return datapathSources.get(kind)!;
 };
+const BLOCK_ROWS = DATAPATH_KINDS.map((kind) => circuitRow(`block:${kind}`, datapathSource(kind), {
+  label: DATAPATH_BLOCKS[kind].label, title: DATAPATH_BLOCKS[kind].hint, keywords: kind,
+  extra: { behaviour: kind, label: DATAPATH_BLOCKS[kind].label },
+}));
 type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
 const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
@@ -1128,9 +1131,6 @@ export function LogicBuilder({
   const [editingLabel, setEditingLabel] = useState<{ id: string; value: string } | null>(null);
   const [search, setSearch] = useState("");
   const [segmentBanks, setSegmentBanks] = useState<Record<string, number>>({});
-  const [segmentDigits, setSegmentDigits] = useState<DigitCount>(4);
-  const [counterWidth, setCounterWidth] = useState<CounterWidth>(4);
-  const [counterMode, setCounterMode] = useState<CounterMode>("up");
   const [circuitFamily, setCircuitFamily] = useState<BlueprintFamily>("transistor");
   const [showVdd, setShowVdd] = useState(true);
   const [showGround, setShowGround] = useState(true);
@@ -2075,7 +2075,8 @@ export function LogicBuilder({
     }
     enterCircuit(next, source?.label || LABELS[gate]);
   };
-  const addNode = (type: GateType, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+  const addNode = (type: GateType, position?: { x: number; y: number }, inlineTarget?: string | null,
+    extra: Partial<Node> = {}) => {
     const inlinePath = inlineTarget === undefined ? activeInlinePath : inlineTarget;
     if (inlinePath) {
       const id = crypto.randomUUID();
@@ -2084,7 +2085,7 @@ export function LogicBuilder({
           type === "lamp" && moduleOutputs(inner).length >= 24) return inner;
         return { ...inner, nodes: [...inner.nodes, {
           id, type, x: position?.x ?? Math.max(100, ...inner.nodes.map((node) => node.x)) + 160,
-          y: position?.y ?? 80 + (inner.nodes.length % 5) * 105, value: false,
+          y: position?.y ?? 80 + (inner.nodes.length % 5) * 105, value: false, ...extra,
           label: type === "switch" ? `IN ${moduleInputs(inner).length + 1}` :
             type === "lamp" ? `OUT ${moduleOutputs(inner).length + 1}` : undefined,
         }] };
@@ -2099,7 +2100,7 @@ export function LogicBuilder({
       y: position?.y ?? 90 + (Math.floor(index / 5) % 5) * 90,
       value: false,
       ...(type === "input4" || type === "input8" || type === "input14" ? { numberValue: 0 } : {}),
-      ...(type === "sevensegment" ? { digits: segmentDigits } : {}),
+      ...extra,
     };
     setCircuit((current) => ({ ...current, nodes: [...current.nodes, next] }));
     setSelected([next.id]);
@@ -2112,25 +2113,6 @@ export function LogicBuilder({
       x: (camera.left + (viewport?.clientWidth || 900) / 2) / camera.zoom,
       y: (camera.top + (viewport?.clientHeight || 520) / 2) / camera.zoom,
     };
-  };
-  const addSavedCircuit = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null) => {
-    if (!source.nodes.length) {
-      setMessage("This saved circuit is empty. Add parts before inserting it.");
-      return;
-    }
-    if (!moduleOutputs(source).length || moduleInputs(source).length > 24 || moduleOutputs(source).length > 24) {
-      insertCircuit(source, position ?? insertionCenter(),
-        inlineTarget === undefined ? activeInlinePath : inlineTarget);
-      return;
-    }
-    const inlinePath = inlineTarget === undefined ? activeInlinePath : inlineTarget;
-    if (inlinePath && !position) {
-      addModule(source, undefined, inlinePath);
-      return;
-    }
-    const center = position ?? insertionCenter();
-    addModule(source, { x: center.x - MODULE_WIDTH / 2,
-      y: center.y - nodeHeight({ id: "", type: "module", module: source, x: 0, y: 0 }) / 2 }, inlineTarget);
   };
   const addModule = (source: Circuit, position?: { x: number; y: number }, inlineTarget?: string | null,
     extra: Partial<Node> = {}) => {
@@ -2629,23 +2611,6 @@ export function LogicBuilder({
     setDrag(null);
   };
   const partsPalette = challenge?.palette ?? palette;
-  const showCounters = !challenge && `counter counting increment decrement up down up/down manual ${counterTitle(counterWidth, counterMode)}`.includes(search.toLowerCase().trim());
-  const visibleBlocks = challenge ? [] : DATAPATH_KINDS.filter((kind) =>
-    `${kind} ${DATAPATH_BLOCKS[kind].label}`.toLowerCase().includes(search.toLowerCase().trim()),
-  );
-  const addBlock = (kind: DatapathKind, position?: { x: number; y: number }, inlineTarget?: string | null) => {
-    const source = datapathSource(kind);
-    addModule(source, position && {
-      x: position.x - MODULE_WIDTH / 2,
-      y: position.y - nodeHeight({ id: "drop", type: "module", module: source, x: 0, y: 0 }) / 2,
-    }, inlineTarget, { behaviour: kind, label: DATAPATH_BLOCKS[kind].label });
-  };
-  const visibleExamples = challenge ? [] : Object.values(PRESETS).filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase().trim()),
-  );
-  const visibleSaved = Object.values(saved).filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase().trim()),
-  );
   const visibleBlueprints = Object.values(BLUEPRINTS).filter((item) =>
     item.name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
   );
@@ -2659,11 +2624,23 @@ export function LogicBuilder({
       addNode(placement.type, position && {
         x: position.x - NODE_WIDTH / 2,
         y: position.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
-      }, inlineTarget);
+      }, inlineTarget, placement.extra);
       return;
     }
-    const height = nodeHeight({ id: "drop", type: "module", module: placement.circuit, x: 0, y: 0 });
-    addModule(placement.circuit, position && { x: position.x - MODULE_WIDTH / 2, y: position.y - height / 2 },
+    const source = placement.circuit;
+    if (!source.nodes.length) {
+      setMessage(`${source.name} is empty. Add parts before inserting it.`);
+      return;
+    }
+    // Loose circuits that cannot become a black box go in as their parts.
+    if (!moduleOutputs(source).length || moduleInputs(source).length > 24 || moduleOutputs(source).length > 24) {
+      insertCircuit(source, position ?? insertionCenter(), inlineTarget === undefined ? activeInlinePath : inlineTarget);
+      return;
+    }
+    // A click lands in the middle of what the reader is looking at; inside an unfolded part, beside its parts.
+    const center = position ?? ((inlineTarget === undefined ? activeInlinePath : inlineTarget) ? undefined : insertionCenter());
+    const height = nodeHeight({ id: "drop", type: "module", module: source, x: 0, y: 0 });
+    addModule(source, center && { x: center.x - MODULE_WIDTH / 2, y: center.y - height / 2 },
       inlineTarget, placement.extra);
   };
   // Rows depend on the palette, the reader's progress and the search, not on every render.
@@ -2675,27 +2652,60 @@ export function LogicBuilder({
       builtInTitle: gateRow(type).title }) : gateRow(type);
   }), [challengeRows, partsPalette, progress]);
   const searchText = search.toLowerCase().trim();
-  const visibleRows = useMemo(() => paletteRows.filter((row) =>
-    `${row.key} ${row.label}`.toLowerCase().includes(searchText)), [paletteRows, searchText]);
-  const exampleRows = useMemo(() => new Map(challenge ? [] : Object.values(PRESETS).flatMap((example) => {
+  const exampleRows = useMemo(() => challenge ? [] : Object.values(PRESETS).map((example) => {
     const entry = entryFor(CATALOG, progress, { preset: example.name });
-    if (!entry) return [];
-    const row = partRow(entry, progress.settings.ownParts, { key: `preset:${example.name}`, label: example.name,
+    const title = circuitHints[example.name];
+    return entry ? partRow(entry, progress.settings.ownParts, { key: `preset:${example.name}`, label: example.name,
       icon: { circuit: example }, builtIn: { circuit: example, extra: {} },
-      builtInTitle: circuitHints[example.name] || `Drag ${example.name} black box onto canvas or click to add` });
-    return [[example.name, row] as const];
-  })), [Boolean(challenge), progress]);
-  const ownRows = useMemo(() => freeMode ? extraOwnRows(CATALOG, progress)
-    .filter((row) => row.label.toLowerCase().includes(searchText)) : [], [freeMode, progress, searchText]);
+      builtInTitle: title || `Drag ${example.name} black box onto canvas or click to add` })
+      : circuitRow(`preset:${example.name}`, example, { title });
+  }), [Boolean(challenge), progress]);
+  const savedRows = useMemo(() => Object.values(saved).map((item) =>
+    circuitRow(`saved:${item.name}`, item, { title: `Add ${item.name} to canvas` })), [saved]);
+  const ownRows = useMemo(() => freeMode ? extraOwnRows(CATALOG, progress) : [], [freeMode, progress]);
+  const opens = useMemo(() => new Map<string, RowOpen>([
+    ...savedRows.map((row) => [row.key, { title: "Open circuit", label: (name: string) => `Open ${name}`,
+      circuit: () => saved[row.label] }] as const),
+    ...PART_LIBRARY.flatMap((item) => item.open ? [[item.row.key, item.open] as const] : []),
+    ...Object.values(PRESETS).map((example) => [`preset:${example.name}`, diagram(example)] as const),
+  ]), [savedRows, saved]);
+  // Every section of the parts list is a list of rows: one search, one row view, one drop path.
+  const sections = useMemo(() => [
+    { title: "Saved circuits", rows: savedRows },
+    { title: "Your parts", rows: ownRows },
+    { title: "Parts", rows: paletteRows },
+    ...(challenge ? [] : [
+      { title: "CPU blocks", rows: BLOCK_ROWS },
+      ...LIBRARY_SECTIONS.map((title) => ({ title, rows: PART_LIBRARY.filter((item) => item.section === title).map((item) => item.row) })),
+      { title: "Examples and storage", rows: exampleRows },
+    ]),
+  ], [savedRows, ownRows, paletteRows, Boolean(challenge), exampleRows]);
+  const visibleSections = useMemo(() => sections.map((section) => ({ ...section,
+    rows: section.rows.filter((row) => rowMatches(row, searchText)) })).filter((section) => section.rows.length),
+  [sections, searchText]);
   const ownCount = useMemo(() =>
     Object.keys(progress.solved).filter((id) => CATALOG.level(id)?.makes).length, [progress.solved]);
-  const rowsByKey = useMemo(() => new Map([...paletteRows, ...exampleRows.values(), ...ownRows]
-    .map((row) => [row.key, row])), [paletteRows, exampleRows, ownRows]);
+  const rowsByKey = useMemo(() => new Map(sections.flatMap((section) => section.rows)
+    .map((row) => [row.key, row])), [sections]);
   const rowAccent = (row: PaletteRow) => "type" in row.icon ? partColors[row.icon.type] : partColors.module;
-  const renderParts = () =>
-    visibleRows.map((row) => (
-      <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => placeRow(placement)} />
-    ));
+  const rowActions = (row: PaletteRow) => {
+    const open = opens.get(row.key);
+    return <>
+      {open && <button type="button" className={styles.savedOpen} onClick={() => load(open.circuit())}
+        aria-label={open.label(row.label)} title={open.title}>↗</button>}
+      {row.key.startsWith("saved:") && <button
+        type="button"
+        className={styles.savedDelete}
+        aria-label={`Delete ${row.label}`}
+        title="Delete saved circuit"
+        onClick={() => setSaved((current) => {
+          const next = { ...current };
+          delete next[row.label];
+          return next;
+        })}
+      >×</button>}
+    </>;
+  };
   const wirePaths = useMemo(() => {
     const paths = circuit.wires.flatMap((wire) => {
       const from = displayNodes.find((node) => node.id === wire.from), to = displayNodes.find((node) => node.id === wire.to);
@@ -3107,125 +3117,15 @@ export function LogicBuilder({
             </p>
           )}
           <div className={styles.parts}>
-            {!challenge && "seven segment display bcd decimal converter".includes(search.toLowerCase().trim()) && <fieldset className={styles.counterControls}>
-              <legend>Seven-segment displays</legend>
-              <label>Digits <select aria-label="Display digits" value={segmentDigits} onChange={event => setSegmentDigits(Number(event.target.value) as DigitCount)}>{DIGIT_COUNTS.map(n => <option key={n} value={n}>{n}</option>)}</select></label>
-              <button type="button" onClick={() => { addNode("sevensegment"); }}>Add raw {segmentDigits}-digit display</button>
-              <button type="button" onClick={() => addModule(decodedDisplayCircuit(segmentDigits))}>Add decoded {segmentDigits}-digit display</button>
-              <button type="button" onClick={() => addModule(BCD_DECODER)}>Add BCD decoder</button>
-              <button type="button" onClick={() => addModule(ADD3)}>Add correction gates</button>
-              <button type="button" onClick={() => addModule(decimalConverter(14, segmentDigits))}>Add binary to decimal converter</button>
-              <button type="button" onClick={() => load(rawSegmentDemo())}>Open raw segment demo</button>
-              <button type="button" onClick={() => load(bcdSegmentDemo())}>Open BCD decoder demo</button>
-              <button type="button" onClick={() => load(decimalSegmentDemo(segmentDigits))}>Open decimal display demo</button>
-              <small>{SEGMENT_CONTRACT}</small>
-            </fieldset>}
-            {showCounters && <fieldset className={styles.counterControls}>
-              <legend>Counter</legend>
-              <label>Width <select aria-label="Counter width" value={counterWidth} onChange={event => setCounterWidth(Number(event.target.value) as CounterWidth)}>
-                {COUNTER_WIDTHS.map(width => <option key={width} value={width}>{width} bits</option>)}
-              </select></label>
-              <label>Mode <select aria-label="Counter mode" value={counterMode} onChange={event => setCounterMode(event.target.value as CounterMode)}>
-                {COUNTER_MODES.map(mode => <option key={mode} value={mode}>{mode === "up-down" ? "Up / down" : mode === "up" ? "Up" : "Down"}</option>)}
-              </select></label>
-              <button type="button" aria-label={`Add ${counterTitle(counterWidth, counterMode)}`} onClick={() => addModule(counterComponent(counterWidth, counterMode))}>
-                <span className={styles.partIcon}><GateSymbol type="module" circuit={counterComponent(counterWidth, counterMode)} /></span>
-                Add {counterTitle(counterWidth, counterMode)}
-              </button>
-              <button type="button" onClick={() => load(counterDemo(counterWidth, counterMode))}>Open wired counter demo</button>
-              <small>{COUNTER_CONTRACT}</small>
-            </fieldset>}
-
-            {visibleSaved.length > 0 && <h3 className={styles.partsSection}>Saved circuits</h3>}
-            {visibleSaved.map((item) => (
-              <div className={styles.savedPart} key={item.name}>
-                <button
-                  type="button"
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.setData("application/x-logic-module", `saved:${item.name}`);
-                    event.dataTransfer.effectAllowed = "copy";
-                  }}
-                  onClick={() => addSavedCircuit(item)}
-                  title={`Add ${item.name} to canvas`}
-                  style={{ "--part-accent": partColors.module } as React.CSSProperties}
-                >
-                  <span className={styles.partIcon}>
-                    <GateSymbol type="module" circuit={item} />
-                  </span>
-                  <span>{item.name}</span>
-                </button>
-                <button type="button" className={styles.savedOpen} onClick={() => load(item)} aria-label={`Open ${item.name}`} title="Open circuit">↗</button>
-                <button
-                  type="button"
-                  className={styles.savedDelete}
-                  aria-label={`Delete ${item.name}`}
-                  title="Delete saved circuit"
-                  onClick={() => setSaved((current) => {
-                    const next = { ...current };
-                    delete next[item.name];
-                    return next;
-                  })}
-                >×</button>
-              </div>
-            ))}
-            {ownRows.length > 0 && <h3 className={styles.partsSection}>Your parts</h3>}
-            {ownRows.map((row) => (
-              <PaletteRowView key={row.key} row={row} accent={partColors.module} onPlace={(placement) => placeRow(placement)} />
-            ))}
-            <h3 className={styles.partsSection}>Parts</h3>
-            {renderParts()}
-            {visibleBlocks.length > 0 && <h3 className={styles.partsSection}>CPU blocks</h3>}
-            {visibleBlocks.map((kind) => (
-              <button
-                type="button"
-                key={kind}
-                draggable
-                onDragStart={(event) => {
-                  event.dataTransfer.setData("application/x-logic-block", kind);
-                  event.dataTransfer.effectAllowed = "copy";
-                }}
-                onClick={() => addBlock(kind)}
-                title={DATAPATH_BLOCKS[kind].hint}
-                style={{ "--part-accent": partColors.module } as React.CSSProperties}
-              >
-                <span className={styles.partIcon}>
-                  <GateSymbol type="module" circuit={datapathSource(kind)} />
-                </span>
-                <span>{DATAPATH_BLOCKS[kind].label}</span>
-              </button>
-            ))}
-            {visibleExamples.length > 0 && <h3 className={styles.partsSection}>Examples and storage</h3>}
-            {visibleExamples.map((example) => exampleRows.has(example.name) ? (
-              <PaletteRowView key={example.name} row={exampleRows.get(example.name)!} accent={partColors.module}
-                onPlace={(placement) => placeRow(placement)}>
-                <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
-              </PaletteRowView>
-            ) : (
-              <div className={styles.savedPart} key={example.name}>
-                <button
-                  type="button"
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.setData("application/x-logic-module", example.name);
-                    event.dataTransfer.effectAllowed = "copy";
-                  }}
-                  onClick={() => addModule(example)}
-                  title={
-                    circuitHints[example.name] ||
-                    `Drag ${example.name} black box onto canvas or click to add`
-                  }
-                  style={{ "--part-accent": partColors.module } as React.CSSProperties}
-                >
-                  <span className={styles.partIcon}>
-                    <GateSymbol type="module" circuit={example} />
-                  </span>
-                  <span>{example.name}</span>
-                </button>
-                <button type="button" className={styles.savedOpen} onClick={() => load(example)} aria-label={`View ${example.name} diagram`} title="View diagram">↗</button>
-              </div>
-            ))}
-            {visibleRows.length === 0 && visibleBlocks.length === 0 && visibleExamples.length === 0 && visibleSaved.length === 0 && ownRows.length === 0 && !showCounters && <p>No matching parts</p>}
+            {visibleSections.map((section) => [
+              <h3 key={`section:${section.title}`} className={styles.partsSection}>{section.title}</h3>,
+              ...section.rows.map((row) => (
+                <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => placeRow(placement)}>
+                  {rowActions(row)}
+                </PaletteRowView>
+              )),
+            ])}
+            {visibleSections.length === 0 && <p>No matching parts</p>}
           </div>
         </aside>}
         <div ref={workspace} className={styles.workspace}>
@@ -3295,35 +3195,6 @@ export function LogicBuilder({
                 if (placement) placeRow(placement, point, inlinePath);
                 return;
               }
-              const blueprint = event.dataTransfer.getData("application/x-logic-circuit");
-              if (blueprint && (BLUEPRINTS[blueprint] || PRESETS[blueprint])) {
-                insertCircuit(
-                  BLUEPRINTS[blueprint] || PRESETS[blueprint],
-                  point,
-                  inlinePath,
-                );
-                return;
-              }
-              const block = event.dataTransfer.getData("application/x-logic-block");
-              if ((DATAPATH_KINDS as string[]).includes(block)) {
-                addBlock(block as DatapathKind, point, inlinePath);
-                return;
-              }
-              const moduleName = event.dataTransfer.getData("application/x-logic-module");
-              const moduleSource = moduleName.startsWith("saved:")
-                ? saved[moduleName.slice(6)]
-                : BLUEPRINTS[moduleName] || PRESETS[moduleName];
-              if (moduleSource) {
-                if (moduleName.startsWith("saved:")) addSavedCircuit(moduleSource, point, inlinePath);
-                else addModule(moduleSource, {
-                  x: point.x - MODULE_WIDTH / 2,
-                  y: point.y - nodeHeight({ id: "drop", type: "module", module: moduleSource, x: 0, y: 0 }) / 2,
-                }, inlinePath);
-                return;
-              }
-              const type = event.dataTransfer.getData("application/x-logic-gate") as GateType;
-              if (!partsPalette.includes(type)) return;
-              addNode(type, { x: point.x - NODE_WIDTH / 2, y: point.y - (inlinePath ? 148 : NODE_HEIGHT) / 2 }, inlinePath);
             }}
             onScroll={recenterCanvas}
             className={clsx(styles.boardScroll, !selectMode && styles.panMode)}

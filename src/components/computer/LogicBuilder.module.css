@@ -274,11 +274,7 @@
 .node.wireJoin.joinConflict{background:#ff8f87}
 .node.wireJoin> *{display:none}
 
-.counterControls{margin:8px 0 14px;padding:9px;border:1px solid #43516c;border-radius:6px;display:flex;flex-direction:column;gap:7px;min-width:0}
-.counterControls legend{padding:0 5px;color:#d9e4f6;font-size:12px;font-weight:700}
-.counterControls label{display:flex;justify-content:space-between;align-items:center;font-size:11px}
-.counterControls select,.manualInput select{border:1px solid #53617c;border-radius:4px;background:#1b2740;color:#e7edf3;font-size:10px;padding:3px;max-width:100%}
-.counterControls small{font-size:10px;line-height:1.5;color:#b8c5db}
+.manualInput select{border:1px solid #53617c;border-radius:4px;background:#1b2740;color:#e7edf3;font-size:10px;padding:3px;max-width:100%}
 .numberInput{width:100%;display:flex;flex-direction:column;gap:7px}
 .decimalInput{display:grid;grid-template-columns:auto 1fr;gap:4px;align-items:center;font-size:10px;max-width:100%;color:#becbe0}
 .decimalInput input{width:100%;min-width:0;background:#111b30;color:#f4e8c8;border:1px solid #69738b;border-radius:3px;padding:3px 5px;font:inherit;font-size:13px}

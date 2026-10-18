@@ -18,6 +18,7 @@ import {
   validateCircuit,
 } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
+import { ROW_DRAG_TYPE } from "./PaletteRow";
 
 beforeEach(() => {
   localStorage.clear();
@@ -492,7 +493,7 @@ describe("inline circuit unfolding", () => {
     } as DOMRect);
     const event = createEvent.drop(diagram, {
       dataTransfer: {
-        getData: (type: string) => (type === "application/x-logic-gate" ? "nand" : ""),
+        getData: (type: string) => (type === ROW_DRAG_TYPE ? "primary:nand" : ""),
       },
     });
     Object.defineProperties(event, { clientX: { value: 450 }, clientY: { value: 250 } });

@@ -2,6 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LogicBuilder } from "./LogicBuilder";
+import { ROW_DRAG_TYPE } from "./PaletteRow";
 
 beforeEach(() => {
   localStorage.clear();
@@ -165,7 +166,7 @@ describe("circuit depth", () => {
         width: 5000, height: 4500, toJSON: () => ({}),
       });
       fireEvent.drop(board, { clientX: 2400, clientY: 2300,
-        dataTransfer: { getData: (type: string) => type === "application/x-logic-module" ? "saved:Loose gates" : "" } });
+        dataTransfer: { getData: (type: string) => type === ROW_DRAG_TYPE ? "primary:saved:Loose gates" : "" } });
     }
     const current = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current;
     expect(current.nodes.slice(0, before.nodes.length)).toEqual(before.nodes);
@@ -751,7 +752,28 @@ describe("circuit depth", () => {
 
     const count = screen.getAllByRole("group", { name: /SWITCH part$/ }).length;
     fireEvent.drop(board, { clientX: 200, clientY: 200,
-      dataTransfer: { getData: (type: string) => type === "application/x-logic-gate" ? "switch" : "" } });
+      dataTransfer: { getData: (type: string) => type === ROW_DRAG_TYPE ? "primary:switch" : "" } });
     expect(screen.getAllByRole("group", { name: /SWITCH part$/ })).toHaveLength(count + 1);
+  });
+
+  it("lists every counter and display option as its own part row", () => {
+    render(<LogicBuilder />);
+    const palette = within(screen.getByLabelText("Gate palette"));
+    const search = palette.getByLabelText("Search parts");
+    expect(palette.queryByRole("combobox", { name: /Counter width|Display digits/ })).toBeNull();
+
+    fireEvent.change(search, { target: { value: "4-bit up" } });
+    expect(palette.getByRole("heading", { name: "Counters" })).toBeTruthy();
+    expect(palette.getByRole("button", { name: "4-bit up/down counter" })).toBeTruthy();
+    expect(palette.getByRole("button", { name: "Open 4-bit up counter wired demo" })).toBeTruthy();
+    fireEvent.click(palette.getByRole("button", { name: "4-bit up counter" }));
+    expect(screen.getByText("4-bit up counter added as a black box.")).toBeTruthy();
+
+    fireEvent.change(search, { target: { value: "3-digit" } });
+    expect(palette.getByRole("heading", { name: "Seven-segment displays" })).toBeTruthy();
+    expect(palette.getByRole("button", { name: "3-digit BCD display" })).toBeTruthy();
+    fireEvent.click(palette.getByRole("button", { name: "3-digit raw display" }));
+    const nodes = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current.nodes;
+    expect(nodes.at(-1)).toMatchObject({ type: "sevensegment", digits: 3 });
   });
 });

@@ -7,7 +7,7 @@ import { chosenVersion, type PaletteEntry, type PartCatalog, partNode } from "./
 import type { OwnPartsMode, Progress } from "./progress";
 
 /** What a click or drop places: a built-in part type, or a boxed circuit. */
-export type Placement = { type: GateType } | { circuit: Circuit; extra: Partial<Node> };
+export type Placement = { type: GateType; extra?: Partial<Node> } | { circuit: Circuit; extra: Partial<Node> };
 
 export type PaletteRow = {
   /** Unique within one palette; also the hint anchor, e.g. "part:xor" or "nand". */
@@ -15,6 +15,8 @@ export type PaletteRow = {
   label: string;
   icon: { type: GateType } | { circuit: Circuit };
   title: string;
+  /** Search words beyond the label; defaults to the key. */
+  keywords?: string;
   /** Undefined while the part is locked. */
   primary?: Placement;
   /** The main entry places the reader's own part. */
@@ -41,6 +43,28 @@ export const gateRow = (type: GateType): PaletteRow => ({
   primary: { type },
   ownPrimary: false,
 });
+
+/** A plain row that places a boxed circuit, e.g. a CPU block, preset or saved circuit. */
+export const circuitRow = (
+  key: string,
+  circuit: Circuit,
+  options: { label?: string; title?: string; keywords?: string; extra?: Partial<Node> } = {},
+): PaletteRow => {
+  const label = options.label ?? circuit.name;
+  return {
+    key,
+    label,
+    icon: { circuit },
+    title: options.title ?? `Drag ${label} black box onto canvas or click to add`,
+    keywords: options.keywords ?? "",
+    primary: { circuit, extra: options.extra ?? {} },
+    ownPrimary: false,
+  };
+};
+
+/** Whether a row answers a lowercase, trimmed search. */
+export const rowMatches = (row: PaletteRow, search: string) =>
+  `${row.label} ${row.keywords ?? row.key}`.toLowerCase().includes(search);
 
 /** A row for a part with a built-in and maybe an own version. */
 export function partRow(

@@ -1,4 +1,6 @@
 export const computerDemos = [
+  { slug: "button-interrupts", title: "Build a button interrupt" },
+  { slug: "keyboard-matrix", title: "Build a keyboard matrix" },
   { slug: "seven-segment", title: "Wire seven-segment decimal displays" },
   // Chapter 1.0: the layers a computer is made of.
   {

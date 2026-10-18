@@ -295,7 +295,11 @@ export function LogicTutorial({
             <label className={styles.parameter}>
               Challenge parameters
               <select
-                aria-label="Counter challenge"
+                aria-label={
+                  level.practice?.family === "manual-counter"
+                    ? "Counter challenge"
+                    : "Construction parameters"
+                }
                 value={level.id}
                 onChange={(event) => openLevel(event.target.value)}
               >

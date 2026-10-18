@@ -3,6 +3,10 @@ import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import {
+  INPUT_DEVICE_CORE_LESSONS,
+  INPUT_DEVICE_LESSONS,
+} from "../../lib/computer/inputDeviceLessons";
 
 const LogicTutorial = dynamic(
   () =>
@@ -13,6 +17,7 @@ const LogicTutorial = dynamic(
 export default function BuildFromNandPage() {
   const router = useRouter();
   const level = typeof router.query.level === "string" ? router.query.level : undefined;
+  const inputPractice = INPUT_DEVICE_LESSONS.includes(level ?? "");
   return (
     <Layout
       title="Build a computer from NAND"
@@ -32,7 +37,8 @@ export default function BuildFromNandPage() {
           {router.isReady && (
             <LogicTutorial
               level={level}
-              sequential
+              levels={inputPractice ? INPUT_DEVICE_CORE_LESSONS : undefined}
+              sequential={!inputPractice}
               onLevelChange={(id) =>
                 router.replace({ query: { level: id } }, undefined, {
                   shallow: true,

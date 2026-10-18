@@ -1039,7 +1039,7 @@ function declarations(statements: Statement[]): { name: string; line: number }[]
 
 export function compileProgram(
   source: string,
-  options: { stack?: StackModel } = {},
+  options: { stack?: StackModel; autoEnableInterrupts?: boolean } = {},
 ): CompiledProgram {
   const stack = options.stack ?? "hardware";
   const inRam = stack === "ram";
@@ -1489,7 +1489,8 @@ export function compileProgram(
     emit(OPCODES.JMP, INTERRUPT_VECTOR + 2, "SKIP VECTOR", handler.line);
     const vector = emit(OPCODES.JMP, 0, "INTERRUPT VECTOR", handler.line);
     callPatches.push({ address: vector, name: KEY_HANDLER, line: handler.line });
-    emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
+    if (options.autoEnableInterrupts !== false)
+      emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
   }
   compileStatements(ast.main, globals, "main");
   // HALT stops GCLK, and the blitters with it: let a running command finish first.

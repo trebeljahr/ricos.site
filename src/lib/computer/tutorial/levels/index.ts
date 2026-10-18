@@ -3,9 +3,10 @@ import { PartCatalog } from "../parts";
 import type { Level } from "../types";
 import { ALU_LEVELS } from "./alu";
 import { ARITHMETIC_LEVELS } from "./arithmetic";
+import { COUNTER_LEVELS } from "./counters";
 import { DISPLAY_LEVELS } from "./displays";
 import { GATE_LEVELS } from "./gates";
-import { COUNTER_LEVELS } from "./counters";
+import { INPUT_DEVICE_LEVELS } from "./inputDevices";
 import { INPUT_LEVELS } from "./inputs";
 import { MEMORY_LEVELS } from "./memory";
 import { PROCESSOR_LEVELS } from "./processor";
@@ -22,6 +23,7 @@ export const LEVELS: readonly Level[] = [
   ...COUNTER_LEVELS,
   ...DISPLAY_LEVELS,
   ...PROCESSOR_LEVELS,
+  ...INPUT_DEVICE_LEVELS,
 ];
 
 /** The counter family has one core lesson; variants remain addressable and saved independently. */

@@ -74,6 +74,8 @@ import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
 import { nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
+import { buttonBench, buttonCounterDisplay, BUTTON_POLICY } from "../../lib/computer/buttonInterrupt";
+import { matrixRowCircuit, ghostMatrixCircuit } from "../../lib/computer/keyboardMatrix";
 import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { SHADER_HINTS, SHADER_PRESETS } from "../../lib/computer/shaderPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
@@ -103,12 +105,15 @@ const PRESET_SYMBOLS: Record<string, SymbolIdentity> = {
   "D flip-flop": "dff", "D latch": "dlatch", "SR latch": "srlatch",
   "4 × 4 SRAM": "memory", "4 × 4 DRAM": "memory", "4 × 4 flash memory": "memory",
 };
-const PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...CPU_PRESETS, ...SHADER_PRESETS }).map(([name, circuit]) =>
+const PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...CPU_PRESETS, ...SHADER_PRESETS, "Button request capture": buttonBench(), "Button counter display": buttonCounterDisplay(), "Matrix row (2 columns)": matrixRowCircuit(2), "Matrix ghosting (2 × 2)": ghostMatrixCircuit() }).map(([name, circuit]) =>
   [name, layoutCircuit(builtinCircuit(`preset:${name}`, circuit, PRESET_SYMBOLS[name] ?? "module"))]));
 const BLUEPRINTS = Object.fromEntries(Object.entries(sourceBlueprints).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
 const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(builtinCircuit(gate, sourceGateBlueprint(gate, family)));
 type DisplayNode = GeometryNode & { expanded?: boolean };
 const circuitHints: Record<string, string> = {
+  "Button request capture": BUTTON_POLICY,
+  "Matrix row (2 columns)": "ROW ACTIVE enables a low driver. A closed isolated contact produces SENSE LOW. These are logical connectivity signals; column electrical 0 is represented by SENSE LOW 1.",
+  "Matrix ghosting (2 × 2)": "One row drives low and the other releases to Z. Close three rectangle corners: without diodes, the fourth can appear sensed through an indirect path. Each gate stage extends the low-reachability path.",
   ...MEMORY_HINTS,
   ...CPU_HINTS,
   ...SHADER_HINTS,
@@ -1023,6 +1028,8 @@ export type LockedClock = {
    * switches at the given values for the rising edge only, e.g. a key press.
    */
   cycle: (overrides?: Record<string, boolean>) => void;
+  /** Set transient manual button levels without advancing the CPU clock. */
+  input: (values: Record<string, boolean>) => void;
   /** Shows recorded frame `index`; frames after it stay recorded. */
   seek: (index: number) => void;
   reset: () => void;
@@ -1880,14 +1887,22 @@ export function LogicBuilder({
     if (!clockRef) return;
     clockRef.current = {
       cycle,
+      input: (values) => {
+        Object.assign(heldManual.current, values);
+        advance({}, currentFrame(timelineRef.current).clockHigh);
+      },
       seek: (index) => setTimeline(seek(timelineRef.current, index)),
-      reset: () => setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
-        snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) })),
+      reset: () => {
+        heldManual.current = {};
+        setManualEpoch((epoch) => epoch + 1);
+        setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
+          snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) }));
+      },
     };
     return () => {
       clockRef.current = null;
     };
-  }, [locked?.clockRef, cycle, setTimeline]);
+  }, [locked?.clockRef, cycle, setTimeline, advance]);
   useEffect(() => {
     lockedRef.current?.onFrame?.({
       frame: currentFrame(timeline),

@@ -210,8 +210,8 @@ export const trips = [
       "The hills of the coffee triangle, the old streets of Cartagena and the jungle trail to Ciudad Perdida.",
   },
   {
-    src: "/assets/photography/bolivia-2025/PXL_20250419_222130404.LONG_EXPOSURE-01.COVER.jpg",
-    alt: "snow-capped volcano in Sajama National Park, Bolivia, lit pink at dusk and reflected in a still pool",
+    src: "/assets/photography/bolivia-2025/PXL_20250409_092415024.NIGHT~2.jpg",
+    alt: "Milky Way and a pink glow on the horizon above the flooded Salar de Uyuni, Bolivia, with the stars reflected in the shallow water",
     name: "bolivia-2025",
     description:
       "Four weeks in Bolivia. La Paz from its cable cars, then the flooded Salar de Uyuni at sunset and the train graveyard outside Uyuni. Later llamas below the volcano in Sajama National Park, Lake Titicaca, and the red canyons and caves of Torotoro.",

@@ -1,5 +1,4 @@
 import { InfiniteScrollGallery } from "@components/Galleries";
-import type { GalleryLayout } from "@components/Galleries/InfiniteScrollGallery";
 import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import { type ReactNode, useMemo } from "react";
@@ -13,11 +12,10 @@ type Props = {
    *  off the title — the colour pages put their swatch and picker there. */
   title: ReactNode;
   images: ImageProps[];
-  layout?: GalleryLayout;
 };
 
 /** Page body shared by every full image gallery: photography albums and Midjourney. */
-export function GalleryPage({ path, title, images, layout }: Props) {
+export function GalleryPage({ path, title, images }: Props) {
   // Memoized: the largest gallery was 572 images x 16 sizes = 9,152 objects,
   // which was rebuilt on every render. `images` is a stable prop from
   // getStaticProps, so this only runs when navigating to another gallery.
@@ -44,7 +42,7 @@ export function GalleryPage({ path, title, images, layout }: Props) {
     <PageMain>
       <section>
         <Header breadcrumbs={{ path }} title={title} />
-        <InfiniteScrollGallery images={imagesWithSrcSet} layout={layout} />
+        <InfiniteScrollGallery images={imagesWithSrcSet} />
         <ToTopButton />
       </section>
     </PageMain>

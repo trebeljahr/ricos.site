@@ -11,6 +11,7 @@ import {
 } from "../lib/metadataJsonFile";
 import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
 import { listAllObjects } from "./drift/lib/buckets";
+import { applyS3Sync, findDeletedKeys, findNotUploadedKeys } from "./syncMetadataRules";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
 const LOCAL_ASSETS_ROOT = path.join(process.cwd(), "src", "content", "Notes");
@@ -28,9 +29,18 @@ async function main() {
 
   console.log(`Current metadata has ${metadataKeys.length} entries.`);
 
-  // 1. Stale entries (in metadata but not in S3), removed when saving
-  const staleKeys = metadataKeys.filter((key) => !s3Keys.has(key));
-  console.log(`Found ${staleKeys.length} stale entries in metadata.`);
+  // 1. Entries deleted from S3, removed when saving. Entries never uploaded stay.
+  const deletedKeys = findDeletedKeys(metadata, s3Keys);
+  console.log(`Found ${deletedKeys.length} entries deleted from S3.`);
+
+  const notUploadedKeys = findNotUploadedKeys(metadata, s3Keys);
+  if (notUploadedKeys.length > 0) {
+    console.log(
+      `Keeping ${notUploadedKeys.length} entries never uploaded to S3 (existsInS3: false):`,
+    );
+    for (const key of notUploadedKeys.slice(0, 20)) console.log(`  ${key}`);
+    if (notUploadedKeys.length > 20) console.log(`  …and ${notUploadedKeys.length - 20} more`);
+  }
 
   // 2. Add missing entries (in S3 but not in metadata)
   const missingKeys = [...s3Keys].filter((key) => !metadata[key]);
@@ -88,12 +98,14 @@ async function main() {
   // The S3 calls above take minutes and other tools write the file meanwhile,
   // so apply only this run's changes to a fresh read. An entry that appeared in
   // between keeps its alt text: additions merge into it.
+  let result = { removed: 0, added: 0, marked: 0 };
   await editMetadataFile(assetsMetadataFilePath, (onDisk) => {
-    for (const key of staleKeys) delete onDisk[key];
-    for (const entry of additions) onDisk[entry.key] = { ...onDisk[entry.key], ...entry };
-    return staleKeys.length + additions.length > 0;
+    result = applyS3Sync(onDisk, { s3Keys, deletedKeys, additions });
+    return result.removed + result.added + result.marked > 0;
   });
-  console.log(`Removed ${staleKeys.length} stale entries, added ${additions.length}.`);
+  console.log(
+    `Removed ${result.removed} entries, added ${result.added}, marked ${result.marked} as uploaded.`,
+  );
   console.log("Done!");
 }
 

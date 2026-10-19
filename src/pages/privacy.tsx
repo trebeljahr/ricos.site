@@ -39,12 +39,41 @@ export default function PrivacyPage() {
             user agent, timestamp, referrer) to deliver the site and protect against abuse. Legal
             basis: Art. 6 (1) (f) GDPR (legitimate interest in operating the site securely).
           </p>
+          <p>
+            Before a request reaches Vercel, it passes through the network of Cloudflare, Inc., 101
+            Townsend St, San Francisco, CA 94107, USA. Cloudflare receives the IP address, user
+            agent and referrer of each request to deliver the site and protect it against abuse. The
+            same legal basis applies.
+          </p>
+
+          <h2>Performance measurement: Cloudflare Web Analytics</h2>
+          <p>
+            Cloudflare adds the script of{" "}
+            <a href="https://developers.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>{" "}
+            to each page. Your browser loads it from <code>static.cloudflareinsights.com</code>, and
+            the script sends its report to <code>ricos.site/cdn-cgi/rum</code>.
+          </p>
+          <p>
+            The report holds the page URL, the referrer and how long the page took to load,
+            including Largest Contentful Paint, Interaction to Next Paint and Cumulative Layout
+            Shift. Cloudflare shows me totals by page, country, browser and device type. The script
+            sets no cookies and stores nothing on your device. It gives each page view a random ID
+            and keeps no ID from one page view to the next. Cloudflare receives your IP address with
+            the report, discards it at the nearest data center and does not store it.
+          </p>
+          <p>
+            Cloudflare does not add the script for visitors who connect through a Cloudflare data
+            center in the EU, the EEA, the United Kingdom or Switzerland. For all other visitors the
+            legal basis is Art. 6 (1) (f) GDPR (legitimate interest in knowing how fast the pages
+            load). You can object at any time. See "Your Rights" below. You can also block{" "}
+            <code>static.cloudflareinsights.com</code> with a content blocker.
+          </p>
 
           <h2>Analytics: Plausible (self-hosted)</h2>
           <p>
             This site uses <a href="https://plausible.io">Plausible Analytics</a>, a privacy-focused
             web analytics tool. The instance is self-hosted on a server I operate under{" "}
-            <code>plausible.trebeljahr.com</code>, so no analytics data is shared with third
+            <code>plausible.trebeljahr.com</code>, so Plausible's data is not shared with third
             parties.
           </p>
           <p>

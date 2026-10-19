@@ -1,7 +1,9 @@
+import { execFile, spawnSync } from "node:child_process";
 import { promises as fsPromises } from "node:fs";
-import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readdir, readFile, rm, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { editMetadataFile } from "src/lib/metadataJsonFile";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { uploadWithMetadata } from "./aws/helpers";
@@ -209,5 +211,80 @@ describe("editMetadataFile", () => {
 
     expect(await readFile(file, "utf-8")).toBe(before);
     expect(await readdir(dir)).toEqual(["metadata.json"]);
+  });
+});
+
+describe("editMetadataFile across processes", () => {
+  const addKey = (key: string) => (metadata: Record<string, unknown>) => {
+    metadata[key] = uploaded(key);
+    return true;
+  };
+
+  it("waits while another process holds the lock", async () => {
+    // The parent process is alive, so its lock is not stale.
+    await writeFile(`${file}.lock`, `${process.ppid} someone-else\n`);
+
+    let saved = false;
+    const pending = editMetadataFile(file, addKey("assets/waited.jpg")).then(() => {
+      saved = true;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    expect(saved).toBe(false);
+    expect((await readJson(file))["assets/waited.jpg"]).toBeUndefined();
+
+    await rm(`${file}.lock`);
+    await pending;
+    expect((await readJson(file))["assets/waited.jpg"]).toEqual(uploaded("assets/waited.jpg"));
+    expect(await readdir(dir)).toEqual(["metadata.json"]);
+  });
+
+  it("takes over a lock left by a process that died", async () => {
+    const { pid } = spawnSync(process.execPath, ["-e", ""]);
+    await writeFile(`${file}.lock`, `${pid} crashed\n`);
+
+    await editMetadataFile(file, addKey("assets/after-crash.jpg"));
+
+    expect((await readJson(file))["assets/after-crash.jpg"]).toBeDefined();
+    expect(await readdir(dir)).toEqual(["metadata.json"]);
+  });
+
+  it("takes over a lock older than 30 seconds", async () => {
+    await writeFile(`${file}.lock`, `${process.ppid} stuck\n`);
+    const aMinuteAgo = new Date(Date.now() - 60_000);
+    await utimes(`${file}.lock`, aMinuteAgo, aMinuteAgo);
+
+    await editMetadataFile(file, addKey("assets/after-stuck.jpg"));
+
+    expect((await readJson(file))["assets/after-stuck.jpg"]).toBeDefined();
+    expect(await readdir(dir)).toEqual(["metadata.json"]);
+  });
+
+  it("loses no edit when several processes save at once", { timeout: 60_000 }, async () => {
+    const child = path.join(dir, "child.mts");
+    await writeFile(
+      child,
+      `import { editMetadataFile } from ${JSON.stringify(path.resolve("src/lib/metadataJsonFile.ts"))};
+const [file, id] = process.argv.slice(2);
+await Promise.all(
+  Array.from({ length: 25 }, (_, i) =>
+    editMetadataFile(file, (metadata) => {
+      const key = \`assets/process-\${id}-\${i}.jpg\`;
+      metadata[key] = { key, width: 1, height: 1, aspectRatio: 1, existsInS3: true };
+      return true;
+    }),
+  ),
+);
+`,
+    );
+    const tsx = path.resolve("node_modules/.bin/tsx");
+
+    await Promise.all(
+      Array.from({ length: 6 }, (_, id) => promisify(execFile)(tsx, [child, file, String(id)])),
+    );
+
+    const metadata = await readJson(file);
+    expect(Object.keys(metadata)).toHaveLength(1 + 6 * 25);
+    expect(metadata[door.key]).toEqual(door);
+    expect((await readdir(dir)).sort()).toEqual(["child.mts", "metadata.json"]);
   });
 });

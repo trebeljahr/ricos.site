@@ -5,11 +5,13 @@
  * Overlapping plain writes once left junk bytes after the closing brace, and
  * whole-entry replacements stripped 598 alt texts.
  *
- * Only node:fs and node:path, so the dev watcher and API routes can import it
- * without loading AWS or CLI dependencies.
+ * Only node built-ins, so the dev watcher and API routes can import it without
+ * loading AWS or CLI dependencies.
  */
+import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 
 export const assetsMetadataFilePath = path.resolve(
   process.cwd(),
@@ -69,6 +71,81 @@ function serialize<T>(task: () => Promise<T>): Promise<T> {
   return next;
 }
 
+// A lock taken over after this long even when its process still runs. An edit
+// holds the lock for one read and one write, a few milliseconds.
+const LOCK_STALE_MS = 30_000;
+const LOCK_TIMEOUT_MS = 60_000;
+const LOCK_RETRY_MS = 25;
+
+function isRunning(pid: number) {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === "EPERM";
+  }
+}
+
+// True when the lock is gone or was stale and is now removed: try again at once.
+async function removeIfStale(lockPath: string): Promise<boolean> {
+  let owner: string;
+  let mtimeMs: number;
+  try {
+    owner = await fs.readFile(lockPath, "utf-8");
+    ({ mtimeMs } = await fs.stat(lockPath));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return true;
+    throw error;
+  }
+
+  // Empty while its owner is still writing it: only age makes that stale.
+  const pid = Number.parseInt(owner, 10);
+  const ownerDied = pid > 0 && !isRunning(pid);
+  if (!ownerDied && Date.now() - mtimeMs < LOCK_STALE_MS) return false;
+
+  // Another waiter may have taken it over in between: remove only the lock we judged.
+  if ((await fs.readFile(lockPath, "utf-8").catch(() => null)) === owner) {
+    await fs.rm(lockPath, { force: true });
+  }
+  return true;
+}
+
+/**
+ * The queue covers one process only, but the asset watcher, the dev server
+ * (/dev/alt-review) and a script can save at the same time. A lock file beside
+ * the target makes them take turns as well. A lock left by a process that
+ * crashed, or older than LOCK_STALE_MS, is taken over.
+ */
+async function withFileLock<T>(filePath: string, task: () => Promise<T>): Promise<T> {
+  const lockPath = `${filePath}.lock`;
+  const token = `${process.pid} ${randomUUID()}\n`;
+  const deadline = Date.now() + LOCK_TIMEOUT_MS;
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+
+  for (;;) {
+    try {
+      await fs.writeFile(lockPath, token, { flag: "wx" });
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+    if (await removeIfStale(lockPath)) continue;
+    if (Date.now() > deadline) {
+      throw new Error(`${lockPath} has been held for over a minute, not writing`);
+    }
+    await sleep(LOCK_RETRY_MS);
+  }
+
+  try {
+    return await task();
+  } finally {
+    // After a takeover the lock belongs to someone else: leave it to them.
+    if ((await fs.readFile(lockPath, "utf-8").catch(() => null)) === token) {
+      await fs.rm(lockPath, { force: true });
+    }
+  }
+}
+
 // Write beside the target and rename, so a crash can never leave half a file.
 async function writeMetadataFile(filePath: string, metadata: MetadataFile) {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -84,7 +161,8 @@ async function writeMetadataFile(filePath: string, metadata: MetadataFile) {
 
 /**
  * Runs `edit` on a fresh read of the file and saves the result when it returns
- * true. Resolves to whether it saved.
+ * true. Resolves to whether it saved. Holds the in-process queue and the lock
+ * file from the read to the rename.
  *
  * `edit` is synchronous on purpose: do slow work (S3 calls, probing images)
  * before the call, so the read it edits is still fresh when it is saved. Set
@@ -95,10 +173,12 @@ export async function editMetadataFile(
   filePath: string,
   edit: (metadata: MetadataFile) => boolean,
 ): Promise<boolean> {
-  return serialize(async () => {
-    const metadata = await readMetadataFile(filePath);
-    if (!edit(metadata)) return false;
-    await writeMetadataFile(filePath, metadata);
-    return true;
-  });
+  return serialize(() =>
+    withFileLock(filePath, async () => {
+      const metadata = await readMetadataFile(filePath);
+      if (!edit(metadata)) return false;
+      await writeMetadataFile(filePath, metadata);
+      return true;
+    }),
+  );
 }

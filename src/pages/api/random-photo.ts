@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getLocalMetadata, photographyFolder } from "src/lib/imageMetadata";
+import { getLocalMetadata, isHiddenPhoto, photographyFolder } from "src/lib/imageMetadata";
+import { gallerySlugOfKey } from "src/lib/utils/gallerySlug";
 
 export type RandomPhoto = { src: string; tripName: string };
 
@@ -9,7 +10,7 @@ let photoKeys: string[] | null = null;
 /** Every photo in every trip gallery, from the same metadata the galleries read. */
 function getPhotoKeys() {
   photoKeys ??= Object.keys(getLocalMetadata()).filter(
-    (key) => key.startsWith(photographyFolder) && IMAGE_PATTERN.test(key),
+    (key) => key.startsWith(photographyFolder) && IMAGE_PATTERN.test(key) && !isHiddenPhoto(key),
   );
   return photoKeys;
 }
@@ -29,7 +30,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader("Cache-Control", "no-store");
     const body: RandomPhoto = {
       src: `/${key}`,
-      tripName: key.slice(photographyFolder.length).split("/")[0],
+      tripName: gallerySlugOfKey(key),
     };
     return res.status(200).json(body);
   } catch {

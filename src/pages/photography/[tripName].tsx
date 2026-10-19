@@ -1,11 +1,7 @@
 import { GalleryPage } from "@components/GalleryPage";
 import Layout from "@components/Layout";
 import type { ImageProps } from "src/@types";
-import {
-  getDataFromMetadata,
-  getPhotographyTripNames,
-  photographyFolder,
-} from "src/lib/imageMetadata";
+import { getPhotographyGalleryImages, getPhotographyTripNames } from "src/lib/imageMetadata";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 import { trips } from "../photography";
 
@@ -76,8 +72,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: StaticProps) {
   const { tripName } = params;
-  const prefix = photographyFolder + tripName + "/";
-  const images = getDataFromMetadata(prefix);
+  const images = getPhotographyGalleryImages(tripName);
 
   return { props: { images, tripName: params.tripName } };
 }

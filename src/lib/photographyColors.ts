@@ -70,7 +70,7 @@ import {
   isColorBucketId,
   neutralForLightness,
 } from "src/lib/colorBuckets.mjs";
-import { getLocalMetadata } from "src/lib/imageMetadata";
+import { getLocalMetadata, isHiddenPhoto } from "src/lib/imageMetadata";
 
 export type PhotoColorEntry = {
   /** Families this photo reads as, strongest-scoring first. */
@@ -135,7 +135,9 @@ let liveKeys: string[] | null = null;
 function keys(): string[] {
   if (liveKeys) return liveKeys;
   const metadata = getLocalMetadata();
-  const live = Object.keys(entries).filter((src) => metadata[src] !== undefined);
+  const live = Object.keys(entries).filter(
+    (src) => metadata[src] !== undefined && !isHiddenPhoto(src),
+  );
 
   const filename = (src: string) => src.slice(src.lastIndexOf("/") + 1);
   const isBestOf = (src: string) => src.split("/")[2] === "best-of";

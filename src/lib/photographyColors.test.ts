@@ -128,6 +128,7 @@ vi.mock("src/lib/imageMetadata", () => ({
           { key, width: 3000, height: 2000, aspectRatio: 1.5, existsInS3: true },
         ]),
     ),
+  isHiddenPhoto: () => false,
 }));
 
 const { entryFor, hueOffset, imagesBySpectrum } = await import("src/lib/photographyColors");

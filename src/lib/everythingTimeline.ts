@@ -58,6 +58,7 @@ const r3fCreatedAtByPath: Record<string, string> = {
   "/r3f/scenes/underwater-shader": "2026-04-02",
 };
 
+// Keyed by photography folder, not gallery slug ("vietnam-2026", not "vietnam").
 const photographyTimelineDates: Record<string, Pick<TimelineEntry, "date" | "datePrecision">> = {
   "best-of": { date: "2024-12-30", datePrecision: "year" },
   alps: { date: "2020-08-01", datePrecision: "year" },
@@ -177,30 +178,41 @@ export function getPageTimelineEntries(pages: CommonMetadata[]): TimelineEntry[]
     }));
 }
 
-export function getPhotographyTimelineDate(tripName: string, travelblogs: CommonMetadata[]) {
-  const curatedDate = photographyTimelineDates[tripName];
-  if (curatedDate) return curatedDate;
+/**
+ * A gallery's timeline date, from its folders newest first: a curated date,
+ * else its travel stories, else a year in the folder name. A gallery that
+ * joins several trips ("vietnam" and "vietnam-2026") takes the newest one's.
+ */
+export function getPhotographyTimelineDate(
+  tripName: string,
+  travelblogs: CommonMetadata[],
+  folders: string[] = [tripName],
+) {
+  for (const folder of folders) {
+    const curatedDate = photographyTimelineDates[folder];
+    if (curatedDate) return curatedDate;
 
-  const matchingTravel = sortTimelineEntries(
-    travelblogs
-      .filter((story) => story.parentFolder === tripName && story.date)
-      .map((story) => ({
-        id: story.link,
-        href: story.link,
-        title: story.title,
-        type: "travel",
-        typeLabel: "Travel story",
-        date: story.date,
-      })),
-  )[0];
+    const matchingTravel = sortTimelineEntries(
+      travelblogs
+        .filter((story) => story.parentFolder === folder && story.date)
+        .map((story) => ({
+          id: story.link,
+          href: story.link,
+          title: story.title,
+          type: "travel",
+          typeLabel: "Travel story",
+          date: story.date,
+        })),
+    )[0];
 
-  if (matchingTravel?.date) {
-    return { date: matchingTravel.date, datePrecision: "year" as const };
-  }
+    if (matchingTravel?.date) {
+      return { date: matchingTravel.date, datePrecision: "year" as const };
+    }
 
-  const year = tripName.match(/(?:^|-)((?:19|20)\d{2})(?:-|$)/)?.[1];
-  if (year) {
-    return { date: `${year}-01-01`, datePrecision: "year" as const };
+    const year = folder.match(/(?:^|-)((?:19|20)\d{2})(?:-|$)/)?.[1];
+    if (year) {
+      return { date: `${year}-01-01`, datePrecision: "year" as const };
+    }
   }
 
   return { date: undefined, datePrecision: undefined };

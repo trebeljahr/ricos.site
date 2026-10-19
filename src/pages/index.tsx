@@ -24,14 +24,7 @@ import { extractAndSortMetadata } from "src/lib/utils/extractAndSortMetadata";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 
 // Hand-curated picks for the homepage — keep small so the page stays fast.
-const FEATURED_PHOTOGRAPHY_TRIPS = [
-  "best-of",
-  "alps",
-  "italy",
-  "vietnam",
-  "sri-lanka",
-  "india-2023",
-];
+const FEATURED_PHOTOGRAPHY_TRIPS = ["best-of", "alps", "italy", "vietnam", "sri-lanka", "india"];
 
 const FEATURED_R3F_DEMOS: { name: string; href: string }[] = [
   { name: "shader-art-demo", href: "/r3f/scenes/shader-art-demo" },
@@ -290,7 +283,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { getImgWidthAndHeightDuringBuild } = await import(
     "src/lib/getImgWidthAndHeightDuringBuild"
   );
-  const { getFirstImageFromMetadata, photographyFolder } = await import("src/lib/imageMetadata");
+  const { getFirstPhotographyImage } = await import("src/lib/imageMetadata");
 
   const travelblogs = loadVeliteData("travelblogs.json");
   const posts = loadVeliteData("posts.json");
@@ -318,7 +311,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
           image: { width, height, src: trip.src, alt: trip.alt } as ImageProps,
         };
       }
-      const image = getFirstImageFromMetadata(photographyFolder + name) as ImageProps;
+      const image = getFirstPhotographyImage(name) as ImageProps;
       return { tripName: name, image };
     }),
   );

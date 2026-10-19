@@ -27,11 +27,11 @@ type Props = {
 type TripImage = { src: string; width: number; height: number; alt?: string };
 
 function getPhotographyEntries(
-  trips: { tripName: string; image: TripImage; description?: string }[],
+  trips: { tripName: string; folders: string[]; image: TripImage; description?: string }[],
   travelblogs: CommonMetadata[],
 ): TimelineEntry[] {
-  return trips.map(({ tripName, image, description }) => {
-    const dateInfo = getPhotographyTimelineDate(tripName, travelblogs);
+  return trips.map(({ tripName, folders, image, description }) => {
+    const dateInfo = getPhotographyTimelineDate(tripName, travelblogs, folders);
     const title = turnKebabIntoTitleCase(tripName);
     return {
       id: `photography:${tripName}`,
@@ -88,7 +88,7 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const { getImgWidthAndHeightDuringBuild } = await import(
     "src/lib/getImgWidthAndHeightDuringBuild"
   );
-  const { getFirstImageFromMetadata, getPhotographyTripNames, photographyFolder } = await import(
+  const { getFirstPhotographyImage, getPhotographyFolders, getPhotographyTripNames } = await import(
     "src/lib/imageMetadata"
   );
 
@@ -99,18 +99,19 @@ export const getStaticProps = async (): Promise<{ props: Props }> => {
   const pages: CommonMetadata[] = loadVeliteData("pages.json");
 
   // Same rule as the /photography index: a curated trip whose folder is not in
-  // the metadata (yet) is skipped instead of throwing in getFirstImageFromMetadata.
+  // the metadata (yet) is skipped instead of throwing in getFirstPhotographyImage.
   const galleryNames = getPhotographyTripNames();
   const tripsMeta = await Promise.all(
     trips
       .filter(({ name }) => galleryNames.includes(name))
       .map(async ({ name, src, alt, description }) => {
+        const folders = getPhotographyFolders(name);
         if (src === "") {
-          const image = getFirstImageFromMetadata(photographyFolder + name);
-          return { image, tripName: name, description };
+          const image = getFirstPhotographyImage(name);
+          return { image, tripName: name, folders, description };
         }
         const { width, height } = await getImgWidthAndHeightDuringBuild(src);
-        return { image: { width, height, src, alt }, tripName: name, description };
+        return { image: { width, height, src, alt }, tripName: name, folders, description };
       }),
   );
 

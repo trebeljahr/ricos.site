@@ -16,6 +16,7 @@ import type { ImageProps } from "src/@types";
 import type { ColorBucketId } from "src/lib/colorBuckets.mjs";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { formatCount } from "src/lib/utils/formatCount";
+import { gallerySlugOfKey } from "src/lib/utils/gallerySlug";
 import { addIdAndIndex } from "src/lib/utils/misc";
 import { offsetOfPosition, positionAtOffset, ribbonRows } from "src/lib/utils/ribbonRows";
 import { alongBand, bandAt, positionInBand, segmentGradient } from "src/lib/utils/spectrumScale";
@@ -169,8 +170,8 @@ const hideIfBroken = (img: HTMLImageElement | null) => {
 const clampRatio = (width: number, height: number) =>
   Math.min(RATIO_MAX, Math.max(RATIO_MIN, width / height));
 
-/** Trip folder out of a metadata key, "assets/photography/<trip>/<file>". */
-const tripOf = (src: string) => turnKebabIntoTitleCase(src.split("/")[2] ?? "");
+/** Gallery name out of a metadata key, "assets/photography/<folder>/<file>". */
+const tripOf = (src: string) => turnKebabIntoTitleCase(gallerySlugOfKey(src));
 
 /**
  * /photography/spectrum — the whole archive as one continuous ribbon, ordered

@@ -50,6 +50,22 @@ export const STATIC_REDIRECTS = [
     destination: "/photography/best-of",
     permanent: true,
   },
+  // Galleries dropped the year from their URL in 2026-10 (gallerySlugOf).
+  // vietnam-2026 joined the older vietnam folder in one gallery.
+  ...[
+    "portugal-2024",
+    "spain-2024",
+    "india-2023",
+    "colombia-2024",
+    "bolivia-2025",
+    "ecuador-2025",
+    "pai-2026",
+    "vietnam-2026",
+  ].map((folder) => ({
+    source: `/photography/${folder}`,
+    destination: `/photography/${folder.replace(/-\d{4}$/, "")}`,
+    permanent: true,
+  })),
   {
     source: "/needles",
     destination: "/needlestack",

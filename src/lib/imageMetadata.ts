@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import hidden from "src/content/photography-hidden.json";
+import { gallerySlugOf } from "src/lib/utils/gallerySlug";
 
 export interface ImageMetadata {
   key: string;
@@ -20,6 +22,14 @@ export function getLocalMetadata(): Record<string, ImageMetadata | undefined> {
 }
 
 export const photographyFolder = "assets/photography/";
+
+/**
+ * Photos taken off every photography page: the galleries, the spectrum and the
+ * random-photo egg. Their files stay in S3 and the metadata, so a post or travel
+ * story that embeds one keeps working. Keys as in metadata.json.
+ */
+const hiddenPhotos = new Set<string>(hidden);
+export const isHiddenPhoto = (key: string) => hiddenPhotos.has(key.replace(/^\//, ""));
 
 export async function getMetadataFromJsonFile(key: string) {
   try {
@@ -65,18 +75,48 @@ export function getFirstImageFromMetadata(prefix: string) {
   };
 }
 
+/** Every photography folder that has images in the metadata, grouped by gallery. */
+function getPhotographyFoldersBySlug(): Map<string, string[]> {
+  const folders = new Set(
+    Object.keys(getLocalMetadata())
+      .filter((key) => key.startsWith(photographyFolder))
+      .map((key) => key.replace(photographyFolder, "").split("/")[0])
+      .filter(Boolean),
+  );
+  const bySlug = new Map<string, string[]>();
+  for (const folder of folders) {
+    const slug = gallerySlugOf(folder);
+    bySlug.set(slug, [...(bySlug.get(slug) ?? []), folder]);
+  }
+  // Newest trip first: "vietnam-2026" sorts after "vietnam", so reverse.
+  for (const list of bySlug.values()) list.sort().reverse();
+  return bySlug;
+}
+
 /**
- * Every photography gallery folder that has images in the metadata. This is the
+ * Every photography gallery that has images in the metadata. This is the
  * single source of truth for which `/photography/[tripName]` routes exist, so
  * both the gallery index and `getStaticPaths` read from it and can't drift apart.
  */
 export function getPhotographyTripNames(): string[] {
-  return [
-    ...new Set(
-      Object.keys(getLocalMetadata())
-        .filter((key) => key.startsWith(photographyFolder))
-        .map((key) => key.replace(photographyFolder, "").split("/")[0])
-        .filter(Boolean),
-    ),
-  ].sort();
+  return [...getPhotographyFoldersBySlug().keys()].sort();
+}
+
+/** The photography folders behind one gallery, newest trip first. */
+export function getPhotographyFolders(slug: string): string[] {
+  return getPhotographyFoldersBySlug().get(slug) ?? [];
+}
+
+/** Every shown image of one gallery, across all its folders. */
+export function getPhotographyGalleryImages(slug: string) {
+  return getPhotographyFolders(slug)
+    .flatMap((folder) => getDataFromMetadata(`${photographyFolder}${folder}/`))
+    .filter(({ src }) => !isHiddenPhoto(src));
+}
+
+/** First shown image of one gallery, for galleries without a curated cover. */
+export function getFirstPhotographyImage(slug: string) {
+  const [first] = getPhotographyGalleryImages(slug);
+  if (!first) throw new Error(`No images found for gallery: ${slug}`);
+  return first;
 }

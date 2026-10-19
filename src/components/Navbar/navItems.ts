@@ -32,6 +32,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "projects", href: "/projects" },
       { label: "3D playground", href: "/r3f" },
+      { label: "art", href: "/art" },
       { label: "midjourney", href: "/midjourney" },
       { label: "1-month projects", href: "/1-month-projects" },
       // /computer 404s in production until the demos are ready to publish.

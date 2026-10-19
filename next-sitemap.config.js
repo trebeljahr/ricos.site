@@ -85,7 +85,7 @@ const nextSitemapConfig = {
   priority: null,
   transform: async (_config, url) => {
     // Exclude anything the page itself marks noindex — stub booknotes with no
-    // summary written yet, and the placeholder shelves (/art, /photography/essays,
+    // summary written yet, and the placeholder shelves (/photography/essays,
     // /photography/prints) that exist as routes but have no content yet.
     if (isNoindex(url)) return null;
 

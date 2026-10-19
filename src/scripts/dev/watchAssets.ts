@@ -22,14 +22,15 @@
  */
 import "dotenv/config";
 import { existsSync, watch } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { readFile } from "node:fs/promises";
+import { join, relative, resolve, sep } from "node:path";
 import { cwd } from "node:process";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import mime from "mime";
 import sharp from "sharp";
 import { createS3Client } from "src/lib/aws";
 import { ASSETS_ROOT, ensureLocalS3Layout } from "src/lib/localS3";
+import { editMetadataFile, type MetadataFile, readMetadataFile } from "src/lib/metadataJsonFile";
 
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 const BUCKET = "images.trebeljahr.com";
@@ -39,44 +40,28 @@ const IS_LOCAL =
   (process.env.NEXT_PUBLIC_IMAGE_BACKEND ?? process.env.IMAGE_BACKEND ?? "local") === "local";
 const DEBOUNCE_MS = 800;
 
-type Metadata = Record<
-  string,
-  {
-    key: string;
-    width: number;
-    height: number;
-    aspectRatio: number;
-    existsInS3: boolean;
-  }
->;
-
-/** `null` when the file exists but does not parse, e.g. read mid-write by another tool. */
-async function loadMetadata(): Promise<Metadata | null> {
-  try {
-    const txt = await readFile(METADATA_PATH, "utf8");
-    return JSON.parse(txt) as Metadata;
-  } catch (e) {
-    return (e as NodeJS.ErrnoException).code === "ENOENT" ? {} : null;
-  }
-}
-
 // Keys this watcher added or changed since its last save.
 const dirtyKeys = new Set<string>();
 
 // Merge only this watcher's own changes into a fresh read of metadata.json.
 // Writing back the snapshot loaded at startup would revert everything other
 // tools wrote while `pnpm dev` ran: backfillLocalMetadata entries, alt text
-// from syncImageAlt, metadata from a pulled Notes commit.
+// from syncImageAlt, metadata from a pulled Notes commit. Throws, and keeps
+// the keys dirty, when the file does not parse or the write fails.
 async function saveMetadata(): Promise<void> {
-  const onDisk = await loadMetadata();
-  if (!onDisk) throw new Error("metadata.json does not parse right now");
-  const keys = [...dirtyKeys];
-  dirtyKeys.clear();
-  for (const key of keys) onDisk[key] = { ...onDisk[key], ...metadata[key] };
-  metadata = onDisk;
+  let keys: string[] = [];
   try {
-    await mkdir(dirname(METADATA_PATH), { recursive: true });
-    await writeFile(METADATA_PATH, JSON.stringify(onDisk, null, 2));
+    await editMetadataFile(METADATA_PATH, (onDisk) => {
+      // Taken here, not before the read: an upsert during the read stays dirty.
+      keys = [...dirtyKeys];
+      dirtyKeys.clear();
+      for (const key of keys) {
+        const entry = metadata[key];
+        if (entry) onDisk[key] = { ...onDisk[key], ...entry };
+      }
+      metadata = onDisk;
+      return keys.length > 0;
+    });
   } catch (e) {
     for (const key of keys) dirtyKeys.add(key);
     throw e;
@@ -143,7 +128,7 @@ function schedule(absPath: string, handler: () => Promise<void>) {
   );
 }
 
-let metadata: Metadata = {};
+let metadata: MetadataFile = {};
 let metaSaveTimer: NodeJS.Timeout | null = null;
 function queueMetaSave(key?: string, delayMs = 200) {
   if (key) dirtyKeys.add(key);
@@ -200,7 +185,8 @@ async function main() {
   // Throws with setup instructions when the Notes submodule is missing;
   // concurrently's --kill-others-on-fail then stops the rest of `pnpm dev`.
   ensureLocalS3Layout();
-  metadata = (await loadMetadata()) ?? {};
+  // An unparseable file is not fatal here: saves retry until it parses again.
+  metadata = await readMetadataFile(METADATA_PATH).catch(() => ({}));
   const mode = IS_LOCAL ? "local (metadata only, no uploads)" : "cloud (S3 uploads enabled)";
   console.log(`Watching ${ASSETS_ROOT}  [${mode}]`);
 

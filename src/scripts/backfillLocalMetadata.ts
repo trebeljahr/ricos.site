@@ -15,25 +15,15 @@
  */
 import "dotenv/config";
 import { existsSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
 import { relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import chokidar from "chokidar";
 import sharp from "sharp";
+import { editMetadataFile, type ImageMetadata, readMetadataFile } from "../lib/metadataJsonFile";
 
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 const ASSETS_ROOT = resolve(cwd(), "src/content/Notes/assets");
 const IMAGE_RE = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
-
-type Entry = {
-  key: string;
-  width: number;
-  height: number;
-  aspectRatio: number;
-  existsInS3: boolean;
-  alt?: string;
-  altSource?: "manual" | "generated" | "ai";
-};
 
 async function probeDims(p: string) {
   try {
@@ -78,14 +68,13 @@ async function main() {
     return;
   }
 
-  const raw = await readFile(METADATA_PATH, "utf8");
-  const meta = JSON.parse(raw) as Record<string, Entry>;
+  const meta = await readMetadataFile(METADATA_PATH);
 
   console.log("Scanning src/content/Notes/assets …");
   const files = await listAssetFiles();
   console.log(`  found ${files.length} image files on disk`);
 
-  let added = 0;
+  const newEntries: ImageMetadata[] = [];
   let skipped = 0;
   for (const abs of files) {
     const key = "assets/" + relative(ASSETS_ROOT, abs);
@@ -98,24 +87,35 @@ async function main() {
       console.warn(`  could not probe dims: ${key}`);
       continue;
     }
-    meta[key] = {
+    newEntries.push({
       key,
       width: dims.width,
       height: dims.height,
       aspectRatio: dims.width / dims.height,
       existsInS3: false,
-    };
-    added++;
+    });
   }
 
-  if (added === 0) {
+  if (newEntries.length === 0) {
     console.log(
       `backfillLocalMetadata: nothing to do (${skipped}/${files.length} already indexed).`,
     );
     return;
   }
+  // Probing takes a while and other tools write the file meanwhile, so add to
+  // a fresh read. An entry that appeared in between wins: it may carry alt text.
+  let added = 0;
+  let total = 0;
   try {
-    await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2) + "\n");
+    await editMetadataFile(METADATA_PATH, (onDisk) => {
+      for (const entry of newEntries) {
+        if (onDisk[entry.key]) continue;
+        onDisk[entry.key] = entry;
+        added++;
+      }
+      total = Object.keys(onDisk).length;
+      return added > 0;
+    });
   } catch (e) {
     // Read-only filesystems on some hosted CI platforms — log and move on.
     console.warn(
@@ -124,7 +124,7 @@ async function main() {
     return;
   }
   console.log(
-    `backfillLocalMetadata: +${added} new entries, ${skipped} already present (${Object.keys(meta).length} total)`,
+    `backfillLocalMetadata: +${added} new entries, ${skipped} already present (${total} total)`,
   );
   console.log(
     "Run `npm run syncImageAlt -- --include-photography` next to fill alt text for the new entries.",

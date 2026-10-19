@@ -1,6 +1,8 @@
+import { promises as fsPromises } from "node:fs";
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { editMetadataFile } from "src/lib/metadataJsonFile";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { uploadWithMetadata } from "./aws/helpers";
 import {
@@ -36,6 +38,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   await rm(dir, { recursive: true, force: true });
 });
 
@@ -133,5 +136,78 @@ describe("updateMetadataFileBulk", () => {
     await updateMetadataFileBulk(file, []);
 
     expect(await readFile(file, "utf-8")).toBe(before.trimEnd());
+  });
+});
+
+describe("editMetadataFile", () => {
+  it("saves a field edit with a trailing newline and keeps the rest of the entry", async () => {
+    const saved = await editMetadataFile(file, (metadata) => {
+      const entry = metadata[door.key];
+      if (entry) entry.altReviewed = true;
+      return true;
+    });
+
+    expect(saved).toBe(true);
+    const text = await readFile(file, "utf-8");
+    expect(text.endsWith("}\n")).toBe(true);
+    expect(JSON.parse(text)[door.key]).toEqual({ ...door, altReviewed: true });
+    expect(await readdir(dir)).toEqual(["metadata.json"]);
+  });
+
+  it("does not touch the file when the edit returns false", async () => {
+    const before = await readFile(file, "utf-8");
+    await writeFile(file, before.trimEnd());
+
+    const saved = await editMetadataFile(file, (metadata) => {
+      delete metadata[door.key];
+      return false;
+    });
+
+    expect(saved).toBe(false);
+    expect(await readFile(file, "utf-8")).toBe(before.trimEnd());
+  });
+
+  it("does not run the edit on a file it cannot parse", async () => {
+    await writeFile(file, "{ broken");
+    const edit = vi.fn(() => true);
+
+    await expect(editMetadataFile(file, edit)).rejects.toThrow(/does not parse/);
+    expect(edit).not.toHaveBeenCalled();
+    expect(await readFile(file, "utf-8")).toBe("{ broken");
+  });
+
+  it("shares one queue with updateMetadataFile, so no edit is lost", async () => {
+    // Every writer of metadata.json in one process goes through this queue.
+    // Interleaved read-modify-writes would drop some of these keys.
+    await Promise.all(
+      Array.from({ length: 100 }, (_, i) =>
+        i % 2 === 0
+          ? updateMetadataFile(file, uploaded(`assets/upload-${i}.jpg`))
+          : editMetadataFile(file, (metadata) => {
+              metadata[`assets/edit-${i}.jpg`] = uploaded(`assets/edit-${i}.jpg`);
+              return true;
+            }),
+      ),
+    );
+
+    const metadata = await readJson(file);
+    expect(Object.keys(metadata)).toHaveLength(101);
+    expect(metadata[door.key]).toEqual(door);
+    expect(await readdir(dir)).toEqual(["metadata.json"]);
+  });
+
+  it("leaves the old file and no temp file when the write fails", async () => {
+    const before = await readFile(file, "utf-8");
+    vi.spyOn(fsPromises, "rename").mockRejectedValueOnce(new Error("disk full"));
+
+    await expect(
+      editMetadataFile(file, (metadata) => {
+        delete metadata[door.key];
+        return true;
+      }),
+    ).rejects.toThrow("disk full");
+
+    expect(await readFile(file, "utf-8")).toBe(before);
+    expect(await readdir(dir)).toEqual(["metadata.json"]);
   });
 });

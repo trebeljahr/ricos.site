@@ -16,26 +16,16 @@
  *
  * 404s in production; there is no auth because it never exists there.
  */
-import { readFile, rename, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { NextApiRequest, NextApiResponse } from "next";
+import {
+  type AltSource,
+  editMetadataFile,
+  type ImageMetadata,
+  readMetadataFile,
+} from "src/lib/metadataJsonFile";
 
 const METADATA_PATH = resolve(process.cwd(), "src", "content", "Notes", "_data", "metadata.json");
-
-type AltSource = "manual" | "generated" | "ai";
-
-type MetadataEntry = {
-  key: string;
-  width: number;
-  height: number;
-  aspectRatio: number;
-  existsInS3: boolean;
-  alt?: string;
-  altSource?: AltSource;
-  altReviewed?: boolean;
-};
-
-type Metadata = Record<string, MetadataEntry>;
 
 export type AltEntry = {
   key: string;
@@ -52,30 +42,7 @@ export type AltUpdate = {
   reviewed?: boolean;
 };
 
-/**
- * Every write is a read-modify-write of one big file, so they run one at a
- * time. Without this a burst of saves can interleave and drop edits.
- */
-let queue: Promise<unknown> = Promise.resolve();
-function serialize<T>(task: () => Promise<T>): Promise<T> {
-  const next = queue.then(task, task);
-  queue = next.catch(() => undefined);
-  return next;
-}
-
-async function readMetadata(): Promise<Metadata> {
-  return JSON.parse(await readFile(METADATA_PATH, "utf-8")) as Metadata;
-}
-
-async function writeMetadata(meta: Metadata) {
-  // Write beside the target and rename, so an interrupted write can never
-  // leave a truncated metadata.json behind.
-  const temporary = `${METADATA_PATH}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(meta, null, 2)}\n`);
-  await rename(temporary, METADATA_PATH);
-}
-
-function toEntry(entry: MetadataEntry): AltEntry {
+function toEntry(entry: ImageMetadata): AltEntry {
   return {
     key: entry.key,
     width: entry.width,
@@ -93,9 +60,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === "GET") {
-    const meta = await readMetadata();
+    const meta = await readMetadataFile(METADATA_PATH);
     const entries = Object.values(meta)
-      .filter((entry) => entry && typeof entry.key === "string")
+      .filter((entry): entry is ImageMetadata => typeof entry?.key === "string")
       .map(toEntry)
       .sort((a, b) => a.key.localeCompare(b.key));
     res.status(200).json({ entries });
@@ -110,11 +77,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-      const saved = await serialize(async () => {
-        const meta = await readMetadata();
-        let applied = 0;
-        const unknown: string[] = [];
-
+      // A queued read-modify-write of a fresh read, saved by temp file and
+      // rename, so a burst of saves cannot interleave and drop edits.
+      let applied = 0;
+      const unknown: string[] = [];
+      await editMetadataFile(METADATA_PATH, (meta) => {
         for (const update of updates) {
           const entry = meta[update.key];
           if (!entry) {
@@ -135,12 +102,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
           applied++;
         }
-
-        if (applied > 0) await writeMetadata(meta);
-        return { applied, unknown };
+        return applied > 0;
       });
 
-      res.status(200).json(saved);
+      res.status(200).json({ applied, unknown });
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
     }

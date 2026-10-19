@@ -17,27 +17,16 @@
  */
 import "dotenv/config";
 import { existsSync } from "node:fs";
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { argv, cwd } from "node:process";
+import { editMetadataFile } from "../lib/metadataJsonFile";
 
 const METADATA_PATH = resolve(cwd(), "src/content/Notes/_data/metadata.json");
 
 const INCLUDE_PHOTOGRAPHY = argv.includes("--include-photography");
 const STAGING_FLAG_INDEX = argv.indexOf("--from-staging");
 const STAGING_DIR = STAGING_FLAG_INDEX >= 0 ? argv[STAGING_FLAG_INDEX + 1] : null;
-
-type AltSource = "manual" | "generated" | "ai";
-type MetadataEntry = {
-  key: string;
-  width: number;
-  height: number;
-  aspectRatio: number;
-  existsInS3: boolean;
-  alt?: string;
-  altSource?: AltSource;
-};
-type Metadata = Record<string, MetadataEntry>;
 
 function altFromKey(key: string): string {
   const last = key.split("/").pop() || "";
@@ -71,56 +60,59 @@ async function main() {
     );
     return;
   }
-  const meta = JSON.parse(await readFile(METADATA_PATH, "utf8")) as Metadata;
-
   const aiAlts = STAGING_DIR ? await loadStagingMaps(STAGING_DIR) : {};
   let aiApplied = 0;
   let generatedAdded = 0;
   let skippedPhotography = 0;
+  let withAlt = 0;
+  let total = 0;
 
-  for (const key of Object.keys(meta)) {
-    const entry = meta[key];
-    if (!entry) continue;
-    const isManual = entry.altSource === "manual";
+  // Edits a fresh read and sets only alt/altSource, so a save from
+  // /dev/alt-review or the asset watcher during the run is kept.
+  try {
+    await editMetadataFile(METADATA_PATH, (meta) => {
+      for (const key of Object.keys(meta)) {
+        const entry = meta[key];
+        if (!entry) continue;
+        const isManual = entry.altSource === "manual";
 
-    // 1. Apply AI-generated alt (subagent output) unless this entry is manual
-    if (!isManual && aiAlts[key]) {
-      entry.alt = aiAlts[key];
-      entry.altSource = "ai";
-      aiApplied++;
-      continue;
-    }
+        // 1. Apply AI-generated alt (subagent output) unless this entry is manual
+        if (!isManual && aiAlts[key]) {
+          entry.alt = aiAlts[key];
+          entry.altSource = "ai";
+          aiApplied++;
+          continue;
+        }
 
-    // 2. Skip photography unless forced, and skip entries that already have alt
-    if (entry.alt) continue;
-    if (!INCLUDE_PHOTOGRAPHY && key.startsWith("assets/photography/")) {
-      skippedPhotography++;
-      continue;
-    }
+        // 2. Skip photography unless forced, and skip entries that already have alt
+        if (entry.alt) continue;
+        if (!INCLUDE_PHOTOGRAPHY && key.startsWith("assets/photography/")) {
+          skippedPhotography++;
+          continue;
+        }
 
-    // 3. Fill in filename-derived default
-    const generated = altFromKey(key);
-    if (!generated) continue;
-    entry.alt = generated;
-    entry.altSource = "generated";
-    generatedAdded++;
+        // 3. Fill in filename-derived default
+        const generated = altFromKey(key);
+        if (!generated) continue;
+        entry.alt = generated;
+        entry.altSource = "generated";
+        generatedAdded++;
+      }
+
+      withAlt = Object.values(meta).filter((e) => e?.alt).length;
+      total = Object.keys(meta).length;
+      return aiApplied + generatedAdded > 0;
+    });
+  } catch (e) {
+    console.warn(
+      `syncImageAlt: couldn't update ${METADATA_PATH} (${(e as Error).message}); continuing.`,
+    );
+    return;
   }
 
-  if (aiApplied + generatedAdded > 0) {
-    try {
-      await writeFile(METADATA_PATH, JSON.stringify(meta, null, 2) + "\n");
-    } catch (e) {
-      console.warn(
-        `syncImageAlt: couldn't write ${METADATA_PATH} (${(e as Error).message}); continuing.`,
-      );
-      return;
-    }
-  }
-
-  const withAlt = Object.values(meta).filter((e) => e?.alt).length;
   console.log(
     `syncImageAlt: +${aiApplied} from AI, +${generatedAdded} filename defaults; ` +
-      `${withAlt}/${Object.keys(meta).length} entries have alt` +
+      `${withAlt}/${total} entries have alt` +
       (INCLUDE_PHOTOGRAPHY
         ? ""
         : ` (skipped ${skippedPhotography} photography entries; pass --include-photography to force)`),

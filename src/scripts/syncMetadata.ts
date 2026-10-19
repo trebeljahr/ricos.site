@@ -1,12 +1,16 @@
 import "dotenv/config";
-import { promises as fs } from "node:fs";
 import path from "node:path";
 import { Presets, SingleBar } from "cli-progress";
 import pLimit from "p-limit";
 import { getImageMetadataFromS3 } from "../lib/aws";
+import {
+  assetsMetadataFilePath,
+  editMetadataFile,
+  type ImageMetadata,
+  readMetadataFile,
+} from "../lib/metadataJsonFile";
 import { getWidthAndHeightFromFileSystem } from "./aws/getWidthAndHeight";
 import { listAllObjects } from "./drift/lib/buckets";
-import { assetsMetadataFilePath, type ImageMetadata } from "./metadataJsonFileHelpers";
 
 const SOURCE_BUCKET = "images.trebeljahr.com";
 const LOCAL_ASSETS_ROOT = path.join(process.cwd(), "src", "content", "Notes");
@@ -19,26 +23,20 @@ async function main() {
   console.log(`Found ${s3Keys.size} objects in S3.`);
 
   console.log("Reading existing metadata.json...");
-  const metadataContent = await fs.readFile(assetsMetadataFilePath, "utf-8");
-  const metadata: Record<string, ImageMetadata> = JSON.parse(metadataContent);
+  const metadata = await readMetadataFile(assetsMetadataFilePath);
   const metadataKeys = Object.keys(metadata);
 
   console.log(`Current metadata has ${metadataKeys.length} entries.`);
 
-  // 1. Remove stale entries (in metadata but not in S3)
-  let removedCount = 0;
-  for (const key of metadataKeys) {
-    if (!s3Keys.has(key)) {
-      delete metadata[key];
-      removedCount++;
-    }
-  }
-  console.log(`Removed ${removedCount} stale entries from metadata.`);
+  // 1. Stale entries (in metadata but not in S3), removed when saving
+  const staleKeys = metadataKeys.filter((key) => !s3Keys.has(key));
+  console.log(`Found ${staleKeys.length} stale entries in metadata.`);
 
   // 2. Add missing entries (in S3 but not in metadata)
   const missingKeys = [...s3Keys].filter((key) => !metadata[key]);
   console.log(`Found ${missingKeys.length} keys in S3 missing from metadata.`);
 
+  const additions: ImageMetadata[] = [];
   if (missingKeys.length > 0) {
     const progress = new SingleBar(
       {
@@ -55,19 +53,19 @@ async function main() {
           // First try to get from S3 metadata
           try {
             const s3Meta = await getImageMetadataFromS3(SOURCE_BUCKET, key);
-            metadata[key] = s3Meta;
+            additions.push(s3Meta);
           } catch (_e) {
             // If S3 doesn't have dimensions in its custom metadata, try to find local file and probe it
             const localPath = path.join(LOCAL_ASSETS_ROOT, key);
             try {
               const { width, height } = await getWidthAndHeightFromFileSystem(localPath);
-              metadata[key] = {
+              additions.push({
                 key,
                 width,
                 height,
                 aspectRatio: width / height,
                 existsInS3: true,
-              };
+              });
             } catch (_localError) {
               // If local file is also not available, we have a problem.
               // We'll skip it for now or mark it as broken.
@@ -87,7 +85,15 @@ async function main() {
   }
 
   console.log("Writing updated metadata.json...");
-  await fs.writeFile(assetsMetadataFilePath, JSON.stringify(metadata, null, 2), "utf-8");
+  // The S3 calls above take minutes and other tools write the file meanwhile,
+  // so apply only this run's changes to a fresh read. An entry that appeared in
+  // between keeps its alt text: additions merge into it.
+  await editMetadataFile(assetsMetadataFilePath, (onDisk) => {
+    for (const key of staleKeys) delete onDisk[key];
+    for (const entry of additions) onDisk[entry.key] = { ...onDisk[entry.key], ...entry };
+    return staleKeys.length + additions.length > 0;
+  });
+  console.log(`Removed ${staleKeys.length} stale entries, added ${additions.length}.`);
   console.log("Done!");
 }
 

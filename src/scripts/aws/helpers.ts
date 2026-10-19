@@ -8,7 +8,11 @@ import {
   getImageMetadataFromFileSystemOrAWS,
 } from "src/lib/aws";
 import { getWidthAndHeightFromFileSystem } from "src/scripts/aws/getWidthAndHeight";
-import { assetsMetadataFilePath, updateMetadataFile } from "../metadataJsonFileHelpers";
+import {
+  assetsMetadataFilePath,
+  type ImageMetadata,
+  updateMetadataFile,
+} from "../metadataJsonFileHelpers";
 
 const Bucket = "images.trebeljahr.com";
 
@@ -36,11 +40,16 @@ export async function doesFileExistInS3(filePath: string): Promise<boolean> {
   }
 }
 
+/**
+ * Uploads one file and returns its metadata.json entry, or null when the
+ * upload failed. It does not write metadata.json: the caller saves the
+ * entries of a whole run in one updateMetadataFileBulk call.
+ */
 export async function uploadWithMetadata(
   filepath: string,
   Key: string,
   Metadata: Record<string, string>,
-) {
+): Promise<ImageMetadata | null> {
   const client = createS3Client();
   const Body = readFileSync(filepath);
 
@@ -55,17 +64,16 @@ export async function uploadWithMetadata(
   try {
     await client.send(command);
 
-    await updateMetadataFile(assetsMetadataFilePath, {
+    return {
       key: Key,
       width: Number.parseInt(Metadata.width, 10),
       height: Number.parseInt(Metadata.height, 10),
       aspectRatio: Number.parseFloat(Metadata.aspectRatio),
       existsInS3: true,
-    });
-
-    return;
+    };
   } catch (err) {
     console.error(err);
+    return null;
   }
 }
 
@@ -91,11 +99,12 @@ export async function uploadSingleFileToS3(filepath: string, awsPath: string) {
   try {
     const w = data?.width;
     const h = data?.height;
-    await uploadWithMetadata(filepath, key, {
+    const entry = await uploadWithMetadata(filepath, key, {
       width: String(w),
       height: String(h),
       aspectRatio: String(w / h),
     });
+    if (entry) await updateMetadataFile(assetsMetadataFilePath, entry);
   } catch (error) {
     console.error(error);
   }

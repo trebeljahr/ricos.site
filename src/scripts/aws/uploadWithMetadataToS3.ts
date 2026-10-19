@@ -8,8 +8,10 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import {
   assetsMetadataFilePath,
-  localMetadata,
-  updateMetadataFile,
+  type ImageMetadata,
+  type MetadataFile,
+  readMetadataFile,
+  updateMetadataFileBulk,
 } from "../metadataJsonFileHelpers";
 import { collectFilesInPath } from "./directoryTraversal";
 import { getWidthAndHeightFromFileSystem } from "./getWidthAndHeight";
@@ -51,7 +53,24 @@ const limit = pLimit(5);
 
 async function uploadDir(directoryPath: string) {
   const files = await collectFilesInPath(directoryPath);
+  const localMetadata = await readMetadataFile();
 
+  // Entries for metadata.json, saved in one write when the run ends. Writing
+  // per file from inside Promise.all overlapped the writes and broke the JSON.
+  const updates: ImageMetadata[] = [];
+  try {
+    await checkAndUpload(directoryPath, files, localMetadata, updates);
+  } finally {
+    await updateMetadataFileBulk(assetsMetadataFilePath, updates);
+  }
+}
+
+async function checkAndUpload(
+  directoryPath: string,
+  files: string[],
+  localMetadata: MetadataFile,
+  updates: ImageMetadata[],
+) {
   const dirName = path.basename(directoryPath);
   const format = `${dirName} | {bar} | {percentage}% | {value}/{total} | {eta}s`;
   const progress = new SingleBar({ format }, Presets.shades_classic);
@@ -85,7 +104,7 @@ async function uploadDir(directoryPath: string) {
 
       const { width, height } = await getWidthAndHeightFromFileSystem(filePath);
 
-      await updateMetadataFile(assetsMetadataFilePath, {
+      updates.push({
         key,
         width,
         height,
@@ -109,13 +128,14 @@ async function uploadDir(directoryPath: string) {
   const uploadsPromises = filesToUpload.map(async (filePath) => {
     const data = await getWidthAndHeightFromFileSystem(filePath);
     const key = path.relative(directoryPath.split("/").slice(0, -1).join("/"), filePath);
-    await limit(() =>
+    const entry = await limit(() =>
       uploadWithMetadata(filePath, key, {
         width: String(data?.width),
         height: String(data?.height),
         aspectRatio: String(data?.width / data?.height),
       }),
     );
+    if (entry) updates.push(entry);
     progress.increment();
   });
 

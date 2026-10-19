@@ -22,6 +22,7 @@ import {
   gradeCpu,
 } from "./cpuGrader";
 import { CPU_PARTS, cpuCircuit } from "./cpuPreset";
+import { PROGRAMS as LOCKSTEP_PROGRAMS } from "./cpuTestPrograms";
 import type { Circuit, Wire } from "./logic";
 
 const raw = (...pairs: [number, number][]): CompiledProgram => ({
@@ -37,10 +38,13 @@ const raw = (...pairs: [number, number][]): CompiledProgram => ({
 });
 const { LDI, STM, ADDI, SUBI, OUT, JNC, CALL, RET, HALT } = OPCODES;
 
+// The lockstep tests already hold the preset to the trace on every program; the
+// grader only needs a loop, every opcode, a random program and the two programs
+// the broken copies below run.
 const PROGRAMS: Record<string, CompiledProgram> = {
-  ...Object.fromEntries(
-    Object.entries(SAMPLE_PROGRAMS).map(([name, source]) => [name, compileProgram(source)]),
-  ),
+  LOOP: compileProgram(SAMPLE_PROGRAMS.LOOP),
+  "every opcode": LOCKSTEP_PROGRAMS["every opcode"],
+  "random 1": LOCKSTEP_PROGRAMS["random 1"],
   "JNC not taken": raw([LDI, 1], [SUBI, 2], [JNC, 10], [LDI, 7], [OUT, 0], [HALT, 0]),
   "store and call": raw([LDI, 5], [STM, 2], [CALL, 10], [OUT, 0], [HALT, 0], [ADDI, 1], [RET, 0]),
 };
@@ -138,7 +142,7 @@ describe("CPU grader on the correct preset", () => {
     ]);
   });
 
-  it("grades a full program fast enough for a button press", () => {
+  it.runIf(process.env.BENCH)("grades a full program fast enough for a button press", () => {
     const program = compileProgram(SAMPLE_PROGRAMS.LOOP);
     // Wall time also counts other processes, so on a busy machine one cold run
     // can cross the budget while the grader itself is fine. Take the best of up

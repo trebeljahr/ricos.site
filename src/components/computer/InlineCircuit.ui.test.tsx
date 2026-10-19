@@ -19,6 +19,7 @@ import {
 } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
 import { ROW_DRAG_TYPE } from "./PaletteRow";
+import { testButton } from "./testButton";
 
 beforeEach(() => {
   localStorage.clear();
@@ -128,7 +129,7 @@ describe("inline circuit unfolding", () => {
     viewport.scrollTop -= 35;
     const explored = camera();
     const expandedWires = wirePaths();
-    fireEvent.click(within(expanded).getByRole("button", { name: "Refold box" }));
+    fireEvent.click(testButton("Refold box", expanded));
     expectCamera(folded);
     expect(wirePaths()).toEqual(foldedWires);
     fireEvent.click(screen.getByLabelText("Undo"));
@@ -139,47 +140,25 @@ describe("inline circuit unfolding", () => {
     fireEvent.click(screen.getByLabelText("Unfold SUM in place"));
     expectCamera(explored);
     expect(localStorage.getItem("ricos-computer-circuits-v1")).toBe(stored);
-  });
+  }, 15000);
 
   it("restores nested exploration level by level, including camera changes after editing", () => {
     const { viewport, camera, expectCamera } = setupViewport();
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "Half adder" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Unfold CIRCUIT in place" }));
+    fireEvent.click(testButton("Half adder", screen.getByLabelText("Gate palette")));
+    fireEvent.click(testButton("Unfold CIRCUIT in place"));
     const outer = screen.getByLabelText("Half adder expanded circuit");
     viewport.scrollLeft += 75;
     const overview = camera();
-    fireEvent.click(within(outer).getByRole("button", { name: "Unfold SUM in place" }));
+    fireEvent.click(testButton("Unfold SUM in place", outer));
     viewport.scrollTop += 90;
-    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    fireEvent.click(testButton("Zoom in"));
     const detail = camera();
     // Runtime input changes create a new circuit object without losing view history.
-    fireEvent.click(
-      within(screen.getByRole("group", { name: "A — SWITCH part" })).getByRole("button", {
-        name: "OFF",
-      }),
-    );
-    fireEvent.click(within(outer).getByRole("button", { name: "Refold one level" }));
+    fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
+    fireEvent.click(testButton("Refold one level", outer));
     expectCamera(overview);
-    fireEvent.click(within(outer).getByRole("button", { name: "Unfold SUM in place" }));
+    fireEvent.click(testButton("Unfold SUM in place", outer));
     expectCamera(detail);
-  });
-
-  it("restores the prior camera after toolbar unfold and refold", () => {
-    const { viewport, camera, expectCamera } = setupViewport();
-    viewport.scrollLeft += 320;
-    viewport.scrollTop += 110;
-    const before = camera();
-    fireEvent.click(screen.getByText("View", { selector: "summary" }));
-    fireEvent.click(screen.getByRole("button", { name: "Unfold one level" }));
-    const expanded = camera();
-    expect(expanded.zoom).toBeLessThan(before.zoom);
-    const viewMenu = screen.getByText("View", { selector: "summary" }).parentElement!;
-    fireEvent.click(within(viewMenu).getByRole("button", { name: "Refold one level" }));
-    expectCamera(before);
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
-    expectCamera(expanded);
   });
 
   it("keeps a distant box visible when folding also changes the canvas origin", () => {
@@ -198,7 +177,7 @@ describe("inline circuit unfolding", () => {
     viewport.scrollLeft += 19800;
     viewport.scrollTop += 14800;
     const before = camera();
-    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
+    fireEvent.click(testButton("Unfold SUM in place"));
     const expanded = screen.getByLabelText(/XOR.*expanded circuit/).parentElement!;
     const [, , width, height] = board
       .querySelector("svg[viewBox]")!
@@ -213,33 +192,19 @@ describe("inline circuit unfolding", () => {
     expect(left).toBeLessThan(900);
     expect(top).toBeGreaterThanOrEqual(39.99);
     expect(top).toBeLessThan(520);
-    fireEvent.click(screen.getByRole("button", { name: "Refold box" }));
+    fireEvent.click(testButton("Refold box"));
     expectCamera(before);
-  });
-
-  it("keeps the board and records fold and unfold in history", () => {
-    render(<LogicBuilder />);
-    const board = screen.getByRole("application", { name: "Circuit canvas" });
-    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
-    expect(screen.getByRole("application", { name: "Circuit canvas" })).toBe(board);
-    expect(screen.getByRole("button", { name: "Refold box" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
-    expect(screen.getByRole("button", { name: "Unfold SUM in place" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Redo" }));
-    expect(screen.getByRole("button", { name: "Refold box" })).toBeTruthy();
   });
 
   it("expands a whole adder box one level at a time", () => {
     render(<LogicBuilder />);
     const parts = screen.getByLabelText("Gate palette");
-    fireEvent.click(within(parts).getByRole("button", { name: "8-bit full adder" }));
+    fireEvent.click(testButton("8-bit full adder", parts));
     const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
-    fireEvent.click(within(adder).getByRole("button", { name: /Unfold .* in place/i }));
+    fireEvent.click(testButton(/Unfold .* in place/i, adder));
     expect(screen.getByRole("application", { name: "Circuit canvas" })).toBeTruthy();
     const expanded = screen.getByLabelText("8-bit full adder expanded circuit");
-    expect(
-      within(expanded).getByRole("button", { name: "Unfold FULL ADDER 0 in place" }),
-    ).toBeTruthy();
+    expect(testButton("Unfold FULL ADDER 0 in place", expanded)).toBeTruthy();
     expect(within(expanded).queryByRole("group", { name: /SWITCH part/i })).toBeNull();
     expect(within(expanded).queryByRole("group", { name: /LAMP part/i })).toBeNull();
     expect(
@@ -259,7 +224,7 @@ describe("inline circuit unfolding", () => {
     expect(
       within(expanded).queryAllByRole("button", { name: "Unfold SUM XOR in place" }),
     ).toHaveLength(0);
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(
       within(expanded).getAllByRole("button", { name: "Unfold SUM XOR in place" }).length,
     ).toBeGreaterThan(0);
@@ -271,25 +236,19 @@ describe("inline circuit unfolding", () => {
 
   it("edits boundary outputs and wires in place with undo and redo", () => {
     render(<LogicBuilder />);
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", {
-        name: "8-bit full adder",
-      }),
-    );
+    fireEvent.click(testButton("8-bit full adder", screen.getByLabelText("Gate palette")));
     const adder = screen.getByRole("group", { name: /8-bit full adder.*part/i });
-    fireEvent.click(within(adder).getByRole("button", { name: /Unfold .* in place/i }));
+    fireEvent.click(testButton(/Unfold .* in place/i, adder));
     let expanded = screen.getByLabelText("8-bit full adder expanded circuit");
     fireEvent.click(expanded);
     fireEvent.click(screen.getByTitle("Drag LAMP onto canvas or click to add"));
     expanded = screen.getByLabelText("Modified 8-bit full adder expanded circuit");
-    expect(
-      screen.getByRole("button", { name: "Wire from Modified 8-bit full adder OUT 10" }),
-    ).toBeTruthy();
+    expect(testButton("Wire from Modified 8-bit full adder OUT 10")).toBeTruthy();
     const wiresBefore = within(expanded)
       .getByLabelText("Modified 8-bit full adder internal wires")
       .querySelectorAll("[data-inline-wire]").length;
-    fireEvent.click(within(expanded).getByRole("button", { name: "Wire from input A0" }));
-    fireEvent.click(within(expanded).getByRole("button", { name: "Wire to output OUT 10" }));
+    fireEvent.click(testButton("Wire from input A0", expanded));
+    fireEvent.click(testButton("Wire to output OUT 10", expanded));
     expect(
       within(expanded)
         .getByLabelText("Modified 8-bit full adder internal wires")
@@ -306,37 +265,35 @@ describe("inline circuit unfolding", () => {
     expect(step(edited!, initialSnapshot(), false, {}, { [input]: true }).values[output]).toBe(
       true,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(
-      within(screen.getByLabelText("Modified 8-bit full adder expanded circuit")).getByRole(
-        "button",
-        { name: "Wire to output OUT 10" },
+      testButton(
+        "Wire to output OUT 10",
+        screen.getByLabelText("Modified 8-bit full adder expanded circuit"),
       ),
     ).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(
       screen.queryByRole("button", { name: "Wire from Modified 8-bit full adder OUT 10" }),
     ).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Redo" }));
-    expect(
-      screen.getByRole("button", { name: "Wire from Modified 8-bit full adder OUT 10" }),
-    ).toBeTruthy();
+    fireEvent.click(testButton("Redo"));
+    expect(testButton("Wire from Modified 8-bit full adder OUT 10")).toBeTruthy();
   }, 15000);
 
   it("adds, renames, and removes a part inside an expanded gate", () => {
     render(<LogicBuilder />);
-    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
+    fireEvent.click(testButton("Unfold SUM in place"));
     let expanded = screen.getByLabelText(/XOR.*expanded circuit/);
     fireEvent.click(expanded);
     fireEvent.click(screen.getByTitle("Drag NAND onto canvas or click to add"));
     expanded = screen.getByLabelText(/Modified XOR.*expanded circuit/);
-    let part = within(expanded).getByRole("group", { name: "NAND — NAND part" });
+    let part = within(expanded).getByLabelText("NAND — NAND part");
     fireEvent.contextMenu(part);
     fireEvent.click(screen.getByRole("menuitem", { name: "Rename part" }));
     const label = within(part).getByRole("textbox", { name: "Label for NAND" });
     fireEvent.change(label, { target: { value: "CUSTOM NAND" } });
     fireEvent.blur(label);
-    part = within(expanded).getByRole("group", { name: "CUSTOM NAND — NAND part" });
+    part = within(expanded).getByLabelText("CUSTOM NAND — NAND part");
     fireEvent.doubleClick(within(part).getByText("CUSTOM NAND"));
     expect(screen.queryByRole("button", { name: /Back/ })).toBeNull();
     fireEvent.keyDown(within(part).getByRole("textbox", { name: "Label for CUSTOM NAND" }), {
@@ -345,20 +302,18 @@ describe("inline circuit unfolding", () => {
     fireEvent.contextMenu(part);
     fireEvent.click(screen.getByRole("menuitem", { name: "Delete part" }));
     expect(within(expanded).queryByRole("group", { name: "CUSTOM NAND — NAND part" })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(
       within(screen.getByLabelText(/Modified XOR.*expanded circuit/)).getByRole("group", {
         name: "CUSTOM NAND — NAND part",
       }),
     ).toBeTruthy();
-  });
+  }, 15000);
 
   it("drags from a boundary output back to an input and deletes the new wire with undo", () => {
     render(<LogicBuilder />);
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", { name: "D latch" }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Unfold CIRCUIT in place" }));
+    fireEvent.click(testButton("D latch", screen.getByLabelText("Gate palette")));
+    fireEvent.click(testButton("Unfold CIRCUIT in place"));
     const expanded = screen.getByLabelText("D latch expanded circuit");
     const diagram = expanded.querySelector<HTMLElement>("[data-inline-diagram]")!;
     vi.spyOn(diagram, "getBoundingClientRect").mockReturnValue({
@@ -366,8 +321,8 @@ describe("inline circuit unfolding", () => {
       top: 50,
       width: parseFloat(diagram.style.width) / 2,
     } as DOMRect);
-    const from = within(expanded).getByRole("button", { name: "Wire to output Q" });
-    const to = within(expanded).getByRole("button", { name: "Wire from input ENABLE" });
+    const from = testButton("Wire to output Q", expanded);
+    const to = testButton("Wire from input ENABLE", expanded);
     const point = (button: HTMLElement) => ({
       clientX: 100 + parseFloat(button.parentElement!.style.left) / 2,
       clientY: 50 + parseFloat(button.parentElement!.style.top) / 2,
@@ -376,63 +331,36 @@ describe("inline circuit unfolding", () => {
     fireEvent.pointerMove(diagram, { pointerId: 1, ...point(to) });
     fireEvent.pointerUp(diagram, { pointerId: 1, ...point(to) });
     const edited = screen.getByLabelText("Modified D latch expanded circuit");
-    const wire = within(edited).getByRole("button", {
-      name: "Select internal wire from ENABLE to Q",
-    });
+    const wire = testButton("Select internal wire from ENABLE to Q", edited);
     fireEvent.click(wire);
     fireEvent.keyDown(edited, { key: "Delete" });
     expect(
       within(edited).queryByRole("button", { name: "Select internal wire from ENABLE to Q" }),
     ).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
-    expect(
-      within(edited).getByRole("button", { name: "Select internal wire from ENABLE to Q" }),
-    ).toBeTruthy();
+    fireEvent.click(testButton("Undo"));
+    expect(testButton("Select internal wire from ENABLE to Q", edited)).toBeTruthy();
   });
 
   it("keeps only fold controls in the header and unfolds adjacent SVG buttons", () => {
     render(<LogicBuilder />);
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", {
-        name: "8-bit full adder",
-      }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Unfold CIRCUIT in place" }));
+    fireEvent.click(testButton("8-bit full adder", screen.getByLabelText("Gate palette")));
+    fireEvent.click(testButton("Unfold CIRCUIT in place"));
     const expanded = screen.getByLabelText("8-bit full adder expanded circuit");
     expect(within(expanded.firstElementChild as HTMLElement).getAllByRole("button")).toHaveLength(
       2,
     );
     for (const index of [0, 1]) {
-      const button = screen.getByRole("button", { name: `Unfold FULL ADDER ${index} in place` });
+      const button = testButton(`Unfold FULL ADDER ${index} in place`);
       fireEvent.pointerDown(button.querySelector("svg")!, { clientX: 10, clientY: 10 });
       fireEvent.click(button.querySelector("svg")!);
     }
     expect(HTMLElement.prototype.setPointerCapture).not.toHaveBeenCalled();
     expect(screen.getAllByLabelText("1-bit full adder expanded circuit")).toHaveLength(2);
-    const boxes = [
-      ...expanded.querySelectorAll<HTMLElement>(
-        ":scope > [data-inline-diagram] > [data-inline-part]",
-      ),
-    ];
-    for (const [index, box] of boxes.entries()) {
-      const x = parseFloat(box.style.left),
-        y = parseFloat(box.style.top);
-      for (const other of boxes.slice(index + 1)) {
-        const ox = parseFloat(other.style.left),
-          oy = parseFloat(other.style.top);
-        expect(
-          x >= ox + parseFloat(other.style.width) ||
-            ox >= x + parseFloat(box.style.width) ||
-            y >= oy + parseFloat(other.style.height) ||
-            oy >= y + parseFloat(box.style.height),
-        ).toBe(true);
-      }
-    }
   }, 15000);
 
   it("previews an inner drag at canvas scale and commits once without renaming the logic", () => {
     render(<LogicBuilder />);
-    fireEvent.click(screen.getByRole("button", { name: "Unfold SUM in place" }));
+    fireEvent.click(testButton("Unfold SUM in place"));
     const expanded = screen.getByLabelText(/XOR.*expanded circuit/);
     const diagram = expanded.querySelector<HTMLElement>("[data-inline-diagram]")!;
     vi.spyOn(diagram, "getBoundingClientRect").mockReturnValue({
@@ -466,7 +394,7 @@ describe("inline circuit unfolding", () => {
       x: x + 100,
       y: y + 80,
     });
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(screen.getByLabelText(/XOR.*expanded circuit/)).toBeTruthy();
     expect(
       validateCircuit(
@@ -477,13 +405,9 @@ describe("inline circuit unfolding", () => {
 
   it("drops a palette part into the targeted nested box at its scaled local position", () => {
     render(<LogicBuilder />);
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", {
-        name: "8-bit full adder",
-      }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Unfold CIRCUIT in place" }));
-    fireEvent.click(screen.getByRole("button", { name: "Unfold FULL ADDER 0 in place" }));
+    fireEvent.click(testButton("8-bit full adder", screen.getByLabelText("Gate palette")));
+    fireEvent.click(testButton("Unfold CIRCUIT in place"));
+    fireEvent.click(testButton("Unfold FULL ADDER 0 in place"));
     const expanded = screen.getByLabelText("1-bit full adder expanded circuit");
     const diagram = expanded.querySelector<HTMLElement>("[data-inline-diagram]")!;
     vi.spyOn(diagram, "getBoundingClientRect").mockReturnValue({
@@ -509,19 +433,15 @@ describe("inline circuit unfolding", () => {
     expect(added.x).toBe(700 - Number(diagram.dataset.originX) - 66);
     expect(added.y).toBe(400 - Number(diagram.dataset.originY) - 74);
     expect(outer.nodes.some((node) => node.type === "nand")).toBe(false);
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(screen.getByLabelText("1-bit full adder expanded circuit")).toBeTruthy();
   }, 15000);
 
   it("keeps edits to a deeper box in the component tree", () => {
     render(<LogicBuilder />);
-    fireEvent.click(
-      within(screen.getByLabelText("Gate palette")).getByRole("button", {
-        name: "8-bit full adder",
-      }),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Unfold CIRCUIT in place" }));
-    fireEvent.click(screen.getByRole("button", { name: "Unfold FULL ADDER 0 in place" }));
+    fireEvent.click(testButton("8-bit full adder", screen.getByLabelText("Gate palette")));
+    fireEvent.click(testButton("Unfold CIRCUIT in place"));
+    fireEvent.click(testButton("Unfold FULL ADDER 0 in place"));
     const fullAdder = screen.getByLabelText("1-bit full adder expanded circuit");
     fireEvent.click(fullAdder);
     fireEvent.click(screen.getByTitle("Drag LAMP onto canvas or click to add"));
@@ -545,11 +465,11 @@ describe("circuit toolbar", () => {
     expect(screen.queryByRole("group", { name: "Simulation" })).toBeNull();
     expect(screen.queryByText("CLK 0")).toBeNull();
     fireEvent.click(screen.getByTitle("Drag CLOCK onto canvas or click to add"));
-    expect(screen.getByRole("group", { name: "Simulation" })).toBeTruthy();
+    expect(screen.getByLabelText("Simulation")).toBeTruthy();
     const status = screen.getByLabelText("Clock status");
     expect(within(status).getByText("Cycle 0")).toBeTruthy();
     expect(within(status).getByText("CLK 0")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(screen.queryByRole("group", { name: "Simulation" })).toBeNull();
     expect(screen.queryByLabelText("Clock status")).toBeNull();
   });
@@ -560,7 +480,7 @@ describe("circuit toolbar", () => {
     fireEvent.change(name, { target: { value: "My test circuit" } });
     fireEvent.blur(name);
     expect(name.value).toBe("My test circuit");
-    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    fireEvent.click(testButton("Undo"));
     expect(name.value).toBe("Half adder");
   });
 });

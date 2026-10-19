@@ -380,9 +380,9 @@ describe("carrying state across fold and unfold", () => {
 });
 
 describe("memory-mapped data memory", () => {
-  /** Drives dataMemoryCircuit tick by tick as the CPU's DMAR, bus and RAM_IN would. */
-  function run(source: string, gates: boolean) {
-    const module = gates ? strip(dataMemoryCircuit()) : dataMemoryCircuit();
+  /** Drives dataMemoryCircuit, all gates, tick by tick as the CPU's DMAR, bus and RAM_IN would. */
+  function run(source: string) {
+    const module = strip(dataMemoryCircuit());
     const block: Node = { id: "dut", type: "module", x: 0, y: 0, module };
     const circuit = harness(block, false);
     let state = initialSnapshot();
@@ -420,25 +420,21 @@ describe("memory-mapped data memory", () => {
     };
   }
 
+  // Each inner block equals its gates above, so the all-gates form covers the
+  // blocks form too. Two programs reach every route: RAM and screen writes and
+  // reads, and plots over a written row.
   const programs = {
-    SMILEY: SAMPLE_PROGRAMS.SMILEY,
-    SWEEP: SAMPLE_PROGRAMS.SWEEP,
     mixed:
       "let a = 7;\nscreen[2] = a + 5;\nlet b = screen[2];\nscreen[5] = b - a;\nprint(screen[5]);",
-    LOOP: SAMPLE_PROGRAMS.LOOP,
-    CROSS: SAMPLE_PROGRAMS.CROSS,
     "plot over rows":
       "screen[4] = 255;\nlet c = 0;\nplot(2, 4, c);\nplot(7, 4, c);\nplot(0, 1);\nlet x = 12;\nplot(x, 4);\nprint(screen[4]);",
   };
   for (const [name, source] of Object.entries(programs))
-    for (const gates of [false, true])
-      it(`${name}: RAM and screen match the stepper (${gates ? "all gates" : "blocks"})`, {
-        timeout: 30_000,
-      }, () => {
-        const { end, ram, screen } = run(source, gates);
-        expect(ram).toEqual(end.ram);
-        expect(screen).toEqual(end.screen);
-      });
+    it(`${name}: RAM and screen match the stepper (all gates)`, { timeout: 30_000 }, () => {
+      const { end, ram, screen } = run(source);
+      expect(ram).toEqual(end.ram);
+      expect(screen).toEqual(end.screen);
+    });
 });
 
 describe("video blocks", () => {
@@ -543,7 +539,7 @@ describe("blitter block", () => {
         busy: model.busy,
         rom: model.op === 6,
       });
-      const { clock: _clock, ...state } = pair.states[0].blocks?.dut as BlitterState & {
+      const { clock: _clock, ...state } = pair.states[0].blocks!.dut as BlitterState & {
         clock: boolean;
       };
       expect(state, `state after step ${i}`).toEqual(model);

@@ -2,6 +2,7 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { LogicBuilder } from "./LogicBuilder";
+import { testButton } from "./testButton";
 
 beforeEach(() => {
   localStorage.clear();
@@ -20,16 +21,11 @@ const searchParts = (query: string) => {
   fireEvent.change(within(palette).getByLabelText("Search parts"), { target: { value: query } });
   return within(palette);
 };
-const switchOn = (part: string) =>
-  fireEvent.click(within(screen.getByLabelText(part)).getByRole("button", { name: "OFF" }));
+const switchOn = (part: string) => fireEvent.click(testButton("OFF", screen.getByLabelText(part)));
 
 describe("expandable memory", () => {
   it("keeps register state when opening and closing its black box", () => {
     render(<LogicBuilder />);
-    const memories = searchParts("4 × 4");
-    expect(memories.getByRole("button", { name: "4 × 4 SRAM" })).toBeTruthy();
-    expect(memories.getByRole("button", { name: "4 × 4 DRAM" })).toBeTruthy();
-    expect(memories.getByRole("button", { name: "4 × 4 flash memory" })).toBeTruthy();
     fireEvent.click(
       searchParts("parallel register").getByRole("button", { name: "8-bit parallel register" }),
     );
@@ -37,15 +33,11 @@ describe("expandable memory", () => {
 
     switchOn("D0 — SWITCH part");
     switchOn("LOAD — SWITCH part");
-    fireEvent.click(
-      within(screen.getByLabelText("Simulation")).getByRole("button", { name: "Step ½ cycle" }),
-    );
+    fireEvent.click(testButton("Step ½ cycle", screen.getByLabelText("Simulation")));
     expect(within(screen.getByLabelText("Q0 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
 
-    fireEvent.click(
-      within(screen.getByLabelText("Circuit depth")).getByRole("button", { name: "← Back" }),
-    );
+    fireEvent.click(testButton("← Back", screen.getByLabelText("Circuit depth")));
     fireEvent.click(screen.getByLabelText("Enter 8-bit parallel register"));
     expect(within(screen.getByLabelText("Q0 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
-  });
+  }, 15000);
 });

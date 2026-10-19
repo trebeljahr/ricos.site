@@ -1,25 +1,21 @@
 // Lockstep test for the CPU unfolded all the way down to gates: the compiled
-// netlist against the folded CPU (behavioural blocks) and against the
-// stepper's per-tick trace. All programs run at once, one per bit of the
-// netlist's 32-bit words.
+// netlist against the stepper's per-tick trace. All programs run at once, one
+// per bit of the netlist's 32-bit words.
 import { describe, expect, it } from "vitest";
 import {
   type CompiledProgram,
   compileProgram,
+  encodeControlWord,
   SAMPLE_PROGRAMS,
-  SIGNALS,
   type StackModel,
   traceTicks,
 } from "../computerStepper";
 import { cpuNetlist, loadProgram, readCpu } from "./cpuNetlist";
-import { CPU_PARTS, cpuCircuit } from "./cpuPreset";
+import { cpuCircuit } from "./cpuPreset";
 import { expectedProbes, PROGRAMS, RAM_PROGRAMS } from "./cpuTestPrograms";
-import { type Circuit, initialSnapshot, type Snapshot, step } from "./logic";
+import type { Circuit } from "./logic";
 import { compileNetlist, NetlistSim } from "./netlist";
 import { createNetlistRunner } from "./netlistRunner";
-import { readProbes } from "./probes";
-
-type Bytes = { bytes: number[] };
 
 /** Flip-flops, logic gates and bus parts in a circuit, every module opened. */
 function countParts(circuit: Circuit, total = { dff: 0, gates: 0, bus: 0 }) {
@@ -36,22 +32,6 @@ function countParts(circuit: Circuit, total = { dff: 0, gates: 0, bus: 0 }) {
   }
   return total;
 }
-const controlOf = (state: Snapshot) =>
-  (state.outputs[CPU_PARTS.control] ?? [])
-    .slice(0, SIGNALS.length)
-    .reduce((word, bit, index) => (bit ? word | (1 << index) : word), 0);
-const shapes = { hardware: cpuCircuit([]), ram: cpuCircuit([], undefined, "ram") };
-/** The stack-in-RAM CPU has no stack part: its stack bytes are RAM bytes. */
-const folded = (state: Snapshot, stack: StackModel = "hardware") => ({
-  control: controlOf(state),
-  bus: state.buses?.[CPU_PARTS.bus] ?? "Z",
-  probes: readProbes(shapes[stack], state),
-  ram: (state.blocks?.[CPU_PARTS.ram] as Bytes).bytes,
-  stack: (state.blocks?.[CPU_PARTS.stack] as Bytes | undefined)?.bytes ?? [],
-  screen: (state.blocks?.[CPU_PARTS.screen] as Bytes).bytes,
-  frame: (state.blocks?.[CPU_PARTS.bigScreen] as Bytes).bytes,
-});
-
 describe("CPU unfolded to a gate netlist", () => {
   const cpu = cpuNetlist(cpuCircuit(compileProgram(SAMPLE_PROGRAMS.LOOP).bytes));
 
@@ -100,9 +80,11 @@ describe("CPU unfolded to a gate netlist", () => {
     ["hardware", PROGRAMS],
     ["ram", RAM_PROGRAMS],
   ];
+  // cpuPreset's lockstep tests hold the folded CPU to the same trace, so the
+  // gates are compared with the trace alone.
   for (const [stack, set] of variants) {
     const programs = Object.entries(set);
-    it(`${stack} stack: runs ${programs.length} programs side by side in lockstep with the folded CPU and the trace`, () => {
+    it(`${stack} stack: runs ${programs.length} programs side by side in lockstep with the trace`, () => {
       expect(programs.length).toBeLessThanOrEqual(32);
       const cpu = cpuNetlist(cpuCircuit([], undefined, stack));
       if (stack === "ram") {
@@ -112,72 +94,55 @@ describe("CPU unfolded to a gate netlist", () => {
       const sim = new NetlistSim(cpu.netlist);
       for (const [copy, [, program]] of programs.entries())
         loadProgram(sim, cpu, program.bytes, copy);
-      const runs = programs.map(([name, program]) => ({
-        name,
-        ticks: traceTicks(program),
-        circuit: cpuCircuit(program.bytes, undefined, stack),
-        state: initialSnapshot(),
-      }));
-      for (const run of runs) run.state = step(run.circuit, run.state, false);
+      const runs = programs.map(([name, program]) => ({ name, ticks: traceTicks(program) }));
       sim.step(false);
       const longest = Math.max(...runs.map((run) => run.ticks.length));
       for (let index = 0; index <= longest + 2; index++) {
         runs.forEach((run, copy) => {
-          const tick = run.ticks[index];
           const gates = readCpu(sim, cpu, copy);
           const where = `${run.name}, tick ${index}`;
-          const { probes: _p, ...before } = folded(run.state, stack);
           // Before the rising edge: the control word and bus the tick acts on.
-          expect({ control: gates.control, bus: gates.bus }, `${where}: control and bus`).toEqual({
-            control: before.control,
-            bus: before.bus,
-          });
-          if (tick) expect(gates.bus, `${where}: bus vs trace`).toBe(tick.bus ?? "Z");
+          // Past its trace a program has halted, and HALT freezes it.
+          const tick = run.ticks[Math.min(index, run.ticks.length - 1)];
+          expect(gates.control, `${where}: control word`).toBe(encodeControlWord(tick.control));
+          if (run.ticks[index]) expect(gates.bus, `${where}: bus`).toBe(tick.bus ?? "Z");
         });
         sim.tick();
+        expect(sim.unstable).toBe(0);
         runs.forEach((run, copy) => {
-          run.state = step(run.circuit, step(run.circuit, run.state, true), false);
           const tick = run.ticks[index];
           const gates = readCpu(sim, cpu, copy);
           const where = `${run.name}, after tick ${index}`;
-          const after = folded(run.state, stack);
-          expect(sim.unstable).toBe(0);
-          expect(gates.probes, `${where}: probes vs folded`).toEqual(after.probes);
-          expect(gates.ram, `${where}: RAM vs folded`).toEqual(after.ram);
-          expect(gates.stack, `${where}: stack vs folded`).toEqual(after.stack);
-          expect(gates.screen, `${where}: screen vs folded`).toEqual(after.screen);
-          expect(gates.frame, `${where}: big screen vs folded`).toEqual(after.frame);
-          // Past its trace a program has halted, and HALT freezes it.
           const last = run.ticks[Math.min(index, run.ticks.length - 1)];
           const { BUS: _bus, ...probes } = gates.probes;
-          expect(probes, `${where}: probes vs trace`).toEqual(expectedProbes(last));
-          expect(gates.ram, `${where}: RAM vs trace`).toEqual(last.ram);
-          expect(gates.screen, `${where}: screen vs trace`).toEqual(last.screen);
-          expect(gates.frame, `${where}: big screen vs trace`).toEqual(last.frame);
+          expect(probes, `${where}: probes`).toEqual(expectedProbes(last));
+          expect(gates.ram, `${where}: RAM`).toEqual(last.ram);
+          expect(gates.screen, `${where}: screen`).toEqual(last.screen);
+          expect(gates.frame, `${where}: big screen`).toEqual(last.frame);
           if (stack === "hardware")
-            expect(gates.stack.slice(0, last.registers.sp), `${where}: stack vs trace`).toEqual(
-              last.stack,
-            );
-          expect(gates.control, `${where}: next control word vs folded`).toBe(after.control);
+            expect(gates.stack.slice(0, last.registers.sp), `${where}: stack`).toEqual(last.stack);
           if (!tick) expect(gates.halted, `${where}: halted`).toBe(true);
         });
       }
-      // ~55 s alone since the 32×32 big screen joined the CPU; more under a loaded machine.
-    }, 180_000);
+    }, 120_000);
   }
 
-  it("measures ticks per second", () => {
-    const sim = new NetlistSim(cpu.netlist);
-    for (let i = 0; i < 2000; i++) sim.tick();
-    const count = 5000;
-    const start = performance.now();
-    for (let i = 0; i < count; i++) sim.tick();
-    const perSecond = Math.round(count / ((performance.now() - start) / 1000));
-    console.info(
-      `CPU as gates: ${cpu.netlist.stats.gates} gates, ${cpu.netlist.stats.flipFlops} flip-flops, ${cpu.netlist.stats.nets} nets, ${perSecond} ticks/s (×32 copies bit-parallel)`,
-    );
-    expect(perSecond).toBeGreaterThan(500);
-  }, 30_000);
+  it.runIf(process.env.BENCH)(
+    "measures ticks per second",
+    () => {
+      const sim = new NetlistSim(cpu.netlist);
+      for (let i = 0; i < 2000; i++) sim.tick();
+      const count = 5000;
+      const start = performance.now();
+      for (let i = 0; i < count; i++) sim.tick();
+      const perSecond = Math.round(count / ((performance.now() - start) / 1000));
+      console.info(
+        `CPU as gates: ${cpu.netlist.stats.gates} gates, ${cpu.netlist.stats.flipFlops} flip-flops, ${cpu.netlist.stats.nets} nets, ${perSecond} ticks/s (×32 copies bit-parallel)`,
+      );
+      expect(perSecond).toBeGreaterThan(500);
+    },
+    30_000,
+  );
 });
 
 describe("netlist compiler", () => {

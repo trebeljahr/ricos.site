@@ -1,16 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  compileProgram,
   controlWord,
-  decodeControlWord,
   encodeControlWord,
   ISA,
   MAX_T_STATES,
   microcodeAddress,
   microcodeRom,
-  SAMPLE_PROGRAMS,
+  OPCODES,
   SIGNALS,
-  traceTicks,
 } from "../computerStepper";
 import { foldControlState, microcodeWords, T_BITS, unfoldControlState } from "./controlUnit";
 import { datapathNode, foldBlockState, toBits, toNumber, unfoldBlockState } from "./datapathBlocks";
@@ -94,7 +91,23 @@ class Pair {
   }
 }
 
-const opcodes = [...ISA.map((item) => item.opcode), 0x00, 0x11, 0xff];
+const { LDI, LDM, JNC, CALL, RET, HALT } = OPCODES;
+/**
+ * One opcode per micro-step shape, with JNC on both carries; the ROM test above
+ * already checks every address. 0x00 and 0xFF are unused and halt.
+ */
+const stepCases: [number, boolean][] = [
+  [LDI, false],
+  [LDM, false],
+  [JNC, false],
+  [JNC, true],
+  [CALL, false],
+  [RET, false],
+  [HALT, false],
+  [0x00, false],
+  [0xff, false],
+];
+const unused = (opcode: number) => !ISA.some((item) => item.opcode === opcode);
 /** The control word on a block's outputs; the control unit's GCLK comes after it. */
 const word = (outputs: boolean[]) => toNumber(outputs.slice(0, SIGNALS.length));
 const signalIndex = (name: string) => SIGNALS.indexOf(name as (typeof SIGNALS)[number]);
@@ -161,60 +174,30 @@ describe("control unit", () => {
     expect(labels.some((label) => label.startsWith("T4 JNC C0:"))).toBe(true);
   });
 
-  it("steps the control unit alone through every opcode, matching the table tick by tick", {
-    timeout: 60_000,
-  }, () => {
-    for (const opcode of opcodes)
-      for (const carry of [false, true]) {
-        const pair = new Pair("control");
-        let t = 0;
-        let halted = false;
-        for (let tick = 0; tick < 3 * MAX_T_STATES; tick++) {
-          const inputs = [...toBits(opcode, 8), carry];
-          const low = pair.apply([...inputs, false]);
-          const expected = controlWord(opcode, t, carry);
-          const label = `${opcode.toString(16)} carry=${carry} tick ${tick} T${t}`;
-          expect(word(low), label).toBe(encodeControlWord(expected));
-          expect(low[SIGNALS.length], `${label} GCLK low`).toBe(false);
-          const high = pair.apply([...inputs, true]);
-          if (expected.includes("HALT")) halted = true;
-          else t = expected.includes("STEP_RESET") ? 0 : t + 1;
-          expect(t, label).toBeLessThan(MAX_T_STATES);
-          // After the edge the outputs show the next T-state's word. GCLK
-          // follows CLK until that word holds HALT; then the clock stays off.
-          const after = controlWord(opcode, t, carry);
-          expect(word(high), label).toBe(encodeControlWord(after));
-          expect(high[SIGNALS.length], `${label} GCLK`).toBe(!after.includes("HALT"));
-        }
-        expect(halted).toBe(controlWord(opcode, 4, carry).includes("HALT"));
+  it("steps the control unit alone through each kind of opcode, matching the table tick by tick", () => {
+    expect([0x00, 0xff].every(unused)).toBe(true);
+    for (const [opcode, carry] of stepCases) {
+      const pair = new Pair("control");
+      let t = 0;
+      let halted = false;
+      for (let tick = 0; tick < 3 * MAX_T_STATES; tick++) {
+        const inputs = [...toBits(opcode, 8), carry];
+        const low = pair.apply([...inputs, false]);
+        const expected = controlWord(opcode, t, carry);
+        const label = `${opcode.toString(16)} carry=${carry} tick ${tick} T${t}`;
+        expect(word(low), label).toBe(encodeControlWord(expected));
+        expect(low[SIGNALS.length], `${label} GCLK low`).toBe(false);
+        const high = pair.apply([...inputs, true]);
+        if (expected.includes("HALT")) halted = true;
+        else t = expected.includes("STEP_RESET") ? 0 : t + 1;
+        expect(t, label).toBeLessThan(MAX_T_STATES);
+        // After the edge the outputs show the next T-state's word. GCLK
+        // follows CLK until that word holds HALT; then the clock stays off.
+        const after = controlWord(opcode, t, carry);
+        expect(word(high), label).toBe(encodeControlWord(after));
+        expect(high[SIGNALS.length], `${label} GCLK`).toBe(!after.includes("HALT"));
       }
-  });
-
-  it("matches traceTicks' control word on every tick of every sample program", {
-    timeout: 60_000,
-  }, () => {
-    for (const [name, source] of Object.entries(SAMPLE_PROGRAMS)) {
-      const ticks = traceTicks(compileProgram(source));
-      const runners = [
-        new Runner(datapathNode("control", "dut", 0, 0)),
-        new Runner(allGates(datapathNode("control", "dut", 0, 0))),
-      ];
-      let ir = 0;
-      let carry = false;
-      for (const tick of ticks) {
-        // The circuit sees IR and the carry flag as they were before this tick.
-        const inputs = [...toBits(ir, 8), carry];
-        for (const runner of runners) {
-          const outputs = runner.apply([...inputs, false]);
-          runner.apply([...inputs, true]);
-          expect(decodeControlWord(word(outputs)), `${name} tick ${tick.index}`).toEqual(
-            decodeControlWord(encodeControlWord(tick.control)),
-          );
-        }
-        ir = tick.registers.ir;
-        carry = tick.registers.carry;
-      }
-      expect(ticks.at(-1)?.control, name).toContain("HALT");
+      expect(halted).toBe(controlWord(opcode, 4, carry).includes("HALT"));
     }
   });
 

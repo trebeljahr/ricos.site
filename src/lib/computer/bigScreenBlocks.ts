@@ -115,28 +115,6 @@ function decode(b: Builder, prefix: string, bits: Ref[], x: number, y: number): 
   );
 }
 
-/** For each output bit, the OR of `sources[r][bit]` AND `select[r]`. */
-function readPort(
-  b: Builder,
-  prefix: string,
-  sources: (bit: number, r: number) => Ref,
-  select: Ref[],
-  x: number,
-  y: number,
-): Ref[] {
-  return range(8).map((bit) =>
-    b.orTree(
-      `${prefix}${bit}`,
-      select.map((sel, r) =>
-        b.gate(`${prefix}-pick${r}-${bit}`, "and", x, y + r * 60 + bit * 6, sources(bit, r), sel),
-      ),
-      x + 160,
-      y + bit * 200,
-      `${prefix.toUpperCase()} BIT ${bit}`,
-    ),
-  );
-}
-
 /**
  * A read port built the way memory chips build it: every row puts its byte
  * on a shared bit line (here an 8-lane bus) through a tri-state driver that
@@ -182,25 +160,15 @@ function bitLinePort(
   return range(8).map((bit): Ref => [`${prefix}-bits`, bit]);
 }
 
-/** How a framebuffer's gate form reads its rows out: bit lines (the default) or AND/OR trees. */
-export type ReadStyle = "bit lines" | "trees";
-
 // ---------------------------------------------------------------- framebuffer
 
 /**
  * A dual-port framebuffer of `size`: A, D, WE and Q are the CPU port, RA
  * picks the byte V reads for the beam. Up to 32 bytes it is register8 rows;
- * above, banks of 32 bytes. Both ports read through bit lines; `style`
- * "trees" builds the older AND/OR read trees instead, for comparison.
+ * above, banks of 32 bytes. Both ports read through bit lines.
  */
-export function vramCircuit(
-  size: ScreenSize,
-  name: SizeName,
-  parts: BigScreenParts,
-  style: ReadStyle = "bit lines",
-): Circuit {
+export function vramCircuit(size: ScreenSize, name: SizeName, parts: BigScreenParts): Circuit {
   const b = new Builder();
-  const port = style === "bit lines" ? bitLinePort : readPort;
   const { address } = shape(size);
   ports(b, vramInputs(address));
   const a = range(address).map((bit) => `a${bit}`);
@@ -224,8 +192,8 @@ export function vramCircuit(
       b.connect(b.gate(`write${r}`, "and", 760, 30 + r * 160, sel, "we", `WRITE ${r}`), id, 8);
       b.connect("clock", id, 9);
     });
-    q = port(b, "read", (bit, r) => [`row${r}`, bit], select, 1100, 30);
-    v = port(b, "video", (bit, r) => [`row${r}`, bit], video, 1100, 30 + bytes * 100 + 200);
+    q = bitLinePort(b, "read", (bit, r) => [`row${r}`, bit], select, 1100, 30);
+    v = bitLinePort(b, "video", (bit, r) => [`row${r}`, bit], video, 1100, 30 + bytes * 100 + 200);
   } else {
     // High address bits pick a bank; the low 5 go to every bank.
     const inner = bitsFor(BANK_BYTES);
@@ -253,8 +221,8 @@ export function vramCircuit(
         },
       );
     });
-    q = port(b, "read", (bit, k) => [`bank${k}`, bit], select, 1000, 30);
-    v = port(b, "video", (bit, k) => [`bank${k}`, 8 + bit], video, 1000, 1000);
+    q = bitLinePort(b, "read", (bit, k) => [`bank${k}`, bit], select, 1000, 30);
+    v = bitLinePort(b, "video", (bit, k) => [`bank${k}`, 8 + bit], video, 1000, 1000);
   }
   q.forEach((bit, i) => {
     b.gate(`q${i}`, "lamp", 1800, 30 + i * 120, bit, undefined, `Q${i}`);

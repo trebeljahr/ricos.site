@@ -365,7 +365,8 @@ const KINDS: [string, (nodes: number) => Synthetic][] = [
 ];
 
 describe("engine benchmark", () => {
-  it("records ms per tick before and after", { timeout: 600_000 }, () => {
+  // Timing only, and slow: runs with BENCH=1.
+  it.runIf(FULL)("records ms per tick before and after", { timeout: 600_000 }, () => {
     const rows: string[] = [];
     for (const [kind, build] of KINDS)
       for (const size of SIZES) {

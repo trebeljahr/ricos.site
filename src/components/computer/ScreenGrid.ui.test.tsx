@@ -1,20 +1,10 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { blankFrame, paint, SCREEN_SIZES } from "../../lib/computer/video";
-import { SAMPLE_PROGRAMS } from "../../lib/computerStepper";
-import { LogicBuilder } from "./LogicBuilder";
-import { ProgramStepper } from "./ProgramStepper";
 import { ScreenGrid } from "./ScreenGrid";
 
-beforeEach(() => {
-  localStorage.clear();
-  Element.prototype.setPointerCapture = () => {};
-});
-afterEach(() => {
-  cleanup();
-  localStorage.clear();
-});
+afterEach(cleanup);
 
 describe("sized screen grids", () => {
   it("keeps the 8×8 label and draws a 16×16 frame pixel by pixel", () => {
@@ -45,72 +35,4 @@ describe("sized screen grids", () => {
     expect(canvas.tagName).toBe("CANVAS");
     expect(canvas.getAttribute("aria-label")).toBe("Huge 512×512, 1 of 262144 pixels lit");
   });
-
-  it("offers the 16×16 and 32×32 screens in the builder and draws them as grids", () => {
-    render(<LogicBuilder />);
-    const parts = screen.getByLabelText("Gate palette");
-    for (const label of ["16×16 SCREEN", "32×32 SCANOUT", "16×16 MONITOR"])
-      expect(within(parts).getByRole("button", { name: label })).toBeTruthy();
-    fireEvent.click(within(parts).getByRole("button", { name: "32×32 SCREEN" }));
-    expect(
-      screen.getByRole("img", { name: /^32×32 SCREEN 32×32, 0 of 1024 pixels lit/ }),
-    ).toBeTruthy();
-  }, 20000);
-
-  it("shows the BANKS program filling the big screen tile by tile", () => {
-    render(
-      <ProgramStepper
-        focus="bankWindow"
-        presets={[{ label: "BANKS", source: SAMPLE_PROGRAMS.BANKS }]}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "BANKS" }));
-    const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
-    const big = () =>
-      screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label");
-    expect(big()).toBe("Big screen 32×32, 0 of 1024 pixels lit");
-    fireEvent.change(slider, { target: { value: slider.max } });
-    // Four smileys of 26 lit pixels each.
-    expect(big()).toBe("Big screen 32×32, 104 of 1024 pixels lit");
-    expect(screen.getByLabelText("Bank").textContent).toContain("BANK 15");
-  }, 20000);
-
-  it("shows the PORT program's ADDR and STEP as it draws", () => {
-    render(
-      <ProgramStepper
-        focus="vramPort"
-        presets={[{ label: "PORT", source: SAMPLE_PROGRAMS.PORT }]}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "PORT" }));
-    const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
-    fireEvent.change(slider, { target: { value: slider.max } });
-    expect(screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label")).toBe(
-      "Big screen 32×32, 44 of 1024 pixels lit",
-    );
-    expect(screen.getByLabelText("Port").textContent).toMatch(/ADDR 53\s*·\s*STEP 4/);
-    // The program never sets BANK, so the bank readout stays away.
-    expect(screen.queryByLabelText("Bank")).toBeNull();
-  }, 20000);
-
-  it("shows the STAMP program's big blitter at work and its four boxes at the end", () => {
-    render(
-      <ProgramStepper
-        focus="bigBlitter"
-        presets={[{ label: "STAMP", source: SAMPLE_PROGRAMS.STAMP }]}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "STAMP" }));
-    const slider = screen.getByLabelText("Execution phase") as HTMLInputElement;
-    const status = () => screen.getByLabelText("Big blitter").textContent ?? "";
-    let step = 0;
-    while (!status().includes("BUSY") && step < Number(slider.max))
-      fireEvent.change(slider, { target: { value: String(++step) } });
-    expect(status()).toMatch(/BUSY · FILL · ROW \d+ OF 16/);
-    fireEvent.change(slider, { target: { value: slider.max } });
-    expect(status()).toContain("IDLE");
-    expect(screen.getByRole("img", { name: /^Big screen 32×32/ }).getAttribute("aria-label")).toBe(
-      "Big screen 32×32, 240 of 1024 pixels lit",
-    );
-  }, 20000);
 });

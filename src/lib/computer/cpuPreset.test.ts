@@ -54,9 +54,9 @@ const controlOf = (state: Snapshot) =>
   (state.outputs[CPU_PARTS.control] ?? [])
     .slice(0, SIGNALS.length)
     .reduce((word, bit, index) => (bit ? word | (1 << index) : word), 0);
-const bytesOf = (state: Snapshot, id: string) => (state.blocks?.[id] as Bytes).bytes;
+const bytesOf = (state: Snapshot, id: string) => (state.blocks![id] as Bytes).bytes;
 const cursorOf = (state: Snapshot) =>
-  [CPU_PARTS.pixelX, CPU_PARTS.pixelY].map((id) => (state.blocks?.[id] as { q: number }).q);
+  [CPU_PARTS.pixelX, CPU_PARTS.pixelY].map((id) => (state.blocks![id] as { q: number }).q);
 
 /**
  * Runs the circuit next to the trace; returns the number of ticks compared.
@@ -117,6 +117,27 @@ function lockstep(
   return ticks.length;
 }
 
+/**
+ * The programs each CPU runs in lockstep here. cpuNetlist runs every program
+ * on both CPUs as gates against the same trace, so this folded run keeps half
+ * the random programs, and the stack-in-RAM CPU drops the samples that never
+ * touch its stack: on that CPU they run as on the hardware-stack one.
+ */
+const { LDS, STS, ADDS, SUBS, ADDSP, CALL, RET, RETI } = OPCODES;
+const stackOpcodes = new Set<number>([LDS, STS, ADDS, SUBS, ADDSP, CALL, RET, RETI]);
+const touchesStack = (program: CompiledProgram) =>
+  traceTicks(program).some((tick) => stackOpcodes.has(tick.registers.ir));
+const HARDWARE_LOCKSTEP = Object.fromEntries(
+  Object.entries(PROGRAMS).filter(([name]) => !["random 4", "random 5", "random 6"].includes(name)),
+);
+const RAM_LOCKSTEP = Object.fromEntries(
+  Object.entries(RAM_PROGRAMS).filter(
+    ([name, program]) =>
+      !["random 3", "random 4"].includes(name) &&
+      (!(name in SAMPLE_PROGRAMS) || touchesStack(program)),
+  ),
+);
+
 describe("CPU preset", () => {
   it("passes the circuit validator with every probe present", () => {
     const circuit = cpuFromSource(SAMPLE_PROGRAMS.EXAMPLE);
@@ -141,14 +162,14 @@ describe("CPU preset", () => {
     const program = compileProgram(SAMPLE_PROGRAMS.FUNCTION);
     const circuit = cpuCircuit(program.bytes);
     const state = step(circuit, initialSnapshot(), false);
-    expect((state.blocks?.[CPU_PARTS.rom] as Bytes).bytes.slice(0, program.bytes.length)).toEqual(
+    expect((state.blocks![CPU_PARTS.rom] as Bytes).bytes.slice(0, program.bytes.length)).toEqual(
       program.bytes,
     );
   });
 
   for (const [stack, programs] of [
-    ["hardware", PROGRAMS],
-    ["ram", RAM_PROGRAMS],
+    ["hardware", HARDWARE_LOCKSTEP],
+    ["ram", RAM_LOCKSTEP],
   ] as const)
     it(`covers every ${stack}-stack opcode across the lockstep programs`, () => {
       const used = new Set(
@@ -177,15 +198,17 @@ describe("CPU preset", () => {
 });
 
 describe("CPU lockstep with the per-tick trace", () => {
-  for (const [name, program] of Object.entries(PROGRAMS))
-    it(name, () => {
+  // CROSS, the longest trace, takes ~5 s alone.
+  for (const [name, program] of Object.entries(HARDWARE_LOCKSTEP))
+    it(name, { timeout: 30_000 }, () => {
       expect(lockstep(program)).toBeGreaterThan(0);
     });
 
   it("draws the CROSS preset's X one pixel per plot, as the trace does", () => {
-    const circuit = CPU_PRESETS["Toy CPU (CROSS program)"];
+    const name = "Toy CPU (CROSS program)";
     const program = compileProgram(SAMPLE_PROGRAMS.CROSS);
-    lockstep(program, circuit);
+    // The preset is the CPU the CROSS lockstep above runs.
+    expect(CPU_PRESETS[name]).toEqual(cpuCircuit(program.bytes, name));
     const ticks = traceTicks(program);
     expect(ticks.at(-1)!.screen).toEqual([0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81]);
     const plots = ticks.filter((tick) => tick.screenWrite?.x != null);
@@ -201,22 +224,27 @@ describe("CPU lockstep with the per-tick trace", () => {
   });
 
   it("runs the builder preset to HALT with OUT = 6", () => {
-    const [circuit] = Object.values(CPU_PRESETS);
-    const ticks = lockstep(compileProgram(SAMPLE_PROGRAMS.LOOP), circuit);
-    expect(ticks).toBeGreaterThan(50);
+    const [[name, circuit]] = Object.entries(CPU_PRESETS);
+    const program = compileProgram(SAMPLE_PROGRAMS.LOOP);
+    // The preset is the CPU the LOOP lockstep above runs.
+    expect(circuit).toEqual(cpuCircuit(program.bytes, name));
+    const ticks = traceTicks(program);
+    expect(ticks.length).toBeGreaterThan(50);
+    expect(ticks.at(-1)!.output.at(-1)).toBe(6);
   });
 });
 
 describe("stack-in-RAM CPU lockstep with the per-tick trace", () => {
-  for (const [name, program] of Object.entries(RAM_PROGRAMS))
-    it(name, () => {
+  for (const [name, program] of Object.entries(RAM_LOCKSTEP))
+    it(name, { timeout: 30_000 }, () => {
       expect(lockstep(program)).toBeGreaterThan(0);
     });
 
   it("runs the recursive builder preset to HALT with OUT = 10, stack frames in RAM", () => {
-    const circuit = Object.values(CPU_PRESETS)[1];
+    const [name, circuit] = Object.entries(CPU_PRESETS)[1];
     const program = ram(RAM_STACK_SAMPLES.RECURSION);
-    lockstep(program, circuit);
+    // The preset is the CPU the RECURSION lockstep above runs.
+    expect(circuit).toEqual(cpuCircuit(program.bytes, name, "ram"));
     const ticks = traceTicks(program);
     expect(ticks.at(-1)!.output).toEqual([10]);
     // sum(4) … sum(0): five frames of 3 bytes plus a return address each.

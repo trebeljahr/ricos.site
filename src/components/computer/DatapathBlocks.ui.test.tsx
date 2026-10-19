@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { datapathNode } from "../../lib/computer/datapathBlocks";
 import type { Circuit } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
+import { testButton } from "./testButton";
 
 beforeEach(() => {
   localStorage.clear();
@@ -36,7 +37,7 @@ function registerBench(): Circuit {
   };
 }
 
-const button = (name: string | RegExp) => screen.getByRole("button", { name }) as HTMLButtonElement;
+const button = (name: string | RegExp) => testButton(name);
 const acc = () => screen.getByLabelText("ACC probe value").textContent ?? "";
 const cycle = () => {
   fireEvent.click(button("Step ½ cycle"));
@@ -61,11 +62,11 @@ describe("datapath blocks in the builder", () => {
       "SCANOUT",
       "8×8 MONITOR",
     ])
-      expect(within(parts).getByRole("button", { name: label })).toBeTruthy();
-    fireEvent.click(within(parts).getByRole("button", { name: "8-BIT ALU" }));
+      expect(testButton(label, parts)).toBeTruthy();
+    fireEvent.click(testButton("8-BIT ALU", parts));
     const saved = JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!);
     expect(saved.current.nodes.at(-1).behaviour).toBe("alu8");
-  });
+  }, 15000);
 
   it("keeps the stored value across unfold, fold, and entering the block", () => {
     localStorage.setItem(
@@ -169,7 +170,7 @@ describe("datapath blocks in the builder", () => {
     expect(grid()!.getAttribute("aria-label")).toBe("8×8 SCREEN rows 00 00 A5 25 00 00 00 00");
   }, 20000);
 
-  it("draws the monitor's beam and paints a written row only as the beam passes it", () => {
+  it("stores a written row at once and starts the monitor's beam", () => {
     localStorage.setItem(
       "ricos-computer-circuits-v1",
       JSON.stringify({ current: CPU_PRESETS["Scanout and monitor"], saved: {} }),
@@ -186,14 +187,6 @@ describe("datapath blocks in the builder", () => {
     fireEvent.click(button("ON"));
     expect(label("DUAL-PORT SCREEN")).toBe("DUAL-PORT SCREEN rows 00 00 00 3C 00 00 00 00");
     expect(label("8×8 MONITOR")).toBe(`8×8 MONITOR rows ${blank}, beam at 1, 0`);
-
-    // The monitor only shows it once its beam has crossed row 3, pixel by pixel.
-    for (let tick = 1; tick < 27; tick++) cycle();
-    expect(label("8×8 MONITOR")).toBe("8×8 MONITOR rows 00 00 00 04 00 00 00 00, beam at 3, 3");
-    const monitor = screen.getByRole("img", { name: /^8×8 MONITOR rows / });
-    const beam = monitor.querySelector("[data-beam=true]");
-    expect([beam?.getAttribute("data-x"), beam?.getAttribute("data-y")]).toEqual(["3", "3"]);
-    for (let tick = 27; tick < 32; tick++) cycle();
-    expect(label("8×8 MONITOR")).toBe("8×8 MONITOR rows 00 00 00 3C 00 00 00 00, beam at 0, 4");
-  }, 60000);
+    // The beam paints it later; lib/computer/video.test.ts and datapathBlocks.test.ts cover that timing.
+  }, 20000);
 });

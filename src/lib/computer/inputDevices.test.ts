@@ -88,42 +88,43 @@ describe("button request and real CPU", () => {
     run.set({ reset: false });
     expect(run.snapshot.values.captured).toBe(false);
   });
-  for (const stack of ["hardware", "ram"] as const)
-    it(`${stack}: button interface feeds the existing CPU in per-tick lockstep`, () => {
-      const program = compileButtonProgram(BUTTON_PROGRAM, stack);
-      const circuit = buttonCpuCircuit(BUTTON_PROGRAM, stack);
-      expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))).not.toBeNull();
-      let actual = step(circuit, initialSnapshot(), false);
-      const events: Record<number, number> = {};
-      // Record exactly the sampled requests which the circuit sends into its unchanged key port.
-      const states = [];
-      for (let tick = 0; tick < 700; tick++) {
-        if (tick === 40 || tick === 400) {
-          actual = step(circuit, actual, false, { "button-raw": true });
-          actual = step(circuit, actual, false, { "button-raw": false });
-        }
-        if (actual.outputs["button-interface"]?.[2]) events[tick] = 1;
-        const word = (actual.outputs[CPU_PARTS.control] ?? [])
-          .slice(0, SIGNALS.length)
-          .reduce((word, on, i) => (on ? word | (2 ** i) : word), 0);
-        const bus = actual.buses?.[CPU_PARTS.bus];
-        actual = step(circuit, actual, true);
-        actual = step(circuit, actual, false);
-        states.push({ probes: readProbes(circuit, actual), word, bus });
+  // The stack-in-RAM CPU takes key presses through the same port, and its
+  // interrupts are held to the trace in cpuPreset's keyed lockstep tests.
+  it("hardware: button interface feeds the existing CPU in per-tick lockstep", () => {
+    const program = compileButtonProgram(BUTTON_PROGRAM, "hardware");
+    const circuit = buttonCpuCircuit(BUTTON_PROGRAM, "hardware");
+    expect(validateCircuit(JSON.parse(JSON.stringify(circuit)))).not.toBeNull();
+    let actual = step(circuit, initialSnapshot(), false);
+    const events: Record<number, number> = {};
+    // Record exactly the sampled requests which the circuit sends into its unchanged key port.
+    const states = [];
+    for (let tick = 0; tick < 700; tick++) {
+      if (tick === 40 || tick === 400) {
+        actual = step(circuit, actual, false, { "button-raw": true });
+        actual = step(circuit, actual, false, { "button-raw": false });
       }
-      const trace = traceTicks(program, 200, events);
-      for (const [i, actual] of states.entries()) {
-        const expected = trace[i];
-        expect(decodeControlWord(actual.word).sort(), `control at ${i}`).toEqual(
-          [...expected.control].sort(),
-        );
-        expect(actual.bus, `bus at ${i}`).toBe(expected.bus ?? "Z");
-        const { BUS, ...probes } = actual.probes;
-        expect(probes, `registers at ${i}`).toEqual(expectedProbes(expected));
-      }
-      expect(trace[699].output).toEqual([1, 2]);
-      expect(trace.slice(0, 700).filter((t) => t.interrupt && t.t === 0)).toHaveLength(2);
-    });
+      if (actual.outputs["button-interface"]?.[2]) events[tick] = 1;
+      const word = (actual.outputs[CPU_PARTS.control] ?? [])
+        .slice(0, SIGNALS.length)
+        .reduce((word, on, i) => (on ? word | (2 ** i) : word), 0);
+      const bus = actual.buses?.[CPU_PARTS.bus];
+      actual = step(circuit, actual, true);
+      actual = step(circuit, actual, false);
+      states.push({ probes: readProbes(circuit, actual), word, bus });
+    }
+    const trace = traceTicks(program, 200, events);
+    for (const [i, actual] of states.entries()) {
+      const expected = trace[i];
+      expect(decodeControlWord(actual.word).sort(), `control at ${i}`).toEqual(
+        [...expected.control].sort(),
+      );
+      expect(actual.bus, `bus at ${i}`).toBe(expected.bus ?? "Z");
+      const { BUS, ...probes } = actual.probes;
+      expect(probes, `registers at ${i}`).toEqual(expectedProbes(expected));
+    }
+    expect(trace[699].output).toEqual([1, 2]);
+    expect(trace.slice(0, 700).filter((t) => t.interrupt && t.t === 0)).toHaveLength(2);
+  });
   it("held raw input yields one handler call and release/repress yields a second", () => {
     const run = seq(buttonCpuCircuit());
     run.set({ "button-raw": true });

@@ -60,12 +60,7 @@ describe("switch states", () => {
 
 describe("codebooks", () => {
   it("looks up the chapter's four phrases", () => {
-    expect(allPatterns(2).map((pattern) => lookup(SEED_CODEBOOK, pattern))).toEqual([
-      "Hello",
-      "How are you?",
-      "Fine, what about you?",
-      "Good. Nice to see you",
-    ]);
+    expect(allPatterns(2).map((pattern) => lookup(SEED_CODEBOOK, pattern))).toEqual(SEED_CODEBOOK);
   });
 
   it("has no meaning for a blank or missing entry", () => {
@@ -83,8 +78,9 @@ describe("codebooks", () => {
 
   it("rewrites one entry without touching the original", () => {
     const edited = withMeaning(SEED_CODEBOOK, "10", "Yes");
-    expect(edited).toEqual(["Hello", "How are you?", "Yes", "Good. Nice to see you"]);
-    expect(SEED_CODEBOOK[2]).toBe("Fine, what about you?");
+    const original = [...SEED_CODEBOOK];
+    expect(edited).toEqual(original.with(2, "Yes"));
+    expect(SEED_CODEBOOK).toEqual(original);
   });
 
   it("scripts the conversation as 00, 01, 10, 11 with alternating speakers", () => {

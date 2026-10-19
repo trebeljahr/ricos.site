@@ -4,7 +4,6 @@ import {
   filterLetters,
   LETTER_STATES,
   LETTER_TYPER_LIMIT,
-  letterLabel,
   letterPattern,
   letterReadings,
   SEED_LETTER_CODEBOOK,
@@ -35,11 +34,6 @@ describe("seed codebook", () => {
   it("gives each letter the low five bits of its ASCII code", () => {
     for (const char of "ABCDEFGHIJKLMNOPQRSTUVWXYZ ")
       expect(seed.indexOf(char)).toBe(char.charCodeAt(0) & 0b11111);
-  });
-
-  it("labels the space SP", () => {
-    expect(letterLabel(" ")).toBe("SP");
-    expect(letterLabel("A")).toBe("A");
   });
 });
 

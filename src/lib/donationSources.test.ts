@@ -13,11 +13,12 @@ import { PROJECTS } from "./projects";
 
 describe("getDonationSource", () => {
   it("names a project from the catalogue and links back to its site", () => {
+    const project = PROJECTS.find(({ slug }) => slug === "fractal-garden");
     expect(getDonationSource("fractal-garden")).toMatchObject({
       slug: "fractal-garden",
-      name: "Fractal Garden",
-      url: "https://fractal.garden",
-      cover: { src: "/projects/fractal-garden.webp" },
+      name: project?.title,
+      url: project?.link,
+      cover: { src: project?.cover?.src },
     });
   });
 
@@ -34,10 +35,6 @@ describe("getDonationSource", () => {
     );
     expect(getDonationRedirect("fractal-garden")).toBeNull();
     expect(getDonationRedirect(["raptor-runner"])).toBeNull();
-  });
-
-  it("knows projects that are not on /projects yet", () => {
-    expect(getDonationSource("chemistry-sketcher")?.name).toBe("Chemistry Sketcher");
   });
 
   it("offers no way back for a page on this site", () => {

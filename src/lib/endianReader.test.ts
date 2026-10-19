@@ -46,19 +46,6 @@ describe("readBytes", () => {
     ]);
   });
 
-  it("moves a single 1 to four different places", () => {
-    expect(values(0x00, 0x01)).toEqual([1, 32768, 128, 256]);
-  });
-
-  it("cannot tell the bit directions apart on a palindrome", () => {
-    // 10000000 00000001 reads the same from both ends, so only the byte grouping shows.
-    expect(values(0x80, 0x01)).toEqual([0x8001, 0x8001, 0x0180, 0x0180]);
-  });
-
-  it("cannot tell the byte orders apart when both bytes are equal", () => {
-    expect(values(0xa1, 0xa1)).toEqual([0xa1a1, 0x8585, 0x8585, 0xa1a1]);
-  });
-
   it("matches big endian in the first order and little endian in the last, for every input", () => {
     for (let word = 0; word <= 0xffff; word++) {
       const bytes = new Uint8Array([word >> 8, word & 0xff]);

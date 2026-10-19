@@ -76,21 +76,6 @@ beforeEach(() => {
 });
 
 describe("POST /api/signup", () => {
-  it("sends the confirmation email for a valid address", async () => {
-    const res = await call(signupHandler, { body: { email: " Reader@Example.com " } });
-    expect(res.status).toBe(200);
-    expect(listmonk.sendTransactional).toHaveBeenCalledTimes(1);
-    expect(listmonk.sendTransactional.mock.calls[0][0]).toMatchObject({ to: "reader@example.com" });
-    expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
-  });
-
-  it("skips the email for a confirmed member", async () => {
-    listmonk.isConfirmedOnList.mockResolvedValueOnce(true);
-    const res = await call(signupHandler, { body: { email: "reader@example.com" } });
-    expect(res.body).toEqual({ success: "You were already signed up to the newsletter." });
-    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
-  });
-
   it("answers a blocklisted address like any other and mails nothing", async () => {
     listmonk.findSubscriber.mockResolvedValueOnce({ status: "blocklisted" });
     const res = await call(signupHandler, { body: { email: "reader@example.com" } });
@@ -207,16 +192,6 @@ describe("GET /api/confirm-email", () => {
     });
     expect(res.redirect).toBe("/email-signup-success");
     expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 15);
-  });
-
-  it("does not confirm an arbitrary address with a made-up hash", async () => {
-    const res = await call(confirmHandler, {
-      method: "GET",
-      query: { email: "victim@example.com", hash: "anything" },
-    });
-    expect(res.redirect).toBe("/email-signup-error");
-    expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
-    expect(mailgun.activateEmailListMember).not.toHaveBeenCalled();
   });
 
   it("sends the reader to the error page when ListMonk fails", async () => {

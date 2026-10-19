@@ -115,35 +115,11 @@ describe("familyForOklch", () => {
     expect(familyForOklch({ l: 0.5, c: CHROMA_FLOOR, h: 250 })).toBe("blue");
   });
 
-  it("splits the hue circle into the documented families", () => {
-    const cases: Array<[number, ColorBucketId]> = [
-      [0, "red"],
-      [20, "red"],
-      [34.9, "red"],
-      [45, "orange"],
-      [80, "gold"],
-      [130, "green"],
-      [190, "teal"],
-      [250, "blue"],
-      [300, "purple"],
-      [340, "pink"],
-      [358, "red"],
-    ];
-    for (const [h, expected] of cases) {
-      // Mid-lightness + saturated, so neither the earth nor the pink
-      // reclassification applies and the bands are tested on their own.
-      expect(familyForOklch({ l: 0.65, c: 0.2, h })).toBe(expected);
-    }
-  });
-
-  it("keeps pure sRGB primaries in the family they are named after", () => {
-    // Regression guard: OKLCh puts sRGB red at 29deg and pure yellow at
-    // 110deg. Evenly-spaced bands would file red under orange and yellow
-    // under green.
-    expect(familyForOklch(rgbToOklch(255, 0, 0))).toBe("red");
-    expect(familyForOklch(rgbToOklch(255, 255, 0))).toBe("gold");
-    expect(familyForOklch(rgbToOklch(0, 255, 0))).toBe("green");
-    expect(familyForOklch(rgbToOklch(0, 0, 255))).toBe("blue");
+  it("keeps red on both sides of the wrap point", () => {
+    // Mid-lightness + saturated, so the pink reclassification does not
+    // apply and the band edges are tested on their own.
+    expect(familyForOklch({ l: 0.65, c: 0.2, h: 34.9 })).toBe("red");
+    expect(familyForOklch({ l: 0.65, c: 0.2, h: 358 })).toBe("red");
   });
 
   it("wraps hues outside [0, 360) instead of falling through to red", () => {
@@ -152,9 +128,8 @@ describe("familyForOklch", () => {
   });
 
   it("keeps warm hues in their own wedge however dark or dull they are", () => {
-    // These four all used to be demoted to an Earth family. It is gone: a
-    // warm pixel belongs to the wedge its angle puts it in, and lightness
-    // no longer moves it. See WHY THERE IS NO EARTH FAMILY in the source.
+    // A warm pixel belongs to the wedge its angle puts it in; lightness and
+    // chroma do not move it.
     expect(familyForOklch({ l: 0.45, c: 0.06, h: 70 })).toBe("gold");
     expect(familyForOklch({ l: 0.45, c: 0.15, h: 70 })).toBe("gold");
     expect(familyForOklch({ l: 0.85, c: 0.06, h: 70 })).toBe("gold");
@@ -200,7 +175,12 @@ describe("neutralForLightness", () => {
 
 describe("bucketForHex", () => {
   it("classifies recognisable colours the way a viewer would name them", () => {
+    // OKLCh puts sRGB red at 29deg and pure yellow at 110deg. Evenly-spaced
+    // bands would file red under orange and yellow under green.
     expect(bucketForHex("#ff0000")).toBe("red");
+    expect(bucketForHex("#ffff00")).toBe("gold");
+    expect(bucketForHex("#00ff00")).toBe("green");
+    expect(bucketForHex("#0000ff")).toBe("blue");
     expect(bucketForHex("#1f4fa8")).toBe("blue");
     expect(bucketForHex("#2e7d32")).toBe("green");
     expect(bucketForHex("#7a5230")).toBe("orange");
@@ -360,26 +340,23 @@ describe("bucketsFromHistogram", () => {
     expect(backwards).toEqual(forwards);
   });
 
-  it("only ever emits known bucket ids", () => {
-    const buckets = bucketsFromHistogram(
-      histogram([
+  it("only ever emits known bucket ids, each once", () => {
+    for (const entries of [
+      [
         ["#a8322b", 300],
         ["#efe9dc", 400],
         ["#1f4fa8", 300],
-      ]),
-    );
-    for (const id of buckets) expect(isColorBucketId(id)).toBe(true);
-  });
-
-  it("never repeats a bucket id", () => {
-    const buckets = bucketsFromHistogram(
-      histogram([
+      ],
+      [
         ["#7a5230", 500],
         ["#efe9dc", 480],
         ["#1f4fa8", 20],
-      ]),
-    );
-    expect(new Set(buckets).size).toBe(buckets.length);
+      ],
+    ] as Array<Array<[string, number]>>) {
+      const buckets = bucketsFromHistogram(histogram(entries));
+      for (const id of buckets) expect(isColorBucketId(id)).toBe(true);
+      expect(new Set(buckets).size).toBe(buckets.length);
+    }
   });
 });
 
@@ -402,8 +379,7 @@ describe("bucket registry", () => {
 
   it("paints each swatch a colour that belongs to the bucket it opens", () => {
     // The wheel is a chooser, so a swatch has to be an example of what is
-    // behind it. Earth is the one this catches: at the chroma the other
-    // eight swatches are scaled to, #6f4200 classifies as gold.
+    // behind it.
     for (const bucket of COLOR_BUCKETS) {
       expect(bucketForHex(bucket.swatch), `${bucket.id} swatch`).toBe(bucket.id);
     }

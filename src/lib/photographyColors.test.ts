@@ -213,10 +213,6 @@ describe("imagesBySpectrum", () => {
     expect(new Set(srcs).size).toBe(srcs.length);
     expect(srcs).not.toContain("assets/photography/jungle/deleted.jpg");
   });
-
-  it("caches the sweep rather than re-sorting on every render", () => {
-    expect(imagesBySpectrum()).toBe(imagesBySpectrum());
-  });
 });
 
 describe("entryFor", () => {

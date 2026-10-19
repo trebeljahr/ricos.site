@@ -18,7 +18,7 @@ export default function ArtGallery({ images }: { images: ImageProps[] }) {
       keywords={["art", "paintings", "drawings", "acrylic", "watercolour", "sketches"]}
       fullScreen={true}
     >
-      <GalleryPage path="art" title="Art" images={images} />
+      <GalleryPage path="art" title="Art" images={images} layout="masonry" />
     </Layout>
   );
 }

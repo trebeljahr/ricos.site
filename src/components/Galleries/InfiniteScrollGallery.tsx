@@ -8,11 +8,20 @@ import { CustomLightBox, useCustomLightbox } from "./useCustomLightbox";
 
 const groupSize = 10;
 
-function groupImages<T extends ImageProps>(displayedImages: T[]): T[][] {
+// Each group is its own row album, so a short leftover group gets stretched to
+// the full album width: on /art (41 photos) the last painting was a lone
+// 1000x1421 tile. A leftover under half a group joins the group before it.
+function groupImages<T extends ImageProps>(images: T[]): T[][] {
   const groupedImages: T[][] = [];
 
-  for (let i = 0; i < displayedImages.length; i += groupSize) {
-    groupedImages.push(displayedImages.slice(i, i + groupSize));
+  for (let i = 0; i < images.length; i += groupSize) {
+    groupedImages.push(images.slice(i, i + groupSize));
+  }
+
+  const last = groupedImages.at(-1);
+  if (groupedImages.length > 1 && last && last.length < groupSize / 2) {
+    groupedImages.pop();
+    groupedImages[groupedImages.length - 1].push(...last);
   }
 
   return groupedImages;
@@ -36,38 +45,40 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
 
   const { openModal, currentImageIndex } = props;
 
-  const [displayedPhotos, setDisplayPhotos] = useState(photos.slice(0, groupSize));
+  // Grouped once over the whole gallery, so a group never changes size (and
+  // re-lays out) when the next one loads.
+  const groups = useMemo(() => groupImages(photos), [photos]);
+  const [groupCount, setGroupCount] = useState(1);
+  const displayedGroups = groups.slice(0, groupCount);
+  const displayedCount = displayedGroups.reduce((sum, group) => sum + group.length, 0);
 
   // If the images prop changes (navigating to a different trip), reset the
-  // displayedPhotos window so the new gallery doesn't inherit the previous
+  // displayed groups so the new gallery doesn't inherit the previous
   // gallery's scrolled-to-bottom state.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `photos` is the trigger, not an input
   useEffect(() => {
-    setDisplayPhotos(photos.slice(0, groupSize));
+    setGroupCount(1);
   }, [photos]);
 
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const hasMore = displayedPhotos.length < photos.length;
+  const hasMore = groupCount < groups.length;
 
   const loadMore = useCallback(() => {
     if (loadingRef.current) return;
     loadingRef.current = true;
-    setDisplayPhotos((prev) => {
-      const newPhotos = photos.slice(prev.length, prev.length + groupSize);
-      if (newPhotos.length === 0) return prev;
-      return [...prev, ...newPhotos];
-    });
+    setGroupCount((count) => Math.min(count + 1, groups.length));
     setTimeout(() => {
       loadingRef.current = false;
     }, 100);
-  }, [photos]);
+  }, [groups.length]);
 
   useEffect(() => {
-    if (currentImageIndex > displayedPhotos.length) {
+    if (currentImageIndex > displayedCount) {
       loadMore();
     }
-  }, [currentImageIndex, displayedPhotos.length, loadMore]);
+  }, [currentImageIndex, displayedCount, loadMore]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -89,7 +100,7 @@ const InfiniteScrollGallery = ({ images }: { images: ImageProps[] }) => {
   return (
     <div className="not-prose">
       <div>
-        {groupImages(displayedPhotos).map((group, i) => (
+        {displayedGroups.map((group, i) => (
           // Off the spacing scale on purpose: this has to match the row gutter
           // react-photo-album picks for the container width (5/10/15px), so the
           // gap between two groups looks like the gaps inside one.

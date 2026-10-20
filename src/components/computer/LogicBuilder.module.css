@@ -274,6 +274,15 @@
 .node.wireJoin.joinConflict{background:#ff8f87}
 .node.wireJoin> *{display:none}
 
+/* Signal tracing gives every net the same two states, including nested circuits. */
+.signalView .wire,.signalView .busWire{filter:none;opacity:.8}
+.signalView .wire.live,.signalView .busWire.live{filter:none;opacity:1}
+.signalView .wire.live{stroke-width:3.5}
+.signalView .wire.wireSelected{stroke-width:4.5;filter:none;opacity:1}
+.signalView .wire.busLanes{stroke-width:7}
+.signalView .busTap{fill:var(--wire-color)}
+.signalView .wire.glow{stroke:var(--wire-color);filter:none}
+
 .manualInput select{border:1px solid #53617c;border-radius:4px;background:#1b2740;color:#e7edf3;font-size:10px;padding:3px;max-width:100%}
 .numberInput{width:100%;display:flex;flex-direction:column;gap:7px}
 .decimalInput{display:grid;grid-template-columns:auto 1fr;gap:4px;align-items:center;font-size:10px;max-width:100%;color:#becbe0}

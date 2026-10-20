@@ -2,12 +2,13 @@ import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { rawSegmentDemo } from "src/lib/computer/sevenSegment";
+import { layoutCircuit } from "src/lib/computer/circuitLayout";
 
 const LogicBuilder = dynamic(
   () => import("@components/computer/LogicBuilder").then((m) => m.LogicBuilder),
   { ssr: false },
 );
-const initial = rawSegmentDemo();
+const initial = layoutCircuit(rawSegmentDemo());
 
 export default function SevenSegmentPage() {
   return (

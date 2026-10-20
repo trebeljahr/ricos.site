@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LogicBuilder } from "./LogicBuilder";
 import { ROW_DRAG_TYPE } from "./PaletteRow";
 import { testButton } from "./testButton";
+import { rawSegmentDemo } from "../../lib/computer/sevenSegment";
+import { SIGNAL_COLORS } from "../../lib/computer/wireAppearance";
 
 beforeEach(() => {
   localStorage.clear();
@@ -12,6 +14,34 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("circuit depth", () => {
+  it("traces high and low signals through root and unfolded wires, then restores identity colors", () => {
+    const { container } = render(<LogicBuilder storageKey={null} />);
+    fireEvent.click(testButton("Half adder", screen.getByLabelText("Gate palette")));
+    fireEvent.click(testButton("Unfold CIRCUIT in place"));
+    const wires = () => [...container.querySelectorAll<SVGGElement>("g[data-wire-signal]")];
+    const originalColors = wires().map((wire) => wire.style.getPropertyValue("--wire-color"));
+    fireEvent.click(screen.getByText("View", { selector: "summary" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Wire colors" }));
+    fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
+    expect(container.querySelector('[data-wire-view="signal"]')).toBeTruthy();
+    expect(wires().some((wire) => wire.dataset.wireSignal === "high")).toBe(true);
+    expect(container.querySelector('[data-inline-wire]')!.parentElement!.getAttribute("data-wire-signal")).toBe("low");
+    for (const wire of wires()) {
+      expect(wire.style.getPropertyValue("--wire-color")).toBe(SIGNAL_COLORS[wire.dataset.wireSignal as keyof typeof SIGNAL_COLORS]);
+    }
+    fireEvent.click(screen.getByRole("switch", { name: "Wire colors" }));
+    expect(wires().map((wire) => wire.style.getPropertyValue("--wire-color"))).toEqual(originalColors);
+  });
+  it("arranges an existing diagram on request and restores its positions with Undo", () => {
+    render(<LogicBuilder initialCircuit={rawSegmentDemo()} storageKey={null} />);
+    const positions = () => screen.getAllByRole("group", { name: /part$/ }).map((node) => node.getAttribute("style"));
+    const before = positions();
+    fireEvent.click(screen.getByText("View", { selector: "summary" }));
+    fireEvent.click(testButton("Arrange by signal flow"));
+    expect(positions()).not.toEqual(before);
+    fireEvent.click(testButton("Undo"));
+    expect(positions()).toEqual(before);
+  });
   it("clears internal wire selection on empty expanded-circuit space", () => {
     render(<LogicBuilder />);
     fireEvent.click(testButton("8-bit full adder", screen.getByLabelText("Gate palette")));

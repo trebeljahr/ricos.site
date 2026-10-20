@@ -7,6 +7,7 @@ import {
   counterTitle,
 } from "./counterCircuits";
 import type { Circuit } from "./logic";
+import { layoutCircuit } from "./circuitLayout";
 import {
   ADD3,
   BCD_DECODER,
@@ -40,12 +41,12 @@ const SEGMENT_WORDS = "seven segment 7-segment display digit decimal";
 const wiredDemo = (circuit: () => Circuit): RowOpen => ({
   title: "Open wired demo",
   label: (name) => `Open ${name} wired demo`,
-  circuit,
+  circuit: () => layoutCircuit(circuit()),
 });
 export const diagram = (circuit: Circuit): RowOpen => ({
   title: "View diagram",
   label: (name) => `View ${name} diagram`,
-  circuit: () => circuit,
+  circuit: () => layoutCircuit(circuit),
 });
 
 const counters: LibraryItem[] = COUNTER_MODES.flatMap((mode) =>
@@ -118,4 +119,12 @@ const displays: LibraryItem[] = [
   }),
 ];
 
-export const PART_LIBRARY: LibraryItem[] = [...counters, ...displays];
+export const PART_LIBRARY: LibraryItem[] = [...counters, ...displays].map((item) => ({
+  ...item,
+  row: {
+    ...item.row,
+    primary: item.row.primary && "circuit" in item.row.primary
+      ? { ...item.row.primary, circuit: layoutCircuit(item.row.primary.circuit) }
+      : item.row.primary,
+  },
+}));

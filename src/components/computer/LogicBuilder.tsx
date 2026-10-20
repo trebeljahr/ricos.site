@@ -81,6 +81,7 @@ import { MATRIX_HINTS, MATRIX_PRESETS } from "../../lib/computer/keyboardMatrix"
 import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { SHADER_HINTS, SHADER_PRESETS } from "../../lib/computer/shaderPreset";
 import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
+import { SIGNAL_COLORS, wireSignal } from "../../lib/computer/wireAppearance";
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { builtinCircuit, remapModulePins, verifiedCircuitIdentity, type SymbolIdentity } from "../../lib/computer/recognition";
@@ -293,7 +294,7 @@ const datapathSources = new Map<DatapathKind, Circuit>();
 const datapathSource = (kind: DatapathKind) => {
   if (!datapathSources.has(kind))
     datapathSources.set(kind,
-      datapathCircuit(kind, kind === "rom256" ? compileProgram(SAMPLE_PROGRAMS.EXAMPLE).bytes : []));
+      layoutCircuit(datapathCircuit(kind, kind === "rom256" ? compileProgram(SAMPLE_PROGRAMS.EXAMPLE).bytes : [])));
   return datapathSources.get(kind)!;
 };
 const BLOCK_ROWS = DATAPATH_KINDS.map((kind) => circuitRow(`block:${kind}`, datapathSource(kind), {
@@ -607,6 +608,7 @@ type InlineCircuitProps = {
   editable: boolean;
   ownsClipboard: (target: EventTarget | null) => boolean;
   onPaste: (clip: CircuitClip, point: { x: number; y: number }, path: string) => string[] | null;
+  signalView: boolean;
 };
 
 type InlineEndpoint = {
@@ -616,7 +618,7 @@ type InlineEndpoint = {
 };
 
 const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
-  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path, editable, ownsClipboard, onPaste }: InlineCircuitProps) {
+  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path, editable, ownsClipboard, onPaste, signalView }: InlineCircuitProps) {
   const root = useRef<HTMLDivElement>(null);
   const diagram = useRef<HTMLDivElement>(null);
   const [segmentBanks, setSegmentBanks] = useState<Record<string, number>>({});
@@ -998,7 +1000,11 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             const to = endpointMap.get(`input:${wire.to}:${wire.input}`);
             if (!from || !to) return null;
             const d = wirePaths[wire.id];
-            return <g key={wire.id} style={{ "--wire-color": WIRE_COLORS[wire.color ?? sourceColor(wire.from, wire.output)] } as React.CSSProperties}>
+            const source = circuit.nodes.find((node) => node.id === wire.from);
+            const width = source ? outputWidth(source, wire.output) : 1;
+            const signal = wireSignal(snapshot, wire.from, wire.output, width);
+            return <g key={wire.id} data-wire-signal={signal}
+              style={{ "--wire-color": signalView ? SIGNAL_COLORS[signal] : WIRE_COLORS[wire.color ?? sourceColor(wire.from, wire.output)] } as React.CSSProperties}>
               <path d={d} className={styles.wireHit} role="button" tabIndex={0}
                 aria-label={`Select internal wire from ${from.label} to ${to.label}`}
                 onPointerDown={(event) => startBranch(event, wire)}
@@ -1010,7 +1016,10 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
                 onContextMenu={(event) => contextMenu(event, { wire: wire.id })}
                 onKeyDown={(event) => { if (event.key === "Enter") { setSelectedWire(wire.id); setSelectedPart(null); } }} />
               <path d={d} data-inline-wire={wire.id}
-                className={clsx(styles.wire, selectedWireIds.includes(wire.id) && styles.wireSelected)} />
+                className={clsx(styles.wire, signal === "high" && styles.live,
+                  width === 8 && styles.busLanes, signal === "floating" && styles.busFloating,
+                  signal === "conflict" && styles.busConflict,
+                  selectedWireIds.includes(wire.id) && styles.wireSelected)} />
             </g>;
           })}
           {preview && <path className={styles.wirePreview} style={{ "--wire-color": WIRE_COLORS[
@@ -1083,7 +1092,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
               unfolded={unfolded} snapshot={snapshot.modules[part.id] ?? EMPTY_SNAPSHOT}
               onToggle={onToggle} onExpandLevel={onExpandLevel} onRefoldLevel={onRefoldLevel}
               onEnter={onEnter} onEdit={onEdit} onActivate={onActivate} activePath={activePath} zoom={zoom} path={part.path}
-              editable={editable} ownsClipboard={ownsClipboard} onPaste={onPaste} />}
+              editable={editable} ownsClipboard={ownsClipboard} onPaste={onPaste} signalView={signalView} />}
             {Array.from({ length: outputCount(part) }, (_, index) => (
               <div key={`output-${index}`} className={styles.portRow} style={portStyle(part, index, "output")}>
                 <PortLabel node={part} index={index} kind="output" folded={!part.child} />
@@ -1241,6 +1250,7 @@ export function LogicBuilder({
   const [selectedWires, setSelectedWires] = useState<string[]>([]);
   const [tidyWiring, setTidyWiring] = useState(true);
   const [busWiring, setBusWiring] = useState(true);
+  const [signalView, setSignalView] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
   const [activeInlinePath, setActiveInlinePath] = useState<string | null>(null);
   useEffect(() => {
@@ -2890,8 +2900,9 @@ export function LogicBuilder({
   return (
     <div
       ref={shellRef}
-      className={clsx(styles.shell, locked && styles.locked)}
+      className={clsx(styles.shell, locked && styles.locked, signalView && styles.signalView)}
       data-logic-builder=""
+      data-wire-view={signalView ? "signal" : "identity"}
       onPointerDownCapture={() => activateBuilder(instanceId, shellRef.current)}
       onFocusCapture={() => activateBuilder(instanceId)}
     >
@@ -2936,6 +2947,12 @@ export function LogicBuilder({
         }
         view={
           <>
+            {!challenge && <button type="button" onClick={() => {
+              portWiring.clear();
+              pendingFit.current = true;
+              setCircuit(layoutCircuit({ ...circuit, wires: circuit.wires.map(({ points: _points, ...wire }) => wire) }));
+              setMessage("Arranged by signal flow. Undo restores the previous layout.");
+            }}>Arrange by signal flow</button>}
             <button
               type="button"
               onClick={() =>
@@ -3004,6 +3021,14 @@ export function LogicBuilder({
                 </select>
               </label>
             )}
+            <ToolbarSwitch
+              label="Wire colors"
+              offLabel="Identity"
+              onLabel="Signal"
+              checked={signalView}
+              description="Signal: yellow is on, muted red is off. Buses keep values, Z and X."
+              onChange={setSignalView}
+            />
             <ToolbarSwitch
               label="Wire paths"
               offLabel="Simple"
@@ -3447,8 +3472,9 @@ export function LogicBuilder({
                       const color = WIRE_COLORS[defaultWireColor(bus.from, circuit.nodes)];
                       const live =
                         boardSnapshot.outputs[bus.from]?.[bus.output] ?? boardSnapshot.values[bus.from];
+                      const signal = wireSignal(boardSnapshot, bus.from, bus.output, from ? outputWidth(from, bus.output) : 1);
                       return (
-                        <g key={bus.key} style={{ "--wire-color": color } as React.CSSProperties}>
+                        <g key={bus.key} data-wire-signal={signal} style={{ "--wire-color": signalView ? SIGNAL_COLORS[signal] : color } as React.CSSProperties}>
                           <path
                             d={wirePaths[`bus:${bus.key}`]}
                             onPointerDown={(event) => {
@@ -3477,7 +3503,8 @@ export function LogicBuilder({
                           />
                           <path
                             d={wirePaths[`bus:${bus.key}`]}
-                            className={clsx(styles.busWire, live && styles.live)}
+                            className={clsx(styles.busWire, live && styles.live,
+                              signal === "floating" && styles.busFloating, signal === "conflict" && styles.busConflict)}
                           />
                           {bus.taps.map((tap) => (
                             <circle
@@ -3505,8 +3532,9 @@ export function LogicBuilder({
                     // Red on a bus means a conflict, so a driven bus never uses the coral wire colour.
                     const color = WIRE_COLORS[isBus && wireColor === "coral" ? "blue" : wireColor];
                     const busValue = isBus ? boardSnapshot.buses?.[wire.from] ?? "Z" : undefined;
+                    const signal = wireSignal(boardSnapshot, wire.from, wire.output, isBus ? 8 : 1);
                     return (
-                      <g key={wire.id} style={{ "--wire-color": color } as React.CSSProperties}>
+                      <g key={wire.id} data-wire-signal={signal} style={{ "--wire-color": signalView ? SIGNAL_COLORS[signal] : color } as React.CSSProperties}>
                         <path
                           d={d}
                           className={styles.wireHit}
@@ -3867,7 +3895,7 @@ export function LogicBuilder({
                           snapshot={boardSnapshot.modules[node.id] ?? EMPTY_SNAPSHOT}
                           {...inlineActions} onActivate={setActiveInlinePath}
                           activePath={activeInlinePath} zoom={zoom} path={node.id}
-                          editable={!locked} ownsClipboard={(target) => ownsKeyEvent(instanceId, shellRef.current, target)} onPaste={pasteCircuit} />
+                          editable={!locked} ownsClipboard={(target) => ownsKeyEvent(instanceId, shellRef.current, target)} onPaste={pasteCircuit} signalView={signalView} />
                       )}
                       {Array.from({ length: outputCount(node) }, (_, output) => (
                         <div

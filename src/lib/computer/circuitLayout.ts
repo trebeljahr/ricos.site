@@ -1,5 +1,6 @@
 import type { Circuit, Node } from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
+import { arrangeSignalFlow } from "./signalLayout";
 
 const layouts = new WeakMap<Circuit, Circuit>();
 
@@ -82,6 +83,14 @@ export function layoutCircuit(circuit: Circuit): Circuit {
     ...node,
     ...(node.module ? { module: layoutCircuit(node.module) } : {}),
   }));
+  const structured = ["8-bit full adder", "8-bit ALU", "8-bit shift register", "8-bit binary counter"].includes(circuit.name) ||
+    /^4 × 4 (SRAM|DRAM|flash memory)$/.test(circuit.name);
+  if (!structured && arrangeSignalFlow(circuit, nodes)) {
+    const result = { ...circuit, nodes };
+    layouts.set(circuit, result);
+    layouts.set(result, result);
+    return result;
+  }
   arrangeBitChain(circuit, nodes);
   const groups = arrangeMemoryBanks(circuit, nodes);
 
@@ -130,5 +139,6 @@ export function layoutCircuit(circuit: Circuit): Circuit {
     nodes: nodes.map((node) => ({ ...node, x: xPositions.get(node.x)!, y: yPositions.get(node)! })),
   };
   layouts.set(circuit, result);
+  layouts.set(result, result);
   return result;
 }

@@ -1,4 +1,3 @@
-import { AnnounceSignup } from "@components/AnnounceSignup";
 import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
@@ -79,12 +78,9 @@ export default function ProjectsPage() {
           </section>
         ))}
 
-        <section id="new-things" className="mb-section flow-stack">
-          <AnnounceSignup />
-          <p className="max-w-prose text-sm">
-            Feed readers: <a href={ANNOUNCEMENTS_FEED_PATH}>RSS feed of new things</a>.
-          </p>
-        </section>
+        <p id="new-things" className="max-w-prose mb-section text-sm">
+          Feed readers: <a href={ANNOUNCEMENTS_FEED_PATH}>RSS feed of new things</a>.
+        </p>
       </PageMain>
     </Layout>
   );

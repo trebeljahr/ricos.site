@@ -6,8 +6,6 @@ announce-only list "New things from Rico" (`announce` in
 ricos.site: the reader gets a confirm email, and only the click puts the address
 on the list. The confirm link and the page after it are on ricos.site.
 
-On ricos.site itself, use `<AnnounceSignup />` from `src/components/AnnounceSignup.tsx`.
-
 ## Rules
 
 - Browsers may call it only from `https://` origins on the domains in

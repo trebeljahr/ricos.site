@@ -108,11 +108,11 @@ export default function PrivacyPage() {
 
           <h2>Newsletters and announcements</h2>
           <p>
-            You can sign up for three mailing lists here: Live and Learn, my newsletter; new
-            chapters of How computers work; and New things from Rico, one email each time I put out
-            a new thing. Signup forms on my other websites can add you to New things from Rico as
-            well. Those forms send your email address to this site, and the rest of this section
-            applies to them too.
+            This site runs three mailing lists: Live and Learn, my newsletter; new chapters of How
+            computers work; and New things from Rico, one email each time I put out a new thing. You
+            can sign up for the first two on this site. Signup forms on my other websites can add
+            you to New things from Rico. Those forms send your email address to this site, and the
+            rest of this section applies to them too.
           </p>
           <p>
             After you sign up, this site sends you an email with a confirmation link. Until you

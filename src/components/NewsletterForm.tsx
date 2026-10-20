@@ -50,7 +50,7 @@ export const NewsletterForm = ({
   const [ownList, setOwnList] = useState(true);
   const [alsoDefault, setAlsoDefault] = useState(false);
   const [email, setEmail] = useState("");
-  // Unique per form: /newsletter shows one form per list.
+  // Unique per form: a page can hold more than one.
   const errorId = `${useId()}-email-error`;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);

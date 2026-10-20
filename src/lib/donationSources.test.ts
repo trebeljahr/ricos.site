@@ -8,7 +8,7 @@ import {
   supportedUrl,
   withReference,
 } from "./donation";
-import { getDonationRedirect, getDonationSource, SOURCE_BRANDS } from "./donationSources";
+import { getDonationSource, SOURCE_BRANDS } from "./donationSources";
 import { PROJECTS } from "./projects";
 
 describe("getDonationSource", () => {
@@ -22,19 +22,19 @@ describe("getDonationSource", () => {
     });
   });
 
-  it("accepts catalogue projects that use donations", () => {
-    for (const { slug } of PROJECTS.filter((project) => project.slug !== "raptor-runner")) {
+  it("accepts every catalogue project", () => {
+    for (const { slug } of PROJECTS) {
       expect(getDonationSource(slug)?.slug, slug).toBe(slug);
     }
   });
 
-  it("routes Raptor Runner support to Steam instead of donations", () => {
-    expect(getDonationSource("raptor-runner")).toBeNull();
-    expect(getDonationRedirect("raptor-runner")).toBe(
-      "https://store.steampowered.com/app/5035590/Raptor_Runner/",
-    );
-    expect(getDonationRedirect("fractal-garden")).toBeNull();
-    expect(getDonationRedirect(["raptor-runner"])).toBeNull();
+  // Raptor Runner's about page links /donate/raptor-runner. It used to send
+  // donors to the Steam store, which made "donate" mean "buy".
+  it("gives Raptor Runner a donation page that links back to the game", () => {
+    expect(getDonationSource("raptor-runner")).toMatchObject({
+      name: "Raptor Runner",
+      url: "https://raptorrunner.com",
+    });
   });
 
   it("offers no way back for a page on this site", () => {

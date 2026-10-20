@@ -187,6 +187,20 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
     cardTitle: "Support the showcase",
     thanks: "Thank you for supporting the showcase and its next improvement.",
   },
+  // Sand, dune and deep sky of the day theme (src/styles/base.css).
+  "raptor-runner": {
+    ...studio,
+    background: "#f5dcaa",
+    surface: "#fbebc6",
+    ink: "#2a1d13",
+    muted: "#4a3526",
+    border: "#e8c98e",
+    accent: "#1f5b6b",
+    invitation:
+      "Raptor Runner is free to play in your browser. A donation gives me time to keep working on it.",
+    cardTitle: "Support Raptor Runner",
+    thanks: "Thank you for supporting Raptor Runner. Enjoy the next run.",
+  },
   "interactive-3d-demos": {
     ...night,
     accent: "#d3b4fa",

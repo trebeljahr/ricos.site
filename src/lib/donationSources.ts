@@ -55,17 +55,16 @@ export const SOURCE_BRANDS: Record<string, DonationBrand> = {
     icon: icon("online-chess.svg"),
     iconBackground: "#f4efe6",
   },
+  // --color-sky-deep on white, the night --color-sky on dark (src/styles/base.css).
+  "raptor-runner": {
+    accent: "#1f5b6b",
+    accentDark: "#7cd2e8",
+    icon: icon("raptor-runner.webp"),
+  },
 };
 
-// Commercial projects use their store instead of the shared donation flow.
-export function getDonationRedirect(slug: unknown): string | null {
-  return slug === "raptor-runner"
-    ? "https://store.steampowered.com/app/5035590/Raptor_Runner/"
-    : null;
-}
-
 export function getDonationSource(slug: unknown): DonationSource | null {
-  if (typeof slug !== "string" || getDonationRedirect(slug)) return null;
+  if (typeof slug !== "string") return null;
   const brand = SOURCE_BRANDS[slug];
   const project = PROJECTS.find((entry) => entry.slug === slug);
   if (project) {

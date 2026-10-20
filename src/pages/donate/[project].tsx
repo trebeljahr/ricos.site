@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from "next";
 import { THANKS_QUERY_KEY } from "src/lib/donation";
 import { RETURN_QUERY_KEY, validateDonationReturn } from "src/lib/donationNavigation";
-import { getDonationRedirect, getDonationSource } from "src/lib/donationSources";
+import { getDonationSource } from "src/lib/donationSources";
 import type { DonatePageProps } from "../donate";
 
 export { default } from "../donate";
@@ -11,8 +11,6 @@ export const getServerSideProps: GetServerSideProps<DonatePageProps> = async ({
   query,
   req,
 }) => {
-  const destination = getDonationRedirect(params?.project);
-  if (destination) return { redirect: { destination, permanent: false } };
   const source = getDonationSource(params?.project);
   if (!source) return { notFound: true };
   return {

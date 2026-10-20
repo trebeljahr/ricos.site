@@ -41,7 +41,7 @@ function Frame({ label, children }: FrameProps) {
 }
 
 // Every project that links to /donate?from=<slug>, in its own colours, so the
-// whole set can be checked at once. Chemistry Sketcher has no brand of its own.
+// whole set can be checked at once. Hydroxyl has no brand of its own.
 const sourceSlugs = [...Object.keys(SOURCE_BRANDS), "chemistry-sketcher"];
 
 function SourceHeaders() {

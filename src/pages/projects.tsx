@@ -53,7 +53,7 @@ export default function ProjectsPage() {
           <ExternalLink href="https://ricoslabs.com" rel="noopener">
             Ricos Labs
           </ExternalLink>{" "}
-          is where I make games, and the umbrella for the rest of my software work.
+          is my studio. It is where I make games, and the umbrella for the rest of my software work.
         </p>
         <p className="max-w-prose mb-section">
           Wanna know what I still want to learn as a programmer? I have an{" "}

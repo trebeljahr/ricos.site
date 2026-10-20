@@ -19,7 +19,7 @@ function contrast(a: string, b: string) {
 
 describe("donation designs", () => {
   it("provides a complete design for every recognized project", () => {
-    for (const slug of [...PROJECTS.map((project) => project.slug), "chemistry-sketcher"]) {
+    for (const { slug } of PROJECTS) {
       if (getDonationSource(slug)) expect(DONATION_DESIGNS[slug], slug).toBeDefined();
     }
     for (const slug of Object.keys(DONATION_DESIGNS)) {

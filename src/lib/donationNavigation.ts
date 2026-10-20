@@ -47,9 +47,9 @@ export function validateDonationReturn(
 export function sourceFromReferrer(referrer: unknown): DonationSource | null {
   if (typeof referrer !== "string") return null;
   return (
-    [...PROJECTS.map(({ slug }) => slug), "chemistry-sketcher"]
-      .map(getDonationSource)
-      .find((source) => source?.url && validateDonationReturn(source, referrer, false)) ?? null
+    PROJECTS.map(({ slug }) => getDonationSource(slug)).find(
+      (source) => source?.url && validateDonationReturn(source, referrer, false),
+    ) ?? null
   );
 }
 

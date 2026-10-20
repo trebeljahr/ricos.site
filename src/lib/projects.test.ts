@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { FEATURED_PROJECTS, PROJECT_SECTIONS, PROJECTS } from "./projects";
+import { FEATURED_PROJECTS, PROJECT_SECTIONS, PROJECTS, projectsInSection } from "./projects";
 
 const INTERNAL_ROUTES = ["/r3f", "/1-month-projects", "/achievements", "/midjourney"];
 
@@ -32,6 +32,22 @@ describe("projects catalogue", () => {
         PROJECTS.some((p) => p.section === t),
         t,
       ).toBe(true);
+  });
+
+  it("orders sections by Rico's ranking: games and explorables, dev tools, everyday apps", () => {
+    expect(PROJECT_SECTIONS.map((s) => s.title)).toEqual([
+      "Games",
+      "Art & 3D",
+      "Dev tools",
+      "Everyday apps",
+    ]);
+  });
+
+  it("lists each section newest first", () => {
+    for (const { title } of PROJECT_SECTIONS) {
+      const dates = projectsInSection(title).map((p) => p.date);
+      expect(dates, title).toEqual([...dates].sort().reverse());
+    }
   });
 
   it("records a real start date for the timeline", () => {

@@ -4,21 +4,11 @@
 import type { DonationBrand, DonationSource } from "./donation";
 import { PROJECTS } from "./projects";
 
-// Projects that link to /donate but have no entry on /projects yet.
-const UNLISTED_SOURCES: DonationSource[] = [
-  {
-    slug: "chemistry-sketcher",
-    name: "Chemistry Sketcher",
-    url: "https://chemistry.trebeljahr.com",
-    subtitle: "Draw a molecule once, then export it for a paper in the form the figure needs.",
-  },
-];
-
 // Each project's colour and icon, taken from its own repo (file noted per
 // entry). Links on the card use the accent as text, so where a project's own
 // colour fails 4.5:1 on the white or the dark card, the entry uses the nearest
 // darker or lighter shade of the same colour and says so. A project without an
-// entry, such as Chemistry Sketcher (neutral black and white, no icon), still
+// entry, such as Hydroxyl (neutral black and white, no icon), still
 // gets its name and screenshot, in the site's own blue.
 const icon = (file: string) => `/donate/sources/${file}`;
 
@@ -90,6 +80,5 @@ export function getDonationSource(slug: unknown): DonationSource | null {
       brand,
     };
   }
-  const unlisted = UNLISTED_SOURCES.find((source) => source.slug === slug);
-  return unlisted ? { ...unlisted, brand } : null;
+  return null;
 }

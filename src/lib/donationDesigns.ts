@@ -203,8 +203,71 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
     accent: "#343b49",
     headingFont: "mono",
     invitation: "Draw a molecule. Make the figure you need. Support the tools on your workbench.",
-    cardTitle: "Support Chemistry Sketcher",
-    thanks: "Thank you for supporting Chemistry Sketcher and your next figure.",
+    cardTitle: "Support Hydroxyl",
+    thanks: "Thank you for supporting Hydroxyl and your next figure.",
+  },
+  // oklch(58% 0.18 270), --color-fd-primary (site/app/globals.css), darkened to 52% for text.
+  vibestats: {
+    ...studio,
+    accent: "#435bcf",
+    headingFont: "mono",
+    invitation:
+      "vibestats is open source and runs on your own machine. A donation gives me time to keep it working.",
+    cardTitle: "Support vibestats",
+    thanks: "Thank you for supporting vibestats.",
+  },
+  // Tailwind emerald-700, the darkest green of the landing page (packages/client/src).
+  "name-check": {
+    ...studio,
+    accent: "#047857",
+    headingFont: "mono",
+    invitation: "A donation gives me time to keep name-check accurate and to add new sources.",
+    cardTitle: "Support name-check",
+    thanks: "Thank you for supporting name-check. Good luck with your name.",
+  },
+  // Page, ink and periwinkle colours of packages/client/src/styles/globals.css.
+  streaks: {
+    ...night,
+    layout: "studio",
+    background: "#16141f",
+    surface: "#1f1c2b",
+    ink: "#ede9f5",
+    muted: "#9c95b4",
+    border: "#3a3550",
+    accent: "#8b7fd4",
+    invitation: "Two minutes counts. A donation gives me time to keep Streaks simple and working.",
+    cardTitle: "Support Streaks",
+    thanks: "Thank you for supporting Streaks. Enjoy your next practice session.",
+  },
+  // Navy and gold of the landing page (packages/client/src/app/page.tsx).
+  "mood-magic": {
+    ...night,
+    layout: "studio",
+    background: "#0f1928",
+    surface: "#162033",
+    ink: "#f4f6fa",
+    muted: "#a9b4c4",
+    border: "#2c3a52",
+    accent: "#f7c66b",
+    invitation:
+      "Small check-ins, tiny rituals. A donation gives me time to keep working on Mood Magic.",
+    cardTitle: "Support Mood Magic",
+    thanks: "Thank you for supporting Mood Magic.",
+  },
+  // The landing page's neutral dark theme (apps/web).
+  "better-bookmarks": {
+    ...night,
+    layout: "studio",
+    background: "#0a0a0a",
+    surface: "#171717",
+    ink: "#fafafa",
+    muted: "#a3a3a3",
+    border: "#2e2e2e",
+    accent: "#e5e5e5",
+    invitation:
+      "Better Bookmarks is free and open source. A donation gives me time to keep working on it.",
+    cardTitle: "Support Better Bookmarks",
+    thanks: "Thank you for supporting Better Bookmarks.",
   },
 };
 

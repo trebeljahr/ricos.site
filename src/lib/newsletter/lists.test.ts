@@ -1,22 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   availableListKeys,
+  confirmedLists,
   isListKey,
   listIdFor,
   listNames,
   offeredListKeys,
   parseListKeys,
+  successPath,
 } from "./lists";
 
 beforeEach(() => {
   process.env.LISTMONK_LIST_ID = "15";
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
+  delete process.env.LISTMONK_ANNOUNCE_LIST_ID;
   delete process.env.NEWSLETTER_PROVIDER;
 });
 
 afterEach(() => {
   delete process.env.LISTMONK_LIST_ID;
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
+  delete process.env.LISTMONK_ANNOUNCE_LIST_ID;
   delete process.env.NEWSLETTER_PROVIDER;
   vi.unstubAllEnvs();
 });
@@ -73,8 +77,15 @@ describe("availableListKeys", () => {
     expect(availableListKeys()).toEqual(["live-and-learn", "computer"]);
   });
 
+  it("adds the announce list once its id is set", () => {
+    process.env.LISTMONK_ANNOUNCE_LIST_ID = "31";
+    expect(availableListKeys()).toEqual(["live-and-learn", "announce"]);
+    expect(listIdFor("announce")).toBe(31);
+  });
+
   it("offers only Live and Learn while pinned to Mailgun", () => {
     process.env.LISTMONK_COMPUTER_LIST_ID = "21";
+    process.env.LISTMONK_ANNOUNCE_LIST_ID = "31";
     process.env.NEWSLETTER_PROVIDER = "mailgun";
     expect(availableListKeys()).toEqual(["live-and-learn"]);
   });
@@ -100,5 +111,20 @@ describe("listNames", () => {
     expect(listNames(["live-and-learn", "computer"])).toBe(
       "Live and Learn and How computers work: new chapters",
     );
+  });
+});
+
+describe("successPath and confirmedLists", () => {
+  it("keeps the bare path for Live and Learn and names any other list", () => {
+    expect(successPath(["live-and-learn"])).toBe("/email-signup-success");
+    expect(successPath(["announce"])).toBe("/email-signup-success?lists=announce");
+  });
+
+  it("reads back known keys only, Live and Learn when none", () => {
+    expect(confirmedLists("announce")).toEqual(["announce"]);
+    expect(confirmedLists("computer,live-and-learn")).toEqual(["live-and-learn", "computer"]);
+    for (const bad of [undefined, "", "other", ["announce"], "__proto__"]) {
+      expect(confirmedLists(bad), String(bad)).toEqual(["live-and-learn"]);
+    }
   });
 });

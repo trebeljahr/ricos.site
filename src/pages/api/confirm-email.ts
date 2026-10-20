@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { readConfirmLink } from "src/lib/newsletter/confirmLink";
+import { successPath } from "src/lib/newsletter/lists";
 import { confirmAddress } from "src/lib/newsletter/subscribe";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -12,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.redirect("/email-signup-error");
     }
     await confirmAddress(link.email, link.lists);
-    res.redirect("/email-signup-success");
+    res.redirect(successPath(link.lists));
   } catch (err) {
     console.error(err);
     res.redirect("/email-signup-error");

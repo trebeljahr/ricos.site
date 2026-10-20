@@ -36,6 +36,14 @@ export const NEWSLETTER_LISTS = {
     cadence: "Only when a chapter is published.",
     listIdEnv: "LISTMONK_COMPUTER_LIST_ID",
   },
+  // Announce-only: one email when a new thing is out, and nothing else.
+  // Other Rico sites sign people up through /api/announce-signup.
+  announce: {
+    name: "New things from Rico",
+    promise: "One email each time I put out a new thing, and nothing else.",
+    cadence: "Every month or two.",
+    listIdEnv: "LISTMONK_ANNOUNCE_LIST_ID",
+  },
 } as const satisfies Record<string, NewsletterList>;
 
 export type ListKey = keyof typeof NEWSLETTER_LISTS;
@@ -94,4 +102,17 @@ export function listNames(keys: readonly ListKey[]): string {
   return names.length <= 1
     ? (names[0] ?? "")
     : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+}
+
+/** Where the confirm route sends a reader: the success page, told which lists to name. */
+export function successPath(lists: readonly ListKey[]): string {
+  if (lists.length === 1 && lists[0] === DEFAULT_LIST) return "/email-signup-success";
+  return `/email-signup-success?lists=${lists.join(",")}`;
+}
+
+/** The success page's side of `successPath`: known keys only, Live and Learn when none. */
+export function confirmedLists(raw: unknown): ListKey[] {
+  if (typeof raw !== "string") return [DEFAULT_LIST];
+  const keys = LIST_KEYS.filter((key) => raw.split(",").includes(key));
+  return keys.length > 0 ? keys : [DEFAULT_LIST];
 }

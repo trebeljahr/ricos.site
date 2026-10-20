@@ -63,15 +63,22 @@ if (shouldRunVelite) {
  * The newsletter lists signup forms offer, inlined into the browser bundle
  * as NEWSLETTER_OFFERED_LISTS. Mirrors `availableListKeys` in
  * src/lib/newsletter/lists.ts, which the signup API checks at runtime: Live
- * and Learn always, the chapter alerts once LISTMONK_COMPUTER_LIST_ID is
- * set and the deployment is not pinned to Mailgun. Only key names, never
- * list ids, reach the browser.
+ * and Learn always, each other list once its list id env var is set and
+ * the deployment is not pinned to Mailgun. Only key names, never list ids,
+ * reach the browser.
  */
 function offeredNewsletterLists() {
   const onMailgun = process.env.NEWSLETTER_PROVIDER?.trim().toLowerCase() === "mailgun";
-  const computerId = Number(process.env.LISTMONK_COMPUTER_LIST_ID);
-  const computer = !onMailgun && Number.isInteger(computerId) && computerId > 0;
-  return computer ? "live-and-learn,computer" : "live-and-learn";
+  const optional = {
+    computer: "LISTMONK_COMPUTER_LIST_ID",
+    announce: "LISTMONK_ANNOUNCE_LIST_ID",
+  };
+  const keys = ["live-and-learn"];
+  for (const [key, envVar] of Object.entries(optional)) {
+    const id = Number(process.env[envVar]);
+    if (!onMailgun && Number.isInteger(id) && id > 0) keys.push(key);
+  }
+  return keys.join(",");
 }
 
 /** Plausible script with the extensions this site uses (see the provider in _app.tsx). */
@@ -166,6 +173,11 @@ const nextConfig = {
         {
           source: "/kestrel/k",
           destination: "/api/kestrel",
+        },
+        // The announcements feed on the projects hub, see src/lib/announcements.ts.
+        {
+          source: "/projects/rss.xml",
+          destination: "/api/announcements-rss",
         },
       ],
     };

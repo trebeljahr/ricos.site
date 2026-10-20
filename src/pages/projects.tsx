@@ -1,9 +1,12 @@
+import { AnnounceSignup } from "@components/AnnounceSignup";
 import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
+import Head from "next/head";
 import Link from "next/link";
+import { ANNOUNCEMENTS_FEED_PATH } from "src/lib/announcements";
 import { PROJECT_SECTIONS, projectsInSection } from "src/lib/projects";
 
 const toAnchor = (title: string) =>
@@ -30,6 +33,14 @@ export default function ProjectsPage() {
         "Rico Trebeljahr",
       ]}
     >
+      <Head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          href={ANNOUNCEMENTS_FEED_PATH}
+          title="New things from Rico"
+        />
+      </Head>
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
@@ -67,6 +78,13 @@ export default function ProjectsPage() {
             <CardGallery content={projectsInSection(title)} withSubtitle coverAspect="video" />
           </section>
         ))}
+
+        <section id="new-things" className="mb-section flow-stack">
+          <AnnounceSignup />
+          <p className="max-w-prose text-sm">
+            Feed readers: <a href={ANNOUNCEMENTS_FEED_PATH}>RSS feed of new things</a>.
+          </p>
+        </section>
       </PageMain>
     </Layout>
   );

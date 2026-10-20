@@ -106,18 +106,53 @@ export default function PrivacyPage() {
             "Do Not Track" setting in your browser; Plausible respects it.
           </p>
 
-          <h2>Newsletter</h2>
+          <h2>Newsletters and announcements</h2>
           <p>
-            If you sign up for the newsletter, your email address is processed for the sole purpose
-            of sending newsletter emails. Legal basis: Art. 6 (1) (a) GDPR (consent). You can
-            unsubscribe at any time via the link in every newsletter email or by emailing{" "}
+            You can sign up for three mailing lists here: Live and Learn, my newsletter; new
+            chapters of How computers work; and New things from Rico, one email each time I put out
+            a new thing. Signup forms on my other websites can add you to New things from Rico as
+            well. Those forms send your email address to this site, and the rest of this section
+            applies to them too.
+          </p>
+          <p>
+            After you sign up, this site sends you an email with a confirmation link. Until you
+            click it, your address is on no list: the link itself carries your address and the lists
+            you picked. When you click it, your address goes on those lists. Legal basis: Art. 6 (1)
+            (a) GDPR (consent).
+          </p>
+          <p>
+            For each subscriber I store the email address, the lists, whether each subscription is
+            confirmed or unsubscribed, and when that changed. I do not store which page or website
+            you signed up on, the referrer, or anything else about your visit. To slow down mass
+            signups, the signup form holds your IP address in memory for up to one minute and then
+            forgets it. The emails contain no tracking pixels and no tracked links. If an email
+            bounces or is marked as spam, that is recorded so that I stop sending to the address.
+          </p>
+          <p>
+            The lists are kept in <a href="https://listmonk.app">Listmonk</a>, which I host myself
+            on a server of Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Germany, in
+            its Nuremberg data center. The emails are sent through Amazon Simple Email Service,
+            operated by Amazon Web Services EMEA SARL, 38 Avenue John F. Kennedy, L-1855 Luxembourg,
+            in its EU (Ireland) region. Amazon receives your address and each email in order to
+            deliver it, and reports back whether it was delivered.
+          </p>
+          <p>
+            You can unsubscribe at any time via the link in every email or by emailing{" "}
             <a
               href="mailto:imprint+ricos.site@trebeljahr.com"
               className="text-accent hover:underline"
             >
               imprint+ricos.site@trebeljahr.com
             </a>
-            .
+            . After you unsubscribe, your address stays on record as unsubscribed so that you get no
+            more emails. Ask me and I delete it completely.
+          </p>
+
+          <h2>RSS feeds</h2>
+          <p>
+            The RSS feeds on this site (<code>/rss.xml</code> and <code>/projects/rss.xml</code>)
+            need no signup. Your feed reader fetches them like any other page, and the server-log
+            processing described under "Hosting" applies.
           </p>
 
           <h2>Your Rights</h2>

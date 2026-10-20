@@ -26,6 +26,14 @@
 - `/src/models` - 3D models and related components
 - `/src/lib` - Utility functions and helpers
 
+## Computer demos
+
+- Use `LogicBuilder` for live circuit diagrams and editing. Use `CircuitDemo` for editable chapter examples and `CircuitPreview` for externally controlled gate views.
+- Reuse `src/lib/computer/demoCircuits.ts`, `PRESETS`, gate blueprints, tutorial built-in parts, and CPU datapath blocks before adding wiring. Device demos use `addDataMemory`, the CPU's address decoder and peripherals.
+- Keep state in the shared circuit simulator and its timeline. Do not add a parallel gate, memory, carry-delay, framebuffer, or device simulator inside a demo component.
+- Keep distinct teaching views (truth-table comparisons, physical switch analogies, analog scopes, representation explorers, performance charts) when their purpose requires them. Their live circuit views still use the shared builder.
+- Embedded demos use `storageKey={null}` so they cannot overwrite the reader's saved lab.
+
 ## AI writing destination (2026-09-30)
 
 AI-written plans, research, drafts, reports, and manual QA notes belong in `/Users/rico/projects/ai-work-notes/`; project notes normally use `projects/<project>/`. Search existing folders before adding one. This is a separate local Git repository and Obsidian vault. Keep source code and code-specific technical documentation in their project repositories. Leave Rico's human-written notes in ricos.site untouched. This destination supersedes older instructions allowing AI prose in ricos.site. Do not recreate the old generated-content folder. Stage only task-owned paths in the relevant repository. Existing running sessions must reload these instructions. Uploading personal records requires explicit approval; a private remote alone is not approval.

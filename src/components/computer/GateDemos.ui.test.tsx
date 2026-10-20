@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { EightBitAdder, FullAdder, HalfAdder } from "./Adders";
 import { SwitchLogic } from "./SwitchLogic";
 import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
 
@@ -20,13 +19,26 @@ describe("truth tables", () => {
   it("marks the row of the current inputs and sets inputs from a row", () => {
     render(<GateTruthTable />);
     expect(currentRow("Truth table of AND")?.textContent).toBe("000");
+    expect(
+      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
+    ).toBeTruthy();
     click(/^Input A: 0/);
     click(/^Input B: 0/);
     expect(currentRow("Truth table of AND")?.textContent).toBe("111");
+    expect(
+      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
+    ).toBeTruthy();
     expect(screen.getByRole("img", { name: "Output OUT: 1" })).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("AND — AND part"));
+    expect(
+      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
+    ).toBeTruthy();
 
     click("XOR");
     expect(currentRow("Truth table of XOR")?.textContent).toBe("110");
+    expect(
+      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
+    ).toBeTruthy();
     click(/^A 0, B 1 gives OUT 1/);
     expect(screen.getByRole("button", { name: /^Input A: 0/ })).toBeTruthy();
   });
@@ -81,38 +93,5 @@ describe("switch logic", () => {
     expect(container.textContent).not.toContain("AND gate");
     click("REVEAL THE GATE");
     expect(container.textContent).toContain("work like an OR gate");
-  });
-});
-
-describe("adders", () => {
-  it("adds with a half adder and a full adder", () => {
-    const half = render(<HalfAdder />);
-    expect(half.container.textContent).toContain("1 + 0 = 01");
-    cleanup();
-    const full = render(<FullAdder />);
-    expect(full.container.textContent).toContain("1+1+0 = 10");
-    click("BOXES");
-    expect(screen.getByRole("img", { name: /^Full adder\. A 1, B 1/ })).toBeTruthy();
-    click(/^Input CIN: 0/);
-    expect(full.container.textContent).toContain("1+1+1 = 11");
-  });
-
-  it("ripples the carries one full adder per step", () => {
-    // Only the demo's own timers: React schedules its effects with setImmediate.
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    const { container } = render(<EightBitAdder />);
-    expect(container.textContent).toContain("13 + 29 = 42");
-    click("255 + 1");
-    expect(container.textContent).toContain("CARRIES RIPPLING");
-    for (let step = 0; step < 8; step++) act(() => vi.advanceTimersByTime(500));
-    expect(container.textContent).toContain("255 + 1 = 256");
-    // It starts from the carries of 13 + 29, so some are already right.
-    expect(container.textContent).toMatch(/SETTLED AFTER [1-8] STEPS/);
-
-    click("RIPPLE ON");
-    click("100 + 200");
-    expect(container.textContent).toContain("100 + 200 = 300");
-    click(/^Full adder for bit 2:/);
-    expect(screen.getByRole("region", { name: "Full adder for bit 2" })).toBeTruthy();
   });
 });

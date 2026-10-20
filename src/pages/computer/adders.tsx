@@ -20,7 +20,7 @@ export default function AddersPage() {
           </h1>
         </header>
         {/* The width of a chapter column, where these are embedded. */}
-        <div className="mx-auto max-w-prose">
+        <div className="mx-auto">
           <h2>
             <code>{"<HalfAdder sumOnly />"}</code>
           </h2>

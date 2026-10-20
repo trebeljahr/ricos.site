@@ -21,8 +21,8 @@ export default function ScanoutPage() {
           </h1>
           <p className="text-gray-700 dark:text-gray-300">
             A display does not show the framebuffer all at once. A beam reads it one pixel per clock
-            tick, and the monitor only changes where the beam passes. Scrub the ticks to see when a
-            redraw reaches the picture.
+            tick, and the monitor only changes where the beam passes. Write screen rows through the
+            memory bus, then run or scrub the clock to follow the beam.
           </p>
         </header>
         <ScanoutDemo />

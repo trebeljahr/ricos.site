@@ -6,7 +6,7 @@ export default function PixelPortPage() {
     <DeviceDemoPage
       slug="pixel-port"
       description="A store to a screen row replaces all 8 of its pixels. The pixel port at F8 to FA changes one pixel and keeps the rest."
-      intro="A store to a screen row replaces all 8 of its pixels. The pixel port at F8 to FA changes one: store x in F8, y in F9, then the colour in FA. Click a pixel to move the cursor there, then store a colour."
+      intro="Drive the device through the CPU's memory bus. Set an address and a byte, store on a clock edge, then open the blocks to follow the gates."
     >
       <PixelPortDemo />
     </DeviceDemoPage>

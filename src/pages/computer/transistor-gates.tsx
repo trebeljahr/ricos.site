@@ -1,7 +1,7 @@
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import { TransistorGates } from "@components/computer/TransistorGates";
-import Link from "next/link";
 import Layout from "@components/Layout";
+import Link from "next/link";
 
 export default function TransistorGatesPage() {
   return (
@@ -21,13 +21,13 @@ export default function TransistorGatesPage() {
           </h1>
         </header>
         {/* The width of a chapter column, where these are embedded. */}
-        <div className="mx-auto max-w-prose">
+        <div className="mx-auto">
           <h2>
             <code>{"<TransistorGates />"}</code>
           </h2>
           <p>
-            This viewer explains completed circuits. To design your own circuit from a behavior
-            goal, open the construction challenge.
+            Edit the transistor circuits below, or build one from a behavior goal in the
+            construction challenge.
           </p>
           <p>
             <Link href="/computer/build-from-nand?level=cmos-not">

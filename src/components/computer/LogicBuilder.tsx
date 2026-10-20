@@ -1159,7 +1159,7 @@ export type LockedClock = {
    * switches at the given values for the rising edge only, e.g. a key press.
    */
   cycle: (overrides?: Record<string, boolean>) => void;
-  /** Set transient manual button levels without advancing the CPU clock. */
+  /** Set switch or manual button levels without advancing the CPU clock. */
   input: (values: Record<string, boolean>) => void;
   /** Shows recorded frame `index`; frames after it stay recorded. */
   seek: (index: number) => void;
@@ -1177,6 +1177,8 @@ export type LockedView = {
 export type LogicBuilderProps = {
   /** Editable starting circuit; storageKey null keeps standalone demos isolated. */
   initialCircuit?: Circuit;
+  /** Parts to frame on mount, e.g. a device and its manual bus controls. */
+  initialFocus?: readonly string[];
   /**
    * Constrained mode for a demo page: shows `circuit` with no toolbar, palette,
    * storage or editing. The page drives the clock through `clockRef`. Clicking a
@@ -1205,6 +1207,7 @@ export type LogicBuilderProps = {
 export function LogicBuilder({
   challenge,
   initialCircuit,
+  initialFocus,
   locked,
   storageKey = STORAGE,
 }: { challenge?: LogicBuilderChallenge } & LogicBuilderProps = {}) {
@@ -1634,13 +1637,16 @@ export function LogicBuilder({
     zoomAt(next, rect.left + rect.width / 2, rect.top + rect.height / 2);
   };
   const pendingFit = useRef(false);
-  const fitCanvas = useCallback(() => {
+  const frameCanvas = useCallback((focusIds?: readonly string[]) => {
     const viewport = boardViewport.current;
     if (!viewport?.clientWidth || !viewport.clientHeight) return;
-    const left = Math.min(0, routes.bounds?.left ?? 0, ...displayNodes.map((node) => node.x)) - 40;
-    const top = Math.min(0, routes.bounds?.top ?? 0, ...displayNodes.map((node) => node.y)) - 40;
-    const right = Math.max(WIDTH, routes.bounds?.right ?? 0, ...displayNodes.map((node) => node.x + nodeWidth(node))) + 40;
-    const bottom = Math.max(HEIGHT, routes.bounds?.bottom ?? 0, ...displayNodes.map((node) => node.y + nodeHeight(node))) + 40;
+    const nodes = focusIds ? displayNodes.filter((node) => focusIds.includes(node.id)) : displayNodes;
+    if (focusIds && !nodes.length) return;
+    const wireBounds = focusIds ? undefined : routes.bounds;
+    const left = Math.min(0, wireBounds?.left ?? 0, ...nodes.map((node) => node.x)) - 40;
+    const top = Math.min(0, wireBounds?.top ?? 0, ...nodes.map((node) => node.y)) - 40;
+    const right = Math.max(focusIds ? 0 : WIDTH, wireBounds?.right ?? 0, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
+    const bottom = Math.max(focusIds ? 0 : HEIGHT, wireBounds?.bottom ?? 0, ...nodes.map((node) => node.y + nodeHeight(node))) + 40;
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
       (viewport.clientWidth - 24) / (right - left),
       (viewport.clientHeight - 24) / (bottom - top)));
@@ -1658,6 +1664,7 @@ export function LogicBuilder({
     setZoom(next);
     setBounds(framed);
   }, [displayNodes, routes.bounds]);
+  const fitCanvas = useCallback(() => frameCanvas(), [frameCanvas]);
   useLayoutEffect(() => {
     if (!pendingFit.current) return;
     pendingFit.current = false;
@@ -1748,7 +1755,7 @@ export function LogicBuilder({
       setReady(true);
       return;
     }
-    requestAnimationFrame(() => restoreViewport());
+    requestAnimationFrame(() => initialFocus ? frameCanvas(initialFocus) : restoreViewport());
     if (lockedRef.current) {
       setReady(true);
       return;
@@ -1807,12 +1814,14 @@ export function LogicBuilder({
   }, []);
   /** One tick from `from`. With ripple on, the result is the same and is replayed in delay order. */
   const heldManual = useRef<Record<string, boolean>>({});
+  const heldInputs = useRef<Record<string, boolean>>({});
   const [manualEpoch, setManualEpoch] = useState(0);
   const settleTick = useCallback(
     (source: Circuit, previous: Snapshot, high: boolean, pulseIds: Record<string, boolean> = {},
       overrides: Record<string, boolean> = {}) => {
       // Blocks unfolded in place run as gates, carrying their stored state.
       pulseIds = { ...heldManual.current, ...pulseIds };
+      overrides = { ...heldInputs.current, ...overrides };
       const target = simulationCircuit(source, unfoldedRef.current);
       const from = syncBlockStates(source, previous, unfoldedRef.current);
       if (!rippleRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
@@ -1908,6 +1917,7 @@ export function LogicBuilder({
 
   const resetRuntime = () => {
     heldManual.current = {};
+    heldInputs.current = {};
     setManualEpoch(epoch => epoch + 1);
     setRunning(false);
     setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
@@ -2017,12 +2027,17 @@ export function LogicBuilder({
     clockRef.current = {
       cycle,
       input: (values) => {
-        Object.assign(heldManual.current, values);
+        for (const [id, value] of Object.entries(values)) {
+          if (circuitRef.current.nodes.some((node) => node.id === id && node.type === "switch"))
+            heldInputs.current[id] = value;
+          else heldManual.current[id] = value;
+        }
         advance({}, currentFrame(timelineRef.current).clockHigh);
       },
       seek: (index) => setTimeline(seek(timelineRef.current, index)),
       reset: () => {
         heldManual.current = {};
+        heldInputs.current = {};
         setManualEpoch((epoch) => epoch + 1);
         setTimeline(createTimeline({ tick: 0, clockHigh: false, pulses: {},
           snapshot: runStep(circuitRef.current, initialSnapshot(), false, unfoldedRef.current) }));

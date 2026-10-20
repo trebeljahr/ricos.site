@@ -6,7 +6,7 @@ export default function BankWindowPage() {
     <DeviceDemoPage
       slug="bank-window"
       description="A 32×32 screen has 128 bytes. Eight addresses and a BANK register reach all of them, one 8×8 tile at a time."
-      intro="A 32×32 screen has 128 bytes. The toy CPU reaches them through 8 data addresses, D0 to D7: a window onto one 8×8 tile. The BANK register at D8 picks the tile. Click a tile, then click pixels in the window."
+      intro="Drive the device through the CPU's memory bus. Set an address and a byte, store on a clock edge, then open the blocks to follow the gates."
     >
       <BankWindowDemo />
     </DeviceDemoPage>

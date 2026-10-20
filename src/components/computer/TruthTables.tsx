@@ -16,10 +16,10 @@ import {
   type TruthGate,
 } from "src/lib/computer/gateLogic";
 import panel from "./ByteExplorer.module.css";
+import { CircuitPreview } from "./CircuitPreview";
 import styles from "./Codebook.module.css";
 import { DemoMachine } from "./CodebookParts";
 import gates from "./GateDemos.module.css";
-import { GateShape, gatePorts, InputMark, LampMark, WirePath } from "./GateDiagram";
 
 const NUMBER_WORDS = ["ZERO", "ONE", "TWO", "THREE"];
 const TWO_INPUT_GATES = TRUTH_GATES.filter((gate) => gate !== "not");
@@ -192,37 +192,6 @@ function GridRow({
   );
 }
 
-/** One gate drawn on the board, its inputs coming in from the left. */
-function GateBoard({ gate, inputs }: { gate: TruthGate; inputs: boolean[] }) {
-  const scale = 1.8;
-  const x = 92;
-  const y = 50 - 21 * scale;
-  const ports = gatePorts(gate, x, y, scale);
-  const output = evalGate(gate, inputs[0], inputs[1]);
-  const names = ["A", "B"];
-  return (
-    <div className={gates.board}>
-      <svg
-        viewBox="0 0 290 100"
-        role="img"
-        aria-label={`${GATE_LABELS[gate]} gate. ${ports.inputs
-          .map((_, index) => `${names[index]} is ${bit(inputs[index])}`)
-          .join(", ")}. Output is ${bit(output)}.`}
-      >
-        {ports.inputs.map((port, index) => (
-          <g key={names[index]}>
-            <WirePath points={[{ x: 58, y: port.y }, port]} on={inputs[index]} />
-            <InputMark x={58} y={port.y} on={inputs[index]} name={names[index]} />
-          </g>
-        ))}
-        <GateShape gate={gate} x={x} y={y} scale={scale} inputs={inputs} output={output} />
-        <WirePath points={[ports.output, { x: 222, y: ports.output.y }]} on={output} />
-        <LampMark x={230} y={ports.output.y} on={output} name="OUT" />
-      </svg>
-    </div>
-  );
-}
-
 /**
  * Pick a gate, flip A and B, and watch its row light up in the truth table or
  * in the 2 × 2 grid. Usable in MDX articles.
@@ -286,7 +255,7 @@ export function GateTruthTable({
               </div>
             )}
           </div>
-          <GateBoard gate={gate} inputs={used} />
+          <CircuitPreview gate={gate} a={inputs[0]} b={inputs[1]} />
           <div className={gates.keys}>
             {names.map((name, index) => (
               <InputKey key={name} name={name} on={inputs[index]} onFlip={() => flip(index)} />

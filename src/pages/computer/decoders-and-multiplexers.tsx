@@ -28,7 +28,7 @@ export default function AddressRoutingPage() {
           </p>
         </header>
         <section className="mb-10" aria-label="Build a decoder first">
-          <div className="mx-auto max-w-prose">
+          <div className="mx-auto">
             <h2 className="text-xl font-semibold">Build a decoder first</h2>
             <p className="my-3">
               Use two address bits to light exactly one of four outputs. Try your circuit before
@@ -48,7 +48,7 @@ export default function AddressRoutingPage() {
             {building && <LazyLogicTutorial title="Build a decoder" levels={["decoder"]} />}
           </div>
         </section>
-        <div className="mx-auto max-w-prose space-y-12">
+        <div className="space-y-12">
           <section>
             <h2 className="mb-4 text-xl font-semibold">Decode the address</h2>
             <DecoderDemo />

@@ -4,10 +4,10 @@ import { useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { bit, evalGate, GATE_RULES, inputRows, rowIndex } from "src/lib/computer/gateLogic";
 import panel from "./ByteExplorer.module.css";
+import { CircuitPreview } from "./CircuitPreview";
 import styles from "./Codebook.module.css";
 import { DemoMachine, MiniButton } from "./CodebookParts";
 import gates from "./GateDemos.module.css";
-import { GateShape, gatePorts, InputMark, LampMark, WirePath } from "./GateDiagram";
 import own from "./SwitchLogic.module.css";
 import { InputKey, OutputLamp } from "./TruthTables";
 
@@ -246,46 +246,6 @@ function SwitchBoard({ wiring, a, b }: { wiring: SwitchWiring; a: boolean; b: bo
   );
 }
 
-/** The gate the switches stand for, with the same inputs. */
-function RevealBoard({ gate, a, b }: { gate: "and" | "or"; a: boolean; b: boolean }) {
-  const scale = 1.5;
-  const x = 82;
-  const y = 40 - 21 * scale;
-  const ports = gatePorts(gate, x, y, scale);
-  const output = evalGate(gate, a, b);
-  return (
-    <div className={gates.board}>
-      <svg
-        viewBox="0 0 250 80"
-        role="img"
-        aria-label={`${gate.toUpperCase()} gate with A ${bit(a)} and B ${bit(b)}: output ${bit(output)}.`}
-      >
-        {[a, b].map((on, index) => (
-          <g key={index === 0 ? "A" : "B"}>
-            <WirePath points={[{ x: 52, y: ports.inputs[index].y }, ports.inputs[index]]} on={on} />
-            <InputMark x={52} y={ports.inputs[index].y} on={on} name={index === 0 ? "A" : "B"} />
-          </g>
-        ))}
-        <GateShape
-          gate={gate}
-          x={x}
-          y={y}
-          scale={scale}
-          inputs={[a, b]}
-          output={output}
-          label={gate.toUpperCase()}
-        />
-        <WirePath points={[ports.output, { x: 186, y: ports.output.y }]} on={output} />
-        <LampMark x={194} y={ports.output.y} on={output} name="LAMP" />
-      </svg>
-    </div>
-  );
-}
-
-/**
- * Two switches and a lamp: wire the switches in a row or side by side, try
- * every case, then reveal the logic gate each wiring is. Usable in MDX articles.
- */
 export function SwitchLogic({
   wiring: initialWiring = "series",
   fixed = false,
@@ -436,7 +396,7 @@ export function SwitchLogic({
           </div>
           {revealed && (
             <div aria-live="polite">
-              <RevealBoard gate={gate} a={a} b={b} />
+              <CircuitPreview gate={gate} a={a} b={b} />
               <p className={gates.rule}>
                 {WIRINGS[wiring].reveal} {GATE_RULES[gate]}
               </p>

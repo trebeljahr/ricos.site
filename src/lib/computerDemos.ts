@@ -53,6 +53,10 @@ export const computerDemos = [
     title: "Add bits with gates",
   },
   {
+    slug: "signed-numbers",
+    title: "Signed numbers and the same adder",
+  },
+  {
     slug: "boolean-logic",
     title: "Read Boolean notation and count truth tables",
   },

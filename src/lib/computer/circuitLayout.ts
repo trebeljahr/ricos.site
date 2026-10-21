@@ -83,6 +83,13 @@ export function layoutCircuit(circuit: Circuit): Circuit {
     ...node,
     ...(node.module ? { module: layoutCircuit(node.module) } : {}),
   }));
+  // CMOS blueprints already use an authored electrical schematic with routed rails.
+  if (circuit.name.endsWith(" from CMOS transistors") && circuit.wires.every((wire) => wire.points)) {
+    const result = { ...circuit, nodes };
+    layouts.set(circuit, result);
+    layouts.set(result, result);
+    return result;
+  }
   const structured = ["8-bit full adder", "8-bit ALU", "8-bit shift register", "8-bit binary counter"].includes(circuit.name) ||
     /^4 × 4 (SRAM|DRAM|flash memory)$/.test(circuit.name);
   if (!structured && arrangeSignalFlow(circuit, nodes)) {

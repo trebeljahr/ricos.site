@@ -20,6 +20,22 @@ it("runs the inverter through native transistor parts and switches gates", () =>
   expect(within(output()).getByLabelText("LED on")).toBeTruthy();
 });
 
+it("exposes real MOSFET terminals and shows conduction independently of drain level", () => {
+  render(<TransistorGates gate="nand" fixed />);
+  expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(2);
+  const source = screen.getAllByRole("button", { name: "Connect to NMOS Source (S)" })[0];
+  expect(source.parentElement?.style.top).toBe("100%");
+  const drain = screen.getAllByRole("button", { name: "Wire from NMOS Drain (D)" })[0];
+  expect(drain.parentElement?.style.top).toBe("0%");
+  expect(screen.getAllByRole("img", { name: /NMOS ideal switch, open/ })).toHaveLength(2);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
+  fireEvent.click(testButton("OFF", screen.getByLabelText("B — SWITCH part")));
+  expect(screen.getAllByRole("img", { name: /NMOS ideal switch, conducting/ })).toHaveLength(2);
+  expect(
+    within(screen.getByLabelText(/OUTPUT — LAMP part/)).getByLabelText("LED off"),
+  ).toBeTruthy();
+});
+
 it("preserves the fixed gate and legend options", () => {
   const { container } = render(<TransistorGates gate="nor" fixed legend={false} />);
   expect(screen.queryByLabelText("Show the NOT gate")).toBeNull();

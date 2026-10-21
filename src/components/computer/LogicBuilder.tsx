@@ -77,7 +77,7 @@ import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
-import { nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
+import { isMosfet, transistorPortPoint, transistorPortSide, nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { BUTTON_HINTS, BUTTON_PRESETS } from "../../lib/computer/buttonInterrupt";
 import { MATRIX_HINTS, MATRIX_PRESETS } from "../../lib/computer/keyboardMatrix";
@@ -94,6 +94,7 @@ import { diagram, LIBRARY_SECTIONS, PART_LIBRARY, type RowOpen } from "../../lib
 import { DecimalInput, ManualButton } from "./ManualInputs";
 import { RecognitionPanel } from "./RecognitionPanel";
 import { GateSymbol } from "./GateSymbol";
+import { TransistorSymbol } from "./TransistorSymbol";
 import { PaletteRowView, ROW_DRAG_TYPE } from "./PaletteRow";
 import { BlockScreen } from "./BlockScreen";
 import styles from "./LogicBuilder.module.css";
@@ -319,8 +320,8 @@ type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
 const rotatedSide = (side: PortSide, direction: -1 | 1): PortSide =>
   portSides[(portSides.indexOf(side) + direction + portSides.length) % portSides.length];
-const inputSide = (node: Node): PortSide => node.inputSide ?? "left";
-const outputSide = (node: Node): PortSide => node.outputSide ?? "right";
+const inputSide = (node: Node, index = 0): PortSide => isMosfet(node) ? transistorPortSide(node, index, "input") : node.inputSide ?? "left";
+const outputSide = (node: Node): PortSide => isMosfet(node) ? transistorPortSide(node, 0, "output") : node.outputSide ?? "right";
 const sideVector = (side: PortSide) => ({
   left: { x: -1, y: 0 }, top: { x: 0, y: -1 },
   right: { x: 1, y: 0 }, bottom: { x: 0, y: 1 },
@@ -336,6 +337,7 @@ const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: 
   return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
 };
 const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") => {
+  if (isMosfet(node)) return transistorPortPoint(node, index, kind);
   if (node.splice || node.type === "junction") return { x: node.x + 5, y: node.y + 5 };
   const side = kind === "input" ? inputSide(node) : outputSide(node);
   const sharedSide = inputSide(node) === outputSide(node);
@@ -364,7 +366,7 @@ const portStyle = (node: DisplayNode, index: number, kind: "input" | "output") =
 
 /** Parts whose readout is their face, so they draw no gate symbol. */
 const drawsOwnFace = (type: GateType) =>
-  isNumberInput(type) || type === "sevensegment" || type === "display4" || type === "display8";
+  (type === "nmos" || type === "pmos") || isNumberInput(type) || type === "sevensegment" || type === "display4" || type === "display8";
 const partName = (node: Node) =>
   node.type === "module" ? node.module?.name || "Module" : LABELS[node.type];
 /** Pin names beside a folded part's side ports; top and bottom rows have no room for them. */
@@ -390,6 +392,7 @@ type NodeReadoutProps = {
 /** The live value or control in a part's body, shared by the board and unfolded circuits. */
 function NodeReadout({ node, snapshot, wires, bank, onBank, onUpdate, manual }: NodeReadoutProps) {
   const name = node.label || LABELS[node.type];
+  if (isMosfet(node)) return null;
   if (isNumberInput(node.type)) {
     const width = NUMBER_INPUT_BITS[node.type];
     return (
@@ -676,7 +679,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
           if (kind === "input" && !segmentPinVisible(part, port, segmentBanks)) continue;
           const point = portPoint(part, port, kind);
           result.push({ id: part.id, port, kind, point, wirePoint: point,
-            side: kind === "input" ? inputSide(part) : outputSide(part),
+            side: kind === "input" ? inputSide(part, port) : outputSide(part),
             label: `${part.label || LABELS[part.type]} ${kind === "input" ? inputLabel(part, port) : outputLabel(part, port)}` });
         }
       }
@@ -1064,7 +1067,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         })}
         {layout.parts.map((part) => (
           <div key={part.id} data-inline-part={part.path}
-            className={clsx(styles.node, styles.inlinePart, (part.splice || part.type === "junction") && styles.wireJoin,
+            className={clsx(styles.node, styles.inlinePart, isMosfet(part) && styles.transistorNode, (part.splice || part.type === "junction") && styles.wireJoin,
               part.splice && snapshot.buses?.[part.id] === "X" && styles.joinConflict, part.child && styles.expandedNode,
               selectedParts.includes(part.id) && styles.inlineSelectedPart, drag?.id === part.id && styles.inlineDragging)}
             style={{ "--part-accent": partColors[part.type], left: part.x, top: part.y,
@@ -1093,7 +1096,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
               </div>
             ))}
             {!part.child && <div className={clsx(styles.nodeBody, styles.inlinePartBody,
-              part.type === "module" && styles.moduleBody)}>
+              part.type === "module" && styles.moduleBody, isMosfet(part) && styles.transistorBody)}>
+              {isMosfet(part) && <TransistorSymbol node={part} snapshot={snapshot} wires={circuit.wires} />}
               <div className={styles.nodeNameRow}>
                 {editingPart === part.id ? labelInput(part) : part.label &&
                   <span className={styles.nodeLabel} title="Double-click to edit label"
@@ -1538,7 +1542,7 @@ function LogicBuilderWorkspace({
           if (wire.points) return false;
           const from = displayNodes.find((node) => node.id === wire.from);
           const to = displayNodes.find((node) => node.id === wire.to);
-          return from && to && outputSide(from) === "right" && inputSide(to) === "left";
+          return from && to && outputSide(from) === "right" && inputSide(to, wire.input) === "left";
         }),
       ),
     [displayNodes, circuit.wires, busWiring, segmentBanks],
@@ -2947,10 +2951,10 @@ function LogicBuilderWorkspace({
       const from = displayNodes.find((node) => node.id === wire.from), to = displayNodes.find((node) => node.id === wire.to);
       if (!from || !to || !segmentPinVisible(to, wire.input, segmentBanks) || hasTransistors && (!powerVisible(from) || !powerVisible(to))) return [];
       const start = portPoint(from, wire.output ?? 0, "output"), end = portPoint(to, wire.input, "input");
-      const standard = outputSide(from) === "right" && inputSide(to) === "left";
+      const standard = outputSide(from) === "right" && inputSide(to, wire.input) === "left";
       const path = wire.points ? explicitWirePath(wire.points, start, end) : standard
         ? tidyWiring || busWiring || end.x <= start.x ? routes.paths[wire.id] : simpleWirePath(start, end)
-        : orientedWirePath(start, end, outputSide(from), inputSide(to));
+        : orientedWirePath(start, end, outputSide(from), inputSide(to, wire.input));
       return path ? [{ id: wire.id, path }] : [];
     });
     return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path }))]);
@@ -3763,10 +3767,10 @@ function LogicBuilderWorkspace({
                       d={
                         (draftStart || targetNode) && (draftEnd || targetNode) &&
                         (draftStart ? outputSide(draftStart) : targetNode ? outputSide(targetNode) : "right") !== "right" ||
-                        (draftEnd ? inputSide(draftEnd) : targetNode ? inputSide(targetNode) : "left") !== "left"
+                        (draftEnd ? inputSide(draftEnd, wireDraft.input ?? 0) : targetNode ? inputSide(targetNode, draftTarget?.input ?? 0) : "left") !== "left"
                           ? orientedWirePath(previewStart, previewEnd,
                               draftStart ? outputSide(draftStart) : targetNode ? outputSide(targetNode) : "right",
-                              draftEnd ? inputSide(draftEnd) : targetNode ? inputSide(targetNode) : "left")
+                              draftEnd ? inputSide(draftEnd, wireDraft.input ?? 0) : targetNode ? inputSide(targetNode, draftTarget?.input ?? 0) : "left")
                           : tidyWiring || previewEnd.x <= previewStart.x
                           ? wirePath(previewStart, previewEnd)
                           : simpleWirePath(previewStart, previewEnd)
@@ -3805,6 +3809,7 @@ function LogicBuilderWorkspace({
                       }}
                       className={clsx(
                         styles.node,
+                        isMosfet(node) && styles.transistorNode,
                         (node.splice || node.type === "junction") && styles.wireJoin,
                         node.splice && boardSnapshot.buses?.[node.id] === "X" && styles.joinConflict,
                         expandedDetails.has(node.id) && styles.expandedNode,
@@ -3916,8 +3921,8 @@ function LogicBuilderWorkspace({
                                     : input === 1 ? "CLK: rising edge" : "RESET: asynchronous active-high reset"
                                   : node.type === "nmos" || node.type === "pmos"
                                     ? input === 0
-                                      ? "Gate control"
-                                      : "Source signal"
+                                      ? "Gate (G): controls the source–drain path"
+                                      : "Source (S): supply-side terminal in this directed switch model"
                                     : inputLabel(node, input)
                             }
                           />
@@ -3927,11 +3932,13 @@ function LogicBuilderWorkspace({
                       <div
                         className={clsx(
                           styles.nodeBody,
+                          isMosfet(node) && styles.transistorBody,
                           node.type === "module" && styles.moduleBody,
                           isScreenBlock(node.behaviour) && styles.screenBody,
                         )}
                         style={expandedDetails.has(node.id) ? { display: "none" } : undefined}
                       >
+                        {isMosfet(node) && <TransistorSymbol node={node} snapshot={boardSnapshot} wires={circuit.wires} />}
                         <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
                           {editingLabel?.id === node.id ? (
                             <input

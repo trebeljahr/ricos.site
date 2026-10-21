@@ -34,8 +34,34 @@ export function TransistorGates({
         </fieldset>
       )}
       <CircuitDemo makeCircuit={makeCircuit} label={`${GATE_LABELS[gate]} from transistors`}>
-        {legend &&
-          "Flip the inputs to trace the conducting paths. PMOS conducts at 0; NMOS conducts at 1. Edit the circuit to try another construction."}
+        {legend && (
+          <div className="space-y-2">
+            <p>
+              These are CMOS gates. G is the gate control, S is the source, and D is the drain. PMOS
+              connects toward VDD when its gate is 0. NMOS connects toward GND when its gate is 1.
+              The output is the shared node between those paths.
+            </p>
+            <p>
+              Follow the vertical source–drain paths, then flip A or B. The circle on a PMOS gate
+              means it switches on at 0.
+            </p>
+            <p>
+              Bipolar transistors use base, collector, and emitter terminals. The{" "}
+              <a
+                className="underline"
+                href="https://www.electronics-tutorials.ws/logic/logic-gates-using-transistors.html"
+              >
+                resistor–transistor circuits
+              </a>{" "}
+              use NPN transistors and resistors to build the same logic functions.
+            </p>
+            <p>
+              This builder uses ideal directed switches: a conducting transistor passes its source
+              level to its drain. It omits body terminals, analog voltages, current, resistance, and
+              capacitance.
+            </p>
+          </div>
+        )}
       </CircuitDemo>
     </div>
   );

@@ -130,11 +130,11 @@ export const GateSymbol = memo(function GateSymbol({
         )}
         {(type === "nmos" || type === "pmos") && (
           <>
-            <path d="M32 5 V14 M32 28 V37 M20 14 V28 M25 14 V28 M25 16 H38 V26 H25 M8 21 H20" />
-            {type === "pmos" && <circle cx="22" cy="21" r="3" fill="#1a2440" />}
+            <path d={`M38 2 V11 H29 M29 31 H38 V40 M23 11 V31 M29 11 V31 M5 21 H${type === "pmos" ? 15 : 23}`} />
+            {type === "pmos" && <circle cx="19" cy="21" r="4" />}
           </>
         )}
-        {type === "high" && <path d="M32 5 V34 M20 13 H44 M25 20 H39 M29 27 H35" />}
+        {type === "high" && <path d="M32 37 V8 M20 8 H44" />}
         {(type === "mux" || type === "demux") && (
           <>
             <path

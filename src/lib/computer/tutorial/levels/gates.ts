@@ -151,7 +151,7 @@ export const cmosNotLevel: Level = {
     },
     {
       title: "Conduction paths",
-      text: "Let A control both gates. Connect the PMOS source to VDD and the NMOS source to GND. Join their outputs at OUT.",
+      text: "Let A control both gates (G). Connect the PMOS source (S) to VDD and the NMOS source (S) to GND. Join their drains (D) at OUT.",
     },
   ],
   optional: true,

@@ -1,6 +1,7 @@
 import { type BusValue, bitsFromBus, busFromBits, resolveBus } from "./bus";
 import { MEMORY_PRESETS } from "./memoryCircuits";
 import { PLACES, SEGMENTS } from "./segmentNames";
+import { layoutCmosBlueprint } from "./cmosLayout";
 
 export type GateType =
   | "switch"
@@ -239,6 +240,7 @@ export const outputWidth = (node: Node, _index = 0): 1 | 8 =>
 export const wireFits = (from: Node, output: number, to: Node, input: number) =>
   outputWidth(from, output) === inputWidth(to, input);
 export const inputLabel = (node: Node, index: number) =>
+  node.type === "nmos" || node.type === "pmos" ? ["Gate (G)", "Source (S)"][index] :
   node.type === "dff" ? ["D", "CLK", "RESET"][index] :
   node.type === "module"
     ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
@@ -254,6 +256,7 @@ export const inputLabel = (node: Node, index: number) =>
             ? `Driver ${index + 1}`
             : `Input ${index + 1}`;
 export const outputLabel = (node: Node, index: number) =>
+  node.type === "nmos" || node.type === "pmos" ? "Drain (D)" :
   node.type === "module"
     ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
     : isNumberInput(node.type) || node.type === "splitter"
@@ -1752,7 +1755,7 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
   );
   wires.push(wire(output, "out"));
   const name = `${LABELS[gate]} from ${BLUEPRINT_FAMILIES[family].suffix}`;
-  return {
+  const circuit: Circuit = {
     name,
     nodes,
     wires,
@@ -1766,6 +1769,7 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
       },
     ],
   };
+  return family === "transistor" ? layoutCmosBlueprint(circuit) : circuit;
 }
 
 export function blueprintGate(circuit: Circuit): LogicGate | null {

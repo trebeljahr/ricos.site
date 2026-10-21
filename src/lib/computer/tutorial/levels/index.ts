@@ -12,6 +12,7 @@ import { MEMORY_LEVELS } from "./memory";
 import { PROCESSOR_LEVELS } from "./processor";
 import { registerCatalog } from "./shared";
 import { SWITCHING_LEVELS } from "./switching";
+import { UNIVERSAL_GATE_LEVELS } from "./universalGates";
 
 export const LEVELS: readonly Level[] = [
   ...GATE_LEVELS,
@@ -24,6 +25,7 @@ export const LEVELS: readonly Level[] = [
   ...DISPLAY_LEVELS,
   ...PROCESSOR_LEVELS,
   ...INPUT_DEVICE_LEVELS,
+  ...UNIVERSAL_GATE_LEVELS,
 ];
 
 /** The counter family has one core lesson; variants remain addressable and saved independently. */

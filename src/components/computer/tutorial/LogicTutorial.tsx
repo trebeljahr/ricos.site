@@ -5,10 +5,10 @@ import { useTutorialProgress } from "../../../hooks/useTutorialProgress";
 import { type Circuit, LABELS, validateCircuit } from "../../../lib/computer/logic";
 import { feedback, type Note } from "../../../lib/computer/tutorial/analysis";
 import { type Grade, gradeLevel, gradePassed } from "../../../lib/computer/tutorial/grade";
+import { requestedHints } from "../../../lib/computer/tutorial/hints";
 import { levelStart } from "../../../lib/computer/tutorial/kit";
 import { CATALOG, LEARNING_LEVELS, LEVELS, levelById } from "../../../lib/computer/tutorial/levels";
 import { levelRows } from "../../../lib/computer/tutorial/paletteRows";
-import { requestedHints } from "../../../lib/computer/tutorial/hints";
 import {
   markSkipped,
   markSolved,
@@ -94,10 +94,10 @@ export function LogicTutorial({
     [ids],
   );
   const [levelId, setLevelId] = useState(() => levelById(requested)?.id ?? ladder[0]?.id);
-  useEffect(() => {
-    if (requested && levelById(requested)) setLevelId(requested);
-  }, [requested]);
   const level = levelById(levelId) ?? ladder[0];
+  const practiceVariants = level.practice
+    ? LEVELS.filter((item) => item.practice?.family === level.practice?.family)
+    : [];
   const index = ladder.findIndex(
     (item) =>
       item.id === level.id || (item.practice && item.practice.family === level.practice?.family),
@@ -122,6 +122,24 @@ export function LogicTutorial({
   const [hints, setHints] = useState(0);
   const [focus, setFocus] = useState<number | null>(null);
   const saveTimer = useRef<number | undefined>(undefined);
+  const pendingDraft = useRef<{ level: Level; circuit: Circuit } | null>(null);
+  const flushDraft = useCallback(() => {
+    window.clearTimeout(saveTimer.current);
+    const pending = pendingDraft.current;
+    pendingDraft.current = null;
+    if (pending)
+      saveDraft(
+        pending.level.id,
+        pending.level.save ? pending.level.save(pending.circuit) : pending.circuit,
+      );
+  }, []);
+
+  useEffect(() => {
+    if (requested && levelById(requested)) {
+      flushDraft();
+      setLevelId(requested);
+    }
+  }, [requested, flushDraft]);
 
   useEffect(() => {
     circuitRef.current = initial;
@@ -130,19 +148,18 @@ export function LogicTutorial({
     setHints(0);
     setFocus(null);
   }, [initial]);
-  useEffect(() => () => window.clearTimeout(saveTimer.current), []);
+  useEffect(() => flushDraft, [flushDraft]);
 
   const onChange = useCallback(
     (next: Circuit) => {
       circuitRef.current = next;
       setCircuit(next);
+      if (pendingDraft.current && pendingDraft.current.level.id !== level.id) flushDraft();
       window.clearTimeout(saveTimer.current);
-      saveTimer.current = window.setTimeout(
-        () => saveDraft(level.id, level.save ? level.save(next) : next),
-        SAVE_DELAY,
-      );
+      pendingDraft.current = { level, circuit: next };
+      saveTimer.current = window.setTimeout(flushDraft, SAVE_DELAY);
     },
-    [level],
+    [level, flushDraft],
   );
 
   const live = useMemo(() => {
@@ -157,6 +174,7 @@ export function LogicTutorial({
   const open = !sequential || isOpen(ladder, index, progress);
 
   const openLevel = (id: string) => {
+    flushDraft();
     setLevelId(id);
     setOpened((value) => value + 1);
     onLevelChange?.(id);
@@ -194,6 +212,8 @@ export function LogicTutorial({
     if (next) openLevel(next.id);
   };
   const reset = () => {
+    window.clearTimeout(saveTimer.current);
+    pendingDraft.current = null;
     setHints(0);
     setFocus(null);
     setChecked(null);
@@ -291,7 +311,7 @@ export function LogicTutorial({
             </p>
           )}
 
-          {level.practice && (
+          {practiceVariants.length > 1 && (
             <label className={styles.parameter}>
               Challenge parameters
               <select
@@ -303,13 +323,11 @@ export function LogicTutorial({
                 value={level.id}
                 onChange={(event) => openLevel(event.target.value)}
               >
-                {LEVELS.filter((item) => item.practice?.family === level.practice?.family).map(
-                  (item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.practice?.label} {statusOf(item, progress)}
-                    </option>
-                  ),
-                )}
+                {practiceVariants.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.practice?.label} {statusOf(item, progress)}
+                  </option>
+                ))}
               </select>
             </label>
           )}

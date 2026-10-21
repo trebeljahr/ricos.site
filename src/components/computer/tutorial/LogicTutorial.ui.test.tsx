@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { useState } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { levelById } from "../../../lib/computer/tutorial/levels";
 import {
   PROGRESS_KEY,
@@ -15,7 +16,10 @@ beforeEach(() => {
   progressStore.reset();
   Element.prototype.setPointerCapture = () => {};
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 const builders = () =>
   Array.from(document.querySelectorAll<HTMLElement>("[data-logic-builder]")).map((element) =>
     within(element),
@@ -109,6 +113,80 @@ describe("independent tutorials", () => {
     expect(
       builders()[0].getByRole("combobox", { name: "Counter challenge" }).getAttribute("value"),
     ).not.toBe("manual-counter-2-up");
+  });
+  it("keeps universal gate embeds independent with no single-choice parameter selector", () => {
+    render(
+      <>
+        <LogicTutorial levels={["universal-nand-not"]} />
+        <LogicTutorial levels={["universal-nor-not"]} />
+      </>,
+    );
+    const [nand, nor] = builders();
+    expect(nand.queryByRole("combobox", { name: "Construction parameters" })).toBeNull();
+    expect(nor.queryByRole("combobox", { name: "Construction parameters" })).toBeNull();
+    expect(nand.getByText("Available blocks: NAND.")).toBeTruthy();
+    expect(nor.getByText("Available blocks: NOR.")).toBeTruthy();
+    expect(nand.queryByRole("list", { name: "Hints" })).toBeNull();
+    expect(nor.queryByRole("list", { name: "Hints" })).toBeNull();
+    buildNot(nand);
+    fireEvent.click(nand.getByRole("button", { name: "Check" }));
+    expect(nand.getByText(/Pass: all 2 rows match/)).toBeTruthy();
+    expect(boardParts(nor)).toHaveLength(2);
+    expect(nor.queryByText(/Pass: all 2 rows match/)).toBeNull();
+    fireEvent.click(nor.getByRole("button", { name: "Hint" }));
+    expect(nor.getByRole("list", { name: "Hints" })).toBeTruthy();
+    expect(nand.queryByRole("list", { name: "Hints" })).toBeNull();
+  });
+  it("flushes the latest draft on an immediate family unmount and restores it after a reload", () => {
+    vi.useFakeTimers();
+    function Families() {
+      const [family, setFamily] = useState("nand");
+      return (
+        <>
+          <button type="button" onClick={() => setFamily(family === "nand" ? "nor" : "nand")}>
+            Switch family
+          </button>
+          <LogicTutorial key={family} levels={[`universal-${family}-not`]} />
+        </>
+      );
+    }
+    const { unmount } = render(<Families />);
+    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+    fireEvent.click(screen.getByRole("button", { name: "Switch family" }));
+    expect(boardParts(builders()[0])).toHaveLength(2);
+    expect(progressStore.get().drafts["universal-nand-not"]).toMatchObject({
+      nodes: expect.arrayContaining([expect.objectContaining({ type: "nand" })]),
+    });
+    fireEvent.click(builders()[0].getByTitle("Drag NOR onto canvas or click to add"));
+    fireEvent.click(screen.getByRole("button", { name: "Switch family" }));
+    expect(boardParts(builders()[0])).toHaveLength(3);
+    expect(progressStore.get().drafts["universal-nor-not"]).toMatchObject({
+      nodes: expect.arrayContaining([expect.objectContaining({ type: "nor" })]),
+    });
+    unmount();
+    progressStore.reset();
+    render(<LogicTutorial levels={["universal-nor-not"]} />);
+    expect(boardParts(builders()[0])).toHaveLength(3);
+  });
+  it("flushes before switching levels and does not restore an edit discarded by Reset", () => {
+    vi.useFakeTimers();
+    const { unmount } = render(
+      <LogicTutorial levels={["universal-nand-not", "universal-nor-not"]} />,
+    );
+    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+    fireEvent.change(screen.getByRole("combobox", { name: "Level" }), {
+      target: { value: "universal-nor-not" },
+    });
+    expect(boardParts(builders()[0])).toHaveLength(2);
+    fireEvent.change(screen.getByRole("combobox", { name: "Level" }), {
+      target: { value: "universal-nand-not" },
+    });
+    expect(boardParts(builders()[0])).toHaveLength(3);
+    fireEvent.click(builders()[0].getByRole("button", { name: "Reset" }));
+    unmount();
+    progressStore.reset();
+    render(<LogicTutorial levels={["universal-nand-not"]} />);
+    expect(boardParts(builders()[0])).toHaveLength(2);
   });
 });
 

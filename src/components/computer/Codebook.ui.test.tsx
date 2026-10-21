@@ -26,13 +26,48 @@ describe("switch states demo", () => {
     expect(within(list).getAllByRole("listitem")).toHaveLength(8);
     expect(current(list)?.textContent).toBe("000");
 
-    click(/^Switch 1 of 3: off/);
-    click(/^Switch 3 of 3: off/);
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 1 of 3" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 3 of 3" }));
     expect(current(list)?.textContent).toBe("101");
-    expect(screen.getByRole("button", { name: /^Switch 1 of 3: on/ })).toBeTruthy();
+    expect(screen.getByRole("switch", { name: "Switch 1 of 3", checked: true })).toBeTruthy();
 
     click("Remove a switch");
     expect(current(screen.getByRole("list", { name: "All 4 states" }))?.textContent).toBe("10");
+  });
+
+  it("counts with carry and borrow, keeps switches in sync, and stops at both limits", () => {
+    render(<SwitchStates />);
+    const increment = screen.getByRole("button", { name: "Increment pattern" });
+    const decrement = screen.getByRole("button", { name: "Decrement pattern" });
+    const selected = () => current(screen.getByRole("list"))?.textContent;
+
+    fireEvent.click(decrement);
+    expect(selected()).toBe("0");
+    expect(decrement.getAttribute("aria-disabled")).toBe("true");
+
+    click("Add a switch");
+    click("Add a switch");
+    for (let step = 0; step < 4; step++) fireEvent.click(increment);
+    expect(selected()).toBe("100");
+    expect(
+      screen.getAllByRole("switch").map((control) => control.getAttribute("aria-checked")),
+    ).toEqual(["true", "false", "false"]);
+
+    fireEvent.click(decrement);
+    expect(selected()).toBe("011");
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 1 of 3" }));
+    expect(selected()).toBe("111");
+    expect(increment.getAttribute("aria-disabled")).toBe("true");
+    fireEvent.click(increment);
+    expect(selected()).toBe("111");
+
+    click("Remove a switch");
+    expect(selected()).toBe("11");
+    expect(increment.getAttribute("aria-disabled")).toBe("true");
+    click("Add a switch");
+    expect(selected()).toBe("110");
+    fireEvent.click(increment);
+    expect(selected()).toBe("111");
   });
 
   it("shows more than 16 states as a grid and stops at eight switches", () => {

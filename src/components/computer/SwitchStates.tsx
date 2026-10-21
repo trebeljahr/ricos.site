@@ -6,8 +6,10 @@ import {
   addSwitch,
   allPatterns,
   flipSwitch,
+  formatPattern,
   MAX_SWITCHES,
   MIN_SWITCHES,
+  patternIndex,
   removeSwitch,
   stateCount,
 } from "src/lib/codebook";
@@ -24,11 +26,23 @@ export function SwitchStates() {
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const switches = pattern.length;
   const count = stateCount(switches);
+  const value = patternIndex(pattern);
   const patterns = allPatterns(switches);
 
   function resize(next: string) {
     setPattern(next);
     playSwitch();
+  }
+
+  function step(direction: -1 | 1) {
+    setPattern((current) => {
+      const next = Math.max(
+        0,
+        Math.min(stateCount(current.length) - 1, patternIndex(current) + direction),
+      );
+      return formatPattern(next, current.length);
+    });
+    playButton();
   }
 
   return (
@@ -63,16 +77,35 @@ export function SwitchStates() {
           <SwitchRow
             pattern={pattern}
             onFlip={(position) => {
-              setPattern(flipSwitch(pattern, position));
-              playButton();
+              setPattern((current) => flipSwitch(current, position));
+              playSwitch();
             }}
             label="Switches"
+            rocker
           />
-          <div className={clsx(panel.screen, styles.lcd)} aria-live="polite">
+          <div className={clsx(panel.screen, styles.lcd)}>
             <div className={panel.screenTop}>
               <span>PATTERN</span>
+              <div className={styles.stepper}>
+                <MiniButton
+                  onClick={() => step(-1)}
+                  label="Decrement pattern"
+                  disabled={value === 0}
+                >
+                  −1
+                </MiniButton>
+                <MiniButton
+                  onClick={() => step(1)}
+                  label="Increment pattern"
+                  disabled={value === count - 1}
+                >
+                  +1
+                </MiniButton>
+              </div>
             </div>
-            <div className={styles.lcdValue}>{pattern}</div>
+            <div className={styles.lcdValue} aria-live="polite" aria-atomic="true">
+              {pattern}
+            </div>
             <div className={styles.lcdLine}>
               {switches} {switches === 1 ? "SWITCH" : "SWITCHES"} → 2<sup>{switches}</sup> = {count}{" "}
               STATES

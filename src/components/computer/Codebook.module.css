@@ -62,6 +62,42 @@
 .switchState { font-size: 10px; letter-spacing: .04em; }
 .demo .keyLarge { width: 100%; height: 48px; font-size: 22px; }
 
+.rocker {
+  position: relative;
+  width: 100%;
+  height: 62px;
+  padding: 4px;
+  border: 2px solid #435247;
+  border-radius: 6px;
+  background: #26382d;
+  box-shadow: inset 0 2px 5px #14231bd9, 0 2px 1px #d5ddcc, 0 3px 4px #26342866;
+  color: #243329;
+  font: 700 15px/1 ui-monospace, monospace;
+  perspective: 140px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.rockerFace {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(#869480, #cbd1be 48%, #eef0df 52%, #cbd1be);
+  box-shadow: inset 0 -2px 1px #f5f6e8, 0 -3px 2px #14231b99;
+  transform: rotateX(18deg);
+  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.rockerFace span { display: grid; place-items: center; }
+.rockerFace span:first-child { opacity: .5; }
+.rocker:hover .rockerFace { filter: brightness(1.06); }
+.rocker[aria-checked="true"] .rockerFace {
+  transform: rotateX(-18deg);
+  background: linear-gradient(#dce7c8, #c5d3b4 48%, #a2b593 52%, #71886b);
+  box-shadow: inset 0 2px 1px #edf4dd, 0 3px 2px #14231b99;
+}
+.rocker[aria-checked="true"] .rockerFace span:first-child { opacity: 1; }
+.rocker[aria-checked="true"] .rockerFace span:last-child { opacity: .5; }
+
 .demo .lcd { margin-top: 12px; padding: 9px 14px 10px; border-width: 6px; cursor: default; }
 .demo .lcdAlert {
   background: repeating-linear-gradient(0deg, #2d14120d 0 2px, #240f0e24 2px 3px), radial-gradient(ellipse at center, #f3c897, #dd9a66 75%, #a9683f);
@@ -157,4 +193,4 @@
 }
 /* iOS zooms the page into any focused field set smaller than 16px. */
 @media (pointer: coarse) { .bookInput { font-size: 16px; } }
-@media (prefers-reduced-motion: reduce) { .miniButton { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .miniButton, .rockerFace { transition: none; } }

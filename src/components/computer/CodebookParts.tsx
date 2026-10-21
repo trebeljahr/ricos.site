@@ -48,17 +48,19 @@ export function DemoMachine({
   );
 }
 
-/** One key per switch, left to right, with a lamp above and its state below. */
+/** One control per switch, left to right, with a lamp above and its state below. */
 export function SwitchRow({
   pattern,
   onFlip,
   label,
   large = false,
+  rocker = false,
 }: {
   pattern: string;
   onFlip: (position: number) => void;
   label: string;
   large?: boolean;
+  rocker?: boolean;
 }) {
   return (
     <fieldset
@@ -72,15 +74,31 @@ export function SwitchRow({
         return (
           <div className={styles.switchUnit} key={number}>
             <i className={styles.lamp} data-on={on} aria-hidden="true" />
-            <button
-              type="button"
-              onClick={() => onFlip(position)}
-              aria-pressed={on}
-              aria-label={`Switch ${number} of ${pattern.length}: ${on ? "on" : "off"}. Flip switch.`}
-              className={clsx(panel.bitButton, large && styles.keyLarge)}
-            >
-              {bit}
-            </button>
+            {rocker ? (
+              <button
+                type="button"
+                role="switch"
+                aria-checked={on}
+                aria-label={`Switch ${number} of ${pattern.length}`}
+                onClick={() => onFlip(position)}
+                className={styles.rocker}
+              >
+                <span className={styles.rockerFace} aria-hidden="true">
+                  <span>1</span>
+                  <span>0</span>
+                </span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onFlip(position)}
+                aria-pressed={on}
+                aria-label={`Switch ${number} of ${pattern.length}: ${on ? "on" : "off"}. Flip switch.`}
+                className={clsx(panel.bitButton, large && styles.keyLarge)}
+              >
+                {bit}
+              </button>
+            )}
             <span className={styles.switchState} aria-hidden="true">
               {on ? "ON" : "OFF"}
             </span>

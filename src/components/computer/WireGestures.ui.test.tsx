@@ -161,8 +161,12 @@ it("shows an invalid drop instead of joining independent one-bit drivers", () =>
   fireEvent.pointerDown(wire, { ...pointer, ...point(board, 360, 103) });
   fireEvent.pointerMove(board, { ...pointer, ...point(board, 360, 323) });
   expect(board.querySelector('[data-wire-join-target="invalid"]')).toBeTruthy();
-  expect(screen.getByText(/Cannot join separate one-bit drivers/)).toBeTruthy();
+  const feedback = screen.getByRole("status");
+  expect(feedback.textContent).toMatch(/Cannot join separate one-bit drivers/);
+  expect(feedback.closest("svg")).toBeNull();
+  expect(board.contains(feedback)).toBe(false);
   fireEvent.pointerUp(board, { ...pointer, ...point(board, 360, 323) });
+  expect(screen.queryByRole("status")).toBeNull();
   expect(stored()).toEqual(before);
 });
 
@@ -261,8 +265,12 @@ it("previews and joins internal wires using the same small splice topology and h
   fireEvent.pointerMove(diagram, { ...pointer, ...target });
   act(() => update?.(0));
   expect(diagram.querySelector('[data-wire-join-target="valid"]')).toBeTruthy();
+  const feedback = screen.getByRole("status");
+  expect(feedback.textContent).toBe("Release to connect");
+  expect(diagram.contains(feedback)).toBe(false);
   expect(stored().nodes[0].module!.nodes.filter((node) => node.splice)).toHaveLength(0);
   fireEvent.pointerUp(diagram, { ...pointer, ...target });
+  expect(screen.queryByText("Release to connect")).toBeNull();
   expect(stored().nodes[0].module!.nodes.filter((node) => node.splice)).toHaveLength(2);
   fireEvent.click(screen.getByRole("button", { name: "Undo" }));
   expect(stored().nodes[0].module!.wires).toEqual(fixture().wires);

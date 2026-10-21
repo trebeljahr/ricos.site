@@ -234,13 +234,15 @@ const draftPort = (draft: WireDraft): PortRef => draft.from
   : { nodeId: draft.to!, kind: "input", index: draft.input ?? 0 };
 function WireJoinPreview({ anchor, error }: { anchor: WireAnchor; error?: string }) {
   return <g className={clsx(styles.wireJoinTarget, error && styles.wireJoinInvalid)}
-    data-wire-join-target={error ? "invalid" : "valid"} aria-hidden="true">
+    data-wire-join-target={error ? "invalid" : "valid"}>
     <path d={anchor.path} />
     <circle cx={anchor.point.x} cy={anchor.point.y} r={8} />
-    <text x={anchor.point.x + 14} y={anchor.point.y - 14}>
-      {error ?? "Release to connect"}
-    </text>
   </g>;
+}
+function WireJoinFeedback({ error }: { error?: string }) {
+  return <div className={clsx(styles.wireJoinFeedback, error && styles.wireJoinInvalid)} role="status">
+    {error ?? "Release to connect"}
+  </div>;
 }
 const defaultWireColor = (id: string, nodes: Node[]): WireColor =>
   wireColorNames[
@@ -997,6 +999,9 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         <button type="button" onClick={() => onRefoldLevel(path)}>
           <ActionIcon name="fold" /> {hasExpandedChildren ? "Refold one level" : "Refold box"}
         </button>
+      </div>
+      <div className={styles.wireFeedbackSlot}>
+        {preview?.wire && <WireJoinFeedback error={preview.error} />}
       </div>
       <div ref={diagram} className={styles.inlineDiagram} data-inline-diagram={path} data-port-surface={path}
         data-origin-x={layout.originX} data-origin-y={layout.originY}
@@ -3373,6 +3378,9 @@ export function LogicBuilder({
             )}
           </div>
           {!challenge && !locked && isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
+          <div className={styles.wireFeedbackSlot}>
+            {draftWireTarget && <WireJoinFeedback error={draftJoinError} />}
+          </div>
           <div
             ref={boardViewport}
             onDragOver={(event) => {

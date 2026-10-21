@@ -277,7 +277,8 @@
 .wireJoinTarget{pointer-events:none;color:#92f4da}
 .wireJoinTarget>path{fill:none;stroke:currentColor;stroke-width:7;opacity:.55}
 .wireJoinTarget>circle{fill:#102b26;stroke:currentColor;stroke-width:2}
-.wireJoinTarget>text{fill:currentColor;stroke:#101a22;stroke-width:5;paint-order:stroke;font:600 13px ui-sans-serif,system-ui,sans-serif}
+.wireFeedbackSlot{position:relative;flex:none;height:0;z-index:30;pointer-events:none}
+.wireJoinFeedback{position:absolute;top:8px;left:8px;box-sizing:border-box;width:max-content;max-width:min(360px,calc(100% - 16px));padding:8px 12px;border:1px solid currentColor;border-radius:6px;background:#17233a;color:#92f4da;font:600 13px/1.5 ui-sans-serif,system-ui,sans-serif;white-space:normal;overflow-wrap:anywhere;box-shadow:0 3px 12px #04091877}
 .wireJoinInvalid{color:#ffaaa0}
 
 /* Signal tracing gives every net the same two states, including nested circuits. */

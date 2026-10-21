@@ -81,7 +81,7 @@ export function SwitchStates() {
               playSwitch();
             }}
             label="Switches"
-            rocker
+            lever
           />
           <div className={clsx(panel.screen, styles.lcd)}>
             <div className={panel.screenTop}>

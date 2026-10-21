@@ -62,41 +62,71 @@
 .switchState { font-size: 10px; letter-spacing: .04em; }
 .demo .keyLarge { width: 100%; height: 48px; font-size: 22px; }
 
-.rocker {
+.toggle {
   position: relative;
   width: 100%;
-  height: 62px;
-  padding: 4px;
-  border: 2px solid #435247;
-  border-radius: 6px;
-  background: #26382d;
-  box-shadow: inset 0 2px 5px #14231bd9, 0 2px 1px #d5ddcc, 0 3px 4px #26342866;
-  color: #243329;
-  font: 700 15px/1 ui-monospace, monospace;
-  perspective: 140px;
+  height: 82px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.rockerFace {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(#869480, #cbd1be 48%, #eef0df 52%, #cbd1be);
-  box-shadow: inset 0 -2px 1px #f5f6e8, 0 -3px 2px #14231b99;
-  transform: rotateX(18deg);
-  transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+.toggleHardware { position: absolute; inset: 0; perspective: 140px; pointer-events: none; }
+.toggleWasher, .toggleNut, .toggleSocket {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
-.rockerFace span { display: grid; place-items: center; }
-.rockerFace span:first-child { opacity: .5; }
-.rocker:hover .rockerFace { filter: brightness(1.06); }
-.rocker[aria-checked="true"] .rockerFace {
-  transform: rotateX(-18deg);
-  background: linear-gradient(#dce7c8, #c5d3b4 48%, #a2b593 52%, #71886b);
-  box-shadow: inset 0 2px 1px #edf4dd, 0 3px 2px #14231b99;
+.toggleWasher {
+  width: min(100%, 36px);
+  aspect-ratio: 1;
+  border: 1px solid #556057;
+  border-radius: 50%;
+  background: conic-gradient(from 30deg, #626d63, #e1e4d8, #818c80, #f0f1e5, #667266, #c1c8b9, #626d63);
+  box-shadow: 0 2px 3px #26342899, inset 0 0 0 2px #a1aa9b;
 }
-.rocker[aria-checked="true"] .rockerFace span:first-child { opacity: 1; }
-.rocker[aria-checked="true"] .rockerFace span:last-child { opacity: .5; }
+.toggleNut {
+  width: min(90%, 30px);
+  aspect-ratio: 1;
+  clip-path: polygon(25% 0, 75% 0, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0 75%, 0 25%);
+  background: conic-gradient(from 22deg, #f1f2e9, #7f897e 12%, #c4cbbe 25%, #626e62 38%, #dfe3d6 50%, #818c7e 63%, #f0f2e6 75%, #8c9789 88%, #f1f2e9);
+}
+.toggleSocket {
+  width: min(64%, 21px);
+  aspect-ratio: 1;
+  border: 3px solid #a0aa98;
+  border-radius: 50%;
+  background: radial-gradient(circle, #16251b 35%, #657361 55%, #202e23 70%);
+  box-shadow: inset 0 2px 2px #111d17, 0 1px 1px #f3f4e5, 0 -1px 1px #4b594d;
+}
+.toggleLever {
+  position: absolute;
+  bottom: 50%;
+  left: calc(50% - 5px);
+  width: 10px;
+  height: 36px;
+  border: 1px solid #667064;
+  border-radius: 6px 6px 3px 3px;
+  background: linear-gradient(90deg, #586458, #b8c2b1 20%, #f7f8ed 38%, #d8dfcf 50%, #85927f 78%, #4e5b50);
+  box-shadow: 2px 2px 3px #14231b80, inset 0 2px 1px #fffef2;
+  transform-origin: 50% 100%;
+  transform: rotateX(-150deg);
+  transition: transform .2s ease;
+}
+.toggleLever::after {
+  content: '';
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 5px;
+  border-radius: 50%;
+  background: linear-gradient(110deg, #fafbf2, #9aa794);
+}
+.toggle[aria-checked="true"] .toggleLever { transform: rotateX(-25deg); }
+.toggle:hover .toggleHardware { filter: brightness(1.08); }
+.toggle:active .toggleHardware { filter: brightness(.97); }
 
 .demo .lcd { margin-top: 12px; padding: 9px 14px 10px; border-width: 6px; cursor: default; }
 .demo .lcdAlert {
@@ -193,4 +223,4 @@
 }
 /* iOS zooms the page into any focused field set smaller than 16px. */
 @media (pointer: coarse) { .bookInput { font-size: 16px; } }
-@media (prefers-reduced-motion: reduce) { .miniButton, .rockerFace { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .miniButton, .toggleLever { transition: none; } }

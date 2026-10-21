@@ -54,13 +54,13 @@ export function SwitchRow({
   onFlip,
   label,
   large = false,
-  rocker = false,
+  lever = false,
 }: {
   pattern: string;
   onFlip: (position: number) => void;
   label: string;
   large?: boolean;
-  rocker?: boolean;
+  lever?: boolean;
 }) {
   return (
     <fieldset
@@ -74,18 +74,20 @@ export function SwitchRow({
         return (
           <div className={styles.switchUnit} key={number}>
             <i className={styles.lamp} data-on={on} aria-hidden="true" />
-            {rocker ? (
+            {lever ? (
               <button
                 type="button"
                 role="switch"
                 aria-checked={on}
                 aria-label={`Switch ${number} of ${pattern.length}`}
                 onClick={() => onFlip(position)}
-                className={styles.rocker}
+                className={styles.toggle}
               >
-                <span className={styles.rockerFace} aria-hidden="true">
-                  <span>1</span>
-                  <span>0</span>
+                <span className={styles.toggleHardware} aria-hidden="true">
+                  <span className={styles.toggleWasher} />
+                  <span className={styles.toggleNut} />
+                  <span className={styles.toggleSocket} />
+                  <span className={styles.toggleLever} />
                 </span>
               </button>
             ) : (

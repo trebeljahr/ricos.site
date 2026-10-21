@@ -16,6 +16,7 @@ export function CircuitDemo({
   initialFocus?: readonly string[];
 }) {
   const circuit = useMemo(makeCircuit, [makeCircuit]);
+  const defaultFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
   return (
     <section className="not-prose my-6" aria-label={label}>
       {children && <div className="mb-4 text-sm">{children}</div>}
@@ -23,7 +24,7 @@ export function CircuitDemo({
         <LogicBuilder
           key={circuit.name}
           initialCircuit={circuit}
-          initialFocus={initialFocus}
+          initialFocus={initialFocus ?? defaultFocus}
           storageKey={null}
         />
       </div>

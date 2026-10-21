@@ -8,8 +8,15 @@ import {
 import { LazyLogicTutorial } from "./tutorial/LazyLogicTutorial";
 
 /** One primitive family at a time; each target has its own draft, check and requested hints. */
-export function UniversalGates() {
+export function UniversalGates({
+  showEmbedTags = true,
+  headingLevel = 2,
+}: {
+  showEmbedTags?: boolean;
+  headingLevel?: 2 | 3;
+} = {}) {
   const [family, setFamily] = useState<UniversalFamily>("nand");
+  const Heading = headingLevel === 3 ? "h3" : "h2";
   return (
     <div className="not-prose">
       <fieldset className="mb-8 flex flex-wrap gap-2 border-0 p-0">
@@ -39,12 +46,14 @@ export function UniversalGates() {
             className="mb-16 border-t border-gray-300 pt-6 dark:border-gray-700"
             aria-label={title}
           >
-            <h2 className="mb-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">
+            <Heading className="mb-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">
               {title}
-            </h2>
-            <p className="mb-5 overflow-x-auto text-xs text-gray-500 dark:text-gray-400">
-              <code>{`<LazyLogicTutorial levels={["${id}"]} />`}</code>
-            </p>
+            </Heading>
+            {showEmbedTags && (
+              <p className="mb-5 overflow-x-auto text-xs text-gray-500 dark:text-gray-400">
+                <code>{`<LazyLogicTutorial levels={["${id}"]} />`}</code>
+              </p>
+            )}
             <LazyLogicTutorial title={title} levels={[id]} height="min(88svh, 880px)" />
           </section>
         );

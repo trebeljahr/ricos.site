@@ -31,7 +31,7 @@ import { SKIP, visit } from "unist-util-visit";
 import { defineConfig, s, type ZodMeta } from "velite";
 import seoMetadata from "./src/content/seo-metadata.json";
 import { chapterToMdx } from "./src/lib/computerSeriesLinks";
-import { MDX_DEMO_COMPONENTS } from "./src/lib/mdxDemoComponents";
+import { hasMdxDemos } from "./src/lib/mdxDemoComponents";
 
 declare module "mdast" {
   interface RootContentMap {
@@ -627,7 +627,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   const seoOgImageAlt = seoEntry.ogImageAlt || data.cover?.alt || "";
 
   // Detect if content uses interactive demo components
-  const hasDemos = MDX_DEMO_COMPONENTS.some((name) => rawContent.includes(`<${name}`));
+  const hasDemos = hasMdxDemos(rawContent);
 
   // rehypeKatex emits `className: "katex"` wrappers, so its presence in the
   // compiled MDX is an exact signal for "this page renders math". Only 5 of

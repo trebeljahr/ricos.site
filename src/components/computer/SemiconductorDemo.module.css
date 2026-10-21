@@ -1,0 +1,93 @@
+.demo {
+  --paper: #fafaf6; --ink: #23342f; --muted: #53635c; --line: #b5c0b6;
+  --p: #f3e3cf; --n: #dcebf0; --depleted: #dce1d9; --electron: #08759c; --hole: #a35416;
+  container-type: inline-size; margin: 32px 0; padding: 25px; border-block: 1px solid var(--line);
+  background: var(--paper); color: var(--ink); font: 400 14px/1.6 system-ui, sans-serif;
+}
+:global(.dark) .demo {
+  --paper: #17231e; --ink: #e6eee6; --muted: #bac8bd; --line: #5a7161;
+  --p: #483b2c; --n: #263e49; --depleted: #465048; --electron: #8ad9ef; --hole: #f2b982;
+}
+.demo [hidden] { display: none; }
+.header { margin-bottom: 23px; }
+.eyebrow { font: 600 10px/1.5 ui-monospace, monospace; letter-spacing: .13em; color: var(--muted); }
+.header h3 { margin: 7px 0 10px; font: 500 clamp(25px, 4.6cqw, 36px)/1.12 system-ui, sans-serif; letter-spacing: -.035em; }
+.header > p:last-child { max-width: 58ch; margin: 0; color: var(--muted); }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.choices button, .actions button, .holeSteps button {
+  min-height: 42px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 3px;
+  color: var(--ink); background: transparent; font: 500 12px/1.4 system-ui, sans-serif; cursor: pointer;
+  transition: background .16s, border-color .16s;
+}
+.choices button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.choices button:hover, .actions button:hover, .holeSteps button:hover { border-color: var(--ink); }
+.demo button:focus-visible, .demo a:focus-visible, .diagramScroll:focus-visible { outline: 3px solid var(--electron); outline-offset: 3px; }
+.view { margin-top: 25px; border-top: 1px solid var(--line); padding-top: 22px; }
+.view h4 { margin: 0 0 18px; font: 500 20px/1.3 system-ui, sans-serif; letter-spacing: -.02em; }
+.diagramScroll { overflow-x: auto; margin: 15px 0; border-block: 1px solid var(--line); }
+.diagram { display: block; width: 100%; min-width: 660px; height: auto; color: var(--ink); }
+.scrollHint { display: none; margin: 8px 0 16px; color: var(--muted); font-size: 11px; }
+.diagram text { fill: currentColor; font: 500 16px/1.4 system-ui, sans-serif; }
+.diagram .smallLabel { font-size: 12px; fill: var(--muted); }
+.diagram .polarity { font-size: 28px; }
+.bond { stroke: var(--line); stroke-width: 3; }
+.bondElectron { fill: var(--electron); }
+.emptyBond { fill: transparent; stroke: var(--hole); stroke-width: 2; }
+.atom { fill: var(--paper); stroke: var(--line); stroke-width: 2; }
+.dopant { fill: var(--n); stroke: var(--ink); stroke-width: 2; }
+.emptySite { fill: transparent; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 6; }
+.electron { color: var(--electron); }
+.electron circle { fill: var(--electron); stroke: var(--electron); }
+.electron text { fill: var(--paper); font-size: 14px; }
+.hole { color: var(--hole); }
+.hole circle { fill: var(--paper); stroke: var(--hole); stroke-width: 2; }
+.hole text { fill: var(--hole); font-size: 14px; }
+.ion { color: var(--muted); }
+.ion rect { fill: var(--paper); stroke: var(--muted); }
+.ion text { font-size: 14px; }
+.pRegion { fill: var(--p); }
+.nRegion { fill: var(--n); }
+.depletion { fill: var(--depleted); opacity: .92; transition: x .22s, width .22s; }
+.boundary { stroke: var(--muted); stroke-dasharray: 3 6; }
+.contact { stroke: var(--ink); stroke-width: 3; }
+.transport { color: var(--electron); }
+.transport line, .transport path, .fieldArrow, .fieldArrow line, .fieldArrow path { fill: none; stroke: currentColor; stroke-width: 2.5; }
+.transport text, .fieldArrow text { font-size: 14px; }
+.transport[data-weak="true"] { opacity: .65; }
+.fieldArrow { color: var(--muted); }
+.insulator { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+.metal { fill: var(--muted); }
+.diagram .metalLabel { fill: var(--paper); }
+.channel { fill: var(--electron); opacity: .4; }
+.finGate { fill: none; stroke: var(--muted); stroke-width: 23; }
+.finInsulator { fill: none; stroke: var(--paper); stroke-width: 14; }
+.finChannel { fill: none; stroke: var(--electron); stroke-width: 8; }
+.leader { fill: none; stroke: var(--ink); }
+.actions { margin: 13px 0; }
+.state { min-height: 3.2em; margin: 19px 0 14px; font-weight: 550; }
+.explanation { margin: 15px 0; max-width: 72ch; }
+.limit { margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.sources { margin: 12px 0 0; color: var(--muted); font-size: 11px; }
+.sources a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 11px; color: var(--muted); }
+.legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 10px; height: 10px; border: 1px solid currentColor; }
+.ionSwatch { border-radius: 1px; }
+.electronSwatch { border-radius: 50%; background: var(--electron); color: var(--electron); }
+.holeSwatch { border-radius: 50%; color: var(--hole); }
+.holeSteps { margin: 20px 0; padding-top: 5px; border-top: 1px solid var(--line); }
+.holeSteps p { font-size: 12px; }
+.occupations { display: flex; align-items: center; gap: 17px; margin: 15px 0; }
+.occupations > span { color: var(--electron); font-size: 27px; }
+.occupations > span[data-hole="true"] { color: var(--hole); }
+.occupations > span:last-child { color: var(--muted); font-size: 12px; line-height: 1.5; }
+@container (max-width: 520px) {
+  .view h4 { font-size: 18px; }
+  .choices button { flex-grow: 1; padding: 9px; }
+  .diagramScroll { margin-inline: -10px; }
+}
+@container (max-width: 660px) { .scrollHint { display: block; } }
+@media (max-width: 520px) { .demo { padding: 18px 12px; } }
+@media (prefers-reduced-motion: reduce) {
+  .choices button, .actions button, .holeSteps button, .depletion { transition: none; }
+}

@@ -49,6 +49,10 @@ export const computerDemos = [
     title: "Gates wired from transistors",
   },
   {
+    slug: "semiconductor",
+    title: "From silicon to a transistor",
+  },
+  {
     slug: "adders",
     title: "Add bits with gates",
   },

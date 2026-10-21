@@ -11,6 +11,32 @@ export const MDX_DEMO_COMPONENTS = [
   "LetterCodebook",
   "AsciiTyper",
   "EndianReader",
+  "AbstractionLayers",
+  "DieZoom",
+  "SwitchLogic",
+  "BooleanOperators",
+  "BooleanNotation",
+  "GateTruthTable",
+  "TransistorGates",
+  "TransistorGateLessons",
+  "UniversalGates",
+  "AdditionTable",
+  "HalfAdder",
+  "FullAdderTable",
+  "FullAdder",
+  "EightBitAdder",
+  "LazyLogicTutorial",
+  "SignalEdges",
+  "ClockScope",
+  "DecoderDemo",
+  "DecoderLesson",
+  "MultiplexerDemo",
+  "MemoryAddressDemo",
+  "SignedNumberExplorer",
+  "SignedArithmetic",
+  "TruthTableScale",
+  "AluArchitectureComparison",
+  "SemiconductorDemo",
   "UnitVectorDemo",
   "ProjectArrowDemo",
   "ProjectionDemo",
@@ -34,3 +60,7 @@ export const MDX_DEMO_COMPONENTS = [
 ] as const;
 
 export type MdxDemoComponent = (typeof MDX_DEMO_COMPONENTS)[number];
+
+/** Called on the prepared MDX source, after chapter comments and navigation are stripped. */
+export const hasMdxDemos = (source: string) =>
+  MDX_DEMO_COMPONENTS.some((name) => new RegExp(`<${name}(?=[\\s/>])`).test(source));

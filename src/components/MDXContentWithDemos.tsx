@@ -3,14 +3,8 @@ import { getMDXComponent } from "mdx-bundler/client";
 import { useMemo } from "react";
 import type { MDXResult } from "src/@types";
 import type { MdxDemoComponent } from "src/lib/mdxDemoComponents";
-import { AsciiTyper } from "./computer/AsciiTyper";
-import { ByteExplorer } from "./computer/ByteExplorer";
-import { Codebook } from "./computer/Codebook";
-import { CodebookMismatch } from "./computer/CodebookMismatch";
-import { EndianReader } from "./computer/EndianReader";
-import { FourByteExplorer } from "./computer/FourByteExplorer";
-import { LetterCodebook } from "./computer/LetterCodebook";
-import { SwitchStates } from "./computer/SwitchStates";
+import { BooleanOperators } from "./computer/BooleanOperators";
+import { COMPUTER_MDX_DEMOS } from "./computer/MdxComputerDemos";
 import { AxisByAxis } from "./Demos/collisionDetection/AxisByAxis";
 import { DotProductDemo } from "./Demos/collisionDetection/DotProductDemo";
 import { EarClipping } from "./Demos/collisionDetection/EarClipping";
@@ -33,14 +27,8 @@ import { MarkdownRenderers } from "./MarkdownRenderers";
 import { NewsletterForm } from "./NewsletterForm";
 
 const allComponents = {
-  ByteExplorer,
-  FourByteExplorer,
-  SwitchStates,
-  Codebook,
-  CodebookMismatch,
-  LetterCodebook,
-  AsciiTyper,
-  EndianReader,
+  ...COMPUTER_MDX_DEMOS,
+  BooleanOperators,
   UnitVectorDemo,
   ProjectArrowDemo,
   ProjectionDemo,

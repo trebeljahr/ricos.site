@@ -77,6 +77,8 @@ export const COMPUTER_MDX_DEMOS = {
   DieZoom: chapterDemo(
     () => import("./DieZoom").then((module) => module.DieZoom),
     "Chip die explorer",
+    850,
+    true,
   ),
   SwitchLogic: chapterDemo(
     () => import("./SwitchLogic").then((module) => module.SwitchLogic),

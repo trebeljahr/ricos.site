@@ -329,6 +329,24 @@ export function DieZoom({
     .sort((a, b) => b.rect.width * b.rect.height - a.rect.width * a.rect.height);
   const spotCorner = spot ? toScreen(spot.rect.x, spot.rect.y) : null;
 
+  function spotLabel(rect: Rect, label: string) {
+    if (!view || !size) return null;
+    const corner = toScreen(rect.x, rect.y);
+    const right = Math.min(size.width, corner.x + rect.width * view.scale);
+    const bottom = Math.min(size.height, corner.y + rect.height * view.scale);
+    const left = Math.max(0, corner.x);
+    const top = Math.max(0, corner.y);
+    if (right - left <= 44 || bottom - top <= 30) return null;
+    return (
+      <span
+        className={own.spotLabel}
+        style={{ left: left - corner.x + 3, top: top - corner.y + 3, maxWidth: right - left - 8 }}
+      >
+        {label}
+      </span>
+    );
+  }
+
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
   const bar = scaleBar(micronsPerScreenPixel);
   // How much closer than the first view, where the whole die and the coin fit.
@@ -450,7 +468,7 @@ export function DieZoom({
                       goTo(item.rect, item.id);
                     }}
                   >
-                    {width > 44 && height > 30 && <span>{item.mapLabel ?? item.label}</span>}
+                    {spotLabel(item.rect, item.mapLabel ?? item.label)}
                   </button>
                 );
               })}
@@ -463,7 +481,9 @@ export function DieZoom({
                   width: spot.rect.width * view.scale,
                   height: spot.rect.height * view.scale,
                 }}
-              />
+              >
+                {spotLabel(spot.rect, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`)}
+              </div>
             )}
             <div className={own.scaleBar} aria-hidden="true">
               <i style={{ width: bar.pixels }} />

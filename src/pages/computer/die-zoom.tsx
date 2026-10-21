@@ -12,15 +12,14 @@ export default function DieZoomPage() {
       noindex
       fillViewport
     >
-      <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
+      <main className="mx-auto w-full max-w-[1440px] px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
         <ComputerDemoNav current="die-zoom" />
         <header className="mb-4 mt-4">
           <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             ZOOM INTO A CHIP
           </h1>
         </header>
-        {/* The width of a chapter column, where these are embedded. */}
-        <div className="mx-auto max-w-prose">
+        <div>
           <h2>
             <code>{"<DieZoom />"}</code>
           </h2>

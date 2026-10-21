@@ -79,6 +79,42 @@ describe("die zoom", () => {
     expect(zoomTag(container)).toBe(before);
   });
 
+  it("keeps the selected area's label at its visible top-left corner while zooming", () => {
+    render(<DieZoom />);
+    const photo = screen.getByRole("application");
+    click("L1 DATA CACHE");
+    const label = () => within(photo).getByText("L1 DATA CACHE");
+    const position = () => {
+      const element = label();
+      const outline = element.parentElement!;
+      return {
+        x: Number.parseFloat(outline.style.left) + Number.parseFloat(element.style.left),
+        y: Number.parseFloat(outline.style.top) + Number.parseFloat(element.style.top),
+      };
+    };
+    expect(position().x).toBeGreaterThan(3);
+    expect(position().y).toBeGreaterThan(3);
+    click("Zoom in");
+    click("Zoom in");
+    expect(position().x).toBeCloseTo(3);
+    expect(position().y).toBeCloseTo(3);
+    fireEvent.keyDown(photo, { key: "ArrowRight" });
+    expect(position().x).toBeCloseTo(3);
+    click("ALL");
+    expect(within(photo).queryByText("L1 DATA CACHE")).toBeNull();
+  });
+
+  it("labels selected close-ups and retains candidate uncertainty on the photo", () => {
+    render(<DieZoom />);
+    const photo = screen.getByRole("application");
+    click("X86 DECODERS");
+    expect(within(photo).getByText("X86 DECODERS")).toBeTruthy();
+    click("SIMPLE DECODER 1");
+    expect(within(photo).getByText("SIMPLE DECODER 1")).toBeTruthy();
+    click("MICROCODE ENTRY PLA?");
+    expect(within(photo).getByText("CANDIDATE · MICROCODE ENTRY PLA?")).toBeTruthy();
+  });
+
   it("opens outlined regions and their decoder close-ups", () => {
     const { container } = render(<DieZoom />);
     click("Zoom to x86 decoders");

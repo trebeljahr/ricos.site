@@ -24,14 +24,11 @@ const weights = [128, 64, 32, 16, 8, 4, 2, 1];
 const presets = [
   { label: "LETTER A", value: 65 },
   { label: "CHARACTER &", value: 38 },
-  { label: "LETTER é", value: 233 },
   { label: "DECIMAL 42", value: 42 },
   { label: "SIGNED −42", value: 214 },
   { label: "SIGNED −128", value: 128 },
   { label: "FLOAT 0.5", value: 0x30 },
-  { label: "FLOAT −1.5", value: 0xbc },
   { label: "FLOAT ∞", value: 0x78 },
-  { label: "FLOAT NaN", value: 0x79 },
   { label: "RED", value: 224, swatch: "#ff0000" },
   { label: "ALL 1'S", value: 255 },
   { label: "ALL 0'S", value: 0 },
@@ -265,10 +262,6 @@ export function ByteExplorer() {
               </div>
             ))}
           </fieldset>
-          <p className={styles.weightLegend}>TWO’S COMPLEMENT PLACE VALUES</p>
-          <p className={styles.weightHelp}>
-            The first bit has weight −2<sup>7</sup> = −128.
-          </p>
           <div className={styles.presetRow}>
             {presets.map((preset) => (
               <button

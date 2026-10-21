@@ -63,13 +63,10 @@ it("loads text, integer, and float examples into the same byte", () => {
   render(<ByteExplorer />);
   for (const [preset, reading, value] of [
     ["CHARACTER &", "ASCII", "&"],
-    ["LETTER é", "LATIN-1", "é"],
     ["SIGNED −42", "TWO’S COMPLEMENT", "-42"],
     ["SIGNED −128", "TWO’S COMPLEMENT", "-128"],
     ["FLOAT 0.5", "FLOAT · E4M3", "0.5"],
-    ["FLOAT −1.5", "FLOAT · E4M3", "-1.5"],
     ["FLOAT ∞", "FLOAT · E4M3", "Infinity"],
-    ["FLOAT NaN", "FLOAT · E4M3", "NaN"],
   ]) {
     fireEvent.click(screen.getByRole("button", { name: preset }));
     expect(

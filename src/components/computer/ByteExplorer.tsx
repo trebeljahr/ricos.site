@@ -23,6 +23,15 @@ import { PanelEditor } from "./PanelEditor";
 const weights = [128, 64, 32, 16, 8, 4, 2, 1];
 const presets = [
   { label: "LETTER A", value: 65 },
+  { label: "CHARACTER &", value: 38 },
+  { label: "LETTER é", value: 233 },
+  { label: "DECIMAL 42", value: 42 },
+  { label: "SIGNED −42", value: 214 },
+  { label: "SIGNED −128", value: 128 },
+  { label: "FLOAT 0.5", value: 0x30 },
+  { label: "FLOAT −1.5", value: 0xbc },
+  { label: "FLOAT ∞", value: 0x78 },
+  { label: "FLOAT NaN", value: 0x79 },
   { label: "RED", value: 224, swatch: "#ff0000" },
   { label: "ALL 1'S", value: 255 },
   { label: "ALL 0'S", value: 0 },
@@ -32,8 +41,7 @@ type ActiveEditor = { type: "reading"; kind: ByteReading } | { type: "color"; ki
 
 const readingLabels: Record<ByteReading, string> = {
   unsigned: "Unsigned",
-  signed: "Signed",
-  fixed: "Fixed · Q4.4",
+  signed: "Two’s complement",
   float: "Float · E4M3",
   ascii: "ASCII",
   latin1: "Latin-1",
@@ -47,8 +55,7 @@ const colorLabels: Record<ByteColor, string> = {
 };
 const editorHints: Record<ByteReading | ByteColor, string> = {
   unsigned: "Whole number from 0 to 255.",
-  signed: "Whole number from −128 to 127.",
-  fixed: "Q4.4 rounds to steps of 1/16.",
+  signed: "Whole number from −128 to 127. The first bit has weight −2⁷ = −128.",
   float: "E4M3 rounds to the nearest available 8-bit float.",
   ascii: "One printable ASCII character.",
   latin1: "One Latin-1 character (U+0000–U+00FF).",
@@ -67,7 +74,17 @@ function unicodeDisplay(value: number): string {
   return String.fromCharCode(value);
 }
 
-function Meter({ label, value, detail, onEdit }: { label: string; value: string; detail?: string; onEdit: () => void }) {
+function Meter({
+  label,
+  value,
+  detail,
+  onEdit,
+}: {
+  label: string;
+  value: string;
+  detail?: string;
+  onEdit: () => void;
+}) {
   return (
     <button
       type="button"
@@ -167,25 +184,21 @@ export function ByteExplorer() {
           ? value === null
             ? ""
             : String(signedByte(value))
-          : editor?.kind === "fixed"
-            ? value === null
+          : editor?.kind === "float"
+            ? float === null
               ? ""
-              : String(signedByte(value) / 16)
-            : editor?.kind === "float"
-              ? float === null
-                ? ""
-                : String(float)
-              : editor?.kind === "ascii"
-                ? (ascii ?? "")
-                : editor?.kind === "latin1"
-                  ? value !== null && value >= 32 && (value < 127 || value >= 160)
-                    ? String.fromCharCode(value)
-                    : ""
-                  : editor?.kind === "unicode"
-                    ? value === null
-                      ? ""
-                      : `U+${value.toString(16).padStart(4, "0").toUpperCase()}`
-                    : "";
+              : String(float)
+            : editor?.kind === "ascii"
+              ? (ascii ?? "")
+              : editor?.kind === "latin1"
+                ? value !== null && value >= 32 && (value < 127 || value >= 160)
+                  ? String.fromCharCode(value)
+                  : ""
+                : editor?.kind === "unicode"
+                  ? value === null
+                    ? ""
+                    : `U+${value.toString(16).padStart(4, "0").toUpperCase()}`
+                  : "";
 
   return (
     <section className={`not-prose ${styles.machine}`} aria-label="Byte interpretation instrument">
@@ -229,6 +242,7 @@ export function ByteExplorer() {
             {value === null ? "ENTER EIGHT 0s OR 1s · SPACES OK" : ""}
           </p>
           <fieldset className={styles.bitBank} aria-label="Bit buttons">
+            <legend className={styles.weightLegend}>UNSIGNED PLACE VALUES</legend>
             {weights.map((weight, index) => (
               <div className={styles.bitUnit} key={weight}>
                 <span className={styles.weight}>{weight}</span>
@@ -242,9 +256,19 @@ export function ByteExplorer() {
                 >
                   {bits?.[index] ?? "·"}
                 </button>
+                <span
+                  className={styles.weight}
+                  title={`Two’s complement bit ${7 - index} weight: ${index === 0 ? -weight : weight}`}
+                >
+                  {index === 0 ? `−${weight}` : weight}
+                </span>
               </div>
             ))}
           </fieldset>
+          <p className={styles.weightLegend}>TWO’S COMPLEMENT PLACE VALUES</p>
+          <p className={styles.weightHelp}>
+            The first bit has weight −2<sup>7</sup> = −128.
+          </p>
           <div className={styles.presetRow}>
             {presets.map((preset) => (
               <button
@@ -256,7 +280,11 @@ export function ByteExplorer() {
                 }}
               >
                 {"swatch" in preset && (
-                  <span className={styles.presetSwatch} style={{ backgroundColor: preset.swatch }} aria-hidden="true" />
+                  <span
+                    className={styles.presetSwatch}
+                    style={{ backgroundColor: preset.swatch }}
+                    aria-hidden="true"
+                  />
                 )}
                 {preset.label}
               </button>
@@ -287,14 +315,9 @@ export function ByteExplorer() {
           </button>
           <div className={styles.meters}>
             <Meter
-              label="SIGNED"
+              label="TWO’S COMPLEMENT"
               value={value === null ? "—" : String(signedByte(value))}
               onEdit={() => openEditor({ type: "reading", kind: "signed" })}
-            />
-            <Meter
-              label="FIXED · Q4.4"
-              value={value === null ? "—" : String(signedByte(value) / 16)}
-              onEdit={() => openEditor({ type: "reading", kind: "fixed" })}
             />
             <Meter
               label="FLOAT · E4M3"
@@ -314,7 +337,11 @@ export function ByteExplorer() {
             <Meter
               label="UNICODE"
               value={value === null ? "—" : unicodeDisplay(value)}
-              detail={value === null ? undefined : `(U+${value.toString(16).padStart(4, "0").toUpperCase()})`}
+              detail={
+                value === null
+                  ? undefined
+                  : `(U+${value.toString(16).padStart(4, "0").toUpperCase()})`
+              }
               onEdit={() => openEditor({ type: "reading", kind: "unicode" })}
             />
           </div>

@@ -1,13 +1,6 @@
 import { float8E4M3, hueColor, rgb332, xtermColor } from "./byteInterpretations";
 
-export type ByteReading =
-  | "unsigned"
-  | "signed"
-  | "fixed"
-  | "float"
-  | "ascii"
-  | "latin1"
-  | "unicode";
+export type ByteReading = "unsigned" | "signed" | "float" | "ascii" | "latin1" | "unicode";
 export type ByteColor = "rgb332" | "grayscale" | "indexed" | "hue";
 
 type EditResult = { value: number } | { error: string };
@@ -142,10 +135,6 @@ export function encodeByteReading(kind: ByteReading, text: string): EditResult {
   }
   const number = Number(trimmed);
   if (!Number.isFinite(number)) return { error: "Enter a valid number." };
-  if (kind === "fixed") {
-    if (number < -8 || number > 7.9375) return { error: "Q4.4 ranges from −8 to 7.9375." };
-    return { value: (Math.round(number * 16) + 256) % 256 };
-  }
   if (!Number.isInteger(number)) return { error: "Enter a whole number." };
   if (kind === "unsigned")
     return number >= 0 && number <= 255 ? { value: number } : { error: "Unsigned byte: 0–255." };

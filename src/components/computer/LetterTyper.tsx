@@ -2,27 +2,20 @@ import clsx from "clsx";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { patternIndex } from "src/lib/codebook";
 import {
-  assignCharacter,
   filterLetters,
   LETTER_STATES,
   LETTER_SWITCHES,
   LETTER_TYPER_LIMIT,
   type LetterFilterResult,
   letterName,
-  letterPattern,
   letterReadings,
   SEED_LETTER_CODEBOOK,
-  shuffled,
-  typedCharacter,
 } from "src/lib/letterCodebook";
 import typer from "./AsciiTyper.module.css";
 import panel from "./ByteExplorer.module.css";
-import { DemoMachine, MiniButton } from "./CodebookParts";
+import { DemoMachine } from "./CodebookParts";
 import { fitHeight } from "./fitHeight";
-import styles from "./LetterCodebook.module.css";
-import { LetterCodebookGrid } from "./LetterCodebookGrid";
 
 const presets = ["HELLO", "HOW ARE YOU?", "SOS"];
 const initialText = "HELLO";
@@ -31,13 +24,6 @@ type Notice = Pick<LetterFilterResult, "rejected" | "folded" | "overflow"> & {
   /** Restarts the note's flash when the same character is refused twice. */
   serial: number;
 };
-
-interface BookNote {
-  char: string;
-  replaced: string;
-  swapped: boolean;
-  serial: number;
-}
 
 /** A character inside a sentence of a note. */
 function inNote(char: string): string {
@@ -48,32 +34,24 @@ function listed(chars: string[]): string {
   return `${chars.slice(0, 3).map(inNote).join(" ")}${chars.length > 3 ? " …" : ""}`;
 }
 
-/**
- * An editable codebook and a typer that writes five bits per character.
- * Usable independently of the fixed letter-codebook demo.
- */
+/** Text in, five bits per character out, using the fixed letter alphabet. */
 export function LetterTyper() {
-  const [codebook, setCodebook] = useDemoState("letter-codebook:letters", [
-    ...SEED_LETTER_CODEBOOK,
-  ]);
-  const [text, setText] = useDemoState("letter-codebook:text", initialText);
-  // Highlight the character typed last, or the codebook field being inspected.
-  const [pattern, setPattern] = useState(() =>
-    letterPattern(SEED_LETTER_CODEBOOK.indexOf(initialText.slice(-1))),
-  );
+  const codebook = SEED_LETTER_CODEBOOK;
+  const [savedText, setText] = useDemoState("letter-codebook:text", initialText);
+  const [latest, setLatest] = useState<number | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
-  const [bookNote, setBookNote] = useState<BookNote | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const caret = useRef<number | null>(null);
   const composing = useRef(false);
   const fitted = useRef<string | null>(null);
   const serial = useRef(0);
   const id = useId();
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
+  const { soundEnabled, toggleSound, playButton } = usePanelSound();
 
+  // Old drafts may contain characters from a previously edited codebook.
+  // Keep composition drafts intact until the input method commits them.
+  const text = composing.current ? savedText : filterLetters(savedText, codebook).text;
   const readings = letterReadings(text, codebook);
-  const active = patternIndex(pattern);
-  const inText = new Set(readings.map((reading) => reading.state));
   const encoded = readings.filter((reading) => reading.state !== null).length;
 
   // A refused character leaves React rewriting the field, which throws the
@@ -105,12 +83,6 @@ export function LetterTyper() {
     );
   }
 
-  /** Highlights the last character of `typed` in the codebook. */
-  function showLast(typed: string) {
-    const last = letterReadings(typed, codebook).at(-1);
-    if (last?.bits) setPattern(last.bits);
-  }
-
   function commit(element: HTMLTextAreaElement) {
     const { value, selectionStart } = element;
     const result = filterLetters(value, codebook);
@@ -124,39 +96,16 @@ export function LetterTyper() {
     const position = Math.min(before.length, result.text.length);
     if (result.text !== value) caret.current = position;
     setText(result.text);
-    showLast(result.text.slice(0, position));
+    setLatest(result.text ? Math.max(0, position - 1) : null);
     note(result);
   }
 
   function replaceText(next: string) {
     const result = filterLetters(next, codebook);
     setText(result.text);
-    showLast(result.text);
+    setLatest(result.text ? result.text.length - 1 : null);
     note(result);
     playButton();
-  }
-
-  function edit(state: number, value: string) {
-    const char = typedCharacter(codebook[state], value);
-    if (char === null) return;
-    const result = assignCharacter(codebook, state, char);
-    serial.current += 1;
-    setCodebook(result.codebook);
-    // What the text field refused a moment ago may have a state now.
-    setNotice(null);
-    setBookNote({
-      char,
-      replaced: result.replaced,
-      swapped: result.swapped,
-      serial: serial.current,
-    });
-  }
-
-  function replaceCodebook(next: string[]) {
-    setCodebook(next);
-    setNotice(null);
-    setBookNote(null);
-    playSwitch();
   }
 
   const rejected = notice?.rejected ?? [];
@@ -165,60 +114,12 @@ export function LetterTyper() {
   return (
     <DemoMachine
       title="LETTER TYPER"
-      label="Letter typer with an editable codebook"
+      label="Letter typer"
       soundEnabled={soundEnabled}
       onToggleSound={toggleSound}
       className={typer.typer}
     >
       <div className={typer.deck}>
-        <div className={typer.bay}>
-          <div className={clsx(panel.sectionHead, typer.wrappingHead)}>
-            <span>CODEBOOK · {LETTER_STATES} CHARACTERS</span>
-            <div className={styles.keys}>
-              <MiniButton
-                onClick={() => replaceCodebook(shuffled(codebook))}
-                label="Shuffle the codebook: the same characters on other states"
-              >
-                SHUFFLE
-              </MiniButton>
-              <MiniButton
-                onClick={() => replaceCodebook([...SEED_LETTER_CODEBOOK])}
-                label="Reset the codebook to the alphabet in order"
-              >
-                RESET
-              </MiniButton>
-            </div>
-          </div>
-          <LetterCodebookGrid
-            codebook={codebook}
-            active={active}
-            inText={inText}
-            onEdit={edit}
-            onShow={(state) => setPattern(letterPattern(state))}
-          />
-          <div className={typer.notes}>
-            <p hidden={bookNote !== null}>Type a character over another to change the codebook.</p>
-            <p role="status">
-              {bookNote && (
-                <span key={bookNote.serial} className={styles.flash}>
-                  {bookNote.swapped ? (
-                    <>
-                      <b>{inNote(bookNote.char)}</b> and <b>{inNote(bookNote.replaced)}</b> traded
-                      states.
-                    </>
-                  ) : (
-                    <>
-                      <b>{inNote(bookNote.char)}</b> took the state of{" "}
-                      <b>{inNote(bookNote.replaced)}</b>. <b>{inNote(bookNote.replaced)}</b> has no
-                      state now.
-                    </>
-                  )}
-                </span>
-              )}
-            </p>
-          </div>
-        </div>
-
         <div className={typer.bay}>
           <div className={panel.sectionHead}>
             <span>TEXT</span>
@@ -266,9 +167,7 @@ export function LetterTyper() {
                   {rejected.length > 0 ? (
                     <>
                       <b>{listed(rejected)}</b> {rejected.length === 1 ? "is" : "are"} not in this
-                      codebook. All {LETTER_STATES} states are taken. To type{" "}
-                      {rejected.length === 1 ? "it" : "one"}, put it in the codebook in place of
-                      another character.
+                      codebook. It holds {LETTER_STATES} characters: A–Z, space, and . , ? ! '.
                     </>
                   ) : notice.overflow > 0 ? (
                     `This typer holds ${LETTER_TYPER_LIMIT} characters. The rest did not fit.`
@@ -309,11 +208,8 @@ export function LetterTyper() {
                 <li
                   // biome-ignore lint/suspicious/noArrayIndexKey: a tile is its position in the text
                   key={index}
-                  className={clsx(
-                    typer.tile,
-                    reading.state === null && styles.lost,
-                    reading.state === active && styles.shown,
-                  )}
+                  className={typer.tile}
+                  data-latest={index === (latest ?? readings.length - 1) || undefined}
                 >
                   <span
                     className={clsx(

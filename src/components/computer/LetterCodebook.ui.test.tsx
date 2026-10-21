@@ -37,7 +37,7 @@ describe("LetterCodebook", () => {
     expect(screen.getByText("MEANS").nextElementSibling?.textContent).toBe("01001");
   });
 
-  it("keeps its alphabet fixed when the typer loads or changes a saved codebook", () => {
+  it("uses the same fixed alphabet as the typer despite an old saved codebook", () => {
     const saved = [...SEED_LETTER_CODEBOOK];
     [saved[1], saved[5]] = [saved[5], saved[1]];
     localStorage.setItem(demoStorageKey("letter-codebook:letters"), JSON.stringify(saved));
@@ -50,10 +50,10 @@ describe("LetterCodebook", () => {
     const fixed = screen.getByRole("region", {
       name: "Five switches and a fixed codebook of characters",
     });
-    const typer = screen.getByRole("region", { name: "Letter typer with an editable codebook" });
-    const field = typer.querySelector('[data-state="1"]') as HTMLInputElement;
-    expect(field.value).toBe("E");
-    fireEvent.change(field, { target: { value: "1" } });
+    const typer = screen.getByRole("region", { name: "Letter typer" });
+    const input = within(typer).getByRole("textbox") as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: "AE" } });
+    expect(within(typer).getByRole("list").textContent).toBe("AA00001EE00101");
     expect(within(fixed).getByRole("button", { name: "State 00001: A" })).toBeTruthy();
     expect(within(typer).queryByRole("group", { name: "Switches" })).toBeNull();
   });

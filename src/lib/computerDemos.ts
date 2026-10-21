@@ -29,7 +29,7 @@ export const computerDemos = [
   },
   {
     slug: "letter-typer",
-    title: "Type with your own alphabet",
+    title: "Type letters, see five bits",
   },
   {
     slug: "ascii-table",

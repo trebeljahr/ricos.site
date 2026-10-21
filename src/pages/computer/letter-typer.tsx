@@ -5,8 +5,8 @@ import Layout from "@components/Layout";
 export default function LetterTyperPage() {
   return (
     <Layout
-      title="Type with your own alphabet"
-      description="Edit a 32-character codebook and write text as five bits per character."
+      title="Type letters, see five bits"
+      description="Type letters and read each character as five bits using the fixed alphabet."
       keywords={[]}
       url="computer/letter-typer"
       noindex

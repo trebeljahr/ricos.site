@@ -1,9 +1,10 @@
-import { Builder, type Ref } from "../../blockBuilder";
+import { SIGNALS, type Signal } from "../../../computerStepper";
+import type { Ref } from "../../blockBuilder";
 import { BUTTON_POLICY, buttonCpuCircuit, buttonInputCircuit } from "../../buttonInterrupt";
 import { CPU_PARTS } from "../../cpuPreset";
-import { matrixRowCircuit } from "../../keyboardMatrix";
+import { matrixRowCircuit, sampledEventCircuit } from "../../keyboardMatrix";
 import { type Circuit, initialSnapshot, moduleInputs, moduleOutputs, step } from "../../logic";
-import { readProbes } from "../../probes";
+import { listProbes, readProbes } from "../../probes";
 import { CircuitKit } from "../kit";
 import type { Level, SequenceTick } from "../types";
 import { constructionHints } from "./constructionHints";
@@ -116,35 +117,7 @@ const capture: Level = {
   ],
 };
 
-export function sampledEventCircuit(): Circuit {
-  const b = new Builder();
-  b.add("raw", "switch", 30, 30, "SAMPLED CONTACT");
-  b.add("clock", "clock", 30, 180, "FRAME CLOCK");
-  b.add("previous", "dff", 260, 30, "PREVIOUS SAMPLE");
-  b.connect("raw", "previous");
-  b.connect("clock", "previous", 1);
-  b.add("stable-bit", "dff", 900, 30, "STABLE STATE");
-  b.connect("clock", "stable-bit", 1);
-  const both = b.gate("both", "and", 480, 30, "raw", "previous");
-  const differ = b.gate("differ", "xor", 480, 180, "raw", "previous");
-  const keep = b.gate("keep", "and", 690, 180, differ, "stable-bit");
-  const next = b.gate("next", "or", 690, 30, both, keep);
-  b.connect(next, "stable-bit");
-  b.add("old-stable", "dff", 1100, 350, "PREVIOUS STABLE");
-  b.connect("stable-bit", "old-stable");
-  b.connect("clock", "old-stable", 1);
-  const notOld = b.gate("not-old", "not", 1100, 30, "old-stable");
-  const notNew = b.gate("not-new", "not", 1100, 180, "stable-bit");
-  const press = b.gate("press", "and", 1320, 30, "stable-bit", notOld);
-  const release = b.gate("release", "and", 1320, 180, notNew, "old-stable");
-  b.gate("stable", "lamp", 1550, 30, "stable-bit", undefined, "STABLE");
-  b.gate("pressed", "lamp", 1550, 180, press, undefined, "PRESS EVENT");
-  b.gate("released", "lamp", 1550, 330, release, undefined, "RELEASE EVENT");
-  return {
-    ...b.circuit("Two-sample contact filter and transitions"),
-    ports: { inputs: ["raw", "clock"], outputs: ["stable", "pressed", "released"] },
-  };
-}
+export { sampledEventCircuit } from "../../keyboardMatrix";
 function sampleTicks(): SequenceTick[] {
   const ticks: SequenceTick[] = [
     { expect: { stable: false, pressed: false, released: false }, note: "Start released." },
@@ -365,7 +338,7 @@ const cpu: Level = {
   optional: true,
   goal: "Connect the input capture to the CPU clock, raw button, reset, key port and acknowledge control. Two brief presses must each enter the handler once and update OUT to 1 then 2.",
   intro:
-    "The existing CPU and a compiled counting handler are provided. The request interface has the same ports as your earlier construction. IN asserts KEY_OUT: use it as acknowledge. PC save, masking and RETI already belong to the CPU; inspect them while testing. Write your own handler in the button-interrupt demo's program challenge.",
+    "The existing CPU and a compiled counting handler are provided. The request interface has the same ports as your earlier construction. IN asserts KEY_OUT: use it as acknowledge. PC save, masking and RETI already belong to the CPU; inspect them while testing. Then build the CPU interrupt entry and return path in the next stage.",
   palette: ["junction", "and", "or", "not"],
   reference: cpuReference,
   start: () => {
@@ -400,4 +373,120 @@ const cpu: Level = {
     },
   ],
 };
-export const INPUT_DEVICE_LEVELS: Level[] = [capture, samples, decoder, ...rows, mapping, cpu];
+/** The same program must keep its PC, stack and arithmetic state while servicing input. */
+export function gradeInterruptCpu(circuit: Circuit) {
+  const expected = cpuReference();
+  const actualProbes = listProbes(circuit),
+    referenceProbes = listProbes(expected);
+  let actual = step(circuit, initialSnapshot(), false);
+  let reference = step(expected, initialSnapshot(), false);
+  for (let tick = 0; tick < 700; tick++) {
+    if (tick === 40 || tick === 400) {
+      for (const high of [true, false]) {
+        actual = step(circuit, actual, false, { "button-raw": high });
+        reference = step(expected, reference, false, { "button-raw": high });
+      }
+    }
+    for (const high of [true, false]) {
+      actual = step(circuit, actual, high);
+      reference = step(expected, reference, high);
+      if (actual.unstable)
+        return { pass: false, summary: `The circuit did not settle at tick ${tick}.` };
+      const mine = readProbes(circuit, actual, actualProbes),
+        wanted = readProbes(expected, reference, referenceProbes);
+      for (const name of ["PC", "ACC", "FLAGS", "SP", "KEY", "IRQ", "OUT"])
+        if (mine[name] !== wanted[name])
+          return {
+            pass: false,
+            summary: `At tick ${tick}, ${name} should be ${wanted[name]}, but reads ${mine[name] ?? "missing"}. Follow request → instruction boundary → saved PC → handler → RETI.`,
+            table: {
+              head: ["Register", "Expected", "Your CPU"],
+              rows: [[name, String(wanted[name]), String(mine[name] ?? "missing")]],
+            },
+          };
+    }
+  }
+  // Matching the complete reference trace also checks the handler's saved ACC/carry and resumed loop.
+  return {
+    pass: true,
+    summary:
+      "Two requests matched the CPU tick for tick: entry saved PC and masked interrupts, IN acknowledged input, and RETI resumed with PC, SP, ACC and carry intact.",
+  };
+}
+
+const interruptCpu: Level = {
+  id: "cpu-interrupt-entry",
+  title: "Build interrupt entry and return",
+  section,
+  optional: true,
+  goal: "Wire KEY READY and IE into IRQ. Accept IRQ only when an instruction ends. Connect INT to the control unit, then connect its interrupt mask, vector and stack controls. Return the saved PC through the shared bus. The handler must acknowledge each request and return to the interrupted loop.",
+  intro:
+    "The input capture and compiled handler are provided. The CPU's interrupt wiring is missing. Entry saves the next PC on the stack, clears IE, and loads the handler vector. IN clears the mailbox. The handler restores ACC and carry, then RETI pops PC and sets IE. The control unit supplies those microinstructions. PC_IN already loads PC from the bus. Connect the vector driver for entry and the stack driver for return.",
+  palette: ["junction", "and", "or", "not"],
+  reference: cpuReference,
+  start: () => {
+    const full = cpuReference();
+    return {
+      circuit: { ...full, wires: full.wires.filter((wire) => !interruptWiring(wire)) },
+      locked: full.nodes.map((node) => node.id),
+    };
+  },
+  spec: {
+    kind: "custom",
+    describe:
+      "Two presses over 700 CPU ticks, checking PC, SP, ACC, carry, input, interrupt state and OUT against the working CPU.",
+    grade: gradeInterruptCpu,
+  },
+  hints: [
+    {
+      text: "KEY READY remembers unread input. IE allows entry. Their next-state signals feed IRQ, which INT may accept only at STEP_RESET.",
+      anchor: { kind: "node", id: CPU_PARTS.irq },
+    },
+    {
+      text: "INT feeds the control unit. Its interrupt entry must push PC, mask further interrupts, and load the vector before fetching handler code.",
+      anchor: { kind: "node", id: CPU_PARTS.control },
+    },
+    {
+      text: "KEY_OUT acknowledges input. RETI uses the ordinary stack-to-PC route and IE_SET. A missing return or mask wire can count a press and still corrupt background work.",
+      anchor: { kind: "node", id: CPU_PARTS.pc },
+    },
+  ],
+};
+
+/** Wires the learner supplies; ordinary fetch and datapath wiring stay in place. */
+export function interruptWiring(wire: Circuit["wires"][number]) {
+  const control = (signal: Signal) =>
+    wire.from === CPU_PARTS.control && wire.output === SIGNALS.indexOf(signal);
+  return (
+    [
+      CPU_PARTS.irq,
+      CPU_PARTS.int,
+      "int-take",
+      "int-mid",
+      "int-hold",
+      "int-next",
+      "ie-kept",
+      "ie-stays",
+      "ie-next",
+      CPU_PARTS.ie,
+    ].includes(wire.to) ||
+    (wire.from === CPU_PARTS.int && wire.to === CPU_PARTS.control) ||
+    control("VEC_OUT") ||
+    control("IE_CLR") ||
+    control("IE_SET") ||
+    control("STACK_IN") ||
+    control("STACK_OUT") ||
+    control("SP_INC") ||
+    control("SP_DEC")
+  );
+}
+
+export const INPUT_DEVICE_LEVELS: Level[] = [
+  capture,
+  samples,
+  decoder,
+  ...rows,
+  mapping,
+  cpu,
+  interruptCpu,
+];

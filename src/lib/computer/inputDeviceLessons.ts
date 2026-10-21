@@ -6,6 +6,7 @@ export const INPUT_DEVICE_CORE_LESSONS = [
   "matrix-row-2",
   "shift-character-map",
   "cpu-button-interface",
+  "cpu-interrupt-entry",
 ] as const;
 export const INPUT_DEVICE_LESSONS: readonly string[] = [
   ...INPUT_DEVICE_CORE_LESSONS,

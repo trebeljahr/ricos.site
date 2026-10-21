@@ -1719,10 +1719,10 @@ function LogicBuilderWorkspace({
     const nodes = focusIds ? displayNodes.filter((node) => focusIds.includes(node.id)) : displayNodes;
     if (focusIds && !nodes.length) return;
     const wireBounds = focusIds ? undefined : routes.bounds;
-    const left = Math.min(0, wireBounds?.left ?? 0, ...nodes.map((node) => node.x)) - 40;
-    const top = Math.min(0, wireBounds?.top ?? 0, ...nodes.map((node) => node.y)) - 40;
-    const right = Math.max(focusIds ? 0 : WIDTH, wireBounds?.right ?? 0, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
-    const bottom = Math.max(focusIds ? 0 : HEIGHT, wireBounds?.bottom ?? 0, ...nodes.map((node) => node.y + nodeHeight(node))) + 40;
+    const left = Math.min(focusIds ? Infinity : 0, wireBounds?.left ?? Infinity, ...nodes.map((node) => node.x)) - 40;
+    const top = Math.min(focusIds ? Infinity : 0, wireBounds?.top ?? Infinity, ...nodes.map((node) => node.y)) - 40;
+    const right = Math.max(focusIds ? -Infinity : WIDTH, wireBounds?.right ?? -Infinity, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
+    const bottom = Math.max(focusIds ? -Infinity : HEIGHT, wireBounds?.bottom ?? -Infinity, ...nodes.map((node) => node.y + nodeHeight(node))) + 40;
     const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
       (viewport.clientWidth - 24) / (right - left),
       (viewport.clientHeight - 24) / (bottom - top)));

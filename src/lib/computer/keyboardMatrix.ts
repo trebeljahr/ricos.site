@@ -216,9 +216,9 @@ export function ghostMatrixCircuit(): Circuit {
         ),
       );
   }
-  cols.forEach((source, c) =>
-    b.gate(`sense${c}`, "lamp", 1600, 30 + c * 200, source, undefined, `C${c} SENSE LOW`),
-  );
+  cols.forEach((source, c) => {
+    b.gate(`sense${c}`, "lamp", 1600, 30 + c * 200, source, undefined, `C${c} SENSE LOW`);
+  });
   return b.circuit("2 × 2 matrix without isolation diodes");
 }
 
@@ -364,3 +364,33 @@ export const MATRIX_HINTS: Record<string, string> = {
   [GHOST_PRESET]:
     "One row drives low and the other releases to Z. Close three rectangle corners: without diodes, the fourth can appear sensed through an indirect path. Each gate stage extends the low-reachability path.",
 };
+
+export function sampledEventCircuit(): Circuit {
+  const b = new Builder();
+  b.add("raw", "switch", 30, 30, "SAMPLED CONTACT");
+  b.add("clock", "clock", 30, 180, "FRAME CLOCK");
+  b.add("previous", "dff", 260, 30, "PREVIOUS SAMPLE");
+  b.connect("raw", "previous");
+  b.connect("clock", "previous", 1);
+  b.add("stable-bit", "dff", 900, 30, "STABLE STATE");
+  b.connect("clock", "stable-bit", 1);
+  const both = b.gate("both", "and", 480, 30, "raw", "previous");
+  const differ = b.gate("differ", "xor", 480, 180, "raw", "previous");
+  const keep = b.gate("keep", "and", 690, 180, differ, "stable-bit");
+  const next = b.gate("next", "or", 690, 30, both, keep);
+  b.connect(next, "stable-bit");
+  b.add("old-stable", "dff", 1100, 350, "PREVIOUS STABLE");
+  b.connect("stable-bit", "old-stable");
+  b.connect("clock", "old-stable", 1);
+  const notOld = b.gate("not-old", "not", 1100, 30, "old-stable");
+  const notNew = b.gate("not-new", "not", 1100, 180, "stable-bit");
+  const press = b.gate("press", "and", 1320, 30, "stable-bit", notOld);
+  const release = b.gate("release", "and", 1320, 180, notNew, "old-stable");
+  b.gate("stable", "lamp", 1550, 30, "stable-bit", undefined, "STABLE");
+  b.gate("pressed", "lamp", 1550, 180, press, undefined, "PRESS EVENT");
+  b.gate("released", "lamp", 1550, 330, release, undefined, "RELEASE EVENT");
+  return {
+    ...b.circuit("Two-sample contact filter and transitions"),
+    ports: { inputs: ["raw", "clock"], outputs: ["stable", "pressed", "released"] },
+  };
+}

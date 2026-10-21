@@ -111,6 +111,8 @@ export type TutorialStep = {
 
 /** A reasoning hint shown only after an explicit request. */
 export type LevelHint = {
+  /** Optional stage label, such as Core idea or First step. */
+  title?: string;
   /** Automatic hint triggers are forbidden; retained for compatibility checks. */
   when?: never;
   text: string;

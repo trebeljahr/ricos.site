@@ -4,6 +4,7 @@
 import { type Circuit, initialSnapshot, step } from "../../logic";
 import { allRows, CircuitKit, defaultStart } from "../kit";
 import type { Level } from "../types";
+import { gateConstructionHints } from "./gateHints";
 import { A, B, CHAPTERS, OUT, once } from "./shared";
 
 const SECTION_CMOS = "Transistors";
@@ -185,7 +186,7 @@ export const notLevel: Level = {
   palette: ["nand"],
   makes: { part: "not", label: "NOT", builtIn: { gate: "not" } },
   reference: notGate,
-  hints: [{ text: "Look at the NAND rows where both inputs are the same." }],
+  hints: gateConstructionHints("nand", "not"),
 };
 
 export const andLevel: Level = {
@@ -201,6 +202,7 @@ export const andLevel: Level = {
   palette: ["nand", "part:not"],
   makes: { part: "and", label: "AND", builtIn: { gate: "and" } },
   reference: andGate,
+  hints: gateConstructionHints("nand", "and", { reusableParts: true }),
 };
 
 export const orLevel: Level = {
@@ -214,6 +216,7 @@ export const orLevel: Level = {
   palette: ["nand", "part:not", "part:and"],
   makes: { part: "or", label: "OR", builtIn: { gate: "or" } },
   reference: orGate,
+  hints: gateConstructionHints("nand", "or", { reusableParts: true }),
 };
 
 export const xorLevel: Level = {
@@ -229,14 +232,7 @@ export const xorLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or"],
   makes: { part: "xor", label: "XOR", builtIn: { gate: "xor" } },
   reference: xorGate,
-  hints: [
-    {
-      text: "XOR is 1 when at least one input is 1 and not both are. Which gate says 'at least one'? Which says 'not both'?",
-    },
-    {
-      text: "Which equal-input case still slips through your circuit? Find a condition that distinguishes it from both different-input cases.",
-    },
-  ],
+  hints: gateConstructionHints("nand", "xor", { reusableParts: true }),
 };
 
 export const norLevel: Level = {
@@ -249,7 +245,7 @@ export const norLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or"],
   makes: { part: "nor", label: "NOR", builtIn: { gate: "nor" } },
   reference: norGate,
-  hints: [{ text: "Compare the NOR table with the OR table, row by row." }],
+  hints: gateConstructionHints("nand", "nor", { reusableParts: true }),
   optional: true,
 };
 

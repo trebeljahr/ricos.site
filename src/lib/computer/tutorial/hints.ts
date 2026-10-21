@@ -55,7 +55,7 @@ export function requestedHints(
 ): LevelHint[] {
   if (depth <= 0) return [];
   return [
-    contextualHint(level, circuit, grade),
-    ...(level.hints ?? []).slice(0, Math.max(0, depth - 1)),
-  ];
+    ...(level.hints ?? []),
+    { ...contextualHint(level, circuit, grade), title: "Your circuit" },
+  ].slice(0, depth);
 }

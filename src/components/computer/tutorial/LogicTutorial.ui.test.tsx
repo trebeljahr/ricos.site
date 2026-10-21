@@ -66,7 +66,7 @@ describe("independent tutorials", () => {
     hint.focus();
     fireEvent.click(hint);
     expect(hint.getAttribute("aria-expanded")).toBe("true");
-    expect(b.getByRole("list", { name: "Hints" }).textContent).toMatch(/Nothing drives OUT/);
+    expect(b.getByRole("list", { name: "Hints" }).textContent).toMatch(/Core idea/);
     fireEvent.click(b.getByRole("button", { name: "Another hint" }));
     expect(boardParts(b)).toHaveLength(before);
     fireEvent.click(b.getByRole("button", { name: "Dismiss hints" }));

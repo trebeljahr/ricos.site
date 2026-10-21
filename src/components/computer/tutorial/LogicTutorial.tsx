@@ -258,10 +258,14 @@ export function LogicTutorial({
   // One callout at a time: a problem from the last check, the current step, a note, or a hint.
   const problems = fresh?.grade.kind === "structure" ? fresh.grade.problems : [];
   const shownHints = hints ? requestedHints(level, circuit, fresh?.grade ?? live, hints) : [];
+  const hintLimit = (level.hints?.length ?? 0) + 1;
+  const latestHint = shownHints[shownHints.length - 1];
   const focused = focus !== null ? fresh?.notes[focus] : undefined;
   let callout: Callout | undefined;
   let rings: string[] = [];
-  if (problems.length) {
+  if (latestHint?.anchor) {
+    callout = { text: latestHint.text, anchor: latestHint.anchor, tone: "tip" };
+  } else if (problems.length) {
     callout = { text: problems[0].text, anchor: problems[0].anchor, tone: "warn" };
     rings = problems.flatMap((problem) =>
       problem.anchor?.kind === "node" ? [problem.anchor.id] : [],
@@ -269,9 +273,6 @@ export function LogicTutorial({
   } else if (focused) {
     callout = { text: focused.text, anchor: focused.anchor, tone: focused.tone };
     rings = focused.nodes ?? [];
-  } else if (shownHints.length) {
-    const hint = shownHints[shownHints.length - 1];
-    if (hint.anchor) callout = { text: hint.text, anchor: hint.anchor, tone: "tip" };
   }
   const customHighlight = fresh?.grade.kind === "custom" ? fresh.grade.result.highlight : undefined;
 
@@ -383,13 +384,13 @@ export function LogicTutorial({
           <div className={styles.actions}>
             <button
               type="button"
-              disabled={hints >= (level.hints?.length ?? 0) + 1}
+              disabled={hints >= hintLimit}
               data-tutorial-hint=""
               aria-controls={hintId}
               aria-expanded={hints > 0}
               onClick={() => setHints((value) => value + 1)}
             >
-              {hints ? "Another hint" : "Hint"}
+              {hints >= hintLimit ? "All hints shown" : hints ? "Another hint" : "Hint"}
             </button>
             {hints > 0 && (
               <button type="button" onClick={() => setHints(0)}>
@@ -409,11 +410,17 @@ export function LogicTutorial({
               </button>
             )}
           </div>
+          <p className={styles.muted}>
+            Hints reveal one clue at a time and leave your wiring unchanged.
+          </p>
           <div id={hintId} aria-live="polite">
             {shownHints.length > 0 && (
               <ul className={styles.hints} aria-label="Hints">
                 {shownHints.map((hint) => (
-                  <li key={hint.text}>{hint.text}</li>
+                  <li key={hint.text}>
+                    {hint.title && <strong>{hint.title}: </strong>}
+                    {hint.text}
+                  </li>
                 ))}
               </ul>
             )}

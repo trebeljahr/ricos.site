@@ -1,8 +1,9 @@
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { rawSegmentDemo } from "src/lib/computer/sevenSegment";
 import { layoutCircuit } from "src/lib/computer/circuitLayout";
+import { demoStorageKey } from "src/lib/computer/demoStorage";
+import { rawSegmentDemo } from "src/lib/computer/sevenSegment";
 
 const LogicBuilder = dynamic(
   () => import("@components/computer/LogicBuilder").then((m) => m.LogicBuilder),
@@ -27,7 +28,7 @@ export default function SevenSegmentPage() {
         </Link>
       </p>
       <div className="not-prose h-[85svh] min-h-[650px]">
-        <LogicBuilder storageKey={null} initialCircuit={initial} />
+        <LogicBuilder storageKey={demoStorageKey("seven-segment")} initialCircuit={initial} />
       </div>
     </DeviceDemoPage>
   );

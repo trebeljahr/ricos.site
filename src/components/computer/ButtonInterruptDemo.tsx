@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDemoState } from "../../hooks/useDemoState";
 import {
   BUTTON_POLICY,
   BUTTON_PROGRAM,
@@ -12,6 +13,7 @@ import {
   compileButtonProgram,
 } from "../../lib/computer/buttonInterrupt";
 import { CPU_PARTS } from "../../lib/computer/cpuPreset";
+import { demoStorageKey } from "../../lib/computer/demoStorage";
 import { readProbes } from "../../lib/computer/probes";
 import { type CompiledProgram, hex, SIGNALS } from "../../lib/computerStepper";
 import {
@@ -31,8 +33,8 @@ const CircuitView = memo(LogicBuilder);
 const bench = buttonBench();
 const countDisplay = buttonCounterDisplay();
 export function ButtonInterruptDemo() {
-  const [source, setSource] = useState(BUTTON_PROGRAM);
-  const [loaded, setLoaded] = useState(BUTTON_PROGRAM);
+  const [source, setSource] = useDemoState("button-program:source", BUTTON_PROGRAM);
+  const [loaded, setLoaded] = useDemoState("button-program:loaded", BUTTON_PROGRAM);
   const [error, setError] = useState("");
   const [mode, setMode] = useState<"pulse" | "held">("pulse");
   const [view, setView] = useState<LockedView | null>(null);
@@ -90,7 +92,10 @@ export function ButtonInterruptDemo() {
         <details>
           <summary className={summaryClass}>Run and unfold the button-to-display circuit</summary>
           <div className={builderClass}>
-            <CircuitView initialCircuit={countDisplay} storageKey={null} />
+            <CircuitView
+              initialCircuit={countDisplay}
+              storageKey={demoStorageKey("button-counter")}
+            />
           </div>
         </details>
         <h2>Catch a press while the CPU is busy</h2>
@@ -113,7 +118,7 @@ export function ButtonInterruptDemo() {
             Experiment with capture, acknowledge and reset wiring
           </summary>
           <div className={builderClass}>
-            <CircuitView initialCircuit={bench} storageKey={null} />
+            <CircuitView initialCircuit={bench} storageKey={demoStorageKey("button-bench")} />
           </div>
         </details>
         <p>

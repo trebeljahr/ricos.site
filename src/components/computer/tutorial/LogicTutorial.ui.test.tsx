@@ -198,6 +198,56 @@ describe("independent tutorials", () => {
     render(<LogicTutorial levels={["universal-nand-not"]} />);
     expect(boardParts(builders()[0])).toHaveLength(2);
   });
+  it.each([
+    "pagehide",
+    "visibilitychange",
+  ])("saves the last edit on %s before the debounce fires", (event) => {
+    vi.useFakeTimers();
+    const { unmount } = render(<LogicTutorial levels={["not"]} />);
+    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+    if (event === "pagehide") fireEvent(window, new Event(event));
+    else {
+      const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+      fireEvent(document, new Event(event));
+      visibility.mockRestore();
+    }
+    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
+    unmount();
+    progressStore.reset();
+    render(<LogicTutorial levels={["not"]} />);
+    expect(boardParts(builders()[0])).toHaveLength(3);
+  });
+  it("keeps the passing solution when a later attempt is incomplete", () => {
+    const { unmount } = render(<LogicTutorial levels={["not"]} />);
+    buildNot(builders()[0]);
+    fireEvent.click(builders()[0].getByRole("button", { name: "Check" }));
+    fireEvent.click(builders()[0].getAllByRole("button", { name: /^Select wire from/ })[0]);
+    fireEvent.keyDown(builders()[0].getByRole("application", { name: "Circuit canvas" }), {
+      key: "Delete",
+    });
+    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+    fireEvent(window, new Event("pagehide"));
+    const progress = JSON.parse(localStorage.getItem(PROGRESS_KEY)!);
+    expect(progress.solved.not.circuit.nodes).toHaveLength(3);
+    expect(progress.drafts.not.nodes).toHaveLength(4);
+    unmount();
+    progressStore.reset();
+    render(<LogicTutorial levels={["not"]} />);
+    expect(boardParts(builders()[0])).toHaveLength(4);
+  });
+  it("stores the full solution for levels that do not create a reusable part", () => {
+    const level = levelById("raw-seven-segment")!;
+    expect(level.makes).toBeUndefined();
+    const circuit = level.reference!();
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [level.id]: circuit } }));
+    progressStore.reset();
+    render(<LogicTutorial levels={[level.id]} />);
+    fireEvent.click(builders()[0].getByRole("button", { name: "Check" }));
+    expect(progressStore.get().solved[level.id].circuit).toMatchObject({
+      nodes: circuit.nodes,
+      wires: circuit.wires,
+    });
+  });
 });
 
 describe("several builders", () => {

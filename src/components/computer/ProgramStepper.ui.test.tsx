@@ -28,6 +28,20 @@ const RECURSIVE =
   "fn down(n) {\n  if (n > 0) {\n    let less = n - 1;\n    down(less);\n  }\n}\ndown(2);";
 
 describe("the program stepper", () => {
+  it("restores unfinished source separately from the last compiled program and other demos", () => {
+    const { unmount } = render(<ProgramStepper />);
+    write("print(7);");
+    fireEvent.change(editor(), { target: { value: "print(" } });
+    unmount();
+    const other = show(demoAt("call-stack"));
+    expect(editor().value).not.toBe("print(");
+    other.unmount();
+    render(<ProgramStepper />);
+    expect(editor().value).toBe("print(");
+    expect(screen.queryByRole("alert")).toBeNull();
+    toEnd();
+    expect(screen.getByText("7", { selector: "div" })).toBeTruthy();
+  });
   it("is the plain CPU by default: source, tape, registers, RAM and output, nothing else", () => {
     render(<ProgramStepper />);
     expect(editor().value).toBe("let x = 2;\nx = x + 3;\nprint(x);");

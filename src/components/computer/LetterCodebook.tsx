@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { type KeyboardEvent, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { flipSwitch, patternIndex } from "src/lib/codebook";
 import {
@@ -115,8 +116,10 @@ function StateField({
  * and a typer that writes text with it. Usable in MDX articles.
  */
 export function LetterCodebook() {
-  const [codebook, setCodebook] = useState<string[]>([...SEED_LETTER_CODEBOOK]);
-  const [text, setText] = useState(initialText);
+  const [codebook, setCodebook] = useDemoState("letter-codebook:letters", [
+    ...SEED_LETTER_CODEBOOK,
+  ]);
+  const [text, setText] = useDemoState("letter-codebook:text", initialText);
   // The state on the switches: the character typed last, until a switch or a field moves it.
   const [pattern, setPattern] = useState(() =>
     letterPattern(SEED_LETTER_CODEBOOK.indexOf(initialText.slice(-1))),

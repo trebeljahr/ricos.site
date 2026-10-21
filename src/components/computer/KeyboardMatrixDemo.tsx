@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { demoStorageKey } from "../../lib/computer/demoStorage";
 import {
   FIFO_LIMIT,
   ghostMatrixCircuit,
@@ -407,7 +408,11 @@ export function KeyboardMatrixDemo() {
         <details>
           <summary className={summaryClass}>Inspect and edit one reusable isolated row</summary>
           <div className={builderClass}>
-            <CircuitView key={size.columns} storageKey={null} initialCircuit={inspect} />
+            <CircuitView
+              key={size.columns}
+              storageKey={demoStorageKey("matrix-row", String(size.columns))}
+              initialCircuit={inspect}
+            />
           </div>
         </details>
         <details>
@@ -415,7 +420,10 @@ export function KeyboardMatrixDemo() {
             Inspect the 2 × 2 ghosting paths without diodes
           </summary>
           <div className={builderClass}>
-            <CircuitView storageKey={null} initialCircuit={ghostMatrixCircuit()} />
+            <CircuitView
+              storageKey={demoStorageKey("matrix-ghosting")}
+              initialCircuit={ghostMatrixCircuit()}
+            />
           </div>
         </details>
         <p>

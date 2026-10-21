@@ -3,6 +3,8 @@
 // the whole page on purpose: every builder on it reads the same progress, so a
 // part solved in one builder shows up in the palette of the others at once.
 // Browser storage may be missing or full; the store then lives in memory.
+
+import { parseCircuitStorage, stringifyCircuitStorage } from "../circuitStorage";
 import { type Circuit, validateCircuit } from "../logic";
 
 export const PROGRESS_KEY = "ricos-logic-tutorial-v1";
@@ -17,7 +19,7 @@ export type OwnPartsMode = "built-in" | "mine" | "only-mine";
 
 export type Solution = {
   at: number;
-  /** The circuit that passed, for levels whose result becomes a part. */
+  /** The circuit that passed; optional for progress saved by older versions. */
   circuit?: Circuit;
 };
 
@@ -40,7 +42,7 @@ const MODES: OwnPartsMode[] = ["built-in", "mine", "only-mine"];
 
 function parse(raw: string | null): Progress | null {
   if (!raw) return null;
-  const value = JSON.parse(raw) as Partial<Progress> | null;
+  const value = parseCircuitStorage(raw) as Partial<Progress> | null;
   if (!value || typeof value !== "object") return null;
   const solved: Record<string, Solution> = {};
   for (const [id, item] of Object.entries(value.solved ?? {})) {
@@ -94,7 +96,7 @@ const notify = () => {
 };
 
 const onStorage = (event: StorageEvent) => {
-  if (event.key !== PROGRESS_KEY) return;
+  if (event.key !== PROGRESS_KEY && event.key !== null) return;
   current = read();
   notify();
 };
@@ -120,7 +122,7 @@ export const progressStore = {
     if (next === current) return;
     current = next;
     try {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(next));
+      localStorage.setItem(PROGRESS_KEY, stringifyCircuitStorage(next));
     } catch {
       // Storage full or blocked: progress lasts until the tab closes.
     }

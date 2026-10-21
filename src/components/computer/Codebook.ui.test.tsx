@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Codebook } from "./Codebook";
 import { CodebookMismatch } from "./CodebookMismatch";
 import { SwitchStates } from "./SwitchStates";
 
 afterEach(cleanup);
+beforeEach(() => localStorage.clear());
 
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
 const current = (list: HTMLElement) => list.querySelector('[aria-current="true"]');

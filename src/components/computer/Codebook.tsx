@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { flipSwitch, lookup, SEED_CODEBOOK, withMeaning } from "src/lib/codebook";
 import panel from "./ByteExplorer.module.css";
@@ -9,7 +10,7 @@ import { CodebookTable, DemoMachine, MiniButton, PhraseScreen, SwitchRow } from 
 /** Two switches and the codebook that gives each state a meaning. Usable in MDX articles. */
 export function Codebook() {
   const [pattern, setPattern] = useState("00");
-  const [codebook, setCodebook] = useState<string[]>([...SEED_CODEBOOK]);
+  const [codebook, setCodebook] = useDemoState("codebook:phrases", [...SEED_CODEBOOK]);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
 
   return (

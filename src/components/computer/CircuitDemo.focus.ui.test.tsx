@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+import { demoStorageKey } from "../../lib/computer/demoStorage";
 import type { Circuit } from "../../lib/computer/logic";
 import { CircuitDemo } from "./CircuitDemo";
 
@@ -37,7 +38,7 @@ it("fits every prewired part by default without changing focus on unrelated rend
   const first = record.props.at(-1)!;
   expect(first.initialFocus).toEqual(["a", "gate", "out"]);
   expect(first.initialCircuit).toBe(circuit);
-  expect(first.storageKey).toBeNull();
+  expect(first.storageKey).toBe(demoStorageKey("Decoder", circuit.name));
   rerender(
     <CircuitDemo makeCircuit={makeCircuit} label="Decoder">
       Follow the wires.
@@ -65,5 +66,5 @@ it("preserves an explicitly requested focus, including an empty selection", () =
   const empty: readonly string[] = [];
   rerender(<CircuitDemo makeCircuit={makeCircuit} label="Focused" initialFocus={empty} />);
   expect(record.props.at(-1)!.initialFocus).toBe(empty);
-  expect(record.props.at(-1)!.storageKey).toBeNull();
+  expect(record.props.at(-1)!.storageKey).toBe(demoStorageKey("Focused", "Circuit"));
 });

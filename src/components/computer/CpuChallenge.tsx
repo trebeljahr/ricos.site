@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDemoState } from "../../hooks/useDemoState";
 import { loadProgram, PROCESSOR_LEVELS } from "../../lib/computer/tutorial/levels/processor";
 import type { ExtraContext } from "./tutorial/LogicTutorial";
 import { LogicTutorial } from "./tutorial/LogicTutorial";
@@ -9,7 +10,8 @@ const LAST = LEVEL_IDS[LEVEL_IDS.length - 1];
 
 /** Once the whole CPU passes: compile any program into its code ROM and run it. */
 function ProgramRunner({ context }: { context: ExtraContext }) {
-  const [source, setSource] = useState(
+  const [source, setSource] = useDemoState(
+    "cpu-challenge:source",
     "let x = 1;\nfor (let i = 0; i < 4; i++) {\n  x = x + x;\n}\nprint(x);",
   );
   const [message, setMessage] = useState("");

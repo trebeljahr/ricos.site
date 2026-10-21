@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import type { BigScreenCard } from "src/lib/computer/bigScreenBlocks";
 import { formatBus } from "src/lib/computer/bus";
@@ -188,9 +189,13 @@ const blockBytes = (circuit: Circuit, snapshot: Snapshot, id: string): number[] 
   (blockState(circuit, snapshot, id) as { bytes?: number[] } | undefined)?.bytes ?? [];
 
 export function CpuCircuitStepper() {
-  const [source, setSource] = useState<string>(LOOP);
-  const [loaded, setLoaded] = useState<string>(LOOP);
-  const [stackModel, setStackModel] = useState<StackModel>("hardware");
+  const [source, setSource] = useDemoState("cpu-circuit:source", LOOP);
+  const [loaded, setLoaded] = useDemoState("cpu-circuit:loaded", LOOP);
+  const [stackModel, setStackModel] = useDemoState<StackModel>(
+    "cpu-circuit:stack",
+    "hardware",
+    (value) => value === "hardware" || value === "ram",
+  );
   const [view, setView] = useState<LockedView | null>(null);
   const [running, setRunning] = useState(false);
   const [ripple, setRipple] = useState(false);

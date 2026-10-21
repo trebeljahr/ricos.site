@@ -67,7 +67,7 @@ function restoreDraft(level: Level, progress: Progress, start: ReturnType<typeof
   const saved = draft ?? solved;
   if (saved == null) return start.circuit;
   try {
-    const circuit = level.restore ? level.restore(saved) : (validateCircuit(saved) ?? undefined);
+    const circuit = draft != null && level.restore ? level.restore(draft) : validateCircuit(saved);
     return circuit ? start.enforce({ ...circuit, name: start.circuit.name }) : start.circuit;
   } catch {
     return start.circuit;
@@ -154,7 +154,18 @@ export function LogicTutorial({
     setHints(0);
     setFocus(null);
   }, [initial]);
-  useEffect(() => flushDraft, [flushDraft]);
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "hidden") flushDraft();
+    };
+    window.addEventListener("pagehide", flushDraft);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.removeEventListener("pagehide", flushDraft);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      flushDraft();
+    };
+  }, [flushDraft]);
 
   const live = useMemo(() => {
     if (level.spec.kind !== "truth") return undefined;
@@ -172,7 +183,7 @@ export function LogicTutorial({
   );
   const recordLivePass = useCallback(
     (valid: Circuit) => {
-      markSolved(level.id, level.makes ? valid : undefined);
+      markSolved(level.id, valid);
     },
     [level],
   );
@@ -218,13 +229,14 @@ export function LogicTutorial({
   const next = ladder[index + 1];
 
   const check = () => {
+    flushDraft();
     const now = circuitRef.current;
     const result = gradeLevel(now, level, start.locked, allowed);
     noteCheck(result);
     let notes: Note[] = [];
     let stats: StatsLine | undefined;
     if (gradePassed(result)) {
-      markSolved(level.id, level.makes ? now : undefined);
+      markSolved(level.id, now);
       if (level.spec.kind !== "custom") {
         const review = feedback(now, level, start.locked, {
           reference,

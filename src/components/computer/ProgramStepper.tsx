@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   AND_JZ_PROGRAM,
@@ -104,12 +105,21 @@ type Props = {
 
 export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
   const start = presets[0];
-  const [source, setSource] = useState<string>(start.source);
-  const [loaded, setLoaded] = useState<string>(start.source);
+  const draftId = `program-stepper:${focus ?? "plain"}:${start.label}`;
+  const [source, setSource] = useDemoState(`${draftId}:source`, start.source);
+  const [loaded, setLoaded] = useDemoState(`${draftId}:loaded`, start.source);
   const [step, setStep] = useState(0);
-  const [stack, setStack] = useState<StackModel>(start.stack ?? "hardware");
+  const [stack, setStack] = useDemoState<StackModel>(
+    `${draftId}:stack`,
+    start.stack ?? "hardware",
+    (value) => value === "hardware" || value === "ram",
+  );
   const [keys, setKeys] = useState<KeySchedule>({});
-  const [language, setLanguage] = useState<ProgramLanguage>(start.language ?? "source");
+  const [language, setLanguage] = useDemoState<ProgramLanguage>(
+    `${draftId}:language`,
+    start.language ?? "source",
+    (value) => value === "source" || value === "assembly",
+  );
   const [tables, setTables] = useState<Tables>(DEFAULT_TABLES);
   /** The microcode editor, assembly and edited tables belong to the demo about the table. */
   const microcode = focus === "microcode";

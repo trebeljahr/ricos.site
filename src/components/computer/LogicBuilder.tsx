@@ -13,6 +13,7 @@ import { bridgeWirePaths, closestPathPoint, explicitWirePath, fanOutBranchPath, 
 import { connectWireEnds, wireJoinError, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
+import { parseCircuitStorage, stringifyCircuitStorage } from "../../lib/computer/circuitStorage";
 import { activateBuilder, claimStorage, ownsKeyEvent, registerBuilder } from "../../lib/computer/builderRegistry";
 import { CATALOG } from "../../lib/computer/tutorial/levels";
 import { circuitRow, entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, rowMatches, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
@@ -1204,7 +1205,7 @@ export type LockedView = {
 export type LogicBuilderProps = {
   /** Embedded boards let wheel scrolling reach the page and omit standalone navigation. */
   embedded?: boolean;
-  /** Editable starting circuit; storageKey null keeps standalone demos isolated. */
+  /** Editable starting circuit; demos use a separate storageKey from the main lab. */
   initialCircuit?: Circuit;
   /** Parts to frame on mount, e.g. a device and its manual bus controls. */
   initialFocus?: readonly string[];
@@ -1802,7 +1803,7 @@ export function LogicBuilder({
     try {
       const raw = localStorage.getItem(storageKey!);
       if (raw) {
-        const parsed = JSON.parse(raw) as { current?: unknown; saved?: Record<string, unknown> };
+        const parsed = parseCircuitStorage(raw) as { current?: unknown; saved?: Record<string, unknown> };
         const restored = validateCircuit(parsed.current);
         if (restored) history.replace((current) => ({ ...current, circuit: restored }));
         if (parsed.saved && typeof parsed.saved === "object") {
@@ -1828,7 +1829,7 @@ export function LogicBuilder({
           level.moduleId ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent,
         circuit,
       );
-      localStorage.setItem(storageKey, JSON.stringify({ current: root, saved }));
+      localStorage.setItem(storageKey, stringifyCircuitStorage({ current: root, saved }));
     } catch {
       setMessage("Browser storage is full. Export this circuit to keep it.");
     }
@@ -1959,8 +1960,18 @@ export function LogicBuilder({
   const enforceLocks = challenge?.enforce;
   const onChallengeChange = challenge?.onChange;
   useEffect(() => {
-    // Locks hold at the top level; an edit inside a locked block is undone on the way out.
-    if (!enforceLocks || viewPath.length) return;
+    if (!enforceLocks) return;
+    // Save and grade the whole board even while editing inside a module.
+    // Locks still restore pre-placed parts when returning to the top level.
+    if (viewPath.length) {
+      const root = viewPath.reduceRight(
+        (inner, level) => level.moduleId
+          ? withUpdatedModule(level.parent, level.moduleId, inner) : level.parent,
+        circuit,
+      );
+      onChallengeChange?.(enforceLocks(root));
+      return;
+    }
     const fixed = enforceLocks(circuit);
     if (fixed !== circuit) {
       circuitRef.current = fixed;
@@ -1969,7 +1980,7 @@ export function LogicBuilder({
       return;
     }
     onChallengeChange?.(circuit);
-  }, [circuit, viewPath.length, enforceLocks, onChallengeChange]);
+  }, [circuit, viewPath, enforceLocks, onChallengeChange]);
   const handleRef = challenge?.handleRef;
   useEffect(() => {
     if (!handleRef) return;

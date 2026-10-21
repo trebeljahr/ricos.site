@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   ALTERNATE_CODEBOOK,
@@ -63,8 +64,8 @@ export function CodebookMismatch() {
   const [pattern, setPattern] = useState(CONVERSATION[0].pattern);
   const [step, setStep] = useState(0);
   const [onScript, setOnScript] = useState(true);
-  const [bookOne, setBookOne] = useState<string[]>([...SEED_CODEBOOK]);
-  const [bookTwo, setBookTwo] = useState<string[]>([...ALTERNATE_CODEBOOK]);
+  const [bookOne, setBookOne] = useDemoState("codebook-mismatch:first", [...SEED_CODEBOOK]);
+  const [bookTwo, setBookTwo] = useDemoState("codebook-mismatch:second", [...ALTERNATE_CODEBOOK]);
   // The demo opens on the mismatch: that is the point it sits in the chapter for.
   const [secondBook, setSecondBook] = useState(true);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();

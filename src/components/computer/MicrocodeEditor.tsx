@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import {
   ABSENT_SIGNALS,
   type MicrocodeProblem,
@@ -80,7 +81,7 @@ type Props = {
 export function MicrocodeEditor({ table, onChange, problems, onExercise }: Props) {
   const [selected, setSelected] = useState<Selection>(0);
   const [opcodeDraft, setOpcodeDraft] = useState<string | null>(null);
-  const [json, setJson] = useState("");
+  const [json, setJson] = useDemoState(`microcode:${table.stack}:json`, "");
   const [jsonMessage, setJsonMessage] = useState<{ error: boolean; text: string } | null>(null);
   const defaults = defaultMicrocode(table.stack);
   const index = selected === "interrupt" ? -1 : Math.min(selected, table.opcodes.length - 1);

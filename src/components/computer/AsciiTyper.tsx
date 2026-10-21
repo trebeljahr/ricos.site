@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { ASCII_TABLE, ASCII_TYPER_LIMIT, asciiReadings, filterAscii } from "src/lib/asciiTable";
 import styles from "./AsciiTyper.module.css";
@@ -40,7 +41,7 @@ export function fitHeight(element: HTMLTextAreaElement): boolean {
 
 /** Text in, seven bits per character out, above the whole ASCII table. Usable in MDX articles. */
 export function AsciiTyper() {
-  const [text, setText] = useState(initialText);
+  const [text, setText] = useDemoState("ascii-typer:text", initialText);
   // Index of the character typed last, which is not always the last one in the text.
   const [latest, setLatest] = useState<number | null>(initialText.length - 1);
   const [notice, setNotice] = useState<Notice | null>(null);

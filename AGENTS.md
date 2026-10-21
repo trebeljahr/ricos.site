@@ -32,7 +32,7 @@
 - Reuse `src/lib/computer/demoCircuits.ts`, `PRESETS`, gate blueprints, tutorial built-in parts, and CPU datapath blocks before adding wiring. Device demos use `addDataMemory`, the CPU's address decoder and peripherals.
 - Keep state in the shared circuit simulator and its timeline. Do not add a parallel gate, memory, carry-delay, framebuffer, or device simulator inside a demo component.
 - Keep distinct teaching views (truth-table comparisons, physical switch analogies, analog scopes, representation explorers, performance charts) when their purpose requires them. Their live circuit views still use the shared builder.
-- Embedded demos use `storageKey={null}` so they cannot overwrite the reader's saved lab.
+- Editable embedded demos use separate keys from `demoStorageKey` so attempts survive reloads without overwriting the reader's saved lab. Controlled previews use `storageKey={null}`; tutorials save through the shared progress store.
 
 ## AI writing destination (2026-09-30)
 

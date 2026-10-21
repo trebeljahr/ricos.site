@@ -6,6 +6,8 @@ export type Rect = { x: number; y: number; width: number; height: number };
 
 export type DieSpot = {
   id: string;
+  /** A closer view inside another spot. */
+  parentId?: string;
   /** Key label, e.g. "L2 CACHE". */
   label: string;
   /** One or two plain sentences for the LCD. */
@@ -80,6 +82,27 @@ export const PENTIUM_II_DIXON: DieShot = {
       rect: { x: 18300, y: 3650, width: 2200, height: 1900 },
     },
     {
+      id: "full-decoder",
+      parentId: "decoders",
+      label: "FULL DECODER",
+      text: "Four translation arrays turn an x86 instruction into up to four micro-operations. Compare their size with either simple decoder beside them.",
+      rect: { x: 19529, y: 3722, width: 854, height: 1709 },
+    },
+    {
+      id: "simple-decoder-1",
+      parentId: "decoders",
+      label: "SIMPLE DECODER 1",
+      text: "This smaller translation array handles instructions that need just one micro-operation. A second simple decoder does the same job below it.",
+      rect: { x: 18428, y: 3860, width: 441, height: 441 },
+    },
+    {
+      id: "simple-decoder-2",
+      parentId: "decoders",
+      label: "SIMPLE DECODER 2",
+      text: "The second simple decoder also produces one micro-operation per instruction. These two small decoders sit beside the larger full decoder.",
+      rect: { x: 18428, y: 5017, width: 441, height: 441 },
+    },
+    {
       id: "alignment",
       label: "ALIGNMENT MARK",
       text: "Four arrows that lined up the masks while the chip was made, layer on layer. The whole mark is about 0.17 mm wide.",
@@ -93,41 +116,26 @@ export type Coin = {
   label: string;
   /** In a sentence: "the nickel". */
   name: string;
-  /** Text stamped on the drawn coin. */
-  face: string;
   diameterMm: number;
-  /** Two colours: the face and the rim. */
-  colors: [string, string];
-  /** A ring of a second metal, for a two-metal coin. */
-  ring?: string;
+  image: string;
 };
 
-// Diameters from the US Mint, the European Central Bank and the Royal Australian Mint.
+// Diameters from the US Mint and the European Central Bank.
+// Photograph sources and CC0 dedications: public/images/computer/coins/LICENSE.md.
 export const COINS: Coin[] = [
   {
     id: "nickel",
     label: "US NICKEL",
     name: "nickel",
-    face: "5¢",
     diameterMm: 21.21,
-    colors: ["#c9ccd0", "#8d939a"],
+    image: "/images/computer/coins/nickel-2005.webp",
   },
   {
     id: "euro",
     label: "1 EURO",
     name: "1 euro coin",
-    face: "1 €",
     diameterMm: 23.25,
-    colors: ["#cfd1d4", "#9a8a52"],
-    ring: "#d6c27a",
-  },
-  {
-    id: "aud",
-    label: "AU $1",
-    name: "Australian dollar",
-    face: "$1",
-    diameterMm: 25,
-    colors: ["#dcc06b", "#9c7f32"],
+    image: "/images/computer/coins/euro-2003.webp",
   },
 ];
 

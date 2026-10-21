@@ -39,7 +39,7 @@ describe("die zoom", () => {
     const { container } = render(<DieZoom />);
     expect(container.textContent).toContain("The die is about 17 mm × 10 mm.");
     expect(container.textContent).toContain(
-      "The nickel beside it is drawn to the same scale: 21.21 mm across.",
+      "The nickel beside it is shown at the same scale: 21.21 mm across.",
     );
     const whole = zoomTag(container);
     expect(whole).toBe("×1.0");
@@ -63,6 +63,10 @@ describe("die zoom", () => {
     const { container } = render(<DieZoom />);
     click("1 EURO");
     expect(container.textContent).toContain("The 1 euro coin beside it");
+    expect(
+      screen.getByRole("img", { name: "Photograph of a 1 euro coin" }).getAttribute("src"),
+    ).toBe("/images/computer/coins/euro-2003.webp");
+    expect(screen.queryByRole("button", { name: "AU $1" })).toBeNull();
     const before = zoomTag(container);
     click("Zoom in");
     expect(zoomTag(container)).not.toBe(before);
@@ -72,5 +76,24 @@ describe("die zoom", () => {
       fireEvent.keyDown(photo, { key: "0" });
     });
     expect(zoomTag(container)).toBe(before);
+  });
+
+  it("opens outlined regions and their decoder close-ups", () => {
+    const { container } = render(<DieZoom />);
+    click("Zoom to x86 decoders");
+    expect(screen.getByRole("group", { name: "Decoder close-ups" })).toBeTruthy();
+    const overview = zoomTag(container);
+    click("Zoom to simple decoder 1");
+    expect(container.textContent).toContain("A second simple decoder does the same job below it.");
+    expect(zoomTag(container)).not.toBe(overview);
+    click("FULL DECODER");
+    expect(container.textContent).toContain("Four translation arrays");
+    click("SIMPLE DECODER 2");
+    expect(container.textContent).toContain(
+      "The second simple decoder also produces one micro-operation",
+    );
+    click("ALL");
+    expect(screen.queryByRole("group", { name: "Decoder close-ups" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Zoom to x86 decoders" })).toBeTruthy();
   });
 });

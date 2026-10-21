@@ -40,9 +40,11 @@
 .coarse { z-index: 0; }
 
 .coin { position: absolute; z-index: 3; filter: drop-shadow(0 4px 8px #000b); pointer-events: none; }
-.coin svg { display: block; width: 100%; height: 100%; }
-.coinFace { fill: #00000059; font: 700 26px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: central; }
-.coinNote { fill: #0000004d; font: 600 7px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: central; }
+.coin img { display: block; width: 100%; height: 100%; max-width: none; }
+
+.spotTarget { position: absolute; z-index: 3; min-width: 6px; min-height: 6px; padding: 0; border: 1px dashed #e1fbcf99; border-radius: 2px; background: transparent; color: #e1fbcf; cursor: zoom-in; }
+.spotTarget span { position: absolute; top: 3px; left: 3px; padding: 2px 4px; background: #0b140ed9; font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.spotTarget:hover, .spotTarget:focus-visible { border-color: #e1fbcf; outline: 2px solid #e1fbcf; outline-offset: 2px; }
 
 .spot {
   position: absolute;
@@ -69,6 +71,8 @@
 
 .keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
 .keyGap { flex: 0 0 4px; }
+.detailKeys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+.detailKeys > span { font-size: 10px; letter-spacing: .06em; }
 .demo .lcd { margin-top: 12px; }
 .lcdText { min-height: 2.7em; margin: 5px 0 0; font-size: 13px; line-height: 1.35; letter-spacing: .01em; }
 .lcdFacts { display: flex; flex-wrap: wrap; gap: 2px 16px; margin-top: 6px; font-size: 11px; }

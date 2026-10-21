@@ -3,7 +3,6 @@ import { type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState }
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   COINS,
-  type Coin,
   coinPlacement,
   type DieShot,
   dieSizeMm,
@@ -46,39 +45,9 @@ function between(from: View, to: View, t: number): View {
   };
 }
 
-function CoinFace({ coin, size }: { coin: Coin; size: number }) {
-  const id = `coin-${coin.id}`;
-  return (
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <defs>
-        <radialGradient id={id} cx="38%" cy="32%" r="75%">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity=".75" />
-          <stop offset="35%" stopColor={coin.colors[0]} />
-          <stop offset="100%" stopColor={coin.colors[1]} />
-        </radialGradient>
-      </defs>
-      <circle cx="50" cy="50" r="49" fill={coin.ring ?? coin.colors[1]} />
-      <circle cx="50" cy="50" r={coin.ring ? 36 : 45} fill={`url(#${id})`} />
-      <circle cx="50" cy="50" r="46.5" fill="none" stroke="#0000002e" strokeWidth="1" />
-      {size > 36 && (
-        <>
-          <text x="50" y="52" className={own.coinFace}>
-            {coin.face}
-          </text>
-          {size > 90 && (
-            <text x="50" y="70" className={own.coinNote}>
-              {coin.diameterMm} mm
-            </text>
-          )}
-        </>
-      )}
-    </svg>
-  );
-}
-
 /**
  * A real chip, zoomable from a coin beside it down to single wires: the
- * Pentium II die at 22,036 × 13,288 pixels, cut into tiles, with a coin drawn
+ * Pentium II die at 22,036 × 13,288 pixels, cut into tiles, with a coin photo
  * to scale. Usable in MDX articles.
  */
 export function DieZoom({
@@ -346,6 +315,12 @@ export function DieZoom({
   const coinCorner = toScreen(placed.x, placed.y);
   const coinSize = view ? placed.diameter * view.scale : 0;
   const spot = shot.spots.find((item) => item.id === spotId) ?? null;
+  const detailSpots = spot
+    ? shot.spots.filter((item) => item.parentId === (spot.parentId ?? spot.id))
+    : [];
+  const outlinedSpots = shot.spots.filter((item) =>
+    spot ? detailSpots.includes(item) && item.id !== spot.id : !item.parentId,
+  );
   const spotCorner = spot ? toScreen(spot.rect.x, spot.rect.y) : null;
 
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
@@ -440,9 +415,39 @@ export function DieZoom({
                 className={own.coin}
                 style={{ left: coinCorner.x, top: coinCorner.y, width: coinSize, height: coinSize }}
               >
-                <CoinFace coin={coin} size={coinSize} />
+                <img
+                  src={coin.image}
+                  alt={`Photograph of a ${coin.name}`}
+                  draggable={false}
+                  width={1024}
+                  height={1024}
+                />
               </div>
             )}
+            {view &&
+              outlinedSpots.map((item) => {
+                const corner = toScreen(item.rect.x, item.rect.y);
+                const width = item.rect.width * view.scale;
+                const height = item.rect.height * view.scale;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={own.spotTarget}
+                    aria-label={`Zoom to ${item.label.toLowerCase()}`}
+                    style={{ left: corner.x, top: corner.y, width, height }}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onDoubleClick={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => event.stopPropagation()}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      goTo(item.rect, item.id);
+                    }}
+                  >
+                    {width > 75 && height > 30 && <span>{item.label}</span>}
+                  </button>
+                );
+              })}
             {spot && spotCorner && view && (
               <div
                 className={own.spot}
@@ -475,11 +480,13 @@ export function DieZoom({
             </MiniButton>
             <MiniButton onClick={() => goTo(bounds, null, 0.08)}>ALL</MiniButton>
             <span className={own.keyGap} aria-hidden="true" />
-            {shot.spots.map((item) => (
-              <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
-                {item.label}
-              </MiniButton>
-            ))}
+            {shot.spots
+              .filter((item) => !item.parentId)
+              .map((item) => (
+                <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
+                  {item.label}
+                </MiniButton>
+              ))}
             <MiniButton
               onClick={() =>
                 goTo(
@@ -491,6 +498,16 @@ export function DieZoom({
               COIN
             </MiniButton>
           </div>
+          {detailSpots.length > 0 && (
+            <div className={own.detailKeys} role="group" aria-label="Decoder close-ups">
+              <span>CLOSER:</span>
+              {detailSpots.map((item) => (
+                <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
+                  {item.label}
+                </MiniButton>
+              ))}
+            </div>
+          )}
           <div className={clsx(panel.screen, styles.lcd, own.lcd)} aria-live="polite">
             <div className={panel.screenTop}>
               <span>{spot ? spot.label : "THE WHOLE DIE"}</span>
@@ -499,7 +516,7 @@ export function DieZoom({
             <p className={own.lcdText}>
               {spot
                 ? spot.text
-                : `The die is about ${formatLength(die.width)} × ${formatLength(die.height)}. The ${coin.name} beside it is drawn to the same scale: ${coin.diameterMm} mm across.`}
+                : `The die is about ${formatLength(die.width)} × ${formatLength(die.height)}. The ${coin.name} beside it is shown at the same scale: ${coin.diameterMm} mm across.`}
             </p>
             <div className={own.lcdFacts}>
               <span>1 SCREEN PIXEL ≈ {formatLength(micronsPerScreenPixel / 1000)}</span>

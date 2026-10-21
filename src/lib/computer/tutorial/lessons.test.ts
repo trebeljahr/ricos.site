@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { recognitionComponent } from "../recognition";
 import { requestedHints } from "./hints";
 import { levelStart } from "./kit";
 import { BUILDER_LESSONS, LESSON_SECTIONS, lessonForCircuit } from "./lessons";
@@ -23,6 +24,15 @@ describe("builder lessons", () => {
       ["D flip-flop", "d-flip-flop"],
       ["8-bit parallel register", "register8"],
       ["4 × 4 SRAM", "ram"],
+      ["4 × 4 DRAM", "dram-array"],
+      ["4 × 4 flash memory", "flash-array"],
+      ["8-bit shift register", "shift-register8"],
+      ["Gated SR latch", "gated-sr-latch"],
+      ["JK latch", "jk-latch"],
+      ["T latch", "t-latch"],
+      ["SR flip-flop", "sr-flip-flop"],
+      ["JK flip-flop", "jk-flip-flop"],
+      ["T flip-flop", "t-flip-flop"],
       ["8-bit shared bus", "shared-bus"],
       ["Half adder", "half-adder"],
       ["8-bit full adder", "adder8"],
@@ -31,5 +41,19 @@ describe("builder lessons", () => {
       expect(levelById(id)).toBeTruthy();
     }
     expect(lessonForCircuit("My circuit")).toBeUndefined();
+  });
+
+  it("draws learned storage parts with their storage symbols", () => {
+    for (const [part, symbol] of [
+      ["gated-sr-latch", "srlatch"],
+      ["jk-latch", "dlatch"],
+      ["t-latch", "dlatch"],
+      ["jk-flip-flop", "dff"],
+      ["shift-register8", "register"],
+      ["dram-cell", "memory"],
+      ["flash-array", "memory"],
+    ]) {
+      expect(recognitionComponent(part)?.symbol).toBe(symbol);
+    }
   });
 });

@@ -10,8 +10,10 @@ import { GATE_LEVELS } from "./gates";
 import { INPUT_DEVICE_LEVELS } from "./inputDevices";
 import { INPUT_LEVELS } from "./inputs";
 import { MEMORY_LEVELS } from "./memory";
+import { MEMORY_TECHNOLOGY_LEVELS } from "./memoryTechnologies";
 import { PROCESSOR_LEVELS } from "./processor";
 import { registerCatalog } from "./shared";
+import { STORAGE_VARIANT_LEVELS } from "./storageVariants";
 import { SWITCHING_LEVELS } from "./switching";
 import { UNIVERSAL_GATE_LEVELS } from "./universalGates";
 
@@ -21,6 +23,8 @@ export const LEVELS: readonly Level[] = [
   ...SWITCHING_LEVELS,
   ...ALU_LEVELS,
   ...MEMORY_LEVELS,
+  ...STORAGE_VARIANT_LEVELS,
+  ...MEMORY_TECHNOLOGY_LEVELS,
   ...BUS_LEVELS,
   ...INPUT_LEVELS,
   ...COUNTER_LEVELS,

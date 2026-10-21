@@ -39,6 +39,15 @@ request. Primitive gate lessons retain their gate-count stage. RAM-cell and bus
 lessons are optional so existing course progress does not acquire a new lock.
 The RAM palette still accepts the earlier latch-and-gates construction.
 
+The optional storage follow-ons cover gated, JK and T latches; SR, JK and T
+flip-flops; and an eight-stage shift register. The transparent JK/T latch intros
+warn about feedback races; their edge-triggered counterparts test repeated
+toggles. DRAM and flash each start with one cell before a 4 × 4 addressed array.
+The DRAM checks include refresh and four idle clock cycles to charge loss. Flash
+checks include one-way programming, unselected writes and global erase. Array
+references assemble learned cell modules with a decoder and output OR trees;
+their built-in parts remain the existing free-builder presets.
+
 Bus checks use the shared simulator's native `snapshot.buses` values, including
 Z and X, rather than Boolean lamps. Custom specs can name `observed` output nodes
 for feedback analysis. Boolean simplification must not infer constants or

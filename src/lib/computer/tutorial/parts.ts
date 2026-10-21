@@ -5,20 +5,20 @@
 import {
   type Circuit,
   type GateType,
-  type Node,
-  PRESETS,
   moduleInputs,
   moduleOutputs,
+  type Node,
+  PRESETS,
 } from "../logic";
 import {
   builtinCircuit,
   recognitionComponent,
   registerRecognitionComponent,
-  verifyCircuitIdentity,
   type SymbolIdentity,
+  verifyCircuitIdentity,
 } from "../recognition";
 import type { KnownPart } from "./analysis";
-import { type Allowed, gradeLevel, gradePassed, gradeTruth, gradeSequence } from "./grade";
+import { type Allowed, gradeLevel, gradePassed, gradeSequence, gradeTruth } from "./grade";
 import { levelStart } from "./kit";
 import type { OwnPartsMode, Progress } from "./progress";
 import type { BuiltIn, Level, PaletteRef, PartId } from "./types";
@@ -70,12 +70,24 @@ export class PartCatalog {
           "alu-slice": "alu",
           alu8: "alu",
           "sr-latch": "srlatch",
+          "gated-sr-latch": "srlatch",
           "d-latch": "dlatch",
+          "jk-latch": "dlatch",
+          "t-latch": "dlatch",
           "d-flip-flop": "dff",
+          "sr-flip-flop": "dff",
+          "jk-flip-flop": "dff",
+          "t-flip-flop": "dff",
           register1: "register",
           register8: "register",
+          "shift-register8": "register",
           counter8: "counter",
+          "ram-cell": "memory",
           ram: "memory",
+          "dram-cell": "memory",
+          "dram-array": "memory",
+          "flash-cell": "memory",
+          "flash-array": "memory",
         };
         const symbol =
           recognitionComponent(info.part)?.symbol ??

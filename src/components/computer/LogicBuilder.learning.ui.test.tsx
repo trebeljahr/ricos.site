@@ -40,3 +40,28 @@ it("opens a RAM lesson in place, keeps hints opt-in, and preserves the bench and
   fireEvent.click(testButton("Undo"));
   expect(screen.queryByLabelText("NAND — NAND part")).toBeNull();
 });
+
+it("opens the matching DRAM construction lesson from its preset shortcut", async () => {
+  render(
+    <LogicBuilder
+      initialCircuit={{ name: "4 × 4 DRAM", nodes: [], wires: [] }}
+      storageKey={null}
+    />,
+  );
+  fireEvent.click(screen.getByText("Learning", { selector: "summary" }));
+  fireEvent.click(screen.getByRole("button", { name: "Build this circuit — 4 × 4 DRAM" }));
+  expect(
+    await screen.findByText(
+      /Store four bits per addressed row on clock edges/,
+      {},
+      { timeout: 30000 },
+    ),
+  ).toBeTruthy();
+  expect(screen.queryByRole("list", { name: "Hints" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Hint" }));
+  expect(
+    within(screen.getByRole("list", { name: "Hints" })).getByText(
+      /Two address bits choose one row/,
+    ),
+  ).toBeTruthy();
+});

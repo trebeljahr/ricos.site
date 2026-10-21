@@ -47,6 +47,7 @@ describe("die zoom", () => {
 
     click("ALIGNMENT MARK");
     expect(container.textContent).toContain("Four arrows that lined up the masks");
+    expect(screen.getByText("50 µm")).toBeTruthy();
     expect(zoomTag(container)).not.toBe(whole);
     const sources = [...container.querySelectorAll("img")].map((img) =>
       decodeURIComponent(img.getAttribute("src") ?? ""),
@@ -95,5 +96,36 @@ describe("die zoom", () => {
     click("ALL");
     expect(screen.queryByRole("group", { name: "Decoder close-ups" })).toBeNull();
     expect(screen.getByRole("button", { name: "Zoom to x86 decoders" })).toBeTruthy();
+  });
+
+  it("stops all zoom inputs at the 50 µm view and allows zooming back out", () => {
+    const { container } = render(<DieZoom />);
+    for (let i = 0; i < 12; i++) click("Zoom in");
+    expect(screen.getByText("50 µm")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" }).getAttribute("aria-disabled")).toBe(
+      "true",
+    );
+    const limit = zoomTag(container);
+    const photo = screen.getByRole("application");
+    // Off-centre attempts must neither zoom further nor move the view.
+    const tileStyles = () => [...photo.querySelectorAll("img")].map((img) => img.style.cssText);
+    const atLimit = tileStyles();
+    fireEvent.keyDown(photo, { key: "+" });
+    fireEvent.wheel(photo, { ctrlKey: true, deltaY: -1000, clientX: 150, clientY: 100 });
+    fireEvent.doubleClick(photo, { clientX: 150, clientY: 100 });
+    fireEvent.pointerDown(photo, { pointerId: 1, clientX: 100, clientY: 100 });
+    fireEvent.pointerDown(photo, { pointerId: 2, clientX: 200, clientY: 100 });
+    fireEvent.pointerMove(photo, { pointerId: 2, clientX: 400, clientY: 100 });
+    fireEvent.pointerUp(photo, { pointerId: 1 });
+    fireEvent.pointerUp(photo, { pointerId: 2 });
+    expect(zoomTag(container)).toBe(limit);
+    expect(tileStyles()).toEqual(atLimit);
+    expect(screen.getByText("50 µm")).toBeTruthy();
+
+    click("Zoom out");
+    expect(zoomTag(container)).not.toBe(limit);
+    expect(
+      screen.getByRole("button", { name: "Zoom in" }).getAttribute("aria-disabled"),
+    ).toBeNull();
   });
 });

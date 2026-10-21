@@ -23,7 +23,8 @@ import styles from "./Codebook.module.css";
 import { DemoMachine, MiniButton } from "./CodebookParts";
 import own from "./DieZoom.module.css";
 
-const MAX_SCALE = 3;
+// Stop where a 50 µm scale bar spans 100 CSS pixels, before detail gets rough.
+const MIN_MICRONS_PER_SCREEN_PIXEL = 0.5;
 const ANIMATION_MS = 750;
 
 type Size = { width: number; height: number };
@@ -77,20 +78,21 @@ export function DieZoom({
   const bounds = useMemo(() => worldBounds(shot, coin), [shot, coin]);
   const perPixel = mmPerPixel(shot);
   const die = dieSizeMm(shot);
+  const maxScale = (perPixel * 1000) / MIN_MICRONS_PER_SCREEN_PIXEL;
 
   const fitScale = size ? fitView(bounds, size).scale : 0;
   const minScale = fitScale * 0.6;
 
   const clamp = useCallback(
     (next: View): View => {
-      const scale = Math.min(MAX_SCALE, Math.max(minScale, next.scale));
+      const scale = Math.min(maxScale, Math.max(minScale, next.scale));
       return {
         scale,
         x: Math.min(bounds.x + bounds.width, Math.max(bounds.x, next.x)),
         y: Math.min(bounds.y + bounds.height, Math.max(bounds.y, next.y)),
       };
     },
-    [bounds, minScale],
+    [bounds, maxScale, minScale],
   );
 
   const setView = useCallback(
@@ -132,7 +134,7 @@ export function DieZoom({
     (screenX: number, screenY: number, factor: number, animate = false) => {
       const current = viewRef.current;
       if (!current || !size) return;
-      const scale = Math.min(MAX_SCALE, Math.max(minScale, current.scale * factor));
+      const scale = Math.min(maxScale, Math.max(minScale, current.scale * factor));
       const worldX = current.x + (screenX - size.width / 2) / current.scale;
       const worldY = current.y + (screenY - size.height / 2) / current.scale;
       const next = {
@@ -143,7 +145,7 @@ export function DieZoom({
       if (animate) animateTo(next);
       else setView(next);
     },
-    [animateTo, minScale, setView, size],
+    [animateTo, maxScale, minScale, setView, size],
   );
 
   // Size of the screen, and the first view once it is known.
@@ -475,7 +477,11 @@ export function DieZoom({
             <MiniButton label="Zoom out" onClick={() => keyZoom(0.5)}>
               −
             </MiniButton>
-            <MiniButton label="Zoom in" onClick={() => keyZoom(2)}>
+            <MiniButton
+              label="Zoom in"
+              onClick={() => keyZoom(2)}
+              disabled={!!view && view.scale >= maxScale}
+            >
               +
             </MiniButton>
             <MiniButton onClick={() => goTo(bounds, null, 0.08)}>ALL</MiniButton>

@@ -1,18 +1,11 @@
 import clsx from "clsx";
-import {
-  type KeyboardEvent,
-  type SyntheticEvent,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { ASCII_TABLE, ASCII_TYPER_LIMIT, asciiReadings, filterAscii } from "src/lib/asciiTable";
+import { ASCII_TYPER_LIMIT, asciiReadings, filterAscii } from "src/lib/asciiTable";
 import styles from "./AsciiTyper.module.css";
 import panel from "./ByteExplorer.module.css";
+import { fitHeight } from "./fitHeight";
 
 const presets = ["HELLO", "hello", "SOS", "123"];
 const initialText = "Hello";
@@ -24,29 +17,12 @@ interface Notice {
   serial: number;
 }
 
-/** The slot a pointer or focus event landed on, if any. */
-function slotOf(event: SyntheticEvent): number | null {
-  const cell = (event.target as HTMLElement).closest<HTMLElement>("[data-code]");
-  return cell ? Number(cell.dataset.code) : null;
-}
-
-/** Sizes the field to its text. False while it has no layout, as inside a closed callout. */
-export function fitHeight(element: HTMLTextAreaElement): boolean {
-  element.style.height = "auto";
-  if (element.scrollHeight === 0) return false;
-  const borders = element.offsetHeight - element.clientHeight;
-  element.style.height = `${element.scrollHeight + borders}px`;
-  return true;
-}
-
-/** Text in, seven bits per character out, above the whole ASCII table. Usable in MDX articles. */
+/** Text in, seven bits per character out. Usable in MDX articles. */
 export function AsciiTyper() {
   const [text, setText] = useDemoState("ascii-typer:text", initialText);
   // Index of the character typed last, which is not always the last one in the text.
   const [latest, setLatest] = useState<number | null>(initialText.length - 1);
   const [notice, setNotice] = useState<Notice | null>(null);
-  const [inspected, setInspected] = useState<number | null>(null);
-  const [tabStop, setTabStop] = useState<number | null>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const caret = useRef<number | null>(null);
   const composing = useRef(false);
@@ -56,10 +32,6 @@ export function AsciiTyper() {
   const { soundEnabled, toggleSound, playButton } = usePanelSound();
 
   const readings = asciiReadings(text);
-  const latestCode = latest === null ? null : (readings[latest]?.code ?? null);
-  const typed = new Set(readings.map((reading) => reading.code));
-  const shownCode = inspected ?? latestCode;
-  const shown = shownCode === null ? null : ASCII_TABLE[shownCode];
 
   // A refused character leaves React rewriting the field, which throws the
   // caret to the end. Put it back, then let the LCD grow with its text: a line
@@ -105,28 +77,6 @@ export function AsciiTyper() {
     setLatest(next ? next.length - 1 : null);
     note([], 0);
     playButton();
-  }
-
-  function moveInTable(event: KeyboardEvent<HTMLFieldSetElement>) {
-    const code = slotOf(event);
-    if (code === null) return;
-    // The column count changes with the panel's width, so read it off the layout:
-    // it is the position of the first slot that sits on the second row.
-    const cells = Array.from(event.currentTarget.querySelectorAll<HTMLElement>("[data-code]"));
-    const wrapAt = cells.findIndex((cell) => cell.offsetTop !== cells[0].offsetTop);
-    const columns = wrapAt === -1 ? cells.length : wrapAt;
-    const steps: Record<string, number> = {
-      ArrowLeft: code - 1,
-      ArrowRight: code + 1,
-      ArrowUp: code - columns,
-      ArrowDown: code + columns,
-      Home: 0,
-      End: 127,
-    };
-    const target = steps[event.key];
-    if (target === undefined) return;
-    event.preventDefault();
-    event.currentTarget.querySelector<HTMLElement>(`[data-code="${target}"]`)?.focus();
   }
 
   const rejected = notice?.rejected ?? [];
@@ -256,95 +206,6 @@ export function AsciiTyper() {
           ) : (
             <p className={styles.empty}>NO CHARACTERS YET</p>
           )}
-        </div>
-
-        <div className={styles.bay}>
-          <div className={clsx(panel.sectionHead, styles.wrappingHead)}>
-            <span>ASCII TABLE · 128 SLOTS</span>
-            <span>POINT AT A SLOT TO READ IT</span>
-          </div>
-          <div className={clsx(panel.screen, styles.detail)}>
-            {shown ? (
-              <>
-                <div className={panel.screenTop}>
-                  <span>{shown.name}</span>
-                  <span>{shown.char === null ? "CONTROL" : "PRINTABLE"}</span>
-                </div>
-                <div className={styles.detailBody}>
-                  <strong
-                    className={clsx(
-                      styles.detailGlyph,
-                      shown.label.length > 1 && styles.abbreviation,
-                    )}
-                  >
-                    {shown.label}
-                  </strong>
-                  <dl className={styles.facts}>
-                    <div>
-                      <dt>DECIMAL</dt>
-                      <dd>{shown.code}</dd>
-                    </div>
-                    <div>
-                      <dt>HEX</dt>
-                      <dd>{shown.hex}</dd>
-                    </div>
-                    <div>
-                      <dt>7 BITS</dt>
-                      <dd>{shown.bits}</dd>
-                    </div>
-                  </dl>
-                </div>
-              </>
-            ) : (
-              <div className={styles.detailEmpty}>NO SLOT SELECTED</div>
-            )}
-          </div>
-          <fieldset
-            className={styles.table}
-            aria-label="ASCII table. Arrow keys move between the 128 slots."
-            onMouseOver={(event) => {
-              const code = slotOf(event);
-              if (code !== null) setInspected(code);
-            }}
-            onMouseLeave={(event) => {
-              const active = document.activeElement;
-              const focused =
-                active instanceof HTMLElement && event.currentTarget.contains(active)
-                  ? Number(active.dataset.code)
-                  : null;
-              setInspected(focused);
-            }}
-            onFocus={(event) => {
-              const code = slotOf(event);
-              setInspected(code);
-              setTabStop(code);
-            }}
-            onBlur={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget)) setInspected(null);
-            }}
-            onKeyDown={moveInTable}
-          >
-            {ASCII_TABLE.map((entry) => (
-              <button
-                key={entry.code}
-                type="button"
-                className={clsx(styles.cell, entry.char === null && styles.control)}
-                data-code={entry.code}
-                data-lit={
-                  entry.code === latestCode ? "latest" : typed.has(entry.code) ? "typed" : undefined
-                }
-                tabIndex={entry.code === (tabStop ?? latestCode ?? 0) ? 0 : -1}
-                aria-label={`${entry.code}: ${entry.name}${
-                  entry.char === null ? ", control character" : ""
-                }. Bits ${entry.bits}, hex ${entry.hex}.${typed.has(entry.code) ? " In your text." : ""}`}
-                // Not every tap or assistive click arrives with a hover or a focus.
-                onClick={() => setInspected(entry.code)}
-              >
-                <span className={styles.cellCode}>{entry.code}</span>
-                <span className={styles.cellLabel}>{entry.label}</span>
-              </button>
-            ))}
-          </fieldset>
         </div>
       </div>
     </section>

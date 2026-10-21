@@ -54,6 +54,14 @@ export const COMPUTER_MDX_DEMOS = {
     () => import("./LetterCodebook").then((module) => module.LetterCodebook),
     "Letter codebook",
   ),
+  LetterTyper: chapterDemo(
+    () => import("./LetterTyper").then((module) => module.LetterTyper),
+    "Letter typer",
+  ),
+  AsciiTable: chapterDemo(
+    () => import("./AsciiTable").then((module) => module.AsciiTable),
+    "ASCII table",
+  ),
   AsciiTyper: chapterDemo(
     () => import("./AsciiTyper").then((module) => module.AsciiTyper),
     "ASCII typer",

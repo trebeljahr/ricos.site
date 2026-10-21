@@ -28,6 +28,14 @@ export const computerDemos = [
     title: "Five switches, one alphabet",
   },
   {
+    slug: "letter-typer",
+    title: "Type with your own alphabet",
+  },
+  {
+    slug: "ascii-table",
+    title: "Explore the ASCII table",
+  },
+  {
     slug: "ascii-typer",
     title: "Type text, see the bits",
   },

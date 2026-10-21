@@ -9,6 +9,8 @@ export const MDX_DEMO_COMPONENTS = [
   "Codebook",
   "CodebookMismatch",
   "LetterCodebook",
+  "LetterTyper",
+  "AsciiTable",
   "AsciiTyper",
   "EndianReader",
   "AbstractionLayers",

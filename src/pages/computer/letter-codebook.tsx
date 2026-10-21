@@ -6,7 +6,7 @@ export default function LetterCodebookPage() {
   return (
     <Layout
       title="Five switches, one alphabet"
-      description="Give each state of five switches a character and write text as five bits per character."
+      description="Flip five switches and read each state through a fixed alphabet."
       keywords={[]}
       url="computer/letter-codebook"
       noindex

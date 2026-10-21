@@ -13,26 +13,25 @@ function setup() {
     within(screen.getByRole("list"))
       .getAllByRole("listitem")
       .map((tile) => tile.firstElementChild?.textContent);
-  const slot = (code: number) =>
-    screen.getByRole("group").querySelector(`[data-code="${code}"]`) as HTMLButtonElement;
-  return { input, tiles, slot };
+  return { input, tiles };
 }
 
 describe("AsciiTyper", () => {
-  it("shows one tile per character and lights the last one typed strongest", () => {
-    const { input, tiles, slot } = setup();
+  it("shows one tile per character and marks the last one typed", () => {
+    const { input, tiles } = setup();
     fireEvent.change(input, { target: { value: "Hi" } });
     expect(tiles()).toEqual(["H", "i"]);
-    expect(slot(72).dataset.lit).toBe("typed");
-    expect(slot(105).dataset.lit).toBe("latest");
-    expect(slot(65).dataset.lit).toBeUndefined();
+    const tilesInOrder = screen.getAllByRole("listitem");
+    expect(tilesInOrder[0].dataset.latest).toBeUndefined();
+    expect(tilesInOrder[1].dataset.latest).toBe("true");
+    expect(screen.queryByRole("group")).toBeNull();
   });
 
   it("turns Enter into a line feed tile", () => {
-    const { input, tiles, slot } = setup();
+    const { input, tiles } = setup();
     fireEvent.change(input, { target: { value: "Hi\n" } });
     expect(tiles()).toEqual(["H", "i", "LF"]);
-    expect(slot(10).dataset.lit).toBe("latest");
+    expect(screen.getAllByRole("listitem").at(-1)?.dataset.latest).toBe("true");
   });
 
   it("refuses characters outside ASCII and says why", () => {
@@ -45,34 +44,5 @@ describe("AsciiTyper", () => {
     );
     fireEvent.change(input, { target: { value: "n !" } });
     expect(screen.getByRole("status").textContent).toBe("");
-  });
-
-  it("reads a slot when it is pointed at or pressed, and types nothing", () => {
-    const { input, tiles, slot } = setup();
-    fireEvent.change(input, { target: { value: "A" } });
-    const detail = () => screen.getByText(/^(PRINTABLE|CONTROL)$/).previousElementSibling;
-    fireEvent.mouseOver(slot(66));
-    expect(detail()?.textContent).toBe("Capital letter B");
-    fireEvent.click(slot(27));
-    expect(detail()?.textContent).toBe("Escape");
-    expect(input.value).toBe("A");
-    expect(tiles()).toEqual(["A"]);
-    expect(slot(66).dataset.lit).toBeUndefined();
-    expect(slot(65).getAttribute("aria-label")).toBe(
-      "65: Capital letter A. Bits 1000001, hex 41. In your text.",
-    );
-    expect(slot(27).getAttribute("aria-label")).toBe(
-      "27: Escape, control character. Bits 0011011, hex 1B.",
-    );
-  });
-
-  it("keeps the 128 slots to a single tab stop", () => {
-    const { slot } = setup();
-    const group = screen.getByRole("group");
-    expect(group.querySelectorAll("[data-code]")).toHaveLength(128);
-    expect(group.querySelectorAll('[tabindex="0"]')).toHaveLength(1);
-    fireEvent.focus(slot(65));
-    fireEvent.keyDown(slot(65), { key: "ArrowRight" });
-    expect(document.activeElement).toBe(slot(66));
   });
 });

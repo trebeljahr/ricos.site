@@ -54,6 +54,7 @@
   box-shadow: 0 0 0 100vmax #00000052;
   pointer-events: none;
 }
+.candidateSpot { border-color: #f2d78d; color: #f2d78d; }
 
 .scaleBar, .zoomTag, .hint {
   position: absolute;

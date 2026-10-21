@@ -320,9 +320,13 @@ export function DieZoom({
   const detailSpots = spot
     ? shot.spots.filter((item) => item.parentId === (spot.parentId ?? spot.id))
     : [];
-  const outlinedSpots = shot.spots.filter((item) =>
-    spot ? detailSpots.includes(item) && item.id !== spot.id : !item.parentId,
-  );
+  const detailGroup = shot.spots.find((item) => item.id === (spot?.parentId ?? spot?.id));
+  const closeUps = detailSpots.filter((item) => !item.candidate);
+  const candidates = detailSpots.filter((item) => item.candidate);
+  const outlinedSpots = shot.spots
+    .filter((item) => (spot ? detailSpots.includes(item) && item.id !== spot.id : !item.parentId))
+    // Smaller regions stay clickable where approximate block boxes overlap.
+    .sort((a, b) => b.rect.width * b.rect.height - a.rect.width * a.rect.height);
   const spotCorner = spot ? toScreen(spot.rect.x, spot.rect.y) : null;
 
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
@@ -435,8 +439,8 @@ export function DieZoom({
                   <button
                     key={item.id}
                     type="button"
-                    className={own.spotTarget}
-                    aria-label={`Zoom to ${item.label.toLowerCase()}`}
+                    className={clsx(own.spotTarget, item.candidate && own.candidateSpot)}
+                    aria-label={`Zoom to ${item.candidate ? "candidate " : ""}${item.label.toLowerCase()}`}
                     style={{ left: corner.x, top: corner.y, width, height }}
                     onPointerDown={(event) => event.stopPropagation()}
                     onDoubleClick={(event) => event.stopPropagation()}
@@ -452,7 +456,7 @@ export function DieZoom({
               })}
             {spot && spotCorner && view && (
               <div
-                className={own.spot}
+                className={clsx(own.spot, spot.candidate && own.candidateSpot)}
                 style={{
                   left: spotCorner.x,
                   top: spotCorner.y,
@@ -511,10 +515,28 @@ export function DieZoom({
               COIN
             </MiniButton>
           </div>
-          {detailSpots.length > 0 && (
-            <div className={own.detailKeys} role="group" aria-label="Decoder close-ups">
+          {closeUps.length > 0 && (
+            <div
+              className={own.detailKeys}
+              role="group"
+              aria-label={
+                detailGroup?.id === "decoders"
+                  ? "Decoder close-ups"
+                  : `${detailGroup?.label.toLowerCase()} close-ups`
+              }
+            >
               <span>CLOSER:</span>
-              {detailSpots.map((item) => (
+              {closeUps.map((item) => (
+                <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
+                  {item.label}
+                </MiniButton>
+              ))}
+            </div>
+          )}
+          {candidates.length > 0 && (
+            <div className={own.detailKeys} role="group" aria-label="Unconfirmed candidates">
+              <span>CANDIDATES · UNCONFIRMED:</span>
+              {candidates.map((item) => (
                 <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
                   {item.label}
                 </MiniButton>
@@ -523,7 +545,9 @@ export function DieZoom({
           )}
           <div className={clsx(panel.screen, styles.lcd, own.lcd)} aria-live="polite">
             <div className={panel.screenTop}>
-              <span>{spot ? spot.label : "THE WHOLE DIE"}</span>
+              <span>
+                {spot ? `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}` : "THE WHOLE DIE"}
+              </span>
               <span>SCREEN WIDTH {formatLength(screenWidthMm)}</span>
             </div>
             <p className={own.lcdText}>
@@ -542,7 +566,9 @@ export function DieZoom({
               <a href={spot.matchedSource.url} target="_blank" rel="noreferrer">
                 {spot.matchedSource.label}
               </a>
-              . Outline approximate.
+              {spot.candidate
+                ? ". Candidate identification; function and location unconfirmed."
+                : ". Outline approximate."}
             </p>
           )}
           <p className={own.note}>

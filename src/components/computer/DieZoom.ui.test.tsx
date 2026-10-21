@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DieZoom } from "./DieZoom";
 
@@ -142,5 +142,54 @@ describe("die zoom", () => {
     expect(container.textContent).toContain("stores sequences of micro-operations");
     click("ALIGNMENT MARK");
     expect(screen.queryByRole("link", { name: "Deschutes P6 core map" })).toBeNull();
+  });
+
+  it("opens context-specific close-ups and keeps candidate identifications separate", () => {
+    const { container } = render(<DieZoom />);
+    click("INSTRUCTION FETCH");
+    expect(screen.getByRole("group", { name: "instruction fetch close-ups" })).toBeTruthy();
+    click("INSTRUCTION BUFFER");
+    expect(container.textContent).toContain("Fetched instruction bytes wait here before decoding.");
+
+    click("FLOATING POINT");
+    const closeUps = screen.getByRole("group", { name: "floating point close-ups" });
+    expect(within(closeUps).queryByRole("button", { name: "FP CONSTANT ROM?" })).toBeNull();
+    const candidates = screen.getByRole("group", { name: "Unconfirmed candidates" });
+    fireEvent.click(within(candidates).getByRole("button", { name: "FP CONSTANT ROM?" }));
+    expect(container.textContent).toContain("CANDIDATE · FP CONSTANT ROM?");
+    expect(container.textContent).toContain("function and location unconfirmed");
+    click("FP CONVERSION");
+    expect(container.textContent).toContain("converts between memory formats");
+    expect(container.textContent).not.toContain("function and location unconfirmed");
+
+    click("ADDRESS TRANSLATION");
+    click("TRANSLATION STORAGE");
+    expect(container.textContent).toContain("cached address-translation information");
+    click("BRANCH PREDICTION");
+    click("BRANCH-TARGET STORAGE");
+    expect(container.textContent).toContain("previously encountered branches");
+    click("ALL");
+    expect(screen.queryByRole("group", { name: "Unconfirmed candidates" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "FP CONSTANT ROM?" })).toBeNull();
+  });
+
+  it("keeps unconfirmed register and capacitor targets available under their parent regions", () => {
+    const { container } = render(<DieZoom />);
+    click("REORDER / RETIREMENT");
+    click("RETIREMENT REGISTERS?");
+    expect(container.textContent).toContain("CANDIDATE · RETIREMENT REGISTERS?");
+    click("REORDER BUFFER ARRAYS?");
+    expect(container.textContent).toContain("individual storage arrays are not established");
+    click("SCHEDULER");
+    click("DECOUPLING CAPACITOR?");
+    expect(container.textContent).toContain("If so, it stores charge locally");
+    click("X86 DECODERS");
+    expect(screen.getByRole("group", { name: "Decoder close-ups" })).toBeTruthy();
+    click("MICROCODE ENTRY PLA?");
+    expect(container.textContent).toContain("may select the starting address");
+    click("DECODER ALIAS CONTROL?");
+    expect(container.textContent).toContain("it differs from register renaming");
+    click("FULL DECODER");
+    expect(container.textContent).not.toContain("function and location unconfirmed");
   });
 });

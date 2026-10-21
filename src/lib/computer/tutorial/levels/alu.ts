@@ -3,6 +3,7 @@
 // the condition test that decides a jump, as in NandGame's ALU section.
 import { bitsOf, busPorts, CircuitKit, numberOf, type Source } from "../kit";
 import type { Level } from "../types";
+import { constructionHints } from "./constructionHints";
 import { A, B, boxed, CHAPTERS, OUT, once, port } from "./shared";
 
 const SECTION = "Arithmetic logic unit";
@@ -163,14 +164,12 @@ export const logicUnitLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor", "part:selector"],
   makes: { part: "logic-unit", label: "LOGIC UNIT", builtIn: { reference: true } },
   reference: logicUnit,
-  hints: [
-    {
-      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
-    },
-    {
-      text: "Which signals describe data, and which signals decide what operation the output represents?",
-    },
-  ],
+  hints: constructionHints(
+    "Compute four possible answers in parallel, then select the answer named by OP1 OP0.",
+    "Form A AND B, A OR B, A XOR B, and NOT A as separate signals.",
+    "Use OP0 to select AND versus OR and XOR versus NOT A. Use OP1 on a third SELECTOR to choose between those two results. Connect that result to OUT.",
+    "Try A=1,B=1 across all four operation codes: expect 1,1,0,0.",
+  ),
 };
 
 export const aluSliceLevel: Level = {
@@ -203,14 +202,12 @@ export const aluSliceLevel: Level = {
   ],
   makes: { part: "alu-slice", label: "ALU SLICE", builtIn: { reference: true } },
   reference: aluSlice,
-  hints: [
-    {
-      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
-    },
-    {
-      text: "Which signals describe data, and which signals decide what operation the output represents?",
-    },
-  ],
+  hints: constructionHints(
+    "A slice computes both logic and addition. Code 11 replaces the logic answer with the sum.",
+    "Feed A and B to a logic unit and a full adder. Only the adder uses CARRY IN.",
+    "Connect OP0 and OP1 to the LOGIC UNIT. ADD = OP0 AND OP1. Use ADD to select logic output when 0 or full-adder SUM when 1. Wire full-adder CARRY directly to CARRY OUT for every operation.",
+    "Try A=B=1 with CARRY IN=0. Switching from AND to ADD changes RESULT from 1 to 0, while CARRY OUT remains 1.",
+  ),
 };
 
 export const alu8Level: Level = {
@@ -230,14 +227,12 @@ export const alu8Level: Level = {
   palette: ["part:alu-slice"],
   makes: { part: "alu8", label: "8-BIT ALU", builtIn: { preset: "8-bit ALU" } },
   reference: alu8,
-  hints: [
-    {
-      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
-    },
-    {
-      text: "Which signals describe data, and which signals decide what operation the output represents?",
-    },
-  ],
+  hints: constructionHints(
+    "All eight slices share the operation code. Carry alone moves between neighboring slices.",
+    "Wire bit 0 using one ALU SLICE. Connect external CARRY IN to that slice.",
+    "For each bit i, feed Ai,Bi and shared OP0,OP1 to a slice. Chain CARRY OUT into the next slice’s CARRY IN. Wire each RESULT to OUTi and the last carry to CARRY OUT.",
+    "Use operation 11 to add 255+1, then operation 10 on 85 and 170 to check independent XOR lanes.",
+  ),
 };
 
 export const conditionLevel: Level = {
@@ -270,14 +265,12 @@ export const conditionLevel: Level = {
   ],
   makes: { part: "condition", label: "CONDITION", builtIn: { reference: true } },
   reference: condition,
-  hints: [
-    {
-      text: "Choose one operation code and test the smallest input case that distinguishes it from the other operations.",
-    },
-    {
-      text: "Which signals describe data, and which signals decide what operation the output represents?",
-    },
-  ],
+  hints: constructionHints(
+    "LT, EQ, and GT enable three tests of X. Any enabled test that matches X permits the jump.",
+    "Build zero and negative tests. Positive means neither zero nor negative.",
+    "Z = IS ZERO(X). N = IS NEGATIVE(X). P = NOT(Z OR N). JUMP = (LT AND N) OR (EQ AND Z) OR (GT AND P). Combine the final terms with two-input OR gates.",
+    "Enable EQ alone and compare X=0 with X=1. Then enable LT and test a number with X3=1.",
+  ),
 };
 
 export const ALU_LEVELS: Level[] = [logicUnitLevel, aluSliceLevel, alu8Level, conditionLevel];

@@ -4,6 +4,7 @@
 // and the clock tick by tick and reads the lamps after each tick settles.
 import { bitsOf, busPorts, CircuitKit, type Source } from "../kit";
 import type { Level, LevelPort, SequenceTick } from "../types";
+import { constructionHints } from "./constructionHints";
 import { boxed, CHAPTERS, once, port } from "./shared";
 
 const SECTION = "Memory";
@@ -128,14 +129,14 @@ const counter8 = once(() => {
 const ram = once(() => {
   const kit = new CircuitKit("RAM", [...ADDRESS, READ, WRITE, ...DATA_IN], DATA_OUT);
   const rows = kit.part("decoder", boxed("decoder"), ["a0", "a1"], { label: "DECODER" });
-  const latch = boxed("d-latch");
+  const cellPart = boxed("ram-cell");
   const reads: Source[][] = Array.from({ length: WIDTH }, () => []);
   for (let row = 0; row < ROWS; row++) {
-    const write = kit.gate("and", [[rows, row], "write"]);
-    const read = kit.gate("and", [[rows, row], "read"]);
     for (let bit = 0; bit < WIDTH; bit++) {
-      const cell = kit.part("d-latch", latch, [write, `in${bit}`], { label: "D LATCH" });
-      reads[bit].push(kit.gate("and", [[cell, 0], read]));
+      const cell = kit.part("ram-cell", cellPart, [[rows, row], "write", "read", `in${bit}`], {
+        label: "RAM CELL",
+      });
+      reads[bit].push([cell, 0]);
     }
   }
   reads.forEach((sources, bit) => {
@@ -325,12 +326,12 @@ export const srLatchLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or"],
   makes: { part: "sr-latch", label: "SR LATCH", builtIn: { preset: "SR latch" } },
   reference: srLatch,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "A stored bit needs feedback. With SET and RESET low, the old Q must help produce the next Q.",
+    "Start with the hold condition: old Q survives only while RESET is 0. Then allow SET to force Q to 1.",
+    "KEEP = Q AND NOT RESET. Q = SET OR KEEP. Feed Q back to KEEP, and invert Q for Q̅. The check never asserts SET and RESET together.",
+    "Set Q to 1, release SET, then reset and release RESET. Both values must survive after their control turns off.",
+  ),
 };
 
 export const dLatchLevel: Level = {
@@ -346,12 +347,12 @@ export const dLatchLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:sr-latch"],
   makes: { part: "d-latch", label: "D LATCH", builtIn: { preset: "D latch" } },
   reference: dLatch,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "ENABLE controls when this memory is transparent. It can follow several DATA changes during one enabled interval.",
+    "Use an SR latch. DATA chooses whether to set or reset, while ENABLE must gate both commands.",
+    "SET = ENABLE AND DATA. RESET = ENABLE AND NOT DATA. Connect these to the SR latch and its Q and Q̅ to the outputs.",
+    "Enable the latch, change DATA twice, then disable it. Change DATA again: Q must keep the last enabled value.",
+  ),
 };
 
 export const dFlipFlopLevel: Level = {
@@ -367,12 +368,12 @@ export const dFlipFlopLevel: Level = {
   palette: ["part:not", "part:and", "part:d-latch"],
   makes: { part: "d-flip-flop", label: "D FLIP-FLOP", builtIn: { preset: "D flip-flop" } },
   reference: dFlipFlop,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "Two latches can isolate the output from DATA except at the rising clock edge.",
+    "Let the first latch follow DATA while CLOCK is low. Let the second follow the first while CLOCK is high.",
+    "Leader ENABLE = NOT CLOCK, leader DATA = DATA. Follower ENABLE = CLOCK, follower DATA = leader Q. Use follower Q and Q̅ as outputs.",
+    "Change DATA while CLOCK is high, then while low. Q must wait for the next rising edge in both cases.",
+  ),
 };
 
 export const register1Level: Level = {
@@ -392,12 +393,12 @@ export const register1Level: Level = {
   palette: ["part:d-flip-flop", "part:selector"],
   makes: { part: "register1", label: "REGISTER BIT", builtIn: { reference: true } },
   reference: register1,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "LOAD chooses which value the flip-flop captures. CLOCK chooses when it captures that value.",
+    "When LOAD is 0, the next data input must equal the old Q. A selector can choose old Q or new DATA.",
+    "Wire LOAD to a selector, Q to its A input, and DATA to B. Feed the selector output to a D flip-flop. CLOCK drives the flip-flop, whose Q also closes the feedback path.",
+    "Load 1 on a rising edge. Turn LOAD off, set DATA to 0, and pulse CLOCK again. Q must stay 1.",
+  ),
 };
 
 export const register8Level: Level = {
@@ -421,12 +422,12 @@ export const register8Level: Level = {
     builtIn: { preset: "8-bit parallel register" },
   },
   reference: register8,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "A byte register repeats the same one-bit memory eight times. CLOCK and LOAD belong to every bit.",
+    "Build bit 0 with one register bit, then repeat the same wiring for bits 1 through 7.",
+    "For each bit i, connect CLOCK, LOAD, and Di to a REGISTER BIT. Connect its Q to Qi. Share the controls, but keep each data lane separate.",
+    "Load 90, then change D to 165 with LOAD off and pulse CLOCK. Q must keep 90 until an enabled rising edge.",
+  ),
 };
 
 export const counter8Level: Level = {
@@ -442,12 +443,96 @@ export const counter8Level: Level = {
   palette: ["high", "ground", "part:register8", "part:adder8"],
   makes: { part: "counter8", label: "COUNTER", builtIn: { preset: "8-bit binary counter" } },
   reference: counter8,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "The register stores the current count. An adder continuously computes the next count from those stored outputs.",
+    "Feed Q0–Q7 into one side of the adder. Add one by grounding the other byte and setting CARRY IN high.",
+    "Register LOAD = HIGH. Connect register Qi to adder Ai, GROUND to every Bi, and HIGH to CARRY IN. Connect each sum bit back to register Di and each Qi to its output. CLOCK drives the register.",
+    "Step through 3 to 4 and 7 to 8. Several bits change on each rising edge; the falling edge must preserve the count.",
+  ),
+};
+
+export const ramCellLevel: Level = {
+  id: "ram-cell",
+  optional: true,
+  title: "Addressed RAM cell",
+  section: SECTION,
+  chapter: CHAPTERS.ram,
+  goal: "Store DATA only while SELECT and WRITE ENABLE are on. Show the stored bit only while SELECT and READ ENABLE are on. Otherwise DATA OUT is 0.",
+  intro:
+    "One RAM cell stores one bit. Row selection and separate read and write enables let many cells share data lines.",
+  spec: {
+    kind: "sequence",
+    inputs: [port("select", "SELECT"), WRITE, READ, DATA],
+    outputs: [port("out", "DATA OUT")],
+    ticks: [
+      {
+        set: { select: true, write: true, data: true },
+        expect: { out: false },
+        note: "Write 1 with reading disabled.",
+      },
+      { set: { write: false, read: true }, expect: { out: true }, note: "Read the stored 1." },
+      {
+        set: { data: false },
+        expect: { out: true },
+        note: "Changing DATA with writing disabled preserves 1.",
+      },
+      {
+        set: { select: false, write: true },
+        expect: { out: false },
+        note: "An unselected cell ignores a write of 0 and hides its output.",
+      },
+      {
+        set: { write: false, select: true },
+        expect: { out: true },
+        note: "Select the cell again: its 1 survived.",
+      },
+      {
+        set: { read: false },
+        expect: { out: false },
+        note: "Disabling read hides the bit without erasing it.",
+      },
+      {
+        set: { read: true },
+        expect: { out: true },
+        note: "Reading again reveals the same stored bit.",
+      },
+      { set: { write: true }, expect: { out: false }, note: "Write 0 while selected and reading." },
+      {
+        set: { data: true },
+        expect: { out: true },
+        note: "While writing stays enabled, storage follows DATA.",
+      },
+      {
+        set: { data: false },
+        expect: { out: false },
+        note: "The enabled latch follows DATA back to 0.",
+      },
+      {
+        set: { write: false, data: true },
+        expect: { out: false },
+        note: "Disabling write keeps the stored 0.",
+      },
+    ],
+  },
+  palette: ["part:and", "part:d-latch"],
+  makes: { part: "ram-cell", label: "RAM CELL", builtIn: { reference: true } },
+  reference: once(() => {
+    const kit = new CircuitKit(
+      "Addressed RAM cell",
+      [port("select", "SELECT"), WRITE, READ, DATA],
+      [port("out", "DATA OUT")],
+    );
+    const write = kit.gate("and", ["select", "write"]);
+    const read = kit.gate("and", ["select", "read"]);
+    const cell = kit.part("d-latch", boxed("d-latch"), [write, "data"], { label: "D LATCH" });
+    return kit.out("out", kit.gate("and", [[cell, 0], read])).build();
+  }),
+  hints: constructionHints(
+    "SELECT chooses this cell. WRITE ENABLE permits storage to change. READ ENABLE permits its stored bit to reach DATA OUT.",
+    "Use a D latch for storage. Its ENABLE must require both SELECT and WRITE ENABLE.",
+    "STORE = SELECT AND WRITE ENABLE. Feed STORE and DATA to a D LATCH. READ = SELECT AND READ ENABLE. DATA OUT = latch Q AND READ.",
+    "Write 1, disable writing, and hide the output by disabling reads. Read again: 1 must remain. An unselected write must do nothing.",
+  ),
 };
 
 export const ramLevel: Level = {
@@ -465,15 +550,15 @@ export const ramLevel: Level = {
     outputs: DATA_OUT,
     ticks: RAM_TICKS,
   },
-  palette: ["part:not", "part:and", "part:or", "part:d-latch", "part:decoder"],
+  palette: ["part:not", "part:and", "part:or", "part:d-latch", "part:decoder", "part:ram-cell"],
   makes: { part: "ram", label: "RAM", builtIn: { preset: "4 × 4 SRAM" } },
   reference: ram,
-  hints: [
-    { text: "Separate the value that is stored from the condition that permits it to change." },
-    {
-      text: "Compare holding an input high with making a new rising edge. Which events should preserve the previous value?",
-    },
-  ],
+  hints: constructionHints(
+    "The address chooses a row. WRITE ENABLE changes its stored bits; READ ENABLE controls what you can see.",
+    "Build one addressed RAM cell first. Then repeat it four times per row and use a decoder to select one row.",
+    "Connect A0 and A1 to a decoder. For row r and bit i, feed decoder Yr, WRITE ENABLE, READ ENABLE, and DATA IN i into one RAM CELL. OR the four cells’ DATA OUT signals for each bit into DATA OUT i.",
+    "Write different values at two addresses with reads disabled. Read them back, then disable reads. The output becomes 0 without erasing either address.",
+  ),
 };
 
 export const MEMORY_LEVELS: Level[] = [
@@ -483,5 +568,6 @@ export const MEMORY_LEVELS: Level[] = [
   register1Level,
   register8Level,
   counter8Level,
+  ramCellLevel,
   ramLevel,
 ];

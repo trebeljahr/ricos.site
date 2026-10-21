@@ -1,0 +1,35 @@
+import { describe, expect, it } from "vitest";
+import { requestedHints } from "./hints";
+import { levelStart } from "./kit";
+import { BUILDER_LESSONS, LESSON_SECTIONS, lessonForCircuit } from "./lessons";
+import { LEARNING_LEVELS, levelById } from "./levels";
+
+describe("builder lessons", () => {
+  it("makes every core lesson available in the builder", () => {
+    const offered = LESSON_SECTIONS.flatMap((section) => section.levels);
+    expect(offered).toEqual(BUILDER_LESSONS);
+    expect(LEARNING_LEVELS.every((level) => offered.includes(level))).toBe(true);
+    expect(offered.some((level) => level.id === "universal-nor-xor")).toBe(true);
+    for (const level of LEARNING_LEVELS) {
+      expect(level.hints?.length, level.id).toBeGreaterThan(0);
+      expect(requestedHints(level, levelStart(level).circuit, undefined, 0), level.id).toEqual([]);
+    }
+  });
+
+  it("opens existing memory, bus, and arithmetic presets at their construction lesson", () => {
+    for (const [name, id] of [
+      ["SR latch", "sr-latch"],
+      ["D latch", "d-latch"],
+      ["D flip-flop", "d-flip-flop"],
+      ["8-bit parallel register", "register8"],
+      ["4 × 4 SRAM", "ram"],
+      ["8-bit shared bus", "shared-bus"],
+      ["Half adder", "half-adder"],
+      ["8-bit full adder", "adder8"],
+    ]) {
+      expect(lessonForCircuit(name)).toBe(id);
+      expect(levelById(id)).toBeTruthy();
+    }
+    expect(lessonForCircuit("My circuit")).toBeUndefined();
+  });
+});

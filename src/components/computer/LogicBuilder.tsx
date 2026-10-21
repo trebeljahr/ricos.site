@@ -1,6 +1,6 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { type MutableRefObject, type ReactNode, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type MutableRefObject, type ReactNode, lazy, Suspense, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ViewportContextMenu } from "./ViewportContextMenu";
 import { CircuitToolbar } from "./CircuitToolbar";
 import { ComputerEmbedContext } from "./ComputerEmbedContext";
@@ -15,6 +15,7 @@ import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
 import { parseCircuitStorage, stringifyCircuitStorage } from "../../lib/computer/circuitStorage";
 import { activateBuilder, claimStorage, ownsKeyEvent, registerBuilder } from "../../lib/computer/builderRegistry";
+import { BUILDER_LESSON_IDS, LESSON_SECTIONS, lessonForCircuit } from "../../lib/computer/tutorial/lessons";
 import { CATALOG } from "../../lib/computer/tutorial/levels";
 import { circuitRow, entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, rowMatches, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
 import { type OwnPartsMode, setOwnPartsMode } from "../../lib/computer/tutorial/progress";
@@ -1234,14 +1235,48 @@ export type LogicBuilderProps = {
   storageKey?: string | null;
 };
 
-export function LogicBuilder({
+type BuilderProps = { challenge?: LogicBuilderChallenge } & LogicBuilderProps;
+const LearningTutorial = lazy(
+  () => import("./tutorial/LogicTutorial").then((module) => ({ default: module.LogicTutorial })),
+);
+
+/** Keep the bench mounted so its edits, undo history, and timeline survive lessons. */
+export function LogicBuilder(props: BuilderProps = {}) {
+  const [lesson, setLesson] = useState<string | null>(null);
+  const chapterEmbed = useContext(ComputerEmbedContext);
+  const embedded = props.embedded ?? chapterEmbed;
+  if (props.challenge || props.locked) {
+    return <LogicBuilderWorkspace {...props} onLearn={setLesson} suspended={false} />;
+  }
+  return (
+    <>
+      <div hidden={lesson !== null} inert={lesson !== null} style={{ display: lesson ? "none" : "contents" }}>
+        <LogicBuilderWorkspace {...props} onLearn={setLesson} suspended={lesson !== null} />
+      </div>
+      {lesson && <div className="flex h-full min-h-0 flex-col" aria-label="Circuit construction lessons" data-circuit-learning="">
+        <button type="button" className="self-start px-3 py-2 text-sm underline underline-offset-4" onClick={() => setLesson(null)}>
+          ← Back to your circuit
+        </button>
+        <div className="min-h-0 flex-1">
+          <Suspense fallback={<p role="status">Loading the lesson…</p>}>
+            <LearningTutorial level={lesson} levels={BUILDER_LESSON_IDS} embedded={embedded} onLevelChange={setLesson} />
+          </Suspense>
+        </div>
+      </div>}
+    </>
+  );
+}
+
+function LogicBuilderWorkspace({
   challenge,
   initialCircuit,
   initialFocus,
   embedded: requestedEmbedded,
   locked,
   storageKey = STORAGE,
-}: { challenge?: LogicBuilderChallenge } & LogicBuilderProps = {}) {
+  onLearn,
+  suspended,
+}: BuilderProps & { onLearn: (id: string) => void; suspended: boolean }) {
   const chapterEmbed = useContext(ComputerEmbedContext);
   const embedded = requestedEmbedded ?? chapterEmbed;
   const lockedRef = useRef(locked);
@@ -1271,6 +1306,14 @@ export function LogicBuilder({
     createTimeline({ tick: 0, clockHigh: false, pulses: {}, snapshot: initialSnapshot() }));
   const { snapshot, clockHigh, tick } = currentFrame(timeline);
   const [running, setRunning] = useState(false);
+  const wasSuspended = useRef(suspended);
+  useEffect(() => {
+    if (suspended) setRunning(false);
+    else if (wasSuspended.current || shellRef.current?.closest("[data-circuit-learning]")) {
+      activateBuilder(instanceId);
+    }
+    wasSuspended.current = suspended;
+  }, [suspended, instanceId]);
   const hasClock = circuit.nodes.some((node) => node.type === "clock" || node.type === "pulse");
   useEffect(() => setNameDraft(circuit.name), [circuit.name]);
   useEffect(() => {
@@ -3162,7 +3205,20 @@ export function LogicBuilder({
         learning={
           challenge ? null : <>
             <ToolbarMenu label="Learning" panelClassName={styles.learningPanel}>
-              <h2>Build from one kind of part</h2>
+              <h2>Build it yourself</h2>
+              <p>Start from a goal, wire the circuit, and ask for hints when you need them.</p>
+              {lessonForCircuit(circuit.name) && <button type="button" onClick={() => onLearn(lessonForCircuit(circuit.name)!)}>
+                Build this circuit — {circuit.name}
+              </button>}
+              {LESSON_SECTIONS.map((section) => <details key={section.title}>
+                <summary className="cursor-pointer py-2">{section.title}</summary>
+                <div className={styles.lessonList}>
+                  {section.levels.map((level) => <button key={level.id} type="button" onClick={() => onLearn(level.id)}>
+                    {level.title}
+                  </button>)}
+                </div>
+              </details>)}
+              <h2>Explore wired gates</h2>
               <p>Open a gate built from transistors, NAND, or NOR.</p>
               <div className={styles.buildTabs} role="group" aria-label="Circuit construction">
                 {(["transistor", "nand", "nor"] as const).map((family) => (

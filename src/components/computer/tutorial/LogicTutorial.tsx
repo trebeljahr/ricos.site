@@ -209,6 +209,7 @@ export function LogicTutorial({
 
   const onChange = useCallback(
     (next: Circuit) => {
+      if (JSON.stringify(next) === JSON.stringify(circuitRef.current)) return;
       noteChange(next);
       circuitRef.current = next;
       setCircuit(next);

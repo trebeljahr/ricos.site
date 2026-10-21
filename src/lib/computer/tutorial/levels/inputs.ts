@@ -1,5 +1,6 @@
 import { type Circuit, initialSnapshot, step } from "../../logic";
 import type { Level } from "../types";
+import { constructionHints } from "./constructionHints";
 
 /** Sources are primitive controls; the learner constructs their bit interface. */
 export const INPUT_LEVELS: Level[] = ([4, 8] as const).map((width) => {
@@ -59,10 +60,11 @@ export const INPUT_LEVELS: Level[] = ([4, 8] as const).map((width) => {
         return { pass: true, summary: `Every ${width}-bit value has the correct weighted lamps.` };
       },
     },
-    hints: [
-      {
-        text: "Try powers of two first. Which single lamp should light? Then choose a value with two set bits.",
-      },
-    ],
+    hints: constructionHints(
+      "The source value is the sum of its set bits’ weights. Output bit 0 has weight 1.",
+      "Set the source to 1, then 2, then 4. Each value should light exactly one matching lamp.",
+      "Wire numeric source output i directly to the lamp with weight 2 to the power i. No logic gate is needed.",
+      "Try 3 and 5. They share the weight-1 bit but differ in their other set bit. Then test the largest source value.",
+    ),
   };
 });

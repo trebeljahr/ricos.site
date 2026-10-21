@@ -1,11 +1,11 @@
 import {
   COUNTER_MODES,
   COUNTER_WIDTHS,
+  type CounterMode,
+  type CounterWidth,
   counterCircuit,
   counterPart,
   counterTitle,
-  type CounterMode,
-  type CounterWidth,
 } from "../../counterCircuits";
 import { moduleInputs, moduleOutputs } from "../../logic";
 import type { Level, SequenceTick } from "../types";
@@ -119,6 +119,7 @@ export const COUNTER_LEVELS: Level[] = COUNTER_WIDTHS.flatMap((width) =>
       reference,
       hints: [
         {
+          title: "Core idea",
           text: "Separate the stored value from the next value. Each output bit needs memory; counting changes that memory only on an edge.",
         },
         {
@@ -135,6 +136,7 @@ export const COUNTER_LEVELS: Level[] = COUNTER_WIDTHS.flatMap((width) =>
             ]
           : []),
         {
+          title: "Reset",
           text: "RESET must work with COUNT held high. The D flip-flop context menu offers an asynchronous RESET pin; ordinary data gating waits for a clock edge.",
         },
       ],

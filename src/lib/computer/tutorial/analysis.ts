@@ -3,6 +3,7 @@
 // compute something a part from an earlier level already does.
 
 import {
+  BUS_TYPES,
   type Circuit,
   type GateType,
   INPUTS,
@@ -202,7 +203,7 @@ function vectorsFor(circuit: Circuit, spec: TruthSpec) {
   rows.forEach((inputs, row) => {
     const { snapshot } = runRow(circuit, spec, inputs);
     for (const node of circuit.nodes) {
-      if (node.type === "lamp") continue;
+      if (node.type === "lamp" || BUS_TYPES.has(node.type)) continue;
       const outputs = snapshot.outputs[node.id];
       if (node.type === "module" && outputs)
         outputs.forEach((value, output) => {
@@ -459,7 +460,10 @@ export function feedback(
   const simplification = simplificationNote(circuit, level, locked);
   if (simplification) notes.push(simplification);
   const spec = level.spec.kind === "truth" ? level.spec : undefined;
-  const outputs = level.spec.kind === "custom" ? [] : level.spec.outputs.map((port) => port.id);
+  const outputs =
+    level.spec.kind === "custom"
+      ? [...(level.spec.observed ?? [])]
+      : level.spec.outputs.map((port) => port.id);
   const truth = spec && truthRows(spec).length <= 1024 ? vectorsFor(circuit, spec) : undefined;
   if (reference) {
     const transistorLevel = reference.transistors > 0;

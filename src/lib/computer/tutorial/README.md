@@ -26,3 +26,21 @@ the existing exhaustive proof. Larger truth lessons and stateful lessons also
 register a trusted construction check, cached by implementation fingerprint.
 Sequence and sampled proofs are labeled accordingly; they do not claim temporal
 or exhaustive equivalence. Changes invalidate the identity fingerprint.
+
+The free builder's Learning menu uses `BUILDER_LESSONS` from `lessons.ts`.
+It includes the main ladder, standalone NAND/NOR challenges, and one entry per
+parameterized family. Variants stay in each lesson's parameter picker. Lessons
+open without sequential locks from the bench. The bench remains mounted with
+its undo history and timeline; opening a lesson pauses it and hides it from
+keyboard and pointer interaction. Lesson drafts use the existing progress store.
+
+Construction hints disclose an idea, first step, signal plan, and experiment on
+request. Primitive gate lessons retain their gate-count stage. RAM-cell and bus
+lessons are optional so existing course progress does not acquire a new lock.
+The RAM palette still accepts the earlier latch-and-gates construction.
+
+Bus checks use the shared simulator's native `snapshot.buses` values, including
+Z and X, rather than Boolean lamps. Custom specs can name `observed` output nodes
+for feedback analysis. Boolean simplification must not infer constants or
+pass-through gates from bus parts. The splitter's zero reading for Z/X cannot
+substitute for checking the bus itself.

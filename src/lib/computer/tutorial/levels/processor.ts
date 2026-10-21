@@ -15,6 +15,7 @@ import {
 } from "../../cpuLevels";
 import type { Circuit } from "../../logic";
 import type { ChapterLink, CustomGrade, Level } from "../types";
+import { constructionHints } from "./constructionHints";
 import { CHAPTERS, once } from "./shared";
 
 const SECTION = "Processor";
@@ -125,14 +126,12 @@ export const PROCESSOR_LEVELS: Level[] = CPU_LEVEL_SPECS.map((spec, index): Leve
       };
     },
     reference: once(() => solvedLevel(setup())),
-    hints: [
-      {
-        text: "Choose one instruction and track its address, control signals, and stored values across the failing ticks.",
-      },
-      {
-        text: "Which values must survive a clock edge? Which control signals allow those values to change?",
-      },
-    ],
+    hints: constructionHints(
+      spec.goal,
+      "Follow one transfer from source to destination. The source’s OUT signal enables its bus driver; the destination’s IN signal loads its register on a rising edge.",
+      spec.steps.join(" "),
+      "Run Check, then use the failing tick to compare bus value, driver enable, and destination LOAD. Check the data path before changing control wiring.",
+    ),
     save: (circuit) => saveLevel(circuit, setup()),
     restore: (saved) => restoreLevel(saved, setup()),
   };

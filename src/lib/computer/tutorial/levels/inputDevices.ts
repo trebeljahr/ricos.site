@@ -6,6 +6,7 @@ import { type Circuit, initialSnapshot, moduleInputs, moduleOutputs, step } from
 import { readProbes } from "../../probes";
 import { CircuitKit } from "../kit";
 import type { Level, SequenceTick } from "../types";
+import { constructionHints } from "./constructionHints";
 
 const section = "Buttons and keyboards";
 const ports = (circuit: Circuit) => ({
@@ -100,6 +101,7 @@ const capture: Level = {
   spec: { kind: "sequence", ...ports(buttonInputCircuit()), ticks: captureTicks },
   hints: [
     {
+      title: "Core idea",
       text: "A sampled level and a remembered event solve different problems. Which storage element can see the button's own rising edge?",
     },
     {
@@ -180,14 +182,12 @@ const samples: Level = {
     builtIn: { reference: true },
   },
   spec: { kind: "sequence", ...ports(sampledEventCircuit()), ticks: sampleTicks() },
-  hints: [
-    {
-      text: "Remember the preceding raw sample and compare it with the new one. If they disagree, keep the last accepted state.",
-    },
-    {
-      text: "Compare the new stable state with its previous value. Only one direction of change should raise each event output.",
-    },
-  ],
+  hints: constructionHints(
+    "Two equal samples accept a new stable state. Event outputs describe a change in that stable state.",
+    "Remember the previous raw sample and the previous stable value with flip-flops.",
+    "AGREE = NOT(RAW XOR PREVIOUS RAW). NEXT = (AGREE AND RAW) OR (NOT AGREE AND STABLE). Store NEXT as STABLE. PRESS = STABLE AND NOT PREVIOUS STABLE; RELEASE = NOT STABLE AND PREVIOUS STABLE. Clock all three memories together.",
+    "Apply one high sample then a low sample: STABLE must remain low. Two high samples produce one press event; holding high must not repeat it.",
+  ),
 };
 
 const rows: Level[] = Array.from({ length: 14 }, (_, i) => i + 2).map((columns) => {
@@ -228,14 +228,12 @@ const rows: Level[] = Array.from({ length: 14 }, (_, i) => i + 2).map((columns) 
           }
         : {}),
     },
-    hints: [
-      {
-        text: "Choose one column. Under which two independent conditions can it be pulled low? Then ask whether a neighboring contact should affect it.",
-      },
-      {
-        text: "Try two contacts in the same row at once. Neither should suppress the other; there is no priority encoder in the switch matrix.",
-      },
-    ],
+    hints: constructionHints(
+      "Each column responds independently to its own contact and the shared row-active condition.",
+      "Choose one column. It reports SENSE LOW only when both the row and that contact are active.",
+      "For every column i, connect ROW ACTIVE and CONTACT i to an AND gate. Connect its output to SENSE LOW i. Share ROW ACTIVE across gates, keeping contact signals separate.",
+      "Activate two contacts together, then deactivate the row. Both sense outputs must turn off without changing the contacts.",
+    ),
   } satisfies Level;
 });
 
@@ -270,11 +268,12 @@ const decoder: Level = {
       k.out(`r${i}`, k.gate("and", [i & 1 ? "a0" : na, i & 2 ? "a1" : nb]));
     return k.build();
   },
-  hints: [
-    {
-      text: "Write the address bits for each row. Each output recognizes one combination of true or inverted address bits.",
-    },
-  ],
+  hints: constructionHints(
+    "An address selects exactly one scan row. The outputs enable row drivers; they do not carry key data.",
+    "Invert both address bits so each row can match either value of each bit.",
+    "ROW 0 = NOT A1 AND NOT A0. ROW 1 = NOT A1 AND A0. ROW 2 = A1 AND NOT A0. ROW 3 = A1 AND A0.",
+    "Try all four addresses. Exactly one row-active output must be high for each address.",
+  ),
 };
 const shiftInputs = [
   { id: "event", label: "PRESS EVENT" },
@@ -317,15 +316,17 @@ const mapping: Level = {
       k.gate("and", ["event", ns]),
       "event",
     ];
-    source.forEach((s, i) => k.out(`bit${i}`, s));
+    source.forEach((s, i) => {
+      k.out(`bit${i}`, s);
+    });
     return k.build();
   },
-  hints: [
-    {
-      text: "Compare the binary codes for a and A, then b and B. Which bits depend on position, and which depend on the modifier?",
-    },
-    { text: "No press event means no output character, even when a key or Shift remains held." },
-  ],
+  hints: constructionHints(
+    "ASCII a/b and A/B differ in a few bits. The press event gates every character so a held modifier emits nothing.",
+    "Write 97,98,65,66 in binary. Compare which bits depend on POSITION and which depend on SHIFT.",
+    "BIT 0 = EVENT AND NOT POSITION. BIT 1 = EVENT AND POSITION. BITS 2–4 = GROUND. BIT 5 = EVENT AND NOT SHIFT. BIT 6 = EVENT.",
+    "Try all four letter choices with EVENT high, then turn EVENT off. All character outputs must become zero.",
+  ),
 };
 
 const cpuReference = () => buttonCpuCircuit();
@@ -388,6 +389,7 @@ const cpu: Level = {
   },
   hints: [
     {
+      title: "Core idea",
       text: "Follow the event backward from KEY READY. The interface request is a level held until the CPU reads it, not a direct jump in program code.",
     },
     {

@@ -41,6 +41,7 @@ export function activateBuilder(id: symbol, root?: HTMLElement | null) {
  * holds the focus, then the only builder on the page.
  */
 export function ownsKeyEvent(id: symbol, root: HTMLElement | null, target: EventTarget | null) {
+  if (root?.closest("[hidden], [inert]")) return false;
   if (active && mounted.has(active)) return active === id;
   if (root && target instanceof Node && root.contains(target)) return true;
   if (target instanceof Element && target.closest("[data-logic-builder]")) return false;

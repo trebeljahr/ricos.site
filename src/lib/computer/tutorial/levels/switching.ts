@@ -4,6 +4,7 @@
 // inside a processor.
 import { bitsOf, busPorts, CircuitKit } from "../kit";
 import type { Level, LevelPort } from "../types";
+import { constructionHints } from "./constructionHints";
 import { A, B, boxed, CHAPTERS, OUT, once, port } from "./shared";
 
 const SECTION = "Switching";
@@ -116,10 +117,12 @@ export const selectorLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor"],
   makes: { part: "selector", label: "SELECTOR", builtIn: { reference: true } },
   reference: selector,
-  hints: [
-    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
-    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
-  ],
+  hints: constructionHints(
+    "A control signal permits one data path at a time. The unselected input must have no effect.",
+    "When SELECT is 0, gate A through. When SELECT is 1, gate B through.",
+    "LEFT = A AND NOT SELECT. RIGHT = B AND SELECT. OUT = LEFT OR RIGHT.",
+    "Use A=1 and B=0, then change SELECT. Repeat with A=0 and B=1 to check both paths.",
+  ),
 };
 
 export const switchLevel: Level = {
@@ -139,10 +142,12 @@ export const switchLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor"],
   makes: { part: "switch", label: "SWITCH", builtIn: { reference: true } },
   reference: switchPart,
-  hints: [
-    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
-    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
-  ],
+  hints: constructionHints(
+    "One DATA input takes either of two paths. The inactive output must stay 0.",
+    "Form two conditions: SELECT for TO B, and NOT SELECT for TO A.",
+    "TO A = DATA AND NOT SELECT. TO B = DATA AND SELECT.",
+    "Set DATA to 1 and switch SELECT. Then set DATA to 0: neither output should light.",
+  ),
 };
 
 export const decoderLevel: Level = {
@@ -165,10 +170,12 @@ export const decoderLevel: Level = {
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor", "part:switch"],
   makes: { part: "decoder", label: "DECODER", builtIn: { reference: true } },
   reference: decoder,
-  hints: [
-    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
-    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
-  ],
+  hints: constructionHints(
+    "Each output recognizes exactly one address. A1 has weight 2 and A0 has weight 1.",
+    "Split the rows by A1, then use A0 to choose within each pair.",
+    "Use two SWITCH parts. Feed NOT A1 into the first DATA and A1 into the second DATA. Drive both SELECT inputs from A0. The first pair becomes Y0,Y1 and the second Y2,Y3.",
+    "Try 00, 01, 10, and 11. Exactly one Y output should light in every case.",
+  ),
 };
 
 export const selector8Level: Level = {
@@ -194,10 +201,12 @@ export const selector8Level: Level = {
     builtIn: { preset: "8-bit 2:1 multiplexer" },
   },
   reference: selector8,
-  hints: [
-    { text: "Hold the control inputs fixed. Which data input is allowed to affect each output?" },
-    { text: "Compare the cases where one control bit changes. What must stay isolated?" },
-  ],
+  hints: constructionHints(
+    "Choosing a byte repeats the one-bit selector eight times. All lanes share one SELECT signal.",
+    "Connect A0 and B0 to one selector, then use the same pattern for every remaining bit.",
+    "For each bit i, connect SELECT, Ai, and Bi to one SELECTOR, then its output to OUTi. Do not connect one bit’s output to another bit’s data input.",
+    "Try A=85 and B=170. Flip SELECT and check that the whole output byte changes together.",
+  ),
 };
 
 export const SWITCHING_LEVELS: Level[] = [selectorLevel, switchLevel, decoderLevel, selector8Level];

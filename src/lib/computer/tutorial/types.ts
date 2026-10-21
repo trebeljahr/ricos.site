@@ -69,6 +69,8 @@ export type CustomGrade = {
 
 export type CustomSpec = {
   kind: "custom";
+  /** Nodes read by the check, including non-lamp outputs such as a bus. */
+  observed?: readonly string[];
   /** What the check runs, shown above the check button, e.g. "Two test programs". */
   describe: string;
   grade: (circuit: Circuit) => CustomGrade;

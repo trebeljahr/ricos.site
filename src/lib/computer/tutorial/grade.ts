@@ -7,9 +7,9 @@ import {
   type GateType,
   initialSnapshot,
   inputCount,
-  outputCount,
   LABELS,
   type Node,
+  outputCount,
   type Snapshot,
   step,
 } from "../logic";
@@ -62,8 +62,6 @@ export type Grade =
 
 export const partName = (node: Node) =>
   node.type === "module" ? node.label || node.module?.name || "part" : LABELS[node.type];
-
-const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
 /** Ids of the nodes whose outputs reach one of `targets`, the targets included. */
 export function feeding(circuit: Circuit, targets: readonly string[]): Set<string> {
@@ -180,23 +178,6 @@ export function structureProblems(
     circuit,
     spec.outputs.map((port) => port.id),
   );
-  for (const id of used) {
-    const node = byId.get(id);
-    if (!node || lockedIds.has(id)) continue;
-    const wired = new Set(circuit.wires.filter((wire) => wire.to === id).map((wire) => wire.input));
-    if (node.splice && node.type === "bus" && wired.size) continue;
-    for (let input = 0; input < inputCount(node); input++) {
-      if (wired.has(input)) continue;
-      const empty = Array.from({ length: inputCount(node) }, (_, index) => index).filter(
-        (index) => !wired.has(index),
-      ).length;
-      problems.push({
-        text: `This ${partName(node)} has ${plural(empty, "empty input")}. Every part that feeds a lamp needs a wire in each input.`,
-        anchor: { kind: "input", node: id, index: input },
-      });
-      break;
-    }
-  }
   if (spec.kind === "truth") {
     const loop = loopNode(circuit, used);
     if (loop)

@@ -34,6 +34,30 @@ describe("independent circuit construction", () => {
     const out = k.gate("nand", [inverted, inverted]);
     expect(gradePassed(grade("and", k.out("out", out).build()))).toBe(true);
   });
+  it.each([
+    { sources: [] },
+    { sources: ["a"] },
+  ])("accepts unwired NAND inputs as 0 with $sources", ({ sources }) => {
+    const level = levelById("not")!;
+    if (level.spec.kind !== "truth") throw new Error("truth spec");
+    const k = new CircuitKit("NOT with an unwired constant", level.spec.inputs, level.spec.outputs);
+    const high = k.gate("nand", sources);
+    const out = k.gate("nand", ["a", high]);
+    const result = grade("not", k.out("out", out).build());
+    expect(result.kind).toBe("truth");
+    expect(gradePassed(result)).toBe(true);
+  });
+  it("reports wrong truth-table outputs instead of rejecting an unwired NAND input", () => {
+    const level = levelById("and")!;
+    if (level.spec.kind !== "truth") throw new Error("truth spec");
+    const k = new CircuitKit("Incomplete AND", level.spec.inputs, level.spec.outputs);
+    const out = k.gate("nand", ["a"]);
+    const result = grade("and", k.out("out", out).build());
+    expect(result.kind).toBe("truth");
+    if (result.kind !== "truth") throw new Error("truth grade");
+    expect(result.pass).toBe(false);
+    expect(result.rows.map((row) => row.actual)).toEqual([[true], [true], [true], [true]]);
+  });
   it("rejects the target built-in even when behavior passes", () => {
     const level = levelById("and")!;
     const k = new CircuitKit("shortcut", level.spec.kind === "truth" ? level.spec.inputs : [], [
@@ -56,7 +80,7 @@ describe("independent circuit construction", () => {
     const down = source.nodes.find((n) => n.type === "nmos")!;
     const broken = { ...source, wires: source.wires.filter((w) => w.from !== down.id) };
     expect(gradePassed(grade("cmos-not", broken))).toBe(false);
-    expect(JSON.stringify(grade("cmos-not", broken))).toMatch(/conducting path|empty input/);
+    expect(JSON.stringify(grade("cmos-not", broken))).toMatch(/conducting path/);
   });
   it("requires every numeric source value and detects crossed weights", () => {
     for (const level of INPUT_LEVELS) {

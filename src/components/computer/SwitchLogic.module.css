@@ -1,4 +1,27 @@
 /* A tabletop teaching model: insulated leads, brass knife switches and a glass lamp. */
+.experiment {
+  width: min(100%, 900px);
+  margin: 28px auto;
+  padding: clamp(12px, 2.4vw, 24px);
+  border: 1px solid #afa078;
+  border-radius: 8px;
+  background: #f1ead6;
+  box-shadow: 0 8px 28px #080f1f26;
+  color: #352e21;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.header { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.eyebrow { color: #796b4e; font-size: 11px; font-weight: 700; letter-spacing: .16em; }
+.header h3 { margin: 5px 0 0; color: #342e22; font-size: clamp(19px, 3vw, 29px); line-height: 1.2; }
+.sound { flex: none; padding: 7px 10px; border: 1px solid #8b7953; border-radius: 4px; background: #e7debf; color: #443a28; font: inherit; font-size: 11px; cursor: pointer; }
+.sound[aria-pressed="true"] { background: #e2e9be; }
+.wiring { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.wiring button { padding: 8px 11px; border: 1px solid #aa9b74; border-radius: 4px; background: #eee9d9; color: #4a412f; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.wiring button[aria-pressed="true"] { border-color: #526a48; background: #526a48; color: #fffef0; }
+.fixedWiring { margin: 16px 0 0; color: #65583c; font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+.caption { display: flex; flex-wrap: wrap; gap: 8px 28px; padding: 13px 2px 0; color: #554b39; font-size: 13px; line-height: 1.5; }
+.caption p { flex: 1 1 280px; margin: 0; }
+.experiment button:focus-visible { outline: 3px solid #32728d; outline-offset: 3px; }
 .board {
   position: relative;
   isolation: isolate;
@@ -26,6 +49,16 @@
   transform: translate(-50%, -50%);
 }
 .knifeSwitch {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #302b20;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.transistorSwitch {
   padding: 0;
   border: 0;
   background: transparent;
@@ -124,7 +157,7 @@
 }
 .battery > i { position: absolute; left: 33%; top: -6%; width: 34%; height: 8%; border-radius: 3px 3px 0 0; background: linear-gradient(90deg, #787467, #ddd8bf, #777568); }
 .battery > span { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-around; color: #e9e8ce; font-size: 3.8cqi; }
-.battery b { font-size: 2cqi; writing-mode: vertical-rl; letter-spacing: .08em; }
+.battery b { font-size: .526em; writing-mode: vertical-rl; letter-spacing: .08em; }
 .lamp {
   position: absolute;
   left: 77.5%;
@@ -163,7 +196,6 @@
 .lampBase i { position: absolute; top: 50%; left: 20%; width: 8%; aspect-ratio: 1; border-radius: 50%; background: #aa8a45; box-shadow: inset 1px 1px #f9e8bb, 0 1px #544322; }
 .lampBase i + i { left: auto; right: 20%; }
 .lampLabel { top: 115%; }
-.instruction { margin: 14px 0 8px; font-size: 12px; line-height: 1.5; }
 .transistor { position: absolute; inset: 4% 0 14%; }
 .package { position: absolute; z-index: 1; inset: 10% 22% 6%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #181f1a; border-radius: 45% 45% 6% 6%; background: linear-gradient(125deg, #58605a, #242b26 55%, #151a17); box-shadow: inset 0 2px 1px #758074, 2px 5px 5px #3d2e2255; color: #e2e7ce; font-size: 2.5cqi; letter-spacing: .04em; }
 .package > span { font-size: 3.5cqi; }
@@ -171,14 +203,38 @@
 .leadLeft { left: 12%; }
 .leadRight { right: 12%; }
 .controlLead { position: absolute; left: 48%; top: 80%; height: 42%; width: 4%; background: #606a59; border-inline: 1px solid #9aa78c; }
-.transistor[data-on="true"] .controlLead { background: #e3f2a2; box-shadow: 0 0 4px #e5f3a3; }
-.voltage { position: absolute; top: 98%; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 30px; width: max-content; padding: 5px 7px; border: 1px solid #59664c; border-radius: 4px; background: linear-gradient(#e6e7cd, #b3b99e); box-shadow: 0 2px 2px #53463160; color: #2d3528; font: inherit; font-size: clamp(9px, 2.5cqi, 13px); cursor: pointer; }
+.transistorSwitch[aria-pressed="true"] .controlLead { background: #e3f2a2; box-shadow: 0 0 4px #e5f3a3; }
+.transistor[data-on="true"] .leadLeft, .transistor[data-on="true"] .leadRight { background: linear-gradient(#fff4bc, #ccad5b 60%, #ffda79); box-shadow: 0 0 7px #ffe69b; }
+.voltage { position: absolute; top: 98%; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 30px; width: max-content; padding: 5px 7px; border: 1px solid #59664c; border-radius: 4px; background: linear-gradient(#e6e7cd, #b3b99e); box-shadow: 0 2px 2px #53463160; color: #2d3528; font: inherit; font-size: clamp(9px, 2.5cqi, 13px); }
 .voltage i { width: 7px; height: 7px; border-radius: 50%; background: #66745a; box-shadow: inset 0 1px 2px #283220; }
-.voltage[aria-pressed="true"] i { background: #def39e; box-shadow: 0 0 5px #e9f5b1; }
-.voltage:hover { filter: brightness(1.06); }
+.voltage[data-high="true"] i { background: #def39e; box-shadow: 0 0 5px #e9f5b1; }
+.transistorSwitch:hover .voltage { filter: brightness(1.06); }
+.sparkBurst { position: absolute; z-index: 5; width: 1px; height: 1px; pointer-events: none; }
+.sparkBurst::before, .sparkBurst i { position: absolute; display: block; border-radius: 50%; background: #fff9c5; box-shadow: 0 0 5px 2px #ffe775; }
+.sparkBurst::before { content: ""; width: 10px; height: 10px; left: -5px; top: -5px; animation: sparkFlash .38s ease-out both; }
+.sparkBurst i { width: 4px; height: 4px; left: -2px; top: -2px; animation: sparkFly .48s ease-out both; }
+.sparkBurst i:nth-child(1) { --x: -23px; --y: -23px; }
+.sparkBurst i:nth-child(2) { --x: 6px; --y: -33px; animation-delay: .025s; }
+.sparkBurst i:nth-child(3) { --x: 28px; --y: -14px; }
+.sparkBurst i:nth-child(4) { --x: 31px; --y: 13px; animation-delay: .04s; }
+.sparkBurst i:nth-child(5) { --x: 8px; --y: 28px; }
+.sparkBurst i:nth-child(6) { --x: -24px; --y: 17px; animation-delay: .02s; }
+.sparkBurst i:nth-child(7) { --x: -34px; --y: -3px; }
+@keyframes sparkFlash { 0% { opacity: 1; transform: scale(.4); } 35% { opacity: 1; transform: scale(1.35); } 100% { opacity: 0; transform: scale(.1); } }
+@keyframes sparkFly { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.25); } }
 @media (prefers-reduced-motion: reduce) {
   .blade, .glass, .lamp::before { transition: none; }
+  .sparkBurst { display: none; }
 }
 @container (max-width: 420px) {
   .battery b { display: none; }
+  .lampLabel { top: 165%; }
+}
+@media (max-width: 560px) {
+  .experiment { margin-block: 20px; }
+  .header { align-items: start; }
+  .sound { font-size: 10px; }
+  .wiring { gap: 5px; margin-top: 13px; }
+  .wiring button { padding: 6px 8px; font-size: 10px; }
+  .caption { font-size: 12px; }
 }

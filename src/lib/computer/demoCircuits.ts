@@ -62,20 +62,64 @@ export function gateDemo(gate: LogicGate): Circuit {
 
 export const transistorDemo = (gate: LogicGate) => layoutCircuit(gateBlueprint(gate, "transistor"));
 
-/** Idealized conducting paths for the physical switch and transistor analogy. */
-export function switchLampDemo(wiring: "single" | "series" | "parallel"): Circuit {
-  const b = new Builder();
-  b.add("power", "high", 0, 0, "BATTERY");
-  b.add("a", "switch", 0, 160, "CONTROL A");
-  b.gate("switch-a", "nmos", 200, 0, "a", "power", "SWITCH A");
-  if (wiring !== "single") {
-    b.add("b", "switch", 200, 160, "CONTROL B");
-    b.gate("switch-b", "nmos", 400, 0, "b", wiring === "series" ? "switch-a" : "power", "SWITCH B");
-    if (wiring === "parallel") b.gate("paths", "junction", 600, 0, "switch-a", "switch-b");
-  }
-  b.add("lamp", "lamp", 800, 0, "LAMP");
-  b.connect(wiring === "single" ? "switch-a" : wiring === "series" ? "switch-b" : "paths", "lamp");
-  return b.circuit("Switches and a lamp");
+export type SwitchLampWiring =
+  | "single"
+  | "series"
+  | "parallel"
+  | "not"
+  | "nand"
+  | "nor"
+  | "xor"
+  | "xnor";
+
+type Contact = readonly ["a" | "b", "nmos" | "pmos"];
+
+/** Conducting paths assembled from the same native transistor parts as the editor. */
+export function switchLampDemo(wiring: SwitchLampWiring): Circuit {
+  const a: Contact = ["a", "nmos"];
+  const b: Contact = ["b", "nmos"];
+  const notA: Contact = ["a", "pmos"];
+  const notB: Contact = ["b", "pmos"];
+  const paths: Record<SwitchLampWiring, Contact[][]> = {
+    single: [[a]],
+    series: [[a, b]],
+    parallel: [[a], [b]],
+    not: [[notA]],
+    nand: [[notA], [notB]],
+    nor: [[notA, notB]],
+    xor: [
+      [a, notB],
+      [notA, b],
+    ],
+    xnor: [
+      [a, b],
+      [notA, notB],
+    ],
+  };
+  const builder = new Builder();
+  builder.add("power", "high", 0, 0, "BATTERY");
+  builder.add("a", "switch", 0, 160, "CONTROL A");
+  if (paths[wiring].some((path) => path.some(([control]) => control === "b")))
+    builder.add("b", "switch", 0, 320, "CONTROL B");
+  const ends = paths[wiring].map((path, branch) =>
+    path.reduce<string>(
+      (source, [control, type], position) =>
+        builder.gate(
+          `path-${branch}-${position}`,
+          type,
+          200 + position * 180,
+          50 + branch * 180,
+          control,
+          source,
+          `${type.toUpperCase()} ${control.toUpperCase()}`,
+        ),
+      "power",
+    ),
+  );
+  if (ends.length === 2) builder.gate("paths", "junction", 600, 0, ends[0], ends[1]);
+  builder.add("lamp", "lamp", 800, 0, "LAMP");
+  builder.connect(ends.length === 2 ? "paths" : ends[0], "lamp");
+  return builder.circuit("Switches and a lamp");
 }
 
 export function routingDemo(kind: "decoder" | "mux" | "memory"): Circuit {

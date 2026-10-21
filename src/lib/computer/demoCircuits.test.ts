@@ -68,18 +68,28 @@ function busBench(kind: (typeof DEVICE_KINDS)[number]) {
 }
 
 describe("chapter circuits", () => {
-  it("runs single, series and parallel switch paths through native transistors", () => {
-    for (const wiring of ["single", "series", "parallel"] as const) {
+  it("runs every lamp path through native transistor contacts", () => {
+    const outputs = {
+      single: (a: boolean, _b: boolean) => a,
+      series: (a: boolean, b: boolean) => a && b,
+      parallel: (a: boolean, b: boolean) => a || b,
+      not: (a: boolean, _b: boolean) => !a,
+      nand: (a: boolean, b: boolean) => !(a && b),
+      nor: (a: boolean, b: boolean) => !(a || b),
+      xor: (a: boolean, b: boolean) => a !== b,
+      xnor: (a: boolean, b: boolean) => a === b,
+    };
+    for (const wiring of Object.keys(outputs) as (keyof typeof outputs)[]) {
       const circuit = switchLampDemo(wiring);
       expect(validateCircuit(circuit)).toBeTruthy();
-      expect(circuit.nodes.filter((node) => node.type === "nmos")).toHaveLength(
-        wiring === "single" ? 1 : 2,
+      expect(
+        circuit.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
+      ).toHaveLength(
+        wiring === "single" || wiring === "not" ? 1 : wiring === "xor" || wiring === "xnor" ? 4 : 2,
       );
       for (const a of [false, true])
         for (const b of [false, true]) {
-          expect(read(circuit, { a, b }).values.lamp).toBe(
-            wiring === "single" ? a : wiring === "series" ? a && b : a || b,
-          );
+          expect(read(circuit, { a, b }).values.lamp).toBe(outputs[wiring](a, b));
         }
     }
   });

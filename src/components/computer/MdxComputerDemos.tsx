@@ -81,10 +81,14 @@ export const COMPUTER_MDX_DEMOS = {
   SwitchLogic: chapterDemo(
     () => import("./SwitchLogic").then((module) => module.SwitchLogic),
     "Switch logic",
+    650,
+    true,
   ),
   TransistorSwitches: chapterDemo(
     () => import("./SwitchLogic").then((module) => module.TransistorSwitches),
     "Electrically controlled switches",
+    650,
+    true,
   ),
   GateTruthTable: chapterDemo(
     () => import("./TruthTables").then((module) => module.GateTruthTable),

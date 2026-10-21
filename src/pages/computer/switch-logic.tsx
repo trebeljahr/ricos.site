@@ -19,8 +19,7 @@ export default function SwitchLogicPage() {
             SWITCHES BECOME LOGIC
           </h1>
         </header>
-        {/* The width of a chapter column, where these are embedded. */}
-        <div className="mx-auto max-w-prose">
+        <div className="mx-auto max-w-4xl">
           <h2>
             <code>{"<SwitchLogic />"}</code>
           </h2>

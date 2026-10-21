@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SwitchLogic, TransistorSwitches } from "./SwitchLogic";
 import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
@@ -77,56 +77,59 @@ describe("truth tables", () => {
 });
 
 describe("switch logic", () => {
-  it("toggles the physical switches, records cases and has no gate reveal", () => {
+  it("clicks the physical contacts and sparks only when a path completes", () => {
+    vi.useFakeTimers();
     const { container } = render(<SwitchLogic />);
     const board = screen.getByRole("group", { name: "Physical switches and a lamp" });
     expect(within(board).getAllByRole("button")).toHaveLength(2);
-    expect(container.textContent).toContain("1 OF 4");
+    expect(container.textContent).not.toContain("CASES TRIED");
     click(/^Switch A: open/);
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(screen.queryByTestId("switch-spark")).toBeNull();
     expect(
       screen.getByRole("button", { name: /^Switch A: closed/ }).getAttribute("aria-pressed"),
     ).toBe("true");
     click(/^Switch B: open/);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    expect(container.textContent).toContain("3 OF 4");
+    expect(screen.getByTestId("switch-spark")).toBeTruthy();
+    act(() => vi.advanceTimersByTime(600));
+    expect(screen.queryByTestId("switch-spark")).toBeNull();
     click(/^Switch A: closed/);
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    expect(container.textContent).toContain("4 OF 4");
+    expect(screen.queryByTestId("switch-spark")).toBeNull();
     expect(screen.queryByRole("button", { name: /REVEAL|HIDE THE GATE/ })).toBeNull();
-    expect(screen.queryByRole("button", { name: /^Input A/ })).toBeNull();
 
     click("SIDE BY SIDE");
-    expect(container.textContent).toContain("1 OF 4");
-    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    click(/^Switch B: closed/);
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    click(/^A 1, B 0:/);
-    expect(screen.getByRole("button", { name: /^Switch A: closed/ })).toBeTruthy();
+    click(/^Switch A: open/);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    expect(screen.getByTestId("switch-spark")).toBeTruthy();
   });
 
-  it("starts with a voltage-controlled transistor, then combines the same paths", () => {
+  it("lets transistor packages control the other gate paths", () => {
     const { container } = render(<TransistorSwitches />);
-    expect(container.textContent).toContain("1 OF 2");
+    expect(container.textContent).not.toContain("CASES TRIED");
     expect(screen.queryByRole("button", { name: /^Control B:/ })).toBeNull();
     click(/^Control A: low/);
-    expect(screen.getByRole("img", { name: "Transistor A: conducting" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /NMOS transistor conducting/ })).toBeTruthy();
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    expect(container.textContent).toContain("2 OF 2");
-    click("IN A ROW");
+    expect(screen.getByTestId("switch-spark")).toBeTruthy();
+    click("IN A ROW · AND");
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    click(/^Control A: low/);
     click(/^Control B: low/);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    click("SIDE BY SIDE");
-    click(/^Control A: high/);
+    click("NOT");
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    click(/^Control B: high/);
+    click(/^Control A: low/);
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    click("ONE SWITCH");
-    expect(container.textContent).toContain("1 OF 2");
-    click(/^A 1:/);
+    click("XOR");
+    expect(screen.getAllByRole("button", { name: /^Control A: low/ })).toHaveLength(2);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Control A: low/ })[0]);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    expect(container.textContent).toContain("2 OF 2");
+    expect(screen.getByTestId("switch-spark")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: /^Control B: low/ })[0]);
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(screen.queryByTestId("switch-spark")).toBeNull();
   });
 });

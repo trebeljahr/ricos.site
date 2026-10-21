@@ -110,14 +110,25 @@ describe("chapter circuits", () => {
   });
 
   it("propagates carry through the same eight full-adder modules as the lab", () => {
-    const circuit = adderDemo("byte");
+    const source = adderDemo("byte");
+    expect(validateCircuit(source)).toBeTruthy();
     for (const [a, b, cin] of [
       [13, 29, 0],
       [255, 1, 0],
       [100, 200, 0],
       [255, 255, 1],
     ]) {
-      const snapshot = read(circuit, { ...bits("a", a, 8), ...bits("b", b, 8), cin: Boolean(cin) });
+      const circuit = {
+        ...source,
+        nodes: source.nodes.map((node) =>
+          node.id === "a"
+            ? { ...node, numberValue: a }
+            : node.id === "b"
+              ? { ...node, numberValue: b }
+              : node,
+        ),
+      };
+      const snapshot = read(circuit, { cin: Boolean(cin) });
       const out = moduleOutputs(circuit).map((node) => snapshot.values[node.id]);
       expect(toNumber(out.slice(0, 8))).toBe((a + b + cin) & 255);
       expect(out[8]).toBe(a + b + cin > 255);

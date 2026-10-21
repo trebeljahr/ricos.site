@@ -8,6 +8,43 @@ import {
 } from "./wireGeometry";
 
 describe("wire drawing and hit geometry", () => {
+  it.each([
+    [
+      { x: 0, y: 0 },
+      { x: 0, y: 40 },
+      { x: 100, y: 40 },
+      { x: 100, y: 80 },
+    ],
+    [
+      { x: 0, y: 0 },
+      { x: 40, y: 0 },
+      { x: 40, y: 100 },
+      { x: 80, y: 100 },
+    ],
+    [
+      { x: 0, y: 0 },
+      { x: 0, y: 40 },
+      { x: 0, y: 80 },
+    ],
+    [
+      { x: 0, y: 0 },
+      { x: 40, y: 0 },
+      { x: 80, y: 0 },
+    ],
+  ])("keeps authored right-angle routes connected when pins move independently: %j", (...points) => {
+    const saved = structuredClone(points);
+    const start = { x: 20, y: 10 },
+      end = { x: 300, y: 200 };
+    const route = pathPoints(explicitWirePath(points, start, end))[0];
+    expect(route[0]).toEqual(start);
+    expect(route.at(-1)).toEqual(end);
+    for (let index = 1; index < route.length; index++)
+      expect(route[index].x === route[index - 1].x || route[index].y === route[index - 1].y).toBe(
+        true,
+      );
+    expect(points).toEqual(saved);
+  });
+
   it("adds one arch for a crossing and keeps its hit shape identical", () => {
     const paths = bridgeWirePaths([
       { id: "horizontal", path: "M 0 50 L 100 50" },

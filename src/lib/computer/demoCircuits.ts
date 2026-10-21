@@ -3,6 +3,7 @@ import { Builder, type Ref, range } from "./blockBuilder";
 import { layoutCircuit } from "./circuitLayout";
 import { addDataMemory, datapathNode } from "./datapathBlocks";
 import { type Circuit, gateBlueprint, type LogicGate, PRESETS } from "./logic";
+import { nodeHeight, nodeWidth } from "./nodeGeometry";
 import { busPorts, CircuitKit } from "./tutorial/kit";
 import { CATALOG } from "./tutorial/levels";
 
@@ -18,15 +19,69 @@ function boxedFullAdder(): Circuit {
   return circuit;
 }
 
+function byteAdderDemo(): Circuit {
+  const circuit = structuredClone(PRESETS["8-bit full adder"]);
+  const stages = circuit.nodes.filter((node) => !/^[ab]\d$/.test(node.id));
+  const diagram: Circuit = {
+    ...circuit,
+    name: "Eight-bit adder",
+    nodes: [
+      { id: "a", type: "input8", label: "A", numberValue: 13, x: 360, y: 80, outputSide: "bottom" },
+      { id: "b", type: "input8", label: "B", numberValue: 29, x: 720, y: 80, outputSide: "bottom" },
+      ...stages.map((node) => {
+        const bit = Number(node.id.match(/\d$/)?.[0] ?? 0);
+        if (node.type === "module")
+          return {
+            ...node,
+            module: layoutCircuit(node.module!),
+            x: 360 + bit * 400,
+            y: 720,
+            inputSide: "top" as const,
+            outputSide: "bottom" as const,
+          };
+        if (node.id.startsWith("out"))
+          return {
+            ...node,
+            label: `SUM${bit}`,
+            x: 310 + bit * 400,
+            y: 1080,
+            inputSide: "top" as const,
+          };
+        return { ...node, x: node.id === "cin" ? 80 : 3560, y: 720 };
+      }),
+    ],
+    wires: circuit.wires.map((wire) =>
+      /^[ab]\d$/.test(wire.from)
+        ? { ...wire, from: wire.from[0], output: Number(wire.from[1]) }
+        : wire,
+    ),
+  };
+  // Give each operand bit its own horizontal lane above the carry chain.
+  // These authored routes use the renderer's bottom source and top module pins.
+  diagram.wires = diagram.wires.map((wire) => {
+    if (wire.from !== "a" && wire.from !== "b") return wire;
+    const source = diagram.nodes.find((node) => node.id === wire.from)!;
+    const target = diagram.nodes.find((node) => node.id === wire.to)!;
+    const bit = wire.output ?? 0;
+    const start = {
+      x: source.x + 16 + (7 - bit) * ((nodeWidth(source) - 40) / 7),
+      y: source.y + nodeHeight(source),
+    };
+    const end = { x: target.x + 16 + wire.input * ((nodeWidth(target) - 40) / 2), y: target.y };
+    const lane = (wire.from === "a" ? 400 : 560) + bit * 18;
+    return { ...wire, points: [start, { x: start.x, y: lane }, { x: end.x, y: lane }, end] };
+  });
+  return diagram;
+}
+
 export function adderDemo(kind: "sum" | "half" | "full" | "boxed-full" | "byte"): Circuit {
+  if (kind === "byte") return byteAdderDemo();
   const base =
-    kind === "byte"
-      ? PRESETS["8-bit full adder"]
-      : kind === "full"
-        ? PRESETS["Full adder"]
-        : kind === "boxed-full"
-          ? boxedFullAdder()
-          : PRESETS["Half adder"];
+    kind === "full"
+      ? PRESETS["Full adder"]
+      : kind === "boxed-full"
+        ? boxedFullAdder()
+        : PRESETS["Half adder"];
   const circuit = structuredClone(base);
   if (kind === "sum") {
     circuit.name = "The sum bit";
@@ -35,14 +90,7 @@ export function adderDemo(kind: "sum" | "half" | "full" | "boxed-full" | "byte")
   }
   circuit.nodes = circuit.nodes.map((node) => ({
     ...node,
-    value:
-      kind === "byte"
-        ? /^a\d$/.test(node.id)
-          ? Boolean(13 & (1 << Number(node.id.slice(1))))
-          : /^b\d$/.test(node.id)
-            ? Boolean(29 & (1 << Number(node.id.slice(1))))
-            : node.value
-        : node.id === "a" || (["full", "boxed-full"].includes(kind) && node.id === "b"),
+    value: node.id === "a" || (["full", "boxed-full"].includes(kind) && node.id === "b"),
   }));
   return layoutCircuit(circuit);
 }

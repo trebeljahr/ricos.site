@@ -82,7 +82,21 @@ export function explicitWirePath(points: Point[], start: Point, end: Point) {
     dy = start.y - first.y;
   if (Math.abs(end.x - last.x - dx) < 0.001 && Math.abs(end.y - last.y - dy) < 0.001)
     return polylinePath(points.map((point) => ({ x: point.x + dx, y: point.y + dy })));
-  return polylinePath([start, ...points.slice(1, -1), end]);
+  const middle = points.slice(1, -1).map((point) => ({ ...point }));
+  const entry = middle[0],
+    exit = middle[middle.length - 1];
+  if (entry && exit) {
+    // Keep the authored rail while its perpendicular leads follow moved pins.
+    if (middle.length === 1 && first.x === entry.x && entry.x === last.x)
+      return polylinePath([start, { x: start.x, y: entry.y }, { x: end.x, y: entry.y }, end]);
+    if (middle.length === 1 && first.y === entry.y && entry.y === last.y)
+      return polylinePath([start, { x: entry.x, y: start.y }, { x: entry.x, y: end.y }, end]);
+    if (first.x === points[1].x) entry.x = start.x;
+    else if (first.y === points[1].y) entry.y = start.y;
+    if (last.x === points[points.length - 2].x) exit.x = end.x;
+    else if (last.y === points[points.length - 2].y) exit.y = end.y;
+  }
+  return polylinePath([start, ...middle, end]);
 }
 
 type Segment = { a: Point; b: Point; start: number; wire: number };

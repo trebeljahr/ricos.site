@@ -6,7 +6,7 @@
 | --- | --- |
 | Half adder / sum bit | `PRESETS["Half adder"]`; sum-only removes the carry branch |
 | Full adder | `PRESETS["Full adder"]`, or the byte adder's existing one-bit module |
-| Eight-bit adder | `PRESETS["8-bit full adder"]` |
+| Eight-bit adder | `PRESETS["8-bit full adder"]` with native A/B byte inputs and separate operand lanes |
 | Transistor gates | `gateBlueprint(gate, "transistor")` |
 | Decoder | Tutorial catalog's built-in decoder |
 | Four-way multiplexer | Three instances of the catalog's built-in selector |

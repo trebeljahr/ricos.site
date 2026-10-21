@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, expect, it } from "vitest";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
 import type { Circuit } from "../../lib/computer/logic";
-import { FullAdder, HalfAdder } from "./Adders";
+import { EightBitAdder, FullAdder, HalfAdder } from "./Adders";
 import { CircuitDemo } from "./CircuitDemo";
 import { MemoryMappedScreenDemo } from "./MemoryMappedScreenDemo";
 import { testButton } from "./testButton";
@@ -25,6 +25,28 @@ it("starts the boxed full adder with two unfoldable half adders", () => {
   expect(screen.getByLabelText("HALF ADDER 1 — 1-bit half adder part")).toBeTruthy();
   fireEvent.click(testButton("Unfold HALF ADDER 1 in place"));
   expect(screen.getByLabelText("1-bit half adder expanded circuit")).toBeTruthy();
+});
+
+it("adds two editable bytes and keeps their controls when a bit stage unfolds", () => {
+  render(<EightBitAdder />);
+  const a = screen.getByLabelText("A decimal input");
+  const b = screen.getByLabelText("B decimal input");
+  expect(screen.queryByLabelText("A0 — SWITCH part")).toBeNull();
+  fireEvent.change(a, { target: { value: "255" } });
+  fireEvent.keyDown(a, { key: "Enter" });
+  fireEvent.change(b, { target: { value: "1" } });
+  fireEvent.keyDown(b, { key: "Enter" });
+  expect(within(screen.getByLabelText("SUM0 — LAMP part")).getByLabelText("LED off")).toBeTruthy();
+  expect(
+    within(screen.getByLabelText("CARRY OUT — LAMP part")).getByLabelText("LED on"),
+  ).toBeTruthy();
+  fireEvent.click(testButton("Unfold FULL ADDER 0 in place"));
+  expect(screen.getByLabelText("1-bit full adder expanded circuit")).toBeTruthy();
+  expect(screen.getByLabelText("A decimal input")).toBeTruthy();
+  expect(screen.getByLabelText("B decimal input")).toBeTruthy();
+  expect(
+    within(screen.getByLabelText("CARRY OUT — LAMP part")).getByLabelText("LED on"),
+  ).toBeTruthy();
 });
 
 it("stores into the native screen through the CPU address decoder", () => {

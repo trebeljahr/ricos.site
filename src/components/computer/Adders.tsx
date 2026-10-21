@@ -29,8 +29,8 @@ export function FullAdder({ unfolded = true }: { unfolded?: boolean }) {
 export function EightBitAdder() {
   return (
     <CircuitDemo makeCircuit={byte} label="Eight-bit adder">
-      Eight full adders pass the carry from bit 0 to bit 7. Flip the input bits and enable Ripple to
-      follow the gate delays.
+      Eight full adders pass the carry from bit 0 to bit 7. Set A and B and enable Ripple to follow
+      the gate delays.
     </CircuitDemo>
   );
 }

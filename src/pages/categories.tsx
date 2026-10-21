@@ -1,5 +1,4 @@
 import { Card } from "@components/Card";
-import { ContentListRow } from "@components/ContentListRow";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
@@ -17,7 +16,7 @@ import {
 import { type Theme, themes } from "src/lib/themes/themesData";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 
-type TagEntry = { tag: string; items: Item[] };
+type TagEntry = { tag: string; items: Pick<Item, "link" | "title">[] };
 
 type ThemeCard = {
   slug: string;
@@ -143,7 +142,11 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
               </h3>
               <ul className="not-prose m-0 list-none p-0">
                 {items.map((item) => (
-                  <ContentListRow key={item.link} item={item} />
+                  <li key={item.link} className="py-1">
+                    <Link href={item.link} className="text-accent hover:underline">
+                      {item.title}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -174,7 +177,12 @@ export async function getStaticProps() {
   }
 
   const tagEntries: TagEntry[] = [...tagMap.entries()]
-    .map(([tag, items]) => ({ tag, items: items.sort(byDateDesc) }))
+    .map(([tag, items]) => ({
+      tag,
+      // A piece can appear under many tags. Send and render only the fields
+      // this directory uses instead of repeating covers and excerpts.
+      items: items.sort(byDateDesc).map(({ link, title }) => ({ link, title })),
+    }))
     .sort((a, b) => b.items.length - a.items.length);
 
   // Build per-theme card. The full list behind each card lives at

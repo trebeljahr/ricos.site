@@ -5,6 +5,19 @@ import Header, { PageMain } from "@components/PostHeader";
 import { ToTopButton } from "@components/ToTopButton";
 import Link from "next/link";
 
+// Keep this already-public contact link usable without Cloudflare rewriting it
+// to a /cdn-cgi/l/email-protection URL that returns 404 to crawlers.
+function ContactEmail() {
+  return (
+    <span
+      dangerouslySetInnerHTML={{
+        __html:
+          '<!--email_off--><a href="mailto:imprint+ricos.site@trebeljahr.com" class="text-accent hover:underline">imprint+ricos.site@trebeljahr.com</a><!--/email_off-->',
+      }}
+    />
+  );
+}
+
 export default function PrivacyPage() {
   return (
     <Layout
@@ -138,12 +151,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             You can unsubscribe at any time via the link in every email or by emailing{" "}
-            <a
-              href="mailto:imprint+ricos.site@trebeljahr.com"
-              className="text-accent hover:underline"
-            >
-              imprint+ricos.site@trebeljahr.com
-            </a>
+            <ContactEmail />
             . After you unsubscribe, your address stays on record as unsubscribed so that you get no
             more emails. Ask me and I delete it completely.
           </p>
@@ -172,12 +180,7 @@ export default function PrivacyPage() {
           </ul>
           <p>
             To exercise any of these rights, contact{" "}
-            <a
-              href="mailto:imprint+ricos.site@trebeljahr.com"
-              className="text-accent hover:underline"
-            >
-              imprint+ricos.site@trebeljahr.com
-            </a>
+            <ContactEmail />
             .
           </p>
         </article>

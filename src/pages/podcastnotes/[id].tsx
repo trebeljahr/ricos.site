@@ -59,6 +59,7 @@ const PodcastnoteComponent = ({ podcastnote, backlinks }: Props) => {
       ogType="article"
       articlePublishedTime={podcastnote.date}
       hasMath={podcastnote.hasMath}
+      noindex
     >
       <JsonLd
         title={podcastnote.seoTitle || podcastnote.displayTitle}

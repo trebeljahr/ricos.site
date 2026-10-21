@@ -125,7 +125,7 @@ const defaultSeoInfo = {
   title: "Procedurally Generated 3D Dungeon",
   description:
     "A 3D dungeon room generated in the browser, powered by R3F, Typescript, and a port of vazgriz's dungeon generator visualized with free 3D models from Quaternius",
-  url: "/r3f/dungeon/dungeon-algo-3d",
+  url: "/r3f/dungeon/dungeon-3d",
   keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
   image: "/assets/pages/r3f/dungeon-3d.png",
   imageAlt: "a 3D dungeon room generated in the browser",
@@ -160,5 +160,5 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
 }
 
 export function getStaticProps() {
-  return { props: { seo: getSeoInfo("/r3f/dungeon/dungeon-algo-3d") } };
+  return { props: { seo: getSeoInfo("/r3f/dungeon/dungeon-3d") } };
 }

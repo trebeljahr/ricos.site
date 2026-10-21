@@ -40,6 +40,16 @@ function buildNot(b: ReturnType<typeof within>) {
 }
 
 describe("independent tutorials", () => {
+  it("explains automatic junction knobs without advertising a standalone junction block", () => {
+    render(<LogicTutorial levels={["cmos-not"]} />);
+    expect(screen.getByText(/Available blocks: PMOS, NMOS/).textContent).not.toContain("JUNCTION");
+    expect(
+      screen.getByText(/Release at the highlighted target to create a small junction knob/),
+    ).toBeTruthy();
+    expect(
+      within(screen.getByLabelText("Gate palette")).queryByRole("button", { name: "JUNCTION" }),
+    ).toBeNull();
+  });
   it("starts with goal, context, table and available blocks; hints never edit the board", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();

@@ -2,8 +2,7 @@
 // NAND, as in NandGame's first section. Each gate the reader builds joins the
 // parts list of the levels after it.
 import { type Circuit, initialSnapshot, step } from "../../logic";
-import { allRows } from "../kit";
-import { CircuitKit, defaultStart } from "../kit";
+import { allRows, CircuitKit, defaultStart } from "../kit";
 import type { Level } from "../types";
 import { A, B, CHAPTERS, OUT, once } from "./shared";
 
@@ -132,9 +131,9 @@ export const cmosNotLevel: Level = {
   title: "NOT from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is the opposite of A. Use PMOS, NMOS, junctions and the fixed supply rails.",
+  goal: "OUT is the opposite of A. Use PMOS, NMOS and the fixed supply rails.",
   intro:
-    "PMOS conducts at gate 0; NMOS conducts at gate 1. Each passes its source signal when enabled. A junction combines branches. This directed switch model omits resistance, capacitance and voltage thresholds. The check requires a driven rail in every case, without competing rails.",
+    "PMOS conducts at gate 0; NMOS conducts at gate 1. Each passes its source signal when enabled. To combine transistor branches, drag an output or an existing wire onto another wire. Release at the highlighted target to create a small junction knob. This directed switch model omits resistance, capacitance and voltage thresholds. The check requires a driven rail in every case, without competing rails.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
   start: withRails(() => cmosNotLevel),
@@ -155,7 +154,7 @@ export const cmosNandLevel: Level = {
   chapter: CHAPTERS.transistors,
   goal: "OUT is 0 only when A and B are both 1. Build a driven CMOS output with the available transistors.",
   intro:
-    "Use the transistor conduction rules from the inverter challenge. In each input case, OUT must reach the required rail. A floating output and competing high/low rails both fail. Choose the branch topology yourself.",
+    "Use the transistor conduction rules from the inverter challenge. Drag a transistor output or wire onto another wire to join branches with a small junction knob. In each input case, OUT must reach the required rail. A floating output and competing high/low rails both fail. Choose the branch topology yourself.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a && b)] },
   palette: ["pmos", "nmos", "junction"],
   makes: { part: "nand", label: "NAND", builtIn: { gate: "nand" } },

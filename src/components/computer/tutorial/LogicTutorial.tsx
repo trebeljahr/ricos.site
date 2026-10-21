@@ -113,6 +113,7 @@ export function LogicTutorial({
   const gatePalette = useMemo(() => [...allowed.gates], [allowed]);
   const reference = useMemo(() => level.reference?.(), [level]);
   const rows = useMemo(() => levelRows(CATALOG, level.palette, progress), [level, progress]);
+  const availableBlocks = level.palette.filter((ref) => ref !== "junction");
   // The board's first circuit, read once per level opening (later saves come from the board).
   const [opened, setOpened] = useState(0);
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-read only when a level opens or resets
@@ -366,8 +367,8 @@ export function LogicTutorial({
           )}
           <p className={styles.muted}>
             Available blocks:{" "}
-            {level.palette.length
-              ? level.palette
+            {availableBlocks.length
+              ? availableBlocks
                   .map((ref) =>
                     ref.startsWith("part:")
                       ? CATALOG.parts.get(ref.slice(5))?.label

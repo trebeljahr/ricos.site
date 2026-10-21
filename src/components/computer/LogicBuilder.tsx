@@ -10,7 +10,7 @@ import { useHistoryState } from "../../hooks/useHistoryState";
 import { useCircuitClipboard } from "../../hooks/useCircuitClipboard";
 import { type CircuitClip, copyCircuit, insertCircuitCopy, remapCircuitPath } from "../../lib/computer/circuitClipboard";
 import { bridgeWirePaths, closestPathPoint, explicitWirePath, fanOutBranchPath, pathPoints, polylinePath } from "../../lib/computer/wireGeometry";
-import { connectWireEnds, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
+import { connectWireEnds, wireJoinError, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
 import { activateBuilder, claimStorage, ownsKeyEvent, registerBuilder } from "../../lib/computer/builderRegistry";
@@ -232,6 +232,16 @@ function PortWirePreview({ wiring }: { wiring: ReturnType<typeof usePortWiring> 
 const draftPort = (draft: WireDraft): PortRef => draft.from
   ? { nodeId: draft.from, kind: "output", index: draft.output ?? 0 }
   : { nodeId: draft.to!, kind: "input", index: draft.input ?? 0 };
+function WireJoinPreview({ anchor, error }: { anchor: WireAnchor; error?: string }) {
+  return <g className={clsx(styles.wireJoinTarget, error && styles.wireJoinInvalid)}
+    data-wire-join-target={error ? "invalid" : "valid"} aria-hidden="true">
+    <path d={anchor.path} />
+    <circle cx={anchor.point.x} cy={anchor.point.y} r={8} />
+    <text x={anchor.point.x + 14} y={anchor.point.y - 14}>
+      {error ?? "Release to connect"}
+    </text>
+  </g>;
+}
 const defaultWireColor = (id: string, nodes: Node[]): WireColor =>
   wireColorNames[
     Math.max(
@@ -254,7 +264,6 @@ const palette: GateType[] = [
   "ground",
   "nmos",
   "pmos",
-  "junction",
   "not",
   "and",
   "or",
@@ -323,7 +332,7 @@ const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: 
   return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
 };
 const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") => {
-  if (node.splice) return { x: node.x + 5, y: node.y + 5 };
+  if (node.splice || node.type === "junction") return { x: node.x + 5, y: node.y + 5 };
   const side = kind === "input" ? inputSide(node) : outputSide(node);
   const sharedSide = inputSide(node) === outputSide(node);
   const count = node.type === "sevensegment" ? 7 : sharedSide
@@ -634,7 +643,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   const [draftLabel, setDraftLabel] = useState("");
   const [menu, setMenu] = useState<{ x: number; y: number; part?: Node; wire?: string } | null>(null);
   const [drag, setDrag] = useState<{ id: string; dx: number; dy: number } | null>(null);
-  const [preview, setPreview] = useState<{ port: InlineEndpoint; point: { x: number; y: number } } | null>(null);
+  const [preview, setPreview] = useState<{ port: InlineEndpoint; point: { x: number; y: number }; wire?: WireAnchor; error?: string } | null>(null);
   const interaction = useRef<{
     pointer: number; x: number; y: number; scale: number;
     part?: string; port?: InlineEndpoint; wire?: WireAnchor; rect: DOMRect;
@@ -766,6 +775,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     const point = { x: (event.clientX - rect.left) / scale, y: (event.clientY - rect.top) / scale };
     const hit = closestPathPoint(wirePaths[wire.id], point);
     const anchor: WireAnchor = { wire: wire.id, point: hit.point, path: wirePaths[wire.id] };
+    setSelectedWire(wire.id); setSelectedPart(null);
     const port: InlineEndpoint = { id: wire.from, port: wire.output ?? 0, kind: "output", point: hit.point,
       wirePoint: hit.point, side: "right", label: "Wire join" };
     portWiring.clear();
@@ -842,8 +852,15 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     frame.current = requestAnimationFrame(() => {
       frame.current = null;
       if (action.part) setDrag({ id: action.part, dx, dy });
-      if (action.port) setPreview({ port: action.port,
-        point: nearestPort(action.port, point, action.scale)?.point ?? point });
+      if (action.port) {
+        const target = nearestPort(action.port, point, action.scale);
+        const wire = !target ? nearestWire(point, action.wire?.wire) : null;
+        const first: WireEnd = action.wire ? localAnchor(action.wire) : {
+          node: action.port.id, port: action.port.port, kind: action.port.kind };
+        setPreview({ port: action.port, point: target?.point ?? wire?.point ?? point,
+          wire: wire ?? undefined,
+          error: wire ? wireJoinError(circuit, first, localAnchor(wire)) : undefined });
+      }
     });
   };
   const finishPointer = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -961,7 +978,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
       onFocus={(event) => { event.stopPropagation(); onActivate(path); }}
       onContextMenu={(event) => { event.preventDefault(); event.stopPropagation(); }}
       onKeyDown={(event) => {
-        if (event.target instanceof Element && event.target.closest("input,select,textarea")) return;
+        if (event.target instanceof Element && event.target.closest("input,select,textarea,[contenteditable]:not([contenteditable='false'])")) return;
         if (event.key === "Escape") { event.stopPropagation(); cancelInteraction(); portWiring.clear(); setPendingPort(null); setMenu(null); }
         if (activePath !== path || !editable) return;
         if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "a") {
@@ -1029,6 +1046,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
           ] } as React.CSSProperties}
             d={preview.port.kind === "output" ? simpleWirePath(preview.port.point, preview.point) :
               simpleWirePath(preview.point, preview.port.point)} />}
+          {preview?.wire && <WireJoinPreview anchor={preview.wire} error={preview.error} />}
         </svg>
         {endpoints.filter((port) => port.boundary).map((port) => {
           const node = circuit.nodes.find((part) => part.id === port.id)!;
@@ -1039,7 +1057,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         })}
         {layout.parts.map((part) => (
           <div key={part.id} data-inline-part={part.path}
-            className={clsx(styles.node, styles.inlinePart, part.splice && styles.wireJoin,
+            className={clsx(styles.node, styles.inlinePart, (part.splice || part.type === "junction") && styles.wireJoin,
               part.splice && snapshot.buses?.[part.id] === "X" && styles.joinConflict, part.child && styles.expandedNode,
               selectedParts.includes(part.id) && styles.inlineSelectedPart, drag?.id === part.id && styles.inlineDragging)}
             style={{ "--part-accent": partColors[part.type], left: part.x, top: part.y,
@@ -2474,8 +2492,8 @@ export function LogicBuilder({
       if (lockedRef.current) return;
       if (!ownsKeyEvent(instanceId, shellRef.current, event.target)) return;
       const editingText =
-        event.target instanceof HTMLElement &&
-        Boolean(event.target.closest("input, textarea, select, [contenteditable='true']"));
+        event.target instanceof Element &&
+        Boolean(event.target.closest("input, textarea, select, [contenteditable]:not([contenteditable='false'])"));
       if (editingText) return;
       if ((event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "a") {
         if (activeInlinePath) return;
@@ -2805,11 +2823,11 @@ export function LogicBuilder({
   // Rows depend on the palette, the reader's progress and the search, not on every render.
   const challengeRows = challenge?.rows;
   const freeMode = !challenge && !locked;
-  const paletteRows: PaletteRow[] = useMemo(() => challengeRows ?? partsPalette.map((type) => {
+  const paletteRows: PaletteRow[] = useMemo(() => (challengeRows ?? partsPalette.map((type) => {
     const entry = entryFor(CATALOG, progress, { gate: type });
     return entry ? partRow(entry, progress.settings.ownParts, { key: type, label: LABELS[type], icon: { type },
       builtInTitle: gateRow(type).title }) : gateRow(type);
-  }), [challengeRows, partsPalette, progress]);
+  })).filter((row) => !("type" in row.icon && row.icon.type === "junction")), [challengeRows, partsPalette, progress]);
   const searchText = search.toLowerCase().trim();
   const exampleRows = useMemo(() => challenge ? [] : Object.values(PRESETS).map((example) => {
     const entry = entryFor(CATALOG, progress, { preset: example.name });
@@ -2896,6 +2914,8 @@ export function LogicBuilder({
   const startWireBranch = (event: React.PointerEvent<SVGPathElement>, wire: Wire, path = anchorPath(wire)) => {
     if (lockedRef.current || event.button !== 0 || event.shiftKey || event.metaKey || event.ctrlKey || selectMode || spaceHeld.current) return;
     event.stopPropagation();
+    event.currentTarget.focus({ preventScroll: true });
+    setSelectedWires([wire.id]); setSelected([]);
     const point = closestPathPoint(path, boardPoint(event.clientX, event.clientY)).point;
     const draft: WireDraft = { from: wire.from, output: wire.output ?? 0, anchor: { wire: wire.id, point, path },
       ...point, originX: point.x, originY: point.y };
@@ -2908,6 +2928,13 @@ export function LogicBuilder({
     : undefined;
   const selectedWireData = circuit.wires.filter((wire) => selectedWires.includes(wire.id));
   const draftTarget = wireDraft ? nearestConnector(wireDraft, wireDraft) : null;
+  const draftWireTarget = wireDraft && !draftTarget &&
+    Math.hypot(wireDraft.x - wireDraft.originX, wireDraft.y - wireDraft.originY) > 8
+    ? nearestWire(wireDraft, wireDraft.anchor?.wire) : null;
+  const draftJoinError = wireDraft && draftWireTarget
+    ? wireJoinError(circuit, wireDraft.anchor ?? (wireDraft.from
+      ? { node: wireDraft.from, port: wireDraft.output ?? 0, kind: "output" }
+      : { node: wireDraft.to!, port: wireDraft.input!, kind: "input" }), draftWireTarget) : undefined;
   const draftStart = wireDraft?.from
     ? circuit.nodes.find((node) => node.id === wireDraft.from)
     : null;
@@ -2917,12 +2944,12 @@ export function LogicBuilder({
     ? portPoint(draftStart, wireDraft!.output ?? 0, "output")
     : targetNode && draftTarget?.output !== undefined
       ? portPoint(targetNode, draftTarget.output, "output")
-      : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
+      : draftWireTarget?.point ?? (wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null);
   const previewEnd = draftEnd
     ? portPoint(draftEnd, wireDraft!.input!, "input")
     : targetNode && draftTarget?.input !== undefined
       ? portPoint(targetNode, draftTarget.input, "input")
-      : wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null;
+      : draftWireTarget?.point ?? (wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null);
   return (
     <div
       ref={shellRef}
@@ -3574,6 +3601,8 @@ export function LogicBuilder({
                           onKeyDown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
                               event.preventDefault();
+                              setActiveInlinePath(null);
+                              setSelected([]);
                               setSelectedWires((current) =>
                                 event.shiftKey || event.metaKey || event.ctrlKey
                                   ? current.includes(wire.id)
@@ -3605,6 +3634,7 @@ export function LogicBuilder({
                           }}
                           onClick={(event) => {
                             event.stopPropagation();
+                            event.currentTarget.focus({ preventScroll: true });
                             setActiveInlinePath(null);
                             setSelectedWires((current) =>
                               event.shiftKey || event.metaKey || event.ctrlKey
@@ -3681,6 +3711,7 @@ export function LogicBuilder({
                       }
                     />
                   )}
+                  {draftWireTarget && <WireJoinPreview anchor={draftWireTarget} error={draftJoinError} />}
                 </svg>
                 {displayNodes
                   .filter((node) => !hasTransistors || powerVisible(node))
@@ -3699,7 +3730,7 @@ export function LogicBuilder({
                       }}
                       className={clsx(
                         styles.node,
-                        node.splice && styles.wireJoin,
+                        (node.splice || node.type === "junction") && styles.wireJoin,
                         node.splice && boardSnapshot.buses?.[node.id] === "X" && styles.joinConflict,
                         expandedDetails.has(node.id) && styles.expandedNode,
                         selected.includes(node.id) && styles.selected,

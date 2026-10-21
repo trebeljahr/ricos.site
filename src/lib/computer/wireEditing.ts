@@ -1,10 +1,10 @@
 import {
   type Circuit,
-  type Node,
-  type Wire,
   inputWidth,
+  type Node,
   outputWidth,
   validateCircuit,
+  type Wire,
 } from "./logic";
 import { closestPathPoint } from "./wireGeometry";
 import { type Point, wirePath } from "./wireRouting";
@@ -25,6 +25,65 @@ function drivers(circuit: Circuit, from: string, output = 0, seen = new Set<stri
     .flatMap((wire) => drivers(circuit, wire.from, wire.output, seen));
 }
 const key = (driver: Driver) => `${driver.from}:${driver.output}`;
+function transistorBranch(circuit: Circuit, id: string, seen = new Set<string>()): boolean {
+  if (seen.has(id)) return false;
+  const node = circuit.nodes.find((node) => node.id === id);
+  if (!node) return false;
+  if (node.type === "nmos" || node.type === "pmos") return true;
+  if (node.type !== "junction" || node.splice) return false;
+  const branches = circuit.wires.filter((wire) => wire.to === id);
+  return (
+    branches.length === 2 &&
+    branches.every((wire) => transistorBranch(circuit, wire.from, new Set(seen).add(id)))
+  );
+}
+const isTransistorJoin = (circuit: Circuit, roots: Driver[]) =>
+  roots.length === 2 && roots.every((root) => transistorBranch(circuit, root.from));
+
+/** Validate a wire drop without splitting routes or allocating new circuit IDs. */
+export function wireJoinError(
+  circuit: Circuit,
+  first: WireEnd,
+  second: WireAnchor,
+): string | undefined {
+  const sourceWire = isWire(first)
+    ? circuit.wires.find((wire) => wire.id === first.wire)
+    : undefined;
+  const targetWire = circuit.wires.find((wire) => wire.id === second.wire);
+  if (!isWire(first) && first.kind === "input") {
+    const source = circuit.nodes.find((node) => node.id === targetWire?.from);
+    const target = circuit.nodes.find((node) => node.id === first.node);
+    if (!source || !target || !targetWire) return "Wire is no longer available.";
+    if (outputWidth(source, targetWire.output) !== inputWidth(target, first.port))
+      return "Cannot join a single bit and an 8-lane bus.";
+    if (circuit.wires.some((wire) => wire.to === first.node && wire.input === first.port))
+      return "This input already has a driver. Remove its wire before connecting another.";
+    return;
+  }
+  const source = circuit.nodes.find(
+    (node) => node.id === (isWire(first) ? sourceWire?.from : first.node),
+  );
+  const target = circuit.nodes.find((node) => node.id === targetWire?.to);
+  if (!source || !target || !targetWire) return "Wire is no longer available.";
+  const output = isWire(first) ? (sourceWire?.output ?? 0) : first.port;
+  if (outputWidth(source, output) !== inputWidth(target, targetWire.input))
+    return "Cannot join a single bit and an 8-lane bus.";
+  if (isWire(first) && first.wire === second.wire) return "Choose another wire or an input.";
+  const roots = [
+    ...new Map(
+      [
+        ...drivers(circuit, source.id, output),
+        ...drivers(circuit, targetWire.from, targetWire.output),
+      ].map((driver) => [key(driver), driver]),
+    ).values(),
+  ];
+  const width = outputWidth(source, output);
+  if (width === 1 && isTransistorJoin(circuit, roots)) return;
+  if (!roots.length || roots.length > (width === 8 ? 8 : 1))
+    return width === 8
+      ? "This bus would exceed eight drivers. Use another bus part."
+      : "Cannot join separate one-bit drivers. Use a gate to combine signals.";
+}
 
 /** Merge complete splice nets, so every fan-out consumer reads the resolved value. */
 function joinNets(
@@ -50,14 +109,16 @@ function joinNets(
   const leaves = circuit.wires.filter((wire) => affected(wire) && !splices.has(wire.to));
   const targetHit = closestPathPoint(second.path, second.point);
   const sourceHit = isWire(first) ? closestPathPoint(first.path, first.point) : null;
-  const newNode = (point: Point): Node => ({
+  const newNode = (point: Point, splice = true): Node => ({
     id: crypto.randomUUID(),
     type: width === 8 ? "bus" : "junction",
-    splice: true,
+    splice: splice ? true : undefined,
     x: point.x - 5,
     y: point.y - 5,
   });
-  const join = newNode(targetHit.point),
+  // Transistor branches use the existing directed two-input
+  // electrical junction. It remains distinct from a one-driver wire splice.
+  const join = newNode(targetHit.point, !(width === 1 && isTransistorJoin(circuit, roots))),
     start = sourceHit ? newNode(sourceHit.point) : null;
   const wires = circuit.wires.filter((wire) => !affected(wire));
   roots.forEach((driver, index) => {
@@ -163,8 +224,8 @@ export function connectWireEnds(
   if (outputWidth(source, output) !== inputWidth(target, input))
     return { error: "Cannot join a single bit and an 8-lane bus." };
   if (isWire(second)) {
-    if (isWire(first) && first.wire === second.wire)
-      return { error: "Choose another wire or an input." };
+    const error = wireJoinError(circuit, first, second);
+    if (error) return { error };
     const roots = [
       ...new Map(
         [
@@ -174,13 +235,6 @@ export function connectWireEnds(
       ).values(),
     ];
     const width = outputWidth(source, output);
-    if (!roots.length || roots.length > (width === 8 ? 8 : 1))
-      return {
-        error:
-          width === 8
-            ? "This bus would exceed eight drivers. Use another bus part."
-            : "Cannot join separate one-bit drivers. Use a gate to combine signals.",
-      };
     const next = joinNets(circuit, first, second, roots, width);
     return next ? { circuit: next } : { error: "Circuit size or parser limit reached." };
   }

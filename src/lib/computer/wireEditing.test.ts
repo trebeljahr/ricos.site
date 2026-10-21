@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { type Circuit, initialSnapshot, step, validateCircuit } from "./logic";
-import { connectWireEnds, splitWire, type WireAnchor } from "./wireEditing";
 import { compileNetlist, NetlistSim } from "./netlist";
+import { connectWireEnds, splitWire, type WireAnchor, wireJoinError } from "./wireEditing";
+
 const base: Circuit = {
   name: "Branches",
   nodes: [
@@ -18,6 +19,46 @@ const anchor: WireAnchor = {
 };
 
 describe("wire connectivity", () => {
+  it("validates reverse input-to-wire previews without changing topology", () => {
+    const before = JSON.stringify(base);
+    expect(wireJoinError(base, { node: "branch", port: 0, kind: "input" }, anchor)).toBeUndefined();
+    expect(wireJoinError(base, { node: "lamp", port: 0, kind: "input" }, anchor)).toMatch(
+      /already has a driver/,
+    );
+    expect(JSON.stringify(base)).toBe(before);
+  });
+  it("joins transistor output wires with a two-input electrical knob, distinct from its route splice", () => {
+    const circuit: Circuit = {
+      name: "Transistor branches",
+      nodes: [
+        { id: "a", type: "switch", x: 0, y: 0, value: false },
+        { id: "vdd", type: "high", x: 0, y: 100 },
+        { id: "gnd", type: "ground", x: 0, y: 200 },
+        { id: "p", type: "pmos", x: 150, y: 0 },
+        { id: "n", type: "nmos", x: 150, y: 200 },
+        { id: "x", type: "lamp", x: 400, y: 0 },
+        { id: "y", type: "lamp", x: 400, y: 200 },
+      ],
+      wires: [
+        { id: "ap", from: "a", to: "p", input: 0 },
+        { id: "an", from: "a", to: "n", input: 0 },
+        { id: "vp", from: "vdd", to: "p", input: 1 },
+        { id: "gn", from: "gnd", to: "n", input: 1 },
+        { id: "px", from: "p", to: "x", input: 0 },
+        { id: "ny", from: "n", to: "y", input: 0 },
+      ],
+    };
+    const source = { wire: "px", point: { x: 320, y: 50 }, path: "M 282 50 L 400 50" };
+    const target = { wire: "ny", point: { x: 320, y: 250 }, path: "M 282 250 L 400 250" };
+    expect(wireJoinError(circuit, source, target)).toBeUndefined();
+    const next = connectWireEnds(circuit, source, target).circuit!;
+    expect(next.nodes.filter((node) => node.type === "junction" && !node.splice)).toHaveLength(1);
+    expect(next.nodes.filter((node) => node.splice)).toHaveLength(1);
+    expect(validateCircuit(next)).toBeTruthy();
+    const state = step(next, initialSnapshot(), false);
+    expect(state.values.x).toBe(true);
+    expect(state.values.y).toBe(true);
+  });
   it("branches at the actual route and preserves its signal after save/reload", () => {
     const next = connectWireEnds(base, anchor, { node: "branch", port: 0, kind: "input" }).circuit!;
     expect(next.nodes.filter((node) => node.splice)).toHaveLength(1);

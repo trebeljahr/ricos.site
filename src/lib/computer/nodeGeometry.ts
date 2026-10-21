@@ -6,7 +6,7 @@ export type DisplayNode = Node & { displayWidth?: number; displayHeight?: number
 const NUMBER_INPUT_WIDTHS: Record<NumberInputType, number> = { input4: 156, input8: 212, input14: 370 };
 
 export function nodeWidth(node: DisplayNode): number {
-  if (node.splice) return 10;
+  if (node.splice || node.type === "junction") return 10;
   if (node.displayWidth !== undefined) return node.displayWidth;
   if (isNumberInput(node.type)) return NUMBER_INPUT_WIDTHS[node.type];
   if (node.type === "sevensegment") return 230 + 65 * ((node.digits ?? 1) - 1);
@@ -18,7 +18,7 @@ export function nodeWidth(node: DisplayNode): number {
 }
 
 export function nodeHeight(node: DisplayNode): number {
-  if (node.splice) return 10;
+  if (node.splice || node.type === "junction") return 10;
   if (node.displayHeight !== undefined) return node.displayHeight;
   // Raw displays expose one seven-pin place bank at a time.
   if (node.type === "sevensegment") return 344;

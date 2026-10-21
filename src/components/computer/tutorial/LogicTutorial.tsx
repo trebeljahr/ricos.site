@@ -3,7 +3,7 @@ import Link from "next/link";
 import { type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTutorialProgress } from "../../../hooks/useTutorialProgress";
 import { type Circuit, LABELS, validateCircuit } from "../../../lib/computer/logic";
-import { feedback, type Note } from "../../../lib/computer/tutorial/analysis";
+import { feedback, type Note, simplificationNote } from "../../../lib/computer/tutorial/analysis";
 import { type Grade, gradeLevel, gradePassed } from "../../../lib/computer/tutorial/grade";
 import { requestedHints } from "../../../lib/computer/tutorial/hints";
 import { levelStart } from "../../../lib/computer/tutorial/kit";
@@ -185,6 +185,10 @@ export function LogicTutorial({
     recordLivePass,
   });
   const currentCorrect = Boolean(grade && gradePassed(grade));
+  const simplification = useMemo(
+    () => (currentCorrect ? simplificationNote(circuit, level, start.locked) : undefined),
+    [currentCorrect, circuit, level, start.locked],
+  );
   const successMessage =
     grade?.kind === "truth"
       ? `All ${grade.rows.length} truth-table rows match.`
@@ -228,8 +232,15 @@ export function LogicTutorial({
         });
         notes = review.notes;
         const transistors = review.stats.transistors > 0;
-        const describe = (stats: typeof review.stats) =>
-          `${stats.parts} part${stats.parts === 1 ? "" : "s"} · ${transistors ? `${stats.transistors} transistors` : `${stats.nands} NAND`} · depth ${stats.depth}`;
+        const describe = (stats: typeof review.stats) => {
+          const goal = level.sizeGoal;
+          const size = goal
+            ? `${stats[goal.metric]} ${goal.unit}${stats[goal.metric] === 1 ? "" : "s"}`
+            : transistors
+              ? `${stats.transistors} transistors`
+              : `${stats.nands} NAND`;
+          return `${stats.parts} part${stats.parts === 1 ? "" : "s"} · ${size} · depth ${stats.depth}`;
+        };
         stats = {
           mine: describe(review.stats),
           reference: review.reference && describe(review.reference),
@@ -485,7 +496,7 @@ export function LogicTutorial({
           <TutorialSuccess
             key={`${level.id}:${opened}`}
             correct={currentCorrect}
-            message={successMessage}
+            message={[successMessage, simplification?.text].filter(Boolean).join(" ")}
             celebration={celebration}
           />
         ) : null,

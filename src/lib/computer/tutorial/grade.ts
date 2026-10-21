@@ -170,7 +170,7 @@ export function structureProblems(
   for (const port of spec.outputs) {
     if (!circuit.wires.some((wire) => wire.to === port.id))
       problems.push({
-        text: `Nothing drives ${port.label} yet. Which signal should determine this output?`,
+        text: `${port.label}'s input pin has no wire attached. Connect the final output to that pin; a wire passing nearby does not connect.`,
         anchor: { kind: "input", node: port.id, index: 0 },
       });
   }

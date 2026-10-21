@@ -1,10 +1,4 @@
-import {
-  type BlueprintFamily,
-  gateBlueprint,
-  inputLabel,
-  type LogicGate,
-  outputLabel,
-} from "../../logic";
+import { type BlueprintFamily, gateBlueprint, type LogicGate } from "../../logic";
 import type { LevelHint } from "../types";
 
 type PrimitiveFamily = Extract<BlueprintFamily, "nand" | "nor">;
@@ -30,7 +24,7 @@ const CORE_IDEAS: Record<PrimitiveFamily, Record<LogicGate, string>> = {
   },
 };
 
-/** Requested guidance only: derived counts and the first connection of one shared blueprint. */
+/** Requested guidance only: reasoning, size, then a complete signal plan. */
 export function gateConstructionHints(
   family: PrimitiveFamily,
   target: LogicGate,
@@ -38,19 +32,19 @@ export function gateConstructionHints(
 ): LevelHint[] {
   const reference = gateBlueprint(target, family);
   const gates = reference.nodes.filter((node) => node.type === family);
-  const first = gates[0];
-  const sources = reference.wires
-    .filter((wire) => wire.to === first.id)
-    .sort((a, b) => a.input - b.input)
-    .map((wire) => {
-      const source = reference.nodes.find((node) => node.id === wire.from)!;
-      return `${source.label} ${outputLabel(source, wire.output ?? 0)}`;
-    });
   const primitive = family.toUpperCase();
-  const connection =
-    sources[0] === sources[1]
-      ? `Connect ${sources[0]} to both ${inputLabel(first, 0)} and ${inputLabel(first, 1)} on that gate.`
-      : `Connect ${sources[0]} to ${inputLabel(first, 0)} and ${sources[1]} to ${inputLabel(first, 1)} on that gate.`;
+  const signals = new Map(reference.nodes.map((node) => [node.id, node.label]));
+  gates.forEach((gate, index) => {
+    signals.set(gate.id, `G${index + 1}`);
+  });
+  const plan = gates.map((gate) => {
+    const inputs = reference.wires
+      .filter((wire) => wire.to === gate.id)
+      .sort((a, b) => a.input - b.input)
+      .map((wire) => signals.get(wire.from));
+    return `${signals.get(gate.id)} = ${primitive}(${inputs.join(", ")})`;
+  });
+  const output = reference.wires.find((wire) => wire.to === "out")!;
   return [
     { title: "Core idea", text: CORE_IDEAS[family][target] },
     {
@@ -62,9 +56,8 @@ export function gateConstructionHints(
       }`,
     },
     {
-      title: "First step",
-      text: `For this ${primitive}-only route, place a ${primitive} gate. ${connection}`,
-      anchor: { kind: "palette", part: family },
+      title: "Signal plan",
+      text: `Name the gate outputs G1, G2, and so on. ${plan.join(". ")}. Connect ${signals.get(output.from)} to OUT. Repeated names mean reuse that signal, not another gate.`,
     },
   ];
 }

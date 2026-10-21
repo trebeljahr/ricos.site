@@ -140,7 +140,35 @@ describe("explicit contextual hints", () => {
     const level = levelById("and")!;
     const start = levelStart(level).circuit;
     expect(requestedHints(level, start, grade("and", start), 0)).toEqual([]);
-    expect(contextualHint(level, start, grade("and", start)).text).toMatch(/Nothing drives OUT/);
+    expect(contextualHint(level, start, grade("and", start)).text).toMatch(
+      /input pin has no wire attached/,
+    );
+  });
+  it("points at a correct unconnected signal instead of asking a generic question", () => {
+    const level = levelById("universal-nand-and")!;
+    const reference = level.reference!();
+    const outputWire = reference.wires.find((wire) => wire.to === "out")!;
+    const circuit = { ...reference, wires: reference.wires.filter((wire) => wire !== outputWire) };
+    const hint = contextualHint(level, circuit, grade(level.id, circuit));
+    expect(hint.anchor).toEqual({ kind: "output", node: outputWire.from, index: 0 });
+    expect(hint.text).toContain("already matches every row");
+    expect(hint.text).toContain("passing nearby does not connect");
+  });
+  it("distinguishes unfinished logic from a final wire that has not snapped to OUT", () => {
+    const level = levelById("universal-nand-or")!;
+    const reference = level.reference!();
+    const outputWire = reference.wires.find((wire) => wire.to === "out")!;
+    const circuit = {
+      ...reference,
+      nodes: reference.nodes.filter((node) => node.id !== outputWire.from),
+      wires: reference.wires.filter(
+        (wire) => wire.to !== outputWire.from && wire.from !== outputWire.from,
+      ),
+    };
+    const hint = contextualHint(level, circuit, grade(level.id, circuit));
+    expect(hint.text).toContain("None of the current signals matches OUT's truth table yet");
+    expect(hint.text).toContain("Finish the remaining stages");
+    expect(hint.anchor).toEqual({ kind: "input", node: "out", index: 0 });
   });
   it("recognizes an inverted output without prescribing a wire", () => {
     const level = levelById("and")!;

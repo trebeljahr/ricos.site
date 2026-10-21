@@ -1,16 +1,17 @@
 // Feedback on a working circuit: how big and how deep it is next to the
 // reference solution, which parts do nothing, and which groups of gates
 // compute something a part from an earlier level already does.
-import { withoutWireSplices } from "../wireTopology";
+
 import {
   type Circuit,
   type GateType,
   INPUTS,
   moduleInputs,
-  NUMBER_INPUT_TYPES,
   moduleOutputs,
   type Node,
+  NUMBER_INPUT_TYPES,
 } from "../logic";
+import { withoutWireSplices } from "../wireTopology";
 import { feeding, partName, runRow, truthRows } from "./grade";
 import type { HintAnchor, Level, PartId, TruthSpec } from "./types";
 
@@ -417,6 +418,32 @@ function idleParts(
 
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
+/** A working circuit stays solved while the learner explores smaller constructions. */
+export function simplificationNote(
+  circuit: Circuit,
+  level: Level,
+  locked: readonly string[],
+): Note | undefined {
+  const goal = level.sizeGoal;
+  if (!goal) return undefined;
+  const count = circuitStats(circuit, locked)[goal.metric];
+  const used = `You used ${plural(count, goal.unit)}.`;
+  if (count > goal.minimum)
+    return {
+      tone: "tip",
+      text: `${used} Can you find the simplest solution? Aim for ${plural(goal.minimum, goal.unit)} while keeping every row correct.`,
+    };
+  if (count === goal.minimum)
+    return {
+      tone: "good",
+      text: `${used} Simplest solution found: this is the fewest needed for this challenge.`,
+    };
+  return {
+    tone: "good",
+    text: `${used} That's fewer than the target of ${plural(goal.minimum, goal.unit)}. Can you explain how your circuit works?`,
+  };
+}
+
 /** Notes for a circuit that passes: size and depth against the reference, and simpler wiring. */
 export function feedback(
   source: Circuit,
@@ -429,6 +456,8 @@ export function feedback(
   const stats = circuitStats(circuit, locked);
   const reference = options.reference ? circuitStats(options.reference, locked) : undefined;
   const notes: Note[] = [];
+  const simplification = simplificationNote(circuit, level, locked);
+  if (simplification) notes.push(simplification);
   const spec = level.spec.kind === "truth" ? level.spec : undefined;
   const outputs = level.spec.kind === "custom" ? [] : level.spec.outputs.map((port) => port.id);
   const truth = spec && truthRows(spec).length <= 1024 ? vectorsFor(circuit, spec) : undefined;
@@ -437,14 +466,14 @@ export function feedback(
     const mine = transistorLevel ? stats.transistors : stats.nands;
     const theirs = transistorLevel ? reference.transistors : reference.nands;
     const unit = transistorLevel ? "transistor" : "NAND gate";
-    if (mine < theirs)
+    if (!level.sizeGoal && mine < theirs)
       notes.push({
         tone: "good",
         text: `Smaller than the reference: ${plural(mine, unit)} against ${theirs}.`,
       });
-    else if (mine === theirs)
+    else if (!level.sizeGoal && mine === theirs)
       notes.push({ tone: "good", text: `Same size as the reference: ${plural(mine, unit)}.` });
-    else
+    else if (!level.sizeGoal)
       notes.push({
         tone: "tip",
         text: `The reference needs ${plural(theirs, unit)}; yours needs ${mine}. It can be built smaller.`,

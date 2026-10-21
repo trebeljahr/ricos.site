@@ -150,6 +150,8 @@ export type Level = {
   /** @deprecated Internal reference-fixture steps only. Never shown in construction lessons. */
   steps?: TutorialStep[];
   hints?: LevelHint[];
+  /** Optional fewest-parts challenge, independent of functional correctness. */
+  sizeGoal?: { metric: "gates" | "transistors"; minimum: number; unit: string };
   /** Extra structure rules, one sentence per problem; the check stops on them. */
   rules?: (circuit: Circuit) => string[];
   /** Off the main path: the next level opens without it. */

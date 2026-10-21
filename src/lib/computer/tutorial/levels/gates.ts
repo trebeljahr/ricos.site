@@ -132,17 +132,26 @@ export const cmosNotLevel: Level = {
   title: "NOT from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is the opposite of A. Use PMOS, NMOS and the fixed supply rails.",
+  goal: "OUT is the opposite of A. Use PMOS, NMOS and the fixed supply rails. Once it works, use the fewest transistors.",
   intro:
     "PMOS conducts at gate 0; NMOS conducts at gate 1. Each passes its source signal when enabled. To combine transistor branches, drag an output or an existing wire onto another wire. Release at the highlighted target to create a small junction knob. This directed switch model omits resistance, capacitance and voltage thresholds. The check requires a driven rail in every case, without competing rails.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
   start: withRails(() => cmosNotLevel),
   reference: cmosNot,
+  sizeGoal: { metric: "transistors", minimum: 2, unit: "transistor" },
   rules: cmosRules,
   hints: [
     {
       text: "For each value of A, which transistor conducts? Which rail must be reachable, and which must be isolated?",
+    },
+    {
+      title: "Transistor count",
+      text: "The simplest CMOS inverter uses two transistors: one PMOS and one NMOS. Junctions and supply rails do not count.",
+    },
+    {
+      title: "Conduction paths",
+      text: "Let A control both gates. Connect the PMOS source to VDD and the NMOS source to GND. Join their outputs at OUT.",
     },
   ],
   optional: true,
@@ -153,7 +162,7 @@ export const cmosNandLevel: Level = {
   title: "NAND from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is 0 only when A and B are both 1. Build a driven CMOS output with the available transistors.",
+  goal: "OUT is 0 only when A and B are both 1. Build a driven CMOS output, then use the fewest transistors.",
   intro:
     "Use the transistor conduction rules from the inverter challenge. Drag a transistor output or wire onto another wire to join branches with a small junction knob. In each input case, OUT must reach the required rail. A floating output and competing high/low rails both fail. Choose the branch topology yourself.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a && b)] },
@@ -161,6 +170,7 @@ export const cmosNandLevel: Level = {
   makes: { part: "nand", label: "NAND", builtIn: { gate: "nand" } },
   start: withRails(() => cmosNandLevel),
   reference: cmosNand,
+  sizeGoal: { metric: "transistors", minimum: 4, unit: "transistor" },
   rules: cmosRules,
   hints: [
     {
@@ -168,6 +178,14 @@ export const cmosNandLevel: Level = {
     },
     {
       text: "A chain needs every switch to conduct. Separate branches need only one conducting route. Which rule matches each rail?",
+    },
+    {
+      title: "Transistor count",
+      text: "The simplest CMOS NAND uses four transistors: two PMOS and two NMOS. Junctions and supply rails do not count.",
+    },
+    {
+      title: "Conduction paths",
+      text: "Put the PMOS pair in parallel from VDD and the NMOS pair in series from GND. Each pair has gates controlled by A and B. Join the two paths at OUT.",
     },
   ],
   optional: true,

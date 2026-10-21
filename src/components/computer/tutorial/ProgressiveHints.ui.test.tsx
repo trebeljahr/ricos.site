@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-it("reveals an idea, count and first step only on request, without changing the circuit", () => {
+it("reveals an idea, count and signal plan only on request, without changing the circuit", () => {
   render(<LogicTutorial levels={["universal-nand-and"]} />);
   const board = screen.getByRole("application", { name: "Circuit canvas" });
   const initialParts = within(board)
@@ -27,10 +27,11 @@ it("reveals an idea, count and first step only on request, without changing the 
   expect(clues().queryByText("Gate count:")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
   expect(clues().getByText(/2 NAND gates/)).toBeTruthy();
-  expect(clues().queryByText("First step:")).toBeNull();
+  expect(clues().queryByText("Signal plan:")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
-  expect(clues().getByText("First step:")).toBeTruthy();
-  expect(clues().getByText(/Input 1/)).toBeTruthy();
+  expect(clues().getByText("Signal plan:")).toBeTruthy();
+  expect(clues().getByText(/G2 = NAND\(G1, G1\)/)).toBeTruthy();
+  expect(screen.queryByText(/For this NAND-only route, place/)).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
   expect(clues().getByText("Your circuit:")).toBeTruthy();
   expect(

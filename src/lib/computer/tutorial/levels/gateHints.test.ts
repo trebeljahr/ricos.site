@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { evalGate } from "../../gateLogic";
 import { gateBlueprint, initialSnapshot, type LogicGate, step } from "../../logic";
 import { gateConstructionHints } from "./gateHints";
 import { andLevel, norLevel, notLevel, orLevel, xorLevel } from "./gates";
@@ -18,18 +19,31 @@ describe("requested gate construction hints", () => {
         const reference = gateBlueprint(target, family);
         const gates = reference.nodes.filter((node) => node.type === family);
         expect(gates).toHaveLength(expected);
-        expect(hints.map((hint) => hint.title)).toEqual(["Core idea", "Gate count", "First step"]);
+        expect(hints.map((hint) => hint.title)).toEqual(["Core idea", "Gate count", "Signal plan"]);
         expect(hints[1].text).toBe(
           `One construction uses ${expected} ${family.toUpperCase()} ${expected === 1 ? "gate" : "gates"}.`,
         );
         expect(hints.every((hint) => hint.when === undefined)).toBe(true);
-        expect(hints[2].anchor).toEqual({ kind: "palette", part: family });
-        const connections = reference.wires.filter((wire) => wire.to === gates[0].id);
-        for (const wire of connections) {
-          const source = reference.nodes.find((node) => node.id === wire.from)!;
-          expect(hints[2].text).toContain(`${source.label} Output`);
-          expect(hints[2].text).toContain(`Input ${wire.input + 1}`);
-        }
+        expect(hints[2].anchor).toBeUndefined();
+        // A learner following only the disclosed plan gets the right truth table.
+        const stages = [
+          ...hints[2].text.matchAll(/(G\d+) = (NAND|NOR)\((A|B|G\d+), (A|B|G\d+)\)/g),
+        ];
+        expect(stages).toHaveLength(expected);
+        const output = hints[2].text.match(/Connect (G\d+) to OUT/)![1];
+        for (const a of [false, true])
+          for (const b of [false, true]) {
+            const signals: Record<string, boolean> = { A: a, B: b };
+            for (const [, name, operation, left, right] of stages) {
+              expect(left in signals && right in signals).toBe(true);
+              signals[name] = evalGate(
+                operation.toLowerCase() as LogicGate,
+                signals[left],
+                signals[right],
+              );
+            }
+            expect(signals[output]).toBe(evalGate(target, a, b));
+          }
         expect(
           UNIVERSAL_GATE_LEVELS.find((level) => level.id === `universal-${family}-${target}`)
             ?.hints,

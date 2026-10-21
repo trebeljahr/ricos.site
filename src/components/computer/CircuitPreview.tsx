@@ -14,6 +14,7 @@ export function CircuitPreview({
   b?: boolean;
 }) {
   const circuit = useMemo(() => gateDemo(gate), [gate]);
+  const initialFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
   const clock = useRef<LockedClock | null>(null);
   // A gate change reloads the locked board; reapply even unchanged input levels.
   // biome-ignore lint/correctness/useExhaustiveDependencies: circuit changes reload the child runtime
@@ -22,7 +23,11 @@ export function CircuitPreview({
   }, [circuit, a, b]);
   return (
     <div className="not-prose h-[320px] min-w-0">
-      <LogicBuilder storageKey={null} locked={{ circuit, clockRef: clock }} />
+      <LogicBuilder
+        storageKey={null}
+        initialFocus={initialFocus}
+        locked={{ circuit, clockRef: clock }}
+      />
     </div>
   );
 }

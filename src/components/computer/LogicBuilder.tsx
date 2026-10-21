@@ -445,8 +445,9 @@ function NodeReadout({ node, snapshot, wires, bank, onBank, onUpdate, manual }: 
   if (node.type === "switch")
     return (
       <button type="button" className={styles.toggle} disabled={!onUpdate}
+        aria-pressed={Boolean(snapshot.values[node.id])}
         onClick={() => onUpdate?.((item) => ({ value: !item.value }))}>
-        {node.value ? "ON" : "OFF"}
+        {snapshot.values[node.id] ? "ON" : "OFF"}
       </button>
     );
   if (node.type === "pulse" && manual)

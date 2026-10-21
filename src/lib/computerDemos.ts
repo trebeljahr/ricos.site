@@ -53,6 +53,10 @@ export const computerDemos = [
     title: "Add bits with gates",
   },
   {
+    slug: "boolean-logic",
+    title: "Read Boolean notation and count truth tables",
+  },
+  {
     slug: "clock",
     title: "Watch a clock tick",
   },

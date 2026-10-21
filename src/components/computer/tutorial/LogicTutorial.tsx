@@ -21,6 +21,8 @@ import { LogicBuilder, type LogicBuilderHandle } from "../LogicBuilder";
 import { type Callout, HintLayer } from "./HintLayer";
 import { failureSentence, SpecView } from "./SpecView";
 import styles from "./Tutorial.module.css";
+import { TutorialSuccess } from "./TutorialSuccess";
+import { useTutorialSuccess } from "./useTutorialSuccess";
 
 export type LogicTutorialProps = {
   /** The level to open first. Default: the first level of `levels`. */
@@ -29,6 +31,8 @@ export type LogicTutorialProps = {
   levels?: readonly string[];
   /** A level opens only once the main levels before it are solved or skipped. */
   sequential?: boolean;
+  /** A chapter workspace; undefined inherits the surrounding embed context. */
+  embedded?: boolean;
   /** Called when the reader opens another level, e.g. to update the URL. */
   onLevelChange?: (id: string) => void;
   /** Extra content at the end of the level panel, e.g. a program runner for the CPU. */
@@ -84,6 +88,7 @@ export function LogicTutorial({
   sequential = false,
   onLevelChange,
   extra,
+  embedded,
 }: LogicTutorialProps) {
   const hintId = useId();
   const ladder = useMemo(
@@ -150,18 +155,6 @@ export function LogicTutorial({
   }, [initial]);
   useEffect(() => flushDraft, [flushDraft]);
 
-  const onChange = useCallback(
-    (next: Circuit) => {
-      circuitRef.current = next;
-      setCircuit(next);
-      if (pendingDraft.current && pendingDraft.current.level.id !== level.id) flushDraft();
-      window.clearTimeout(saveTimer.current);
-      pendingDraft.current = { level, circuit: next };
-      saveTimer.current = window.setTimeout(flushDraft, SAVE_DELAY);
-    },
-    [level, flushDraft],
-  );
-
   const live = useMemo(() => {
     if (level.spec.kind !== "truth") return undefined;
     const count = level.spec.rows?.length ?? 2 ** level.spec.inputs.length;
@@ -172,6 +165,44 @@ export function LogicTutorial({
   const grade = fresh?.grade ?? (live?.kind === "structure" ? undefined : live);
   const solved = Boolean(progress.solved[level.id]);
   const open = !sequential || isOpen(ladder, index, progress);
+  const session = useMemo(
+    () => ({ level: level.id, opened, initial }),
+    [level.id, opened, initial],
+  );
+  const recordLivePass = useCallback(
+    (valid: Circuit) => {
+      markSolved(level.id, level.makes ? valid : undefined);
+    },
+    [level],
+  );
+  const { celebration, noteChange, noteCheck, resetSuccess } = useTutorialSuccess({
+    session,
+    initial,
+    circuit,
+    liveGrade: live,
+    enabled: open,
+    recordLivePass,
+  });
+  const currentCorrect = Boolean(grade && gradePassed(grade));
+  const successMessage =
+    grade?.kind === "truth"
+      ? `All ${grade.rows.length} truth-table rows match.`
+      : grade?.kind === "sequence"
+        ? "Every checked step matches."
+        : "The requested checks pass.";
+
+  const onChange = useCallback(
+    (next: Circuit) => {
+      noteChange(next);
+      circuitRef.current = next;
+      setCircuit(next);
+      if (pendingDraft.current && pendingDraft.current.level.id !== level.id) flushDraft();
+      window.clearTimeout(saveTimer.current);
+      pendingDraft.current = { level, circuit: next };
+      saveTimer.current = window.setTimeout(flushDraft, SAVE_DELAY);
+    },
+    [level, flushDraft, noteChange],
+  );
 
   const openLevel = (id: string) => {
     flushDraft();
@@ -184,6 +215,7 @@ export function LogicTutorial({
   const check = () => {
     const now = circuitRef.current;
     const result = gradeLevel(now, level, start.locked, allowed);
+    noteCheck(result);
     let notes: Note[] = [];
     let stats: StatsLine | undefined;
     if (gradePassed(result)) {
@@ -212,6 +244,7 @@ export function LogicTutorial({
     if (next) openLevel(next.id);
   };
   const reset = () => {
+    resetSuccess(start.circuit);
     window.clearTimeout(saveTimer.current);
     pendingDraft.current = null;
     setHints(0);
@@ -409,12 +442,12 @@ export function LogicTutorial({
                 onReplay={(replay) => handle.current?.show(replay.circuit, replay.halfCycles)}
               />
             )}
-            {!fresh && checked && (
+            {!fresh && checked && !currentCorrect && (
               <p className={styles.muted}>
                 The board changed since the last check. Press Check again.
               </p>
             )}
-            {!checked && solved && (
+            {!checked && solved && !currentCorrect && (
               <p className={styles.muted}>
                 You solved this level before. Press Check to see the feedback again.
               </p>
@@ -429,6 +462,8 @@ export function LogicTutorial({
   return (
     <LogicBuilder
       key={`${level.id}:${opened}`}
+      embedded={embedded}
+      storageKey={null}
       challenge={{
         circuit: initial,
         enforce: start.enforce,
@@ -438,6 +473,14 @@ export function LogicTutorial({
         onChange,
         handleRef: handle,
         panel,
+        feedback: open ? (
+          <TutorialSuccess
+            key={`${level.id}:${opened}`}
+            correct={currentCorrect}
+            message={successMessage}
+            celebration={celebration}
+          />
+        ) : null,
         overlay: open ? <HintLayer callout={callout} rings={rings} /> : null,
       }}
     />

@@ -4,6 +4,7 @@ import Header, { PageMain } from "@components/PostHeader";
 import type { ComputerChapter } from "@velite";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import styles from "./ComputerChapter.module.css";
 
 const MDXContentWithDemos = dynamic(() =>
   import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
@@ -62,7 +63,7 @@ export default function ComputerChapterPage({ chapter, prev, next }: Props) {
       noindex={!chapter.published}
     >
       <PageMain>
-        <article className="mx-auto max-w-prose">
+        <article className={`mx-auto max-w-prose ${styles.chapter}`}>
           <Header
             breadcrumbs={{ path: `computer/${chapter.slug}` }}
             title={chapter.title}

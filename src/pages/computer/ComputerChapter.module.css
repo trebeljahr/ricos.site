@@ -1,0 +1,13 @@
+.chapter {
+  --computer-embed-width: min(1440px, calc(100vw - 48px));
+}
+
+/* Keep prose readable while circuit workspaces use the available page width. */
+.chapter :global([data-computer-embed="wide"]) {
+  width: var(--computer-embed-width);
+  margin-inline: calc((100% - var(--computer-embed-width)) / 2);
+}
+
+@media (max-width: 640px) {
+  .chapter { --computer-embed-width: calc(100vw - 24px); }
+}

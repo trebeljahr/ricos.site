@@ -299,3 +299,28 @@
 .segmentBanks,.segmentDisplay{border:0;margin:0;min-inline-size:0}.segmentBanks{margin-bottom:8px;padding:0}
 
 .nodeBody:has(.segmentPanel){padding-left:96px;padding-right:16px}
+
+/* Chapter boards participate in document scrolling; drag and modifier/pinch zoom still edit the view. */
+.embedded .boardScroll { overflow: hidden; overscroll-behavior: auto; touch-action: pan-y; }
+.embedded .board { touch-action: pan-y; }
+.embedded:has(.layoutWithCoach) { height: auto; }
+.embedded .layoutWithCoach {
+  flex: none;
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 300px;
+  grid-template-rows: minmax(540px, auto);
+}
+.embedded .layoutWithCoach > .workspace { min-height: 540px; }
+.embedded .coach { overflow: visible; overscroll-behavior: auto; }
+@container (max-width: 1000px) {
+  .embedded .layoutWithCoach { display: flex; flex-direction: column; }
+  .embedded .layoutWithCoach > .sidebar { flex: none; max-height: 220px; border-right: 0; border-bottom: 1px solid #405071; }
+  .embedded .layoutWithCoach > .workspace { flex: none; height: 560px; min-height: 560px; }
+  .embedded .coach { flex: none; border-left: 0; border-top: 1px solid #405071; }
+}
+@container (max-width: 860px) {
+  .layoutWithCoach { overflow-y: auto; overscroll-behavior: auto; }
+}
+.embedded .layoutWithCoach { overflow: visible; }
+
+.challengeFeedback { flex: none; padding: 0 12px; background: #1b2742; border-bottom: 1px solid #455677; }

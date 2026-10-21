@@ -17,19 +17,20 @@ const LogicTutorial = dynamic(
 export function LazyLogicTutorial({
   height = "min(85svh, 820px)",
   title = "Circuit builder",
+  embedded = true,
   ...props
 }: LogicTutorialProps & { height?: string; title?: string }) {
   return (
     <LazyMount
-      height={height}
+      height={embedded ? "auto" : height}
       label={title}
       placeholder={
-        <div className={styles.placeholder} style={{ height: "100%" }}>
+        <div className={styles.placeholder} style={{ minHeight: height }}>
           {title}: loads when you scroll here.
         </div>
       }
     >
-      <LogicTutorial {...props} />
+      <LogicTutorial {...props} embedded={embedded} />
     </LazyMount>
   );
 }

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import clsx from "clsx";
-import { type MutableRefObject, type ReactNode, memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type MutableRefObject, type ReactNode, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ViewportContextMenu } from "./ViewportContextMenu";
 import { CircuitToolbar } from "./CircuitToolbar";
+import { ComputerEmbedContext } from "./ComputerEmbedContext";
 import { ToolbarMenu } from "./ToolbarMenu";
 import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
@@ -1149,6 +1150,8 @@ export type LogicBuilderChallenge = {
   rows?: PaletteRow[];
   /** A column beside the canvas, e.g. a tutorial level's goal, checks and feedback. */
   panel?: ReactNode;
+  /** Current validation feedback beside the working canvas, including on narrow screens. */
+  feedback?: ReactNode;
   /** Drawn over the whole builder, e.g. hint callouts anchored to parts and ports. */
   overlay?: ReactNode;
 };
@@ -1176,6 +1179,8 @@ export type LockedView = {
 };
 
 export type LogicBuilderProps = {
+  /** Embedded boards let wheel scrolling reach the page and omit standalone navigation. */
+  embedded?: boolean;
   /** Editable starting circuit; storageKey null keeps standalone demos isolated. */
   initialCircuit?: Circuit;
   /** Parts to frame on mount, e.g. a device and its manual bus controls. */
@@ -1209,9 +1214,12 @@ export function LogicBuilder({
   challenge,
   initialCircuit,
   initialFocus,
+  embedded: requestedEmbedded,
   locked,
   storageKey = STORAGE,
 }: { challenge?: LogicBuilderChallenge } & LogicBuilderProps = {}) {
+  const chapterEmbed = useContext(ComputerEmbedContext);
+  const embedded = requestedEmbedded ?? chapterEmbed;
   const lockedRef = useRef(locked);
   lockedRef.current = locked;
   // Several builders may share a page: key presses, storage and element ids stay per builder.
@@ -1685,6 +1693,7 @@ export function LogicBuilder({
       };
     };
     const onWheel = (event: WheelEvent) => {
+      if (embedded && !event.ctrlKey && !event.metaKey) return;
       event.preventDefault();
       const anchor = gestureAnchor(event);
       const pixels = event.deltaY * (event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 :
@@ -1747,7 +1756,7 @@ export function LogicBuilder({
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [zoomAt]);
+  }, [zoomAt, embedded]);
 
   useEffect(() => {
     if (challenge) {
@@ -2627,6 +2636,7 @@ export function LogicBuilder({
       pinch.current = current;
       touchMoved.current = true;
     } else {
+      if (embedded) return;
       const dx = event.clientX - previous.x;
       const dy = event.clientY - previous.y;
       if (Math.abs(dx) + Math.abs(dy) > 1) {
@@ -2916,7 +2926,8 @@ export function LogicBuilder({
   return (
     <div
       ref={shellRef}
-      className={clsx(styles.shell, locked && styles.locked, signalView && styles.signalView)}
+      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, signalView && styles.signalView)}
+      data-embedded={embedded || undefined}
       data-logic-builder=""
       data-wire-view={signalView ? "signal" : "identity"}
       onPointerDownCapture={() => activateBuilder(instanceId, shellRef.current)}
@@ -2927,9 +2938,9 @@ export function LogicBuilder({
         identity={
           <>
             <div className={styles.identity}>
-              <Link className={styles.eyebrow} href="/computer">
+              {!embedded && <Link className={styles.eyebrow} href="/computer">
                 ← ALL COMPUTER DEMOS
-              </Link>
+              </Link>}
               <input
                 className={styles.circuitName}
                 aria-label="Circuit name"
@@ -3293,6 +3304,7 @@ export function LogicBuilder({
           </div>
         </aside>}
         <div ref={workspace} className={styles.workspace}>
+          {challenge?.feedback && <div className={styles.challengeFeedback}>{challenge.feedback}</div>}
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
             >
             <button
@@ -3328,7 +3340,7 @@ export function LogicBuilder({
                   Select
                 </button>
                 <small>
-                  Shift-click or Shift-drag ports to select · Drag selected ports to wire · Scroll to zoom
+                  Shift-click or Shift-drag ports to select · Drag selected ports to wire · {embedded ? "Ctrl/⌘ + scroll to zoom" : "Scroll to zoom"}
                 </small>
               </>
             )}

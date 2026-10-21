@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { audioSilenced } from "src/lib/silentAudio";
 
-type PanelSound = "switch" | "button";
+type PanelSound = "switch" | "button" | "success";
 
 /** Short, locally synthesized mechanical clicks. Audio starts only after a user gesture. */
-export function usePanelSound() {
-  const [enabled, setEnabled] = useState(true);
+export function usePanelSound({ defaultEnabled = true }: { defaultEnabled?: boolean } = {}) {
+  const [enabled, setEnabled] = useState(defaultEnabled);
   const context = useRef<AudioContext | null>(null);
   const noise = useRef<AudioBuffer | null>(null);
 
@@ -23,6 +23,24 @@ export function usePanelSound() {
         const audio = context.current ?? new AudioContext();
         context.current = audio;
         if (audio.state === "suspended") void audio.resume();
+
+        if (kind === "success") {
+          const now = audio.currentTime;
+          [523.25, 659.25, 783.99].forEach((frequency, index) => {
+            const tone = audio.createOscillator();
+            const volume = audio.createGain();
+            const start = now + index * 0.065;
+            tone.type = "sine";
+            tone.frequency.setValueAtTime(frequency, start);
+            volume.gain.setValueAtTime(0.0001, start);
+            volume.gain.exponentialRampToValueAtTime(0.045, start + 0.012);
+            volume.gain.exponentialRampToValueAtTime(0.0001, start + 0.19);
+            tone.connect(volume).connect(audio.destination);
+            tone.start(start);
+            tone.stop(start + 0.2);
+          });
+          return;
+        }
 
         if (!noise.current) {
           const buffer = audio.createBuffer(
@@ -84,10 +102,13 @@ export function usePanelSound() {
     [enabled],
   );
 
+  const playSuccess = useCallback(() => play("success"), [play]);
+
   return {
     soundEnabled: enabled,
     toggleSound: () => setEnabled((current) => !current),
     playSwitch: () => play("switch"),
     playButton: () => play("button"),
+    playSuccess,
   };
 }

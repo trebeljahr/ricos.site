@@ -446,7 +446,7 @@ export function DieZoom({
                       goTo(item.rect, item.id);
                     }}
                   >
-                    {width > 75 && height > 30 && <span>{item.label}</span>}
+                    {width > 44 && height > 30 && <span>{item.mapLabel ?? item.label}</span>}
                   </button>
                 );
               })}
@@ -485,6 +485,13 @@ export function DieZoom({
               +
             </MiniButton>
             <MiniButton onClick={() => goTo(bounds, null, 0.08)}>ALL</MiniButton>
+            <MiniButton
+              onClick={() =>
+                goTo({ x: 0, y: 0, width: shot.width, height: shot.height }, null, 0.04)
+              }
+            >
+              DIE
+            </MiniButton>
             <span className={own.keyGap} aria-hidden="true" />
             {shot.spots
               .filter((item) => !item.parentId)
@@ -529,6 +536,15 @@ export function DieZoom({
               <span>1 PHOTO PIXEL ≈ {formatLength(perPixel)}</span>
             </div>
           </div>
+          {spot?.matchedSource && (
+            <p className={own.credit}>
+              Region matched to the{" "}
+              <a href={spot.matchedSource.url} target="_blank" rel="noreferrer">
+                {spot.matchedSource.label}
+              </a>
+              . Outline approximate.
+            </p>
+          )}
           <p className={own.note}>
             At full zoom one photo pixel is about {formatLength(perPixel)}. The transistors on this
             chip are 0.25 µm, smaller than one pixel.

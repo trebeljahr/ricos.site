@@ -10,8 +10,12 @@ export type DieSpot = {
   parentId?: string;
   /** Key label, e.g. "L2 CACHE". */
   label: string;
+  /** Short label that fits the outline in the whole-chip view. */
+  mapLabel?: string;
   /** One or two plain sentences for the LCD. */
   text: string;
+  /** A matched core layout identifies the region, with an approximate outline. */
+  matchedSource?: { label: string; url: string };
   /** Where it is, in pixels of the full-size photo. */
   rect: Rect;
 };
@@ -48,6 +52,10 @@ export function tileLevelWidths(width: number, height: number, tileSize: number)
 
 const DIXON_WIDTH = 22036;
 const DIXON_HEIGHT = 13288;
+const P6_CORE_MAP = {
+  label: "Deschutes P6 core map",
+  url: "https://nand2mario.github.io/wiki/p6/roms/",
+};
 
 export const PENTIUM_II_DIXON: DieShot = {
   id: "pentium-ii-dixon",
@@ -67,7 +75,9 @@ export const PENTIUM_II_DIXON: DieShot = {
     url: "https://commons.wikimedia.org/wiki/File:Intel-pentium-ii-dixon-die-shot-high-resolution-stitched.jpg",
     source: "Wikimedia Commons",
   },
-  // From the image notes on the Commons file page.
+  // L2 cache, decoder and alignment boxes follow the Commons image notes.
+  // Other regions match the rotated Deschutes core layout; boundaries are
+  // approximate. See dieShots.sources.md for the visual matches and sources.
   spots: [
     {
       id: "cache",
@@ -76,8 +86,69 @@ export const PENTIUM_II_DIXON: DieShot = {
       rect: { x: 55, y: 634, width: 7575, height: 12130 },
     },
     {
+      id: "l1-data",
+      label: "L1 DATA CACHE",
+      text: "16 KB holds recently used data close to the execution units. The regular memory arrays contrast with the surrounding logic.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 13560, y: 9190, width: 3000, height: 3330 },
+    },
+    {
+      id: "l1-instructions",
+      label: "L1 INSTRUCTION CACHE",
+      mapLabel: "L1 CODE",
+      text: "A separate 16 KB cache holds instruction bytes. Keeping instructions and data in separate caches lets the core access both at once.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 18870, y: 7030, width: 2610, height: 4110 },
+    },
+    {
+      id: "microcode",
+      label: "MICROCODE ROM",
+      mapLabel: "MICROCODE",
+      text: "This read-only memory stores sequences of micro-operations for complex instructions. Simple instructions take the decoder path instead.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 18930, y: 830, width: 2500, height: 2210 },
+    },
+    {
+      id: "floating-point",
+      label: "FLOATING POINT",
+      text: "Floating-point arithmetic handles numbers with fractions and a wide range of magnitudes. This region also includes nearby floating-point conversion logic.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 8320, y: 800, width: 4520, height: 2140 },
+    },
+    {
+      id: "integer",
+      label: "INTEGER ARITHMETIC",
+      mapLabel: "INTEGER",
+      text: "Integer execution circuits add, subtract, shift and compare whole numbers. Their repeated structures sit beside the floating-point region.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 9530, y: 3000, width: 3300, height: 1990 },
+    },
+    {
+      id: "mmx",
+      label: "MMX",
+      text: "MMX applies one operation to several packed integers at once. These circuits helped process audio, images and other multimedia data.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 12930, y: 830, width: 1740, height: 4080 },
+    },
+    {
+      id: "scheduler",
+      label: "SCHEDULER",
+      mapLabel: "SCHED.",
+      text: "The reservation station holds micro-operations until their inputs and execution units are ready. Ready work can run before older work that must wait.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 14760, y: 830, width: 1700, height: 4130 },
+    },
+    {
+      id: "branch-predictor",
+      label: "BRANCH PREDICTION",
+      text: "The branch target buffer helps predict where execution will go next. This lets the instruction fetch unit keep working before a branch finishes.",
+      matchedSource: P6_CORE_MAP,
+      rect: { x: 16440, y: 11200, width: 5020, height: 1360 },
+    },
+    {
       id: "decoders",
       label: "X86 DECODERS",
+      mapLabel: "DECODERS",
       text: "These circuits turn each x86 instruction into the small steps the core runs. One full decoder sits next to two simple ones.",
       rect: { x: 18300, y: 3650, width: 2200, height: 1900 },
     },

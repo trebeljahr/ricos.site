@@ -128,4 +128,19 @@ describe("die zoom", () => {
       screen.getByRole("button", { name: "Zoom in" }).getAttribute("aria-disabled"),
     ).toBeNull();
   });
+
+  it("explores other core regions and distinguishes matched outlines from photo annotations", () => {
+    const { container } = render(<DieZoom />);
+    const whole = zoomTag(container);
+    click("DIE");
+    expect(zoomTag(container)).not.toBe(whole);
+    click("Zoom to l1 data cache");
+    expect(container.textContent).toContain("16 KB holds recently used data");
+    expect(screen.getByRole("link", { name: "Deschutes P6 core map" })).toBeTruthy();
+    expect(container.textContent).toContain("Outline approximate.");
+    click("MICROCODE ROM");
+    expect(container.textContent).toContain("stores sequences of micro-operations");
+    click("ALIGNMENT MARK");
+    expect(screen.queryByRole("link", { name: "Deschutes P6 core map" })).toBeNull();
+  });
 });

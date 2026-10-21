@@ -6,7 +6,7 @@ export default function SemiconductorPage() {
   return (
     <Layout
       title="From silicon to a transistor"
-      description="Explore silicon bonding, doping, PN-junction bias and the difference between bipolar and field-effect transistors."
+      description="Explore crystal doping, silicon and germanium, junctions, transistor operation and real transistor packages."
       keywords={[]}
       url="computer/semiconductor"
       noindex
@@ -15,9 +15,6 @@ export default function SemiconductorPage() {
       <main className="mx-auto w-full max-w-5xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
         <ComputerDemoNav current="semiconductor" />
         <h1 className="sr-only">From silicon to a transistor</h1>
-        <p className="mt-8 text-sm text-gray-500">
-          <code>{"<SemiconductorDemo />"}</code>
-        </p>
         <SemiconductorDemo />
         <ComputerDemoNav current="semiconductor" bottom />
       </main>

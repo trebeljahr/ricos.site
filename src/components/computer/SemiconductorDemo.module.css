@@ -1,93 +1,186 @@
 .demo {
-  --paper: #fafaf6; --ink: #23342f; --muted: #53635c; --line: #b5c0b6;
-  --p: #f3e3cf; --n: #dcebf0; --depleted: #dce1d9; --electron: #08759c; --hole: #a35416;
-  container-type: inline-size; margin: 32px 0; padding: 25px; border-block: 1px solid var(--line);
+  --paper: #f6f6ef; --stage: #edeee6; --ink: #23342f; --muted: #56685e; --line: #c3cdbf;
+  --p: #ead9c3; --n: #c8e2e9; --depleted: #c7cdc2; --electron: #007b9d; --hole: #ab5a1f;
+  container-type: inline-size; margin: 28px 0; padding: 26px; border-block: 1px solid var(--line);
   background: var(--paper); color: var(--ink); font: 400 14px/1.6 system-ui, sans-serif;
 }
 :global(.dark) .demo {
-  --paper: #17231e; --ink: #e6eee6; --muted: #bac8bd; --line: #5a7161;
-  --p: #483b2c; --n: #263e49; --depleted: #465048; --electron: #8ad9ef; --hole: #f2b982;
+  --paper: #15251f; --stage: #101e19; --ink: #edf2e5; --muted: #adbdad; --line: #3e594a;
+  --p: #4b3928; --n: #1e424a; --depleted: #425143; --electron: #72d5eb; --hole: #f5b377;
 }
 .demo [hidden] { display: none; }
-.header { margin-bottom: 23px; }
-.eyebrow { font: 600 10px/1.5 ui-monospace, monospace; letter-spacing: .13em; color: var(--muted); }
-.header h3 { margin: 7px 0 10px; font: 500 clamp(25px, 4.6cqw, 36px)/1.12 system-ui, sans-serif; letter-spacing: -.035em; }
-.header > p:last-child { max-width: 58ch; margin: 0; color: var(--muted); }
-.choices { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; margin: 0; padding: 0; border: 0; }
-.choices button, .actions button, .holeSteps button {
-  min-height: 42px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 3px;
+.demo [hidden] * { animation-play-state: paused !important; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.eyebrow { margin: 0; font: 600 10px/1.5 ui-monospace, monospace; letter-spacing: .15em; color: var(--muted); }
+.header h3 { margin: 7px 0 0; font: 500 clamp(25px, 4.6cqw, 36px)/1.12 system-ui, sans-serif; letter-spacing: -.035em; }
+.choices { display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.choices button, .demo button {
+  min-height: 42px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 5px;
   color: var(--ink); background: transparent; font: 500 12px/1.4 system-ui, sans-serif; cursor: pointer;
-  transition: background .16s, border-color .16s;
+  transition: background .18s, border-color .18s, color .18s;
 }
-.choices button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
-.choices button:hover, .actions button:hover, .holeSteps button:hover { border-color: var(--ink); }
-.demo button:focus-visible, .demo a:focus-visible, .diagramScroll:focus-visible { outline: 3px solid var(--electron); outline-offset: 3px; }
-.view { margin-top: 25px; border-top: 1px solid var(--line); padding-top: 22px; }
-.view h4 { margin: 0 0 18px; font: 500 20px/1.3 system-ui, sans-serif; letter-spacing: -.02em; }
-.diagramScroll { overflow-x: auto; margin: 15px 0; border-block: 1px solid var(--line); }
-.diagram { display: block; width: 100%; min-width: 660px; height: auto; color: var(--ink); }
-.scrollHint { display: none; margin: 8px 0 16px; color: var(--muted); font-size: 11px; }
+.demo button:disabled { cursor: default; opacity: .65; }
+.choices button[aria-pressed="true"], .demo .primaryButton { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.demo button:hover { border-color: var(--ink); }
+.demo button:focus-visible, .demo a:focus-visible, .demo summary:focus-visible { outline: 3px solid var(--electron); outline-offset: 4px; }
+.demo .motionButton { font-size: 11px; flex-shrink: 0; border-color: transparent; color: var(--muted); }
+.view { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 22px; }
+.view h4 { margin: 0 0 18px; max-width: 40ch; font: 500 clamp(18px, 3.5cqw, 24px)/1.25 system-ui, sans-serif; letter-spacing: -.025em; }
+.viewHeading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 18px; margin-bottom: 15px; }
+.viewHeading h4 { width: 100%; }
+.controlRow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.demo .quietButton { border: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+.diagramStage { margin: 16px 0; background: var(--stage); border-radius: 7px; overflow: hidden; }
+.diagram { display: block; width: 100%; height: auto; color: var(--ink); }
 .diagram text { fill: currentColor; font: 500 16px/1.4 system-ui, sans-serif; }
 .diagram .smallLabel { font-size: 12px; fill: var(--muted); }
 .diagram .polarity { font-size: 28px; }
-.bond { stroke: var(--line); stroke-width: 3; }
+.diagram .carrierLabel { font-size: 14px; fill: var(--electron); }
+.bond { stroke: var(--line); stroke-width: 4; }
 .bondElectron { fill: var(--electron); }
 .emptyBond { fill: transparent; stroke: var(--hole); stroke-width: 2; }
-.atom { fill: var(--paper); stroke: var(--line); stroke-width: 2; }
-.dopant { fill: var(--n); stroke: var(--ink); stroke-width: 2; }
-.emptySite { fill: transparent; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 4 6; }
+.atom { fill: var(--paper); stroke: var(--muted); stroke-width: 2; }
+.dopant, .donorAtom { fill: var(--n); stroke: var(--electron); stroke-width: 2; }
+.acceptorAtom { fill: var(--p); stroke: var(--hole); stroke-width: 2; }
+.emptySite { fill: transparent; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 3 5; }
 .electron { color: var(--electron); }
 .electron circle { fill: var(--electron); stroke: var(--electron); }
-.electron text { fill: var(--paper); font-size: 14px; }
+.electron text { fill: var(--stage); font-size: 14px; }
 .hole { color: var(--hole); }
-.hole circle { fill: var(--paper); stroke: var(--hole); stroke-width: 2; }
+.hole circle { fill: var(--stage); stroke: var(--hole); stroke-width: 2; }
 .hole text { fill: var(--hole); font-size: 14px; }
 .ion { color: var(--muted); }
 .ion rect { fill: var(--paper); stroke: var(--muted); }
 .ion text { font-size: 14px; }
 .pRegion { fill: var(--p); }
 .nRegion { fill: var(--n); }
-.depletion { fill: var(--depleted); opacity: .92; transition: x .22s, width .22s; }
+.depletion { fill: var(--depleted); opacity: .92; transition: x .6s, width .6s; }
 .boundary { stroke: var(--muted); stroke-dasharray: 3 6; }
 .contact { stroke: var(--ink); stroke-width: 3; }
 .transport { color: var(--electron); }
-.transport line, .transport path, .fieldArrow, .fieldArrow line, .fieldArrow path { fill: none; stroke: currentColor; stroke-width: 2.5; }
+.transport line, .transport path, .fieldArrow, .fieldArrow line, .fieldArrow path { fill: none; stroke: currentColor; stroke-width: 2; }
 .transport text, .fieldArrow text { font-size: 14px; }
-.transport[data-weak="true"] { opacity: .65; }
+.transport[data-weak="true"] { opacity: .6; }
 .fieldArrow { color: var(--muted); }
+.widthBracket { fill: none; stroke: var(--muted); stroke-width: 1.5; transition: d .6s; }
 .insulator { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
 .metal { fill: var(--muted); }
 .diagram .metalLabel { fill: var(--paper); }
-.channel { fill: var(--electron); opacity: .4; }
+.channel { fill: var(--electron); opacity: .3; animation: channelForm .7s ease-out both; transform-origin: 330px 205px; }
 .finGate { fill: none; stroke: var(--muted); stroke-width: 23; }
 .finInsulator { fill: none; stroke: var(--paper); stroke-width: 14; }
-.finChannel { fill: none; stroke: var(--electron); stroke-width: 8; }
-.leader { fill: none; stroke: var(--ink); }
-.actions { margin: 13px 0; }
-.state { min-height: 3.2em; margin: 19px 0 14px; font-weight: 550; }
+.finChannel { fill: none; stroke: var(--electron); stroke-width: 8; animation: channelAppear .7s ease-out both; }
+.leader { fill: none; stroke: var(--muted); stroke-width: 1; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 6px; align-items: center; }
+.actions button span { margin-left: 14px; }
+.state { min-height: 1.6em; margin: 14px 0; font-weight: 500; font-size: 14px; }
 .explanation { margin: 15px 0; max-width: 72ch; }
-.limit { margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.65; }
-.sources { margin: 12px 0 0; color: var(--muted); font-size: 11px; }
-.sources a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 11px; color: var(--muted); }
+.limit { color: var(--muted); font-size: 12px; }
+.sources { color: var(--muted); font-size: 12px; }
+.sources a, .details a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 11px; color: var(--muted); }
 .legend > span { display: inline-flex; align-items: center; gap: 7px; }
 .legend i { width: 10px; height: 10px; border: 1px solid currentColor; }
 .ionSwatch { border-radius: 1px; }
 .electronSwatch { border-radius: 50%; background: var(--electron); color: var(--electron); }
 .holeSwatch { border-radius: 50%; color: var(--hole); }
-.holeSteps { margin: 20px 0; padding-top: 5px; border-top: 1px solid var(--line); }
-.holeSteps p { font-size: 12px; }
-.occupations { display: flex; align-items: center; gap: 17px; margin: 15px 0; }
-.occupations > span { color: var(--electron); font-size: 27px; }
-.occupations > span[data-hole="true"] { color: var(--hole); }
-.occupations > span:last-child { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.details { margin-top: 18px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.details summary { cursor: pointer; padding: 13px 0; width: fit-content; }
+.details p { max-width: 75ch; margin: 10px 0; }
+.modelNote { font-size: 10px; color: var(--muted); margin: 18px 0 0; }
+.sequence { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+.demo .sequence button { display: flex; align-items: center; justify-content: center; gap: 9px; flex: 1; border: 0; border-radius: 0; border-bottom: 2px solid transparent; color: var(--muted); }
+.demo .sequence button[aria-pressed="true"] { border-color: var(--electron); color: var(--ink); }
+.sequence button span { font: 500 11px ui-monospace, monospace; color: var(--muted); }
+.crystalBond { stroke: var(--line); stroke-width: 2.3; }
+.crystalAtom { fill: var(--paper); stroke: var(--muted); stroke-width: 1.3; }
+.diagram .dopantLabel { font-size: 14px; font-weight: 650; }
+.incomingDopant { animation: substitute 1.1s cubic-bezier(.2,.6,.2,1) both; }
+.releasedCarrier { animation: release 1.4s ease-in-out both; }
+.flow { animation: transport 2.8s linear infinite; }
+.hoppingElectron { transition: transform .7s cubic-bezier(.25,.6,.25,1); }
+.holeSteps { border-top: 1px solid var(--line); margin-top: 20px; padding: 16px 0 0; }
+.holeHeading { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 12px; }
+.holeDiagram { display: block; width: 100%; color: var(--ink); }
+.holeDiagram text { fill: currentColor; font-size: 13px; }
+.holeDiagram .electron text { fill: var(--stage); }
+.holeDiagram .hole text { fill: var(--hole); }
+.acceptedElectron { animation: acceptElectron .9s ease-out both; }
+.gateField { stroke-dasharray: 4 4; animation: fieldDrift 1.5s linear infinite; }
+.recombination { animation: recombine 3s ease-in-out infinite; transform-origin: 305px 280px; }
+.intoPage { animation: depth 2.5s linear infinite; }
+.depthRing { fill: none; stroke: var(--electron); stroke-width: 1; }
+.demo[data-motion="paused"] *, .demo[data-motion="paused"] *::before { animation-play-state: paused !important; }
+@keyframes substitute { from { transform: translateY(-85px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes release { from { transform: translate(0, 0); } to { transform: translate(var(--release-x), var(--release-y)); } }
+@keyframes transport { 0% { opacity: 0; transform: translate(0, 0); } 10%, 85% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--travel-x), var(--travel-y)); } }
+@keyframes channelForm { from { transform: scaleX(.05); opacity: 0; } to { transform: scaleX(1); opacity: .3; } }
+@keyframes channelAppear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes acceptElectron { from { transform: translate(86px, -128px); } to { transform: translate(0, 0); } }
+@keyframes fieldDrift { to { stroke-dashoffset: -16; } }
+@keyframes recombine { 0%, 20% { opacity: 1; transform: scale(1); } 70%, 100% { opacity: 0; transform: scale(.3); } }
+@keyframes depth { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; } 100% { opacity: 0; transform: scale(1.4); } }
 @container (max-width: 520px) {
-  .view h4 { font-size: 18px; }
-  .choices button { flex-grow: 1; padding: 9px; }
-  .diagramScroll { margin-inline: -10px; }
+  .header { align-items: flex-start; }
+  .header h3 { font-size: 25px; }
+  .demo .motionButton { padding: 0; min-height: 32px; font-size: 10px; max-width: 80px; }
+  .choices button { flex-grow: 1; padding: 8px; font-size: 11px; }
+  .diagramStage { margin-inline: -8px; }
+  .diagram text { font-size: 18px; }
+  .diagram .smallLabel { font-size: 14px; }
+  .diagram .dopantLabel { font-size: 14px; }
+  .sequence button { padding-inline: 3px; font-size: 11px; gap: 4px; }
+  .state { font-size: 13px; }
 }
-@container (max-width: 660px) { .scrollHint { display: block; } }
-@media (max-width: 520px) { .demo { padding: 18px 12px; } }
+@media (max-width: 520px) { .demo { padding: 20px 14px; } }
 @media (prefers-reduced-motion: reduce) {
-  .choices button, .actions button, .holeSteps button, .depletion { transition: none; }
+  .demo *, .demo *::before { animation: none !important; transition: none !important; }
+  .releasedCarrier { transform: translate(var(--release-x), var(--release-y)); }
+  .flow { transform: translate(var(--rest-x), 0); }
 }
+.caption { margin: 10px 0; font-size: 12px; color: var(--muted); max-width: 76ch; }
+.caption a, .photoFigure a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.elementCell rect { fill: var(--paper); stroke: var(--line); }
+.elementCell { opacity: .48; transition: opacity .3s; }
+.elementCell[data-highlight] { opacity: 1; }
+.elementCell[data-highlight][data-kind="host"] rect { fill: var(--depleted); stroke: var(--ink); stroke-width: 2; }
+.elementCell[data-highlight][data-kind="donor"] rect { fill: var(--n); stroke: var(--electron); stroke-width: 2; }
+.elementCell[data-highlight][data-kind="acceptor"] rect { fill: var(--p); stroke: var(--hole); stroke-width: 2; }
+.diagram .atomicNumber { font: 10px ui-monospace, monospace; }
+.diagram .elementSymbol { font-size: 24px; }
+.diagram .elementName { font-size: 10px; }
+.elementTransfer { animation: elementTransfer 1.4s cubic-bezier(.3,.1,.2,1) both; }
+@keyframes elementTransfer { from { transform: translate(var(--from-x), var(--from-y)); } to { transform: translate(0, 0); } }
+.defect { fill: var(--p); stroke: var(--hole); stroke-width: 2; stroke-dasharray: 3 3; }
+.diagram .latticeLabel { font-size: 11px; }
+.trappedCarrier { animation: trapped 2s ease-in-out infinite; }
+.scatteredPath { fill: none; stroke: var(--electron); stroke-width: 2; stroke-dasharray: 5 5; animation: fieldDrift 2s linear infinite; }
+@keyframes trapped { 50% { opacity: .3; } }
+.photoFigure { margin: 20px 0 12px; }
+.photoFigure img { display: block; width: 100%; height: auto; max-height: 330px; object-fit: contain; background: #ece9df; border-radius: 5px; }
+.historicPhoto img { max-height: 420px; background: #ddd8ca; }
+.photoFigure figcaption { margin-top: 8px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.packageBody { fill: #252b29; stroke: #748077; stroke-width: 2; }
+.diagram .packageMarking { fill: #e1e6dc; font: 18px ui-monospace, monospace; }
+.packagePin path { fill: none; stroke: #8b9b94; stroke-width: 10; }
+.packagePin circle { fill: #8b9b94; }
+.packagePin[data-selected] path { stroke: var(--electron); }
+.packagePin[data-selected] circle { fill: var(--electron); }
+.siliconDie { fill: #698fa1; stroke: #c0d9e0; stroke-width: 1; }
+.bondWire { fill: none; stroke: #e3bc6b; stroke-width: 2; }
+.cutaway { animation: channelAppear .4s ease-out; }
+.goldContact { fill: none; stroke: #c29a42; stroke-width: 5; }
+.wedge { fill: var(--p); stroke: var(--hole); stroke-width: 2; }
+.sequence { margin: 0; padding: 0; min-width: 0; border: 0; border-bottom: 1px solid var(--line); }
+.realShowcase { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; }
+.realShowcase .photoFigure { min-width: 0; }
+.realShowcase .diagramStage { min-width: 0; }
+@container (max-width: 600px) { .realShowcase { grid-template-columns: 1fr; gap: 0; } }
+.contact { fill: none; }
+.diagram .carrierLabel { paint-order: stroke; stroke: var(--stage); stroke-width: 5px; stroke-linejoin: round; }
+.photoDiagram { display: block; width: 100%; height: auto; background: #effaff; border-radius: 5px; overflow: hidden; }
+.photoDiagram path { fill: none; stroke: #355568; stroke-width: 1.5; }
+.photoDiagram text { fill: #243830; font: 500 16px system-ui, sans-serif; }
+.splitDiagram { display: grid; grid-template-columns: 345fr 315fr; margin: 16px 0; background: var(--stage); border-radius: 7px; overflow: hidden; }
+.splitDiagram svg { overflow: hidden; }
+@container (max-width: 520px) { .splitDiagram { grid-template-columns: 1fr; } .splitDiagram svg { max-height: 400px; } }

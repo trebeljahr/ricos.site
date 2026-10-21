@@ -14,10 +14,10 @@ function slotOf(event: SyntheticEvent): number | null {
 
 /** Explore all 128 ASCII entries without a text input. */
 export function AsciiTable() {
-  const [inspected, setInspected] = useState(65);
+  const [selected, setSelected] = useState(65);
   const [tabStop, setTabStop] = useState<number | null>(null);
   const { soundEnabled, toggleSound, playButton } = usePanelSound();
-  const shown = ASCII_TABLE[inspected];
+  const shown = ASCII_TABLE[selected];
   function moveInTable(event: KeyboardEvent<HTMLFieldSetElement>) {
     const code = slotOf(event);
     if (code === null) return;
@@ -52,7 +52,7 @@ export function AsciiTable() {
         <div className={styles.bay}>
           <div className={clsx(panel.sectionHead, styles.wrappingHead)}>
             <span>ASCII TABLE · 128 SLOTS</span>
-            <span>POINT AT A SLOT TO READ IT</span>
+            <span>CLICK A SLOT TO SELECT IT</span>
           </div>
           <div className={clsx(panel.screen, styles.detail)}>
             {shown ? (
@@ -93,13 +93,8 @@ export function AsciiTable() {
           <fieldset
             className={styles.table}
             aria-label="ASCII table. Arrow keys move between the 128 slots."
-            onMouseOver={(event) => {
-              const code = slotOf(event);
-              if (code !== null) setInspected(code);
-            }}
             onFocus={(event) => {
               const code = slotOf(event);
-              if (code !== null) setInspected(code);
               setTabStop(code);
             }}
             onKeyDown={moveInTable}
@@ -110,14 +105,15 @@ export function AsciiTable() {
                 type="button"
                 className={clsx(styles.cell, entry.char === null && styles.control)}
                 data-code={entry.code}
-                data-lit={entry.code === inspected ? "latest" : undefined}
+                data-lit={entry.code === selected ? "latest" : undefined}
+                aria-pressed={entry.code === selected}
                 tabIndex={entry.code === (tabStop ?? 65) ? 0 : -1}
                 aria-label={`${entry.code}: ${entry.name}${
                   entry.char === null ? ", control character" : ""
                 }. Bits ${entry.bits}, hex ${entry.hex}.`}
-                // Not every tap or assistive click arrives with a hover or a focus.
                 onClick={() => {
-                  setInspected(entry.code);
+                  setSelected(entry.code);
+                  setTabStop(entry.code);
                   playButton();
                 }}
               >

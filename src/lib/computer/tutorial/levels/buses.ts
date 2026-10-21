@@ -56,14 +56,14 @@ type BusCase = {
 
 const busNodes = (shared: boolean): Node[] => [
   { id: "a", type: "input8", x: 40, y: 40, label: shared ? "A" : "DATA", numberValue: 0 },
-  { id: "ea", type: "switch", x: 40, y: 220, label: shared ? "ENABLE A" : "ENABLE", value: false },
+  { id: "ea", type: "switch", x: 320, y: 120, label: shared ? "ENABLE A" : "ENABLE", value: false },
   ...(shared
     ? [
         { id: "b", type: "input8" as const, x: 40, y: 400, label: "B", numberValue: 0 },
-        { id: "eb", type: "switch" as const, x: 40, y: 580, label: "ENABLE B", value: false },
+        { id: "eb", type: "switch" as const, x: 320, y: 480, label: "ENABLE B", value: false },
       ]
     : []),
-  { id: "net", type: "bus", x: 1000, y: 180, label: "SHARED BUS" },
+  { id: "net", type: "bus", x: 1100, y: shared ? 260 : 140, label: "SHARED BUS" },
 ];
 
 function busReference(shared: boolean): Circuit {
@@ -73,8 +73,8 @@ function busReference(shared: boolean): Circuit {
     const merge = `merge-${source}`,
       driver = `drive-${source}`;
     nodes.push(
-      { id: merge, type: "merger", x: 350, y: 40 + index * 360 },
-      { id: driver, type: "busdriver", x: 650, y: 100 + index * 360 },
+      { id: merge, type: "merger", x: 520, y: 40 + index * 360 },
+      { id: driver, type: "busdriver", x: 770, y: 100 + index * 360 },
     );
     for (let bit = 0; bit < 8; bit++)
       wires.push({ id: `${source}-${bit}`, from: source, output: bit, to: merge, input: bit });

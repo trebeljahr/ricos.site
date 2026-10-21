@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { SwitchLogic } from "./SwitchLogic";
+import { SwitchLogic, TransistorSwitches } from "./SwitchLogic";
 import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
 
 afterEach(() => {
@@ -77,21 +77,56 @@ describe("truth tables", () => {
 });
 
 describe("switch logic", () => {
-  it("fills in the cases tried and reveals the gate", () => {
+  it("toggles the physical switches, records cases and has no gate reveal", () => {
     const { container } = render(<SwitchLogic />);
+    const board = screen.getByRole("group", { name: "Physical switches and a lamp" });
+    expect(within(board).getAllByRole("button")).toHaveLength(2);
     expect(container.textContent).toContain("1 OF 4");
-    click(/^Input A: 0/);
+    click(/^Switch A: open/);
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    click(/^Input B: 0/);
+    expect(
+      screen.getByRole("button", { name: /^Switch A: closed/ }).getAttribute("aria-pressed"),
+    ).toBe("true");
+    click(/^Switch B: open/);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(container.textContent).toContain("3 OF 4");
-    click("REVEAL THE GATE");
-    expect(container.textContent).toContain("Two switches in a row work like an AND gate.");
+    click(/^Switch A: closed/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(container.textContent).toContain("4 OF 4");
+    expect(screen.queryByRole("button", { name: /REVEAL|HIDE THE GATE/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^Input A/ })).toBeNull();
 
     click("SIDE BY SIDE");
     expect(container.textContent).toContain("1 OF 4");
-    expect(container.textContent).not.toContain("AND gate");
-    click("REVEAL THE GATE");
-    expect(container.textContent).toContain("work like an OR gate");
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    click(/^Switch B: closed/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    click(/^A 1, B 0:/);
+    expect(screen.getByRole("button", { name: /^Switch A: closed/ })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+  });
+
+  it("starts with a voltage-controlled transistor, then combines the same paths", () => {
+    const { container } = render(<TransistorSwitches />);
+    expect(container.textContent).toContain("1 OF 2");
+    expect(screen.queryByRole("button", { name: /^Control B:/ })).toBeNull();
+    click(/^Control A: low/);
+    expect(screen.getByRole("img", { name: "Transistor A: conducting" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    expect(container.textContent).toContain("2 OF 2");
+    click("IN A ROW");
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    click(/^Control B: low/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    click("SIDE BY SIDE");
+    click(/^Control A: high/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    click(/^Control B: high/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    click("ONE SWITCH");
+    expect(container.textContent).toContain("1 OF 2");
+    click(/^A 1:/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    expect(container.textContent).toContain("2 OF 2");
   });
 });

@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { BigScreenCard } from "./bigScreenBlocks";
 import { toNumber } from "./blockBuilder";
 import { screenRows } from "./datapathBlocks";
-import { adderDemo, DEVICE_KINDS, deviceDemo, routingDemo, transistorDemo } from "./demoCircuits";
+import {
+  adderDemo,
+  DEVICE_KINDS,
+  deviceDemo,
+  routingDemo,
+  switchLampDemo,
+  transistorDemo,
+} from "./demoCircuits";
 import {
   type Circuit,
   initialSnapshot,
@@ -61,6 +68,21 @@ function busBench(kind: (typeof DEVICE_KINDS)[number]) {
 }
 
 describe("chapter circuits", () => {
+  it("runs single, series and parallel switch paths through native transistors", () => {
+    for (const wiring of ["single", "series", "parallel"] as const) {
+      const circuit = switchLampDemo(wiring);
+      expect(validateCircuit(circuit)).toBeTruthy();
+      expect(circuit.nodes.filter((node) => node.type === "nmos")).toHaveLength(
+        wiring === "single" ? 1 : 2,
+      );
+      for (const a of [false, true])
+        for (const b of [false, true]) {
+          expect(read(circuit, { a, b }).values.lamp).toBe(
+            wiring === "single" ? a : wiring === "series" ? a && b : a || b,
+          );
+        }
+    }
+  });
   it("uses real XOR/AND and full-adder wiring for every input row", () => {
     for (const kind of ["sum", "half", "full", "boxed-full"] as const) {
       const circuit = adderDemo(kind);

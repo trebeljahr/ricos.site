@@ -1,12 +1,12 @@
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
-import { SwitchLogic } from "@components/computer/SwitchLogic";
+import { SwitchLogic, TransistorSwitches } from "@components/computer/SwitchLogic";
 import Layout from "@components/Layout";
 
 export default function SwitchLogicPage() {
   return (
     <Layout
       title="Two switches, one lamp"
-      description="Wire two switches to a lamp, try every case, then see which logic gate the wiring is."
+      description="Wire two switches to a lamp, click the switches, then control the same paths with transistors."
       keywords={[]}
       url="computer/switch-logic"
       noindex
@@ -29,6 +29,8 @@ export default function SwitchLogicPage() {
             <code>{'<SwitchLogic wiring="parallel" fixed />'}</code>
           </h2>
           <SwitchLogic wiring="parallel" fixed />
+          <h2>Switches controlled by electricity</h2>
+          <TransistorSwitches />
         </div>
         <ComputerDemoNav current="switch-logic" bottom />
       </main>

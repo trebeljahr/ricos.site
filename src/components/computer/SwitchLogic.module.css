@@ -1,30 +1,184 @@
-/* The battery, switch and lamp drawing of SwitchLogic. Board, wires and labels
-   come from GateDemos.module.css. */
-.board svg { max-height: 240px; }
-.blade { stroke: #8fb894; stroke-width: 3.5; stroke-linecap: round; transition: all .18s ease-out; }
-.bladeClosed { stroke: #d9f6c0; }
-.contact { fill: #16291c; stroke: #a8c9a6; stroke-width: 2; }
-.plate { stroke: #d1ecc8; stroke-width: 3; stroke-linecap: round; }
-.plateShort { stroke: #d1ecc8; stroke-width: 6; stroke-linecap: round; }
-.bulb { fill: #1f3324; stroke: #8fb894; stroke-width: 2; transition: fill .15s; }
-.bulbOn { fill: #f4ffe0; stroke: #ffffff; }
-.halo { fill: #d9ffb0; opacity: .22; filter: blur(4px); }
-.filament { fill: none; stroke: #6e8a72; stroke-width: 1.6; stroke-linejoin: round; }
-.filamentOn { stroke: #b9822a; }
-/* Dashes that run along a lit wire, in the direction the current flows. */
-.flow {
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 1.5 11;
-  opacity: .75;
-  animation: flow .6s linear infinite;
+/* A tabletop teaching model: insulated leads, brass knife switches and a glass lamp. */
+.board {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 10 / 7;
+  margin-top: 16px;
+  border: 2px solid #716346;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(3deg, transparent 0 7px, #50351709 8px, transparent 10px 14px),
+    linear-gradient(125deg, #d6c69c, #b8a477 70%, #c7b58b);
+  box-shadow: inset 0 2px 3px #fff7, inset 0 -3px 5px #4b361b50, 0 3px 5px #27322740;
+  container-type: inline-size;
 }
-@keyframes flow { from { stroke-dashoffset: 12.5; } to { stroke-dashoffset: 0; } }
-.revealRow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 12px; }
-.revealRow > span { margin: 0; }
+.cables { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cableShadow, .cable, .returnCable, .cableShine { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cableShadow { stroke: #34271866; stroke-width: 13; transform: translateY(4px); filter: blur(2px); }
+.cable { stroke: #8e3827; stroke-width: 9; }
+.returnCable { stroke: #383c38; stroke-width: 9; }
+.cableShine { stroke: #fff3; stroke-width: 2; transform: translateY(-2px); }
+.knifeSwitch, .transistorSwitch {
+  position: absolute;
+  width: 25.667%;
+  height: 22.38%;
+  transform: translate(-50%, -50%);
+}
+.knifeSwitch {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #302b20;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.switchBase {
+  display: block;
+  position: absolute;
+  inset: 5% 0 12%;
+  border: 1px solid #534833;
+  border-radius: 9%;
+  background: linear-gradient(130deg, #f0e7c9, #c7b98e 65%, #aa9972);
+  box-shadow: inset 0 2px 2px #fff9, inset 0 -3px 1px #807454, 0 5px 5px #3b2b2255;
+}
+.contactLeft, .contactRight {
+  position: absolute;
+  top: 37%;
+  width: 19%;
+  height: 29%;
+  border: 1px solid #796027;
+  border-radius: 22%;
+  background: linear-gradient(120deg, #ead49a, #8f6e2f 48%, #d9bb6c 54%, #ae863d);
+  box-shadow: 0 3px 2px #4f3c28;
+}
+.contactLeft { left: 4%; }
+.contactRight { right: 4%; }
+.contactLeft::after, .contactRight::after {
+  content: "";
+  position: absolute;
+  inset: 27%;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #efe1aa, #ab8e4a 45%, #665123 46% 56%, #d8b66b 58%);
+  box-shadow: 0 1px 2px #473920;
+}
+.blade {
+  position: absolute;
+  left: 14%;
+  top: 42%;
+  width: 72%;
+  height: 17%;
+  border: 1px solid #a78c43;
+  border-radius: 2px;
+  background: linear-gradient(#f9e5a5, #bc9346 40%, #e3c674 60%, #9a7434);
+  box-shadow: 0 13px 6px #3e2f2655;
+  transform-origin: 0 50%;
+  transform: rotate(-32deg);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.blade[data-closed="true"] { transform: rotate(0); box-shadow: 0 2px 2px #3e2f2655; }
+.blade i {
+  position: absolute;
+  right: -3%;
+  top: -50%;
+  width: 38%;
+  height: 210%;
+  border: 1px solid #242c25;
+  border-radius: 4px;
+  background: linear-gradient(#586458, #28372c 70%, #1c251f);
+  box-shadow: inset 0 2px #84917b, 0 2px 2px #392b2455;
+}
+.knifeSwitch:hover .blade i { background: linear-gradient(#6f7d69, #384e3c); }
+.knifeSwitch:active .switchBase { translate: 0 1px; }
+.switchLabel, .lampLabel {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: max-content;
+  transform: translateX(-50%);
+  color: #302b20;
+  font-size: clamp(9px, 2.5cqi, 13px);
+  letter-spacing: .015em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.battery {
+  position: absolute;
+  left: 8.75%;
+  top: 54.76%;
+  width: 9.17%;
+  height: 26.19%;
+  border: 1px solid #443b2d;
+  border-radius: 15% / 6%;
+  background: linear-gradient(90deg, #6f482c, #d2ab79 20%, #dfbd8d 35%, #91613c 80%, #5c412d);
+  box-shadow: inset 0 2px #f3d7af, 4px 6px 7px #3d2c2155;
+}
+.battery::after {
+  content: "";
+  position: absolute;
+  inset: 28% 0 4%;
+  border-radius: 0 0 8% 8%;
+  background: linear-gradient(90deg, #27352f, #536256 35%, #26342b);
+}
+.battery > i { position: absolute; left: 33%; top: -6%; width: 34%; height: 8%; border-radius: 3px 3px 0 0; background: linear-gradient(90deg, #787467, #ddd8bf, #777568); }
+.battery > span { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-around; color: #e9e8ce; font-size: 3.8cqi; }
+.battery b { font-size: 2cqi; writing-mode: vertical-rl; letter-spacing: .08em; }
+.lamp {
+  position: absolute;
+  left: 77.5%;
+  top: 43%;
+  width: 13.33%;
+  height: 28%;
+}
+.lamp::before {
+  content: "";
+  position: absolute;
+  inset: -45% -70% -15%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #fff2b9b0, #ffda6430 45%, transparent 70%);
+  opacity: 0;
+  transition: opacity .2s ease;
+  pointer-events: none;
+}
+.lamp[data-on="true"]::before { opacity: 1; }
+.glass {
+  position: absolute;
+  z-index: 1;
+  inset: 0 7% 26%;
+  border: 1px solid #eee9cdb3;
+  border-radius: 48% 48% 35% 35%;
+  background: radial-gradient(ellipse at 35% 25%, #ffffff70, #d6dfce35 50%, #6c786950);
+  box-shadow: inset -3px -3px 6px #4f584433, inset 2px 2px 4px #fffb;
+  transition: background .2s, box-shadow .2s;
+}
+.glass::after { content: ""; position: absolute; left: 35%; right: 35%; top: 55%; bottom: 0; border-inline: 1px solid #6e6753; }
+.glassHighlight { position: absolute; left: 17%; top: 12%; width: 15%; height: 32%; border-radius: 50%; background: #ffffff85; transform: rotate(24deg); }
+.filament { position: absolute; left: 31%; top: 48%; width: 38%; height: 13%; border: 2px solid #655442; border-top: 0; border-radius: 0 0 50% 50%; }
+.lamp[data-on="true"] .glass { background: radial-gradient(ellipse at 40% 35%, #fffef1, #ffe7a4 55%, #d4ab57c0); box-shadow: 0 0 20px #ffe5a5a0, inset 2px 2px 4px #fffc; }
+.lamp[data-on="true"] .filament { border-color: #fffded; filter: drop-shadow(0 0 3px #ffb323); }
+.socket { position: absolute; z-index: 2; left: 27%; right: 27%; top: 65%; height: 22%; border: 1px solid #6c6557; border-radius: 10% 10% 25% 25%; background: repeating-linear-gradient(-8deg, #c6b992 0 3px, #786e55 4px 6px); }
+.lampBase { position: absolute; left: -12%; right: -12%; top: 83%; height: 23%; border-radius: 50%; background: radial-gradient(ellipse at 45% 25%, #eee6cf, #c1b699 60%, #887c62); box-shadow: 1px 4px 3px #44342155; }
+.lampBase i { position: absolute; top: 50%; left: 20%; width: 8%; aspect-ratio: 1; border-radius: 50%; background: #aa8a45; box-shadow: inset 1px 1px #f9e8bb, 0 1px #544322; }
+.lampBase i + i { left: auto; right: 20%; }
+.lampLabel { top: 115%; }
+.instruction { margin: 14px 0 8px; font-size: 12px; line-height: 1.5; }
+.transistor { position: absolute; inset: 4% 0 14%; }
+.package { position: absolute; z-index: 1; inset: 10% 22% 6%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #181f1a; border-radius: 45% 45% 6% 6%; background: linear-gradient(125deg, #58605a, #242b26 55%, #151a17); box-shadow: inset 0 2px 1px #758074, 2px 5px 5px #3d2e2255; color: #e2e7ce; font-size: 2.5cqi; letter-spacing: .04em; }
+.package > span { font-size: 3.5cqi; }
+.leadLeft, .leadRight { position: absolute; top: 47%; height: 9%; width: 30%; background: linear-gradient(#ebdfbd, #7b7b6c 60%, #ada18a); }
+.leadLeft { left: 12%; }
+.leadRight { right: 12%; }
+.controlLead { position: absolute; left: 48%; top: 80%; height: 42%; width: 4%; background: #606a59; border-inline: 1px solid #9aa78c; }
+.transistor[data-on="true"] .controlLead { background: #e3f2a2; box-shadow: 0 0 4px #e5f3a3; }
+.voltage { position: absolute; top: 98%; left: 50%; transform: translateX(-50%); display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 30px; width: max-content; padding: 5px 7px; border: 1px solid #59664c; border-radius: 4px; background: linear-gradient(#e6e7cd, #b3b99e); box-shadow: 0 2px 2px #53463160; color: #2d3528; font: inherit; font-size: clamp(9px, 2.5cqi, 13px); cursor: pointer; }
+.voltage i { width: 7px; height: 7px; border-radius: 50%; background: #66745a; box-shadow: inset 0 1px 2px #283220; }
+.voltage[aria-pressed="true"] i { background: #def39e; box-shadow: 0 0 5px #e9f5b1; }
+.voltage:hover { filter: brightness(1.06); }
 @media (prefers-reduced-motion: reduce) {
-  .flow { display: none; }
-  .blade, .bulb { transition: none; }
+  .blade, .glass, .lamp::before { transition: none; }
+}
+@container (max-width: 420px) {
+  .battery b { display: none; }
 }

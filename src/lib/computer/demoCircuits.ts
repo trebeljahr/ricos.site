@@ -62,6 +62,22 @@ export function gateDemo(gate: LogicGate): Circuit {
 
 export const transistorDemo = (gate: LogicGate) => layoutCircuit(gateBlueprint(gate, "transistor"));
 
+/** Idealized conducting paths for the physical switch and transistor analogy. */
+export function switchLampDemo(wiring: "single" | "series" | "parallel"): Circuit {
+  const b = new Builder();
+  b.add("power", "high", 0, 0, "BATTERY");
+  b.add("a", "switch", 0, 160, "CONTROL A");
+  b.gate("switch-a", "nmos", 200, 0, "a", "power", "SWITCH A");
+  if (wiring !== "single") {
+    b.add("b", "switch", 200, 160, "CONTROL B");
+    b.gate("switch-b", "nmos", 400, 0, "b", wiring === "series" ? "switch-a" : "power", "SWITCH B");
+    if (wiring === "parallel") b.gate("paths", "junction", 600, 0, "switch-a", "switch-b");
+  }
+  b.add("lamp", "lamp", 800, 0, "LAMP");
+  b.connect(wiring === "single" ? "switch-a" : wiring === "series" ? "switch-b" : "paths", "lamp");
+  return b.circuit("Switches and a lamp");
+}
+
 export function routingDemo(kind: "decoder" | "mux" | "memory"): Circuit {
   if (kind === "decoder") return layoutCircuit(builtIn("decoder"));
   if (kind === "mux") {

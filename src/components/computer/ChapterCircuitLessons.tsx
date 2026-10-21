@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DecoderDemo } from "./AddressRouting";
+import { TransistorSwitches } from "./SwitchLogic";
 import { TransistorGates } from "./TransistorGates";
 import { LazyLogicTutorial } from "./tutorial/LazyLogicTutorial";
 
@@ -24,6 +25,7 @@ export function TransistorGateLessons() {
   const [revealed, setRevealed] = useState(false);
   return (
     <section className="not-prose my-8" aria-label="Build and explore gates from transistors">
+      <TransistorSwitches />
       <LazyLogicTutorial title="Build gates from transistors" levels={["cmos-not", "cmos-nand"]} />
       <details className="my-6" onToggle={(event) => setRevealed(event.currentTarget.open)}>
         <summary className="cursor-pointer py-3 text-sm underline underline-offset-4">

@@ -26,8 +26,6 @@
 .header { display: flex; justify-content: space-between; align-items: start; gap: 24px; padding: 34px 36px 28px; }
 .demo .eyebrow { color: var(--accent); font-size: 10px; font-weight: 650; letter-spacing: .13em; text-transform: uppercase; }
 .demo .title { margin-top: 8px; font-family: Georgia, serif; font-size: clamp(30px, 5cqi, 44px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; }
-.demo .intro { max-width: 48ch; margin-top: 12px; color: var(--muted); font-size: 14px; }
-.edition { flex: 0 0 auto; padding-top: 7px; color: var(--muted); font-family: Georgia, serif; font-size: 15px; font-style: italic; text-align: right; }
 .explorer { scroll-margin-top: 84px; display: grid; grid-template-columns: 1.12fr 1fr; border-block: 1px solid var(--rule); }
 .illustration { min-width: 0; padding: 22px 24px 24px; background: #f1ebdf; }
 .stageHeading { display: flex; align-items: center; justify-content: space-between; min-height: 28px; }
@@ -37,28 +35,14 @@
 .reset:hover { color: var(--accent); }
 .stage { --move: 620ms; --ease: cubic-bezier(.45, .05, .2, 1); overflow: hidden; margin-top: 2px; }
 .stage svg { display: block; width: 100%; height: auto; overflow: hidden; }
-.demo .stageCaption { min-height: 28px; margin: 8px 0 18px; color: var(--muted); font-family: Georgia, serif; font-size: 14px; font-style: italic; text-align: center; }
-.controls { display: flex; justify-content: space-between; gap: 12px; }
-.demo .back, .demo .open { min-height: 44px; padding: 9px 15px; border: 1px solid var(--rule); border-radius: 4px; font-size: 13px; font-weight: 600; transition: background 180ms, transform 180ms; }
-.demo .back { background: transparent; color: var(--ink); }
-.demo .open { display: flex; justify-content: space-between; gap: 24px; background: var(--accent); border-color: var(--accent); color: #fffaf2; }
-.demo .open:hover { background: #813b2c; transform: translateY(-1px); }
-.demo .back:hover { background: #e8e0d2; }
-.demo button[aria-disabled="true"] { opacity: .42; cursor: default; transform: none; }
 .explanation { display: flex; align-items: center; padding: 30px; border-left: 1px solid var(--rule); }
 .chapter { width: 100%; animation: arrive 280ms ease both; }
 .demo .layerName { margin: 12px 0; font-family: Georgia, serif; font-size: clamp(26px, 4cqi, 35px); font-weight: 400; line-height: 1.13; letter-spacing: -.025em; text-wrap: balance; }
 .description { font-size: 15px; }
-.example { margin-top: 22px; padding-left: 14px; border-left: 2px solid #c5ad86; }
-.smallLabel { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; }
-.example p, .connection p { font-size: 13px; line-height: 1.6; }
-.connection { margin-top: 23px; padding-top: 18px; border-top: 1px solid var(--rule); }
-.demo .nextLink { display: inline-flex; align-items: baseline; gap: 9px; margin-top: 12px; padding: 5px 0; border: 0; background: none; color: var(--accent); font-size: 12px; font-weight: 600; text-align: left; }
-.nextLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+.demo .connection { margin-top: 16px; color: var(--muted); font-size: 13px; }
 .journey { padding: 28px 32px 24px; }
-.journeyHeading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 16px; }
-.demo .journeyHeading h3 { font-family: Georgia, serif; font-size: 21px; font-weight: 400; }
-.journeyHeading > span { color: var(--muted); font-size: 11px; }
+.journeyHeading { cursor: pointer; color: var(--muted); font-size: 12px; }
+.journey[open] .journeyHeading { margin-bottom: 16px; }
 .rail { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px 12px; margin: 0; padding: 0; list-style: none; }
 .rail li { margin: 0; padding: 0; }
 .rail li::before { display: none; }
@@ -70,7 +54,6 @@
 .miniDoll { display: block; width: 16px; height: 26px; overflow: visible; transition: transform 200ms ease; }
 .railButton:hover .miniDoll { transform: translateY(-2px); }
 .miniOutline { fill: none; stroke: #473b31; stroke-width: 3; stroke-linejoin: round; }
-.demo .note { margin: 0 32px; padding: 18px 0 22px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 12px; line-height: 1.65; }
 .camera, .zoom, .doll, .lidLift { transition: transform var(--move) var(--ease); }
 .lidAside { transition: transform var(--move) var(--ease), opacity 280ms ease; }
 [data-direction="open"] .zoom { transition-delay: 60ms; }
@@ -100,14 +83,10 @@
 @keyframes arrive { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @container (max-width: 740px) {
   .header { padding: 28px 24px 24px; }
-  .edition { display: none; }
   .illustration { padding: 18px 16px 22px; }
   .explanation { padding: 24px 20px; }
   .journey { padding: 24px 20px; }
   .rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .demo .note { margin-inline: 24px; }
-  .demo .open { gap: 12px; }
-  .demo .back, .demo .open { padding-inline: 10px; }
 }
 @container (max-width: 540px) {
   .explorer { grid-template-columns: minmax(0, 1fr); }
@@ -115,8 +94,6 @@
   .stage { max-width: 360px; margin-inline: auto; }
   .explanation { border-left: 0; border-top: 1px solid var(--rule); padding: 26px 24px; }
   .demo .layerName { font-size: 30px; }
-  .journeyHeading { display: block; }
-  .journeyHeading > span { display: block; margin-top: 4px; }
   .rail { gap: 2px 6px; }
   .railButton { gap: 5px; padding-inline: 3px; }
   .railName { font-size: 11px; }
@@ -124,3 +101,9 @@
 @media (prefers-reduced-motion: reduce) {
   .demo *, .demo *::before, .demo *::after { animation: none; transition: none; }
 }
+
+.demo .stageHint { min-height: 36px; margin-top: 8px; color: var(--muted); font-size: 12px; text-align: center; }
+.dollControl { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
+.dollControl path { fill: transparent; stroke: transparent; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.dollControl:hover path { fill: #fff3; }
+.dollControl:focus-visible path { stroke: var(--accent); stroke-width: 3; stroke-dasharray: 4 3; }

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, KeyboardEvent, ReactNode, RefObject } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import {
   ABSTRACTION_LAYERS,
@@ -7,8 +7,6 @@ import {
   clampDepth,
   INNERMOST,
   INNERMOST_NOTE,
-  KEY_IDEA,
-  PART_TITLES,
 } from "src/lib/computer/abstractionLayers";
 import styles from "./AbstractionLayers.module.css";
 
@@ -169,13 +167,24 @@ function DollStage({
   from,
   label,
   ids,
+  onSelect,
+  stageRef,
 }: {
   depth: number;
   from: number;
   label: string;
   ids: StageIds;
+  onSelect: (depth: number) => void;
+  stageRef: RefObject<SVGSVGElement | null>;
 }) {
   const { x, y, size } = placement(depth);
+  const parentSize = size / SHRINK;
+  const parentY = y + (RISE * parentSize) / 100;
+  function activate(event: KeyboardEvent<SVGGElement>, next: number) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    onSelect(next);
+  }
 
   let world: ReactNode = (
     <g>
@@ -204,9 +213,11 @@ function DollStage({
 
   return (
     <div className={styles.stage}>
+      {/* biome-ignore lint/a11y/useSemanticElements: The SVG group contains keyboard-accessible illustrated controls. */}
       <svg
         viewBox="0 0 400 280"
-        role="img"
+        ref={stageRef}
+        role="group"
         aria-label={label}
         data-direction={depth >= from ? "open" : "close"}
         data-depth={depth}
@@ -225,12 +236,52 @@ function DollStage({
             <stop offset="1" stopColor="#000" stopOpacity="0.3" />
           </linearGradient>
         </defs>
+        {/* biome-ignore lint/a11y/noAriaHiddenOnFocusable: This drawing has no focusable elements; sibling hit regions provide the controls. */}
         <g
+          aria-hidden="true"
           className={styles.camera}
           style={{ transform: `translate(${x}px, ${y}px) scale(${size / 100})` }}
         >
           {world}
         </g>
+        {depth > 0 && (
+          // biome-ignore lint/a11y/useSemanticElements: A native HTML button cannot contain these SVG hit regions.
+          <g
+            role="button"
+            tabIndex={0}
+            aria-label={`Close doll: ${ABSTRACTION_LAYERS[depth - 1].name}`}
+            className={styles.dollControl}
+            transform={`translate(${x} ${parentY}) scale(${parentSize / 100})`}
+            onClick={() => onSelect(depth - 1)}
+            onKeyDown={(event) => activate(event, depth - 1)}
+          >
+            <g clipPath={`url(#${ids.bottom})`}>
+              <path d={DOLL_PATH} />
+            </g>
+            <g
+              transform={`translate(${LID_ASIDE} ${LID_LIFTED}) rotate(${LID_TILT}) translate(0 ${-LID_CENTRE})`}
+            >
+              <g clipPath={`url(#${ids.top})`}>
+                <path d={DOLL_PATH} />
+              </g>
+            </g>
+          </g>
+        )}
+        {depth < INNERMOST && (
+          // biome-ignore lint/a11y/useSemanticElements: A native HTML button cannot contain this SVG hit region.
+          <g
+            role="button"
+            tabIndex={0}
+            data-open="true"
+            aria-label={`Open doll: ${ABSTRACTION_LAYERS[depth].name}`}
+            className={styles.dollControl}
+            transform={`translate(${x} ${y}) scale(${size / 100})`}
+            onClick={() => onSelect(depth + 1)}
+            onKeyDown={(event) => activate(event, depth + 1)}
+          >
+            <path d={DOLL_PATH} />
+          </g>
+        )}
       </svg>
     </div>
   );
@@ -271,7 +322,8 @@ export function AbstractionLayers() {
   // The explanation updates at once; the illustration opens one doll at a time.
   const [depth, setDepth] = useState(0);
   const [stage, setStage] = useState({ shown: 0, from: 0 });
-  const openKey = useRef<HTMLButtonElement>(null);
+  const stageRef = useRef<SVGSVGElement>(null);
+  const focusDoll = useRef(false);
   const explorer = useRef<HTMLDivElement>(null);
   const base = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const ids: StageIds = { top: `${base}-top`, bottom: `${base}-bottom`, shade: `${base}-shade` };
@@ -289,7 +341,17 @@ export function AbstractionLayers() {
     return () => window.clearTimeout(timer);
   }, [depth, stage.shown]);
 
-  function goTo(next: number) {
+  useEffect(() => {
+    if (!focusDoll.current) return;
+    const control =
+      stageRef.current?.querySelector<SVGGElement>("[data-open]") ??
+      stageRef.current?.querySelector<SVGGElement>('[role="button"]');
+    control?.focus({ preventScroll: true });
+    if (stage.shown === depth) focusDoll.current = false;
+  }, [depth, stage.shown]);
+
+  function goTo(next: number, focus = false) {
+    focusDoll.current = focus;
     const target = clampDepth(next);
     if (target === depth) return false;
     setDepth(target);
@@ -308,16 +370,7 @@ export function AbstractionLayers() {
         <div>
           <p className={styles.eyebrow}>The computer, layer by layer</p>
           <h2 className={styles.title}>There is more inside.</h2>
-          <p className={styles.intro}>
-            Open the dolls. Follow a route from the app on your screen to the voltages in its
-            circuits.
-          </p>
         </div>
-        <span className={styles.edition} aria-hidden="true">
-          {total} layers
-          <br />
-          one computer
-        </span>
       </header>
       <div ref={explorer} className={styles.explorer}>
         <div className={styles.illustration}>
@@ -330,8 +383,7 @@ export function AbstractionLayers() {
                 type="button"
                 className={styles.reset}
                 onClick={() => {
-                  goTo(0);
-                  openKey.current?.focus();
+                  goTo(0, true);
                 }}
                 aria-label="Close every doll and go back to the app"
               >
@@ -348,73 +400,27 @@ export function AbstractionLayers() {
                 : `A nesting doll opened ${stage.shown} ${stage.shown === 1 ? "time" : "times"}. The doll in view: ${shownLayer.name}.`
             }
             ids={ids}
+            onSelect={(next) => goTo(next, true)}
+            stageRef={stageRef}
           />
-          <p className={styles.stageCaption} aria-hidden="true">
-            {shownLayer.name}
+          <p className={styles.stageHint}>
+            {stage.shown === 0
+              ? "Click the doll to open it."
+              : stage.shown === INNERMOST
+                ? "Click the lifted lid to close it."
+                : "Click the doll to open it. Click the lifted lid to close it."}
           </p>
-          <div className={styles.controls}>
-            <button
-              type="button"
-              className={styles.back}
-              onClick={() => goTo(depth - 1)}
-              aria-disabled={depth === 0 || undefined}
-              aria-label="Close the doll: go one layer out"
-            >
-              ← Close doll
-            </button>
-            <button
-              ref={openKey}
-              type="button"
-              className={styles.open}
-              onClick={() => goTo(depth + 1)}
-              aria-disabled={depth === INNERMOST || undefined}
-              aria-label="Open the doll: go one layer in"
-            >
-              {inner ? "Open doll" : "At the centre"} <span aria-hidden="true">→</span>
-            </button>
-          </div>
         </div>
         <div className={styles.explanation}>
           <div key={layer.id} className={styles.chapter}>
-            <p className={styles.eyebrow}>
-              Part {layer.part} · {PART_TITLES[layer.part]}
-            </p>
             <h3 className={styles.layerName}>{layer.name}</h3>
             <p className={styles.description}>{layer.does}</p>
-            <div className={styles.example}>
-              <span className={styles.smallLabel}>For example</span>
-              <p>{layer.example}</p>
-            </div>
-            <div className={styles.connection}>
-              <span className={styles.smallLabel}>
-                {inner ? "The next connection" : "From here, physics"}
-              </span>
-              <p>{inner ? layer.builtFrom : INNERMOST_NOTE}</p>
-              {inner && (
-                <button
-                  type="button"
-                  className={styles.nextLink}
-                  onClick={() => {
-                    goTo(depth + 1);
-                    openKey.current?.focus();
-                  }}
-                >
-                  Explore{" "}
-                  {inner.name === "CPU" || inner.name === "RAM"
-                    ? inner.name
-                    : inner.name.toLowerCase()}{" "}
-                  <span aria-hidden="true">↗</span>
-                </button>
-              )}
-            </div>
+            <p className={styles.connection}>{inner ? layer.builtFrom : INNERMOST_NOTE}</p>
           </div>
         </div>
       </div>
-      <div className={styles.journey}>
-        <div className={styles.journeyHeading}>
-          <h3>The whole journey</h3>
-          <span>Choose any layer to explore</span>
-        </div>
+      <details className={styles.journey}>
+        <summary className={styles.journeyHeading}>All {total} layers</summary>
         <ol className={styles.rail} aria-label="All layers, from the outside in">
           {ABSTRACTION_LAYERS.map((entry, index) => {
             const current = index === depth;
@@ -426,8 +432,7 @@ export function AbstractionLayers() {
                   aria-current={current ? "true" : undefined}
                   data-state={index < depth ? "open" : current ? "current" : "inside"}
                   onClick={() => {
-                    goTo(index);
-                    openKey.current?.focus({ preventScroll: true });
+                    goTo(index, true);
                     explorer.current?.scrollIntoView?.({
                       block: "start",
                       behavior: prefersInstant() ? "instant" : "smooth",
@@ -443,8 +448,7 @@ export function AbstractionLayers() {
             );
           })}
         </ol>
-      </div>
-      <p className={styles.note}>{KEY_IDEA}</p>
+      </details>
       <p className="sr-only" aria-live="polite">
         Layer {depth + 1} of {total}: {layer.name}. {layer.does}{" "}
         {inner ? `Next: ${inner.name}. ${layer.builtFrom}` : INNERMOST_NOTE}

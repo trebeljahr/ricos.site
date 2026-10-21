@@ -6,7 +6,8 @@ import { A, B, CHAPTERS, OUT, once } from "./shared";
 
 export const UNIVERSAL_FAMILIES = ["nand", "nor"] as const;
 export type UniversalFamily = (typeof UNIVERSAL_FAMILIES)[number];
-export const UNIVERSAL_TARGETS = GATE_NAMES;
+export const universalTargets = (family: UniversalFamily) =>
+  GATE_NAMES.filter((target) => target !== family);
 
 export const universalGateId = (family: UniversalFamily, target: LogicGate) =>
   `universal-${family}-${target}`;
@@ -23,7 +24,7 @@ const targetHints: Record<LogicGate, string> = {
 
 /** Isolated practice never awards replacement parts or changes the main construction ladder. */
 export const UNIVERSAL_GATE_LEVELS: Level[] = UNIVERSAL_FAMILIES.flatMap((family) =>
-  UNIVERSAL_TARGETS.map((target): Level => {
+  universalTargets(family).map((target): Level => {
     const id = universalGateId(family, target);
     const title = `${target.toUpperCase()} from ${family.toUpperCase()}`;
     return {

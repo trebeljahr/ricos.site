@@ -3,12 +3,3 @@
 .sound { display: block; margin: 7px 0 0; padding: 4px 0; border: 0; background: transparent; color: #acbace; font: inherit; font-size: 11px; cursor: pointer; }
 .sound:hover { color: #dbfce9; }
 .sound:focus-visible { outline: 2px solid #99ebc3; outline-offset: 3px; }
-.particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; contain: paint; }
-.particle { position: absolute; top: 50%; left: 50%; width: 5px; height: 9px; opacity: 0; background: var(--color); animation: scatter 1100ms cubic-bezier(.15,.65,.3,1) var(--delay) both; }
-@keyframes scatter {
-  0% { opacity: 0; transform: translate(0, 0) rotate(0); }
-  12% { opacity: 1; }
-  85% { opacity: .9; }
-  100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--spin)); }
-}
-@media (prefers-reduced-motion: reduce) { .particles { display: none; } .particle { animation: none; } }

@@ -6,9 +6,11 @@ import { CATALOG, LEARNING_LEVELS, LEVELS } from "./index";
 import { UNIVERSAL_GATE_LEVELS } from "./universalGates";
 
 describe("universal gate construction", () => {
-  it("registers all fourteen independent practices without changing earned parts or the learning ladder", () => {
-    expect(UNIVERSAL_GATE_LEVELS).toHaveLength(14);
-    expect(new Set(UNIVERSAL_GATE_LEVELS.map((level) => level.id)).size).toBe(14);
+  it("registers the other six functions for each primitive without changing earned parts or the learning ladder", () => {
+    expect(UNIVERSAL_GATE_LEVELS).toHaveLength(12);
+    expect(new Set(UNIVERSAL_GATE_LEVELS.map((level) => level.id)).size).toBe(12);
+    expect(UNIVERSAL_GATE_LEVELS.some((level) => level.id === "universal-nand-nand")).toBe(false);
+    expect(UNIVERSAL_GATE_LEVELS.some((level) => level.id === "universal-nor-nor")).toBe(false);
     for (const level of UNIVERSAL_GATE_LEVELS) {
       expect(LEVELS).toContain(level);
       expect(LEARNING_LEVELS).not.toContain(level);

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import {
   UNIVERSAL_FAMILIES,
-  UNIVERSAL_TARGETS,
   type UniversalFamily,
   universalGateId,
+  universalTargets,
 } from "src/lib/computer/tutorial/levels/universalGates";
 import { LazyLogicTutorial } from "./tutorial/LazyLogicTutorial";
 
@@ -37,7 +37,7 @@ export function UniversalGates({
         Each challenge starts with inputs and an output. Use only {family.toUpperCase()} gates to
         match its truth table. Each builder loads when you scroll near it.
       </p>
-      {UNIVERSAL_TARGETS.map((target) => {
+      {universalTargets(family).map((target) => {
         const id = universalGateId(family, target);
         const title = `${target.toUpperCase()} from ${family.toUpperCase()}`;
         return (

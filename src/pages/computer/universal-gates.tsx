@@ -6,7 +6,7 @@ export default function UniversalGatesPage() {
   return (
     <Layout
       title="Build every gate from NAND or NOR"
-      description="Build seven logic functions using only NAND gates or only NOR gates, with independent challenges and truth-table checks."
+      description="Build the other six logic functions using only NAND gates or only NOR gates, with independent challenges and truth-table checks."
       keywords={[]}
       url="computer/universal-gates"
       noindex

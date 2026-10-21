@@ -1,20 +1,9 @@
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ConfettiBurst } from "src/components/ConfettiBurst";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import styles from "./TutorialSuccess.module.css";
 
-const COLORS = ["#9ce7c2", "#ebce79", "#c1cafa"];
-const PARTICLES = Array.from({ length: 22 }, (_, index) => ({
-  id: index,
-  style: {
-    "--x": `${(index % 2 ? 1 : -1) * (35 + ((index * 31) % 210))}px`,
-    "--y": `${-55 + ((index * 19) % 125)}px`,
-    "--spin": `${100 + index * 43}deg`,
-    "--delay": `${(index % 4) * 35}ms`,
-    "--color": COLORS[index % COLORS.length],
-  } as CSSProperties,
-}));
-
-/** Inline correctness persists; each requested celebration stays within this feedback region. */
+/** Inline correctness persists; the shared site celebration fills the viewport. */
 export function TutorialSuccess({
   correct,
   message,
@@ -28,7 +17,7 @@ export function TutorialSuccess({
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(false);
   const seen = useRef(0);
-  const timer = useRef<number | undefined>(undefined);
+  const finishCelebration = useCallback(() => setActive(false), []);
 
   useEffect(() => {
     const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -38,15 +27,12 @@ export function TutorialSuccess({
     media.addEventListener?.("change", update);
     return () => media.removeEventListener?.("change", update);
   }, []);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
   useEffect(() => {
     if (!celebration || seen.current === celebration) return;
     seen.current = celebration;
     playSuccess();
     if (reducedMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     setActive(true);
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setActive(false), 1300);
   }, [celebration, reducedMotion, playSuccess]);
   useEffect(() => {
     if (!celebration || !correct) setActive(false);
@@ -62,16 +48,9 @@ export function TutorialSuccess({
         )}
       </div>
       {active && correct && !reducedMotion && (
-        <span
-          key={celebration}
-          className={styles.particles}
-          data-tutorial-confetti={celebration}
-          aria-hidden="true"
-        >
-          {PARTICLES.map((particle) => (
-            <i key={particle.id} className={styles.particle} style={particle.style} />
-          ))}
-        </span>
+        <div key={celebration} data-tutorial-confetti={celebration} aria-hidden="true">
+          <ConfettiBurst fullscreen onComplete={finishCelebration} />
+        </div>
       )}
       <button
         type="button"

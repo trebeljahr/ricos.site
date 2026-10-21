@@ -6,7 +6,10 @@ import { HandButton } from "./HandButton";
 import { HandEmoji } from "./HandEmoji";
 
 // Only fetched the first time the easter egg fires.
-const ConfettiExplosion = dynamic(() => import("react-confetti-explosion"), { ssr: false });
+const ConfettiBurst = dynamic(
+  () => import("../ConfettiBurst").then((module) => module.ConfettiBurst),
+  { ssr: false },
+);
 
 const EGG_ID = "waving-hand";
 
@@ -75,16 +78,7 @@ const WavingHand = () => {
       </HandButton>
       {confettiKey !== null && (
         <span aria-hidden="true" className="pointer-events-none absolute top-1/2 left-1/2">
-          <ConfettiExplosion
-            key={confettiKey}
-            force={0.7}
-            duration={2400}
-            particleCount={120}
-            particleSize={10}
-            width={900}
-            zIndex={400}
-            onComplete={() => setConfettiKey(null)}
-          />
+          <ConfettiBurst key={confettiKey} onComplete={() => setConfettiKey(null)} />
         </span>
       )}
     </span>

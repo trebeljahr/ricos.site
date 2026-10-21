@@ -28,7 +28,7 @@ it("recognizes a manually wired short truth-table solve immediately and does not
   expect(screen.getByText("✓ Correct wiring.")).toBeTruthy();
   expect(progressStore.get().solved.not.circuit?.wires).toHaveLength(3);
   expect(container.querySelector("[data-tutorial-confetti]")).toBeTruthy();
-  act(() => vi.advanceTimersByTime(1400));
+  act(() => vi.advanceTimersByTime(2500));
   fireEvent.click(screen.getByRole("button", { name: "Check" }));
   fireEvent.click(screen.getByRole("button", { name: "Check" }));
   expect(container.querySelector("[data-tutorial-confetti]")).toBeNull();

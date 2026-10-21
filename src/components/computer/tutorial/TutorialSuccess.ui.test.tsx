@@ -9,7 +9,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("contains one brief burst while keeping correctness visible and sound opt-in", () => {
+it("uses the shared screen-wide burst while keeping correctness visible and sound opt-in", () => {
   vi.useFakeTimers();
   const { container, rerender } = render(
     <TutorialSuccess correct={false} message="All 2 rows match." celebration={0} />,
@@ -22,7 +22,10 @@ it("contains one brief burst while keeping correctness visible and sound opt-in"
   rerender(<TutorialSuccess correct message="All 2 rows match." celebration={1} />);
   expect(screen.getByRole("status").textContent).toContain("Correct wiring");
   expect(container.querySelector("[data-tutorial-confetti]")).toBeTruthy();
-  act(() => vi.advanceTimersByTime(1400));
+  const overlay = document.querySelector('[data-slot="confetti-explosion-screen"]');
+  expect(overlay).toBeTruthy();
+  expect(container.contains(overlay)).toBe(false);
+  act(() => vi.advanceTimersByTime(2500));
   expect(container.querySelector("[data-tutorial-confetti]")).toBeNull();
   expect(screen.getByRole("status").textContent).toContain("All 2 rows match");
   fireEvent.click(screen.getByRole("button", { name: "Success sound off. Toggle success sound." }));

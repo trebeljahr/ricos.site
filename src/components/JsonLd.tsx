@@ -1,9 +1,13 @@
 import Head from "next/head";
+import type { ImageProps } from "src/@types";
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import { baseUrl, completeUrl } from "src/lib/urlUtils";
 
 const BEST_RATING = 10;
 const WORST_RATING = 1;
+
+const serializeSchema = (schema: Record<string, unknown>) =>
+  JSON.stringify(schema).replace(/</g, "\\u003c");
 
 type ArticleJsonLdProps = {
   title: string;
@@ -117,7 +121,7 @@ export const JsonLd = ({
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO JSON-LD, no user input
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}
       />
     </Head>
   );
@@ -145,7 +149,7 @@ export const BreadcrumbJsonLd = ({ items }: { items: BreadcrumbItem[] }) => {
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO JSON-LD, no user input
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}
       />
     </Head>
   );
@@ -171,7 +175,96 @@ export const WebSiteJsonLd = () => {
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: SEO JSON-LD, no user input
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}
+      />
+    </Head>
+  );
+};
+
+type CollectionItem = {
+  name: string;
+  url: string;
+  description?: string;
+};
+
+export const CollectionJsonLd = ({
+  title,
+  description,
+  url,
+  items,
+}: {
+  title: string;
+  description: string;
+  url: string;
+  items: CollectionItem[];
+}) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: title,
+    description,
+    url: completeUrl(url),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        url: completeUrl(item.url),
+        ...(item.description && { description: item.description }),
+      })),
+    },
+  };
+
+  return (
+    <Head>
+      <script
+        key="collection-json-ld"
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: serialized JSON-LD escapes HTML delimiters
+        dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}
+      />
+    </Head>
+  );
+};
+
+export const ImageGalleryJsonLd = ({
+  title,
+  url,
+  images,
+}: {
+  title?: string;
+  url: string;
+  images: ImageProps[];
+}) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    ...(title && { name: title }),
+    url: completeUrl(url),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: images.length,
+      itemListElement: images.map((image, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "ImageObject",
+          contentUrl: completeUrl(nextImageUrl(image.src, 1080)),
+          ...(image.alt && { caption: image.alt }),
+        },
+      })),
+    },
+  };
+
+  return (
+    <Head>
+      <script
+        key="gallery-json-ld"
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: serialized JSON-LD escapes HTML delimiters
+        dangerouslySetInnerHTML={{ __html: serializeSchema(schema) }}
       />
     </Head>
   );

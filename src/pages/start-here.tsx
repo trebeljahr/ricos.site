@@ -1,6 +1,6 @@
 import { Card, type CardCover } from "@components/Card";
 import { ImageWithLoader } from "@components/ImageWithLoader";
-import { BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, CollectionJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
@@ -26,6 +26,13 @@ const PORTRAIT: CardCover = {
   src: "/assets/photography/transat/me-steering-the-boat-smiling-happily.jpg",
   alt: "Rico steering a sailboat in the middle of the Atlantic and smiling",
 };
+
+const ABOUT_LINKS = [
+  ["/now", "Now", "What I'm doing right now."],
+  ["/principles", "Principles", "The rules I try to live by."],
+  ["/timeline", "Timeline", "Everything on this site, newest first."],
+  ["/rss.xml", "RSS feed", "For feed readers. Everything new, nothing else."],
+] as const;
 
 const Arrow = () => (
   <span aria-hidden className="inline-block transition-transform group-hover:translate-x-1">
@@ -67,15 +74,30 @@ const Section = ({
 );
 
 export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Props) {
+  const description =
+    "New here? A few things that show what ricos.site is about: travel photography, 3D scenes you can play with, some odd side projects, and the newsletter.";
+  const destinations = [
+    { name: "Best-of photography", url: "/photography/best-of" },
+    ...demos.map(({ title, href }) => ({ name: title, url: href })),
+    { name: "3D playground", url: "/r3f" },
+    ...rabbitHoles.map(({ title, href }) => ({ name: title, url: href })),
+    ...ABOUT_LINKS.map(([href, title]) => ({ name: title, url: href })),
+  ];
   return (
     <Layout
       title="Start Here – A Guide to ricos.site"
-      description="New here? A few things that show what ricos.site is about: travel photography, 3D scenes you can play with, some odd side projects, and the newsletter."
+      description={description}
       url="start-here"
       image={PORTRAIT.src}
       imageAlt={PORTRAIT.alt}
       keywords={["start here", "best of", "Rico Trebeljahr"]}
     >
+      <CollectionJsonLd
+        title="Start Here"
+        description={description}
+        url="/start-here"
+        items={destinations}
+      />
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
@@ -224,12 +246,7 @@ export default function StartHerePage({ bestOfPhotos, demos, rabbitHoles }: Prop
               <div>
                 <h3 className="flush-top text-2xl">Get to know me</h3>
                 <ul className="not-prose list-none space-y-stack p-0">
-                  {[
-                    ["/now", "Now", "What I'm doing right now."],
-                    ["/principles", "Principles", "The rules I try to live by."],
-                    ["/timeline", "Timeline", "Everything on this site, newest first."],
-                    ["/rss.xml", "RSS feed", "For feed readers. Everything new, nothing else."],
-                  ].map(([href, label, note]) => (
+                  {ABOUT_LINKS.map(([href, label, note]) => (
                     <li key={href}>
                       <Link href={href} className="group block text-inherit no-underline">
                         <span className="inline-flex items-center gap-2 text-lg font-semibold text-accent group-hover:underline">

@@ -22,6 +22,9 @@ type Props = {
 
 export default function ThemePage({ theme, items, seo }: Props) {
   const url = `themes/${theme.slug}`;
+  const currentIndex = themes.findIndex(({ slug }) => slug === theme.slug);
+  const previousTheme = themes[currentIndex - 1];
+  const nextTheme = themes[currentIndex + 1];
 
   return (
     <Layout
@@ -74,6 +77,22 @@ export default function ThemePage({ theme, items, seo }: Props) {
         </section>
 
         <footer className="mt-region">
+          <nav
+            aria-label="Themes"
+            className="mb-group flex flex-wrap justify-between gap-4 text-sm"
+          >
+            {previousTheme && (
+              <Link href={`/themes/${previousTheme.slug}`} rel="prev">
+                ← {previousTheme.title}
+              </Link>
+            )}
+            <Link href="/categories">All themes</Link>
+            {nextTheme && (
+              <Link href={`/themes/${nextTheme.slug}`} rel="next">
+                {nextTheme.title} →
+              </Link>
+            )}
+          </nav>
           <NewsletterForm />
           <ToTopButton />
         </footer>

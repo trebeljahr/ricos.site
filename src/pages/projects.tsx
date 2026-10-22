@@ -1,6 +1,6 @@
 import { CardGallery } from "@components/CardGalleries";
 import { ExternalLink } from "@components/ExternalLink";
-import { BreadcrumbJsonLd } from "@components/JsonLd";
+import { BreadcrumbJsonLd, CollectionJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 import Head from "next/head";
@@ -15,10 +15,13 @@ const toAnchor = (title: string) =>
     .replace(/(^-|-$)/g, "");
 
 export default function ProjectsPage() {
+  const description =
+    "Browse games, tools and visual experiments by Rico Trebeljahr. Follow each project to try it, learn more or find available source code.";
+  const orderedProjects = PROJECT_SECTIONS.flatMap(({ title }) => projectsInSection(title));
   return (
     <Layout
-      title="Projects"
-      description="Games, tools and other things Rico Trebeljahr has built. Most of them run right in your browser."
+      title="Games, Tools and Experiments – Rico Trebeljahr"
+      description={description}
       url="projects"
       image="/projects/collection-of-beauty.webp"
       imageAlt="Collage of classic paintings from Collection of Beauty"
@@ -40,6 +43,16 @@ export default function ProjectsPage() {
           title="New things from Rico"
         />
       </Head>
+      <CollectionJsonLd
+        title="Projects"
+        description={description}
+        url="/projects"
+        items={orderedProjects.map((project) => ({
+          name: project.title,
+          url: project.link,
+          description: project.subtitle,
+        }))}
+      />
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },

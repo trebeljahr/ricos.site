@@ -75,7 +75,6 @@ const nextSitemapConfig = {
     "/email-signup-error",
     "/emergency",
     "/sub",
-    "/midjourney",
     // dev-only tools; their APIs 404 in production but the routes still show
     // up in the route manifest
     "/dev/alt-review",

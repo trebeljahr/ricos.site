@@ -9,7 +9,7 @@ export default function ArtGallery({ images }: { images: ImageProps[] }) {
   return (
     <Layout
       title="Art – Rico Trebeljahr"
-      description={`${images.length} paintings and drawings by Rico Trebeljahr: acrylic, watercolour, ink and pencil, newest first.`}
+      description="Browse paintings and drawings by Rico Trebeljahr, from acrylic and watercolour to ink and pencil. The gallery shows the newest work first."
       url="/art"
       image={cover?.src}
       imageAlt={cover?.alt || "A painting by Rico Trebeljahr"}

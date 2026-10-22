@@ -4710,7 +4710,7 @@
   },
   "/r3f/scenes/ocean": {
     "metaTitle": "3D Ocean Demo - Underwater Scene in React Three Fiber",
-    "metaDescription": "An underwater scene with kelp, whales and water shaders, built with React Three Fiber and Three.js.",
+    "metaDescription": "Explore an underwater scene with fish, a whale and an ocean surface. This browser demo uses React Three Fiber, Three.js and water shaders.",
     "ogImage": "/assets/pages/ocean.png",
     "ogImageAlt": "3D render of low poly kelp and a whale swimming around the ocean",
     "keywords": [
@@ -4910,7 +4910,7 @@
   },
   "/r3f/particles/fishes": {
     "metaTitle": "3D Fish School Simulation - FBO Particles in R3F",
-    "metaDescription": "A school of fish driven by a boid compute shader, using custom meshes instead of the usual points.",
+    "metaDescription": "Watch a school of 3D fish move with a boid compute shader in this React Three Fiber demo. Orbit the scene to view the custom fish meshes.",
     "ogImage": "/assets/pages/fishes.png",
     "ogImageAlt": "a school of fish swimming around in a 3D scene",
     "keywords": [
@@ -4927,7 +4927,7 @@
   },
   "/r3f/particles/mesh-merger": {
     "metaTitle": "Mesh Merger Particles - 3D Effect in Three.js",
-    "metaDescription": "A particle system that morphs one 3D mesh into another, so the shapes melt from one into the next.",
+    "metaDescription": "Watch particles morph between a box, sword, sphere, axe and torus shapes. Orbit this Three.js scene to view the changing forms.",
     "ogImage": "/assets/pages/mesh-merger.png",
     "ogImageAlt": "particles transitioning between 3D mesh shapes",
     "keywords": [
@@ -5559,7 +5559,7 @@
   },
   "/quotes": {
     "metaTitle": "Quote Collection - Wisdom from Books & Thinkers",
-    "metaDescription": "Quotes worth keeping, collected out of books, films, podcasts and blog posts over the years.",
+    "metaDescription": "Browse quotes collected from books, films, podcasts and blog posts. Search by words, author or source, and filter the collection by topic.",
     "ogImage": "/assets/midjourney/a-collection-of-notes-of-importance.jpg",
     "ogImageAlt": "A collection of important notes representing curated quotes",
     "keywords": [
@@ -9167,7 +9167,7 @@
   },
   "/r3f/models/ship": {
     "metaTitle": "3D Ship on Ocean - React Three Fiber Demo",
-    "metaDescription": "A ship sitting on drei's ocean shader. One of the first things I ever built with React Three Fiber.",
+    "metaDescription": "View a 3D ship on an ocean surface in this React Three Fiber demo. Move through the scene to see the ship, sky and water shader.",
     "ogImage": "/assets/pages/ship.png",
     "ogImageAlt": "a 3D model of a ship floating in the ocean",
     "keywords": [
@@ -9331,5 +9331,182 @@
     "ogImage": "/assets/newsletter/80/tent.jpg",
     "ogImageAlt": "a canvas bell tent pitched under a tarp among mossy oak trees in a green spring forest",
     "keywords": ["newsletter", "live and learn", "Sardinia", "travel", "friendship"]
+  },
+  "/themes/ai-frontier": {
+    "metaTitle": "The AI Frontier – Rico Trebeljahr",
+    "metaDescription": "Browse notes on AI labs, language models, image generation and robotics. Follow links to the original writing and related pieces on ricos.site.",
+    "ogImage": "/assets/blog/open-ai-avatar.png",
+    "ogImageAlt": "OpenAI logo on a dark backdrop",
+    "keywords": [
+      "ai",
+      "openai",
+      "anthropic",
+      "deepmind",
+      "nvidia",
+      "meta",
+      "google",
+      "microsoft",
+      "agi",
+      "llms",
+      "machine learning",
+      "generative ai"
+    ]
+  },
+  "/themes/mind-and-meaning": {
+    "metaTitle": "Mind & Meaning – Rico Trebeljahr",
+    "metaDescription": "Browse writing and notes on psychology, neuroscience, consciousness and philosophy. Follow ideas about learning, motivation and the human mind.",
+    "ogImage": "/assets/blog/brain.jpg",
+    "ogImageAlt": "an illustration of a human brain",
+    "keywords": [
+      "psychology",
+      "neuroscience",
+      "consciousness",
+      "philosophy",
+      "sociology",
+      "happiness",
+      "motivation",
+      "learning",
+      "intelligence"
+    ]
+  },
+  "/themes/future-arriving": {
+    "metaTitle": "How the Future Arrives – Rico Trebeljahr",
+    "metaDescription": "Browse writing and notes on technology, progress, economics and infrastructure. Explore ideas about the changes shaping the world.",
+    "ogImage": "/assets/blog/road.jpg",
+    "ogImageAlt": "a long road disappearing into the horizon",
+    "keywords": [
+      "future",
+      "progress",
+      "technology",
+      "business",
+      "economics",
+      "politics",
+      "history",
+      "infrastructure",
+      "spacex"
+    ]
+  },
+  "/themes/making-things": {
+    "metaTitle": "Making Things – Rico Trebeljahr",
+    "metaDescription": "Browse writing and notes on programming, design, art and creative work. Read about creative coding, visual experiments and how things are built.",
+    "ogImage": "/assets/blog/fractal-garden.png",
+    "ogImageAlt": "a colorful procedural fractal garden",
+    "keywords": [
+      "programming",
+      "engineering",
+      "design",
+      "art",
+      "music",
+      "beauty"
+    ]
+  },
+  "/themes/on-the-road": {
+    "metaTitle": "On the Road – Rico Trebeljahr",
+    "metaDescription": "Browse travel stories and photo essays from islands, mountains and the Caribbean. Follow Rico's journeys through places near and far.",
+    "ogImage": "/assets/blog/laos-rice-field.jpg",
+    "ogImageAlt": "a rice field at golden hour in Laos",
+    "keywords": [
+      "travel",
+      "adventure",
+      "hiking",
+      "waterfall",
+      "surfing",
+      "relaxing",
+      "dominica",
+      "caribbean",
+      "colombia",
+      "guadeloupe",
+      "martinique"
+    ]
+  },
+  "/themes/reading-life": {
+    "metaTitle": "A Reading Life – Rico Trebeljahr",
+    "metaDescription": "Browse book notes and writing on fiction, science fiction, fantasy and philosophy. Follow links to books, summaries and ideas worth revisiting.",
+    "ogImage": "/assets/book-covers/navalmanack.jpg",
+    "ogImageAlt": "the cover of The Almanack of Naval Ravikant",
+    "keywords": [
+      "non-fiction",
+      "fiction",
+      "fantasy",
+      "sci-fi",
+      "top-50",
+      "made-me-think",
+      "ideas",
+      "curiosity",
+      "reading"
+    ]
+  },
+  "/themes/first-principles": {
+    "metaTitle": "First Principles – Rico Trebeljahr",
+    "metaDescription": "Browse writing and notes on mathematics, computation, physics and engineering. Explore the ideas that underpin programming and technology.",
+    "ogImage": "/assets/blog/vector-demo.png",
+    "ogImageAlt": "an animated diagram of vector arithmetic",
+    "keywords": [
+      "mathematics",
+      "programming",
+      "computation",
+      "physics",
+      "engineering"
+    ]
+  },
+  "/themes/science-and-nature": {
+    "metaTitle": "Science & Nature – Rico Trebeljahr",
+    "metaDescription": "Browse writing and notes on biology, physics, evolution and science. Follow ideas about the natural world, from cells to computation.",
+    "ogImage": "/assets/blog/mandelbrot.jpg",
+    "ogImageAlt": "a Mandelbrot set rendered in deep colors",
+    "keywords": [
+      "science",
+      "biology",
+      "biochemistry",
+      "biotech",
+      "evolution",
+      "physics",
+      "mathematics",
+      "nanotechnology",
+      "superconductors",
+      "computation"
+    ]
+  },
+  "/themes/living-well": {
+    "metaTitle": "Living Well – Rico Trebeljahr",
+    "metaDescription": "Browse writing and notes on habits, focus, health and the good life. Explore ideas about productivity, wisdom and what makes a life worthwhile.",
+    "ogImage": "/assets/blog/morning.jpg",
+    "ogImageAlt": "a quiet morning routine scene",
+    "keywords": [
+      "self-help",
+      "good-life",
+      "habits",
+      "productivity",
+      "wisdom",
+      "advice",
+      "happiness",
+      "minimalism",
+      "health",
+      "life",
+      "spirituality",
+      "buddhism"
+    ]
+  },
+  "/themes/personal-essays": {
+    "metaTitle": "Personal Essays – Rico Trebeljahr",
+    "metaDescription": "Browse personal essays by Rico Trebeljahr about flow, decisions and being alive. Follow reflections on personal growth and everyday experience.",
+    "ogImage": "/assets/blog/keyboard.jpg",
+    "ogImageAlt": "a worn keyboard ready for writing",
+    "keywords": [
+      "personal development"
+    ]
+  },
+  "/timeline": {
+    "metaTitle": "Writing, Photos and Projects Timeline – Rico Trebeljahr",
+    "metaDescription": "Everything published on ricos.site in one chronological stream: writing, notes, travel, photography, projects, and R3F demos.",
+    "ogImage": "/assets/blog/network.jpg",
+    "ogImageAlt": "a network of connected dots",
+    "keywords": [
+      "timeline",
+      "writing",
+      "photography",
+      "projects",
+      "r3f"
+    ]
   }
 }

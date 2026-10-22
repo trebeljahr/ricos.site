@@ -99,7 +99,7 @@ export default function DonatePage({
   return (
     <Layout
       title="Support Me – ricos.site"
-      description="If something here was useful or made your day a little better, you can buy me a coffee."
+      description="Support Rico Trebeljahr's writing, games and browser experiments. Find donation options and other ways to help keep the projects going."
       url="donate"
       keywords={[
         "buy me a coffee",

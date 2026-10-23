@@ -1,3 +1,4 @@
+import { SpectrumThumbnail } from "@components/Galleries/SpectrumThumbnail";
 import { CustomLightBox, useCustomLightbox } from "@components/Galleries/useCustomLightbox";
 import Layout from "@components/Layout";
 import Header from "@components/PostHeader";
@@ -104,8 +105,8 @@ const OVERSCAN = 1;
  * tile it passes would start a download that nothing cancels: a few thousand
  * requests queued ahead of the photographs where the drag stops, which then
  * take seconds to appear. While the page moves faster than a viewport per
- * this many milliseconds, tiles that have not loaded show their tint instead,
- * and they fetch once it has been still this long.
+ * this many milliseconds, new tiles show their tint instead, and they fetch
+ * once it has been still this long. Nearby downloads already started stay alive.
  */
 const GLIMPSE_MS = 150;
 
@@ -155,17 +156,6 @@ const ROW_SLACK = 2;
  * `object-cover` takes to about a quarter of the frame.
  */
 const TRAILING_MAX_STRETCH = 1.35;
-
-/**
- * Hide a tile's photograph if it failed to load, so the tile shows its tint
- * instead of the browser's broken-image icon. Also the image's ref, for one
- * the server rendered that had already failed before React was listening.
- * `complete` with no pixels is a failure; an image still loading, or lazily
- * waiting to, is not `complete`.
- */
-const hideIfBroken = (img: HTMLImageElement | null) => {
-  if (img?.complete && img.naturalWidth === 0) img.dataset.broken = "";
-};
 
 const clampRatio = (width: number, height: number) =>
   Math.min(RATIO_MAX, Math.max(RATIO_MIN, width / height));
@@ -342,11 +332,14 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
   const [span, setSpan] = useState({ first: 0, last: 0 });
 
   /** True while the page moves faster than a tile could load; see
-   *  GLIMPSE_MS. Tiles that have not loaded yet show their tint meanwhile. */
+   *  GLIMPSE_MS. Newly mounted tiles show their tint meanwhile. */
   const [hurrying, setHurrying] = useState(false);
-  /** Tiles whose photograph has arrived, which keep it while `hurrying`.
-   *  The rest have no <img> until the page slows down. */
+  /** Cached photographs can start even during a fast pass. New tiles wait
+   *  until it ends; mounted thumbnails preserve their in-flight downloads. */
   const loaded = useRef(new Set<string>());
+  const rememberLoaded = useCallback((id: string) => {
+    loaded.current.add(id);
+  }, []);
 
   /** The band the marker is in, for `aria-current`. */
   const [activeBand, setActiveBand] = useState(0);
@@ -801,30 +794,15 @@ export default function PhotographySpectrumPage({ images, tints, marks }: Props)
                     style={{ backgroundColor: tile.tint }}
                     className="block h-full w-full cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent"
                   >
-                    {/* No <img> at all rather than one without a `src`. An
-                        image whose `src` is taken away mid-download, like one
-                        that fails, is drawn as the browser's broken-image
-                        icon in a grey frame, and with thirty tiles on screen
-                        that was a screenful of them on every fast pass. */}
-                    {show && (
-                      // biome-ignore lint/performance/noImgElement: next/image renders a wrapper span and a loader per tile; across the rows in the document that machinery costs more than the plain element, and every URL the loader would build is already available from nextImageUrl
-                      <img
-                        ref={hideIfBroken}
-                        src={tile.src}
-                        srcSet={tile.srcSet}
-                        sizes={tile.sizes}
-                        // The button carries the label; the picture repeats it.
-                        alt=""
-                        aria-hidden="true"
-                        width={tile.width}
-                        height={180}
-                        loading="lazy"
-                        decoding="async"
-                        onLoad={() => loaded.current.add(tile.id)}
-                        onError={(event) => hideIfBroken(event.currentTarget)}
-                        className="h-full w-full object-cover data-broken:invisible"
-                      />
-                    )}
+                    <SpectrumThumbnail
+                      id={tile.id}
+                      src={tile.src}
+                      srcSet={tile.srcSet}
+                      sizes={tile.sizes}
+                      width={tile.width}
+                      enabled={show}
+                      onLoad={rememberLoaded}
+                    />
                   </button>
                 </li>
               );

@@ -309,12 +309,11 @@ export function TruthTableScale() {
   );
 }
 
-/** Chapter-sized review of notation, truth tables and shared explanations. */
+/** Chapter-sized review of notation and gate truth tables. */
 export function BooleanExplainer() {
   return (
     <div className={`not-prose ${styles.root}`}>
       <BooleanNotation />
-      <TruthTableScale />
     </div>
   );
 }

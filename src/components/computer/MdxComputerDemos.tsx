@@ -188,10 +188,8 @@ export const COMPUTER_MDX_DEMOS = {
     650,
     true,
   ),
-  TruthTableScale: chapterDemo(
-    () => import("./BooleanExplainer").then((module) => module.TruthTableScale),
-    "Truth-table size explorer",
-  ),
+  // Shelved demo: keep existing chapter embeds valid without rendering a placeholder.
+  TruthTableScale: () => null,
   BooleanNotation: chapterDemo(
     () => import("./BooleanExplainer").then((module) => module.BooleanNotation),
     "Boolean notation explorer",

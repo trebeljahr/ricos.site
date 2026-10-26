@@ -6,7 +6,7 @@ export default function BooleanLogicPage() {
   return (
     <Layout
       title="Read Boolean logic"
-      description="Compare Boolean symbols, choose truth-table rows and see how the number of possible functions grows."
+      description="Compare Boolean symbols and choose truth-table rows to see each gate's output."
       keywords={[]}
       url="computer/boolean-logic"
       noindex

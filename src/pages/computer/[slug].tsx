@@ -31,6 +31,7 @@ type Props = {
     | "published"
     | "content"
     | "hasDemos"
+    | "hasMath"
   >;
   prev: Neighbour | null;
   next: Neighbour | null;
@@ -61,6 +62,7 @@ export default function ComputerChapterPage({ chapter, prev, next }: Props) {
       url={`computer/${chapter.slug}`}
       keywords={["computers"]}
       noindex={!chapter.published}
+      hasMath={chapter.hasMath}
     >
       <PageMain>
         <article className={`mx-auto max-w-prose ${styles.chapter}`}>
@@ -120,6 +122,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
       published: c.published,
       content: c.content,
       hasDemos: c.hasDemos,
+      hasMath: c.hasMath,
       ...(c.summary ? { summary: c.summary } : {}),
     },
     prev: neighbour(chapters[index - 1]),

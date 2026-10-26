@@ -61,7 +61,7 @@ export function cmosLampLayout(circuit: Circuit) {
     const columns = Math.max(...[...groups.values()].map((group) => group.length));
     const width = 100 + (columns - 1) * 120;
     const center = left + width / 2;
-    positions.set(stage.id, { x: center, y: 336 });
+    positions.set(stage.id, { x: center, y: 280 });
     const controlIds = new Set(
       parts.map((part) => incoming(part.id).find((wire) => wire.input === 0)!.from),
     );
@@ -82,7 +82,7 @@ export function cmosLampLayout(circuit: Circuit) {
           group = groups.get(`${type}:${level}`)!;
         const x = group.length === 1 ? center : left + 50 + group.indexOf(part) * 120;
         const y =
-          type === "pmos" ? (series ? 160 + level * 88 : 250) : series ? 512 - level * 88 : 422;
+          type === "pmos" ? (series ? 140 + level * 88 : 180) : series ? 470 - level * 88 : 380;
         positions.set(part.id, { x, y });
         stageFor.set(part.id, { left, index, first: left + 50 });
       }
@@ -97,22 +97,35 @@ export function cmosLampLayout(circuit: Circuit) {
         const maxRank = Math.max(...upstream.map(rank));
         const y = feedsTransistor
           ? type === "pmos"
-            ? 204 + maxRank * 88
-            : 468 - maxRank * 88
+            ? 184 + maxRank * 88
+            : 426 - maxRank * 88
           : type === "pmos"
-            ? 292
-            : 380;
+            ? 256
+            : 336;
         positions.set(junction.id, { x: center, y });
       }
     }
     left += width + 80;
   }
   const width = Math.max(800, left + 120);
-  positions.set("vcc", { x: 80, y: 64 });
-  positions.set("gnd", { x: 80, y: 680 });
-  positions.set("a", { x: 240, y: 570 });
-  if (byId.has("b")) positions.set("b", { x: 400, y: 570 });
-  positions.set("out", { x: width - 124, y: 336 });
+  positions.set("vcc", { x: 80, y: 48 });
+  positions.set("gnd", { x: 80, y: 600 });
+  // Local labeled inputs can sit beside the lower network, keeping the board short.
+  const selectorY = 550;
+  const freeColumns = Array.from(
+    { length: Math.floor((width - 120) / 160) },
+    (_, i) => 200 + i * 160,
+  ).filter(
+    (x) =>
+      x < width - 90 &&
+      !circuit.nodes.filter(isMosfet).some((node) => {
+        const p = positions.get(node.id)!;
+        return Math.abs(p.y - selectorY) < 94 && Math.abs(p.x - x) < 109;
+      }),
+  );
+  positions.set("a", { x: freeColumns[0] ?? 240, y: selectorY - 40 });
+  if (byId.has("b")) positions.set("b", { x: freeColumns[1] ?? 400, y: selectorY - 40 });
+  positions.set("out", { x: width - 124, y: 280 });
   const point = (id: string, input?: number): Point => {
     const node = byId.get(id)!,
       p = positions.get(id)!;
@@ -131,11 +144,7 @@ export function cmosLampLayout(circuit: Circuit) {
       end = point(wire.to, wire.input);
     const bends =
       from.type === "ground"
-        ? [
-            { x: width - 24, y: start.y },
-            { x: width - 24, y: 550 },
-            { x: end.x, y: 550 },
-          ]
+        ? [{ x: end.x, y: start.y }]
         : from.type === "high"
           ? [{ x: end.x, y: start.y }]
           : isMosfet(from)
@@ -230,5 +239,5 @@ export function cmosLampLayout(circuit: Circuit) {
     occupied.push({ net: nets[wire.id], points });
     return { ...wire, points };
   });
-  return { width, height: 720, positions, labels, wires, stages };
+  return { width, height: 640, selectorY, positions, labels, wires, stages };
 }

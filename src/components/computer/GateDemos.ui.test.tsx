@@ -156,4 +156,48 @@ describe("switch logic", () => {
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     expect(screen.queryByTestId("switch-spark")).toBeNull();
   });
+  it.each([
+    ["single", [false, false, true, true]],
+    ["series", [false, false, false, true]],
+    ["parallel", [false, true, true, true]],
+    ["not", [true, true, false, false]],
+    ["nand", [true, true, true, false]],
+    ["nor", [true, false, false, false]],
+    ["xor", [false, true, true, false]],
+    ["xnor", [true, false, false, true]],
+  ] as const)("traces the complete %s load path for every input pair", (wiring, cases) => {
+    const { container } = render(<TransistorSwitches wiring={wiring} fixed />);
+    for (const [index, [a, b]] of [
+      [false, false],
+      [false, true],
+      [true, false],
+      [true, true],
+    ].entries()) {
+      for (const [name, high] of [
+        ["A", a],
+        ["B", b],
+      ] as const) {
+        const control = screen.queryByRole("button", { name: new RegExp(`^Control ${name}:`) });
+        if (control && (control.getAttribute("aria-pressed") === "true") !== high)
+          fireEvent.click(control);
+      }
+      const lit = cases[index];
+      expect(screen.getByRole("img", { name: `Output LAMP: ${lit ? 1 : 0}` })).toBeTruthy();
+      expect(Boolean(container.querySelector("[data-current]"))).toBe(lit);
+      expect(container.querySelector("[data-signal][data-current]")).toBeNull();
+      expect(screen.getByRole("status").textContent).toBe(
+        lit ? "Complete path · lamp on" : "Broken path · lamp off",
+      );
+    }
+  });
+
+  it("stops the physical current trace when a series contact opens", () => {
+    const { container } = render(<SwitchLogic fixed />);
+    click(/^Switch A: open/);
+    expect(container.querySelector("[data-current]")).toBeNull();
+    click(/^Switch B: open/);
+    expect(container.querySelector("[data-current]")).toBeTruthy();
+    click(/^Switch A: closed/);
+    expect(container.querySelector("[data-current]")).toBeNull();
+  });
 });

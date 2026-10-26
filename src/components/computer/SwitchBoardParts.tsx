@@ -1,22 +1,46 @@
 import own from "./SwitchLogic.module.css";
 export type Control = "A" | "B";
-/** SPDT: the common terminal always selects one of the battery's two rails. */
+export function SwitchContact({
+  closed,
+  active,
+  reverse,
+}: {
+  closed: boolean;
+  active: boolean;
+  reverse: boolean;
+}) {
+  return (
+    <span className={own.switchBase} aria-hidden="true">
+      <i className={own.contactLeft} />
+      <i className={own.contactRight} />
+      <span className={own.blade} data-closed={closed}>
+        <i />
+      </span>
+      {active && <span className={own.currentContact} data-reverse={reverse} />}
+    </span>
+  );
+}
+
 export function ControlSwitch({
   name,
   x,
   high,
-  onFlip,
+  above = true,
+  below = false,
   y = 425,
   boardWidth = 800,
   boardHeight = 560,
+  onFlip,
 }: {
   name: Control;
   x: number;
   high: boolean;
-  onFlip: () => void;
-  y?: number;
-  boardWidth?: number;
+  above?: boolean;
+  below?: boolean;
   boardHeight?: number;
+  boardWidth?: number;
+  y?: number;
+  onFlip: () => void;
 }) {
   return (
     <button
@@ -32,9 +56,12 @@ export function ControlSwitch({
       aria-label={`Control ${name}: ${high ? "high" : "low"}. Connect gate to battery ${high ? "negative" : "positive"}.`}
       onClick={onFlip}
     >
+      <span className={own.switchBase} aria-hidden="true" />
       <svg viewBox="-60 -50 120 100" aria-hidden="true">
-        <rect className={own.selectorBase} x="-56" y="-32" width="112" height="76" rx="7" />
-        <path className={own.deviceLead} d="M0 -40 V-10 M-32 10 V20 M32 10 V20" />
+        <path
+          className={own.deviceLead}
+          d={`${above ? "M0 -10 V-40" : ""} ${below ? "M0 -10 V40" : ""} M-32 10 V20 M32 10 V20`}
+        />
         <text className={own.selectorRail} x="-32" y="34">
           −
         </text>
@@ -46,7 +73,9 @@ export function ControlSwitch({
         <path className={own.selectorBlade} data-high={high} d="M0 -10 L-32 10" />
         <circle className={own.terminal} cx="0" cy="-10" r="5" />
       </svg>
-      <span className={own.controlLabel}>{name}</span>
+      <span className={own.controlLabel}>
+        {name} = {Number(high)}
+      </span>
     </button>
   );
 }
@@ -56,21 +85,33 @@ export function Cable({
   returning = false,
   signal = false,
   high = false,
+  active = false,
   color,
 }: {
   d: string;
   returning?: boolean;
   signal?: boolean;
   high?: boolean;
+  active?: boolean;
   color?: string;
 }) {
   return (
-    <g data-signal={signal || undefined} data-high={signal ? high : undefined}>
+    <g
+      data-current={active || undefined}
+      data-signal={signal || undefined}
+      data-high={signal ? high : undefined}
+    >
       <path
         d={d}
         style={color ? { stroke: color } : undefined}
         className={signal ? own.signalCable : returning ? own.returnCable : own.cable}
       />
+      {active && (
+        <>
+          <path d={d} className={own.currentCable} />
+          <path d={d} className={own.currentFlow} />
+        </>
+      )}
     </g>
   );
 }

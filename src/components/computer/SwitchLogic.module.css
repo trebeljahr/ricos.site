@@ -25,41 +25,50 @@
   isolation: isolate;
   width: 100%;
   min-width: 560px;
-  aspect-ratio: 10 / 7;
+  aspect-ratio: 5 / 3;
   background: linear-gradient(120deg, #f5f4eb, #e9e9df);
   container-type: inline-size;
 }
 .cables { position: absolute; inset: 0; width: 100%; height: 100%; }
-.cable, .returnCable, .signalCable { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cable, .returnCable, .signalCable, .currentCable, .currentFlow, .flowArrow { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .cable { stroke: #a14e3f; stroke-width: 4; }
 .returnCable { stroke: #60645e; stroke-width: 4; }
-.signalCable { stroke: #738667; stroke-width: 3; transition: stroke .18s; }
+.signalCable { stroke: #738667; stroke-width: 2; transition: stroke .18s; }
 [data-high="true"] > .signalCable { stroke: #497535; }
 .terminal { fill: #c2ad7d; stroke: #62583e; stroke-width: 1.5; }
 .junction { fill: #514c3f; stroke: #f1f0e5; stroke-width: 1; }
 .knifeSwitch, .transistorSwitch, .controlSwitch { position: absolute; transform: translate(-50%, -50%); }
 .knifeSwitch {
-  width: 19.25%; height: 16.786%; padding: 0; border: 0;
+  width: 19.25%; height: 11.75cqi; padding: 0; border: 0;
   background: transparent; color: #302b20; font: inherit; cursor: pointer;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.transistorSwitch { width: 15%; height: 17.857%; transform: translate(-50%, -45%); }
-.transistorSwitch svg, .controlSwitch svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.deviceLead { fill: none; stroke: #8a8d7c; stroke-width: 5; }
-.chip { fill: #303b32; stroke: #19251d; stroke-width: 2; }
-.chipKind, .chipName { fill: #f2f1dc; text-anchor: middle; font: 12px ui-monospace, monospace; }
-.chipName { font-size: 19px; }
-.stateLight { fill: #778171; transition: fill .18s; }
-.stateLight[data-on="true"] { fill: #c1e895; }
-.gateLabel { fill: #706e5c; font: 10px ui-monospace, monospace; }
-.controlSwitch { left: 50%; top: 75.893%; width: 15%; height: 17.857%; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; touch-action: manipulation; }
-.selectorBase { fill: #e2deca; stroke: #a29a7c; }
+.transistorSwitch { width: 19.25%; height: 11.75cqi; }
+.transistorLabel, .contactName { position: absolute; left: 50%; transform: translateX(-50%); width: max-content; color: #474b37; font-size: 1.6cqi; line-height: 1; }
+.transistorLabel { bottom: calc(100% + 4.25cqi); }
+.transistorSwitch[data-gate-up="true"] .transistorLabel { bottom: auto; top: calc(100% + 1.25cqi); }
+.contactName { top: calc(100% + 1.125cqi); font-size: 2cqi; }
+.gateLead { position: absolute; left: 50%; top: 100%; height: 13.83%; border-left: 2px solid #738667; padding-left: 7px; color: #58654b; font-size: 1.4cqi; line-height: 1; }
+.transistorSwitch[data-gate-up="true"] .gateLead { top: auto; bottom: 100%; }
+.controlSwitch { left: 50%; top: 52.083%; width: 15%; height: 12.5cqi; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; touch-action: manipulation; }
+.controlSwitch > .switchBase { inset: 18% 3.333% 6%; }
+.controlSwitch svg { position: relative; display: block; width: 100%; height: 100%; overflow: visible; }
+.deviceLead { fill: none; stroke: #738667; stroke-width: 2; }
 .selectorRail { fill: #5b5646; font: 14px ui-monospace, monospace; text-anchor: middle; }
-.selectorBlade { fill: none; stroke: #7a6538; stroke-width: 7; stroke-linecap: round; transform-origin: 0 -10px; transition: transform .18s; }
+.selectorBlade { fill: none; stroke: #a27b35; stroke-width: 7; stroke-linecap: round; transform-origin: 0 -10px; transition: transform .18s; filter: drop-shadow(0 2px 1px #4f3c2855); }
 .selectorBlade[data-high="true"] { transform: rotate(-116deg); }
-.controlSwitch:hover .selectorBase { fill: #ece7d2; }
-.controlSwitch:active .selectorBase { fill: #d8d2ba; }
-.controlLabel { position: absolute; top: 110%; left: 50%; transform: translateX(-50%); width: max-content; color: #384c31; font-size: 1.8cqi; line-height: 1; }
+.controlSwitch:hover .switchBase { filter: brightness(1.04); }
+.controlSwitch:active .switchBase { translate: 0 1px; }
+.controlLabel { position: absolute; top: 23%; left: 9%; width: max-content; color: #384c31; font-size: 1.5cqi; line-height: 1; }
+.currentCable { stroke: #c69839; stroke-width: 4; }
+.currentFlow { stroke: #fff5c3; stroke-width: 2.5; stroke-dasharray: 2 18; animation: currentFlow 1s linear infinite; }
+.flowArrow { stroke: #69501f; stroke-width: 2; }
+.flowStatus { margin: 13px 0 0; font-size: 12px; font-weight: 700; }
+.flowLegend { max-width: 72ch; margin: 6px 0 0; color: #605940; font-size: 11px; line-height: 1.6; }
+.currentContact { position: absolute; z-index: 2; top: 50%; left: 14%; width: 72%; height: 3px; background: repeating-linear-gradient(90deg, #fff5c3 0 3px, transparent 3px 20px); background-size: 20px 3px; animation: contactFlow 1s linear infinite; pointer-events: none; }
+.currentContact[data-reverse="true"] { animation-direction: reverse; }
+@keyframes currentFlow { to { stroke-dashoffset: -20; } }
+@keyframes contactFlow { to { background-position: 20px 0; } }
 .switchBase {
   display: block;
   position: absolute;
@@ -118,7 +127,7 @@
 .knifeSwitch:hover .blade i { background: linear-gradient(#6f7d69, #384e3c); }
 .knifeSwitch:active .switchBase { translate: 0 1px; }
 .battery {
-  position: absolute; left: 6%; top: 39.286%; width: 8%; height: 22.857%;
+  position: absolute; left: 6%; top: 39.583%; width: 8%; height: 16cqi;
   border: 1px solid #443b2d; border-radius: 15% / 6%;
   background: linear-gradient(90deg, #6f482c, #d2ab79 20%, #dfbd8d 35%, #91613c 80%, #5c412d);
   box-shadow: inset 0 2px #f3d7af, 2px 3px 4px #3d2c2133;
@@ -132,9 +141,9 @@
 .lamp {
   position: absolute;
   left: 81.25%;
-  top: 40.929%;
+  top: 24.833%;
   width: 12.5%;
-  height: 22.857%;
+  height: 16cqi;
 }
 .lamp::before {
   content: "";
@@ -181,8 +190,9 @@
 @keyframes sparkFlash { 0% { opacity: 1; transform: scale(.4); } 35% { opacity: 1; transform: scale(1.35); } 100% { opacity: 0; transform: scale(.1); } }
 @keyframes sparkFly { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.25); } }
 @media (prefers-reduced-motion: reduce) {
-  .blade, .selectorBlade, .signalCable, .stateLight, .glass, .lamp::before { transition: none; }
+  .blade, .selectorBlade, .signalCable, .glass, .lamp::before { transition: none; }
   .sparkBurst { display: none; }
+  .currentFlow, .currentContact { animation: none; }
 }
 @media (max-width: 560px) {
   .experiment { margin-block: 20px; }
@@ -195,5 +205,10 @@
 .boardViewport:focus-visible { outline: 3px solid #32728d; outline-offset: 3px; }
 
 .cmosBoard { min-width: 680px; }
-.cmosBoard .controlLabel { top: 100%; }
+
 .netLabel { fill: #615d4d; font: 13px ui-monospace, monospace; }
+
+.cmosSwitch { position: absolute; transform: translate(-50%, -50%) rotate(90deg); }
+.cmosGateLabel { fill: #497535; font: 12px ui-monospace, monospace; text-anchor: end; }
+.cmosKind { fill: #615d4d; font: 10px ui-monospace, monospace; text-anchor: middle; }
+.cmosInputLabel { fill: #497535; font: 14px ui-monospace, monospace; text-anchor: middle; }

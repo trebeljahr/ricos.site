@@ -4,8 +4,43 @@ import type { Circuit, Snapshot } from "src/lib/computer/logic";
 import { isMosfet } from "src/lib/computer/transistorGeometry";
 import { bridgeWirePaths, polylinePath, wireJunctions } from "src/lib/computer/wireGeometry";
 import { wireNetKeys } from "src/lib/computer/wireTopology";
-import { Battery, Cable, type Control, ControlSwitch, Lamp } from "./SwitchBoardParts";
+import {
+  Battery,
+  Cable,
+  type Control,
+  ControlSwitch,
+  Lamp,
+  SwitchContact,
+} from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
+
+/** Trace the load path through the simulator's conducting devices; gate controls are excluded. */
+export function lampCurrentPath(circuit: Circuit, snapshot: Snapshot) {
+  const wires = new Set<string>();
+  const devices = new Set<string>();
+  const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
+  const visiting = new Set<string>();
+  const visit = (id: string): boolean => {
+    const node = byId.get(id);
+    if (!node || !snapshot.values[id] || visiting.has(id)) return false;
+    if (node.type === "high") return true;
+    visiting.add(id);
+    const sources = circuit.wires.filter(
+      (wire) => wire.to === id && (!isMosfet(node) || wire.input === 1),
+    );
+    let connected = false;
+    for (const wire of sources) {
+      if (!visit(wire.from)) continue;
+      wires.add(wire.id);
+      connected = true;
+    }
+    if (connected && isMosfet(node)) devices.add(id);
+    visiting.delete(id);
+    return connected;
+  };
+  visit("out");
+  return { wires, devices };
+}
 
 /** The lamp view draws the shared CMOS circuit, including its input inverters and both rails. */
 export function CmosLampBoard({
@@ -21,10 +56,12 @@ export function CmosLampBoard({
   a: boolean;
   b: boolean;
   onFlip: (name: Control) => void;
-  spark: { id: number; x: number; y: number } | null;
+  spark: { id: number; x: number; y: number; control?: Control } | null;
 }) {
   const layout = useMemo(() => cmosLampLayout(circuit), [circuit]);
   const nets = useMemo(() => wireNetKeys(circuit), [circuit]);
+  const current = useMemo(() => lampCurrentPath(circuit, snapshot), [circuit, snapshot]);
+  const lit = Boolean(snapshot.values.out);
   const controls = circuit.nodes.filter((node) => node.type === "switch");
   const railNet = (id: string) => nets[circuit.wires.find((wire) => wire.from === id)!.id];
   const colors = new Map<string, string>();
@@ -36,30 +73,24 @@ export function CmosLampBoard({
       colors.set(nets[wire.id], ["#57764b", "#407d83", "#8c704c", "#7b6687", "#596d4a"][index % 5]);
   }
   const paths = [
-    ...layout.wires.map((wire) => ({
-      id: wire.id,
-      net: nets[wire.id],
-      path: polylinePath(wire.points),
-    })),
-    { id: "battery-positive", net: railNet("vcc"), path: "M80 284 V64" },
-    { id: "battery-negative", net: railNet("gnd"), path: "M80 420 V680" },
-    {
-      id: "selector-supply",
-      net: railNet("vcc"),
-      path: `M130 64 V650 H${controls.length === 1 ? 272 : 432}`,
-    },
+    ...layout.wires
+      .filter(
+        (wire) =>
+          !(isMosfet(circuit.nodes.find((node) => node.id === wire.to)!) && wire.input === 0),
+      )
+      .map((wire) => ({
+        id: wire.id,
+        net: nets[wire.id],
+        path: polylinePath(wire.points),
+        active: current.wires.has(wire.id),
+      })),
+    { id: "battery-positive", net: railNet("vcc"), path: "M80 228 V48", active: lit },
     {
       id: "lamp-return",
       net: railNet("gnd"),
-      path: `M${layout.width - 76} 336 H${layout.width - 24} V680 H80`,
+      path: `M${layout.width - 76} 280 H${layout.width - 24} V600 H80 V364`,
+      active: lit,
     },
-    ...controls.flatMap((node) => {
-      const x = layout.positions.get(node.id)!.x;
-      return [
-        { id: `${node.id}-positive`, net: railNet("vcc"), path: `M${x + 32} 630 V650` },
-        { id: `${node.id}-negative`, net: railNet("gnd"), path: `M${x - 32} 630 V680` },
-      ];
-    }),
   ];
   const bridged = bridgeWirePaths(paths);
   const junctions = wireJunctions(paths);
@@ -83,8 +114,19 @@ export function CmosLampBoard({
             aria-hidden="true"
           >
             {paths.map((wire) => (
-              <Cable key={wire.id} d={bridged[wire.id]} color={colors.get(wire.net) ?? "#7a705d"} />
+              <Cable
+                key={wire.id}
+                d={bridged[wire.id]}
+                color={colors.get(wire.net) ?? "#7a705d"}
+                active={wire.active}
+              />
             ))}
+            {lit && (
+              <path
+                className={own.flowArrow}
+                d={`M${layout.width - 175} 280 l-8 -5 m8 5 l-8 5 M${layout.width - 24} 480 l-5 -8 m5 8 l5 -8`}
+              />
+            )}
             {junctions.map((point) => (
               <circle
                 key={`${point.x}-${point.y}-${point.wire}`}
@@ -99,23 +141,29 @@ export function CmosLampBoard({
               const control = circuit.wires.find(
                 (wire) => wire.to === node.id && wire.input === 0,
               )!.from;
-              const high = Boolean(snapshot.values[control]);
-              const closed = node.type === "nmos" ? high : !high;
               const label = layout.labels.get(control) ?? control;
               return (
                 <g key={node.id} transform={`translate(${pos.x} ${pos.y})`}>
-                  <path className={own.deviceLead} d="M0 -34 V-26 M0 26 V34 M-46 0 H-36" />
-                  <rect className={own.chip} x="-36" y="-27" width="72" height="54" rx="8" />
-                  <text className={own.chipKind} x="0" y="-8">
-                    {node.type.toUpperCase()}
-                  </text>
-                  <text className={own.chipName} x="0" y="15">
+                  <path className={own.deviceLead} d="M0 -34 V-28 M0 28 V34 M-46 0 H-24" />
+                  <text className={own.cmosGateLabel} x="-50" y="4">
                     {label}
                   </text>
-                  <circle className={own.stateLight} data-on={closed} cx="25" cy="-17" r="3" />
+                  <text className={own.cmosKind} x="0" y="-49">
+                    {node.type.toUpperCase()}
+                  </text>
                 </g>
               );
             })}
+            {controls.map((node) => (
+              <text
+                key={node.id}
+                className={own.cmosInputLabel}
+                x={layout.positions.get(node.id)!.x}
+                y={layout.selectorY - 55}
+              >
+                {layout.labels.get(node.id)}
+              </text>
+            ))}
             {layout.stages.map((node) => {
               const pos = layout.positions.get(node.id)!;
               return (
@@ -132,12 +180,24 @@ export function CmosLampBoard({
             const high = Boolean(snapshot.values[control]),
               closed = node.type === "nmos" ? high : !high;
             return (
-              <span
+              <div
                 key={node.id}
-                className="sr-only"
+                className={own.cmosSwitch}
+                style={{
+                  left: `${(layout.positions.get(node.id)!.x / layout.width) * 100}%`,
+                  top: `${(layout.positions.get(node.id)!.y / layout.height) * 100}%`,
+                  width: `${(77 / layout.width) * 100}%`,
+                  height: `${(47 / layout.height) * 100}%`,
+                }}
                 role="img"
                 aria-label={`${node.type.toUpperCase()} ${layout.labels.get(control) ?? control} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}`}
-              />
+              >
+                <SwitchContact
+                  closed={closed}
+                  active={current.devices.has(node.id)}
+                  reverse={node.type === "nmos"}
+                />
+              </div>
             );
           })}
           {spark && (
@@ -145,8 +205,8 @@ export function CmosLampBoard({
               key={spark.id}
               className={own.sparkBurst}
               style={{
-                left: `${(spark.x / layout.width) * 100}%`,
-                top: `${(spark.y / layout.height) * 100}%`,
+                left: `${((spark.control ? layout.positions.get(spark.control.toLowerCase())!.x + ((spark.control === "A" ? a : b) ? 32 : -32) : spark.x) / layout.width) * 100}%`,
+                top: `${((spark.control ? layout.selectorY + 10 : spark.y) / layout.height) * 100}%`,
               }}
               data-testid="switch-spark"
               aria-hidden="true"
@@ -156,11 +216,11 @@ export function CmosLampBoard({
               ))}
             </span>
           )}
-          <Battery y={292} boardWidth={layout.width} boardHeight={layout.height} />
+          <Battery y={236} boardWidth={layout.width} boardHeight={layout.height} />
           <Lamp
             lit={snapshot.values.out}
             x={layout.width - 150}
-            y={205}
+            y={149}
             boardWidth={layout.width}
             boardHeight={layout.height}
           />
@@ -169,7 +229,7 @@ export function CmosLampBoard({
               key={node.id}
               name={node.id === "a" ? "A" : "B"}
               x={layout.positions.get(node.id)!.x}
-              y={610}
+              y={layout.selectorY}
               boardWidth={layout.width}
               boardHeight={layout.height}
               high={node.id === "a" ? a : b}

@@ -5,15 +5,23 @@ import {
   switchLampDemo,
   transistorLampDemo,
 } from "src/lib/computer/demoCircuits";
-import { initialSnapshot, step } from "src/lib/computer/logic";
+import { initialSnapshot, type Snapshot, step } from "src/lib/computer/logic";
 import { CmosLampBoard } from "./CmosLampBoard";
-import { Battery, Cable, type Control, ControlSwitch, Lamp, Terminal } from "./SwitchBoardParts";
+import {
+  Battery,
+  Cable,
+  type Control,
+  ControlSwitch,
+  Lamp,
+  SwitchContact,
+  Terminal,
+} from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
 
 export type SwitchWiring = "series" | "parallel";
 type ContactKind = "nmos" | "pmos";
 type Contact = { name: Control; kind: ContactKind; x: number; y: number };
-type Spark = { id: number; x: number; y: number };
+type Spark = { id: number; x: number; y: number; control?: Control };
 
 const WIRINGS: Record<SwitchLampWiring, string> = {
   single: "ONE SWITCH",
@@ -37,15 +45,15 @@ const ELECTRICAL_WIRINGS: SwitchLampWiring[] = [
 ];
 
 function contactsFor(wiring: SwitchWiring | "single"): Contact[] {
-  if (wiring === "single") return [{ name: "A", kind: "nmos", x: 410, y: 180 }];
+  if (wiring === "single") return [{ name: "A", kind: "nmos", x: 420, y: 140 }];
   return wiring === "series"
     ? [
-        { name: "A", kind: "nmos", x: 320, y: 180 },
-        { name: "B", kind: "nmos", x: 500, y: 180 },
+        { name: "A", kind: "nmos", x: 330, y: 140 },
+        { name: "B", kind: "nmos", x: 510, y: 140 },
       ]
     : [
-        { name: "A", kind: "nmos", x: 410, y: 145 },
-        { name: "B", kind: "nmos", x: 410, y: 285 },
+        { name: "A", kind: "nmos", x: 330, y: 140 },
+        { name: "B", kind: "nmos", x: 510, y: 360 },
       ];
 }
 function conducts(contact: Contact, a: boolean, b: boolean) {
@@ -56,62 +64,61 @@ function conducts(contact: Contact, a: boolean, b: boolean) {
 function KnifeSwitch({
   contact,
   closed,
+  active,
+  boardHeight,
   onFlip,
 }: {
   contact: Contact;
   closed: boolean;
+  active: boolean;
+  boardHeight: number;
   onFlip: () => void;
 }) {
   return (
     <button
       type="button"
       className={own.knifeSwitch}
-      style={{ left: `${contact.x / 8}%`, top: `${contact.y / 5.6}%` }}
+      style={{ left: `${contact.x / 8}%`, top: `${(contact.y / boardHeight) * 100}%` }}
       aria-pressed={closed}
       aria-label={`Switch ${contact.name}: ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`}
       onClick={onFlip}
     >
-      <span className={own.switchBase} aria-hidden="true">
-        <i className={own.contactLeft} />
-        <i className={own.contactRight} />
-        <span className={own.blade} data-closed={closed}>
-          <i />
-        </span>
-      </span>
+      <SwitchContact closed={closed} active={active} reverse={false} />
+      <span className={own.contactName}>{contact.name}</span>
     </button>
   );
 }
-/** Packages show state; only the separate battery-fed selector switches change it. */
+/** Gate leads face the controls between the two branches. */
 function TransistorSwitch({
   contact,
   high,
   closed,
+  active,
+  reverse,
+  boardHeight,
 }: {
   contact: Contact;
   high: boolean;
   closed: boolean;
+  active: boolean;
+  reverse: boolean;
+  boardHeight: number;
 }) {
   return (
     <div
       className={own.transistorSwitch}
-      style={{ left: `${contact.x / 8}%`, top: `${contact.y / 5.6}%` }}
+      data-gate-up={contact.y === 360}
+      style={{ left: `${contact.x / 8}%`, top: `${(contact.y / boardHeight) * 100}%` }}
       role="img"
       aria-label={`${contact.kind.toUpperCase()} ${contact.name} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}`}
     >
-      <svg viewBox="-60 -45 120 100" aria-hidden="true">
-        <path className={own.deviceLead} d="M-56 0 H-32 M32 0 H56 M0 24 V48" />
-        <rect className={own.chip} x="-36" y="-34" width="72" height="62" rx="9" />
-        <text className={own.chipKind} x="0" y="-11">
-          {contact.kind.toUpperCase()}
-        </text>
-        <text className={own.chipName} x="0" y="12">
-          {contact.name}
-        </text>
-        <circle className={own.stateLight} data-on={closed} cx="24" cy="-23" r="3" />
-        <text className={own.gateLabel} x="10" y="43">
-          G
-        </text>
-      </svg>
+      <SwitchContact closed={closed} active={active} reverse={reverse} />
+      <span className={own.transistorLabel}>
+        {contact.kind.toUpperCase()} {contact.name} · {closed ? "CLOSED" : "OPEN"}
+      </span>
+      <span className={own.gateLead} aria-hidden="true">
+        G
+      </span>
     </div>
   );
 }
@@ -123,6 +130,7 @@ function SwitchBoard({
   lit,
   electrical,
   spark,
+  snapshot,
   onFlip,
 }: {
   wiring: SwitchWiring | "single";
@@ -131,15 +139,24 @@ function SwitchBoard({
   lit: boolean;
   electrical: boolean;
   spark: Spark | null;
+  snapshot: Snapshot;
   onFlip: (name: Control) => void;
 }) {
   const contacts = contactsFor(wiring);
   const branched = wiring === "parallel";
   // A real N-channel lamp switch belongs on the return side of the load.
   const lowSide = electrical && contacts.every((contact) => contact.kind === "nmos");
-  const rows = branched ? [145, 285] : [180];
+  const rows = branched ? [140, 360] : [140];
+  const boardHeight = branched ? 480 : electrical ? 400 : 360;
+  const returnY = boardHeight - 30;
   const controls: Control[] = contacts.some((contact) => contact.name === "B") ? ["A", "B"] : ["A"];
-  const controlX = (name: Control) => (controls.length === 1 ? 410 : name === "A" ? 320 : 500);
+  const controlX = (name: Control) => (controls.length === 1 ? 420 : name === "A" ? 330 : 510);
+  // The native simulator decides which complete branches conduct. These are
+  // presentation paths, not a second circuit or current simulation.
+  const activeRows = rows.map((y, branch) => {
+    const last = contacts.filter((contact) => contact.y === y).length - 1;
+    return Boolean(snapshot.values[`path-${branch}-${last}`]);
+  });
   return (
     <div className={own.boardFrame}>
       <section
@@ -150,6 +167,7 @@ function SwitchBoard({
       >
         <div
           className={own.board}
+          style={{ aspectRatio: `800 / ${boardHeight}` }}
           role="group"
           aria-label={
             electrical
@@ -157,71 +175,82 @@ function SwitchBoard({
               : "Physical switches and a lamp"
           }
         >
-          <svg className={own.cables} viewBox="0 0 800 560" aria-hidden="true">
-            {electrical ? (
+          <svg className={own.cables} viewBox={`0 0 800 ${boardHeight}`} aria-hidden="true">
+            {lowSide ? (
               <>
-                <Cable d={`M80 212 V56 H${lowSide ? 650 : 180}`} />
-                <Cable
-                  d={`M80 348 V512 H${lowSide ? controlX(controls[controls.length - 1]) - 32 : 776}`}
-                  returning
-                />
-                <Cable d={`M150 56 V475 H${controlX(controls[controls.length - 1]) + 32}`} />
-                <Cable
-                  d={lowSide ? `M180 512 V${rows[0]}` : `M180 56 V${rows[rows.length - 1]}`}
-                  returning={lowSide}
-                />
+                <Cable d="M80 182 V40 H760 V250 H724" active={lit} />
+                <Cable d="M676 250 H610" returning active={lit} />
+                <Cable d="M180 360 H80 V318" returning active={lit} />
               </>
             ) : (
               <>
-                <Cable d={`M80 212 V${rows[0]} H180 V${rows[rows.length - 1]}`} />
-                <Cable d="M80 348 V430 H776 V360 H724" returning />
+                <Cable d="M80 182 V140 H180" active={lit} />
+                <Cable d="M610 250 H676" active={lit} />
+                <Cable d={`M724 250 H760 V${returnY} H80 V318`} returning active={lit} />
               </>
             )}
-            {rows.map((y) => {
+            {/* Each half of a branch rail carries current only for its own path. */}
+            <Cable d={`M180 140 V${branched || lowSide ? 360 : 140}`} returning={lowSide} />
+            <Cable d={`M610 140 V${branched ? 360 : 250}`} returning={lowSide} />
+            {rows.map((y, branch) => {
               const row = contacts.filter((contact) => contact.y === y);
+              const active = activeRows[branch];
+              const ends = [
+                180,
+                ...row.flatMap((contact) => [contact.x - 56, contact.x + 56]),
+                610,
+              ];
               return (
-                <g key={y}>
-                  <Cable d={`M180 ${y} H${row[0].x - 56}`} returning={lowSide} />
-                  {row.length === 2 && (
-                    <Cable d={`M${row[0].x + 56} ${y} H${row[1].x - 56}`} returning={lowSide} />
+                <g key={y} data-branch={branch} data-conducting={active}>
+                  {Array.from({ length: row.length + 1 }, (_, index) => {
+                    const left = ends[index * 2];
+                    const right = ends[index * 2 + 1];
+                    return (
+                      <Cable
+                        key={left}
+                        d={lowSide ? `M${right} ${y} H${left}` : `M${left} ${y} H${right}`}
+                        returning={lowSide}
+                        active={active}
+                      />
+                    );
+                  })}
+                  {active && (
+                    <>
+                      <Cable
+                        d={lowSide ? `M180 ${y} V360` : `M180 140 V${y}`}
+                        returning={lowSide}
+                        active
+                      />
+                      <Cable
+                        d={lowSide ? `M610 250 V${y}` : `M610 ${y} V250`}
+                        returning={lowSide}
+                        active
+                      />
+                      <path
+                        className={own.flowArrow}
+                        d={`M${lowSide ? 200 : 590} ${y} l${lowSide ? 8 : -8} -5 m${lowSide ? -8 : 8} 5 l${lowSide ? 8 : -8} 5`}
+                      />
+                    </>
                   )}
-                  <Cable d={`M${row[row.length - 1].x + 56} ${y} H610`} returning={lowSide} />
                 </g>
               );
             })}
-            {lowSide ? (
-              <>
-                <Cable d={`M610 ${rows[0]} V390 H776 V360 H724`} returning />
-                <Cable d="M676 360 H650 V56" />
-              </>
-            ) : (
-              <>
-                <Cable d={`M610 ${rows[0]} V360 H676`} />
-                {electrical && <Cable d="M724 360 H776 V512" returning />}
-              </>
-            )}
             {electrical &&
               controls.map((name) => {
                 const x = controlX(name);
                 const high = name === "A" ? a : b;
-                const gates = contacts.filter((contact) => contact.name === name);
-                const lane = name === "A" ? 230 : 580;
-                const top = gates[0].y + 48;
-                return (
-                  <g key={name}>
-                    <Cable d={`M${x - 32} 445 V512`} returning />
-                    <Cable d={`M${x + 32} 445 V475`} />
-                    <Cable d={`M${x} 385 H${lane} V${top} H${gates[0].x}`} signal high={high} />
-                    {gates.slice(1).map((contact) => (
-                      <g key={contact.y}>
-                        <Cable d={`M${lane} ${contact.y + 48} H${contact.x}`} signal high={high} />
+                return contacts
+                  .filter((contact) => contact.name === name)
+                  .map((contact) => {
+                    const gateY = contact.y === 360 ? 300 : 200;
+                    const selectorY = contact.y === 360 ? 290 : 210;
+                    return (
+                      <g key={`${name}-${contact.y}`}>
+                        <Cable d={`M${x} ${selectorY} V${gateY}`} signal high={high} />
+                        <Terminal x={x} y={gateY} />
                       </g>
-                    ))}
-                    {gates.map((contact) => (
-                      <Terminal key={contact.y} x={contact.x} y={contact.y + 48} />
-                    ))}
-                  </g>
-                );
+                    );
+                  });
               })}
             {contacts.map((contact) => (
               <g key={`${contact.name}-${contact.kind}-${contact.y}`}>
@@ -229,44 +258,18 @@ function SwitchBoard({
                 <Terminal x={contact.x + 56} y={contact.y} />
               </g>
             ))}
-            <Terminal x={80} y={212} />
-            <Terminal x={80} y={348} />
-            {/* SVG paint order keeps junction dots above every cable. */}
-            <g>
-              {branched &&
-                rows.map((y) => (
-                  <g key={y}>
-                    <Terminal x={180} y={y} junction />
-                    <Terminal x={610} y={y} junction />
-                  </g>
-                ))}
-              {lowSide && <Terminal x={650} y={56} junction />}
-              {electrical && (
-                <>
-                  <Terminal x={180} y={lowSide ? 512 : 56} junction />
-                  <Terminal x={150} y={56} junction />
-                  {controls.map((name) => (
-                    <g key={name}>
-                      <Terminal x={controlX(name) - 32} y={512} junction />
-                      <Terminal x={controlX(name) + 32} y={475} junction />
-                      {contacts
-                        .filter((contact) => contact.name === name)
-                        .slice(1)
-                        .map((contact) => (
-                          <Terminal
-                            key={contact.y}
-                            x={name === "A" ? 230 : 580}
-                            y={contact.y + 48}
-                            junction
-                          />
-                        ))}
-                    </g>
-                  ))}
-                </>
-              )}
-            </g>
+            <Terminal x={80} y={182} />
+            <Terminal x={80} y={318} />
+            {branched &&
+              rows.map((y) => (
+                <g key={y}>
+                  <Terminal x={180} y={y} junction />
+                  <Terminal x={610} y={y} junction />
+                </g>
+              ))}
+            {branched && <Terminal x={610} y={250} junction />}
           </svg>
-          <Battery />
+          <Battery y={190} boardHeight={boardHeight} />
           {contacts.map((contact) =>
             electrical ? (
               <TransistorSwitch
@@ -274,12 +277,17 @@ function SwitchBoard({
                 contact={contact}
                 high={contact.name === "A" ? a : b}
                 closed={conducts(contact, a, b)}
+                active={activeRows[rows.indexOf(contact.y)]}
+                reverse={lowSide}
+                boardHeight={boardHeight}
               />
             ) : (
               <KnifeSwitch
                 key={`${contact.name}-${contact.kind}-${contact.y}`}
                 contact={contact}
                 closed={contact.name === "A" ? a : b}
+                active={activeRows[rows.indexOf(contact.y)]}
+                boardHeight={boardHeight}
                 onFlip={() => onFlip(contact.name)}
               />
             ),
@@ -291,6 +299,10 @@ function SwitchBoard({
                 name={name}
                 x={controlX(name)}
                 high={name === "A" ? a : b}
+                above={contacts.some((contact) => contact.name === name && contact.y === 140)}
+                below={contacts.some((contact) => contact.name === name && contact.y === 360)}
+                boardHeight={boardHeight}
+                y={250}
                 onFlip={() => onFlip(name)}
               />
             ))}
@@ -298,7 +310,7 @@ function SwitchBoard({
             <span
               key={spark.id}
               className={own.sparkBurst}
-              style={{ left: `${spark.x / 8}%`, top: `${spark.y / 5.6}%` }}
+              style={{ left: `${spark.x / 8}%`, top: `${(spark.y / boardHeight) * 100}%` }}
               data-testid="switch-spark"
               aria-hidden="true"
             >
@@ -307,7 +319,7 @@ function SwitchBoard({
               ))}
             </span>
           )}
-          <Lamp lit={lit} />
+          <Lamp lit={lit} y={119.2} boardHeight={boardHeight} />
         </div>
       </section>
     </div>
@@ -359,7 +371,7 @@ function SwitchExperiment({
     () => step(circuit, initialSnapshot(), false, {}, { a, b }),
     [circuit, a, b],
   );
-  const lit = snapshot.values[output];
+  const lit = Boolean(snapshot.values[output]);
   useEffect(() => {
     if (!spark) return;
     const timer = window.setTimeout(() => setSpark(null), 600);
@@ -382,6 +394,7 @@ function SwitchExperiment({
               id: ++sparkId.current,
               x: (name === "A" ? 240 : 400) + ((name === "A" ? nextA : nextB) ? 32 : -32),
               y: 620,
+              control: name,
             }
           : closing
             ? { id: ++sparkId.current, x: closing.x + 56, y: closing.y }
@@ -453,9 +466,18 @@ function SwitchExperiment({
           lit={lit}
           electrical={electrical}
           spark={spark}
+          snapshot={snapshot}
           onFlip={flip}
         />
       )}
+      <p className={own.flowStatus} role="status">
+        {lit ? "Complete path · lamp on" : "Broken path · lamp off"}
+      </p>
+      <p className={own.flowLegend}>
+        Moving dots follow current from +, through the lamp, back to −.
+        {electrical &&
+          " Matching labels share a control wire. Each selector’s + and − connect to the same battery terminals."}
+      </p>
     </section>
   );
 }

@@ -1228,6 +1228,8 @@ export type LogicBuilderProps = {
   locked?: {
     circuit: Circuit;
     clockRef: MutableRefObject<LockedClock | null>;
+    /** Let readers operate top-level switches without editing the circuit. */
+    interactiveInputs?: boolean;
     onFrame?: (view: LockedView) => void;
     ripple?: boolean;
     rippleSpeed?: number;
@@ -3025,7 +3027,7 @@ function LogicBuilderWorkspace({
   return (
     <div
       ref={shellRef}
-      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, signalView && styles.signalView)}
+      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, locked?.interactiveInputs && styles.interactiveInputs, signalView && styles.signalView)}
       data-embedded={embedded || undefined}
       data-logic-builder=""
       data-wire-view={signalView ? "signal" : "identity"}
@@ -4028,7 +4030,9 @@ function LogicBuilderWorkspace({
                         <strong className={styles.nodePartName}>{partName(node)}</strong>
                         <NodeReadout node={node} snapshot={boardSnapshot} wires={circuit.wires}
                           bank={segmentBank(node, segmentBanks)} onBank={showSegmentBank}
-                          onUpdate={(patch) => setCircuit((current) => ({
+                          onUpdate={locked?.interactiveInputs && node.type === "switch"
+                            ? () => locked.clockRef.current?.input({ [node.id]: !boardSnapshot.values[node.id] })
+                            : (patch) => setCircuit((current) => ({
                             ...current,
                             nodes: current.nodes.map((item) => item.id === node.id ? { ...item, ...patch(item) } : item),
                           }))}

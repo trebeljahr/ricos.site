@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { CSSProperties, ReactNode } from "react";
-import { useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
+import { useMemo, useRef, useState } from "react";
+import { adderDemo, gateDemo } from "src/lib/computer/demoCircuits";
 import {
   bit,
   evalGate,
@@ -15,13 +15,12 @@ import {
   TRUTH_GATES,
   type TruthGate,
 } from "src/lib/computer/gateLogic";
+import type { Circuit } from "src/lib/computer/logic";
 import panel from "./ByteExplorer.module.css";
-import { CircuitPreview } from "./CircuitPreview";
-import styles from "./Codebook.module.css";
-import { DemoMachine } from "./CodebookParts";
 import gates from "./GateDemos.module.css";
+import { type LockedClock, LogicBuilder } from "./LogicBuilder";
+import table from "./TruthTables.module.css";
 
-const NUMBER_WORDS = ["ZERO", "ONE", "TWO", "THREE"];
 const TWO_INPUT_GATES = TRUTH_GATES.filter((gate) => gate !== "not");
 
 /** A key for one input, with its name above. */
@@ -77,18 +76,18 @@ export function TruthList({
   const style = { "--columns": columns } as CSSProperties;
   return (
     <div>
-      <div className={gates.tableHead} style={style} aria-hidden="true">
+      <div className={table.tableHead} style={style} aria-hidden="true">
         {inputNames.map((name) => (
           <span key={name}>{name}</span>
         ))}
         {outputNames.map((name, index) => (
-          <span key={name} className={clsx(index === 0 && gates.split)}>
+          <span key={name} className={clsx(index === 0 && table.split)}>
             {name}
           </span>
         ))}
-        {extra && <span className={gates.split}>{extra.name}</span>}
+        {extra && <span className={table.split}>{extra.name}</span>}
       </div>
-      <ol className={gates.table} aria-label={label}>
+      <ol className={table.table} aria-label={label}>
         {inputRows(inputNames.length).map((row, index) => {
           const values = outputs(row);
           const description = `${inputNames.map((name, at) => `${name} ${bit(row[at])}`).join(", ")} gives ${outputNames
@@ -98,7 +97,7 @@ export function TruthList({
             <li key={index}>
               <button
                 type="button"
-                className={gates.row}
+                className={table.row}
                 style={style}
                 aria-current={index === current ? "true" : undefined}
                 aria-label={`${description}. Set the inputs to this row.`}
@@ -110,12 +109,12 @@ export function TruthList({
                 {values.map((value, at) => (
                   <span
                     key={outputNames[at]}
-                    className={clsx(at === 0 && gates.split, value && gates.out1)}
+                    className={clsx(at === 0 && table.split, value && table.out1)}
                   >
                     {bit(value)}
                   </span>
                 ))}
-                {extra && <span className={gates.split}>{extra.cell(row)}</span>}
+                {extra && <span className={table.split}>{extra.cell(row)}</span>}
               </button>
             </li>
           );
@@ -138,7 +137,7 @@ function TruthGrid({
   name: string;
 }) {
   return (
-    <div className={gates.quad} role="group" aria-label={`${name} as a grid`}>
+    <div className={table.quad} role="group" aria-label={`${name} as a grid`}>
       <span />
       <span>B 0</span>
       <span>B 1</span>
@@ -192,104 +191,115 @@ function GridRow({
   );
 }
 
-/**
- * Pick a gate, flip A and B, and watch its row light up in the truth table or
- * in the 2 × 2 grid. Usable in MDX articles.
- */
+/** Use the builder's switches and timeline as the source of the selected row. */
+function useTableCircuit(circuit: Circuit) {
+  const clock = useRef<LockedClock | null>(null);
+  const switches = useMemo(() => circuit.nodes.filter((node) => node.type === "switch"), [circuit]);
+  const [inputs, setInputs] = useState(() => switches.map((node) => Boolean(node.value)));
+  const initialFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
+  const board = (
+    <div className={table.circuit}>
+      <LogicBuilder
+        embedded
+        storageKey={null}
+        initialFocus={initialFocus}
+        locked={{
+          circuit,
+          clockRef: clock,
+          interactiveInputs: true,
+          onFrame: ({ frame }) => {
+            const next = switches.map((node) => Boolean(frame.snapshot.values[node.id]));
+            setInputs((current) =>
+              next.every((value, index) => value === current[index]) &&
+              next.length === current.length
+                ? current
+                : next,
+            );
+          },
+        }}
+      />
+    </div>
+  );
+  const pick = (row: boolean[]) => {
+    clock.current?.input(Object.fromEntries(switches.map((node, index) => [node.id, row[index]])));
+  };
+  return { board, inputs, pick };
+}
+
+function withInputs(circuit: Circuit, inputs: boolean[]): Circuit {
+  let index = 0;
+  return {
+    ...circuit,
+    nodes: circuit.nodes.map((node) =>
+      node.type === "switch" ? { ...node, value: inputs[index++] ?? false } : node,
+    ),
+  };
+}
+
+/** Pick a gate and try its inputs in the shared circuit explorer or truth table. */
 export function GateTruthTable({
   gate: initialGate = "and",
   fixed = false,
   view: initialView = "table",
 }: {
   gate?: TruthGate;
-  /** Hides the gate keys, for a spot in the text about one gate. */
+  /** Hides the gate selector for a passage about one gate. */
   fixed?: boolean;
   view?: "table" | "grid";
 }) {
   const [gate, setGate] = useState<TruthGate>(initialGate);
-  const [inputs, setInputs] = useState([false, false]);
+  const [circuit, setCircuit] = useState(() => gateDemo(initialGate));
   const [view, setView] = useState(initialView);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
+  const { board, inputs, pick } = useTableCircuit(circuit);
   const count = gateInputs(gate);
-  const used = inputs.slice(0, count);
-  const output = evalGate(gate, inputs[0], inputs[1]);
   const names = ["A", "B"].slice(0, count);
 
-  function flip(index: number) {
-    setInputs((current) => current.map((value, at) => (at === index ? !value : value)));
-    playSwitch();
-  }
-  function pick(row: boolean[]) {
-    setInputs((current) => [row[0], row[1] ?? current[1]]);
-    playButton();
-  }
-
   return (
-    <DemoMachine
-      title="TRUTH TABLE"
-      label={`Truth table of the ${GATE_LABELS[gate]} gate`}
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-      className={gates.demo}
+    <section
+      className={clsx("not-prose", table.demo)}
+      aria-label={`Truth table of the ${GATE_LABELS[gate]} gate`}
     >
-      <div className={styles.body}>
-        <div className={styles.plate}>
-          <div className={clsx(panel.sectionHead, gates.headWrap)}>
-            <span>{fixed ? `${GATE_LABELS[gate]} GATE` : "GATE"}</span>
-            {!fixed && (
-              <div className={styles.segmented} role="group" aria-label="Gate">
-                {TRUTH_GATES.map((name) => (
-                  <button
-                    key={name}
-                    type="button"
-                    aria-pressed={gate === name}
-                    onClick={() => {
-                      setGate(name);
-                      if (name === "not") setView("table");
-                      playButton();
-                    }}
-                  >
-                    {GATE_LABELS[name]}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <CircuitPreview gate={gate} a={inputs[0]} b={inputs[1]} />
-          <div className={gates.keys}>
-            {names.map((name, index) => (
-              <InputKey key={name} name={name} on={inputs[index]} onFlip={() => flip(index)} />
+      <div className={table.toolbar}>
+        {fixed ? (
+          <span>{GATE_LABELS[gate]} gate</span>
+        ) : (
+          <label className={table.selectLabel}>
+            Gate
+            <select
+              value={gate}
+              onChange={(event) => {
+                const next = event.target.value as TruthGate;
+                setGate(next);
+                setCircuit(withInputs(gateDemo(next), inputs));
+                if (next === "not") setView("table");
+              }}
+            >
+              {TRUTH_GATES.map((name) => (
+                <option key={name} value={name}>
+                  {GATE_LABELS[name]}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {count === 2 && (
+          <div className={table.segmented} role="group" aria-label="Table layout">
+            {(["table", "grid"] as const).map((name) => (
+              <button
+                key={name}
+                type="button"
+                aria-pressed={view === name}
+                onClick={() => setView(name)}
+              >
+                {name === "table" ? "Table" : "Grid"}
+              </button>
             ))}
-            <span className={gates.arrow} aria-hidden="true">
-              →
-            </span>
-            <OutputLamp name="OUT" on={output} />
           </div>
-          <p className={gates.rule} aria-live="polite">
-            {GATE_LABELS[gate]}: {GATE_RULES[gate]}
-          </p>
-        </div>
-        <div className={styles.plate}>
-          <div className={clsx(panel.sectionHead, gates.headWrap)}>
-            <span>{view === "grid" ? "FOUR CASES" : `${2 ** count} ROWS`}</span>
-            {count === 2 && (
-              <div className={styles.segmented} role="group" aria-label="Table layout">
-                {(["table", "grid"] as const).map((name) => (
-                  <button
-                    key={name}
-                    type="button"
-                    aria-pressed={view === name}
-                    onClick={() => {
-                      setView(name);
-                      playButton();
-                    }}
-                  >
-                    {name.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+        )}
+      </div>
+      <div className={table.workspace}>
+        {board}
+        <div className={table.results}>
           {view === "grid" && count === 2 ? (
             <TruthGrid
               output={(a, b) => evalGate(gate, a, b)}
@@ -302,110 +312,62 @@ export function GateTruthTable({
               inputNames={names}
               outputNames={["OUT"]}
               outputs={([a, b]) => [evalGate(gate, a, b)]}
-              current={rowIndex(used)}
+              current={rowIndex(inputs.slice(0, count))}
               onPick={pick}
               label={`Truth table of ${GATE_LABELS[gate]}`}
             />
           )}
-          <p className={gates.note}>
-            {view === "grid" && count === 2
-              ? "Each cell is one case. A lit cell means the output is 1."
-              : "Each row is one case. Press a row to set the inputs."}
+          <p className={table.note}>
+            Choose a {view === "grid" && count === 2 ? "cell" : "row"} or flip a circuit switch.
           </p>
         </div>
       </div>
-    </DemoMachine>
+      <p className={table.rule}>
+        {GATE_LABELS[gate]}: {GATE_RULES[gate]}
+      </p>
+    </section>
   );
 }
 
-/**
- * Adding two one-bit numbers, as a truth table with a SUM and a CARRY column.
- * Trying gates against the columns finds the two that build a half adder.
- * Usable in MDX articles.
- */
+/** Compare gates with the sum and carry of the shared half-adder circuit. */
 export function AdditionTable() {
-  const [inputs, setInputs] = useState([true, true]);
+  const [circuit] = useState(() => withInputs(adderDemo("half"), [true, true]));
   const [trial, setTrial] = useState<TruthGate | null>(null);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
+  const { board, inputs, pick } = useTableCircuit(circuit);
   const [a, b] = inputs;
   const { sum, carry } = halfAdd(a, b);
-  const total = Number(a) + Number(b);
-  const rows = inputRows(2);
   const matches = (column: "sum" | "carry") =>
-    trial ? rows.filter(([x, y]) => evalGate(trial, x, y) === halfAdd(x, y)[column]).length : 0;
+    trial
+      ? inputRows(2).filter(([x, y]) => evalGate(trial, x, y) === halfAdd(x, y)[column]).length
+      : 0;
 
   return (
-    <DemoMachine
-      title="ADDING TWO BITS"
-      label="Truth table for adding two one-bit numbers"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-      className={gates.demo}
+    <section
+      className={clsx("not-prose", table.demo)}
+      aria-label="Truth table for adding two one-bit numbers"
     >
-      <div className={styles.body}>
-        <div className={styles.plate}>
-          <div className={panel.sectionHead}>
-            <span>A + B</span>
-          </div>
-          <div className={clsx(panel.screen, styles.lcd)} aria-live="polite">
-            <div className={panel.screenTop}>
-              <span>RESULT</span>
-              <span>CARRY · SUM</span>
-            </div>
-            <div className={gates.sumLine}>
-              {bit(a)} + {bit(b)} = {bit(carry)}
-              {bit(sum)}
-            </div>
-            <div className={styles.lcdLine}>
-              {NUMBER_WORDS[Number(a)]} + {NUMBER_WORDS[Number(b)]} = {NUMBER_WORDS[total]}
-            </div>
-          </div>
-          <div className={gates.keys}>
-            <InputKey
-              name="A"
-              on={a}
-              onFlip={() => {
-                setInputs([!a, b]);
-                playSwitch();
-              }}
-            />
-            <InputKey
-              name="B"
-              on={b}
-              onFlip={() => {
-                setInputs([a, !b]);
-                playSwitch();
-              }}
-            />
-            <span className={gates.arrow} aria-hidden="true">
-              →
-            </span>
-            <OutputLamp name="CARRY" on={carry} />
-            <OutputLamp name="SUM" on={sum} />
-          </div>
-          <p className={gates.note}>
-            1 + 1 does not fit in one bit. SUM shows 0 and CARRY takes the 1 to the next column.
-          </p>
-        </div>
-        <div className={styles.plate}>
-          <div className={clsx(panel.sectionHead, gates.headWrap)}>
-            <span>TRY A GATE</span>
-            <div className={styles.segmented} role="group" aria-label="Gate to compare">
-              {TWO_INPUT_GATES.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  aria-pressed={trial === name}
-                  onClick={() => {
-                    setTrial(trial === name ? null : name);
-                    playButton();
-                  }}
-                >
-                  {GATE_LABELS[name]}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className={table.toolbar}>
+        <span>Adding two bits</span>
+        <label className={table.selectLabel}>
+          Compare a gate
+          <select
+            value={trial ?? ""}
+            onChange={(event) =>
+              setTrial(event.target.value ? (event.target.value as TruthGate) : null)
+            }
+          >
+            <option value="">None</option>
+            {TWO_INPUT_GATES.map((name) => (
+              <option key={name} value={name}>
+                {GATE_LABELS[name]}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div className={table.workspace}>
+        {board}
+        <div className={table.results}>
           <TruthList
             inputNames={["A", "B"]}
             outputNames={["CARRY", "SUM"]}
@@ -414,10 +376,7 @@ export function AdditionTable() {
               return [result.carry, result.sum];
             }}
             current={rowIndex(inputs)}
-            onPick={(row) => {
-              setInputs(row);
-              playButton();
-            }}
+            onPick={pick}
             extra={
               trial
                 ? { name: GATE_LABELS[trial], cell: ([x, y]) => bit(evalGate(trial, x, y)) }
@@ -425,101 +384,59 @@ export function AdditionTable() {
             }
             label="Truth table of one-bit addition"
           />
-          <p className={gates.rule} aria-live="polite">
-            {trial
-              ? `${GATE_LABELS[trial]} matches SUM in ${matches("sum")} of 4 rows and CARRY in ${matches("carry")} of 4.`
-              : "Pick a gate. Which one gives the SUM column? Which one gives CARRY?"}
-          </p>
+          <p className={table.note}>Choose a row or flip a circuit switch.</p>
         </div>
       </div>
-    </DemoMachine>
+      <p className={table.rule} aria-live="polite">
+        {bit(a)} + {bit(b)} = {bit(carry)}
+        {bit(sum)}
+      </p>
+      <p className={table.note} aria-live="polite">
+        {trial
+          ? `${GATE_LABELS[trial]} matches SUM in ${matches("sum")} of 4 rows and CARRY in ${matches("carry")} of 4.`
+          : "Which gate gives the SUM column? Which one gives CARRY?"}
+      </p>
+    </section>
   );
 }
 
-/**
- * Adding three one-bit numbers: A, B and a carry from the column before. The
- * two outputs, read together, count the inputs that are on. Usable in MDX articles.
- */
+/** The shared full-adder circuit and all eight input combinations. */
 export function FullAdderTable() {
-  const [inputs, setInputs] = useState([true, false, true]);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
+  const [circuit] = useState(() => withInputs(adderDemo("full"), [true, false, true]));
+  const { board, inputs, pick } = useTableCircuit(circuit);
   const [a, b, carryIn] = inputs;
   const { sum, carry } = fullAdd(a, b, carryIn);
-  const total = inputs.filter(Boolean).length;
-  const names = ["A", "B", "CIN"];
 
   return (
-    <DemoMachine
-      title="FULL ADDER TABLE"
-      label="Truth table of a full adder"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-      className={gates.demo}
-    >
-      <div className={styles.body}>
-        <div className={styles.plate}>
-          <div className={panel.sectionHead}>
-            <span>A + B + CARRY IN</span>
-          </div>
-          <div className={clsx(panel.screen, styles.lcd)} aria-live="polite">
-            <div className={panel.screenTop}>
-              <span>RESULT</span>
-              <span>COUT · SUM</span>
-            </div>
-            <div className={gates.sumLine}>
-              {bit(a)} + {bit(b)} + {bit(carryIn)} = {bit(carry)}
-              {bit(sum)}
-            </div>
-            <div className={styles.lcdLine}>
-              {NUMBER_WORDS[total]} {total === 1 ? "INPUT IS" : "INPUTS ARE"} ON
-            </div>
-          </div>
-          <div className={gates.keys}>
-            {names.map((name, index) => (
-              <InputKey
-                key={name}
-                name={name}
-                on={inputs[index]}
-                onFlip={() => {
-                  setInputs(inputs.map((value, at) => (at === index ? !value : value)));
-                  playSwitch();
-                }}
-              />
-            ))}
-            <span className={gates.arrow} aria-hidden="true">
-              →
-            </span>
-            <OutputLamp name="COUT" on={carry} />
-            <OutputLamp name="SUM" on={sum} />
-          </div>
-          <p className={gates.note}>
-            CIN is the carry from the column to the right. COUT goes on to the column to the left.
-          </p>
-        </div>
-        <div className={styles.plate}>
-          <div className={panel.sectionHead}>
-            <span>8 ROWS</span>
-            <span>3 INPUTS</span>
-          </div>
+    <section className={clsx("not-prose", table.demo)} aria-label="Truth table of a full adder">
+      <div className={table.toolbar}>
+        <span>Full adder</span>
+        <span className={table.note}>CIN: carry in · COUT: carry out</span>
+      </div>
+      <div className={table.workspace}>
+        {board}
+        <div className={table.results}>
           <TruthList
-            inputNames={names}
+            inputNames={["A", "B", "CIN"]}
             outputNames={["COUT", "SUM"]}
             outputs={([x, y, z]) => {
               const result = fullAdd(x, y, z);
               return [result.carry, result.sum];
             }}
             current={rowIndex(inputs)}
-            onPick={(row) => {
-              setInputs(row);
-              playButton();
-            }}
+            onPick={pick}
             label="Truth table of a full adder"
           />
-          <p className={gates.note}>
-            Read COUT and SUM together as one binary number. It counts how many inputs are 1.
-          </p>
+          <p className={table.note}>Choose a row or flip a circuit switch.</p>
         </div>
       </div>
-    </DemoMachine>
+      <p className={table.rule} aria-live="polite">
+        {bit(a)} + {bit(b)} + {bit(carryIn)} = {bit(carry)}
+        {bit(sum)}
+      </p>
+      <p className={table.note}>
+        Read COUT and SUM together as one binary number. It counts how many inputs are 1.
+      </p>
+    </section>
   );
 }

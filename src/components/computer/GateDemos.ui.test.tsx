@@ -22,25 +22,39 @@ describe("truth tables", () => {
     expect(
       within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
     ).toBeTruthy();
-    click(/^Input A: 0/);
-    click(/^Input B: 0/);
+    fireEvent.click(
+      within(screen.getByLabelText("A — SWITCH part")).getByRole("button", { name: "OFF" }),
+    );
+    fireEvent.click(
+      within(screen.getByLabelText("B — SWITCH part")).getByRole("button", { name: "OFF" }),
+    );
     expect(currentRow("Truth table of AND")?.textContent).toBe("111");
     expect(
       within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
     ).toBeTruthy();
-    expect(screen.getByRole("img", { name: "Output OUT: 1" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Input A:/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /SOUND/ })).toBeNull();
     fireEvent.click(screen.getByLabelText("AND — AND part"));
     expect(
       within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
     ).toBeTruthy();
 
-    click("XOR");
+    fireEvent.change(screen.getByRole("combobox", { name: "Gate" }), { target: { value: "xor" } });
     expect(currentRow("Truth table of XOR")?.textContent).toBe("110");
     expect(
       within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
     ).toBeTruthy();
     click(/^A 0, B 1 gives OUT 1/);
-    expect(screen.getByRole("button", { name: /^Input A: 0/ })).toBeTruthy();
+    expect(
+      within(screen.getByLabelText("A — SWITCH part")).getByRole("button", { name: "OFF" }),
+    ).toBeTruthy();
+    expect(
+      within(screen.getByLabelText("B — SWITCH part")).getByRole("button", { name: "ON" }),
+    ).toBeTruthy();
+    fireEvent.click(
+      within(screen.getByLabelText("A — SWITCH part")).getByRole("button", { name: "OFF" }),
+    );
+    expect(currentRow("Truth table of XOR")?.textContent).toBe("110");
   });
 
   it("shows two-input gates as a 2 × 2 grid and NOT as two rows", () => {
@@ -51,7 +65,7 @@ describe("truth tables", () => {
         .getAllByRole("button")
         .map((cell) => cell.textContent),
     ).toEqual(["1", "1", "1", "0"]);
-    click("NOT");
+    fireEvent.change(screen.getByRole("combobox", { name: "Gate" }), { target: { value: "not" } });
     expect(
       within(screen.getByRole("list", { name: "Truth table of NOT" })).getAllByRole("button"),
     ).toHaveLength(2);
@@ -61,18 +75,26 @@ describe("truth tables", () => {
   it("finds the gates for SUM and CARRY", () => {
     const { container } = render(<AdditionTable />);
     expect(container.textContent).toContain("1 + 1 = 10");
-    click("XOR");
+    fireEvent.change(screen.getByRole("combobox", { name: "Compare a gate" }), {
+      target: { value: "xor" },
+    });
     expect(container.textContent).toContain("XOR matches SUM in 4 of 4 rows and CARRY in 1 of 4.");
-    click("AND");
+    fireEvent.change(screen.getByRole("combobox", { name: "Compare a gate" }), {
+      target: { value: "and" },
+    });
     expect(container.textContent).toContain("AND matches SUM in 1 of 4 rows and CARRY in 4 of 4.");
   });
 
   it("counts the inputs that are on in the full adder table", () => {
     const { container } = render(<FullAdderTable />);
     expect(container.textContent).toContain("1 + 0 + 1 = 10");
-    click(/^Input B: 0/);
+    fireEvent.click(
+      within(screen.getByLabelText("B — SWITCH part")).getByRole("button", { name: "OFF" }),
+    );
     expect(container.textContent).toContain("1 + 1 + 1 = 11");
-    expect(container.textContent).toContain("THREE INPUTS ARE ON");
+    expect(currentRow("Truth table of a full adder")?.textContent).toBe("11111");
+    click(/^A 0, B 0, CIN 0 gives COUT 0, SUM 0/);
+    expect(currentRow("Truth table of a full adder")?.textContent).toBe("00000");
   });
 });
 

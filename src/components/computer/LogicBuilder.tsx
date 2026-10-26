@@ -1734,7 +1734,7 @@ function LogicBuilderWorkspace({
     if (!viewport?.clientWidth || !viewport.clientHeight) return;
     const nodes = focusIds ? displayNodes.filter((node) => focusIds.includes(node.id)) : displayNodes;
     if (focusIds && !nodes.length) return;
-    const wireBounds = focusIds ? undefined : routes.bounds;
+    const wireBounds = focusIds && nodes.length !== displayNodes.length ? undefined : routes.bounds;
     const left = Math.min(focusIds ? Infinity : 0, wireBounds?.left ?? Infinity, ...nodes.map((node) => node.x)) - 40;
     const top = Math.min(focusIds ? Infinity : 0, wireBounds?.top ?? Infinity, ...nodes.map((node) => node.y)) - 40;
     const right = Math.max(focusIds ? -Infinity : WIDTH, wireBounds?.right ?? -Infinity, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
@@ -3586,10 +3586,14 @@ function LogicBuilderWorkspace({
                 {circuit.groups?.map((group) => {
                   const parts = circuit.nodes.filter((item) => group.nodeIds.includes(item.id));
                   if (!parts.length) return null;
-                  const left = Math.max(8, Math.min(...parts.map((item) => item.x)) - 20);
-                  const top = Math.max(8, Math.min(...parts.map((item) => item.y)) - 28);
-                  const right = Math.max(...parts.map((item) => item.x + nodeWidth(item))) + 20;
-                  const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item))) + 18;
+                  const members = new Set(group.nodeIds);
+                  // Internal rails can extend past the parts; leave room around their drawn routes too.
+                  const points = circuit.wires.filter((wire) => wirePaths[wire.id] && members.has(wire.from) && members.has(wire.to))
+                    .flatMap((wire) => pathPoints(anchorPath(wire) ?? "").flat());
+                  const left = Math.min(...parts.map((item) => item.x), ...points.map((point) => point.x)) - 20;
+                  const top = Math.min(...parts.map((item) => item.y), ...points.map((point) => point.y)) - 28;
+                  const right = Math.max(...parts.map((item) => item.x + nodeWidth(item)), ...points.map((point) => point.x)) + 20;
+                  const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item)), ...points.map((point) => point.y)) + 18;
                   return (
                     <div
                       key={group.id}

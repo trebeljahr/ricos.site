@@ -318,6 +318,7 @@
   grid-template-columns: 180px minmax(0, 1fr) 300px;
   grid-template-rows: minmax(540px, auto);
 }
+.embedded .lockedLayout.layoutWithCoach { grid-template-columns: minmax(0, 1fr) 300px; }
 .embedded .layoutWithCoach > .workspace { height: 600px; min-height: 600px; }
 .embedded .coach { overflow: visible; overscroll-behavior: auto; }
 @container (max-width: 1000px) {

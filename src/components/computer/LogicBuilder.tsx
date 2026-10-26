@@ -1236,6 +1236,9 @@ export type LogicBuilderProps = {
     interactiveInputs?: boolean;
     /** Demo-specific controls shown beside the shared zoom controls. */
     controls?: ReactNode;
+    /** Content in the same sidebar used for tutorial goals and truth tables. */
+    panel?: ReactNode;
+    panelLabel?: string;
     onFrame?: (view: LockedView) => void;
     ripple?: boolean;
     rippleSpeed?: number;
@@ -3053,6 +3056,7 @@ function LogicBuilderWorkspace({
     : targetNode && draftTarget?.input !== undefined
       ? portPoint(targetNode, draftTarget.input, "input")
       : draftWireTarget?.point ?? (wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null);
+  const sidePanel = challenge?.panel ?? locked?.panel;
   return (
     <div
       ref={shellRef}
@@ -3410,7 +3414,7 @@ function LogicBuilderWorkspace({
           <small>Level {viewPath.length + 1}</small>
         </nav>
       )}
-      <div className={clsx(styles.layout, locked && styles.lockedLayout, challenge?.panel && styles.layoutWithCoach)}>
+      <div className={clsx(styles.layout, locked && styles.lockedLayout, sidePanel && styles.layoutWithCoach)}>
         {!locked && <aside className={styles.sidebar} aria-label="Gate palette">
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
@@ -4171,7 +4175,7 @@ function LogicBuilderWorkspace({
             </span>
           </div>
         </div>
-        {challenge?.panel && <aside className={styles.coach} aria-label="Level">{challenge.panel}</aside>}
+        {sidePanel && <aside className={styles.coach} aria-label={challenge?.panel ? "Level" : locked?.panelLabel ?? "Details"}>{sidePanel}</aside>}
       </div>
       {challenge?.overlay}
       {recognizing && <RecognitionPanel

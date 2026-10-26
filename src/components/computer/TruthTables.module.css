@@ -1,20 +1,3 @@
-.demo {
-  --table-muted: #647270;
-  container-type: inline-size;
-  margin-block: 24px;
-  color: #1f3432;
-}
-:global(.dark) .demo {
-  --table-muted: #a3b9b0;
-  color: #e0eae4;
-}
-.toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; font-size: 14px; }
-.workspace { display: grid; gap: 24px; align-items: start; }
-.circuit { height: 520px; min-width: 0; }
-.results { min-width: 0; }
-.demo .note { margin: 10px 0 0; font-size: 12px; line-height: 1.6; color: var(--table-muted); }
-.toolbar .note { margin: 0; }
-.demo .rule { margin: 14px 0 0; font-size: 14px; line-height: 1.6; }
-@container (min-width: 720px) { .workspace { grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr); } }
-
+.demo { margin-block: 24px; }
+.circuit { min-width: 0; }
 .demo .picker { background: transparent; border: 0; }

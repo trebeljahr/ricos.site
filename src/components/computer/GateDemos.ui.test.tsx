@@ -11,7 +11,9 @@ afterEach(() => {
 
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
 const currentRow = (name: string) =>
-  within(screen.getByRole("table", { name }))
+  within(
+    within(screen.getByRole("complementary", { name: "Truth table" })).getByRole("table", { name }),
+  )
     .getAllByRole("row")
     .find((row) => row.getAttribute("data-current") === "true");
 
@@ -77,6 +79,11 @@ describe("truth tables", () => {
 
   it("finds the gates for SUM and CARRY", () => {
     const { container } = render(<AdditionTable />);
+    expect(
+      within(screen.getByRole("complementary", { name: "Truth table" })).getByRole("table", {
+        name: "Truth table of one-bit addition",
+      }),
+    ).toBeTruthy();
     expect(container.textContent).toContain("1 + 1 = 10");
     fireEvent.click(screen.getByText("Compare: None", { selector: "summary" }));
     click("XOR");

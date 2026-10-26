@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
 import { type SwitchLampWiring, switchLampDemo } from "src/lib/computer/demoCircuits";
 import { bit } from "src/lib/computer/gateLogic";
@@ -195,7 +195,6 @@ function Cable({
 }) {
   return (
     <g data-signal={signal || undefined} data-high={signal ? high : undefined}>
-      <path d={d} className={own.cableSleeve} />
       <path d={d} className={signal ? own.signalCable : returning ? own.returnCable : own.cable} />
     </g>
   );
@@ -223,7 +222,6 @@ function SwitchBoard({
   spark: Spark | null;
   onFlip: (name: Control) => void;
 }) {
-  const patternId = useId();
   const contacts = contactsFor(wiring);
   const branched = ["parallel", "nand", "xor", "xnor"].includes(wiring);
   // A real N-channel lamp switch belongs on the return side of the load.
@@ -249,12 +247,6 @@ function SwitchBoard({
           }
         >
           <svg className={own.cables} viewBox="0 0 800 560" aria-hidden="true">
-            <defs>
-              <pattern id={patternId} width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="10" cy="10" r="1.7" fill="#c6c5b9" />
-              </pattern>
-            </defs>
-            <rect x="130" y="90" width="630" height="350" rx="8" fill={`url(#${patternId})`} />
             {electrical ? (
               <>
                 <Cable d={`M80 212 V56 H${lowSide ? 650 : 180}`} />

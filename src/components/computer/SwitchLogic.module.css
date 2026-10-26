@@ -1,4 +1,4 @@
-/* A digital teaching breadboard: explicit terminals, rails and separate gate controls. */
+/* Physical switch and lamp diagrams with separate electrical gate controls. */
 .experiment {
   width: min(100%, 900px);
   margin: 28px auto;
@@ -30,8 +30,7 @@
   container-type: inline-size;
 }
 .cables { position: absolute; inset: 0; width: 100%; height: 100%; }
-.cableSleeve, .cable, .returnCable, .signalCable { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.cableSleeve { stroke: #f0f0e6; stroke-width: 9; }
+.cable, .returnCable, .signalCable { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .cable { stroke: #a14e3f; stroke-width: 4; }
 .returnCable { stroke: #60645e; stroke-width: 4; }
 .signalCable { stroke: #738667; stroke-width: 3; transition: stroke .18s; }

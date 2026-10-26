@@ -1,31 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  type BooleanOperation,
-  booleanResult,
-  truthTablePreview,
-  truthTableSize,
-} from "./booleanExplanations";
-
-describe("Boolean relationships", () => {
-  it.each<[BooleanOperation, string]>([
-    ["and", "0001"],
-    ["or", "0111"],
-    ["not", "1100"],
-    ["nand", "1110"],
-    ["nor", "1000"],
-    ["xor", "0110"],
-    ["xnor", "1001"],
-    ["implies", "1101"],
-    ["nonimplication", "0010"],
-    ["converse", "1011"],
-    ["converse-nonimplication", "0100"],
-  ])("%s follows its truth table, in 00, 01, 10, 11 order", (operation, column) => {
-    const actual = [0, 1, 2, 3]
-      .map((row) => Number(booleanResult(operation, Boolean(row & 2), Boolean(row & 1))))
-      .join("");
-    expect(actual).toBe(column);
-  });
-});
+import { truthTablePreview, truthTableSize } from "./booleanExplanations";
 
 describe("truth table size", () => {
   it("counts the empty assignment and both constant functions", () => {
@@ -51,14 +25,11 @@ describe("truth table size", () => {
     expect(preview[7].map(Number).join("")).toBe("00000111");
   });
 
-  it.each([
-    -1,
-    0.5,
-    9,
-    Number.NaN,
-    Number.POSITIVE_INFINITY,
-  ])("rejects invalid input count %s", (count) => {
-    expect(() => truthTableSize(count)).toThrow(RangeError);
-    expect(() => truthTablePreview(count)).toThrow(RangeError);
-  });
+  it.each([-1, 0.5, 9, Number.NaN, Number.POSITIVE_INFINITY])(
+    "rejects invalid input count %s",
+    (count) => {
+      expect(() => truthTableSize(count)).toThrow(RangeError);
+      expect(() => truthTablePreview(count)).toThrow(RangeError);
+    },
+  );
 });

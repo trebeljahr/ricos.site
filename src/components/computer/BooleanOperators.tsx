@@ -1,6 +1,6 @@
-import { BOOLEAN_OPERATIONS } from "src/lib/computer/booleanExplanations";
+import { BOOLEAN_OPERATION_IDS, BOOLEAN_OPERATIONS } from "src/lib/computer/booleanExplanations";
 
-/** A compact notation reference for the three operators introduced in the chapter. */
+/** The seven common computer gates, with their Boolean-algebra spellings. */
 export function BooleanOperators() {
   return (
     <div className="not-prose my-6 overflow-x-auto">
@@ -20,15 +20,26 @@ export function BooleanOperators() {
           </tr>
         </thead>
         <tbody>
-          {(["not", "and", "or"] as const).map((gate) => {
+          {BOOLEAN_OPERATION_IDS.map((gate) => {
             const definition = BOOLEAN_OPERATIONS[gate];
             return (
               <tr key={gate} className="border-b border-gray-200 dark:border-gray-700">
                 <th scope="row" className="px-2 py-3 font-medium">
                   {definition.name}
                 </th>
-                <td className="whitespace-nowrap px-2 py-3 font-serif text-xl">
-                  {definition.notations[0].expression}
+                <td className="px-2 py-3 font-serif text-xl">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
+                    {definition.notations.map(({ expression, reading }) => (
+                      <span
+                        key={expression}
+                        className="whitespace-nowrap"
+                        role="math"
+                        aria-label={reading}
+                      >
+                        {expression}
+                      </span>
+                    ))}
+                  </div>
                 </td>
                 <td className="px-2 py-3 leading-relaxed">{definition.rule}</td>
               </tr>
@@ -36,6 +47,10 @@ export function BooleanOperators() {
           })}
         </tbody>
       </table>
+      <p className="mt-3 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+        A and B are inputs. 1 means true; 0 means false. Symbols in the same row mean the same
+        operation. Here + means OR, so 1 + 1 = 1.
+      </p>
     </div>
   );
 }

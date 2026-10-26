@@ -190,10 +190,6 @@ export const COMPUTER_MDX_DEMOS = {
   ),
   // Shelved demo: keep existing chapter embeds valid without rendering a placeholder.
   TruthTableScale: () => null,
-  BooleanNotation: chapterDemo(
-    () => import("./BooleanExplainer").then((module) => module.BooleanNotation),
-    "Boolean notation explorer",
-  ),
   AluArchitectureComparison: chapterDemo(
     () => import("./AluArchitectureComparison").then((module) => module.AluArchitectureComparison),
     "ALU architecture comparison",

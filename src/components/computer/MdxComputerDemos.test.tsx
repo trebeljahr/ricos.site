@@ -74,7 +74,7 @@ describe("chapter demo integration", () => {
       <Component components={{ ...COMPUTER_MDX_DEMOS, BooleanOperators }} />,
     );
     expect(html.match(/loads when you scroll here/g)).toHaveLength(
-      Object.keys(COMPUTER_MDX_DEMOS).length,
+      Object.keys(COMPUTER_MDX_DEMOS).filter((name) => name !== "TruthTableScale").length,
     );
     expect(html).toContain("Basic Boolean operators");
     expect(html).not.toContain("data-logic-builder");

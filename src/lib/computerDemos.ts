@@ -73,10 +73,6 @@ export const computerDemos = [
     title: "Build every gate from NAND or NOR",
   },
   {
-    slug: "boolean-logic",
-    title: "Read Boolean notation and count truth tables",
-  },
-  {
     slug: "clock",
     title: "Watch a clock tick",
   },

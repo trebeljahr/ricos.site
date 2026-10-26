@@ -113,14 +113,20 @@ export function cmosLampLayout(circuit: Circuit) {
   // Local labeled inputs can sit beside the lower network, keeping the board short.
   const selectorY = 550;
   const freeColumns = Array.from(
-    { length: Math.floor((width - 120) / 160) },
-    (_, i) => 200 + i * 160,
+    { length: Math.floor((width - 120) / 140) },
+    (_, i) => 160 + i * 140,
   ).filter(
     (x) =>
       x < width - 90 &&
       !circuit.nodes.filter(isMosfet).some((node) => {
         const p = positions.get(node.id)!;
-        return Math.abs(p.y - selectorY) < 94 && Math.abs(p.x - x) < 109;
+        const grounded = circuit.wires.some(
+          (wire) => wire.from === "gnd" && wire.to === node.id && wire.input === 1,
+        );
+        return (
+          (Math.abs(p.y - selectorY) < 94 && Math.abs(p.x - x) < 109) ||
+          (grounded && p.y + 34 < selectorY + 50 && Math.abs(p.x - x) < 70)
+        );
       }),
   );
   positions.set("a", { x: freeColumns[0] ?? 240, y: selectorY - 40 });

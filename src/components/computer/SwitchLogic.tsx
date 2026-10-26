@@ -275,12 +275,6 @@ function SwitchBoard({
                     <Cable d={`M${row[0].x + 56} ${y} H${row[1].x - 56}`} returning={lowSide} />
                   )}
                   <Cable d={`M${row[row.length - 1].x + 56} ${y} H610`} returning={lowSide} />
-                  {branched && (
-                    <>
-                      <Terminal x={180} y={y} junction />
-                      <Terminal x={610} y={y} junction />
-                    </>
-                  )}
                 </g>
               );
             })}
@@ -288,7 +282,6 @@ function SwitchBoard({
               <>
                 <Cable d={`M610 ${rows[0]} V390 H776 V360 H724`} returning />
                 <Cable d="M676 360 H650 V56" />
-                <Terminal x={650} y={56} junction />
               </>
             ) : (
               <>
@@ -296,41 +289,29 @@ function SwitchBoard({
                 {electrical && <Cable d="M724 360 H776 V512" returning />}
               </>
             )}
-            {electrical && <Terminal x={180} y={lowSide ? 512 : 56} junction />}
-            {electrical && (
-              <>
-                <Terminal x={150} y={56} junction />
-                {controls.map((name) => {
-                  const x = controlX(name);
-                  const high = name === "A" ? a : b;
-                  const gates = contacts.filter((contact) => contact.name === name);
-                  const lane = name === "A" ? 230 : 580;
-                  const top = gates[0].y + 48;
-                  return (
-                    <g key={name}>
-                      <Cable d={`M${x - 32} 445 V512`} returning />
-                      <Cable d={`M${x + 32} 445 V475`} />
-                      <Terminal x={x - 32} y={512} junction />
-                      <Terminal x={x + 32} y={475} junction />
-                      <Cable d={`M${x} 385 H${lane} V${top} H${gates[0].x}`} signal high={high} />
-                      {gates.slice(1).map((contact) => (
-                        <g key={contact.y}>
-                          <Cable
-                            d={`M${lane} ${contact.y + 48} H${contact.x}`}
-                            signal
-                            high={high}
-                          />
-                          <Terminal x={lane} y={contact.y + 48} junction />
-                        </g>
-                      ))}
-                      {gates.map((contact) => (
-                        <Terminal key={contact.y} x={contact.x} y={contact.y + 48} />
-                      ))}
-                    </g>
-                  );
-                })}
-              </>
-            )}
+            {electrical &&
+              controls.map((name) => {
+                const x = controlX(name);
+                const high = name === "A" ? a : b;
+                const gates = contacts.filter((contact) => contact.name === name);
+                const lane = name === "A" ? 230 : 580;
+                const top = gates[0].y + 48;
+                return (
+                  <g key={name}>
+                    <Cable d={`M${x - 32} 445 V512`} returning />
+                    <Cable d={`M${x + 32} 445 V475`} />
+                    <Cable d={`M${x} 385 H${lane} V${top} H${gates[0].x}`} signal high={high} />
+                    {gates.slice(1).map((contact) => (
+                      <g key={contact.y}>
+                        <Cable d={`M${lane} ${contact.y + 48} H${contact.x}`} signal high={high} />
+                      </g>
+                    ))}
+                    {gates.map((contact) => (
+                      <Terminal key={contact.y} x={contact.x} y={contact.y + 48} />
+                    ))}
+                  </g>
+                );
+              })}
             {contacts.map((contact) => (
               <g key={`${contact.name}-${contact.kind}-${contact.y}`}>
                 <Terminal x={contact.x - 56} y={contact.y} />
@@ -339,6 +320,40 @@ function SwitchBoard({
             ))}
             <Terminal x={80} y={212} />
             <Terminal x={80} y={348} />
+            {/* SVG paint order keeps junction dots above every cable. */}
+            <g>
+              {branched &&
+                rows.map((y) => (
+                  <g key={y}>
+                    <Terminal x={180} y={y} junction />
+                    <Terminal x={610} y={y} junction />
+                  </g>
+                ))}
+              {lowSide && <Terminal x={650} y={56} junction />}
+              {electrical && (
+                <>
+                  <Terminal x={180} y={lowSide ? 512 : 56} junction />
+                  <Terminal x={150} y={56} junction />
+                  {controls.map((name) => (
+                    <g key={name}>
+                      <Terminal x={controlX(name) - 32} y={512} junction />
+                      <Terminal x={controlX(name) + 32} y={475} junction />
+                      {contacts
+                        .filter((contact) => contact.name === name)
+                        .slice(1)
+                        .map((contact) => (
+                          <Terminal
+                            key={contact.y}
+                            x={name === "A" ? 230 : 580}
+                            y={contact.y + 48}
+                            junction
+                          />
+                        ))}
+                    </g>
+                  ))}
+                </>
+              )}
+            </g>
           </svg>
           <div className={own.battery} role="img" aria-label="Battery">
             <i />

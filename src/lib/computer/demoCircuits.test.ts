@@ -4,6 +4,7 @@ import { toNumber } from "./blockBuilder";
 import { screenRows } from "./datapathBlocks";
 import {
   adderDemo,
+  booleanSelectorDemo,
   DEVICE_KINDS,
   deviceDemo,
   lampGate,
@@ -72,6 +73,17 @@ function busBench(kind: (typeof DEVICE_KINDS)[number]) {
 }
 
 describe("chapter circuits", () => {
+  it("implements the selector expression for every control and data combination", () => {
+    const circuit = booleanSelectorDemo();
+    expect(validateCircuit(circuit)).toBeTruthy();
+    for (const sel of [false, true])
+      for (const a of [false, true])
+        for (const b of [false, true]) {
+          const snapshot = read(circuit, { sel, a, b });
+          expect(snapshot.values.out).toBe((!sel && a) || (sel && b));
+        }
+  });
+
   it("runs every lamp path through native transistor contacts", () => {
     const outputs = {
       single: (a: boolean, _b: boolean) => a,

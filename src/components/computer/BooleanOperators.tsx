@@ -1,19 +1,25 @@
-import { BOOLEAN_OPERATION_IDS, BOOLEAN_OPERATIONS } from "src/lib/computer/booleanExplanations";
+import {
+  BOOLEAN_NOTATION_CONVENTIONS,
+  BOOLEAN_OPERATION_IDS,
+  BOOLEAN_OPERATIONS,
+} from "src/lib/computer/booleanExplanations";
 
-/** The seven common computer gates, with their Boolean-algebra spellings. */
+/** The seven common computer gates, grouped by notation convention. */
 export function BooleanOperators() {
   return (
-    <div className="not-prose my-6 overflow-x-auto">
-      <table className="w-full border-collapse text-left text-sm">
+    <div className="not-prose my-6 overflow-x-auto" data-computer-embed="wide">
+      <table className="w-full min-w-[620px] border-collapse text-left text-sm">
         <caption className="mb-3 text-left font-medium">Basic Boolean operators</caption>
         <thead>
           <tr className="border-b border-gray-300 dark:border-gray-600">
             <th scope="col" className="px-2 py-3">
               Operator
             </th>
-            <th scope="col" className="px-2 py-3">
-              Notation
-            </th>
+            {BOOLEAN_NOTATION_CONVENTIONS.map(({ id, label }) => (
+              <th key={id} scope="col" className="px-2 py-3">
+                {label}
+              </th>
+            ))}
             <th scope="col" className="px-2 py-3">
               Meaning
             </th>
@@ -27,30 +33,36 @@ export function BooleanOperators() {
                 <th scope="row" className="px-2 py-3 font-medium">
                   {definition.name}
                 </th>
-                <td className="px-2 py-3 font-serif text-xl">
-                  <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    {definition.notations.map(({ expression, reading }) => (
-                      <span
-                        key={expression}
-                        className="whitespace-nowrap"
-                        role="math"
-                        aria-label={reading}
-                      >
-                        {expression}
+                {BOOLEAN_NOTATION_CONVENTIONS.map(({ id }) => (
+                  <td key={id} className="px-2 py-3 font-serif text-xl">
+                    {definition.notations[id] ? (
+                      <div className="flex flex-col gap-1">
+                        {definition.notations[id]?.map(({ expression, reading, overline }) => (
+                          <span
+                            key={expression}
+                            className="whitespace-nowrap"
+                            role="math"
+                            aria-label={reading}
+                          >
+                            <span className={overline ? "overline" : undefined} aria-hidden="true">
+                              {expression}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400" aria-hidden="true">
+                        —
                       </span>
-                    ))}
-                  </div>
-                </td>
-                <td className="px-2 py-3 leading-relaxed">{definition.rule}</td>
+                    )}
+                  </td>
+                ))}
+                <td className="min-w-[180px] px-2 py-3 leading-relaxed">{definition.rule}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="mt-3 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
-        A and B are inputs. 1 means true; 0 means false. Symbols in the same row mean the same
-        operation. Here + means OR, so 1 + 1 = 1.
-      </p>
     </div>
   );
 }

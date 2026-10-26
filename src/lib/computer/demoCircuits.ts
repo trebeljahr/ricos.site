@@ -167,6 +167,28 @@ export function switchLampDemo(wiring: "single" | "series" | "parallel"): Circui
   return builder.circuit("Switches and a lamp");
 }
 
+/** The tutorial's selector, with labels matching its Boolean expression. */
+export function booleanSelectorDemo(): Circuit {
+  const circuit = structuredClone(builtIn("selector"));
+  circuit.name = "Boolean selector";
+  const labels: Record<string, string> = {
+    sel: "S",
+    a: "A",
+    b: "B",
+    out: "Y",
+    n1: "NOT S",
+    n2: "NOT S AND A",
+    n3: "S AND B",
+    n4: "OR",
+  };
+  circuit.nodes = circuit.nodes.map((node) => ({
+    ...node,
+    label: labels[node.id] ?? node.label,
+    value: node.id === "a",
+  }));
+  return layoutCircuit(circuit);
+}
+
 export function routingDemo(kind: "decoder" | "mux" | "memory"): Circuit {
   if (kind === "decoder") return layoutCircuit(builtIn("decoder"));
   if (kind === "mux") {

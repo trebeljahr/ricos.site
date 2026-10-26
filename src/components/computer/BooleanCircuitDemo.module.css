@@ -1,0 +1,18 @@
+.lesson { max-width: 680px; margin-inline: auto; padding-block: 12px; }
+.lesson h2 { margin: 0 0 12px; font-size: clamp(24px, 4vw, 32px); font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }
+.lesson p { margin: 10px 0; line-height: 1.65; }
+.formula { margin-block: 24px; font: clamp(28px, 5vw, 42px)/1.6 Georgia, serif; }
+.overline { text-decoration: overline; }
+.term { border-bottom: 2px solid transparent; padding: 2px 4px; transition: color 140ms, border-color 140ms, background-color 140ms; }
+.term[data-active="true"] { color: #176856; border-color: currentColor; background: #1768560d; }
+:global(.dark) .term[data-active="true"] { color: #9cdbc0; background: #9cdbc00d; }
+.paths { display: flex; flex-wrap: wrap; gap: 0 24px; font-size: 14px; }
+.paths strong { margin-right: 8px; font: 20px Georgia, serif; }
+.reading { display: grid; gap: 10px; padding-block: 18px; margin-top: 16px; border-block: 1px solid #94a3b850; }
+.reading [role="math"] { font: 22px Georgia, serif; }
+.reading output { font-size: 14px; }
+.reading [data-match="false"] { color: #a24717; }
+:global(.dark) .reading [data-match="false"] { color: #f3b38b; }
+.lesson .hint { font-size: 13px; color: #647270; }
+:global(.dark) .lesson .hint { color: #a3b9b0; }
+@media (prefers-reduced-motion: reduce) { .term { transition: none; } }

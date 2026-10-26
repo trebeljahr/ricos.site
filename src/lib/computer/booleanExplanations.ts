@@ -1,72 +1,88 @@
 import type { TruthGate } from "./gateLogic";
 
-type Notation = { expression: string; reading: string };
+export const BOOLEAN_NOTATION_CONVENTIONS = [
+  { id: "logic", label: "Logic notation" },
+  { id: "algebra", label: "Algebra notation" },
+  { id: "other", label: "Other symbols" },
+] as const;
+
+type Notation = { expression: string; reading: string; overline?: boolean };
+type Convention = (typeof BOOLEAN_NOTATION_CONVENTIONS)[number]["id"];
 type BooleanDefinition = {
   name: string;
   rule: string;
-  notations: readonly Notation[];
+  notations: Partial<Record<Convention, readonly Notation[]>>;
 };
 
-/** Mathematical aliases share one Boolean function, independent of their spelling. */
 export const BOOLEAN_OPERATIONS: Record<TruthGate, BooleanDefinition> = {
   not: {
     name: "NOT",
     rule: "The output is the opposite of A.",
-    notations: [
-      { expression: "¬A", reading: "not A" },
-      { expression: "A̅", reading: "A bar, meaning not A" },
-      { expression: "A′", reading: "A prime, meaning not A" },
-    ],
+    notations: {
+      logic: [{ expression: "¬A", reading: "not A" }],
+      algebra: [
+        { expression: "A", reading: "A bar, meaning not A", overline: true },
+        { expression: "A′", reading: "A prime, meaning not A" },
+      ],
+    },
   },
   and: {
     name: "AND",
     rule: "The output is 1 only when both inputs are 1.",
-    notations: [
-      { expression: "A ∧ B", reading: "A and B" },
-      { expression: "A · B", reading: "A and B" },
-      { expression: "AB", reading: "A and B" },
-    ],
-  },
-  nand: {
-    name: "NAND",
-    rule: "The output is 0 only when both inputs are 1.",
-    notations: [
-      { expression: "¬(A ∧ B)", reading: "not, A and B" },
-      { expression: "A ↑ B", reading: "A NAND B" },
-    ],
+    notations: {
+      logic: [{ expression: "A ∧ B", reading: "A and B" }],
+      algebra: [
+        { expression: "A · B", reading: "A and B" },
+        { expression: "AB", reading: "A and B" },
+      ],
+    },
   },
   or: {
     name: "OR",
     rule: "The output is 1 when either input is 1, including when both are 1.",
-    notations: [
-      { expression: "A ∨ B", reading: "A or B" },
-      { expression: "A + B", reading: "A or B" },
-    ],
+    notations: {
+      logic: [{ expression: "A ∨ B", reading: "A or B" }],
+      algebra: [{ expression: "A + B", reading: "A or B" }],
+    },
+  },
+  nand: {
+    name: "NAND",
+    rule: "The output is 0 only when both inputs are 1.",
+    notations: {
+      logic: [{ expression: "¬(A ∧ B)", reading: "not, A and B" }],
+      algebra: [{ expression: "A · B", reading: "not, A and B", overline: true }],
+      other: [{ expression: "A ↑ B", reading: "A NAND B" }],
+    },
   },
   nor: {
     name: "NOR",
     rule: "The output is 1 only when both inputs are 0.",
-    notations: [
-      { expression: "¬(A ∨ B)", reading: "not, A or B" },
-      { expression: "A ↓ B", reading: "A NOR B" },
-    ],
+    notations: {
+      logic: [{ expression: "¬(A ∨ B)", reading: "not, A or B" }],
+      algebra: [{ expression: "A + B", reading: "not, A or B", overline: true }],
+      other: [{ expression: "A ↓ B", reading: "A NOR B" }],
+    },
   },
   xor: {
     name: "XOR",
     rule: "The output is 1 when exactly one input is 1.",
-    notations: [
-      { expression: "A ⊕ B", reading: "A exclusive or B" },
-      { expression: "A ≠ B", reading: "A is different from B" },
-    ],
+    notations: {
+      logic: [{ expression: "A ⊕ B", reading: "A exclusive or B" }],
+      algebra: [{ expression: "A ⊕ B", reading: "A exclusive or B" }],
+      other: [{ expression: "A ≠ B", reading: "A is different from B" }],
+    },
   },
   xnor: {
     name: "XNOR",
     rule: "The output is 1 when the inputs are equal.",
-    notations: [
-      { expression: "¬(A ⊕ B)", reading: "not, A exclusive or B" },
-      { expression: "A ≡ B", reading: "A is equivalent to B" },
-      { expression: "A ⊙ B", reading: "A XNOR B" },
-    ],
+    notations: {
+      logic: [{ expression: "¬(A ⊕ B)", reading: "not, A exclusive or B" }],
+      algebra: [{ expression: "A ⊕ B", reading: "not, A exclusive or B", overline: true }],
+      other: [
+        { expression: "A ≡ B", reading: "A is equivalent to B" },
+        { expression: "A ⊙ B", reading: "A XNOR B" },
+      ],
+    },
   },
 };
 

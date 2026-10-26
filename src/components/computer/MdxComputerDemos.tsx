@@ -194,6 +194,12 @@ export const COMPUTER_MDX_DEMOS = {
     650,
     true,
   ),
+  BooleanCircuitDemo: chapterDemo(
+    () => import("./BooleanCircuitDemo").then((module) => module.BooleanCircuitDemo),
+    "Boolean expression and matching circuit",
+    850,
+    true,
+  ),
   // Shelved demo: keep existing chapter embeds valid without rendering a placeholder.
   TruthTableScale: () => null,
   AluArchitectureComparison: chapterDemo(

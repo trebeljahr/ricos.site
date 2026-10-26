@@ -3,6 +3,7 @@ import {
   MemoryAddressDemo,
   MultiplexerDemo,
 } from "@components/computer/AddressRouting";
+import { BooleanCircuitDemo } from "@components/computer/BooleanCircuitDemo";
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutorial";
 import Layout from "@components/Layout";
@@ -27,6 +28,7 @@ export default function AddressRoutingPage() {
             An address picks a wire. A multiplexer picks the data that travels along it.
           </p>
         </header>
+        <BooleanCircuitDemo />
         <section className="mb-10" aria-label="Build a decoder first">
           <div className="mx-auto">
             <h2 className="text-xl font-semibold">Build a decoder first</h2>

@@ -1213,6 +1213,8 @@ export type LockedView = {
 };
 
 export type LogicBuilderProps = {
+  /** Reports the displayed circuit’s timeline state to an embedding lesson. */
+  onFrame?: (view: LockedView) => void;
   /** Embedded boards let wheel scrolling reach the page and omit standalone navigation. */
   embedded?: boolean;
   /** Editable starting circuit; demos use a separate storageKey from the main lab. */
@@ -1288,10 +1290,13 @@ function LogicBuilderWorkspace({
   locked,
   storageKey = STORAGE,
   onLearn,
+  onFrame,
   suspended,
 }: BuilderProps & { onLearn: (id: string) => void; suspended: boolean }) {
   const chapterEmbed = useContext(ComputerEmbedContext);
   const embedded = requestedEmbedded ?? chapterEmbed;
+  const onFrameRef = useRef(onFrame);
+  onFrameRef.current = onFrame;
   const lockedRef = useRef(locked);
   lockedRef.current = locked;
   // Several builders may share a page: key presses, storage and element ids stay per builder.
@@ -2155,12 +2160,14 @@ function LogicBuilderWorkspace({
     };
   }, [locked?.clockRef, cycle, setTimeline, advance]);
   useEffect(() => {
-    lockedRef.current?.onFrame?.({
+    const view = {
       frame: currentFrame(timeline),
       index: timeline.index,
       frames: timeline.frames.length,
       unfolded,
-    });
+    };
+    lockedRef.current?.onFrame?.(view);
+    onFrameRef.current?.(view);
   }, [timeline, unfolded]);
   const enterCircuit = (next: Circuit, via: string, moduleId?: string) => {
     if (lockedRef.current) return;

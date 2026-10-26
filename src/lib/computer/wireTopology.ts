@@ -69,7 +69,7 @@ export function wireNetKeys(circuit: Circuit): Record<string, string> {
     return result;
   };
   const junctions = new Set(
-    circuit.nodes.filter((node) => node.type === "junction").map((node) => node.id),
+    circuit.nodes.filter((node) => node.type === "junction" || node.splice).map((node) => node.id),
   );
   for (const wire of circuit.wires) {
     if (!junctions.has(wire.to)) continue;

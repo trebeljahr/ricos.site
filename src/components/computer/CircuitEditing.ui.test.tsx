@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type Circuit, initialSnapshot, step } from "../../lib/computer/logic";
+import { type Circuit, initialSnapshot, step, WIRE_COLORS } from "../../lib/computer/logic";
 import { enforceStart } from "../../lib/computer/tutorial/kit";
 import { pathPoints } from "../../lib/computer/wireGeometry";
 import { LogicBuilder } from "./LogicBuilder";
@@ -314,4 +314,32 @@ describe("circuit clipboard and pointer editing", () => {
     fireEvent.paste(board(), { clipboardData: data });
     expect(board().querySelectorAll("[data-node-id][role=group]")).toHaveLength(3);
   });
+});
+
+it("recolors all wires through junctions together and restores them with Undo", () => {
+  const circuit: Circuit = {
+    name: "Joined colors", nodes: [
+      { id: "s", label: "SOURCE", type: "switch", x: 0, y: 0 },
+      { id: "j", label: "JOIN", type: "junction", x: 220, y: 58 },
+      { id: "k", label: "NEXT", type: "junction", x: 320, y: 58 },
+      { id: "l", label: "LIGHT", type: "lamp", x: 440, y: 0 },
+    ], wires: [
+      { id: "a", from: "s", to: "j", input: 0, color: "violet" },
+      { id: "b", from: "j", to: "k", input: 0 },
+      { id: "c", from: "k", to: "l", input: 0 },
+    ],
+  };
+  const { container } = render(<LogicBuilder initialCircuit={circuit} storageKey={null} />);
+  const colors = () => new Set([...container.querySelectorAll<SVGGElement>('svg[aria-label="Circuit wires"] g[data-wire-signal]')]
+    .map((wire) => wire.style.getPropertyValue("--wire-color")));
+  const joinColor = () => screen.getByRole("group", { name: "JOIN — JUNCTION part" }).style.getPropertyValue("--junction-color");
+  expect(colors()).toEqual(new Set([WIRE_COLORS.violet]));
+  expect(joinColor()).toBe(WIRE_COLORS.violet);
+  fireEvent.contextMenu(screen.getByRole("button", { name: /Select wire from NEXT / }));
+  fireEvent.click(screen.getByRole("button", { name: "Color wire amber" }));
+  expect(colors()).toEqual(new Set([WIRE_COLORS.amber]));
+  expect(joinColor()).toBe(WIRE_COLORS.amber);
+  fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+  expect(colors()).toEqual(new Set([WIRE_COLORS.violet]));
+  expect(joinColor()).toBe(WIRE_COLORS.violet);
 });

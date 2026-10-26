@@ -85,7 +85,7 @@ import { MATRIX_HINTS, MATRIX_PRESETS } from "../../lib/computer/keyboardMatrix"
 import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { SHADER_HINTS, SHADER_PRESETS } from "../../lib/computer/shaderPreset";
 import { orientedWirePath, routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
-import { SIGNAL_COLORS, wireSignal } from "../../lib/computer/wireAppearance";
+import { recolorWireNets, SIGNAL_COLORS, wireNetColors, wireSignal } from "../../lib/computer/wireAppearance";
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { builtinCircuit, remapModulePins, verifiedCircuitIdentity, type SymbolIdentity } from "../../lib/computer/recognition";
@@ -689,8 +689,14 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     }
     return colors;
   }, [circuit.nodes, circuit.wires]);
-  const sourceColor = (from: string, output = 0): WireColor =>
-    signalColors.get(`${from}:${output}`) ?? "cyan";
+  const netKeys = useMemo(() => wireNetKeys(circuit), [circuit.nodes, circuit.wires]);
+  const netColors = useMemo(() => wireNetColors(circuit, netKeys,
+    (from, output) => signalColors.get(`${from}:${output}`) ?? "cyan"), [circuit, netKeys, signalColors]);
+  const sourceColor = (from: string, output = 0): WireColor => {
+    const existing = circuit.wires.find((wire) => wire.from === from && (wire.output ?? 0) === output) ??
+      (circuit.nodes.some((node) => node.id === from && (node.type === "junction" || node.splice)) ? circuit.wires.find((wire) => wire.to === from) : undefined);
+    return existing ? netColors[existing.id] : signalColors.get(`${from}:${output}`) ?? "cyan";
+  };
   const [portMessage, setPortMessage] = useState("");
   const inlinePorts = useMemo(() => {
     const boundaryPorts = (kind: InlineEndpoint["kind"]) => endpoints
@@ -732,7 +738,6 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   });
   const clearPortSelection = portWiring.clear;
   useEffect(() => { if (activePath !== path) clearPortSelection(); }, [activePath, path, clearPortSelection]);
-  const netKeys = useMemo(() => wireNetKeys(circuit), [circuit.nodes, circuit.wires]);
   const routes = useMemo(() => routeCircuitWires(circuit.wires.flatMap((wire) => {
     const from = endpointMap.get(`output:${wire.from}:${wire.output ?? 0}`);
     const to = endpointMap.get(`input:${wire.to}:${wire.input}`);
@@ -1027,7 +1032,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             const width = source ? outputWidth(source, wire.output) : 1;
             const signal = wireSignal(snapshot, wire.from, wire.output, width);
             return <g key={wire.id} data-wire-signal={signal}
-              style={{ "--wire-color": signalView ? SIGNAL_COLORS[signal] : WIRE_COLORS[wire.color ?? sourceColor(wire.from, wire.output)] } as React.CSSProperties}>
+              style={{ "--wire-color": signalView ? SIGNAL_COLORS[signal] : WIRE_COLORS[netColors[wire.id]] } as React.CSSProperties}>
               <path d={d} className={styles.wireHit} role="button" tabIndex={0}
                 aria-label={`Select internal wire from ${from.label} to ${to.label}`}
                 onPointerDown={(event) => startBranch(event, wire)}
@@ -1066,7 +1071,10 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
             className={clsx(styles.node, styles.inlinePart, isMosfet(part) && styles.transistorNode, (part.splice || part.type === "junction") && styles.wireJoin,
               part.splice && snapshot.buses?.[part.id] === "X" && styles.joinConflict, part.child && styles.expandedNode,
               selectedParts.includes(part.id) && styles.inlineSelectedPart, drag?.id === part.id && styles.inlineDragging)}
-            style={{ "--part-accent": partColors[part.type], left: part.x, top: part.y,
+            style={{ "--part-accent": partColors[part.type],
+              "--junction-color": part.splice || part.type === "junction" ? signalView
+                ? SIGNAL_COLORS[wireSignal(snapshot, part.id, 0, outputWidth(part))] : WIRE_COLORS[sourceColor(part.id)] : undefined,
+              left: part.x, top: part.y,
               width: nodeWidth(part), height: nodeHeight(part),
               transform: drag?.id === part.id ? `translate(${drag.dx}px, ${drag.dy}px)` : undefined } as React.CSSProperties}
             role="group" aria-label={`${part.label || LABELS[part.type]} — ${part.type === "module" ? part.module?.name : LABELS[part.type]} part`}
@@ -1509,6 +1517,13 @@ function LogicBuilderWorkspace({
   }, [displayNodes]);
 
   const netKeys = useMemo(() => wireNetKeys(circuit), [circuit.nodes, circuit.wires]);
+  const netColors = useMemo(() => wireNetColors(circuit, netKeys,
+    (from) => defaultWireColor(from, circuit.nodes)), [circuit, netKeys]);
+  const sourceWireColor = (from: string, output = 0): WireColor => {
+    const existing = circuit.wires.find((wire) => wire.from === from && (wire.output ?? 0) === output) ??
+      (circuit.nodes.some((node) => node.id === from && (node.type === "junction" || node.splice)) ? circuit.wires.find((wire) => wire.to === from) : undefined);
+    return existing ? netColors[existing.id] : defaultWireColor(from, circuit.nodes);
+  };
   const routes = useMemo(
     () =>
       routeCircuitWires(
@@ -2437,9 +2452,7 @@ function LogicBuilderWorkspace({
       setPending(null);
       return;
     }
-    const sourceColor =
-      circuit.wires.find((wire) => wire.from === from)?.color ??
-      defaultWireColor(from, circuit.nodes);
+    const sourceColor = sourceWireColor(from, output);
     setCircuit((current) => ({
       ...current,
       wires: [
@@ -2463,7 +2476,7 @@ function LogicBuilderWorkspace({
         ...Array.from({ length: 8 }, (_, bit) => ({
           id: crypto.randomUUID(), from: sourceId, to: targetId,
           input: startInput + bit, output: bit,
-          color: defaultWireColor(sourceId, current.nodes),
+          color: sourceWireColor(sourceId, bit),
         })),
       ],
     }));
@@ -2481,8 +2494,7 @@ function LogicBuilderWorkspace({
     },
     onConnect: (connections) => setCircuit((current) => ({ ...current, wires: [
       ...current.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(),
-        color: current.wires.find((wire) => wire.from === connection.from)?.color ??
-          defaultWireColor(connection.from, current.nodes) })),
+        color: sourceWireColor(connection.from, connection.output) })),
     ] })),
     onMessage: setMessage,
   });
@@ -3599,7 +3611,7 @@ function LogicBuilderWorkspace({
                   {busWiring &&
                     routes.buses.map((bus) => {
                       const from = circuit.nodes.find((node) => node.id === bus.from);
-                      const color = WIRE_COLORS[defaultWireColor(bus.from, circuit.nodes)];
+                      const color = WIRE_COLORS[netColors[bus.taps[0].wireId]];
                       const live =
                         boardSnapshot.outputs[bus.from]?.[bus.output] ?? boardSnapshot.values[bus.from];
                       const signal = wireSignal(boardSnapshot, bus.from, bus.output, from ? outputWidth(from, bus.output) : 1);
@@ -3658,9 +3670,7 @@ function LogicBuilderWorkspace({
                     const { x: x2, y: y2 } = portPoint(to, wire.input, "input");
                     const d = wirePaths[wire.id];
                     const isBus = outputWidth(from, wire.output ?? 0) === 8;
-                    const wireColor = wire.color ?? defaultWireColor(wire.from, circuit.nodes);
-                    // Red on a bus means a conflict, so a driven bus never uses the coral wire colour.
-                    const color = WIRE_COLORS[isBus && wireColor === "coral" ? "blue" : wireColor];
+                    const color = WIRE_COLORS[netColors[wire.id]];
                     const busValue = isBus ? boardSnapshot.buses?.[wire.from] ?? "Z" : undefined;
                     const signal = wireSignal(boardSnapshot, wire.from, wire.output, isBus ? 8 : 1);
                     return (
@@ -3779,7 +3789,7 @@ function LogicBuilderWorkspace({
                           "--wire-color":
                             WIRE_COLORS[
                               wireDraft.from
-                                ? defaultWireColor(wireDraft.from, circuit.nodes)
+                                ? sourceWireColor(wireDraft.from, wireDraft.output)
                                 : draftTarget
                                   ? defaultWireColor(draftTarget.id, circuit.nodes)
                                   : "cyan"
@@ -3820,6 +3830,8 @@ function LogicBuilderWorkspace({
                       style={
                         {
                           "--part-accent": partColors[node.type],
+                          "--junction-color": node.splice || node.type === "junction" ? signalView
+                            ? SIGNAL_COLORS[wireSignal(boardSnapshot, node.id, 0, outputWidth(node))] : WIRE_COLORS[sourceWireColor(node.id)] : undefined,
                           left: `${((node.x - bounds.left) / canvasWidth) * 100}%`,
                           top: `${((node.y - bounds.top) / canvasHeight) * 100}%`,
                           width: `${(nodeWidth(node) / canvasWidth) * 100}%`,
@@ -4381,7 +4393,7 @@ function LogicBuilderWorkspace({
           )}
           {menu.kind === "wire" && (
             <>
-              <span className={styles.contextLabel}>Color {selectedWireData.length > 1 && selectedWires.includes(menu.id || "") ? `${selectedWireData.length} wires` : "wire"}</span>
+              <span className={styles.contextLabel}>Color connected wires</span>
               <div className={styles.contextColors} aria-label="Wire color">
                 {wireColorNames.map((color) => (
                   <button
@@ -4392,14 +4404,9 @@ function LogicBuilderWorkspace({
                     aria-label={`Color wire ${color}`}
                     title={color}
                     onClick={() => {
-                      setCircuit((current) => ({
-                        ...current,
-                        wires: current.wires.map((wire) =>
-                          (selectedWireData.length > 1 && selectedWires.includes(menu.id || "")
-                            ? selectedWires.includes(wire.id) : wire.id === menu.id)
-                            ? { ...wire, color } : wire,
-                        ),
-                      }));
+                      setCircuit((current) => recolorWireNets(current,
+                        selectedWireData.length > 1 && selectedWires.includes(menu.id || "")
+                          ? selectedWires : [menu.id!], color));
                       setMenu(null);
                     }}
                   />

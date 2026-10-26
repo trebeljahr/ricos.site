@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
+import { transistorDemo } from "../../lib/computer/demoCircuits";
+import { demoStorageKey } from "../../lib/computer/demoStorage";
 import { TransistorGates } from "./TransistorGates";
 import { testButton } from "./testButton";
 
@@ -41,4 +43,27 @@ it("preserves the fixed gate and legend options", () => {
   expect(screen.queryByLabelText("Show the NOT gate")).toBeNull();
   expect(container.textContent).not.toContain("PMOS conducts at 0");
   expect(screen.getByRole("application", { name: "Circuit canvas" })).toBeTruthy();
+});
+
+
+it("compacts a saved transistor demo on Arrange and restores its edits with Undo", () => {
+  const saved = structuredClone(transistorDemo("not"));
+  saved.nodes = saved.nodes.map((node) => ({ ...node, y: node.y * 2,
+    ...(node.id === "a" ? { value: true } : {}) }));
+  saved.wires = saved.wires.map((wire) => ({ ...wire, color: "amber" as const }));
+  const key = demoStorageKey("NOT from transistors", saved.name);
+  localStorage.setItem(key, JSON.stringify({ current: saved, saved: {} }));
+  render(<TransistorGates fixed />);
+  const current = () => JSON.parse(localStorage.getItem(key)!).current;
+  const before = current();
+  fireEvent.click(screen.getByText("View", { selector: "summary" }));
+  fireEvent.click(testButton("Arrange by signal flow"));
+  const arranged = current();
+  expect(arranged.nodes.map((node: { y: number }) => node.y)).not.toEqual(before.nodes.map((node: { y: number }) => node.y));
+  expect(arranged.nodes.find((node: { id: string }) => node.id === "a").value).toBe(true);
+  expect(arranged.wires.map((wire: { from: string; to: string; input: number; color: string }) =>
+    [wire.from, wire.to, wire.input, wire.color])).toEqual(before.wires.map((wire: { from: string; to: string; input: number; color: string }) =>
+      [wire.from, wire.to, wire.input, wire.color]));
+  fireEvent.click(testButton("Undo"));
+  expect(current()).toEqual(before);
 });

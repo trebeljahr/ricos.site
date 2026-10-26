@@ -2,11 +2,16 @@ import type { Circuit, Node } from "./logic";
 import { isMosfet, transistorPortPoint } from "./transistorGeometry";
 
 /** Lay out complementary stages as supply → pull-up → OUT → pull-down → ground.
- * Only built-in blueprints use this; saved reader circuits retain their layout.
+ * Used for built-ins and explicit Arrange; saved reader layouts never reflow automatically.
  */
 export function layoutCmosBlueprint(circuit: Circuit): Circuit {
   const nodes = circuit.nodes.map((node) => ({ ...node }));
   const byId = new Map(nodes.map((node) => [node.id, node]));
+  if (
+    !["vcc", "gnd", "out"].every((id) => byId.has(id)) ||
+    !nodes.some((node) => node.type === "switch")
+  )
+    return circuit;
   const incoming = (id: string) => circuit.wires.filter((wire) => wire.to === id);
   const branch = (id: string, seen = new Set<string>()): Node[] => {
     if (seen.has(id)) return [];
@@ -38,11 +43,17 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
       ).size === 2,
   );
   if (!stages.length) return circuit;
+  const outputY = 420;
+  const transistorHeight = 132;
+  const outputGap = 144;
+  const seriesPitch = transistorHeight + 32;
+  const pullUpY = outputY - outputGap / 2 - transistorHeight;
+  const pullDownY = outputY + outputGap / 2;
   const stageColumns = new Map<string, number>();
   for (const [index, stage] of stages.entries()) {
     const x = 380 + index * 680;
     stage.x = x + 88;
-    stage.y = 540;
+    stage.y = outputY - 5;
     for (const type of ["pmos", "nmos"] as const) {
       const parts = branch(stage.id).filter((part) => part.type === type);
       const rank = (part: Node): number => {
@@ -50,7 +61,7 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         const parent = source && byId.get(source.from);
         return parent?.type === type ? rank(parent) + 1 : 0;
       };
-      const series = parts.some((part) => rank(part) > 0);
+      const lastRank = Math.max(...parts.map(rank));
       const rows = new Map<number, number>();
       for (const part of parts) {
         const level = rank(part),
@@ -59,26 +70,36 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         stageColumns.set(part.id, x);
         part.x = x + column * 220;
         part.y =
-          type === "pmos" ? (series ? 180 + level * 180 : 270) : series ? 780 - level * 180 : 690;
+          type === "pmos"
+            ? pullUpY - (lastRank - level) * seriesPitch
+            : pullDownY + (lastRank - level) * seriesPitch;
       }
       for (const wire of incoming(stage.id)) {
         const root = byId.get(wire.from)!;
         if (root.type === "junction" && branch(root.id).some((part) => part.type === type)) {
           root.x = x + 308;
-          root.y = type === "pmos" ? 450 : 600;
+          root.y = outputY + (type === "pmos" ? -24 : 24) - 5;
         }
       }
     }
   }
   const supply = byId.get("vcc")!,
     ground = byId.get("gnd")!;
-  Object.assign(supply, { x: 40, y: 0, outputSide: "bottom" });
-  Object.assign(ground, { x: 40, y: 1000, outputSide: "top" });
   const switches = nodes.filter((node) => node.type === "switch");
   switches.forEach((node, index) => {
-    Object.assign(node, { x: 40, y: 360 + index * 200 });
+    Object.assign(node, { x: 40, y: outputY - 63 + (index - (switches.length - 1) / 2) * 164 });
   });
-  Object.assign(byId.get("out")!, { x: stages.at(-1)!.x + 330, y: 482 });
+  // Keep power beside the controls; the outer rails still enter transistor sources from outside.
+  Object.assign(supply, { x: 40, y: switches[0].y - 116 - 32, outputSide: "top" });
+  Object.assign(ground, { x: 40, y: switches.at(-1)!.y + 126 + 32, outputSide: "bottom" });
+  const supplyRail =
+    Math.min(supply.y, ...nodes.filter((node) => node.type === "pmos").map((node) => node.y)) - 24;
+  const groundRail =
+    Math.max(
+      ground.y + 116,
+      ...nodes.filter((node) => node.type === "nmos").map((node) => node.y + transistorHeight),
+    ) + 24;
+  Object.assign(byId.get("out")!, { x: stages.at(-1)!.x + 330, y: outputY - 63 });
   const point = (node: Node, input?: number) =>
     isMosfet(node)
       ? transistorPortPoint(node, input ?? 0, input === undefined ? "output" : "input")
@@ -94,11 +115,11 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
                   : 0),
             y:
               node.y +
-              (node.type === "high"
-                ? 116
-                : node.type === "ground"
+              (node.type === "high" || node.type === "ground"
+                ? node.outputSide === "top"
                   ? 0
-                  : (node.type === "lamp" || node.type === "switch" ? 126 : 116) / 2),
+                  : 116
+                : (node.type === "lamp" || node.type === "switch" ? 126 : 116) / 2),
           };
   return {
     ...circuit,
@@ -110,7 +131,7 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         end = point(to, wire.input);
       let bends: { x: number; y: number }[];
       if (from.type === "high" || from.type === "ground") {
-        const y = from.type === "high" ? 140 : 960;
+        const y = from.type === "high" ? supplyRail : groundRail;
         bends = [
           { x: start.x, y },
           { x: end.x, y },
@@ -119,6 +140,7 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         const stageX = stageColumns.get(to.id)!;
         const x = stageX - (wire.from === "b" ? 55 : 85);
         const entryX = to.x - 55;
+        const railY = to.type === "pmos" ? pullUpY + transistorHeight + 24 : pullDownY - 24;
         bends =
           to.x === stageX
             ? [
@@ -127,8 +149,8 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
               ]
             : [
                 { x, y: start.y },
-                { x, y: to.type === "pmos" ? 480 : 580 },
-                { x: entryX, y: to.type === "pmos" ? 480 : 580 },
+                { x, y: railY },
+                { x: entryX, y: railY },
                 { x: entryX, y: end.y },
               ];
       } else if (isMosfet(from) && isMosfet(to)) {

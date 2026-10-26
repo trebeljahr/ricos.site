@@ -76,6 +76,7 @@ import { DATAPATH_BLOCKS, DATAPATH_KINDS, type DatapathKind, datapathCircuit, is
 import { compileProgram, SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
+import { layoutCmosBlueprint } from "../../lib/computer/cmosLayout";
 import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
 import { isMosfet, transistorPortPoint, transistorPortSide, nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
@@ -3075,7 +3076,9 @@ function LogicBuilderWorkspace({
             {!challenge && <button type="button" onClick={() => {
               portWiring.clear();
               pendingFit.current = true;
-              setCircuit(layoutCircuit({ ...circuit, wires: circuit.wires.map(({ points: _points, ...wire }) => wire) }));
+              const unrouted = { ...circuit, wires: circuit.wires.map(({ points: _points, ...wire }) => wire) };
+              setCircuit(circuit.name.endsWith(" from CMOS transistors")
+                ? layoutCmosBlueprint(unrouted) : layoutCircuit(unrouted));
               setMessage("Arranged by signal flow. Undo restores the previous layout.");
             }}>Arrange by signal flow</button>}
             <button

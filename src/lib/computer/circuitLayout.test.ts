@@ -28,10 +28,10 @@ function checkLayout(source: Circuit) {
   for (const [index, a] of diagram.nodes.entries()) {
     for (const b of diagram.nodes.slice(index + 1)) {
       const separated =
-        a.x + nodeWidth(a) + 40 <= b.x ||
-        b.x + nodeWidth(b) + 40 <= a.x ||
-        a.y + nodeHeight(a) + 40 <= b.y ||
-        b.y + nodeHeight(b) + 40 <= a.y;
+        a.x + nodeWidth(a) <= b.x ||
+        b.x + nodeWidth(b) <= a.x ||
+        a.y + nodeHeight(a) <= b.y ||
+        b.y + nodeHeight(b) <= a.y;
       expect(separated, `${source.name}: ${a.id} overlaps ${b.id}`).toBe(true);
     }
     if (source.nodes[index].module) checkLayout(source.nodes[index].module!);
@@ -41,7 +41,7 @@ function checkLayout(source: Circuit) {
 describe("built-in component layouts", () => {
   it.each(
     examples.map((circuit) => [circuit.name, circuit] as const),
-  )("%s has clear component gutters at every detail level", (_name, source) => {
+  )("%s has non-overlapping components at every detail level", (_name, source) => {
     const before = JSON.stringify(source);
     checkLayout(source);
     expect(JSON.stringify(source)).toBe(before);

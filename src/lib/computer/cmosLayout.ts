@@ -50,16 +50,30 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
   const pullUpY = outputY - outputGap / 2 - transistorHeight;
   const pullDownY = outputY + outputGap / 2;
   const stageColumns = new Map<string, number>();
+  const gateControls = new Map<string, string[]>();
   for (const [index, stage] of stages.entries()) {
     const x = 380 + index * 680;
     stage.x = x + 88;
     stage.y = outputY - 5;
+    const controls = [
+      ...new Set(
+        branch(stage.id)
+          .filter(isMosfet)
+          .map((part) => incoming(part.id).find((wire) => wire.input === 0)!.from),
+      ),
+    ];
+    for (const part of branch(stage.id).filter(isMosfet)) gateControls.set(part.id, controls);
     for (const type of ["pmos", "nmos"] as const) {
       const parts = branch(stage.id).filter((part) => part.type === type);
       const rank = (part: Node): number => {
         const source = incoming(part.id).find((wire) => wire.input === 1);
         const parent = source && byId.get(source.from);
-        return parent?.type === type ? rank(parent) + 1 : 0;
+        if (parent?.type === type) return rank(parent) + 1;
+        if (parent?.type === "junction") {
+          const upstream = branch(parent.id).filter((node) => node.type === type);
+          if (upstream.length) return Math.max(...upstream.map(rank)) + 1;
+        }
+        return 0;
       };
       const lastRank = Math.max(...parts.map(rank));
       const rows = new Map<number, number>();
@@ -74,12 +88,21 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
             ? pullUpY - (lastRank - level) * seriesPitch
             : pullDownY + (lastRank - level) * seriesPitch;
       }
-      for (const wire of incoming(stage.id)) {
-        const root = byId.get(wire.from)!;
-        if (root.type === "junction" && branch(root.id).some((part) => part.type === type)) {
-          root.x = x + 308;
-          root.y = outputY + (type === "pmos" ? -24 : 24) - 5;
-        }
+      for (const root of branch(stage.id).filter(
+        (part) => part.type === "junction" && part.id !== stage.id,
+      )) {
+        const upstream = branch(root.id).filter(isMosfet);
+        if (!upstream.length || upstream.some((part) => part.type !== type)) continue;
+        const feedsTransistor = circuit.wires.some(
+          (wire) => wire.from === root.id && wire.input === 1 && isMosfet(byId.get(wire.to)!),
+        );
+        root.x = x + 198 - 5;
+        const maxRank = Math.max(...upstream.map(rank));
+        const outerY =
+          type === "pmos"
+            ? pullUpY - (lastRank - maxRank) * seriesPitch + transistorHeight + 16
+            : pullDownY + (lastRank - maxRank) * seriesPitch - 16;
+        root.y = (feedsTransistor ? outerY : outputY + (type === "pmos" ? -24 : 24)) - 5;
       }
     }
   }
@@ -138,21 +161,27 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         ];
       } else if (isMosfet(to) && wire.input === 0) {
         const stageX = stageColumns.get(to.id)!;
-        const x = stageX - (wire.from === "b" ? 55 : 85);
+        const controls = gateControls.get(to.id)!;
+        const controlIndex = controls.indexOf(wire.from);
+        const x = stageX - 45 - controlIndex * 30;
         const entryX = to.x - 55;
-        const railY = to.type === "pmos" ? pullUpY + transistorHeight + 24 : pullDownY - 24;
-        bends =
-          to.x === stageX
-            ? [
-                { x, y: start.y },
-                { x, y: end.y },
-              ]
+        const railY = to.type === "pmos" ? to.y + transistorHeight + 24 : to.y - 24;
+        const sourceStage = stages.findIndex((stage) => stage.id === from.id);
+        const signalY =
+          outputY + (wire.from === "a" ? -40 : wire.from === "b" ? 40 : sourceStage === 0 ? -8 : 8);
+        const exitX = from.type === "switch" ? (wire.from === "a" ? 210 : 240) : start.x + 35;
+        bends = [
+          { x: exitX, y: start.y },
+          { x: exitX, y: signalY },
+          { x, y: signalY },
+          { x, y: to.x === stageX ? end.y : railY },
+          ...(to.x === stageX
+            ? []
             : [
-                { x, y: start.y },
-                { x, y: railY },
                 { x: entryX, y: railY },
                 { x: entryX, y: end.y },
-              ];
+              ]),
+        ];
       } else if (isMosfet(from) && isMosfet(to)) {
         bends = [];
       } else if (isMosfet(from)) {

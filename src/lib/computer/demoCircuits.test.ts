@@ -6,9 +6,11 @@ import {
   adderDemo,
   DEVICE_KINDS,
   deviceDemo,
+  lampGate,
   routingDemo,
   switchLampDemo,
   transistorDemo,
+  transistorLampDemo,
 } from "./demoCircuits";
 import {
   type Circuit,
@@ -18,6 +20,8 @@ import {
   step,
   validateCircuit,
 } from "./logic";
+
+import { cmosNandLevel } from "./tutorial/levels/gates";
 
 const read = (circuit: Circuit, inputs: Record<string, boolean>) =>
   step(circuit, initialSnapshot(), false, {}, inputs);
@@ -73,20 +77,13 @@ describe("chapter circuits", () => {
       single: (a: boolean, _b: boolean) => a,
       series: (a: boolean, b: boolean) => a && b,
       parallel: (a: boolean, b: boolean) => a || b,
-      not: (a: boolean, _b: boolean) => !a,
-      nand: (a: boolean, b: boolean) => !(a && b),
-      nor: (a: boolean, b: boolean) => !(a || b),
-      xor: (a: boolean, b: boolean) => a !== b,
-      xnor: (a: boolean, b: boolean) => a === b,
     };
     for (const wiring of Object.keys(outputs) as (keyof typeof outputs)[]) {
       const circuit = switchLampDemo(wiring);
       expect(validateCircuit(circuit)).toBeTruthy();
       expect(
         circuit.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
-      ).toHaveLength(
-        wiring === "single" || wiring === "not" ? 1 : wiring === "xor" || wiring === "xnor" ? 4 : 2,
-      );
+      ).toHaveLength(wiring === "single" ? 1 : 2);
       for (const a of [false, true])
         for (const b of [false, true]) {
           expect(read(circuit, { a, b }).values.lamp).toBe(outputs[wiring](a, b));
@@ -147,11 +144,19 @@ describe("chapter circuits", () => {
     };
     for (const gate of Object.keys(truth) as (keyof typeof truth)[]) {
       const circuit = transistorDemo(gate);
-      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 16, xnor: 18 };
+      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 12, xnor: 12 };
       expect(
         circuit.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
       ).toHaveLength(counts[gate]);
       expect(validateCircuit(circuit)).toBeTruthy();
+      expect(cmosNandLevel.rules!(circuit)).toEqual([]);
+      const wiring = gate === "and" ? "series" : gate === "or" ? "parallel" : gate;
+      const lamp = transistorLampDemo(wiring);
+      expect(lampGate(wiring)).toBe(gate);
+      expect(
+        lamp.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
+      ).toHaveLength(counts[gate]);
+      expect(lamp.wires).toEqual(circuit.wires);
       for (let row = 0; row < 4; row++) {
         const a = Boolean(row & 1),
           b = Boolean(row & 2);

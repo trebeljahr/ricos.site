@@ -1543,8 +1543,8 @@ export const BLUEPRINT_RECIPES: Record<BlueprintFamily, Record<LogicGate, string
     or: "CMOS NOR plus inverter",
     nand: "Parallel PMOS, series NMOS",
     nor: "Series PMOS, parallel NMOS",
-    xor: "Four CMOS NAND stages",
-    xnor: "CMOS XOR plus inverter",
+    xor: "Complementary CMOS with input inverters",
+    xnor: "Complementary CMOS with input inverters",
   },
   nand: {
     not: "A NAND A",
@@ -1607,9 +1607,17 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
       join(join(p(left, "vcc"), p(right, "vcc")), n(left, n(right, "gnd")));
     const cmosNor = (left: string, right: string) =>
       join(p(left, p(right, "vcc")), join(n(left, "gnd"), n(right, "gnd")));
-    const cmosXor = () => {
-      const ab = cmosNand("a", "b");
-      return cmosNand(cmosNand("a", ab), cmosNand("b", ab));
+    // Direct static CMOS: two input inverters plus complementary 4-device networks.
+    // Swapping B and its complement changes XOR into XNOR without an output inverter.
+    const cmosExclusive = (equivalent: boolean) => {
+      const notA = inverter("a");
+      const notB = inverter("b");
+      const b = equivalent ? notB : "b";
+      const bBar = equivalent ? "b" : notB;
+      const upper = join(p("a", "vcc"), p(b, "vcc"));
+      const pullUp = join(p(notA, upper), p(bBar, upper));
+      const pullDown = join(n("a", n(b, "gnd")), n(notA, n(bBar, "gnd")));
+      return join(pullUp, pullDown);
     };
     switch (gate) {
       case "not":
@@ -1628,10 +1636,10 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
         output = inverter(cmosNor("a", "b"));
         break;
       case "xor":
-        output = cmosXor();
+        output = cmosExclusive(false);
         break;
       case "xnor":
-        output = inverter(cmosXor());
+        output = cmosExclusive(true);
         break;
     }
   } else if (family === "nand") {

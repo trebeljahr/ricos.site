@@ -1,20 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { type SwitchLampWiring, switchLampDemo } from "src/lib/computer/demoCircuits";
-import { bit } from "src/lib/computer/gateLogic";
+import {
+  type SwitchLampWiring,
+  switchLampDemo,
+  transistorLampDemo,
+} from "src/lib/computer/demoCircuits";
 import { initialSnapshot, step } from "src/lib/computer/logic";
+import { CmosLampBoard } from "./CmosLampBoard";
+import { Battery, Cable, type Control, ControlSwitch, Lamp, Terminal } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
 
 export type SwitchWiring = "series" | "parallel";
-type Control = "A" | "B";
 type ContactKind = "nmos" | "pmos";
 type Contact = { name: Control; kind: ContactKind; x: number; y: number };
 type Spark = { id: number; x: number; y: number };
 
 const WIRINGS: Record<SwitchLampWiring, string> = {
   single: "ONE SWITCH",
-  series: "IN A ROW · AND",
-  parallel: "SIDE BY SIDE · OR",
+  series: "AND",
+  parallel: "OR",
   not: "NOT",
   nand: "NAND",
   nor: "NOR",
@@ -32,47 +36,17 @@ const ELECTRICAL_WIRINGS: SwitchLampWiring[] = [
   "xnor",
 ];
 
-function contactsFor(wiring: SwitchLampWiring): Contact[] {
-  switch (wiring) {
-    case "single":
-      return [{ name: "A", kind: "nmos", x: 410, y: 180 }];
-    case "not":
-      return [{ name: "A", kind: "pmos", x: 410, y: 180 }];
-    case "series":
-      return [
+function contactsFor(wiring: SwitchWiring | "single"): Contact[] {
+  if (wiring === "single") return [{ name: "A", kind: "nmos", x: 410, y: 180 }];
+  return wiring === "series"
+    ? [
         { name: "A", kind: "nmos", x: 320, y: 180 },
         { name: "B", kind: "nmos", x: 500, y: 180 },
-      ];
-    case "nor":
-      return [
-        { name: "A", kind: "pmos", x: 320, y: 180 },
-        { name: "B", kind: "pmos", x: 500, y: 180 },
-      ];
-    case "parallel":
-      return [
+      ]
+    : [
         { name: "A", kind: "nmos", x: 410, y: 145 },
         { name: "B", kind: "nmos", x: 410, y: 285 },
       ];
-    case "nand":
-      return [
-        { name: "A", kind: "pmos", x: 410, y: 145 },
-        { name: "B", kind: "pmos", x: 410, y: 285 },
-      ];
-    case "xor":
-      return [
-        { name: "A", kind: "nmos", x: 320, y: 145 },
-        { name: "B", kind: "pmos", x: 500, y: 145 },
-        { name: "A", kind: "pmos", x: 320, y: 285 },
-        { name: "B", kind: "nmos", x: 500, y: 285 },
-      ];
-    case "xnor":
-      return [
-        { name: "A", kind: "nmos", x: 320, y: 145 },
-        { name: "B", kind: "nmos", x: 500, y: 145 },
-        { name: "A", kind: "pmos", x: 320, y: 285 },
-        { name: "B", kind: "pmos", x: 500, y: 285 },
-      ];
-  }
 }
 function conducts(contact: Contact, a: boolean, b: boolean) {
   const high = contact.name === "A" ? a : b;
@@ -142,69 +116,6 @@ function TransistorSwitch({
   );
 }
 
-/** SPDT: the common terminal always selects one of the battery's two rails. */
-function ControlSwitch({
-  name,
-  x,
-  high,
-  onFlip,
-}: {
-  name: Control;
-  x: number;
-  high: boolean;
-  onFlip: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={own.controlSwitch}
-      style={{ left: `${x / 8}%` }}
-      aria-pressed={high}
-      aria-label={`Control ${name}: ${high ? "high" : "low"}. Connect gate to battery ${high ? "negative" : "positive"}.`}
-      onClick={onFlip}
-    >
-      <svg viewBox="-60 -50 120 100" aria-hidden="true">
-        <rect className={own.selectorBase} x="-56" y="-32" width="112" height="76" rx="7" />
-        <path className={own.deviceLead} d="M0 -40 V-10 M-32 10 V20 M32 10 V20" />
-        <text className={own.selectorRail} x="-32" y="34">
-          −
-        </text>
-        <text className={own.selectorRail} x="32" y="34">
-          +
-        </text>
-        <circle className={own.terminal} cx="-32" cy="10" r="5" />
-        <circle className={own.terminal} cx="32" cy="10" r="5" />
-        <path className={own.selectorBlade} data-high={high} d="M0 -10 L-32 10" />
-        <circle className={own.terminal} cx="0" cy="-10" r="5" />
-      </svg>
-      <span className={own.controlLabel}>{name}</span>
-    </button>
-  );
-}
-
-function Cable({
-  d,
-  returning = false,
-  signal = false,
-  high = false,
-}: {
-  d: string;
-  returning?: boolean;
-  signal?: boolean;
-  high?: boolean;
-}) {
-  return (
-    <g data-signal={signal || undefined} data-high={signal ? high : undefined}>
-      <path d={d} className={signal ? own.signalCable : returning ? own.returnCable : own.cable} />
-    </g>
-  );
-}
-function Terminal({ x, y, junction = false }: { x: number; y: number; junction?: boolean }) {
-  return (
-    <circle className={junction ? own.junction : own.terminal} cx={x} cy={y} r={junction ? 4 : 5} />
-  );
-}
-
 function SwitchBoard({
   wiring,
   a,
@@ -214,7 +125,7 @@ function SwitchBoard({
   spark,
   onFlip,
 }: {
-  wiring: SwitchLampWiring;
+  wiring: SwitchWiring | "single";
   a: boolean;
   b: boolean;
   lit: boolean;
@@ -223,7 +134,7 @@ function SwitchBoard({
   onFlip: (name: Control) => void;
 }) {
   const contacts = contactsFor(wiring);
-  const branched = ["parallel", "nand", "xor", "xnor"].includes(wiring);
+  const branched = wiring === "parallel";
   // A real N-channel lamp switch belongs on the return side of the load.
   const lowSide = electrical && contacts.every((contact) => contact.kind === "nmos");
   const rows = branched ? [145, 285] : [180];
@@ -355,11 +266,7 @@ function SwitchBoard({
               )}
             </g>
           </svg>
-          <div className={own.battery} role="img" aria-label="Battery">
-            <i />
-            <span className={own.batteryPositive}>+</span>
-            <span className={own.batteryNegative}>−</span>
-          </div>
+          <Battery />
           {contacts.map((contact) =>
             electrical ? (
               <TransistorSwitch
@@ -400,22 +307,7 @@ function SwitchBoard({
               ))}
             </span>
           )}
-          <div
-            className={own.lamp}
-            data-on={lit}
-            role="img"
-            aria-label={`Output LAMP: ${bit(lit)}`}
-          >
-            <div className={own.glass}>
-              <i className={own.filament} />
-              <i className={own.glassHighlight} />
-            </div>
-            <div className={own.socket} />
-            <div className={own.lampBase}>
-              <i />
-              <i />
-            </div>
-          </div>
+          <Lamp lit={lit} />
         </div>
       </section>
     </div>
@@ -456,11 +348,18 @@ function SwitchExperiment({
   const sparkId = useRef(0);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const [a, b] = inputs;
-  const circuit = useMemo(() => switchLampDemo(wiring), [wiring]);
-  const lit = useMemo(
-    () => step(circuit, initialSnapshot(), false, {}, { a, b }).values.lamp,
+  const physicalWiring =
+    wiring === "single" ? "single" : wiring === "parallel" ? "parallel" : "series";
+  const circuit = useMemo(
+    () => (electrical ? transistorLampDemo(wiring) : switchLampDemo(physicalWiring)),
+    [wiring, physicalWiring, electrical],
+  );
+  const output = electrical && wiring !== "single" ? "out" : "lamp";
+  const snapshot = useMemo(
+    () => step(circuit, initialSnapshot(), false, {}, { a, b }),
     [circuit, a, b],
   );
+  const lit = snapshot.values[output];
   useEffect(() => {
     if (!spark) return;
     const timer = window.setTimeout(() => setSpark(null), 600);
@@ -469,14 +368,24 @@ function SwitchExperiment({
   function flip(name: Control) {
     const nextA = name === "A" ? !a : a;
     const nextB = name === "B" ? !b : b;
-    const nextLit = step(circuit, initialSnapshot(), false, {}, { a: nextA, b: nextB }).values.lamp;
-    const closing = contactsFor(wiring).find(
+    const nextLit = step(circuit, initialSnapshot(), false, {}, { a: nextA, b: nextB }).values[
+      output
+    ];
+    const closing = contactsFor(physicalWiring).find(
       (contact) =>
         contact.name === name && !conducts(contact, a, b) && conducts(contact, nextA, nextB),
     );
     setSpark(
-      !lit && nextLit && closing
-        ? { id: ++sparkId.current, x: closing.x + 56, y: closing.y }
+      !lit && nextLit
+        ? electrical && wiring !== "single"
+          ? {
+              id: ++sparkId.current,
+              x: (name === "A" ? 240 : 400) + ((name === "A" ? nextA : nextB) ? 32 : -32),
+              y: 620,
+            }
+          : closing
+            ? { id: ++sparkId.current, x: closing.x + 56, y: closing.y }
+            : null
         : null,
     );
     setInputs([nextA, nextB]);
@@ -527,15 +436,26 @@ function SwitchExperiment({
         </div>
       )}
       {fixed && <p className={own.fixedWiring}>{wiringLabel(wiring)}</p>}
-      <SwitchBoard
-        wiring={wiring}
-        a={a}
-        b={b}
-        lit={lit}
-        electrical={electrical}
-        spark={spark}
-        onFlip={flip}
-      />
+      {electrical && wiring !== "single" ? (
+        <CmosLampBoard
+          circuit={circuit}
+          snapshot={snapshot}
+          a={a}
+          b={b}
+          onFlip={flip}
+          spark={spark}
+        />
+      ) : (
+        <SwitchBoard
+          wiring={physicalWiring}
+          a={a}
+          b={b}
+          lit={lit}
+          electrical={electrical}
+          spark={spark}
+          onFlip={flip}
+        />
+      )}
     </section>
   );
 }

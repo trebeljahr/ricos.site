@@ -193,3 +193,7 @@
 }
 
 .boardViewport:focus-visible { outline: 3px solid #32728d; outline-offset: 3px; }
+
+.cmosBoard { min-width: 680px; }
+.cmosBoard .controlLabel { top: 100%; }
+.netLabel { fill: #615d4d; font: 13px ui-monospace, monospace; }

@@ -120,29 +120,26 @@ export type SwitchLampWiring =
   | "xor"
   | "xnor";
 
-type Contact = readonly ["a" | "b", "nmos" | "pmos"];
+export const lampGate = (wiring: Exclude<SwitchLampWiring, "single">): LogicGate =>
+  wiring === "series" ? "and" : wiring === "parallel" ? "or" : wiring;
 
-/** Conducting paths assembled from the same native transistor parts as the editor. */
-export function switchLampDemo(wiring: SwitchLampWiring): Circuit {
+/** The lamp and editor use the same complete complementary CMOS network. */
+export function transistorLampDemo(wiring: SwitchLampWiring): Circuit {
+  return wiring === "single"
+    ? switchLampDemo("single")
+    : gateBlueprint(lampGate(wiring), "transistor");
+}
+
+type Contact = readonly ["a" | "b", "nmos"];
+
+/** Physical contact analogies: one switch, two in series, or two in parallel. */
+export function switchLampDemo(wiring: "single" | "series" | "parallel"): Circuit {
   const a: Contact = ["a", "nmos"];
   const b: Contact = ["b", "nmos"];
-  const notA: Contact = ["a", "pmos"];
-  const notB: Contact = ["b", "pmos"];
-  const paths: Record<SwitchLampWiring, Contact[][]> = {
+  const paths: Record<typeof wiring, Contact[][]> = {
     single: [[a]],
     series: [[a, b]],
     parallel: [[a], [b]],
-    not: [[notA]],
-    nand: [[notA], [notB]],
-    nor: [[notA, notB]],
-    xor: [
-      [a, notB],
-      [notA, b],
-    ],
-    xnor: [
-      [a, b],
-      [notA, notB],
-    ],
   };
   const builder = new Builder();
   builder.add("power", "high", 0, 0, "BATTERY");

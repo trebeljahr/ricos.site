@@ -67,3 +67,18 @@ it("compacts a saved transistor demo on Arrange and restores its edits with Undo
   fireEvent.click(testButton("Undo"));
   expect(current()).toEqual(before);
 });
+
+it.each(["xor", "xnor"] as const)("opens the new %s circuit without overwriting an older saved attempt", (gate) => {
+  const legacy = structuredClone(transistorDemo("nand"));
+  legacy.name = transistorDemo(gate).name;
+  legacy.nodes.find((node) => node.id === "a")!.label = "OLD ATTEMPT";
+  const key = demoStorageKey(`${gate.toUpperCase()} from transistors`, legacy.name);
+  const stored = JSON.stringify({ current: legacy, saved: {} });
+  localStorage.setItem(key, stored);
+  render(<TransistorGates gate={gate} fixed />);
+  expect(screen.queryByLabelText("OLD ATTEMPT — SWITCH part")).toBeNull();
+  expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(6);
+  expect(screen.getAllByRole("button", { name: "Connect to PMOS Gate (G)" })).toHaveLength(6);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
+  expect(localStorage.getItem(key)).toBe(stored);
+});

@@ -37,7 +37,11 @@ export function TransistorGates({
           ))}
         </fieldset>
       )}
-      <CircuitDemo makeCircuit={makeCircuit} label={`${GATE_LABELS[gate]} from transistors`}>
+      <CircuitDemo
+        makeCircuit={makeCircuit}
+        label={`${GATE_LABELS[gate]} from transistors`}
+        revision={gate === "xor" || gate === "xnor" ? "direct-static-cmos-v1" : undefined}
+      >
         {legend && (
           <div className="space-y-2">
             <p>
@@ -45,7 +49,7 @@ export function TransistorGates({
                 {GATE_LABELS[gate]} · {transistorCount} transistors in the starting circuit.
               </strong>
               {gate === "xor" || gate === "xnor"
-                ? " This XOR uses four NAND gates (16 transistors); XNOR adds an inverter (18). Other transistor designs use different counts."
+                ? " Two input inverters use four transistors. The complementary pull-up and pull-down networks use eight more."
                 : gate === "and" || gate === "or"
                   ? " A four-transistor NAND or NOR followed by a two-transistor inverter."
                   : " Both the pull-up and pull-down networks are included."}

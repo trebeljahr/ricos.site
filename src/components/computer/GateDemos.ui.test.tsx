@@ -136,7 +136,7 @@ describe("switch logic", () => {
     expect(screen.getByRole("img", { name: /NMOS A transistor conducting/ })).toBeTruthy();
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(screen.getByTestId("switch-spark")).toBeTruthy();
-    click("IN A ROW · AND");
+    click("AND");
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     click(/^Control A: low/);
     click(/^Control B: low/);
@@ -147,7 +147,8 @@ describe("switch logic", () => {
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     click("XOR");
     expect(screen.getAllByRole("button", { name: /^Control A: low/ })).toHaveLength(1);
-    expect(screen.getAllByRole("img", { name: /A transistor .*gate low/ })).toHaveLength(2);
+    expect(screen.getAllByRole("img", { name: /A transistor .*gate low/ })).toHaveLength(4);
+    expect(screen.getAllByRole("img", { name: /^(N|P)MOS .*transistor/ })).toHaveLength(12);
     fireEvent.click(screen.getAllByRole("button", { name: /^Control A: low/ })[0]);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(screen.getByTestId("switch-spark")).toBeTruthy();

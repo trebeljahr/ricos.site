@@ -10,15 +10,18 @@ export function CircuitDemo({
   children,
   label,
   initialFocus,
+  revision,
 }: {
   makeCircuit: () => Circuit;
   children?: ReactNode;
   label: string;
   initialFocus?: readonly string[];
+  /** A changed starter circuit gets a fresh slot; older reader edits stay saved. */
+  revision?: string;
 }) {
   const circuit = useMemo(makeCircuit, [makeCircuit]);
   const defaultFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
-  const storageKey = demoStorageKey(label, circuit.name);
+  const storageKey = demoStorageKey(label, circuit.name, ...(revision ? [revision] : []));
   return (
     <section className="not-prose my-6" aria-label={label}>
       {children && <div className="mb-4 text-sm">{children}</div>}

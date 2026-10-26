@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CMOS_GATES, type CmosGate, GATE_LABELS } from "../../lib/computer/cmosGates";
 import { transistorDemo } from "../../lib/computer/demoCircuits";
 import { CircuitDemo } from "./CircuitDemo";
@@ -14,7 +14,11 @@ export function TransistorGates({
   legend?: boolean;
 }) {
   const [gate, setGate] = useState(initialGate);
-  const makeCircuit = useCallback(() => transistorDemo(gate), [gate]);
+  const circuit = useMemo(() => transistorDemo(gate), [gate]);
+  const makeCircuit = useCallback(() => circuit, [circuit]);
+  const transistorCount = circuit.nodes.filter(
+    (node) => node.type === "pmos" || node.type === "nmos",
+  ).length;
   return (
     <div className="not-prose">
       {!fixed && (
@@ -36,6 +40,16 @@ export function TransistorGates({
       <CircuitDemo makeCircuit={makeCircuit} label={`${GATE_LABELS[gate]} from transistors`}>
         {legend && (
           <div className="space-y-2">
+            <p>
+              <strong>
+                {GATE_LABELS[gate]} · {transistorCount} transistors in the starting circuit.
+              </strong>
+              {gate === "xor" || gate === "xnor"
+                ? " This XOR uses four NAND gates (16 transistors); XNOR adds an inverter (18). Other transistor designs use different counts."
+                : gate === "and" || gate === "or"
+                  ? " A four-transistor NAND or NOR followed by a two-transistor inverter."
+                  : " Both the pull-up and pull-down networks are included."}
+            </p>
             <p>
               These are CMOS gates. G is the gate control, S is the source, and D is the drain. PMOS
               connects toward VDD when its gate is 0. NMOS connects toward GND when its gate is 1.

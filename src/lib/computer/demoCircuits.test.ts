@@ -142,9 +142,15 @@ describe("chapter circuits", () => {
       nor: (a: boolean, b: boolean) => !(a || b),
       and: (a: boolean, b: boolean) => a && b,
       or: (a: boolean, b: boolean) => a || b,
+      xor: (a: boolean, b: boolean) => a !== b,
+      xnor: (a: boolean, b: boolean) => a === b,
     };
     for (const gate of Object.keys(truth) as (keyof typeof truth)[]) {
       const circuit = transistorDemo(gate);
+      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 16, xnor: 18 };
+      expect(
+        circuit.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
+      ).toHaveLength(counts[gate]);
       expect(validateCircuit(circuit)).toBeTruthy();
       for (let row = 0; row < 4; row++) {
         const a = Boolean(row & 1),

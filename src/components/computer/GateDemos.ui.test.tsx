@@ -106,12 +106,12 @@ describe("switch logic", () => {
     expect(screen.getByTestId("switch-spark")).toBeTruthy();
   });
 
-  it("lets transistor packages control the other gate paths", () => {
+  it("uses separate battery selectors to control shared transistor gates", () => {
     const { container } = render(<TransistorSwitches />);
     expect(container.textContent).not.toContain("CASES TRIED");
     expect(screen.queryByRole("button", { name: /^Control B:/ })).toBeNull();
     click(/^Control A: low/);
-    expect(screen.getByRole("button", { name: /NMOS transistor conducting/ })).toBeTruthy();
+    expect(screen.getByRole("img", { name: /NMOS A transistor conducting/ })).toBeTruthy();
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(screen.getByTestId("switch-spark")).toBeTruthy();
     click("IN A ROW · AND");
@@ -124,7 +124,9 @@ describe("switch logic", () => {
     click(/^Control A: low/);
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     click("XOR");
-    expect(screen.getAllByRole("button", { name: /^Control A: low/ })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /^Control A: low/ })).toHaveLength(1);
+    expect(screen.getAllByRole("img", { name: /A transistor .*gate low/ })).toHaveLength(2);
+    expect(screen.getByText(/Ideal switch paths, not complete CMOS gates/)).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: /^Control A: low/ })[0]);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(screen.getByTestId("switch-spark")).toBeTruthy();

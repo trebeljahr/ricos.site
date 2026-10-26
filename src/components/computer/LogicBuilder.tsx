@@ -1213,6 +1213,8 @@ export type LockedView = {
 };
 
 export type LogicBuilderProps = {
+  /** Reframe a compact preview when its available size changes. */
+  autoFit?: boolean;
   /** Reports the displayed circuit’s timeline state to an embedding lesson. */
   onFrame?: (view: LockedView) => void;
   /** Embedded boards let wheel scrolling reach the page and omit standalone navigation. */
@@ -1286,6 +1288,7 @@ function LogicBuilderWorkspace({
   challenge,
   initialCircuit,
   initialFocus,
+  autoFit = false,
   embedded: requestedEmbedded,
   locked,
   storageKey = STORAGE,
@@ -1766,6 +1769,23 @@ function LogicBuilderWorkspace({
     setBounds(framed);
   }, [displayNodes, routes.bounds]);
   const fitCanvas = useCallback(() => frameCanvas(), [frameCanvas]);
+  const refitPreview = useRef(() => {});
+  refitPreview.current = () => frameCanvas(initialFocus);
+  useEffect(() => {
+    const viewport = boardViewport.current;
+    if (!autoFit || !viewport || typeof ResizeObserver === "undefined") return;
+    let frame = 0;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => refitPreview.current());
+    });
+    observer.observe(viewport);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [autoFit]);
+
   useLayoutEffect(() => {
     if (!pendingFit.current) return;
     pendingFit.current = false;

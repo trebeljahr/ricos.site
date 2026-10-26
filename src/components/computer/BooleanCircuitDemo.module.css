@@ -16,3 +16,10 @@
 .lesson .hint { font-size: 13px; color: #647270; }
 :global(.dark) .lesson .hint { color: #a3b9b0; }
 @media (prefers-reduced-motion: reduce) { .term { transition: none; } }
+.controls { padding: 0; border: 0; min-width: 0; display: flex; gap: 24px; margin-block: 24px; }
+.edit { min-height: 44px; padding: 8px 14px; border: 1px solid #94a3b870; border-radius: 4px; background: transparent; font: inherit; cursor: pointer; }
+.edit:hover { border-color: currentColor; }
+.edit:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.preview { height: clamp(280px, 45vw, 430px); min-width: 0; margin-top: 18px; }
+
+.controls button { width: 46px; height: 44px; }

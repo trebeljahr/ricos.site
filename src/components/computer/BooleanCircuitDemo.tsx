@@ -1,13 +1,18 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { booleanSelectorDemo } from "src/lib/computer/demoCircuits";
 import styles from "./BooleanCircuitDemo.module.css";
 import { CircuitDemo } from "./CircuitDemo";
-import type { LockedView } from "./LogicBuilder";
+import { type LockedClock, type LockedView, LogicBuilder } from "./LogicBuilder";
+import { InputKey } from "./TruthTables";
 
 type Reading = { s: boolean; a: boolean; b: boolean; y: boolean };
 
 /** The expression is the specification; circuit readings come from the builder's timeline. */
 export function BooleanCircuitDemo() {
+  const [editing, setEditing] = useState(false);
+  const circuit = useMemo(booleanSelectorDemo, []);
+  const focus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
+  const clock = useRef<LockedClock | null>(null);
   const [reading, setReading] = useState<Reading | null>(null);
   const onFrame = useCallback(({ frame }: LockedView) => {
     const values = frame.snapshot.values;
@@ -29,11 +34,7 @@ export function BooleanCircuitDemo() {
   const expected = reading ? (reading.s ? reading.b : reading.a) : false;
 
   return (
-    <CircuitDemo
-      makeCircuit={booleanSelectorDemo}
-      label="Boolean expression and matching circuit"
-      onFrame={onFrame}
-    >
+    <section className="not-prose my-6" aria-label="Boolean expression and matching circuit">
       <div className={styles.lesson}>
         <h2>Choose one of two values</h2>
         <p>
@@ -82,10 +83,53 @@ export function BooleanCircuitDemo() {
         ) : (
           <p className={styles.hint}>The comparison needs the circuit’s S, A, B and Y terminals.</p>
         )}
+        {!editing && (
+          <fieldset className={styles.controls} aria-label="Selector inputs">
+            {[
+              { id: "sel", name: "S", value: reading?.s },
+              { id: "a", name: "A", value: reading?.a },
+              { id: "b", name: "B", value: reading?.b },
+            ].map(({ id, name, value }) => (
+              <InputKey
+                key={id}
+                name={name}
+                on={Boolean(value)}
+                onFlip={() => clock.current?.input({ [id]: !value })}
+              />
+            ))}
+          </fieldset>
+        )}
         <p className={styles.hint}>
-          Flip S, A and B, or change the wiring. Compare Y with the expression for each input.
+          {editing
+            ? "Change the wiring, then compare Y with the expression."
+            : "Flip S to choose A or B. Open a gate to see its wiring."}
         </p>
+        <button
+          className={styles.edit}
+          type="button"
+          aria-pressed={editing}
+          onClick={() => setEditing(!editing)}
+        >
+          {editing ? "Show the reference circuit" : "Edit a copy"}
+        </button>
       </div>
-    </CircuitDemo>
+      {editing ? (
+        <CircuitDemo
+          makeCircuit={booleanSelectorDemo}
+          label="Editable Boolean selector"
+          onFrame={onFrame}
+        />
+      ) : (
+        <div className={styles.preview}>
+          <LogicBuilder
+            autoFit
+            embedded
+            storageKey={null}
+            initialFocus={focus}
+            locked={{ circuit, clockRef: clock, interactiveInputs: true, onFrame }}
+          />
+        </div>
+      )}
+    </section>
   );
 }

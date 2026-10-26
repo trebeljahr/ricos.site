@@ -177,8 +177,8 @@ export function booleanSelectorDemo(): Circuit {
     b: "B",
     out: "Y",
     n1: "NOT S",
-    n2: "NOT S AND A",
-    n3: "S AND B",
+    n2: "S̅ · A",
+    n3: "S · B",
     n4: "OR",
   };
   circuit.nodes = circuit.nodes.map((node) => ({

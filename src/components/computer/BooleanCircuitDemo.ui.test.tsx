@@ -8,12 +8,15 @@ import { BooleanCircuitDemo } from "./BooleanCircuitDemo";
 beforeEach(() => localStorage.clear());
 afterEach(cleanup);
 
-it("reads every input combination from the editable circuit and shows the selected value in the expression", () => {
+it("reads every input combination from the shared circuit and shows the selected value in the expression", () => {
   render(<BooleanCircuitDemo />);
   const set = (name: string, value: boolean) => {
-    const input = within(screen.getByLabelText(`${name} — SWITCH part`)).getByRole("button", {
-      name: /^(ON|OFF)$/,
-    });
+    const input =
+      name === "S"
+        ? screen.getByRole("button", { name: /^Input S:/ })
+        : within(screen.getByLabelText(`${name} — SWITCH part`)).getByRole("button", {
+            name: /^(ON|OFF)$/,
+          });
     if ((input.getAttribute("aria-pressed") === "true") !== value) fireEvent.click(input);
   };
   for (const s of [false, true])
@@ -36,10 +39,11 @@ it("compares the actual saved wiring with the expression instead of calculating 
   const circuit = booleanSelectorDemo();
   circuit.wires = circuit.wires.filter((wire) => wire.to !== "out");
   localStorage.setItem(
-    demoStorageKey("Boolean expression and matching circuit", circuit.name),
+    demoStorageKey("Editable Boolean selector", circuit.name),
     JSON.stringify({ current: circuit, saved: {} }),
   );
   render(<BooleanCircuitDemo />);
+  fireEvent.click(screen.getByRole("button", { name: "Edit a copy" }));
   expect(screen.getByLabelText("Expression with current inputs").textContent).toBe(
     "1 · 1 + 0 · 0 = 1",
   );

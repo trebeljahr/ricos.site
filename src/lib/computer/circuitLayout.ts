@@ -90,10 +90,25 @@ export function layoutCircuit(circuit: Circuit): Circuit {
     layouts.set(result, result);
     return result;
   }
+  // Group labels survive renamed tutorial references and explicit Arrange requests.
+  const gateConstruction = circuit.groups?.some((group) => group.id === "construction" &&
+    /^(NOT|AND|OR|NAND|NOR|XOR|XNOR) from (NAND gates|NOR gates|mixed gates)$/.test(group.label));
   const structured = ["8-bit full adder", "8-bit ALU", "8-bit shift register", "8-bit binary counter"].includes(circuit.name) ||
     /^4 × 4 (SRAM|DRAM|flash memory)$/.test(circuit.name);
-  if (!structured && arrangeSignalFlow(circuit, nodes)) {
-    const result = { ...circuit, nodes };
+  if (!structured && arrangeSignalFlow(
+    gateConstruction ? { ...circuit, groups: undefined } : circuit,
+    nodes,
+    gateConstruction ? { rowGap: 32, columnGap: 72 } : undefined,
+  )) {
+    // Keep connected controls inside the construction, so their bypass wires and constants
+    // cannot straddle the enclosure. The output lamp remains outside, as in the CMOS view.
+    const groups = gateConstruction ? circuit.groups?.map((group) => group.id === "construction" ? {
+      ...group,
+      nodeIds: [...new Set([...group.nodeIds, ...nodes.filter((node) => node.type === "switch" &&
+        circuit.wires.some((wire) => wire.from === node.id && group.nodeIds.includes(wire.to)))
+        .map((node) => node.id)])],
+    } : group) : circuit.groups;
+    const result = { ...circuit, nodes, groups };
     layouts.set(circuit, result);
     layouts.set(result, result);
     return result;

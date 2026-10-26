@@ -22,7 +22,11 @@ function portOffset(vertex: Vertex, index: number, kind: "input" | "output") {
 /** Layer a combinational diagram by dependencies, then order each layer by its pins.
  * Feedback, groups and rotated parts retain their authored schematic structure.
  * Mutates only the supplied display copies, never the circuit's port/node order. */
-export function arrangeSignalFlow(circuit: Circuit, nodes: Node[]): boolean {
+export function arrangeSignalFlow(
+  circuit: Circuit,
+  nodes: Node[],
+  { rowGap = 40, columnGap = 120 }: { rowGap?: number; columnGap?: number } = {},
+): boolean {
   if (!nodes.length || circuit.groups?.length || nodes.some((node) =>
     node.splice || (node.inputSide && node.inputSide !== "left") ||
     (node.outputSide && node.outputSide !== "right"))) return false;
@@ -85,7 +89,7 @@ export function arrangeSignalFlow(circuit: Circuit, nodes: Node[]): boolean {
       edge.to.incoming.push(hop);
     }
   }
-  const gap = 40;
+  const gap = rowGap;
   const pack = (layer: Vertex[], desired: Map<Vertex, number>) => {
     // Isotonic regression finds the nearest ordered positions while preserving
     // body clearance. Unlike a forward collision push, it cannot drift downward.
@@ -174,7 +178,7 @@ export function arrangeSignalFlow(circuit: Circuit, nodes: Node[]): boolean {
     const signals = new Set(layer.flatMap((vertex) => vertex.outgoing.map((edge) =>
       `${vertex.node?.id ?? layer.indexOf(vertex)}:${edge.output}`))).size;
     x += Math.max(0, ...layer.map((vertex) => vertex.node ? nodeWidth(vertex.node) : 0)) +
-      Math.max(120, Math.min(signals, 24) * 16 + 48);
+      Math.max(columnGap, Math.min(signals, 24) * 16 + 48);
   }
   return true;
 }

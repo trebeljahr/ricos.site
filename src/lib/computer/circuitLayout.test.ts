@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { evalGate } from "./gateLogic";
 import { layoutCircuit } from "./circuitLayout";
 import { storageCircuit } from "./circuitHierarchy";
-import { BLUEPRINTS, type Circuit, moduleInputs, moduleOutputs, PRESETS } from "./logic";
+import { BLUEPRINTS, type Circuit, initialSnapshot, step, moduleInputs, moduleOutputs, PRESETS } from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
 import { arrangeSignalFlow } from "./signalLayout";
 import { rawSegmentDemo, bcdSegmentDemo, BCD_DECODER, ADD3 } from "./sevenSegment";
@@ -97,4 +98,17 @@ describe("built-in component layouts", () => {
       expect(nodes).toEqual(source.nodes);
     }
   });
+});
+
+it("preserves every grouped gate construction's truth table after layout", () => {
+  for (const family of ["nand", "nor", "mixed"] as const) for (const gate of GATE_NAMES) {
+    const source = gateBlueprint(gate, family);
+    const circuit = layoutCircuit(source);
+    for (let row = 0; row < 4; row++) {
+      const a = Boolean(row & 1), b = Boolean(row & 2);
+      const edited = { ...circuit, nodes: circuit.nodes.map(node => node.id === "a" || node.id === "b"
+        ? { ...node, value: node.id === "a" ? a : b } : node) };
+      expect(step(edited, initialSnapshot(), false).values.out).toBe(evalGate(gate, a, b));
+    }
+  }
 });

@@ -1543,8 +1543,8 @@ export const BLUEPRINT_RECIPES: Record<BlueprintFamily, Record<LogicGate, string
     or: "CMOS NOR plus inverter",
     nand: "Parallel PMOS, series NMOS",
     nor: "Series PMOS, parallel NMOS",
-    xor: "Complementary CMOS with input inverters",
-    xnor: "Complementary CMOS with input inverters",
+    xor: "CMOS NOR plus AOI21",
+    xnor: "CMOS NAND plus OAI21",
   },
   nand: {
     not: "A NAND A",
@@ -1607,16 +1607,20 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
       join(join(p(left, "vcc"), p(right, "vcc")), n(left, n(right, "gnd")));
     const cmosNor = (left: string, right: string) =>
       join(p(left, p(right, "vcc")), join(n(left, "gnd"), n(right, "gnd")));
-    // Direct static CMOS: two input inverters plus complementary 4-device networks.
-    // Swapping B and its complement changes XOR into XNOR without an output inverter.
+    // Compact static CMOS: a 4-device NAND/NOR drives a 6-device compound gate.
     const cmosExclusive = (equivalent: boolean) => {
-      const notA = inverter("a");
-      const notB = inverter("b");
-      const b = equivalent ? notB : "b";
-      const bBar = equivalent ? "b" : notB;
-      const upper = join(p("a", "vcc"), p(b, "vcc"));
-      const pullUp = join(p(notA, upper), p(bBar, upper));
-      const pullDown = join(n("a", n(b, "gnd")), n(notA, n(bBar, "gnd")));
+      if (equivalent) {
+        const ab = cmosNand("a", "b");
+        // XNOR = NOT((A OR B) AND NOT(A AND B)): NAND + OAI21.
+        const pullUp = join(p("a", p("b", "vcc")), p(ab, "vcc"));
+        const source = n(ab, "gnd");
+        return join(pullUp, join(n("a", source), n("b", source)));
+      }
+      const neither = cmosNor("a", "b");
+      // XOR = NOT((A AND B) OR NOT(A OR B)): NOR + AOI21.
+      const upper = join(p("a", "vcc"), p("b", "vcc"));
+      const pullUp = p(neither, upper);
+      const pullDown = join(n("a", n("b", "gnd")), n(neither, "gnd"));
       return join(pullUp, pullDown);
     };
     switch (gate) {

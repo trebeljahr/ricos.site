@@ -144,7 +144,7 @@ describe("chapter circuits", () => {
     };
     for (const gate of Object.keys(truth) as (keyof typeof truth)[]) {
       const circuit = transistorDemo(gate);
-      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 12, xnor: 12 };
+      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 10, xnor: 10 };
       expect(
         circuit.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
       ).toHaveLength(counts[gate]);

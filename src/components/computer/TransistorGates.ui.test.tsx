@@ -77,8 +77,8 @@ it.each(["xor", "xnor"] as const)("opens the new %s circuit without overwriting 
   localStorage.setItem(key, stored);
   render(<TransistorGates gate={gate} fixed />);
   expect(screen.queryByLabelText("OLD ATTEMPT — SWITCH part")).toBeNull();
-  expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(6);
-  expect(screen.getAllByRole("button", { name: "Connect to PMOS Gate (G)" })).toHaveLength(6);
+  expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(5);
+  expect(screen.getAllByRole("button", { name: "Connect to PMOS Gate (G)" })).toHaveLength(5);
   fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
   expect(localStorage.getItem(key)).toBe(stored);
 });

@@ -40,7 +40,7 @@ export function TransistorGates({
       <CircuitDemo
         makeCircuit={makeCircuit}
         label={`${GATE_LABELS[gate]} from transistors`}
-        revision={gate === "xor" || gate === "xnor" ? "direct-static-cmos-v1" : undefined}
+        revision={gate === "xor" || gate === "xnor" ? "compound-cmos-v1" : undefined}
       >
         {legend && (
           <div className="space-y-2">
@@ -48,11 +48,13 @@ export function TransistorGates({
               <strong>
                 {GATE_LABELS[gate]} · {transistorCount} transistors in the starting circuit.
               </strong>
-              {gate === "xor" || gate === "xnor"
-                ? " Two input inverters use four transistors. The complementary pull-up and pull-down networks use eight more."
-                : gate === "and" || gate === "or"
-                  ? " A four-transistor NAND or NOR followed by a two-transistor inverter."
-                  : " Both the pull-up and pull-down networks are included."}
+              {gate === "xor"
+                ? " A four-transistor NOR drives a six-transistor AOI21 stage."
+                : gate === "xnor"
+                  ? " A four-transistor NAND drives a six-transistor OAI21 stage."
+                  : gate === "and" || gate === "or"
+                    ? " A four-transistor NAND or NOR followed by a two-transistor inverter."
+                    : " Both the pull-up and pull-down networks are included."}
             </p>
             <p>
               These are CMOS gates. G is the gate control, S is the source, and D is the drain. PMOS

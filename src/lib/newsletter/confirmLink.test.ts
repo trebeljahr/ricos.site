@@ -148,7 +148,7 @@ describe("signed tokens", () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("PORT", "");
     expect(confirmLink("reader@example.com")).toMatch(
-      /^http:\/\/localhost:3713\/api\/confirm-email/,
+      /^http:\/\/localhost:2222\/api\/confirm-email/,
     );
     vi.stubEnv("PORT", "51234");
     expect(confirmLink("reader@example.com")).toMatch(

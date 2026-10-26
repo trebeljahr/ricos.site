@@ -32,7 +32,7 @@ describe("project donation navigation", () => {
       "http://localhost.evil.test:1111/",
       "http://192.168.1.2:1111/",
       "http://user@localhost:1111/",
-      "http://localhost:3713/donate/fractal-garden",
+      "http://localhost:2222/donate/fractal-garden",
     ])
       expect(validateDonationReturn(garden, url)).toBeNull();
     vi.stubEnv("NODE_ENV", "production");

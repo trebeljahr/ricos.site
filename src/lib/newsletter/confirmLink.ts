@@ -31,11 +31,11 @@ function getSalt() {
 /**
  * Links are built from configuration, never from the request's origin. In
  * development they follow `PORT`, which `next dev` sets to its own port, so
- * a dev server on another port than 3713 gets links back to itself.
+ * a dev server on another port than 2222 gets links back to itself.
  */
 export function siteUrl(): string {
   if (process.env.NODE_ENV === "development") {
-    return `http://localhost:${process.env.PORT || 3713}`;
+    return `http://localhost:${process.env.PORT || 2222}`;
   }
   if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_BRANCH_URL) {
     return `https://${process.env.VERCEL_BRANCH_URL}`;

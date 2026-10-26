@@ -15,10 +15,10 @@
   },
   "scripts": {
     "dev": "NEXT_PUBLIC_IMAGE_BACKEND=local VELITE_EXTERNAL=1 concurrently -n next,assets,velite,velite-hmr -c magenta,yellow,green,blue --kill-others-on-fail \"pnpm run dev:next\" \"pnpm run watch:assets\" \"pnpm run watch:velite\" \"pnpm run watch:velite-hmr\"",
-    "dev:cloud": "next dev -p 3713",
-    "dev:remote": "next dev -p 3713",
+    "dev:cloud": "next dev -p ${PORT:-2222}",
+    "dev:remote": "next dev -p ${PORT:-2222}",
     "dev:local-only": "IMAGE_FALLBACK_CLOUDFRONT=false npm run dev",
-    "dev:next": "NEXT_PUBLIC_IMAGE_BACKEND=local next dev -p 3713",
+    "dev:next": "NEXT_PUBLIC_IMAGE_BACKEND=local next dev -p ${PORT:-2222}",
     "s3:start": "tsx src/scripts/dev/setup-local-s3.ts",
     "watch:assets": "tsx src/scripts/dev/watchAssets.ts",
     "watch:velite": "NODE_OPTIONS=--max-old-space-size=6144 tsx src/scripts/dev/watchVelite.ts",

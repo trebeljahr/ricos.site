@@ -34,7 +34,7 @@ export function validateDonationReturn(
     }
     // Never loop back into a donation page, including a stale same-site referrer.
     if (
-      (url.origin === SITE_ORIGIN || (local && url.port === "3713")) &&
+      (url.origin === SITE_ORIGIN || (local && url.port === "2222")) &&
       /^\/donate(?:\/|$)/.test(url.pathname)
     )
       return null;

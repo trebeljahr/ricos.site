@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { inputCount, PRESETS } from "./logic";
-import { routeCircuitWires, simpleWirePath, wirePath } from "./wireRouting";
+import {
+  orientedWirePath,
+  type PortSide,
+  routeCircuitWires,
+  simpleWirePath,
+  wirePath,
+} from "./wireRouting";
 
 // Recover the orthogonal skeleton, including the unrounded corner of each Q.
 function routeGeometry(path: string) {
@@ -72,6 +78,92 @@ describe("wire routing", () => {
     }
   });
 
+  it("connects facing vertical transistor terminals without a detour", () => {
+    expect(orientedWirePath({ x: 88, y: 132 }, { x: 88, y: 196 }, "bottom", "top")).toBe(
+      "M 88 132 L 88 196",
+    );
+  });
+  it("respects all port directions without reversing along a connector stub", () => {
+    const sides: PortSide[] = ["left", "top", "right", "bottom"];
+    const vectors = { left: [-1, 0], top: [0, -1], right: [1, 0], bottom: [0, 1] };
+    for (const end of [
+      { x: 100, y: 100 },
+      { x: 100, y: 0 },
+      { x: 0, y: 100 },
+      { x: -100, y: -100 },
+    ])
+      for (const from of sides)
+        for (const to of sides) {
+          const geometry = routeGeometry(orientedWirePath({ x: 0, y: 0 }, end, from, to));
+          const first = geometry[0],
+            last = geometry.at(-1)!;
+          expect(
+            (first.b.x - first.a.x) * vectors[from][0] + (first.b.y - first.a.y) * vectors[from][1],
+          ).toBeGreaterThan(0);
+          expect(
+            (last.a.x - last.b.x) * vectors[to][0] + (last.a.y - last.b.y) * vectors[to][1],
+          ).toBeGreaterThan(0);
+          for (let i = 1; i < geometry.length; i++) {
+            const a = geometry[i - 1],
+              b = geometry[i];
+            expect(
+              (a.b.x - a.a.x) * (b.b.x - b.a.x) + (a.b.y - a.a.y) * (b.b.y - b.a.y),
+            ).toBeGreaterThanOrEqual(0);
+          }
+        }
+  });
+  it("routes opposing transistor drain wires over and under each other without crossing", () => {
+    const routes = routeCircuitWires(
+      [
+        {
+          id: "upper",
+          from: "pmos",
+          to: "right",
+          output: 0,
+          startSide: "bottom",
+          endSide: "left",
+          start: { x: 88, y: 132 },
+          end: { x: 400, y: 80 },
+        },
+        {
+          id: "lower",
+          from: "nmos",
+          to: "right2",
+          output: 0,
+          startSide: "top",
+          endSide: "left",
+          start: { x: 88, y: 196 },
+          end: { x: 400, y: 240 },
+        },
+      ],
+      [],
+    );
+    expect(routeClearance(routes.paths.upper, routes.paths.lower)).toBeGreaterThanOrEqual(12);
+  });
+  it("uses the saved path of an authored wire when choosing other lanes", () => {
+    const points = [
+      { x: 100, y: -100 },
+      { x: 100, y: 200 },
+    ];
+    const routes = routeCircuitWires(
+      [
+        { id: "saved", from: "a", to: "b", output: 0, start: points[0], end: points[1], points },
+        {
+          id: "new",
+          from: "c",
+          to: "d",
+          output: 0,
+          startSide: "bottom",
+          endSide: "top",
+          start: { x: 50, y: 0 },
+          end: { x: 150, y: 100 },
+        },
+      ],
+      [],
+    );
+    expect(routes.paths.saved).toBe("M 100 -100 L 100 200");
+    expect(routes.paths.new).toMatch(/L 150 100$/);
+  });
   it("draws a simple curve by default, including backward connections", () => {
     expect(simpleWirePath({ x: 0, y: 20 }, { x: 200, y: 160 })).toBe(
       "M 0 20 C 100 20 100 160 200 160",
@@ -104,18 +196,30 @@ describe("wire routing", () => {
     expect(xCoordinates.every((x) => x >= 100 && x <= 140)).toBe(true);
   });
   it("keeps a feedback lane outside both endpoint bodies", () => {
-    const { paths } = routeCircuitWires([
-      { id: "feedback", from: "q", to: "next", output: 0,
-        start: { x: 532, y: 158 }, end: { x: 160, y: 158 } },
-    ], [
-      { id: "q", x: 400, y: 100, width: 132, height: 116 },
-      { id: "next", x: 160, y: 100, width: 132, height: 116 },
-    ]);
+    const { paths } = routeCircuitWires(
+      [
+        {
+          id: "feedback",
+          from: "q",
+          to: "next",
+          output: 0,
+          start: { x: 532, y: 158 },
+          end: { x: 160, y: 158 },
+        },
+      ],
+      [
+        { id: "q", x: 400, y: 100, width: 132, height: 116 },
+        { id: "next", x: 160, y: 100, width: 132, height: 116 },
+      ],
+    );
     // Previously the return lane ran at y=130, straight through both bodies.
-    const points = [...paths.feedback.matchAll(/(?:M|L|Q) (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g)]
-      .map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
+    const points = [
+      ...paths.feedback.matchAll(/(?:M|L|Q) (-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g),
+    ].map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
     expect(points.some((point) => point.y <= 72 || point.y >= 244)).toBe(true);
-    expect(points.every((point) => !(point.x > 160 && point.x < 532 && point.y > 100 && point.y < 216))).toBe(true);
+    expect(
+      points.every((point) => !(point.x > 160 && point.x < 532 && point.y > 100 && point.y < 216)),
+    ).toBe(true);
   });
   it("separates parallel wires onto adjacent lanes", () => {
     const wires = ["a", "b"].map((id) => ({

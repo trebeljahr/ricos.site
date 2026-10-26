@@ -56,3 +56,29 @@ export function withoutWireSplices(circuit: Circuit): Circuit {
       .filter((group) => group.nodeIds.length),
   };
 }
+
+/** Electrical identity across fan-out wires and explicit junction parts. */
+export function wireNetKeys(circuit: Circuit): Record<string, string> {
+  const parent = new Map<string, string>();
+  const pin = (id: string, output = 0) => JSON.stringify([id, output]);
+  const root = (key: string): string => {
+    const next = parent.get(key);
+    if (!next) return key;
+    const result = root(next);
+    parent.set(key, result);
+    return result;
+  };
+  const junctions = new Set(
+    circuit.nodes.filter((node) => node.type === "junction").map((node) => node.id),
+  );
+  for (const wire of circuit.wires) {
+    if (!junctions.has(wire.to)) continue;
+    const source = root(pin(wire.from, wire.output)),
+      target = root(pin(wire.to));
+    if (source !== target)
+      parent.set(source < target ? target : source, source < target ? source : target);
+  }
+  return Object.fromEntries(
+    circuit.wires.map((wire) => [wire.id, root(pin(wire.from, wire.output))]),
+  );
+}

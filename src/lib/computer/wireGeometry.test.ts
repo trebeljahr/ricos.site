@@ -5,6 +5,7 @@ import {
   explicitWirePath,
   fanOutBranchPath,
   pathPoints,
+  wireJunctions,
 } from "./wireGeometry";
 
 describe("wire drawing and hit geometry", () => {
@@ -68,6 +69,48 @@ describe("wire drawing and hit geometry", () => {
       { id: "c", path: "M 50 0 L 50 100" },
     ]);
     expect(many.c.match(/ Q /g)).toHaveLength(1);
+  });
+  it("draws connected branches as square T junctions, never as self-crossing arches", () => {
+    const wires = [
+      { id: "trunk", net: "signal", path: "M 0 50 L 100 50" },
+      { id: "branch", net: "signal", path: "M 0 50 L 40 50 Q 50 50 50 60 L 50 100" },
+    ];
+    const paths = bridgeWirePaths(wires);
+    expect(paths.branch).not.toContain("Q");
+    expect(wireJunctions(wires.map((wire) => ({ ...wire, path: paths[wire.id] })))).toEqual([
+      { x: 50, y: 50, wire: "trunk" },
+    ]);
+    // The same geometry with unrelated drivers must not acquire a junction dot.
+    expect(wireJunctions(wires.map((wire) => ({ ...wire, net: wire.id })))).toEqual([]);
+  });
+  it("marks an interior crossing as a junction only when both paths share a net", () => {
+    const wires = [
+      { id: "horizontal", net: "same", path: "M 0 50 L 100 50" },
+      { id: "vertical", net: "same", path: "M 50 0 L 50 100" },
+    ];
+    expect(bridgeWirePaths(wires).vertical).not.toContain("Q");
+    expect(wireJunctions(wires)).toEqual([{ x: 50, y: 50, wire: "horizontal" }]);
+  });
+  it("does not insert arches into rounded corners or retrace a short segment", () => {
+    const wires = [
+      { id: "cross", path: "M 93 0 L 93 100" },
+      { id: "bend", path: "M 0 50 L 90 50 Q 100 50 100 60 L 100 100" },
+    ];
+    const paths = bridgeWirePaths(wires);
+    // Keep the original bend command intact even when the other wire needs a bridge.
+    expect(paths.bend).toContain("Q 100 50 100 60");
+    const points = pathPoints(paths.bend)[0];
+    for (let i = 1; i < points.length; i++) {
+      expect(points[i].x).toBeGreaterThanOrEqual(points[i - 1].x);
+      expect(points[i].y).toBeGreaterThanOrEqual(points[i - 1].y);
+    }
+  });
+  it("keeps curved wire commands intact when adding a bridge on a straight section", () => {
+    const paths = bridgeWirePaths([
+      { id: "curve", path: "M 0 0 C 10 0 20 10 30 10 L 100 10" },
+      { id: "cross", path: "M 60 -50 L 60 50" },
+    ]);
+    expect(paths.curve).toContain("C 10 0 20 10 30 10");
   });
   it("follows vertical fan-out trunks through rendered arches", () => {
     const route = fanOutBranchPath(

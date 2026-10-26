@@ -351,3 +351,4 @@
 .transistorNode:hover .editName,.transistorNode:focus-within .editName{opacity:1}
 
 /* MOSFET faces and real lead targets share the same square geometry. */
+.wireJunction{fill:var(--wire-color);stroke:none;pointer-events:none}

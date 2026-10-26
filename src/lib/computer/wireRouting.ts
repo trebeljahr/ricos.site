@@ -1,5 +1,6 @@
 export type Point = { x: number; y: number };
 export type RoutingObstacle = { id: string; x: number; y: number; width: number; height: number };
+export type PortSide = "left" | "top" | "right" | "bottom";
 export type RoutingWire = {
   id: string;
   from: string;
@@ -7,9 +8,14 @@ export type RoutingWire = {
   output: number;
   start: Point;
   end: Point;
+  startSide?: PortSide;
+  endSide?: PortSide;
+  net?: string;
+  /** Authored routes take part in obstacle avoidance without being rearranged. */
+  points?: Point[];
 };
 
-type Segment = { a: Point; b: Point };
+type Segment = { a: Point; b: Point; net?: string };
 
 export function simpleWirePath(start: Point, end: Point) {
   if (end.x <= start.x) return wirePath(start, end);
@@ -18,17 +24,122 @@ export function simpleWirePath(start: Point, end: Point) {
 }
 
 function cleanPoints(points: Point[]) {
-  return points.filter((point, index) => {
-    if (index === 0 || index === points.length - 1) return true;
-    const before = points[index - 1];
-    const after = points[index + 1];
-    return !(
-      (point.x === before.x && point.y === before.y) ||
-      (point.x === after.x && point.y === after.y) ||
-      (point.x === before.x && point.x === after.x) ||
-      (point.y === before.y && point.y === after.y)
+  const result: Point[] = [];
+  for (const point of points) {
+    const last = result[result.length - 1];
+    if (last && point.x === last.x && point.y === last.y) continue;
+    while (result.length >= 2) {
+      const a = result[result.length - 2],
+        b = result[result.length - 1];
+      // Only collapse a straight continuation. A reversal is a routing defect.
+      if (
+        (b.x - a.x) * (point.y - b.y) !== (b.y - a.y) * (point.x - b.x) ||
+        (b.x - a.x) * (point.x - b.x) + (b.y - a.y) * (point.y - b.y) <= 0
+      )
+        break;
+      result.pop();
+    }
+    result.push(point);
+  }
+  return result;
+}
+
+const sideVector = (side: PortSide): Point =>
+  ({
+    left: { x: -1, y: 0 },
+    right: { x: 1, y: 0 },
+    top: { x: 0, y: -1 },
+    bottom: { x: 0, y: 1 },
+  })[side];
+
+/** Route fixed ports using their actual outward directions, with shared clearance lanes. */
+function orientedRoutePoints(
+  start: Point,
+  end: Point,
+  startSide: PortSide,
+  endSide: PortSide,
+  obstacles: Omit<RoutingObstacle, "id">[],
+  occupied: Segment[],
+  terminals: Omit<RoutingObstacle, "id">[],
+) {
+  const from = sideVector(startSide),
+    to = sideVector(endSide);
+  const facingGap = (end.x - start.x) * from.x + (end.y - start.y) * from.y;
+  const stub =
+    from.x === -to.x && from.y === -to.y && facingGap > 0 ? Math.min(24, facingGap / 2) : 24;
+  const exit = { x: start.x + from.x * stub, y: start.y + from.y * stub };
+  const entry = { x: end.x + to.x * stub, y: end.y + to.y * stub };
+  const xs = new Set([
+    exit.x,
+    entry.x,
+    (exit.x + entry.x) / 2,
+    Math.min(exit.x, entry.x) - 24,
+    Math.max(exit.x, entry.x) + 24,
+  ]);
+  const ys = new Set([
+    exit.y,
+    entry.y,
+    (exit.y + entry.y) / 2,
+    Math.min(exit.y, entry.y) - 24,
+    Math.max(exit.y, entry.y) + 24,
+  ]);
+  // Exact obstacle edges and occupied lanes avoid coarse-grid near misses.
+  for (const box of [...obstacles, ...terminals]) {
+    xs.add(box.x - 24);
+    xs.add(box.x + box.width + 24);
+    ys.add(box.y - 24);
+    ys.add(box.y + box.height + 24);
+  }
+  for (const { a, b } of occupied) {
+    if (a.x === b.x) {
+      xs.add(a.x - 16);
+      xs.add(a.x + 16);
+    }
+    if (a.y === b.y) {
+      ys.add(a.y - 16);
+      ys.add(a.y + 16);
+    }
+  }
+  const candidates: Point[][] = [
+    [start, exit, { x: entry.x, y: exit.y }, entry, end],
+    [start, exit, { x: exit.x, y: entry.y }, entry, end],
+  ];
+  for (const x of xs)
+    candidates.push([start, exit, { x, y: exit.y }, { x, y: entry.y }, entry, end]);
+  for (const y of ys)
+    candidates.push([start, exit, { x: exit.x, y }, { x: entry.x, y }, entry, end]);
+  let best: Point[] = candidates[0],
+    bestScore = Infinity;
+  for (const candidate of candidates) {
+    const points = cleanPoints(candidate);
+    // Reject U-turns instead of smoothing them into little loops at a pin.
+    if (
+      points.some((b, i) => {
+        if (!i || i === points.length - 1) return false;
+        const a = points[i - 1],
+          c = points[i + 1];
+        return (b.x - a.x) * (c.x - b.x) + (b.y - a.y) * (c.y - b.y) < 0;
+      })
+    )
+      continue;
+    const length = segments(points).reduce(
+      (sum, { a, b }) => sum + Math.abs(a.x - b.x) + Math.abs(a.y - b.y),
+      0,
     );
-  });
+    const hits = obstacleHits(points, obstacles) + obstacleHits(candidate.slice(1, -1), terminals);
+    const score =
+      hits * 100000 + wireConflictCost(points, occupied) * 12 + length + (points.length - 2) * 16;
+    if (score < bestScore) {
+      best = points;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+
+/** Port-aware preview, also used while dragging an individual endpoint. */
+export function orientedWirePath(start: Point, end: Point, startSide: PortSide, endSide: PortSide) {
+  return roundedPath(orientedRoutePoints(start, end, startSide, endSide, [], [], []));
 }
 
 function roundedPath(raw: Point[]) {
@@ -247,6 +358,13 @@ export function routeCircuitWires(
   const occupied: Segment[] = [];
   const routedPoints: Point[] = [];
   const bundled = new Set<string>();
+  for (const wire of wires) {
+    if (!wire.points) continue;
+    paths[wire.id] = wire.points.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
+    routedPoints.push(...wire.points);
+    occupied.push(...segments(wire.points).map((segment) => ({ ...segment, net: wire.net })));
+    bundled.add(wire.id);
+  }
   // Route the outside of each fan first: top to bottom for upward wires,
   // bottom to top for downward wires. Creation order can trap later wires
   // behind an earlier bend, even when a shortest, crossing-free fan exists.
@@ -265,7 +383,13 @@ export function routeCircuitWires(
   if (withBuses) {
     const groups = new Map<string, RoutingWire[]>();
     for (const wire of orderedWires) {
-      if (wire.end.x - wire.start.x < 64) continue;
+      if (
+        wire.points ||
+        (wire.startSide ?? "right") !== "right" ||
+        (wire.endSide ?? "left") !== "left" ||
+        wire.end.x - wire.start.x < 64
+      )
+        continue;
       const key = `${wire.from}:${wire.output}`;
       groups.set(key, [...(groups.get(key) ?? []), wire]);
     }
@@ -312,7 +436,12 @@ export function routeCircuitWires(
       if (bestX === null || bestHits > 0) continue;
       const top = Math.min(start.y, ...group.map((wire) => wire.end.y));
       const bottom = Math.max(start.y, ...group.map((wire) => wire.end.y));
-      routedPoints.push(start, { x: bestX, y: top }, { x: bestX, y: bottom }, ...group.map((wire) => wire.end));
+      routedPoints.push(
+        start,
+        { x: bestX, y: top },
+        { x: bestX, y: bottom },
+        ...group.map((wire) => wire.end),
+      );
       const trunk = [start, { x: bestX, y: start.y }];
       // Two subpaths meet at the junction. No vertical retrace or loop.
       const path = `M ${start.x} ${start.y} L ${bestX} ${start.y} M ${bestX} ${top} L ${bestX} ${bottom}`;
@@ -328,11 +457,15 @@ export function routeCircuitWires(
         crossings: [],
         taps: group.map((wire) => ({ x: bestX!, y: wire.end.y, wireId: wire.id })),
       });
-      occupied.push(...segments(trunk), { a: { x: bestX, y: top }, b: { x: bestX, y: bottom } });
+      occupied.push(...segments(trunk).map((segment) => ({ ...segment, net: group[0].net })), {
+        a: { x: bestX, y: top },
+        b: { x: bestX, y: bottom },
+        net: group[0].net,
+      });
       for (const wire of group) {
         const branch = [{ x: bestX, y: wire.end.y }, wire.end];
         paths[wire.id] = `M ${bestX} ${wire.end.y} L ${wire.end.x} ${wire.end.y}`;
-        occupied.push(...segments(branch));
+        occupied.push(...segments(branch).map((segment) => ({ ...segment, net: wire.net })));
         bundled.add(wire.id);
       }
     }
@@ -343,7 +476,21 @@ export function routeCircuitWires(
     // Only the connector stubs may touch their own components. Feedback must
     // travel outside both bodies, even when the endpoints sit at similar heights.
     const terminals = obstacles.filter((box) => box.id === wire.from || box.id === wire.to);
-    const points = routePoints(wire.start, wire.end, relevant, occupied, terminals);
+    const otherNets = occupied.filter((segment) => !wire.net || segment.net !== wire.net);
+    const startSide = wire.startSide ?? "right",
+      endSide = wire.endSide ?? "left";
+    const points =
+      startSide === "right" && endSide === "left"
+        ? routePoints(wire.start, wire.end, relevant, otherNets, terminals)
+        : orientedRoutePoints(
+            wire.start,
+            wire.end,
+            startSide,
+            endSide,
+            relevant,
+            otherNets,
+            terminals,
+          );
     routedPoints.push(...points);
     for (const bus of buses) {
       for (const { a, b } of segments(points)) {
@@ -367,14 +514,16 @@ export function routeCircuitWires(
       }
     }
     paths[wire.id] = roundedPath(points);
-    occupied.push(...segments(points));
+    occupied.push(...segments(points).map((segment) => ({ ...segment, net: wire.net })));
   }
-  const bounds = routedPoints.length ? {
-    left: Math.min(...routedPoints.map((point) => point.x)),
-    top: Math.min(...routedPoints.map((point) => point.y)),
-    right: Math.max(...routedPoints.map((point) => point.x)),
-    bottom: Math.max(...routedPoints.map((point) => point.y)),
-  } : undefined;
+  const bounds = routedPoints.length
+    ? {
+        left: Math.min(...routedPoints.map((point) => point.x)),
+        top: Math.min(...routedPoints.map((point) => point.y)),
+        right: Math.max(...routedPoints.map((point) => point.x)),
+        bottom: Math.max(...routedPoints.map((point) => point.y)),
+      }
+    : undefined;
   for (const bus of buses) {
     const seen = new Set<string>();
     bus.crossings = bus.crossings.filter((point) => {

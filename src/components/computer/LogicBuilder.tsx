@@ -9,7 +9,8 @@ import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { useCircuitClipboard } from "../../hooks/useCircuitClipboard";
 import { type CircuitClip, copyCircuit, insertCircuitCopy, remapCircuitPath } from "../../lib/computer/circuitClipboard";
-import { bridgeWirePaths, closestPathPoint, explicitWirePath, fanOutBranchPath, pathPoints, polylinePath } from "../../lib/computer/wireGeometry";
+import { bridgeWirePaths, closestPathPoint, explicitWirePath, fanOutBranchPath, pathPoints, polylinePath, wireJunctions } from "../../lib/computer/wireGeometry";
+import { wireNetKeys } from "../../lib/computer/wireTopology";
 import { connectWireEnds, wireJoinError, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
 import { usePortWiring } from "../../hooks/usePortWiring";
 import { useTutorialProgress } from "../../hooks/useTutorialProgress";
@@ -83,7 +84,7 @@ import { BUTTON_HINTS, BUTTON_PRESETS } from "../../lib/computer/buttonInterrupt
 import { MATRIX_HINTS, MATRIX_PRESETS } from "../../lib/computer/keyboardMatrix";
 import { CPU_HINTS, CPU_PRESETS } from "../../lib/computer/cpuPreset";
 import { SHADER_HINTS, SHADER_PRESETS } from "../../lib/computer/shaderPreset";
-import { routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
+import { orientedWirePath, routeCircuitWires, simpleWirePath, wirePath } from "../../lib/computer/wireRouting";
 import { SIGNAL_COLORS, wireSignal } from "../../lib/computer/wireAppearance";
 import { ActionIcon } from "./ActionIcon";
 import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
@@ -326,16 +327,6 @@ const sideVector = (side: PortSide) => ({
   left: { x: -1, y: 0 }, top: { x: 0, y: -1 },
   right: { x: 1, y: 0 }, bottom: { x: 0, y: 1 },
 })[side];
-const orientedWirePath = (start: { x: number; y: number }, end: { x: number; y: number },
-  fromSide: PortSide, toSide: PortSide) => {
-  if (fromSide === "right" && toSide === "left")
-    return end.x > start.x ? simpleWirePath(start, end) : wirePath(start, end);
-  const from = sideVector(fromSide);
-  const to = sideVector(toSide);
-  const exit = { x: start.x + from.x * 24, y: start.y + from.y * 24 };
-  const entry = { x: end.x + to.x * 24, y: end.y + to.y * 24 };
-  return `M ${start.x} ${start.y} L ${exit.x} ${exit.y} ${wirePath(exit, entry)} L ${end.x} ${end.y}`;
-};
 const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") => {
   if (isMosfet(node)) return transistorPortPoint(node, index, kind);
   if (node.splice || node.type === "junction") return { x: node.x + 5, y: node.y + 5 };
@@ -741,13 +732,15 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   });
   const clearPortSelection = portWiring.clear;
   useEffect(() => { if (activePath !== path) clearPortSelection(); }, [activePath, path, clearPortSelection]);
+  const netKeys = useMemo(() => wireNetKeys(circuit), [circuit.nodes, circuit.wires]);
   const routes = useMemo(() => routeCircuitWires(circuit.wires.flatMap((wire) => {
     const from = endpointMap.get(`output:${wire.from}:${wire.output ?? 0}`);
     const to = endpointMap.get(`input:${wire.to}:${wire.input}`);
     return from && to ? [{ id: wire.id, from: wire.from, to: wire.to, output: wire.output ?? 0,
-      start: from.wirePoint, end: to.wirePoint }] : [];
+      start: from.wirePoint, end: to.wirePoint, startSide: from.side, endSide: to.side, net: netKeys[wire.id],
+      points: wire.points ? pathPoints(explicitWirePath(wire.points.map((point) => ({ x: point.x + layout.originX, y: point.y + layout.originY })), from.wirePoint, to.wirePoint))[0] : undefined }] : [];
   }), layout.parts.map((part) => ({ id: part.id, x: part.x, y: part.y,
-    width: nodeWidth(part), height: nodeHeight(part) }))), [circuit.wires, endpointMap, layout.parts]);
+    width: nodeWidth(part), height: nodeHeight(part) }))), [circuit.wires, endpointMap, layout.parts, netKeys, layout.originX, layout.originY]);
   const movedPoint = (port: InlineEndpoint, wire = false) => {
     const point = wire ? port.wirePoint : port.point;
     return drag?.id === port.id ? { x: point.x + drag.dx, y: point.y + drag.dy } : point;
@@ -756,11 +749,12 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
     const from = endpointMap.get(`output:${wire.from}:${wire.output ?? 0}`), to = endpointMap.get(`input:${wire.to}:${wire.input}`);
     if (!from || !to) return [];
     const start = movedPoint(from, true), end = movedPoint(to, true);
-    return [{ id: wire.id, path: wire.points ? explicitWirePath(wire.points.map((point) => ({
+    return [{ id: wire.id, net: netKeys[wire.id], path: wire.points ? explicitWirePath(wire.points.map((point) => ({
       x: point.x + layout.originX, y: point.y + layout.originY })), start, end) :
       drag && (drag.id === from.id || drag.id === to.id) ? orientedWirePath(start, end, from.side, to.side) :
       routes.paths[wire.id] ?? orientedWirePath(start, end, from.side, to.side) }];
-  })), [circuit.wires, endpointMap, routes, drag, layout.originX, layout.originY]);
+  })), [circuit.wires, endpointMap, routes, drag, layout.originX, layout.originY, netKeys]);
+  const junctions = useMemo(() => wireJunctions(circuit.wires.map((wire) => ({ id: wire.id, path: wirePaths[wire.id] ?? "", net: netKeys[wire.id] }))), [circuit.wires, wirePaths, netKeys]);
   const localAnchor = (anchor: WireAnchor): WireAnchor => ({ ...anchor,
     point: { x: anchor.point.x - layout.originX, y: anchor.point.y - layout.originY },
     path: pathPoints(anchor.path).map((points) => polylinePath(points.map((point) => ({
@@ -1049,6 +1043,8 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
                   width === 8 && styles.busLanes, signal === "floating" && styles.busFloating,
                   signal === "conflict" && styles.busConflict,
                   selectedWireIds.includes(wire.id) && styles.wireSelected)} />
+              {junctions.filter((point) => point.wire === wire.id).map((point) =>
+                <circle key={`${point.x}:${point.y}`} cx={point.x} cy={point.y} r={4} className={styles.wireJunction} />)}
             </g>;
           })}
           {preview && <path className={styles.wirePreview} style={{ "--wire-color": WIRE_COLORS[
@@ -1512,6 +1508,7 @@ function LogicBuilderWorkspace({
       });
   }, [displayNodes]);
 
+  const netKeys = useMemo(() => wireNetKeys(circuit), [circuit.nodes, circuit.wires]);
   const routes = useMemo(
     () =>
       routeCircuitWires(
@@ -1527,6 +1524,10 @@ function LogicBuilderWorkspace({
                   output: wire.output ?? 0,
                   start: portPoint(from, wire.output ?? 0, "output"),
                   end: portPoint(to, wire.input, "input"),
+                  startSide: outputSide(from),
+                  endSide: inputSide(to, wire.input),
+                  net: netKeys[wire.id],
+                  points: wire.points ? pathPoints(explicitWirePath(wire.points, portPoint(from, wire.output ?? 0, "output"), portPoint(to, wire.input, "input")))[0] : undefined,
                 },
               ]
             : [];
@@ -1538,14 +1539,9 @@ function LogicBuilderWorkspace({
           width: nodeWidth(node),
           height: nodeHeight(node),
         })),
-        busWiring && circuit.wires.every((wire) => {
-          if (wire.points) return false;
-          const from = displayNodes.find((node) => node.id === wire.from);
-          const to = displayNodes.find((node) => node.id === wire.to);
-          return from && to && outputSide(from) === "right" && inputSide(to, wire.input) === "left";
-        }),
+        busWiring,
       ),
-    [displayNodes, circuit.wires, busWiring, segmentBanks],
+    [displayNodes, circuit.wires, busWiring, segmentBanks, netKeys],
   );
   const [drag, setDrag] = useState<{
     x: number;
@@ -2952,13 +2948,13 @@ function LogicBuilderWorkspace({
       if (!from || !to || !segmentPinVisible(to, wire.input, segmentBanks) || hasTransistors && (!powerVisible(from) || !powerVisible(to))) return [];
       const start = portPoint(from, wire.output ?? 0, "output"), end = portPoint(to, wire.input, "input");
       const standard = outputSide(from) === "right" && inputSide(to, wire.input) === "left";
-      const path = wire.points ? explicitWirePath(wire.points, start, end) : standard
-        ? tidyWiring || busWiring || end.x <= start.x ? routes.paths[wire.id] : simpleWirePath(start, end)
-        : orientedWirePath(start, end, outputSide(from), inputSide(to, wire.input));
-      return path ? [{ id: wire.id, path }] : [];
+      const path = wire.points ? explicitWirePath(wire.points, start, end) :
+        !standard || tidyWiring || busWiring || end.x <= start.x ? routes.paths[wire.id] : simpleWirePath(start, end);
+      return path ? [{ id: wire.id, path, net: netKeys[wire.id] }] : [];
     });
-    return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path }))]);
-  }, [circuit.wires, displayNodes, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks]);
+    return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path, net: netKeys[bus.taps[0].wireId] }))]);
+  }, [circuit.wires, displayNodes, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks, netKeys]);
+  const junctions = useMemo(() => wireJunctions(circuit.wires.map((wire) => ({ id: wire.id, path: wirePaths[wire.id] ?? "", net: netKeys[wire.id] }))), [circuit.wires, wirePaths, netKeys]);
   const anchorPath = (wire: Wire) => {
     const bus = routes.buses.find((bus) => bus.taps.some((tap) => tap.wireId === wire.id));
     if (!bus || wire.points) return wirePaths[wire.id];
@@ -3744,6 +3740,8 @@ function LogicBuilderWorkspace({
                             locked?.glowWire?.(wire, boardSnapshot) && styles.glow,
                           )}
                         />
+                        {junctions.filter((point) => point.wire === wire.id).map((point) =>
+                          <circle key={`${point.x}:${point.y}`} cx={point.x} cy={point.y} r={4} className={styles.wireJunction} />)}
                         {isBus && (
                           <text
                             x={x1 + (outputSide(from) === "left" ? -10 : 10)}

@@ -99,29 +99,101 @@ export function explicitWirePath(points: Point[], start: Point, end: Point) {
   return polylinePath([start, ...middle, end]);
 }
 
-type Segment = { a: Point; b: Point; start: number; wire: number };
-/** Add one arch at each geometric crossing. Shared terminals remain plain joins. */
-export function bridgeWirePaths(wires: { id: string; path: string }[]) {
-  const result: Record<string, string> = Object.fromEntries(
-    wires.map((wire) => [wire.id, wire.path]),
-  );
-  const paths = wires.map((wire) => pathPoints(wire.path));
-  const segments: Segment[] = [],
-    distances: number[] = [];
-  const starts: Point[][] = paths.map((parts) =>
-    parts.flatMap((points) => [points[0], points[points.length - 1]]),
-  );
-  paths.forEach((parts, wire) => {
-    let at = 0;
-    for (const points of parts)
-      for (let i = 1; i < points.length; i++) {
-        segments.push({ a: points[i - 1], b: points[i], start: at, wire });
-        at += length(points[i - 1], points[i]);
-      }
-    distances[wire] = at;
+export type DrawnWire = { id: string; path: string; net?: string };
+type DrawCommand = { command: string; text: string; a: Point; b: Point; controls: Point[] };
+type Segment = { a: Point; b: Point; wire: number; command: number; straight: boolean };
+
+function drawCommands(path: string): DrawCommand[] {
+  let cursor = { x: 0, y: 0 };
+  return [...path.matchAll(/[MLQC][^MLQC]*/g)].map(([text]) => {
+    const numbers = (text.slice(1).match(/[-+]?(?:\d*\.)?\d+(?:e[-+]?\d+)?/gi) ?? []).map(Number);
+    const points = Array.from({ length: numbers.length / 2 }, (_, i) => ({
+      x: numbers[i * 2],
+      y: numbers[i * 2 + 1],
+    }));
+    const result = {
+      command: text[0],
+      text: text.trim(),
+      a: cursor,
+      b: points[points.length - 1],
+      controls: points.slice(0, -1),
+    };
+    cursor = result.b;
+    return result;
   });
-  const crossings = new Map<number, { at: number; point: Point; dx: number; dy: number }[]>();
-  // Spatial bins avoid an all-pairs scan on large gate diagrams.
+}
+
+function onStraightSegment(point: Point, { a, b }: Pick<Segment, "a" | "b">) {
+  const epsilon = 0.001;
+  return (
+    (Math.abs(a.x - b.x) < epsilon
+      ? Math.abs(point.x - a.x) < epsilon
+      : Math.abs(point.y - a.y) < epsilon) &&
+    point.x >= Math.min(a.x, b.x) - epsilon &&
+    point.x <= Math.max(a.x, b.x) + epsilon &&
+    point.y >= Math.min(a.y, b.y) - epsilon &&
+    point.y <= Math.max(a.y, b.y) + epsilon
+  );
+}
+
+function drawnSegments(commands: DrawCommand[][]): Segment[] {
+  return commands.flatMap((parts, wire) =>
+    parts.flatMap((part, command) => {
+      if (part.command === "M") return [];
+      const points = pathPoints(`M ${part.a.x} ${part.a.y} ${part.text}`)[0];
+      return points.slice(1).map((b, i) => ({
+        a: points[i],
+        b,
+        wire,
+        command,
+        straight: part.command === "L" && (part.a.x === part.b.x || part.a.y === part.b.y),
+      }));
+    }),
+  );
+}
+
+/** Shared signals meet at square T junctions; reserve arches for separate nets. */
+export function bridgeWirePaths(wires: DrawnWire[]) {
+  const commands = wires.map((wire) => drawCommands(wire.path));
+  const terminals = commands.map((parts) =>
+    parts.flatMap((part, i) =>
+      part.command === "M"
+        ? [part.b, ...(i ? [parts[i - 1].b] : [])]
+        : i === parts.length - 1
+          ? [part.b]
+          : [],
+    ),
+  );
+  let segments = drawnSegments(commands);
+  // A rounded branch would peel away from its own trunk. Keep that joint square.
+  commands.forEach((parts, wire) => {
+    if (!wires[wire].net) return;
+    for (const part of parts) {
+      if (part.command !== "Q" || part.controls.length !== 1) continue;
+      const corner = part.controls[0];
+      if (
+        !(
+          (part.a.x === corner.x && part.b.y === corner.y) ||
+          (part.a.y === corner.y && part.b.x === corner.x)
+        )
+      )
+        continue;
+      const shared = segments.some(
+        (other) =>
+          other.wire !== wire &&
+          wires[other.wire].net === wires[wire].net &&
+          other.straight &&
+          onStraightSegment(corner, other),
+      );
+      if (shared) part.text = `L ${corner.x} ${corner.y} L ${part.b.x} ${part.b.y}`;
+    }
+  });
+  const joined = commands.map((parts) => parts.map((part) => part.text).join(" "));
+  // Reparse the restored corners so their straight sections can own bridges too.
+  const joinedCommands = joined.map(drawCommands);
+  segments = drawnSegments(joinedCommands);
+  const crossings = new Map<string, { point: Point; at: number }[]>();
+  // Spatial bins keep large gate diagrams out of an all-pairs scan.
   const cell = segments.reduce(
     (size, { a, b }) =>
       Math.max(
@@ -133,8 +205,8 @@ export function bridgeWirePaths(wires: { id: string; path: string }[]) {
       ),
     96,
   );
-  const bins = new Map<string, number[]>();
-  const checked = new Set<string>();
+  const bins = new Map<string, number[]>(),
+    checked = new Set<string>();
   segments.forEach((segment, index) => {
     const { a, b } = segment;
     for (
@@ -151,7 +223,11 @@ export function bridgeWirePaths(wires: { id: string; path: string }[]) {
           previous = bins.get(key) ?? [];
         for (const otherIndex of previous) {
           const other = segments[otherIndex];
-          if (other.wire === segment.wire) continue;
+          if (
+            other.wire === segment.wire ||
+            (wires[segment.wire].net && wires[segment.wire].net === wires[other.wire].net)
+          )
+            continue;
           const pair = `${otherIndex}:${index}`;
           if (checked.has(pair)) continue;
           checked.add(pair);
@@ -165,58 +241,110 @@ export function bridgeWirePaths(wires: { id: string; path: string }[]) {
             cy = other.a.y - a.y;
           const t = (cx * ey - cy * ex) / det,
             u = (cx * dy - cy * dx) / det;
-          if (t < -0.00001 || t > 1.00001 || u < -0.00001 || u > 1.00001) continue;
+          // Touching a bend is not a transverse crossing.
+          if (t <= 0.00001 || t >= 0.99999 || u <= 0.00001 || u >= 0.99999) continue;
           const point = mix(a, b, t);
-          // Never put a bridge beside a shared endpoint or an existing splice dot.
           if (
-            starts[segment.wire].some((p) => length(p, point) < 9) ||
-            starts[other.wire].some((p) => length(p, point) < 9)
+            [segment.wire, other.wire].some((wire) =>
+              terminals[wire].some((p) => length(p, point) < 10),
+            )
           )
             continue;
-          const owner = segment.wire > other.wire ? segment : other;
-          const at = owner.start + length(owner.a, point),
-            len = length(owner.a, owner.b);
-          if (at < 9 || distances[owner.wire] - at < 9 || !len) continue;
-          const list = crossings.get(owner.wire) ?? [];
+          // The entire arch must fit on one straight section, clear of both bends.
+          const owner = [segment, other].find(
+            (s) => s.straight && length(s.a, point) >= 10 && length(s.b, point) >= 10,
+          );
+          if (!owner) continue;
+          const ownerKey = `${owner.wire}:${owner.command}`,
+            at = length(owner.a, point);
+          const list = crossings.get(ownerKey) ?? [];
           if (!list.some((crossing) => Math.abs(crossing.at - at) < 16)) {
-            list.push({
-              at,
-              point,
-              dx: (owner.b.x - owner.a.x) / len,
-              dy: (owner.b.y - owner.a.y) / len,
-            });
-            crossings.set(owner.wire, list);
+            list.push({ point, at });
+            crossings.set(ownerKey, list);
           }
         }
         previous.push(index);
         bins.set(key, previous);
       }
   });
-  for (const [wire, crossingsOnWire] of crossings) {
-    // Bus trunks contain separate subpaths; each crossing is owned by a single drawn segment.
-    let at = 0,
-      path = "";
-    const sorted = crossingsOnWire.sort((a, b) => a.at - b.at);
-    for (const points of paths[wire]) {
-      path += ` M ${points[0].x} ${points[0].y}`;
-      for (let i = 1; i < points.length; i++) {
-        const a = points[i - 1],
-          b = points[i],
-          len = length(a, b),
-          endAt = at + len;
-        for (const crossing of sorted)
-          if (crossing.at >= at && crossing.at < endAt) {
-            const r = 6,
-              { point: p, dx, dy } = crossing;
-            path += ` L ${p.x - dx * r} ${p.y - dy * r} Q ${p.x - dy * 12} ${p.y + dx * 12} ${p.x + dx * r} ${p.y + dy * r}`;
-          }
-        // Skip the piece beneath an arch, even if it straddles sampled curve segments.
-        if (!sorted.some((crossing) => endAt > crossing.at - 6 && endAt < crossing.at + 6))
-          path += ` L ${b.x} ${b.y}`;
-        at = endAt;
-      }
+  return Object.fromEntries(
+    joinedCommands.map((parts, wire) => [
+      wires[wire].id,
+      parts
+        .map((part, command) => {
+          const list = crossings.get(`${wire}:${command}`);
+          if (!list) return part.text;
+          const len = length(part.a, part.b),
+            dx = (part.b.x - part.a.x) / len,
+            dy = (part.b.y - part.a.y) / len;
+          const nx = dy ? -1 : 0,
+            ny = dx ? -1 : 0;
+          return (
+            list
+              .sort((a, b) => a.at - b.at)
+              .map(
+                ({ point: p }) =>
+                  `L ${p.x - dx * 6} ${p.y - dy * 6} Q ${p.x + nx * 12} ${p.y + ny * 12} ${p.x + dx * 6} ${p.y + dy * 6}`,
+              )
+              .join(" ") + ` L ${part.b.x} ${part.b.y}`
+          );
+        })
+        .join(" "),
+    ]),
+  );
+}
+
+/** Dot only real branches (three or more directions) of one electrical net. */
+export function wireJunctions(wires: DrawnWire[]): (Point & { wire: string })[] {
+  const groups = new Map<string, DrawnWire[]>();
+  for (const wire of wires)
+    if (wire.net) groups.set(wire.net, [...(groups.get(wire.net) ?? []), wire]);
+  const result: (Point & { wire: string })[] = [];
+  for (const group of groups.values()) {
+    if (group.length < 2) continue;
+    const commands = group.map((wire) => drawCommands(wire.path));
+    const segments = drawnSegments(commands).filter((segment) => segment.straight);
+    const candidates = new Map<string, Point>();
+    for (const { a, b } of segments) {
+      candidates.set(`${a.x}:${a.y}`, a);
+      candidates.set(`${b.x}:${b.y}`, b);
     }
-    result[wires[wire].id] = path.trim();
+    for (let i = 0; i < segments.length; i++)
+      for (let j = i + 1; j < segments.length; j++) {
+        const first = segments[i],
+          second = segments[j];
+        if (first.wire === second.wire) continue;
+        const horizontal = first.a.y === first.b.y ? first : second;
+        const vertical = first.a.x === first.b.x ? first : second;
+        if (
+          horizontal === vertical ||
+          horizontal.a.y !== horizontal.b.y ||
+          vertical.a.x !== vertical.b.x
+        )
+          continue;
+        const point = { x: vertical.a.x, y: horizontal.a.y };
+        if (
+          point.x >= Math.min(horizontal.a.x, horizontal.b.x) &&
+          point.x <= Math.max(horizontal.a.x, horizontal.b.x) &&
+          point.y >= Math.min(vertical.a.y, vertical.b.y) &&
+          point.y <= Math.max(vertical.a.y, vertical.b.y)
+        )
+          candidates.set(`${point.x}:${point.y}`, point);
+      }
+    for (const point of candidates.values()) {
+      const rays = new Set<string>();
+      const owners = new Set<number>();
+      for (const segment of segments) {
+        if (!onStraightSegment(point, segment)) continue;
+        owners.add(segment.wire);
+        for (const end of [segment.a, segment.b]) {
+          if (length(point, end) < 0.001) continue;
+          rays.add(`${Math.sign(end.x - point.x)}:${Math.sign(end.y - point.y)}`);
+        }
+      }
+      if (rays.size >= 3 && owners.size >= 2)
+        result.push({ ...point, wire: group[[...owners][0]].id });
+    }
   }
   return result;
 }

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
   describeInputs,
   describeMiss,
@@ -15,7 +15,21 @@ const bit = (value: boolean | undefined) => (value === undefined ? "·" : value 
 /** Rows shown in full; longer tables show the failing row and a toggle. */
 const SHORT_TABLE = 16;
 
-function TruthTable({ spec, grade }: { spec: TruthSpec; grade?: Grade }) {
+export function TruthTable({
+  spec,
+  grade,
+  current,
+  onPick,
+  extra,
+  label = "Truth table",
+}: {
+  spec: TruthSpec;
+  grade?: Grade;
+  current?: readonly boolean[];
+  onPick?: (inputs: boolean[]) => void;
+  extra?: { name: string; cell: (inputs: boolean[]) => ReactNode };
+  label?: string;
+}) {
   const [all, setAll] = useState(false);
   const rows = truthRows(spec);
   const results = grade?.kind === "truth" ? grade.rows : undefined;
@@ -29,7 +43,11 @@ function TruthTable({ spec, grade }: { spec: TruthSpec; grade?: Grade }) {
   return (
     <div className={styles.spec}>
       <div className={styles.tableScroll}>
-        <table className={styles.truth}>
+        <table
+          className={styles.truth}
+          aria-label={label}
+          data-interactive={Boolean(onPick) || undefined}
+        >
           <thead>
             <tr>
               {spec.inputs.map((port) => (
@@ -42,6 +60,11 @@ function TruthTable({ spec, grade }: { spec: TruthSpec; grade?: Grade }) {
                   {port.short ?? port.label}
                 </th>
               ))}
+              {extra && (
+                <th scope="col" className={styles.outputHead}>
+                  {extra.name}
+                </th>
+              )}
               {results && <th scope="col">Yours</th>}
             </tr>
           </thead>
@@ -50,22 +73,41 @@ function TruthTable({ spec, grade }: { spec: TruthSpec; grade?: Grade }) {
               const inputs = rows[index];
               const expected = spec.fn(inputs);
               const result = results?.[index];
+              const selected =
+                current !== undefined && inputs.every((value, column) => value === current[column]);
+              const description = `${spec.inputs.map((port, column) => `${port.short ?? port.label} ${bit(inputs[column])}`).join(", ")} gives ${spec.outputs.map((port, column) => `${port.short ?? port.label} ${bit(expected[column])}`).join(", ")}. Set the inputs to this row.`;
               return (
                 <tr
                   key={index}
+                  data-current={selected || undefined}
                   className={clsx(
                     result && (result.pass ? styles.rowPass : styles.rowFail),
                     index === first && styles.rowFirst,
                   )}
                 >
                   {inputs.map((value, column) => (
-                    <td key={spec.inputs[column].id}>{bit(value)}</td>
+                    <td key={spec.inputs[column].id}>
+                      {column === 0 && onPick ? (
+                        <button
+                          type="button"
+                          className={styles.rowButton}
+                          aria-label={description}
+                          aria-current={selected ? "true" : undefined}
+                          onClick={() => onPick(inputs)}
+                        >
+                          {bit(value)}
+                        </button>
+                      ) : (
+                        bit(value)
+                      )}
+                    </td>
                   ))}
                   {expected.map((value, column) => (
                     <td key={spec.outputs[column].id} className={styles.outputCell}>
                       {bit(value)}
                     </td>
                   ))}
+                  {extra && <td className={styles.outputCell}>{extra.cell(inputs)}</td>}
                   {result && (
                     <td className={styles.yours}>
                       {result.unstable ? "≈" : result.actual.map(bit).join(" ")}{" "}

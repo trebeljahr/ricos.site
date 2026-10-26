@@ -1230,6 +1230,8 @@ export type LogicBuilderProps = {
     clockRef: MutableRefObject<LockedClock | null>;
     /** Let readers operate top-level switches without editing the circuit. */
     interactiveInputs?: boolean;
+    /** Demo-specific controls shown beside the shared zoom controls. */
+    controls?: ReactNode;
     onFrame?: (view: LockedView) => void;
     ripple?: boolean;
     rippleSpeed?: number;
@@ -3423,6 +3425,7 @@ function LogicBuilderWorkspace({
           {challenge?.feedback && <div className={styles.challengeFeedback}>{challenge.feedback}</div>}
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
             >
+            {locked?.controls}
             <button
               type="button"
               onClick={() => zoomFromCenter(zoomRef.current / 1.25)}

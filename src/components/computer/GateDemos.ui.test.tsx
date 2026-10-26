@@ -11,9 +11,9 @@ afterEach(() => {
 
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
 const currentRow = (name: string) =>
-  within(screen.getByRole("list", { name }))
-    .getAllByRole("button")
-    .find((row) => row.getAttribute("aria-current") === "true");
+  within(screen.getByRole("table", { name }))
+    .getAllByRole("row")
+    .find((row) => row.getAttribute("data-current") === "true");
 
 describe("truth tables", () => {
   it("marks the row of the current inputs and sets inputs from a row", () => {
@@ -39,7 +39,8 @@ describe("truth tables", () => {
       within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
     ).toBeTruthy();
 
-    fireEvent.change(screen.getByRole("combobox", { name: "Gate" }), { target: { value: "xor" } });
+    fireEvent.click(screen.getByText("Gate: AND", { selector: "summary" }));
+    click("XOR");
     expect(currentRow("Truth table of XOR")?.textContent).toBe("110");
     expect(
       within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
@@ -57,31 +58,31 @@ describe("truth tables", () => {
     expect(currentRow("Truth table of XOR")?.textContent).toBe("110");
   });
 
-  it("shows two-input gates as a 2 × 2 grid and NOT as two rows", () => {
+  it("always uses the sidebar table, including legacy grid embeds and NOT", () => {
     render(<GateTruthTable gate="nand" view="grid" />);
-    const grid = screen.getByRole("group", { name: "NAND as a grid" });
-    expect(
-      within(grid)
-        .getAllByRole("button")
-        .map((cell) => cell.textContent),
-    ).toEqual(["1", "1", "1", "0"]);
-    fireEvent.change(screen.getByRole("combobox", { name: "Gate" }), { target: { value: "not" } });
-    expect(
-      within(screen.getByRole("list", { name: "Truth table of NOT" })).getAllByRole("button"),
-    ).toHaveLength(2);
+    expect(screen.getByRole("table", { name: "Truth table of NAND" })).toBeTruthy();
     expect(screen.queryByRole("group", { name: "Table layout" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^(Table|Grid)$/ })).toBeNull();
+    expect(screen.queryByRole("combobox")).toBeNull();
+    fireEvent.click(screen.getByText("Gate: NAND", { selector: "summary" }));
+    const menu = screen.getByText("Gate: NAND").closest("details")!;
+    click("NOT");
+    expect(menu.open).toBe(false);
+    expect(
+      within(screen.getByRole("table", { name: "Truth table of NOT" })).getAllByRole("row"),
+    ).toHaveLength(3);
+    click(/^A 1 gives OUT 0/);
+    expect(currentRow("Truth table of NOT")?.textContent).toBe("10");
   });
 
   it("finds the gates for SUM and CARRY", () => {
     const { container } = render(<AdditionTable />);
     expect(container.textContent).toContain("1 + 1 = 10");
-    fireEvent.change(screen.getByRole("combobox", { name: "Compare a gate" }), {
-      target: { value: "xor" },
-    });
+    fireEvent.click(screen.getByText("Compare: None", { selector: "summary" }));
+    click("XOR");
     expect(container.textContent).toContain("XOR matches SUM in 4 of 4 rows and CARRY in 1 of 4.");
-    fireEvent.change(screen.getByRole("combobox", { name: "Compare a gate" }), {
-      target: { value: "and" },
-    });
+    fireEvent.click(screen.getByText("Compare: XOR", { selector: "summary" }));
+    click("AND");
     expect(container.textContent).toContain("AND matches SUM in 1 of 4 rows and CARRY in 4 of 4.");
   });
 

@@ -95,6 +95,8 @@ export const COMPUTER_MDX_DEMOS = {
   GateTruthTable: chapterDemo(
     () => import("./TruthTables").then((module) => module.GateTruthTable),
     "Gate truth table",
+    600,
+    true,
   ),
   TransistorGates: chapterDemo(
     () => import("./TransistorGates").then((module) => module.TransistorGates),
@@ -117,6 +119,8 @@ export const COMPUTER_MDX_DEMOS = {
   AdditionTable: chapterDemo(
     () => import("./TruthTables").then((module) => module.AdditionTable),
     "One-bit addition table",
+    600,
+    true,
   ),
   HalfAdder: chapterDemo(
     () => import("./Adders").then((module) => module.HalfAdder),
@@ -127,6 +131,8 @@ export const COMPUTER_MDX_DEMOS = {
   FullAdderTable: chapterDemo(
     () => import("./TruthTables").then((module) => module.FullAdderTable),
     "Full-adder truth table",
+    600,
+    true,
   ),
   FullAdder: chapterDemo(
     () => import("./Adders").then((module) => module.FullAdder),

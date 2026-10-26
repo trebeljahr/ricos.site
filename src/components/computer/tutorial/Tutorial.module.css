@@ -491,3 +491,14 @@
   color: #e7edf3;
   font: inherit;
 }
+
+/* The sidebar's table can also drive a demo's shared circuit inputs. */
+.tableScroll:has(.truth[data-interactive]) { max-height: none; }
+.truth[data-interactive] { background: #1a2440; color: #dfe7f7; }
+.truth[data-interactive] tbody tr { position: relative; }
+.truth[data-interactive] td { height: 38px; padding: 5px; }
+.truth tr[data-current="true"] { background: #2b4c54; }
+.truth tr:focus-within { outline: 2px solid #86ded5; outline-offset: -2px; }
+.rowButton { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.rowButton::after { content: ""; position: absolute; inset: 0; }
+.rowButton:focus-visible { outline: none; }

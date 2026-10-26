@@ -57,66 +57,6 @@
 }
 .lampOut i[data-on="true"] { background: radial-gradient(circle at 35% 35%, #f1ffe4, #a7d46b 70%); box-shadow: 0 0 14px #c5ee8b, 0 0 3px #f1ffe4; }
 
-/* The truth table: one button per row, the current row lit. */
-.table { display: grid; gap: 4px; margin: 12px 0 0; padding: 0; list-style: none; }
-.tableHead, .row {
-  display: grid;
-  grid-template-columns: var(--columns);
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  font-size: 14px;
-  letter-spacing: .06em;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-.tableHead { padding-block: 0; font-size: 10px; letter-spacing: .08em; }
-.row {
-  width: 100%;
-  border: 1px solid #748273;
-  border-radius: 4px;
-  background: linear-gradient(#879587, #a5b1a1);
-  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
-  color: inherit;
-  font-family: inherit;
-  font-weight: inherit;
-  cursor: pointer;
-}
-.row:hover { filter: brightness(1.06); }
-.row[aria-current="true"] {
-  border-color: #2c4031;
-  background: #354d39;
-  box-shadow: inset 0 2px 3px #14281a;
-  color: #d9f2c0;
-  text-shadow: 0 0 6px #a9e987;
-}
-.split { border-left: 2px solid #5f6e60; }
-.row[aria-current="true"] .split { border-left-color: #8fb894; }
-.hidden { opacity: .45; }
-.mark { font-size: 12px; }
-.mark[data-ok="false"] { color: #7d261a; }
-.row[aria-current="true"] .mark[data-ok="false"] { color: #ffb4a2; }
-.out1 { font-weight: 800; }
-
-/* The same table as a 2 × 2 grid: A down the side, B across the top. */
-.quad { display: grid; grid-template-columns: auto repeat(2, minmax(0, 1fr)); gap: 4px; margin-top: 12px; font-size: 11px; letter-spacing: .06em; text-align: center; }
-.quad > span { align-self: center; }
-.quad button {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1.6;
-  border: 1px solid #748273;
-  border-radius: 4px;
-  background: linear-gradient(#879587, #a5b1a1);
-  box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5;
-  color: inherit;
-  font: inherit;
-  font-size: 22px;
-  cursor: pointer;
-}
-.quad button[data-out="true"] { border-color: #3d5a3f; background: radial-gradient(ellipse at center, #c9f2aa, #8fbf7d); text-shadow: 0 0 6px #e8ffd8; }
-.quad button[aria-current="true"] { outline: 3px solid #26362a; outline-offset: -3px; }
-
 .rule { margin: 10px 0 0; font-size: 12px; line-height: 1.45; letter-spacing: .01em; }
 .note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; letter-spacing: .01em; opacity: .85; }
 

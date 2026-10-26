@@ -19,8 +19,8 @@ export default function TruthTablesPage() {
             TRUTH TABLES
           </h1>
         </header>
-        {/* The width of a chapter column, where these are embedded. */}
-        <div className="mx-auto max-w-prose">
+        {/* Match the wider circuit embeds used in chapters. */}
+        <div className="mx-auto">
           <h2>
             <code>{"<GateTruthTable />"}</code>
           </h2>

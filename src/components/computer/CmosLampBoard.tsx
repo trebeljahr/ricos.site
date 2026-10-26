@@ -16,7 +16,7 @@ export function lampCurrentPath(circuit: Circuit, snapshot: Snapshot) {
   const visit = (id: string): boolean => {
     const node = byId.get(id);
     if (!node || !snapshot.values[id] || visiting.has(id)) return false;
-    if (node.type === "high") return true;
+    if (node.type === "high" || node.type === "switch") return true;
     visiting.add(id);
     const sources = circuit.wires.filter(
       (wire) => wire.to === id && (!isMosfet(node) || wire.input === 1),
@@ -172,7 +172,7 @@ export function CmosLampBoard({
               const pos = layout.positions.get(node.id)!;
               return (
                 <text key={node.id} className={own.netLabel} x={pos.x + 9} y={pos.y - 9}>
-                  {layout.labels.get(node.id)}
+                  {layout.labels.get(node.id)} · {snapshot.values[node.id] ? 1 : 0}
                 </text>
               );
             })}

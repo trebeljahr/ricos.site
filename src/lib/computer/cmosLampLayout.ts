@@ -1,3 +1,4 @@
+import { cmosTopology } from "./cmosTopology";
 import type { Circuit, Node, Wire } from "./logic";
 import { isMosfet } from "./transistorGeometry";
 import type { Point } from "./wireRouting";
@@ -6,36 +7,7 @@ import { wireNetKeys } from "./wireTopology";
 /** Presentation coordinates for the actual CMOS graph. No gates or wires are synthesized here. */
 export function cmosLampLayout(circuit: Circuit) {
   const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
-  const incoming = (id: string) => circuit.wires.filter((wire) => wire.to === id);
-  const branch = (id: string, seen = new Set<string>()): Node[] => {
-    if (seen.has(id)) return [];
-    seen.add(id);
-    const node = byId.get(id)!;
-    if (!isMosfet(node) && node.type !== "junction") return [];
-    return [
-      node,
-      ...incoming(id)
-        .filter((wire) => node.type === "junction" || wire.input === 1)
-        .flatMap((wire) => branch(wire.from, seen)),
-    ];
-  };
-  const stages = circuit.nodes.filter(
-    (node) =>
-      node.type === "junction" &&
-      incoming(node.id).every(
-        (wire) =>
-          new Set(
-            branch(wire.from)
-              .filter(isMosfet)
-              .map((part) => part.type),
-          ).size === 1,
-      ) &&
-      new Set(
-        branch(node.id)
-          .filter(isMosfet)
-          .map((part) => part.type),
-      ).size === 2,
-  );
+  const { incoming, branch, stages, kinds } = cmosTopology({ ...circuit, nodes: circuit.nodes });
   const positions = new Map<string, Point>();
   const stageFor = new Map<string, { left: number; index: number; first: number }>();
   const labels = new Map<string, string>([
@@ -48,8 +20,8 @@ export function cmosLampLayout(circuit: Circuit) {
     const rank = (node: Node): number => {
       const source = incoming(node.id).find((wire) => wire.input === 1)!;
       const parent = byId.get(source.from)!;
-      if (isMosfet(parent)) return rank(parent) + 1;
-      if (parent.type === "junction")
+      if (parent.type === node.type) return rank(parent) + 1;
+      if (parent.type === "junction" && kinds(parent.id).size === 1)
         return Math.max(...branch(parent.id).filter(isMosfet).map(rank)) + 1;
       return 0;
     };
@@ -65,13 +37,25 @@ export function cmosLampLayout(circuit: Circuit) {
     const controlIds = new Set(
       parts.map((part) => incoming(part.id).find((wire) => wire.input === 0)!.from),
     );
+    const railInverter =
+      parts.length === 2 &&
+      controlIds.size === 1 &&
+      parts.every(
+        (part) =>
+          incoming(part.id).find((wire) => wire.input === 1)!.from ===
+          (part.type === "pmos" ? "vcc" : "gnd"),
+      );
     labels.set(
       stage.id,
-      parts.length === 2 && controlIds.size === 1 && controlIds.has("a")
+      railInverter && controlIds.has("a")
         ? "Ā"
-        : parts.length === 2 && controlIds.size === 1 && controlIds.has("b")
+        : railInverter && controlIds.has("b")
           ? "B̄"
-          : "X",
+          : parts.some((part) =>
+                incoming(part.id).some((wire) => wire.input === 1 && wire.from === "a"),
+              )
+            ? "XOR"
+            : "X",
     );
     if (index === stages.length - 1) labels.set(stage.id, "OUT");
     for (const type of ["pmos", "nmos"] as const) {
@@ -148,6 +132,16 @@ export function cmosLampLayout(circuit: Circuit) {
     const from = byId.get(wire.from)!,
       start = point(from.id),
       end = point(wire.to, wire.input);
+    if (
+      isMosfet(byId.get(wire.to)!) &&
+      wire.input === 1 &&
+      (from.type === "switch" || (from.type === "junction" && kinds(from.id).size === 2))
+    ) {
+      const upper = byId.get(wire.to)!.type === "pmos";
+      const y = upper ? 90 : 466;
+      const x = from.type === "switch" ? 140 : start.x + 68;
+      return compact([start, { x, y: start.y }, { x, y }, { x: end.x, y }, end]);
+    }
     const bends =
       from.type === "ground"
         ? [{ x: end.x, y: start.y }]

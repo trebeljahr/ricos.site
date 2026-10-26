@@ -1518,7 +1518,7 @@ export const BLUEPRINT_FAMILIES: Record<
   transistor: {
     label: "CMOS transistors",
     suffix: "CMOS transistors",
-    note: "PMOS pull-up paths connect VDD to output; NMOS pull-down paths connect output to ground. NAND uses parallel PMOS and series NMOS; NOR reverses them.",
+    note: "Video reference circuits: NAND uses parallel PMOS and series NMOS; NOR reverses them. XOR passes A or inverted A to OUT; XNOR adds an inverter.",
   },
   nand: {
     label: "NAND only",
@@ -1543,8 +1543,8 @@ export const BLUEPRINT_RECIPES: Record<BlueprintFamily, Record<LogicGate, string
     or: "CMOS NOR plus inverter",
     nand: "Parallel PMOS, series NMOS",
     nor: "Series PMOS, parallel NMOS",
-    xor: "CMOS NOR plus AOI21",
-    xnor: "CMOS NAND plus OAI21",
+    xor: "Four-transistor pass-transistor XOR",
+    xnor: "Pass-transistor XOR plus inverter",
   },
   nand: {
     not: "A NAND A",
@@ -1601,27 +1601,16 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
     const p = (control: string, source: string) => add("pmos", [control, source], "PMOS");
     const n = (control: string, source: string) => add("nmos", [control, source], "NMOS");
     const join = (left: string, right: string) => add("junction", [left, right], "OUTPUT NODE");
-    // Each stage has complementary paths from VDD and GND to the shared output.
+    // Reference: Computer&Electronics, HaBMAD-Dr8M. XOR passes input levels;
+    // unlike the other stages, its sources are A and NOT A rather than fixed rails.
     const inverter = (input: string) => join(p(input, "vcc"), n(input, "gnd"));
     const cmosNand = (left: string, right: string) =>
       join(join(p(left, "vcc"), p(right, "vcc")), n(left, n(right, "gnd")));
     const cmosNor = (left: string, right: string) =>
-      join(p(left, p(right, "vcc")), join(n(left, "gnd"), n(right, "gnd")));
-    // Compact static CMOS: a 4-device NAND/NOR drives a 6-device compound gate.
-    const cmosExclusive = (equivalent: boolean) => {
-      if (equivalent) {
-        const ab = cmosNand("a", "b");
-        // XNOR = NOT((A OR B) AND NOT(A AND B)): NAND + OAI21.
-        const pullUp = join(p("a", p("b", "vcc")), p(ab, "vcc"));
-        const source = n(ab, "gnd");
-        return join(pullUp, join(n("a", source), n("b", source)));
-      }
-      const neither = cmosNor("a", "b");
-      // XOR = NOT((A AND B) OR NOT(A OR B)): NOR + AOI21.
-      const upper = join(p("a", "vcc"), p("b", "vcc"));
-      const pullUp = p(neither, upper);
-      const pullDown = join(n("a", n("b", "gnd")), n(neither, "gnd"));
-      return join(pullUp, pullDown);
+      join(p(right, p(left, "vcc")), join(n(left, "gnd"), n(right, "gnd")));
+    const videoXor = () => {
+      const notA = inverter("a");
+      return join(p("b", "a"), n("b", notA));
     };
     switch (gate) {
       case "not":
@@ -1640,10 +1629,11 @@ export function gateBlueprint(gate: LogicGate, family: BlueprintFamily): Circuit
         output = inverter(cmosNor("a", "b"));
         break;
       case "xor":
-        output = cmosExclusive(false);
+        output = videoXor();
         break;
       case "xnor":
-        output = cmosExclusive(true);
+        // Derived extension: the video XOR followed by its two-device NOT.
+        output = inverter(videoXor());
         break;
     }
   } else if (family === "nand") {

@@ -45,11 +45,13 @@ it("preserves the fixed gate and legend options", () => {
   expect(screen.getByRole("application", { name: "Circuit canvas" })).toBeTruthy();
 });
 
-
 it("compacts a saved transistor demo on Arrange and restores its edits with Undo", () => {
   const saved = structuredClone(transistorDemo("not"));
-  saved.nodes = saved.nodes.map((node) => ({ ...node, y: node.y * 2,
-    ...(node.id === "a" ? { value: true } : {}) }));
+  saved.nodes = saved.nodes.map((node) => ({
+    ...node,
+    y: node.y * 2,
+    ...(node.id === "a" ? { value: true } : {}),
+  }));
   saved.wires = saved.wires.map((wire) => ({ ...wire, color: "amber" as const }));
   const key = demoStorageKey("NOT from transistors", saved.name);
   localStorage.setItem(key, JSON.stringify({ current: saved, saved: {} }));
@@ -59,26 +61,54 @@ it("compacts a saved transistor demo on Arrange and restores its edits with Undo
   fireEvent.click(screen.getByText("View", { selector: "summary" }));
   fireEvent.click(testButton("Arrange by signal flow"));
   const arranged = current();
-  expect(arranged.nodes.map((node: { y: number }) => node.y)).not.toEqual(before.nodes.map((node: { y: number }) => node.y));
+  expect(arranged.nodes.map((node: { y: number }) => node.y)).not.toEqual(
+    before.nodes.map((node: { y: number }) => node.y),
+  );
   expect(arranged.nodes.find((node: { id: string }) => node.id === "a").value).toBe(true);
-  expect(arranged.wires.map((wire: { from: string; to: string; input: number; color: string }) =>
-    [wire.from, wire.to, wire.input, wire.color])).toEqual(before.wires.map((wire: { from: string; to: string; input: number; color: string }) =>
-      [wire.from, wire.to, wire.input, wire.color]));
+  expect(
+    arranged.wires.map((wire: { from: string; to: string; input: number; color: string }) => [
+      wire.from,
+      wire.to,
+      wire.input,
+      wire.color,
+    ]),
+  ).toEqual(
+    before.wires.map((wire: { from: string; to: string; input: number; color: string }) => [
+      wire.from,
+      wire.to,
+      wire.input,
+      wire.color,
+    ]),
+  );
   fireEvent.click(testButton("Undo"));
   expect(current()).toEqual(before);
 });
 
-it.each(["xor", "xnor"] as const)("opens the new %s circuit without overwriting an older saved attempt", (gate) => {
-  const legacy = structuredClone(transistorDemo("nand"));
-  legacy.name = transistorDemo(gate).name;
-  legacy.nodes.find((node) => node.id === "a")!.label = "OLD ATTEMPT";
-  const key = demoStorageKey(`${gate.toUpperCase()} from transistors`, legacy.name);
-  const stored = JSON.stringify({ current: legacy, saved: {} });
-  localStorage.setItem(key, stored);
-  render(<TransistorGates gate={gate} fixed />);
-  expect(screen.queryByLabelText("OLD ATTEMPT — SWITCH part")).toBeNull();
-  expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(5);
-  expect(screen.getAllByRole("button", { name: "Connect to PMOS Gate (G)" })).toHaveLength(5);
-  fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
-  expect(localStorage.getItem(key)).toBe(stored);
-});
+it.each(["xor", "xnor"] as const)(
+  "opens the new %s circuit without overwriting an older saved attempt",
+  (gate) => {
+    const legacy = structuredClone(transistorDemo("nand"));
+    legacy.name = transistorDemo(gate).name;
+    legacy.nodes.find((node) => node.id === "a")!.label = "OLD ATTEMPT";
+    const key = demoStorageKey(`${gate.toUpperCase()} from transistors`, legacy.name);
+    const stored = JSON.stringify({ current: legacy, saved: {} });
+    localStorage.setItem(key, stored);
+    const compoundKey = demoStorageKey(
+      `${gate.toUpperCase()} from transistors`,
+      legacy.name,
+      "compound-cmos-v1",
+    );
+    localStorage.setItem(compoundKey, stored);
+    render(<TransistorGates gate={gate} fixed />);
+    expect(screen.queryByLabelText("OLD ATTEMPT — SWITCH part")).toBeNull();
+    expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(
+      gate === "xor" ? 2 : 3,
+    );
+    expect(screen.getAllByRole("button", { name: "Connect to PMOS Gate (G)" })).toHaveLength(
+      gate === "xor" ? 2 : 3,
+    );
+    fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
+    expect(localStorage.getItem(key)).toBe(stored);
+    expect(localStorage.getItem(compoundKey)).toBe(stored);
+  },
+);

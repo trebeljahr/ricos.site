@@ -10,3 +10,17 @@ export const GATE_LABELS: Record<CmosGate, string> = {
   xor: "XOR",
   xnor: "XNOR",
 };
+
+// Circuit references in Computer&Electronics' transistor-to-gate lesson.
+export const GATE_REFERENCE_SECONDS: Record<CmosGate, number> = {
+  not: 295,
+  nand: 122,
+  nor: 451,
+  and: 386,
+  or: 494,
+  xor: 555,
+  xnor: 555,
+};
+export function gateReferenceUrl(gate: CmosGate) {
+  return `https://www.youtube.com/watch?v=HaBMAD-Dr8M&t=${GATE_REFERENCE_SECONDS[gate]}s`;
+}

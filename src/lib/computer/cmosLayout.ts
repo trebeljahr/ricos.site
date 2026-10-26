@@ -1,7 +1,8 @@
+import { cmosTopology } from "./cmosTopology";
 import type { Circuit, Node } from "./logic";
 import { isMosfet, transistorPortPoint } from "./transistorGeometry";
 
-/** Lay out complementary stages as supply → pull-up → OUT → pull-down → ground.
+/** Lay out MOS stages with sources entering above PMOS and below NMOS.
  * Used for built-ins and explicit Arrange; saved reader layouts never reflow automatically.
  */
 export function layoutCmosBlueprint(circuit: Circuit): Circuit {
@@ -12,36 +13,7 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
     !nodes.some((node) => node.type === "switch")
   )
     return circuit;
-  const incoming = (id: string) => circuit.wires.filter((wire) => wire.to === id);
-  const branch = (id: string, seen = new Set<string>()): Node[] => {
-    if (seen.has(id)) return [];
-    seen.add(id);
-    const node = byId.get(id)!;
-    if (!isMosfet(node) && node.type !== "junction") return [];
-    return [
-      node,
-      ...incoming(id)
-        .filter((wire) => node.type === "junction" || wire.input === 1)
-        .flatMap((wire) => branch(wire.from, seen)),
-    ];
-  };
-  const stages = nodes.filter(
-    (node) =>
-      node.type === "junction" &&
-      incoming(node.id).every((wire) => {
-        const types = new Set(
-          branch(wire.from)
-            .filter(isMosfet)
-            .map((part) => part.type),
-        );
-        return types.size === 1;
-      }) &&
-      new Set(
-        branch(node.id)
-          .filter(isMosfet)
-          .map((part) => part.type),
-      ).size === 2,
-  );
+  const { incoming, branch, stages, kinds } = cmosTopology({ ...circuit, nodes });
   if (!stages.length) return circuit;
   const outputY = 420;
   const transistorHeight = 132;
@@ -69,7 +41,7 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         const source = incoming(part.id).find((wire) => wire.input === 1);
         const parent = source && byId.get(source.from);
         if (parent?.type === type) return rank(parent) + 1;
-        if (parent?.type === "junction") {
+        if (parent?.type === "junction" && kinds(parent.id).size === 1) {
           const upstream = branch(parent.id).filter((node) => node.type === type);
           if (upstream.length) return Math.max(...upstream.map(rank)) + 1;
         }
@@ -181,6 +153,18 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
                 { x: entryX, y: railY },
                 { x: entryX, y: end.y },
               ]),
+        ];
+      } else if (
+        isMosfet(to) &&
+        wire.input === 1 &&
+        (from.type === "switch" || (from.type === "junction" && kinds(from.id).size === 2))
+      ) {
+        const y = to.type === "pmos" ? supplyRail - 28 : groundRail + 28;
+        const x = from.type === "switch" ? 210 : start.x + 160;
+        bends = [
+          { x, y: start.y },
+          { x, y },
+          { x: end.x, y },
         ];
       } else if (isMosfet(from) && isMosfet(to)) {
         bends = [];

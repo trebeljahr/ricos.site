@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
+import { gateReferenceUrl } from "src/lib/computer/cmosGates";
 import {
+  lampGate,
   type SwitchLampWiring,
   switchLampDemo,
   transistorLampDemo,
@@ -470,8 +472,24 @@ function SwitchExperiment({
           onFlip={flip}
         />
       )}
+      {electrical && wiring !== "single" && (
+        <p className={own.flowLegend}>
+          {circuit.nodes.filter((node) => node.type === "pmos" || node.type === "nmos").length}{" "}
+          transistors.{" "}
+          <a className="underline" href={gateReferenceUrl(lampGate(wiring)!)}>
+            Video wiring
+          </a>
+          .{wiring === "xnor" && " XNOR adds a two-transistor NOT to the video's XOR."}
+          {(wiring === "xor" || wiring === "xnor") &&
+            " Ideal pass switches; real output-voltage loss is not modeled."}
+        </p>
+      )}
       <p className={own.flowStatus} role="status">
-        {lit ? "Complete path · lamp on" : "Broken path · lamp off"}
+        {electrical && wiring !== "single"
+          ? `OUT · ${lit ? 1 : 0} · lamp ${lit ? "on" : "off"}`
+          : lit
+            ? "Complete path · lamp on"
+            : "Broken path · lamp off"}
       </p>
       <p className={own.flowLegend}>
         Moving dots follow current from +, through the lamp, back to −.

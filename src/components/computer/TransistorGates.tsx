@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
-import { CMOS_GATES, type CmosGate, GATE_LABELS } from "../../lib/computer/cmosGates";
+import {
+  CMOS_GATES,
+  type CmosGate,
+  GATE_LABELS,
+  gateReferenceUrl,
+} from "../../lib/computer/cmosGates";
 import { transistorDemo } from "../../lib/computer/demoCircuits";
 import { CircuitDemo } from "./CircuitDemo";
 import { buttonClass, controlsClass } from "./DeviceDemoParts";
@@ -40,7 +45,7 @@ export function TransistorGates({
       <CircuitDemo
         makeCircuit={makeCircuit}
         label={`${GATE_LABELS[gate]} from transistors`}
-        revision={gate === "xor" || gate === "xnor" ? "compound-cmos-v1" : undefined}
+        revision={gate === "xor" || gate === "xnor" ? "video-HaBMAD-Dr8M-v1" : undefined}
       >
         {legend && (
           <div className="space-y-2">
@@ -49,36 +54,27 @@ export function TransistorGates({
                 {GATE_LABELS[gate]} · {transistorCount} transistors in the starting circuit.
               </strong>
               {gate === "xor"
-                ? " A four-transistor NOR drives a six-transistor AOI21 stage."
+                ? " B selects A or inverted A using two pass transistors. The other two transistors invert A."
                 : gate === "xnor"
-                  ? " A four-transistor NAND drives a six-transistor OAI21 stage."
+                  ? " The video's four-transistor XOR followed by its two-transistor NOT. This is a derived extension."
                   : gate === "and" || gate === "or"
-                    ? " A four-transistor NAND or NOR followed by a two-transistor inverter."
-                    : " Both the pull-up and pull-down networks are included."}
+                    ? " A four-transistor NAND or NOR followed by a two-transistor NOT."
+                    : " Complementary PMOS and NMOS paths drive the output toward 1 or 0."}
             </p>
             <p>
-              These are CMOS gates. G is the gate control, S is the source, and D is the drain. PMOS
-              connects toward VDD when its gate is 0. NMOS connects toward GND when its gate is 1.
-              The output is the shared node between those paths.
+              G controls the transistor. A conducting transistor passes its source (S) level to its
+              drain (D). PMOS switches on at 0; NMOS switches on at 1. OUT is a voltage level, shown
+              by the lamp.
             </p>
             <p>
-              Follow the vertical source–drain paths, then flip A or B. The circle on a PMOS gate
-              means it switches on at 0.
-            </p>
-            <p>
-              Bipolar transistors use base, collector, and emitter terminals. The{" "}
-              <a
-                className="underline"
-                href="https://www.electronics-tutorials.ws/logic/logic-gates-using-transistors.html"
-              >
-                resistor–transistor circuits
-              </a>{" "}
-              use NPN transistors and resistors to build the same logic functions.
-            </p>
-            <p>
-              This builder uses ideal directed switches: a conducting transistor passes its source
-              level to its drain. It omits body terminals, analog voltages, current, resistance, and
-              capacitance.
+              Wiring follows the{" "}
+              <a className="underline" href={gateReferenceUrl(gate)}>
+                video diagram
+              </a>
+              .
+              {gate === "xor" || gate === "xnor"
+                ? " The pass-transistor XOR uses ideal switches here. Real devices can weaken its output voltage; this model omits that effect."
+                : " The simulator uses ideal switches and omits analog voltage, resistance, and capacitance."}
             </p>
           </div>
         )}

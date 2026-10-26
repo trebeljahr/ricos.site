@@ -35,3 +35,8 @@ it.each(["series", "parallel", "not", "nand", "nor", "xor", "xnor"] as const)(
     }
   },
 );
+
+it("labels the signal-fed selector as XOR rather than an inverter of B", () => {
+  const layout = cmosLampLayout(transistorLampDemo("xnor"));
+  expect(layout.stages.map((stage) => layout.labels.get(stage.id))).toEqual(["Ā", "XOR", "OUT"]);
+});

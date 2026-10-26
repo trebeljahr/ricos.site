@@ -148,8 +148,8 @@ describe("switch logic", () => {
     expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     click("XOR");
     expect(screen.getAllByRole("button", { name: /^Control A: low/ })).toHaveLength(1);
-    expect(screen.getAllByRole("img", { name: /A transistor .*gate low/ })).toHaveLength(4);
-    expect(screen.getAllByRole("img", { name: /^(N|P)MOS .*transistor/ })).toHaveLength(10);
+    expect(screen.getAllByRole("img", { name: /A transistor .*gate low/ })).toHaveLength(2);
+    expect(screen.getAllByRole("img", { name: /^(N|P)MOS .*transistor/ })).toHaveLength(4);
     fireEvent.click(screen.getAllByRole("button", { name: /^Control A: low/ })[0]);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(screen.getByTestId("switch-spark")).toBeTruthy();
@@ -187,7 +187,11 @@ describe("switch logic", () => {
       expect(Boolean(container.querySelector("[data-current]"))).toBe(lit);
       expect(container.querySelector("[data-signal][data-current]")).toBeNull();
       expect(screen.getByRole("status").textContent).toBe(
-        lit ? "Complete path · lamp on" : "Broken path · lamp off",
+        wiring === "single"
+          ? lit
+            ? "Complete path · lamp on"
+            : "Broken path · lamp off"
+          : `OUT · ${lit ? 1 : 0} · lamp ${lit ? "on" : "off"}`,
       );
     }
   });

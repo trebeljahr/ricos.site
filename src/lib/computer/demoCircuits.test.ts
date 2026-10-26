@@ -144,12 +144,11 @@ describe("chapter circuits", () => {
     };
     for (const gate of Object.keys(truth) as (keyof typeof truth)[]) {
       const circuit = transistorDemo(gate);
-      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 10, xnor: 10 };
+      const counts = { not: 2, nand: 4, nor: 4, and: 6, or: 6, xor: 4, xnor: 6 };
       expect(
         circuit.nodes.filter((node) => node.type === "nmos" || node.type === "pmos"),
       ).toHaveLength(counts[gate]);
       expect(validateCircuit(circuit)).toBeTruthy();
-      expect(cmosNandLevel.rules!(circuit)).toEqual([]);
       const wiring = gate === "and" ? "series" : gate === "or" ? "parallel" : gate;
       const lamp = transistorLampDemo(wiring);
       expect(lampGate(wiring)).toBe(gate);
@@ -160,10 +159,46 @@ describe("chapter circuits", () => {
       for (let row = 0; row < 4; row++) {
         const a = Boolean(row & 1),
           b = Boolean(row & 2);
+        // External input drivers select a supply rail. Include those rails when
+        // checking pass-transistor paths for floating outputs or rail contention.
+        const driven = {
+          ...circuit,
+          nodes: circuit.nodes.map((node) =>
+            node.type === "switch"
+              ? {
+                  ...node,
+                  type: ((node.id === "a" ? a : b) ? "high" : "ground") as "high" | "ground",
+                }
+              : node,
+          ),
+        };
+        expect(cmosNandLevel.rules!(driven)).toEqual([]);
         const snapshot = read(circuit, { a, b });
         expect(snapshot.values.out).toBe(truth[gate](a, b));
       }
     }
+  });
+
+  it("matches the video's XOR selector connections, including signal-fed sources", () => {
+    const circuit = transistorDemo("xor");
+    const input = (id: string, pin: number) =>
+      circuit.wires.find((wire) => wire.to === id && wire.input === pin)!.from;
+    const devices = circuit.nodes.filter((node) => node.type === "pmos" || node.type === "nmos");
+    const inverter = devices.filter((node) => input(node.id, 0) === "a");
+    const selector = devices.filter((node) => input(node.id, 0) === "b");
+    expect(inverter).toHaveLength(2);
+    expect(selector).toHaveLength(2);
+    const notA = circuit.nodes.find(
+      (node) =>
+        node.type === "junction" &&
+        inverter.every((part) =>
+          circuit.wires.some((wire) => wire.from === part.id && wire.to === node.id),
+        ),
+    )!;
+    expect(input(selector.find((node) => node.type === "pmos")!.id, 1)).toBe("a");
+    expect(input(selector.find((node) => node.type === "nmos")!.id, 1)).toBe(notA.id);
+    expect(input(inverter.find((node) => node.type === "pmos")!.id, 1)).toBe("vcc");
+    expect(input(inverter.find((node) => node.type === "nmos")!.id, 1)).toBe("gnd");
   });
 
   it("decodes all addresses and routes all four-bit data patterns", () => {

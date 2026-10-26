@@ -4,15 +4,21 @@ export function SwitchContact({
   closed,
   active,
   reverse,
+  selector = false,
 }: {
   closed: boolean;
   active: boolean;
   reverse: boolean;
+  selector?: boolean;
 }) {
   return (
-    <span className={own.switchBase} aria-hidden="true">
+    <span
+      className={selector ? `${own.switchBase} ${own.selectorSwitchBase}` : own.switchBase}
+      aria-hidden="true"
+    >
       <i className={own.contactLeft} />
       <i className={own.contactRight} />
+      {selector && <i className={own.selectorPivot} />}
       <span className={own.blade} data-closed={closed}>
         <i />
       </span>
@@ -56,7 +62,7 @@ export function ControlSwitch({
       aria-label={`Control ${name}: ${high ? "high" : "low"}. Connect gate to battery ${high ? "negative" : "positive"}.`}
       onClick={onFlip}
     >
-      <span className={own.switchBase} aria-hidden="true" />
+      <SwitchContact closed={high} active={false} reverse={false} selector />
       <svg viewBox="-60 -50 120 100" aria-hidden="true">
         <path
           className={own.deviceLead}
@@ -68,10 +74,6 @@ export function ControlSwitch({
         <text className={own.selectorRail} x="32" y="34">
           +
         </text>
-        <circle className={own.terminal} cx="-32" cy="10" r="5" />
-        <circle className={own.terminal} cx="32" cy="10" r="5" />
-        <path className={own.selectorBlade} data-high={high} d="M0 -10 L-32 10" />
-        <circle className={own.terminal} cx="0" cy="-10" r="5" />
       </svg>
       <span className={own.controlLabel}>
         {name} = {Number(high)}

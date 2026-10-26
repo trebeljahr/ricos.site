@@ -88,37 +88,39 @@ function KnifeSwitch({
     </button>
   );
 }
-/** Gate leads face the controls between the two branches. */
+/** Transistors retain their package drawing; only the separate controls are switches. */
 function TransistorSwitch({
   contact,
   high,
   closed,
-  active,
-  reverse,
   boardHeight,
 }: {
   contact: Contact;
   high: boolean;
   closed: boolean;
-  active: boolean;
-  reverse: boolean;
   boardHeight: number;
 }) {
   return (
     <div
       className={own.transistorSwitch}
-      data-gate-up={contact.y === 360}
       style={{ left: `${contact.x / 8}%`, top: `${(contact.y / boardHeight) * 100}%` }}
       role="img"
       aria-label={`${contact.kind.toUpperCase()} ${contact.name} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}`}
     >
-      <SwitchContact closed={closed} active={active} reverse={reverse} />
-      <span className={own.transistorLabel}>
-        {contact.kind.toUpperCase()} {contact.name} · {closed ? "CLOSED" : "OPEN"}
-      </span>
-      <span className={own.gateLead} aria-hidden="true">
-        G
-      </span>
+      <svg viewBox="-60 -60 120 120" aria-hidden="true">
+        <path className={own.deviceLead} d="M-56 0 H-32 M32 0 H56 M0 24 V60" />
+        <rect className={own.chip} x="-36" y="-34" width="72" height="62" rx="9" />
+        <text className={own.chipKind} x="0" y="-11">
+          {contact.kind.toUpperCase()}
+        </text>
+        <text className={own.chipName} x="0" y="12">
+          {contact.name}
+        </text>
+        <circle className={own.stateLight} data-on={closed} cx="24" cy="-23" r="3" />
+        <text className={own.gateLabel} x="10" y="55">
+          G
+        </text>
+      </svg>
     </div>
   );
 }
@@ -277,8 +279,6 @@ function SwitchBoard({
                 contact={contact}
                 high={contact.name === "A" ? a : b}
                 closed={conducts(contact, a, b)}
-                active={activeRows[rows.indexOf(contact.y)]}
-                reverse={lowSide}
                 boardHeight={boardHeight}
               />
             ) : (

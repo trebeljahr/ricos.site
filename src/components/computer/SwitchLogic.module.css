@@ -43,20 +43,29 @@
   background: transparent; color: #302b20; font: inherit; cursor: pointer;
   -webkit-tap-highlight-color: transparent; touch-action: manipulation;
 }
-.transistorSwitch { width: 19.25%; height: 11.75cqi; }
-.transistorLabel, .contactName { position: absolute; left: 50%; transform: translateX(-50%); width: max-content; color: #474b37; font-size: 1.6cqi; line-height: 1; }
-.transistorLabel { bottom: calc(100% + 4.25cqi); }
-.transistorSwitch[data-gate-up="true"] .transistorLabel { bottom: auto; top: calc(100% + 1.25cqi); }
-.contactName { top: calc(100% + 1.125cqi); font-size: 2cqi; }
-.gateLead { position: absolute; left: 50%; top: 100%; height: 13.83%; border-left: 2px solid #738667; padding-left: 7px; color: #58654b; font-size: 1.4cqi; line-height: 1; }
-.transistorSwitch[data-gate-up="true"] .gateLead { top: auto; bottom: 100%; }
+.transistorSwitch { width: 15%; height: 15cqi; }
+.transistorSwitch svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.contactName { position: absolute; left: 50%; transform: translateX(-50%); width: max-content; top: calc(100% + 1.125cqi); color: #474b37; font-size: 2cqi; line-height: 1; }
+.chip { fill: #303b32; stroke: #19251d; stroke-width: 2; }
+.chipKind, .chipName { fill: #f2f1dc; text-anchor: middle; font: 12px ui-monospace, monospace; }
+.chipName { font-size: 19px; }
+.stateLight { fill: #778171; transition: fill .18s; }
+.stateLight[data-on="true"] { fill: #c1e895; }
+.gateLabel { fill: #706e5c; font: 10px ui-monospace, monospace; }
 .controlSwitch { left: 50%; top: 52.083%; width: 15%; height: 12.5cqi; padding: 0; border: 0; background: none; cursor: pointer; font: inherit; touch-action: manipulation; }
 .controlSwitch > .switchBase { inset: 18% 3.333% 6%; }
-.controlSwitch svg { position: relative; display: block; width: 100%; height: 100%; overflow: visible; }
+.controlSwitch svg { position: relative; z-index: 1; pointer-events: none; display: block; width: 100%; height: 100%; overflow: visible; }
 .deviceLead { fill: none; stroke: #738667; stroke-width: 2; }
+.transistorPart .deviceLead, .transistorSwitch .deviceLead { stroke: #8a8d7c; stroke-width: 5; }
 .selectorRail { fill: #5b5646; font: 14px ui-monospace, monospace; text-anchor: middle; }
-.selectorBlade { fill: none; stroke: #a27b35; stroke-width: 7; stroke-linecap: round; transform-origin: 0 -10px; transition: transform .18s; filter: drop-shadow(0 2px 1px #4f3c2855); }
-.selectorBlade[data-high="true"] { transform: rotate(-116deg); }
+.selectorSwitchBase .contactLeft, .selectorSwitchBase .contactRight, .selectorPivot {
+  z-index: 2; width: 14.286%; height: 21.053%; top: 44.737%; border-radius: 22%;
+}
+.selectorSwitchBase .contactLeft { left: 14.286%; }
+.selectorSwitchBase .contactRight { right: 14.286%; }
+.selectorPivot { position: absolute; left: 43.75%; top: 19.737%; width: 12.5%; height: 18.421%; border: 1px solid #796027; border-radius: 50%; background: linear-gradient(120deg, #ead49a, #8f6e2f 48%, #d9bb6c 54%, #ae863d); box-shadow: 0 2px 2px #4f3c28; }
+.selectorSwitchBase .blade { z-index: 3; left: 50%; top: 22.368%; width: 33.693%; height: 13.158%; transform: rotate(148deg); box-shadow: 0 2px 2px #3e2f2655; }
+.selectorSwitchBase .blade[data-closed="true"] { transform: rotate(32deg); }
 .controlSwitch:hover .switchBase { filter: brightness(1.04); }
 .controlSwitch:active .switchBase { translate: 0 1px; }
 .controlLabel { position: absolute; top: 23%; left: 9%; width: max-content; color: #384c31; font-size: 1.5cqi; line-height: 1; }
@@ -190,7 +199,7 @@
 @keyframes sparkFlash { 0% { opacity: 1; transform: scale(.4); } 35% { opacity: 1; transform: scale(1.35); } 100% { opacity: 0; transform: scale(.1); } }
 @keyframes sparkFly { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.25); } }
 @media (prefers-reduced-motion: reduce) {
-  .blade, .selectorBlade, .signalCable, .glass, .lamp::before { transition: none; }
+  .blade, .signalCable, .stateLight, .glass, .lamp::before { transition: none; }
   .sparkBurst { display: none; }
   .currentFlow, .currentContact { animation: none; }
 }
@@ -208,7 +217,5 @@
 
 .netLabel { fill: #615d4d; font: 13px ui-monospace, monospace; }
 
-.cmosSwitch { position: absolute; transform: translate(-50%, -50%) rotate(90deg); }
 .cmosGateLabel { fill: #497535; font: 12px ui-monospace, monospace; text-anchor: end; }
-.cmosKind { fill: #615d4d; font: 10px ui-monospace, monospace; text-anchor: middle; }
 .cmosInputLabel { fill: #497535; font: 14px ui-monospace, monospace; text-anchor: middle; }

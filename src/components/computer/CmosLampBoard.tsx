@@ -4,14 +4,7 @@ import type { Circuit, Snapshot } from "src/lib/computer/logic";
 import { isMosfet } from "src/lib/computer/transistorGeometry";
 import { bridgeWirePaths, polylinePath, wireJunctions } from "src/lib/computer/wireGeometry";
 import { wireNetKeys } from "src/lib/computer/wireTopology";
-import {
-  Battery,
-  Cable,
-  type Control,
-  ControlSwitch,
-  Lamp,
-  SwitchContact,
-} from "./SwitchBoardParts";
+import { Battery, Cable, type Control, ControlSwitch, Lamp } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
 
 /** Trace the load path through the simulator's conducting devices; gate controls are excluded. */
@@ -141,15 +134,26 @@ export function CmosLampBoard({
               const control = circuit.wires.find(
                 (wire) => wire.to === node.id && wire.input === 0,
               )!.from;
+              const high = Boolean(snapshot.values[control]);
+              const closed = node.type === "nmos" ? high : !high;
               const label = layout.labels.get(control) ?? control;
               return (
-                <g key={node.id} transform={`translate(${pos.x} ${pos.y})`}>
-                  <path className={own.deviceLead} d="M0 -34 V-28 M0 28 V34 M-46 0 H-24" />
-                  <text className={own.cmosGateLabel} x="-50" y="4">
+                <g
+                  key={node.id}
+                  className={own.transistorPart}
+                  transform={`translate(${pos.x} ${pos.y})`}
+                >
+                  <path className={own.deviceLead} d="M0 -34 V-26 M0 26 V34 M-46 0 H-36" />
+                  <rect className={own.chip} x="-36" y="-27" width="72" height="54" rx="8" />
+                  <text className={own.chipKind} x="0" y="-8">
+                    {node.type.toUpperCase()}
+                  </text>
+                  <text className={own.chipName} x="0" y="15">
                     {label}
                   </text>
-                  <text className={own.cmosKind} x="0" y="-49">
-                    {node.type.toUpperCase()}
+                  <circle className={own.stateLight} data-on={closed} cx="25" cy="-17" r="3" />
+                  <text className={own.cmosGateLabel} x="-50" y="4">
+                    {label}
                   </text>
                 </g>
               );
@@ -180,24 +184,12 @@ export function CmosLampBoard({
             const high = Boolean(snapshot.values[control]),
               closed = node.type === "nmos" ? high : !high;
             return (
-              <div
+              <span
                 key={node.id}
-                className={own.cmosSwitch}
-                style={{
-                  left: `${(layout.positions.get(node.id)!.x / layout.width) * 100}%`,
-                  top: `${(layout.positions.get(node.id)!.y / layout.height) * 100}%`,
-                  width: `${(77 / layout.width) * 100}%`,
-                  height: `${(47 / layout.height) * 100}%`,
-                }}
+                className="sr-only"
                 role="img"
                 aria-label={`${node.type.toUpperCase()} ${layout.labels.get(control) ?? control} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}`}
-              >
-                <SwitchContact
-                  closed={closed}
-                  active={current.devices.has(node.id)}
-                  reverse={node.type === "nmos"}
-                />
-              </div>
+              />
             );
           })}
           {spark && (

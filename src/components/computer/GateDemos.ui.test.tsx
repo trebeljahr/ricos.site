@@ -126,7 +126,6 @@ describe("switch logic", () => {
     click("XOR");
     expect(screen.getAllByRole("button", { name: /^Control A: low/ })).toHaveLength(1);
     expect(screen.getAllByRole("img", { name: /A transistor .*gate low/ })).toHaveLength(2);
-    expect(screen.getByText(/Ideal switch paths, not complete CMOS gates/)).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: /^Control A: low/ })[0]);
     expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
     expect(screen.getByTestId("switch-spark")).toBeTruthy();

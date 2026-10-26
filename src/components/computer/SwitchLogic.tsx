@@ -1,15 +1,9 @@
-import dynamic from "next/dynamic";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import type { CmosGate } from "src/lib/computer/cmosGates";
 import { type SwitchLampWiring, switchLampDemo } from "src/lib/computer/demoCircuits";
 import { bit } from "src/lib/computer/gateLogic";
 import { initialSnapshot, step } from "src/lib/computer/logic";
 import own from "./SwitchLogic.module.css";
-
-const CompleteCmosGate = dynamic(() =>
-  import("./TransistorGates").then((module) => module.TransistorGates),
-);
 
 export type SwitchWiring = "series" | "parallel";
 type Control = "A" | "B";
@@ -17,24 +11,15 @@ type ContactKind = "nmos" | "pmos";
 type Contact = { name: Control; kind: ContactKind; x: number; y: number };
 type Spark = { id: number; x: number; y: number };
 
-const WIRINGS: Record<SwitchLampWiring, { label: string; path: string }> = {
-  single: { label: "ONE SWITCH", path: "One transistor opens or closes the path to the lamp." },
-  series: {
-    label: "IN A ROW · AND",
-    path: "One path passes through A and then B. Both must conduct.",
-  },
-  parallel: {
-    label: "SIDE BY SIDE · OR",
-    path: "Two paths reach the lamp. Either switch can complete one.",
-  },
-  not: { label: "NOT", path: "A PMOS transistor conducts when A is low, reversing the result." },
-  nand: {
-    label: "NAND",
-    path: "Either low control completes a PMOS path. Only two highs keep the lamp off.",
-  },
-  nor: { label: "NOR", path: "Two PMOS transistors sit in a row. Both controls must be low." },
-  xor: { label: "XOR", path: "One path takes high A and low B; the other takes low A and high B." },
-  xnor: { label: "XNOR", path: "One path takes two highs; the other takes two lows." },
+const WIRINGS: Record<SwitchLampWiring, string> = {
+  single: "ONE SWITCH",
+  series: "IN A ROW · AND",
+  parallel: "SIDE BY SIDE · OR",
+  not: "NOT",
+  nand: "NAND",
+  nor: "NOR",
+  xor: "XOR",
+  xnor: "XNOR",
 };
 const ELECTRICAL_WIRINGS: SwitchLampWiring[] = [
   "single",
@@ -119,9 +104,6 @@ function KnifeSwitch({
           <i />
         </span>
       </span>
-      <span className={own.switchLabel}>
-        {contact.name} · {closed ? "CLOSED · 1" : "OPEN · 0"}
-      </span>
     </button>
   );
 }
@@ -195,9 +177,7 @@ function ControlSwitch({
         <path className={own.selectorBlade} data-high={high} d="M0 -10 L-32 10" />
         <circle className={own.terminal} cx="0" cy="-10" r="5" />
       </svg>
-      <span className={own.controlLabel}>
-        {name} · {high ? "HIGH · 1" : "LOW · 0"}
-      </span>
+      <span className={own.controlLabel}>{name}</span>
     </button>
   );
 }
@@ -253,7 +233,6 @@ function SwitchBoard({
   const controlX = (name: Control) => (controls.length === 1 ? 410 : name === "A" ? 320 : 500);
   return (
     <div className={own.boardFrame}>
-      <p className={own.scrollHint}>Scroll sideways to follow the whole circuit.</p>
       <section
         className={own.boardViewport}
         // biome-ignore lint/a11y/noNoninteractiveTabindex: Scrollable diagrams need keyboard access.
@@ -276,25 +255,25 @@ function SwitchBoard({
               </pattern>
             </defs>
             <rect x="130" y="90" width="630" height="350" rx="8" fill={`url(#${patternId})`} />
-            <text className={own.boardLabel} x="150" y="34">
-              BATTERY +
-            </text>
-            <text className={own.boardLabel} x="150" y="542">
-              BATTERY − · RETURN
-            </text>
-            {electrical && (
-              <text className={own.boardLabel} x="750" y="34" textAnchor="end">
-                IDEAL LAMP CIRCUIT · {contacts.length}{" "}
-                {contacts.length === 1 ? "TRANSISTOR" : "TRANSISTORS"}
-              </text>
+            {electrical ? (
+              <>
+                <Cable d={`M80 212 V56 H${lowSide ? 650 : 180}`} />
+                <Cable
+                  d={`M80 348 V512 H${lowSide ? controlX(controls[controls.length - 1]) - 32 : 776}`}
+                  returning
+                />
+                <Cable d={`M150 56 V475 H${controlX(controls[controls.length - 1]) + 32}`} />
+                <Cable
+                  d={lowSide ? `M180 512 V${rows[0]}` : `M180 56 V${rows[rows.length - 1]}`}
+                  returning={lowSide}
+                />
+              </>
+            ) : (
+              <>
+                <Cable d={`M80 212 V${rows[0]} H180 V${rows[rows.length - 1]}`} />
+                <Cable d="M80 348 V430 H776 V360 H724" returning />
+              </>
             )}
-            <Cable d="M80 212 V56 H750" />
-            <Cable d="M80 348 V512 H750" returning />
-            {electrical && <Cable d="M150 56 V475 H750" />}
-            <Cable
-              d={lowSide ? `M180 512 V${rows[0]}` : `M180 56 V${rows[rows.length - 1]}`}
-              returning={lowSide}
-            />
             {rows.map((y) => {
               const row = contacts.filter((contact) => contact.y === y);
               return (
@@ -315,18 +294,17 @@ function SwitchBoard({
             })}
             {lowSide ? (
               <>
-                <Cable d={`M610 ${rows[0]} V390 H724 V360`} returning />
+                <Cable d={`M610 ${rows[0]} V390 H776 V360 H724`} returning />
                 <Cable d="M676 360 H650 V56" />
                 <Terminal x={650} y={56} junction />
               </>
             ) : (
               <>
                 <Cable d={`M610 ${rows[0]} V360 H676`} />
-                <Cable d="M724 360 H750 V512" returning />
-                <Terminal x={750} y={512} junction />
+                {electrical && <Cable d="M724 360 H776 V512" returning />}
               </>
             )}
-            <Terminal x={180} y={lowSide ? 512 : 56} junction />
+            {electrical && <Terminal x={180} y={lowSide ? 512 : 56} junction />}
             {electrical && (
               <>
                 <Terminal x={150} y={56} junction />
@@ -373,7 +351,6 @@ function SwitchBoard({
           <div className={own.battery} role="img" aria-label="Battery">
             <i />
             <span className={own.batteryPositive}>+</span>
-            <b>BATTERY</b>
             <span className={own.batteryNegative}>−</span>
           </div>
           {contacts.map((contact) =>
@@ -431,7 +408,6 @@ function SwitchBoard({
               <i />
               <i />
             </div>
-            <span className={own.lampLabel}>LAMP · {lit ? "ON · 1" : "OFF · 0"}</span>
           </div>
         </div>
       </section>
@@ -469,7 +445,6 @@ function SwitchExperiment({
 }) {
   const [wiring, setWiring] = useState<SwitchLampWiring>(initialWiring);
   const [inputs, setInputs] = useState<[boolean, boolean]>([false, false]);
-  const [showCmos, setShowCmos] = useState(false);
   const [spark, setSpark] = useState<Spark | null>(null);
   const sparkId = useRef(0);
   const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
@@ -508,7 +483,7 @@ function SwitchExperiment({
     playButton();
   }
   function wiringLabel(name: SwitchLampWiring) {
-    return electrical ? WIRINGS[name].label : name === "series" ? "IN A ROW" : "SIDE BY SIDE";
+    return electrical ? WIRINGS[name] : name === "series" ? "IN A ROW" : "SIDE BY SIDE";
   }
   return (
     <section
@@ -517,7 +492,6 @@ function SwitchExperiment({
     >
       <div className={own.header}>
         <div>
-          <span className={own.eyebrow}>BATTERY · SWITCHES · LAMP</span>
           <h3>{electrical ? "Switches controlled by electricity" : "Switches and a lamp"}</h3>
         </div>
         <button
@@ -555,48 +529,6 @@ function SwitchExperiment({
         spark={spark}
         onFlip={flip}
       />
-      <p className={own.wireLegend}>Dots join wires. Crossings without dots do not connect.</p>
-      <div className={own.caption}>
-        <p>{WIRINGS[wiring].path}</p>
-        <p>
-          {electrical
-            ? "Flip A or B to connect its gate wire to battery + (high) or − (low). The lamp current takes the separate path through the transistor."
-            : "Click the switch handles. A closed switch lets current through; an open switch breaks the path."}
-        </p>
-      </div>
-      {electrical && (
-        <p className={own.modelNote}>
-          <strong>Ideal switch paths, not complete CMOS gates.</strong> These show when a lamp
-          circuit closes. NMOS conducts at high; PMOS conducts at low. A CMOS gate also drives its
-          output to + or −. NOT uses 2 transistors; NAND and NOR use 4; AND and OR use 6. XOR and
-          XNOR counts depend on the circuit.{" "}
-          <a href="https://computationstructures.org/notes/cmos/notes.html">
-            How CMOS gates are wired
-          </a>
-          . Gate current, voltage thresholds and body diodes are omitted here.
-        </p>
-      )}
-      {electrical && wiring !== "single" && (
-        <details
-          className={own.cmosDetails}
-          onToggle={(event) => setShowCmos(event.currentTarget.open)}
-        >
-          <summary>
-            Compare the complete{" "}
-            {wiring === "series" ? "AND" : wiring === "parallel" ? "OR" : wiring.toUpperCase()} CMOS
-            circuit
-          </summary>
-          {showCmos && (
-            <CompleteCmosGate
-              key={wiring}
-              fixed
-              gate={
-                (wiring === "series" ? "and" : wiring === "parallel" ? "or" : wiring) as CmosGate
-              }
-            />
-          )}
-        </details>
-      )}
     </section>
   );
 }

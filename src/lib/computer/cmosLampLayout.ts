@@ -13,7 +13,7 @@ export function cmosLampLayout(circuit: Circuit) {
     ["a", "A"],
     ["b", "B"],
   ]);
-  let left = 200;
+  let left = 400;
   for (const [index, stage] of stages.entries()) {
     const parts = branch(stage.id).filter(isMosfet);
     const rank = (node: Node): number => {
@@ -89,23 +89,25 @@ export function cmosLampLayout(circuit: Circuit) {
     }
     left += width + 80;
   }
-  const width = Math.max(800, left + 120);
+  const width = Math.max(820, left + 120);
   positions.set("vcc", { x: 80, y: 48 });
   const groundY = 550;
-  const selectorY = 630;
   positions.set("gnd", { x: 80, y: groundY });
   const inputSwitches = circuit.nodes
     .filter((node) => node.type === "switch")
     .map((node, index) => {
-      const x = index === 0 ? 240 : 500;
-      const y = selectorY;
+      const x = 220;
+      const y = index === 0 ? 180 : 470;
+      const lane = index === 0 ? 380 : 340;
       return {
         id: node.id,
         x,
         y,
+        lane,
         input: { x: x - 56, y },
         output: { x: x + 56, y },
-        resistor: { x: x + 100, top: groundY + 16, bottom: groundY + 40 },
+        resistor:
+          index === 0 ? { x: 320, top: 260, bottom: 284 } : { x: 340, top: 500, bottom: 524 },
       };
     });
   for (const input of inputSwitches) positions.set(input.id, input.output);
@@ -158,17 +160,7 @@ export function cmosLampLayout(circuit: Circuit) {
         net: vcc,
         currentSource: input.id,
         signal: false,
-        points:
-          input.id === "a"
-            ? [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.input]
-            : [
-                { x: 80, y: 48 },
-                { x: 132, y: 48 },
-                { x: 132, y: 710 },
-                { x: input.x - 100, y: 710 },
-                { x: input.x - 100, y: input.y },
-                input.input,
-              ],
+        points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.input],
       },
       {
         id: `${input.id}-bias-signal`,
@@ -179,7 +171,7 @@ export function cmosLampLayout(circuit: Circuit) {
         points: [
           input.output,
           { x: input.resistor.x, y: input.y },
-          { x: input.resistor.x, y: input.resistor.bottom },
+          { x: input.resistor.x, y: input.resistor.top },
         ],
       },
       {
@@ -189,7 +181,7 @@ export function cmosLampLayout(circuit: Circuit) {
         net: gnd,
         signal: false,
         points: [
-          { x: input.resistor.x, y: input.resistor.top },
+          { x: input.resistor.x, y: input.resistor.bottom },
           { x: input.resistor.x, y: groundY },
         ],
       },
@@ -216,12 +208,10 @@ export function cmosLampLayout(circuit: Circuit) {
     const input = inputSwitches.find((input) => input.id === from.id);
     let prefix: Point[], lane: number;
     if (input) {
-      // Leave the same right-hand contact as the first physical-switch demo,
-      // clear the open handle, then share a straight input trunk at the left.
-      const exitX = input.x + 120,
-        row = 520 + (input.id === "b" ? 14 : 0);
-      lane = input.id === "a" ? 156 : 180;
-      prefix = [start, { x: exitX, y: start.y }, { x: exitX, y: row }, { x: lane, y: row }];
+      // Inputs face the transistor stages, so each net leaves its switch
+      // directly into one vertical trunk, without routing back underneath it.
+      lane = input.lane;
+      prefix = [start, { x: lane, y: start.y }];
     } else {
       const sourceStage = stages.find((stage) => stage.id === from.id)!;
       lane =
@@ -252,8 +242,7 @@ export function cmosLampLayout(circuit: Circuit) {
   });
   return {
     width,
-    height: 740,
-    selectorY,
+    height: 600,
     groundY,
     inputSwitches,
     inputWires,

@@ -212,7 +212,7 @@ export function CmosLampBoard({
               className={own.sparkBurst}
               style={{
                 left: `${((spark.control ? layout.inputSwitches.find((input) => input.id === spark.control!.toLowerCase())!.output.x : spark.x) / layout.width) * 100}%`,
-                top: `${((spark.control ? layout.selectorY : spark.y) / layout.height) * 100}%`,
+                top: `${((spark.control ? layout.inputSwitches.find((input) => input.id === spark.control!.toLowerCase())!.y : spark.y) / layout.height) * 100}%`,
               }}
               data-testid="switch-spark"
               aria-hidden="true"

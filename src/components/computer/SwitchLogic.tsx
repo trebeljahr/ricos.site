@@ -47,7 +47,7 @@ const ELECTRICAL_WIRINGS: SwitchLampWiring[] = [
 ];
 
 function contactsFor(wiring: SwitchWiring | "single"): Contact[] {
-  if (wiring === "single") return [{ name: "A", kind: "nmos", x: 420, y: 140 }];
+  if (wiring === "single") return [{ name: "A", kind: "nmos", x: 500, y: 180 }];
   return wiring === "series"
     ? [
         { name: "A", kind: "nmos", x: 330, y: 140 },
@@ -123,8 +123,8 @@ function SwitchBoard({
   const branched = wiring === "parallel";
   // A real N-channel lamp switch belongs on the return side of the load.
   const lowSide = electrical && contacts.every((contact) => contact.kind === "nmos");
-  const rows = branched ? [140, 360] : [140];
-  const boardHeight = branched ? 480 : electrical ? 430 : 360;
+  const rows = branched ? [140, 360] : electrical ? [180] : [140];
+  const boardHeight = branched ? 480 : electrical ? 400 : 360;
   const returnY = boardHeight - 30;
   // The native simulator decides which complete branches conduct. These are
   // presentation paths, not a second circuit or current simulation.
@@ -165,8 +165,8 @@ function SwitchBoard({
               </>
             )}
             {/* Each half of a branch rail carries current only for its own path. */}
-            <Cable d={`M180 140 V${branched || lowSide ? 360 : 140}`} returning={lowSide} />
-            <Cable d={`M610 140 V${branched ? 360 : 250}`} returning={lowSide} />
+            <Cable d={`M180 ${rows[0]} V${branched || lowSide ? 360 : 140}`} returning={lowSide} />
+            <Cable d={`M610 ${rows[0]} V${branched ? 360 : 250}`} returning={lowSide} />
             {rows.map((y, branch) => {
               const row = contacts.filter((contact) => contact.y === y);
               const active = activeRows[branch];
@@ -212,17 +212,17 @@ function SwitchBoard({
             })}
             {electrical && (
               <>
-                <Cable d="M150 40 V280 H174 Q180 274 186 280 H364" />
-                <Cable d="M476 280 H520 V200 H420" signal high={a} />
-                <Cable d="M520 280 V322" signal high={a} />
-                <Cable d="M520 346 V360 H180" returning />
-                <PullDown x={520} top={322} bottom={346} name="A" />
-                <Terminal x={150} y={40} junction />
-                <Terminal x={520} y={280} junction />
+                <Cable d="M132 40 V280 H174 Q180 274 186 280 H224" />
+                <Cable d="M336 280 H500 V240" signal high={a} />
+                <Cable d="M380 280 V322" signal high={a} />
+                <Cable d="M380 346 V360 H180" returning />
+                <PullDown x={380} top={322} bottom={346} name="A" />
+                <Terminal x={132} y={40} junction />
+                <Terminal x={380} y={280} junction />
                 <Terminal x={180} y={360} junction />
-                <Terminal x={364} y={280} />
-                <Terminal x={476} y={280} />
-                <Terminal x={420} y={200} />
+                <Terminal x={224} y={280} />
+                <Terminal x={336} y={280} />
+                <Terminal x={500} y={240} />
               </>
             )}
             {contacts.map((contact) => (
@@ -268,7 +268,7 @@ function SwitchBoard({
           {electrical && (
             <KnifeSwitch
               name="A"
-              x={420}
+              x={280}
               y={280}
               closed={a}
               control

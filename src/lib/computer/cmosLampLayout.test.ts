@@ -9,11 +9,12 @@ it.each(["series", "parallel", "not", "nand", "nor", "xor", "xnor"] as const)(
     const circuit = transistorLampDemo(gate);
     const layout = cmosLampLayout(circuit);
     for (const control of circuit.nodes.filter((node) => node.type === "switch")) {
-      const x = layout.inputSwitches.find((input) => input.id === control.id)!.x;
+      const input = layout.inputSwitches.find((input) => input.id === control.id)!;
+      const x = input.x;
       const left = x - 77,
         right = x + 77;
-      const top = layout.selectorY - 72,
-        bottom = layout.selectorY + 47;
+      const top = input.y - 72,
+        bottom = input.y + 47;
       for (const wire of layout.wires) {
         const target = circuit.nodes.find((node) => node.id === wire.to)!;
         if (isMosfet(target) && wire.input === 0) continue;
@@ -55,9 +56,9 @@ it.each(["series", "parallel", "not", "nand", "nor", "xor", "xnor"] as const)(
       expect(input.output).toEqual({ x: input.x + 56, y: input.y });
       const bias = layout.inputWires.find((wire) => wire.id === `${input.id}-bias-signal`)!;
       expect(bias.points[0]).toEqual(input.output);
-      expect(bias.points.at(-1)).toEqual({ x: input.resistor.x, y: input.resistor.bottom });
+      expect(bias.points.at(-1)).toEqual({ x: input.resistor.x, y: input.resistor.top });
       const ground = layout.inputWires.find((wire) => wire.id === `${input.id}-bias-ground`)!;
-      expect(ground.points[0]).toEqual({ x: input.resistor.x, y: input.resistor.top });
+      expect(ground.points[0]).toEqual({ x: input.resistor.x, y: input.resistor.bottom });
       expect(ground.points.at(-1)).toEqual({ x: input.resistor.x, y: layout.groundY });
       for (const wire of layout.wires.filter((wire) => wire.from === input.id)) {
         expect(wire.points[0]).toEqual(input.output);

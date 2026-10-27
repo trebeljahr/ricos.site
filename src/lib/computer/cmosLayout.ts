@@ -23,9 +23,11 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
   const pullDownY = outputY + outputGap / 2;
   const stageColumns = new Map<string, number>();
   const gateControls = new Map<string, string[]>();
-  for (const [index, stage] of stages.entries()) {
-    const x = 380 + index * 680;
-    stage.x = x + 88;
+  let nextStageX = 380;
+  for (const stage of stages) {
+    const x = nextStageX;
+    // Junction coordinates describe the dot's box; its centre must share the drain axis.
+    stage.x = x + 88 - 5;
     stage.y = outputY - 5;
     const controls = [
       ...new Set(
@@ -77,6 +79,7 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         root.y = (feedsTransistor ? outerY : outputY + (type === "pmos" ? -24 : 24)) - 5;
       }
     }
+    nextStageX = Math.max(...branch(stage.id).filter(isMosfet).map((part) => part.x)) + 132 + 180;
   }
   const supply = byId.get("vcc")!,
     ground = byId.get("gnd")!;
@@ -94,7 +97,9 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
       ground.y + 116,
       ...nodes.filter((node) => node.type === "nmos").map((node) => node.y + transistorHeight),
     ) + 24;
-  Object.assign(byId.get("out")!, { x: stages.at(-1)!.x + 330, y: outputY - 63 });
+  const outputX = Math.max(...branch(stages.at(-1)!.id).filter(isMosfet)
+    .map((node) => node.x + 132)) + 64;
+  Object.assign(byId.get("out")!, { x: outputX, y: outputY - 63 });
   const point = (node: Node, input?: number) =>
     isMosfet(node)
       ? transistorPortPoint(node, input ?? 0, input === undefined ? "output" : "input")
@@ -119,6 +124,10 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
   return {
     ...circuit,
     nodes,
+    groups: circuit.groups?.map((group) => group.id === "construction" ? {
+      ...group,
+      nodeIds: [...new Set([...group.nodeIds, ...switches.map((node) => node.id)])],
+    } : group),
     wires: circuit.wires.map((wire) => {
       const from = byId.get(wire.from)!,
         to = byId.get(wire.to)!;
@@ -139,8 +148,11 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         const entryX = to.x - 55;
         const railY = to.type === "pmos" ? to.y + transistorHeight + 24 : to.y - 24;
         const sourceStage = stages.findIndex((stage) => stage.id === from.id);
+        const straightControl = controls.length === 1 &&
+          (from.type === "junction" || switches.length === 1);
         const signalY =
-          outputY + (wire.from === "a" ? -40 : wire.from === "b" ? 40 : sourceStage === 0 ? -8 : 8);
+          outputY + (straightControl ? 0
+            : wire.from === "a" ? -40 : wire.from === "b" ? 40 : sourceStage === 0 ? -8 : 8);
         const exitX = from.type === "switch" ? (wire.from === "a" ? 210 : 240) : start.x + 35;
         bends = [
           { x: exitX, y: start.y },

@@ -5,6 +5,7 @@ import { storageCircuit } from "./circuitHierarchy";
 import { BLUEPRINTS, type Circuit, initialSnapshot, step, moduleInputs, moduleOutputs, PRESETS } from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
 import { arrangeSignalFlow } from "./signalLayout";
+import { transistorPortPoint } from "./transistorGeometry";
 import { rawSegmentDemo, bcdSegmentDemo, BCD_DECODER, ADD3 } from "./sevenSegment";
 import { BLUEPRINT_FAMILIES, GATE_NAMES, gateBlueprint } from "./logic";
 
@@ -111,4 +112,17 @@ it("preserves every grouped gate construction's truth table after layout", () =>
       expect(step(edited, initialSnapshot(), false).values.out).toBe(evalGate(gate, a, b));
     }
   }
+});
+
+it("joins inverter drains on one axis and runs the output directly to its lamp", () => {
+  const circuit = gateBlueprint("not", "transistor");
+  const junction = circuit.nodes.find((node) => node.type === "junction")!;
+  const centre = { x: junction.x + 5, y: junction.y + 5 };
+  for (const wire of circuit.wires.filter((wire) => wire.to === junction.id)) {
+    const drain = circuit.nodes.find((node) => node.id === wire.from)!;
+    expect(transistorPortPoint(drain, 0, "output").x).toBe(centre.x);
+    expect(wire.points!.every((point) => point.x === centre.x)).toBe(true);
+  }
+  const output = circuit.wires.find((wire) => wire.to === "out")!;
+  expect(output.points!.every((point) => point.y === centre.y)).toBe(true);
 });

@@ -24,7 +24,7 @@ it("runs the inverter through native transistor parts and switches gates", () =>
 
 it("exposes real MOSFET terminals and shows conduction independently of drain level", () => {
   render(<TransistorGates gate="nand" fixed />);
-  expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(2);
+  expect(screen.getAllByLabelText("Connect to NMOS Gate (G)", { selector: "button" })).toHaveLength(2);
   const source = screen.getAllByRole("button", { name: "Connect to NMOS Source (S)" })[0];
   expect(source.parentElement?.style.top).toBe("100%");
   const drain = screen.getAllByRole("button", { name: "Wire from NMOS Drain (D)" })[0];
@@ -53,7 +53,7 @@ it("compacts a saved transistor demo on Arrange and restores its edits with Undo
     ...(node.id === "a" ? { value: true } : {}),
   }));
   saved.wires = saved.wires.map((wire) => ({ ...wire, color: "amber" as const }));
-  const key = demoStorageKey("NOT from transistors", saved.name);
+  const key = demoStorageKey("NOT from transistors", saved.name, "video-HaBMAD-Dr8M-compact-v2");
   localStorage.setItem(key, JSON.stringify({ current: saved, saved: {} }));
   render(<TransistorGates fixed />);
   const current = () => JSON.parse(localStorage.getItem(key)!).current;
@@ -84,7 +84,7 @@ it("compacts a saved transistor demo on Arrange and restores its edits with Undo
   expect(current()).toEqual(before);
 });
 
-it.each(["xor", "xnor"] as const)(
+it.each(["not", "and", "or", "nand", "nor", "xor", "xnor"] as const)(
   "opens the new %s circuit without overwriting an older saved attempt",
   (gate) => {
     const legacy = structuredClone(transistorDemo("nand"));
@@ -99,16 +99,28 @@ it.each(["xor", "xnor"] as const)(
       "compound-cmos-v1",
     );
     localStorage.setItem(compoundKey, stored);
+    const videoKey = demoStorageKey(`${gate.toUpperCase()} from transistors`, legacy.name, "video-HaBMAD-Dr8M-v1");
+    localStorage.setItem(videoKey, stored);
     render(<TransistorGates gate={gate} fixed />);
     expect(screen.queryByLabelText("OLD ATTEMPT — SWITCH part")).toBeNull();
-    expect(screen.getAllByRole("button", { name: "Connect to NMOS Gate (G)" })).toHaveLength(
-      gate === "xor" ? 2 : 3,
+    expect(screen.getAllByLabelText("Connect to NMOS Gate (G)", { selector: "button" })).toHaveLength(
+      transistorDemo(gate).nodes.filter((node) => node.type === "nmos").length,
     );
-    expect(screen.getAllByRole("button", { name: "Connect to PMOS Gate (G)" })).toHaveLength(
-      gate === "xor" ? 2 : 3,
+    expect(screen.getAllByLabelText("Connect to PMOS Gate (G)", { selector: "button" })).toHaveLength(
+      transistorDemo(gate).nodes.filter((node) => node.type === "pmos").length,
     );
     fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
     expect(localStorage.getItem(key)).toBe(stored);
     expect(localStorage.getItem(compoundKey)).toBe(stored);
+    expect(localStorage.getItem(videoKey)).toBe(stored);
   },
 );
+
+it("keeps edits to the refreshed demo after reloading", () => {
+  const first = render(<TransistorGates fixed />);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
+  first.unmount();
+  render(<TransistorGates fixed />);
+  expect(testButton("ON", screen.getByLabelText("A — SWITCH part"))).toBeTruthy();
+  expect(within(screen.getByLabelText(/OUTPUT — LAMP part/)).getByLabelText("LED off")).toBeTruthy();
+});

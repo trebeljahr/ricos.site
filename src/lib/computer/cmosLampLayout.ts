@@ -9,7 +9,6 @@ export function cmosLampLayout(circuit: Circuit) {
   const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
   const { incoming, branch, stages, kinds } = cmosTopology({ ...circuit, nodes: circuit.nodes });
   const positions = new Map<string, Point>();
-  const stageFor = new Map<string, { left: number; index: number; first: number }>();
   const labels = new Map<string, string>([
     ["a", "A"],
     ["b", "B"],
@@ -68,7 +67,6 @@ export function cmosLampLayout(circuit: Circuit) {
         const y =
           type === "pmos" ? (series ? 140 + level * 88 : 180) : series ? 470 - level * 88 : 380;
         positions.set(part.id, { x, y });
-        stageFor.set(part.id, { left, index, first: left + 50 });
       }
       for (const junction of branch(stage.id).filter(
         (node) => node.type === "junction" && node.id !== stage.id,
@@ -93,28 +91,24 @@ export function cmosLampLayout(circuit: Circuit) {
   }
   const width = Math.max(800, left + 120);
   positions.set("vcc", { x: 80, y: 48 });
-  positions.set("gnd", { x: 80, y: 600 });
-  // Local labeled inputs can sit beside the lower network, keeping the board short.
-  const selectorY = 550;
-  const freeColumns = Array.from(
-    { length: Math.floor((width - 120) / 140) },
-    (_, i) => 160 + i * 140,
-  ).filter(
-    (x) =>
-      x < width - 90 &&
-      !circuit.nodes.filter(isMosfet).some((node) => {
-        const p = positions.get(node.id)!;
-        const grounded = circuit.wires.some(
-          (wire) => wire.from === "gnd" && wire.to === node.id && wire.input === 1,
-        );
-        return (
-          (Math.abs(p.y - selectorY) < 94 && Math.abs(p.x - x) < 109) ||
-          (grounded && p.y + 34 < selectorY + 50 && Math.abs(p.x - x) < 70)
-        );
-      }),
-  );
-  positions.set("a", { x: freeColumns[0] ?? 240, y: selectorY - 40 });
-  if (byId.has("b")) positions.set("b", { x: freeColumns[1] ?? 400, y: selectorY - 40 });
+  const groundY = 550;
+  const selectorY = 630;
+  positions.set("gnd", { x: 80, y: groundY });
+  const inputSwitches = circuit.nodes
+    .filter((node) => node.type === "switch")
+    .map((node, index) => {
+      const x = index === 0 ? 240 : 500;
+      const y = selectorY;
+      return {
+        id: node.id,
+        x,
+        y,
+        input: { x: x - 56, y },
+        output: { x: x + 56, y },
+        resistor: { x: x + 100, top: groundY + 16, bottom: groundY + 40 },
+      };
+    });
+  for (const input of inputSwitches) positions.set(input.id, input.output);
   positions.set("out", { x: width - 124, y: 280 });
   const point = (id: string, input?: number): Point => {
     const node = byId.get(id)!,
@@ -152,92 +146,120 @@ export function cmosLampLayout(circuit: Circuit) {
             : [{ x: end.x, y: start.y }];
     return compact([start, ...bends, end]);
   };
-  const occupied = circuit.wires
-    .filter((wire) => !gateWire(wire))
-    .map((wire) => ({ net: nets[wire.id], points: currentPoints(wire) }));
+  const inputWires = inputSwitches.flatMap((input) => {
+    const net = nets[circuit.wires.find((wire) => wire.from === input.id)!.id];
+    const vcc = nets[circuit.wires.find((wire) => wire.from === "vcc")!.id];
+    const gnd = nets[circuit.wires.find((wire) => wire.from === "gnd")!.id];
+    return [
+      {
+        id: `${input.id}-supply`,
+        from: "vcc",
+        to: input.id,
+        net: vcc,
+        currentSource: input.id,
+        signal: false,
+        points:
+          input.id === "a"
+            ? [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.input]
+            : [
+                { x: 80, y: 48 },
+                { x: 132, y: 48 },
+                { x: 132, y: 710 },
+                { x: input.x - 100, y: 710 },
+                { x: input.x - 100, y: input.y },
+                input.input,
+              ],
+      },
+      {
+        id: `${input.id}-bias-signal`,
+        from: input.id,
+        to: `${input.id}-resistor`,
+        net,
+        signal: true,
+        points: [
+          input.output,
+          { x: input.resistor.x, y: input.y },
+          { x: input.resistor.x, y: input.resistor.bottom },
+        ],
+      },
+      {
+        id: `${input.id}-bias-ground`,
+        from: `${input.id}-resistor`,
+        to: "gnd",
+        net: gnd,
+        signal: false,
+        points: [
+          { x: input.resistor.x, y: input.resistor.top },
+          { x: input.resistor.x, y: groundY },
+        ],
+      },
+    ];
+  });
+  const devices = circuit.nodes.filter(isMosfet);
+  const horizontalClear = (x1: number, x2: number, y: number) =>
+    !devices.some((node) => {
+      const p = positions.get(node.id)!;
+      return (
+        y > p.y - 35 && y < p.y + 35 && Math.max(x1, x2) > p.x - 44 && Math.min(x1, x2) < p.x + 44
+      );
+    });
   const wires = circuit.wires.map((wire) => {
     const from = byId.get(wire.from)!,
       to = byId.get(wire.to)!;
-    const start = point(from.id),
-      end = point(to.id, wire.input);
-    if (!gateWire(wire)) return { ...wire, points: currentPoints(wire) };
-    const stage = stageFor.get(to.id)!;
-    const controls = [
-      ...new Set(
-        branch(stages[stage.index].id)
-          .filter(isMosfet)
-          .map((node) => incoming(node.id).find((wire) => wire.input === 0)!.from),
-      ),
-    ];
-    const lane =
-      from.type === "switch"
-        ? from.id === "a"
-          ? 140
-          : 172
-        : stage.left - 25 - controls.indexOf(from.id) * 14;
-    const entryX = end.x - 4;
-    // Cross earlier stages between device rows, never through their packages.
-    const horizontalClear = (y: number) =>
-      !occupied.some(
-        (route) =>
-          route.net !== nets[wire.id] &&
-          route.points.slice(1).some((b, i) => {
-            const a = route.points[i];
-            return (
-              a.y === b.y &&
-              Math.abs(a.y - y) < 5 &&
-              Math.min(Math.max(a.x, b.x), Math.max(lane, entryX)) >
-                Math.max(Math.min(a.x, b.x), Math.min(lane, entryX))
-            );
-          }),
-      ) &&
-      !circuit.nodes.filter(isMosfet).some((node) => {
-        const p = positions.get(node.id)!;
-        return (
-          y >= p.y - 35 &&
-          y <= p.y + 35 &&
-          Math.max(lane, entryX) >= p.x - 44 &&
-          Math.min(lane, entryX) <= p.x + 44
-        );
-      });
-    const direction = to.type === "pmos" ? -1 : 1;
-    const entry =
-      [
-        0,
-        44 * direction,
-        -44 * direction,
-        60 * direction,
-        -60 * direction,
-        88 * direction,
-        -88 * direction,
-        104 * direction,
-        -104 * direction,
-      ]
-        .map((offset) => end.y + offset)
-        .find(horizontalClear) ?? end.y;
-    const originY =
-      from.type === "switch"
-        ? start.y - (from.id === "b" ? 12 : 0)
-        : start.y + (labels.get(from.id) === "Ā" ? -16 : 16);
-    const bends = [
-      ...(from.type === "switch"
-        ? [{ x: start.x, y: originY }]
-        : [
-            { x: start.x + 28, y: start.y },
-            { x: start.x + 28, y: originY },
-          ]),
-      { x: lane, y: originY },
-      { x: lane, y: entry },
-      ...(entry === end.y
-        ? []
-        : [
-            { x: entryX, y: entry },
-            { x: entryX, y: end.y },
-          ]),
-    ];
-    const points = compact([start, ...bends, end]);
-    occupied.push({ net: nets[wire.id], points });
-    return { ...wire, points };
+    const start = point(wire.from),
+      end = point(wire.to, wire.input);
+    const controlledSource =
+      isMosfet(to) &&
+      wire.input === 1 &&
+      (from.type === "switch" || (from.type === "junction" && kinds(from.id).size === 2));
+    if (!gateWire(wire) && !controlledSource) return { ...wire, points: currentPoints(wire) };
+    const input = inputSwitches.find((input) => input.id === from.id);
+    let prefix: Point[], lane: number;
+    if (input) {
+      // Leave the same right-hand contact as the first physical-switch demo,
+      // clear the open handle, then share a straight input trunk at the left.
+      const exitX = input.x + 120,
+        row = 520 + (input.id === "b" ? 14 : 0);
+      lane = input.id === "a" ? 156 : 180;
+      prefix = [start, { x: exitX, y: start.y }, { x: exitX, y: row }, { x: lane, y: row }];
+    } else {
+      const sourceStage = stages.find((stage) => stage.id === from.id)!;
+      lane =
+        Math.max(
+          ...branch(sourceStage.id)
+            .filter(isMosfet)
+            .map((part) => positions.get(part.id)!.x),
+        ) + 60;
+      prefix = [start, { x: lane, y: start.y }];
+    }
+    if (controlledSource) {
+      const direction = to.type === "pmos" ? -1 : 1;
+      const y = [24, 44, 64, 88, 112, 140]
+        .map((offset) => end.y + direction * offset)
+        .find((y) => horizontalClear(lane, end.x, y));
+      if (y === undefined) throw new Error(`No clear source route for ${wire.id}`);
+      return { ...wire, points: compact([...prefix, { x: lane, y }, { x: end.x, y }, end]) };
+    }
+    const entryX = end.x - 16;
+    const y = [0, -44, 44, -64, 64, -88, 88, -112, 112, -140, 140]
+      .map((offset) => end.y + offset)
+      .find((y) => horizontalClear(lane, entryX, y));
+    if (y === undefined) throw new Error(`No clear gate route for ${wire.id}`);
+    return {
+      ...wire,
+      points: compact([...prefix, { x: lane, y }, { x: entryX, y }, { x: entryX, y: end.y }, end]),
+    };
   });
-  return { width, height: 640, selectorY, positions, labels, wires, stages };
+  return {
+    width,
+    height: 740,
+    selectorY,
+    groundY,
+    inputSwitches,
+    inputWires,
+    positions,
+    labels,
+    wires,
+    stages,
+  };
 }

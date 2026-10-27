@@ -1,84 +1,78 @@
 import own from "./SwitchLogic.module.css";
 export type Control = "A" | "B";
-export function SwitchContact({
-  closed,
-  active,
-  reverse,
-  selector = false,
-}: {
-  closed: boolean;
-  active: boolean;
-  reverse: boolean;
-  selector?: boolean;
-}) {
-  return (
-    <span
-      className={selector ? `${own.switchBase} ${own.selectorSwitchBase}` : own.switchBase}
-      aria-hidden="true"
-    >
-      <i className={own.contactLeft} />
-      <i className={own.contactRight} />
-      {selector && <i className={own.selectorPivot} />}
-      <span className={own.blade} data-closed={closed}>
-        <i />
-      </span>
-      {active && <span className={own.currentContact} data-reverse={reverse} />}
-    </span>
-  );
-}
-
-export function ControlSwitch({
+/** One component and geometry for the first lamp demo and every transistor input. */
+export function KnifeSwitch({
   name,
   x,
-  high,
-  above = true,
-  below = false,
-  y = 425,
+  y,
+  closed,
+  active = false,
+  control = false,
   boardWidth = 800,
   boardHeight = 560,
   onFlip,
 }: {
   name: Control;
   x: number;
-  high: boolean;
-  above?: boolean;
-  below?: boolean;
-  boardHeight?: number;
+  y: number;
+  closed: boolean;
+  active?: boolean;
+  control?: boolean;
   boardWidth?: number;
-  y?: number;
+  boardHeight?: number;
   onFlip: () => void;
 }) {
   return (
     <button
       type="button"
-      className={own.controlSwitch}
+      className={own.knifeSwitch}
       style={{
         left: `${(x / boardWidth) * 100}%`,
         top: `${(y / boardHeight) * 100}%`,
-        width: `${(120 / boardWidth) * 100}%`,
-        height: `${(100 / boardHeight) * 100}%`,
+        width: `${(154 / boardWidth) * 100}%`,
+        height: `${(94 / boardHeight) * 100}%`,
       }}
-      aria-pressed={high}
-      aria-label={`Control ${name}: ${high ? "high" : "low"}. Connect gate to battery ${high ? "negative" : "positive"}.`}
+      aria-pressed={closed}
+      aria-label={
+        control
+          ? `Control ${name}: ${closed ? "high" : "low"}; switch ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`
+          : `Switch ${name}: ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`
+      }
       onClick={onFlip}
     >
-      <SwitchContact closed={high} active={false} reverse={false} selector />
-      <svg viewBox="-60 -50 120 100" aria-hidden="true">
-        <path
-          className={own.deviceLead}
-          d={`${above ? "M0 -10 V-40" : ""} ${below ? "M0 -10 V40" : ""} M-32 10 V20 M32 10 V20`}
-        />
-        <text className={own.selectorRail} x="-32" y="34">
-          −
-        </text>
-        <text className={own.selectorRail} x="32" y="34">
-          +
-        </text>
-      </svg>
-      <span className={own.controlLabel}>
-        {name} = {Number(high)}
+      <span className={own.switchBase} aria-hidden="true">
+        <i className={own.contactLeft} />
+        <i className={own.contactRight} />
+        <span className={own.blade} data-closed={closed}>
+          <i />
+        </span>
+        {active && <span className={own.currentContact} />}
+      </span>
+      <span className={own.contactName}>
+        {name}
+        {control && ` = ${Number(closed)}`}
       </span>
     </button>
+  );
+}
+
+/** Passive input bias; the shared digital simulator already defines open inputs as 0. */
+export function PullDown({
+  x,
+  top,
+  bottom,
+  name,
+}: {
+  x: number;
+  top: number;
+  bottom: number;
+  name: Control;
+}) {
+  return (
+    <g>
+      <title>{`Pull-down resistor for ${name}: holds the open input at 0`}</title>
+      <rect className={own.resistor} x={x - 6} y={top} width="12" height={bottom - top} rx="1" />
+    </g>
   );
 }
 

@@ -4,7 +4,15 @@ import type { Circuit, Snapshot } from "src/lib/computer/logic";
 import { isMosfet } from "src/lib/computer/transistorGeometry";
 import { bridgeWirePaths, polylinePath, wireJunctions } from "src/lib/computer/wireGeometry";
 import { wireNetKeys } from "src/lib/computer/wireTopology";
-import { Battery, Cable, type Control, ControlSwitch, Lamp } from "./SwitchBoardParts";
+import {
+  Battery,
+  Cable,
+  type Control,
+  KnifeSwitch,
+  Lamp,
+  PullDown,
+  Terminal,
+} from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
 
 /** Trace the load path through the simulator's conducting devices; gate controls are excluded. */
@@ -55,7 +63,6 @@ export function CmosLampBoard({
   const nets = useMemo(() => wireNetKeys(circuit), [circuit]);
   const current = useMemo(() => lampCurrentPath(circuit, snapshot), [circuit, snapshot]);
   const lit = Boolean(snapshot.values.out);
-  const controls = circuit.nodes.filter((node) => node.type === "switch");
   const railNet = (id: string) => nets[circuit.wires.find((wire) => wire.from === id)!.id];
   const colors = new Map<string, string>();
   colors.set(railNet("vcc"), "#a14e3f");
@@ -66,22 +73,29 @@ export function CmosLampBoard({
       colors.set(nets[wire.id], ["#57764b", "#407d83", "#8c704c", "#7b6687", "#596d4a"][index % 5]);
   }
   const paths = [
-    ...layout.wires
-      .filter(
-        (wire) =>
-          !(isMosfet(circuit.nodes.find((node) => node.id === wire.to)!) && wire.input === 0),
-      )
-      .map((wire) => ({
-        id: wire.id,
-        net: nets[wire.id],
-        path: polylinePath(wire.points),
-        active: current.wires.has(wire.id),
-      })),
+    ...layout.wires.map((wire) => ({
+      id: wire.id,
+      net: nets[wire.id],
+      path: polylinePath(wire.points),
+      active: current.wires.has(wire.id),
+      signal: isMosfet(circuit.nodes.find((node) => node.id === wire.to)!) && wire.input === 0,
+      high: Boolean(snapshot.values[wire.from]),
+    })),
+    ...layout.inputWires.map((wire) => ({
+      ...wire,
+      path: polylinePath(wire.points),
+      active:
+        "currentSource" in wire &&
+        circuit.wires.some(
+          (native) => native.from === wire.currentSource && current.wires.has(native.id),
+        ),
+      high: Boolean(snapshot.values[wire.from]),
+    })),
     { id: "battery-positive", net: railNet("vcc"), path: "M80 228 V48", active: lit },
     {
       id: "lamp-return",
       net: railNet("gnd"),
-      path: `M${layout.width - 76} 280 H${layout.width - 24} V600 H80 V364`,
+      path: `M${layout.width - 76} 280 H${layout.width - 24} V${layout.groundY} H80 V364`,
       active: lit,
     },
   ];
@@ -107,12 +121,15 @@ export function CmosLampBoard({
             aria-hidden="true"
           >
             {paths.map((wire) => (
-              <Cable
-                key={wire.id}
-                d={bridged[wire.id]}
-                color={colors.get(wire.net) ?? "#7a705d"}
-                active={wire.active}
-              />
+              <g key={wire.id} data-wire-id={wire.id}>
+                <Cable
+                  d={bridged[wire.id]}
+                  color={colors.get(wire.net) ?? "#7a705d"}
+                  active={wire.active}
+                  signal={"signal" in wire && wire.signal}
+                  high={"high" in wire && wire.high}
+                />
+              </g>
             ))}
             {lit && (
               <path
@@ -152,21 +169,18 @@ export function CmosLampBoard({
                     {label}
                   </text>
                   <circle className={own.stateLight} data-on={closed} cx="25" cy="-17" r="3" />
-                  <text className={own.cmosGateLabel} x="-50" y="4">
-                    {label}
+                  <text className={own.gateLabel} x="-48" y="-7">
+                    G
                   </text>
                 </g>
               );
             })}
-            {controls.map((node) => (
-              <text
-                key={node.id}
-                className={own.cmosInputLabel}
-                x={layout.positions.get(node.id)!.x}
-                y={layout.selectorY - 55}
-              >
-                {layout.labels.get(node.id)}
-              </text>
+            {layout.inputSwitches.map((input) => (
+              <g key={input.id}>
+                <PullDown {...input.resistor} name={input.id === "a" ? "A" : "B"} />
+                <Terminal x={input.input.x} y={input.input.y} />
+                <Terminal x={input.output.x} y={input.output.y} />
+              </g>
             ))}
             {layout.stages.map((node) => {
               const pos = layout.positions.get(node.id)!;
@@ -197,8 +211,8 @@ export function CmosLampBoard({
               key={spark.id}
               className={own.sparkBurst}
               style={{
-                left: `${((spark.control ? layout.positions.get(spark.control.toLowerCase())!.x + ((spark.control === "A" ? a : b) ? 32 : -32) : spark.x) / layout.width) * 100}%`,
-                top: `${((spark.control ? layout.selectorY + 10 : spark.y) / layout.height) * 100}%`,
+                left: `${((spark.control ? layout.inputSwitches.find((input) => input.id === spark.control!.toLowerCase())!.output.x : spark.x) / layout.width) * 100}%`,
+                top: `${((spark.control ? layout.selectorY : spark.y) / layout.height) * 100}%`,
               }}
               data-testid="switch-spark"
               aria-hidden="true"
@@ -216,16 +230,20 @@ export function CmosLampBoard({
             boardWidth={layout.width}
             boardHeight={layout.height}
           />
-          {controls.map((node) => (
-            <ControlSwitch
-              key={node.id}
-              name={node.id === "a" ? "A" : "B"}
-              x={layout.positions.get(node.id)!.x}
-              y={layout.selectorY}
+          {layout.inputSwitches.map((input) => (
+            <KnifeSwitch
+              key={input.id}
+              name={input.id === "a" ? "A" : "B"}
+              x={input.x}
+              y={input.y}
               boardWidth={layout.width}
               boardHeight={layout.height}
-              high={node.id === "a" ? a : b}
-              onFlip={() => onFlip(node.id === "a" ? "A" : "B")}
+              closed={input.id === "a" ? a : b}
+              control
+              active={circuit.wires.some(
+                (wire) => wire.from === input.id && current.wires.has(wire.id),
+              )}
+              onFlip={() => onFlip(input.id === "a" ? "A" : "B")}
             />
           ))}
         </div>

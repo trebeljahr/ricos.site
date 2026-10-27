@@ -13,9 +13,9 @@ import {
   Battery,
   Cable,
   type Control,
-  ControlSwitch,
+  KnifeSwitch,
   Lamp,
-  SwitchContact,
+  PullDown,
   Terminal,
 } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
@@ -63,33 +63,6 @@ function conducts(contact: Contact, a: boolean, b: boolean) {
   return contact.kind === "nmos" ? high : !high;
 }
 
-function KnifeSwitch({
-  contact,
-  closed,
-  active,
-  boardHeight,
-  onFlip,
-}: {
-  contact: Contact;
-  closed: boolean;
-  active: boolean;
-  boardHeight: number;
-  onFlip: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={own.knifeSwitch}
-      style={{ left: `${contact.x / 8}%`, top: `${(contact.y / boardHeight) * 100}%` }}
-      aria-pressed={closed}
-      aria-label={`Switch ${contact.name}: ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`}
-      onClick={onFlip}
-    >
-      <SwitchContact closed={closed} active={active} reverse={false} />
-      <span className={own.contactName}>{contact.name}</span>
-    </button>
-  );
-}
 /** Transistors retain their package drawing; only the separate controls are switches. */
 function TransistorSwitch({
   contact,
@@ -151,10 +124,8 @@ function SwitchBoard({
   // A real N-channel lamp switch belongs on the return side of the load.
   const lowSide = electrical && contacts.every((contact) => contact.kind === "nmos");
   const rows = branched ? [140, 360] : [140];
-  const boardHeight = branched ? 480 : electrical ? 400 : 360;
+  const boardHeight = branched ? 480 : electrical ? 430 : 360;
   const returnY = boardHeight - 30;
-  const controls: Control[] = contacts.some((contact) => contact.name === "B") ? ["A", "B"] : ["A"];
-  const controlX = (name: Control) => (controls.length === 1 ? 420 : name === "A" ? 330 : 510);
   // The native simulator decides which complete branches conduct. These are
   // presentation paths, not a second circuit or current simulation.
   const activeRows = rows.map((y, branch) => {
@@ -239,23 +210,21 @@ function SwitchBoard({
                 </g>
               );
             })}
-            {electrical &&
-              controls.map((name) => {
-                const x = controlX(name);
-                const high = name === "A" ? a : b;
-                return contacts
-                  .filter((contact) => contact.name === name)
-                  .map((contact) => {
-                    const gateY = contact.y === 360 ? 300 : 200;
-                    const selectorY = contact.y === 360 ? 290 : 210;
-                    return (
-                      <g key={`${name}-${contact.y}`}>
-                        <Cable d={`M${x} ${selectorY} V${gateY}`} signal high={high} />
-                        <Terminal x={x} y={gateY} />
-                      </g>
-                    );
-                  });
-              })}
+            {electrical && (
+              <>
+                <Cable d="M150 40 V280 H174 Q180 274 186 280 H364" />
+                <Cable d="M476 280 H520 V200 H420" signal high={a} />
+                <Cable d="M520 280 V322" signal high={a} />
+                <Cable d="M520 346 V360 H180" returning />
+                <PullDown x={520} top={322} bottom={346} name="A" />
+                <Terminal x={150} y={40} junction />
+                <Terminal x={520} y={280} junction />
+                <Terminal x={180} y={360} junction />
+                <Terminal x={364} y={280} />
+                <Terminal x={476} y={280} />
+                <Terminal x={420} y={200} />
+              </>
+            )}
             {contacts.map((contact) => (
               <g key={`${contact.name}-${contact.kind}-${contact.y}`}>
                 <Terminal x={contact.x - 56} y={contact.y} />
@@ -286,7 +255,9 @@ function SwitchBoard({
             ) : (
               <KnifeSwitch
                 key={`${contact.name}-${contact.kind}-${contact.y}`}
-                contact={contact}
+                name={contact.name}
+                x={contact.x}
+                y={contact.y}
                 closed={contact.name === "A" ? a : b}
                 active={activeRows[rows.indexOf(contact.y)]}
                 boardHeight={boardHeight}
@@ -294,20 +265,17 @@ function SwitchBoard({
               />
             ),
           )}
-          {electrical &&
-            controls.map((name) => (
-              <ControlSwitch
-                key={name}
-                name={name}
-                x={controlX(name)}
-                high={name === "A" ? a : b}
-                above={contacts.some((contact) => contact.name === name && contact.y === 140)}
-                below={contacts.some((contact) => contact.name === name && contact.y === 360)}
-                boardHeight={boardHeight}
-                y={250}
-                onFlip={() => onFlip(name)}
-              />
-            ))}
+          {electrical && (
+            <KnifeSwitch
+              name="A"
+              x={420}
+              y={280}
+              closed={a}
+              control
+              boardHeight={boardHeight}
+              onFlip={() => onFlip("A")}
+            />
+          )}
           {spark && (
             <span
               key={spark.id}
@@ -494,7 +462,7 @@ function SwitchExperiment({
       <p className={own.flowLegend}>
         Moving dots follow current from +, through the lamp, back to −.
         {electrical &&
-          " Matching labels share a control wire. Each selector’s + and − connect to the same battery terminals."}
+          " The same knife switches feed A and B from the battery. Pull-down resistors hold an open input at 0; thin wires carry those levels to the transistors."}
       </p>
     </section>
   );

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { transistorLampDemo } from "../../lib/computer/demoCircuits";
 import { SwitchLogic, TransistorSwitches } from "./SwitchLogic";
 import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
 
@@ -202,6 +203,25 @@ describe("switch logic", () => {
       );
     }
   });
+
+  it.each(["series", "parallel", "not", "nand", "nor", "xor", "xnor"] as const)(
+    "draws every native %s connection, including the input gates",
+    (gate) => {
+      const { container } = render(<TransistorSwitches wiring={gate} fixed />);
+      for (const wire of transistorLampDemo(gate).wires) {
+        expect(
+          container.querySelector(`[data-wire-id="${wire.id}"] path`),
+          `Missing visible wire ${wire.id}`,
+        ).toBeTruthy();
+      }
+      for (const node of transistorLampDemo(gate).nodes.filter((node) => node.type === "switch")) {
+        expect(container.querySelector(`[data-wire-id="${node.id}-supply"] path`)).toBeTruthy();
+        expect(
+          container.querySelector(`[data-wire-id="${node.id}-bias-ground"] path`),
+        ).toBeTruthy();
+      }
+    },
+  );
 
   it("stops the physical current trace when a series contact opens", () => {
     const { container } = render(<SwitchLogic fixed />);

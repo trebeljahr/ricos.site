@@ -474,6 +474,13 @@
       "kind": "interactive",
       "origin": "added"
     },
+    "nxp-com-an219-metastability-primer": {
+      "title": "A metastability primer (AN219)",
+      "url": "https://www.nxp.com/docs/en/application-note/AN219.pdf",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Philips Semiconductors"
+    },
     "os-phil-opp-com": {
       "title": "Writing an OS in Rust",
       "url": "https://os.phil-opp.com/",
@@ -583,6 +590,13 @@
       "origin": "added",
       "by": "Charles Petzold"
     },
+    "ranger-uta-edu-sr-latch-timing-diagrams": {
+      "title": "SR Latch Timing Diagrams",
+      "url": "https://ranger.uta.edu/~carroll/cse2341/summer99/html%20files/chapter_6/tsld012.htm",
+      "kind": "reference",
+      "origin": "added",
+      "by": "University of Texas at Arlington"
+    },
     "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele": {
       "title": "Clock In Digital Electronics: Theory and Fundamentals",
       "url": "https://resources.pcb.cadence.com/blog/2023-clock-in-digital-electronics-theory-and-fundamentals",
@@ -645,6 +659,13 @@
       "url": "https://utf8everywhere.org/",
       "kind": "article",
       "origin": "added"
+    },
+    "uvm-edu-latch-and-flip-flop": {
+      "title": "Latch and flip flop",
+      "url": "https://www.uvm.edu/~cbcafier/cs2210/content/04_logic_gates/latch_and_flip_flop.html",
+      "kind": "article",
+      "origin": "added",
+      "by": "Clayton Cafiero and Surya Malik, University of Vermont"
     },
     "visual6502-org-jssim": {
       "title": "Visual 6502",
@@ -3798,7 +3819,11 @@
           "id": "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "nxp-com-an219-metastability-primer"
+        }
+      ],
       "questions": [
         "Skew and jitter both move a clock edge. Which one is fixed and which one changes from tick to tick?",
         "What are setup time and hold time?",
@@ -3847,6 +3872,15 @@
         }
       ],
       "deeper": [
+        {
+          "id": "uvm-edu-latch-and-flip-flop"
+        },
+        {
+          "id": "ranger-uta-edu-sr-latch-timing-diagrams"
+        },
+        {
+          "id": "nxp-com-an219-metastability-primer"
+        },
         {
           "id": "yt-7WnbIeMgWYA",
           "note": "DRAM: one transistor and a leaking capacitor"

@@ -642,6 +642,20 @@
       "kind": "interactive",
       "origin": "added"
     },
+    "ti-com-sn74hc02-ep": {
+      "title": "SN74HC02-EP: Quadruple 2-Input NOR Gates",
+      "url": "https://www.ti.com/product/SN74HC02-EP",
+      "kind": "reference",
+      "origin": "added",
+      "by": "Texas Instruments"
+    },
+    "ti-com-video-usb-layout-basics": {
+      "title": "Layout basics for USB designs",
+      "url": "https://www.ti.com/video/6087491555001",
+      "kind": "video",
+      "origin": "added",
+      "by": "Texas Instruments"
+    },
     "tinytapeout-com": {
       "title": "Tiny Tapeout",
       "url": "https://tinytapeout.com/",
@@ -653,6 +667,13 @@
       "url": "https://tls13.xargs.org/",
       "kind": "interactive",
       "origin": "added"
+    },
+    "tubes-mit-edu-fluidic-oscillators": {
+      "title": "Stochastic regimes in very-low-frequency fluidic oscillator",
+      "url": "https://tubes.mit.edu/6S917/_static/2024/resources/fluidic_oscillators.pdf",
+      "kind": "paper",
+      "origin": "added",
+      "by": "Václav Tesař"
     },
     "utf8everywhere-org": {
       "title": "UTF-8 Everywhere",
@@ -1480,6 +1501,13 @@
       "kind": "video",
       "origin": "added",
       "by": "Monty Montgomery"
+    },
+    "worldradiohistory-mullard-transistor-circuits": {
+      "title": "Mullard Reference Manual of Transistor Circuits",
+      "url": "https://www.worldradiohistory.com/UK/Miscellaneous/Mullard-Reference-Manual-of-Transistor-Circuits-1960.pdf",
+      "kind": "book",
+      "origin": "added",
+      "by": "Mullard"
     },
     "yt--6JAgFWCL9w": {
       "title": "8-bit computer build: Connecting the bus",
@@ -3880,6 +3908,22 @@
         },
         {
           "id": "nxp-com-an219-metastability-primer"
+        },
+        {
+          "id": "ti-com-sn74hc02-ep",
+          "note": "a real NOR gate's power connections and propagation delay"
+        },
+        {
+          "id": "ti-com-video-usb-layout-basics",
+          "note": "PCB signal travel time: a rule of thumb of 165 picoseconds per inch"
+        },
+        {
+          "id": "worldradiohistory-mullard-transistor-circuits",
+          "note": "the multivibrator chapter explains the name's connection to square-wave harmonics"
+        },
+        {
+          "id": "tubes-mit-edu-fluidic-oscillators",
+          "note": "pages 2–3 compare the original oscillating multivibrator with the bistable flip-flop"
         },
         {
           "id": "yt-7WnbIeMgWYA",

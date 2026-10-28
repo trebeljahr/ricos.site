@@ -58,7 +58,6 @@
 .currentFlow { stroke: #fff5c3; stroke-width: 2.5; stroke-dasharray: 2 18; animation: currentFlow 1s linear infinite; }
 .flowArrow { stroke: #69501f; stroke-width: 2; }
 .flowStatus { margin: 13px 0 0; font-size: 12px; font-weight: 700; }
-.flowLegend { max-width: 72ch; margin: 6px 0 0; color: #605940; font-size: 11px; line-height: 1.6; }
 .currentContact { position: absolute; z-index: 2; top: 50%; left: 14%; width: 72%; height: 3px; background: repeating-linear-gradient(90deg, #fff5c3 0 3px, transparent 3px 20px); background-size: 20px 3px; animation: contactFlow 1s linear infinite; pointer-events: none; }
 @keyframes currentFlow { to { stroke-dashoffset: -20; } }
 @keyframes contactFlow { to { background-position: 20px 0; } }
@@ -201,18 +200,11 @@
 
 .netLabel { fill: #615d4d; font: 13px ui-monospace, monospace; }
 
-.comparisonIntro { margin: 12px 0 0; font-size: 13px; line-height: 1.5; }
 .comparisonViewport { overflow-x: auto; margin-top: 20px; }
 .comparisonColumns { display: grid; grid-template-columns: 1fr 1fr; min-width: 640px; }
 .comparisonHalf { min-width: 0; padding: 0 12px; }
 .comparisonHalf + .comparisonHalf { border-left: 1px solid #b2b1a3; }
 .comparisonHalf h4 { margin: 0; font-size: 17px; }
-.comparisonCaption { margin: 5px 0 0; font-size: 12px; }
 .comparisonHalf .board { min-width: 0; }
 .comparisonHalf .boardViewport { margin-top: 12px; }
 .comparisonHalf .flowStatus { font-size: 11px; }
-
-.comparisonScrollHint { display: none; margin: 8px 0 0; color: #605940; font-size: 11px; }
-@media (max-width: 760px) {
-  .comparisonScrollHint { display: block; }
-}

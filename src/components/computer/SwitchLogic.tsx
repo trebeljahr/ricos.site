@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { gateReferenceUrl } from "src/lib/computer/cmosGates";
 import {
-  lampGate,
   type SwitchLampWiring,
   switchLampDemo,
   transistorLampDemo,
@@ -322,9 +320,6 @@ export function TransistorComparison() {
           SOUND {soundEnabled ? "ON" : "OFF"}
         </button>
       </div>
-      <p className={own.comparisonIntro}>
-        Start with both inputs at 0. Close each switch to change its input to 1.
-      </p>
       <div
         className={own.comparisonViewport}
         role="group"
@@ -337,11 +332,6 @@ export function TransistorComparison() {
           <TransistorComparisonHalf kind="nmos" onFlip={playSwitch} />
         </div>
       </div>
-      <p className={own.comparisonScrollHint}>Scroll sideways to compare both circuits.</p>
-      <p className={own.flowLegend}>
-        Input 0: PMOS conducts, NMOS blocks. Input 1: PMOS blocks, NMOS conducts. In this simplified
-        demo, an open switch means input 0. Moving dots show current through the lamp.
-      </p>
     </section>
   );
 }
@@ -357,9 +347,6 @@ function TransistorComparisonHalf({ kind, onFlip }: { kind: ContactKind; onFlip:
   return (
     <section className={own.comparisonHalf} aria-label={`${kind.toUpperCase()} lamp circuit`}>
       <h4>{kind.toUpperCase()}</h4>
-      <p className={own.comparisonCaption}>
-        {kind === "pmos" ? "On at input 0" : "Off at input 0"}
-      </p>
       <SwitchBoard
         kind={kind}
         wiring="single"
@@ -506,29 +493,12 @@ function SwitchExperiment({
           onFlip={flip}
         />
       )}
-      {electrical && wiring !== "single" && (
-        <p className={own.flowLegend}>
-          {circuit.nodes.filter((node) => node.type === "pmos" || node.type === "nmos").length}{" "}
-          transistors.{" "}
-          <a className="underline" href={gateReferenceUrl(lampGate(wiring)!)}>
-            Video wiring
-          </a>
-          .{wiring === "xnor" && " XNOR adds a two-transistor NOT to the video's XOR."}
-          {(wiring === "xor" || wiring === "xnor") &&
-            " Ideal pass switches; real output-voltage loss is not modeled."}
-        </p>
-      )}
       <p className={own.flowStatus} role="status">
         {electrical && wiring !== "single"
           ? `OUT · ${lit ? 1 : 0} · lamp ${lit ? "on" : "off"}`
           : lit
             ? "Complete path · lamp on"
             : "Broken path · lamp off"}
-      </p>
-      <p className={own.flowLegend}>
-        Moving dots follow current from +, through the lamp, back to −.
-        {electrical &&
-          " The same knife switches feed A and B from the battery. In this demo, open inputs are 0; thin wires carry the input levels to the transistors."}
       </p>
     </section>
   );

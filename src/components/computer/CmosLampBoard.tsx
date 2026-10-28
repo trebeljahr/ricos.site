@@ -4,15 +4,7 @@ import type { Circuit, Snapshot } from "src/lib/computer/logic";
 import { isMosfet } from "src/lib/computer/transistorGeometry";
 import { bridgeWirePaths, polylinePath, wireJunctions } from "src/lib/computer/wireGeometry";
 import { wireNetKeys } from "src/lib/computer/wireTopology";
-import {
-  Battery,
-  Cable,
-  type Control,
-  KnifeSwitch,
-  Lamp,
-  PullDown,
-  Terminal,
-} from "./SwitchBoardParts";
+import { Battery, Cable, type Control, KnifeSwitch, Lamp, Terminal } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
 
 /** Trace the load path through the simulator's conducting devices; gate controls are excluded. */
@@ -177,7 +169,6 @@ export function CmosLampBoard({
             })}
             {layout.inputSwitches.map((input) => (
               <g key={input.id}>
-                <PullDown {...input.resistor} name={input.id === "a" ? "A" : "B"} />
                 <Terminal x={input.input.x} y={input.input.y} />
                 <Terminal x={input.output.x} y={input.output.y} />
               </g>

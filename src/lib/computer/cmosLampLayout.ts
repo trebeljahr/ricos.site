@@ -106,8 +106,6 @@ export function cmosLampLayout(circuit: Circuit) {
         lane,
         input: { x: x - 56, y },
         output: { x: x + 56, y },
-        resistor:
-          index === 0 ? { x: 320, top: 260, bottom: 284 } : { x: 340, top: 500, bottom: 524 },
       };
     });
   for (const input of inputSwitches) positions.set(input.id, input.output);
@@ -148,45 +146,15 @@ export function cmosLampLayout(circuit: Circuit) {
             : [{ x: end.x, y: start.y }];
     return compact([start, ...bends, end]);
   };
-  const inputWires = inputSwitches.flatMap((input) => {
-    const net = nets[circuit.wires.find((wire) => wire.from === input.id)!.id];
-    const vcc = nets[circuit.wires.find((wire) => wire.from === "vcc")!.id];
-    const gnd = nets[circuit.wires.find((wire) => wire.from === "gnd")!.id];
-    return [
-      {
-        id: `${input.id}-supply`,
-        from: "vcc",
-        to: input.id,
-        net: vcc,
-        currentSource: input.id,
-        signal: false,
-        points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.input],
-      },
-      {
-        id: `${input.id}-bias-signal`,
-        from: input.id,
-        to: `${input.id}-resistor`,
-        net,
-        signal: true,
-        points: [
-          input.output,
-          { x: input.resistor.x, y: input.y },
-          { x: input.resistor.x, y: input.resistor.top },
-        ],
-      },
-      {
-        id: `${input.id}-bias-ground`,
-        from: `${input.id}-resistor`,
-        to: "gnd",
-        net: gnd,
-        signal: false,
-        points: [
-          { x: input.resistor.x, y: input.resistor.bottom },
-          { x: input.resistor.x, y: groundY },
-        ],
-      },
-    ];
-  });
+  const inputWires = inputSwitches.map((input) => ({
+    id: `${input.id}-supply`,
+    from: "vcc",
+    to: input.id,
+    net: nets[circuit.wires.find((wire) => wire.from === "vcc")!.id],
+    currentSource: input.id,
+    signal: false,
+    points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.input],
+  }));
   const devices = circuit.nodes.filter(isMosfet);
   const horizontalClear = (x1: number, x2: number, y: number) =>
     !devices.some((node) => {

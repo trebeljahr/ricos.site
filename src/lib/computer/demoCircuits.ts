@@ -124,10 +124,18 @@ export const lampGate = (wiring: Exclude<SwitchLampWiring, "single">): LogicGate
   wiring === "series" ? "and" : wiring === "parallel" ? "or" : wiring;
 
 /** The lamp and editor use the same complete complementary CMOS network. */
-export function transistorLampDemo(wiring: SwitchLampWiring): Circuit {
-  return wiring === "single"
-    ? switchLampDemo("single")
-    : gateBlueprint(lampGate(wiring), "transistor");
+export function transistorLampDemo(
+  wiring: SwitchLampWiring,
+  kind: "nmos" | "pmos" = "nmos",
+): Circuit {
+  if (wiring !== "single") return gateBlueprint(lampGate(wiring), "transistor");
+  const circuit = switchLampDemo("single");
+  return {
+    ...circuit,
+    nodes: circuit.nodes.map((node) =>
+      node.type === "nmos" ? { ...node, type: kind, label: `${kind.toUpperCase()} A` } : node,
+    ),
+  };
 }
 
 type Contact = readonly ["a" | "b", "nmos"];

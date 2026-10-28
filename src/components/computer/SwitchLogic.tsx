@@ -9,15 +9,7 @@ import {
 } from "src/lib/computer/demoCircuits";
 import { initialSnapshot, type Snapshot, step } from "src/lib/computer/logic";
 import { CmosLampBoard } from "./CmosLampBoard";
-import {
-  Battery,
-  Cable,
-  type Control,
-  KnifeSwitch,
-  Lamp,
-  PullDown,
-  Terminal,
-} from "./SwitchBoardParts";
+import { Battery, Cable, type Control, KnifeSwitch, Lamp, Terminal } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
 
 export type SwitchWiring = "series" | "parallel";
@@ -46,8 +38,8 @@ const ELECTRICAL_WIRINGS: SwitchLampWiring[] = [
   "xnor",
 ];
 
-function contactsFor(wiring: SwitchWiring | "single"): Contact[] {
-  if (wiring === "single") return [{ name: "A", kind: "nmos", x: 500, y: 180 }];
+function contactsFor(wiring: SwitchWiring | "single", kind: ContactKind = "nmos"): Contact[] {
+  if (wiring === "single") return [{ name: "A", kind, x: 500, y: 180 }];
   return wiring === "series"
     ? [
         { name: "A", kind: "nmos", x: 330, y: 140 },
@@ -101,6 +93,7 @@ function TransistorSwitch({
 }
 
 function SwitchBoard({
+  kind = "nmos",
   wiring,
   a,
   b,
@@ -110,6 +103,7 @@ function SwitchBoard({
   snapshot,
   onFlip,
 }: {
+  kind?: ContactKind;
   wiring: SwitchWiring | "single";
   a: boolean;
   b: boolean;
@@ -119,7 +113,7 @@ function SwitchBoard({
   snapshot: Snapshot;
   onFlip: (name: Control) => void;
 }) {
-  const contacts = contactsFor(wiring);
+  const contacts = contactsFor(wiring, kind);
   const branched = wiring === "parallel";
   // A real N-channel lamp switch belongs on the return side of the load.
   const lowSide = electrical && contacts.every((contact) => contact.kind === "nmos");
@@ -212,14 +206,11 @@ function SwitchBoard({
             })}
             {electrical && (
               <>
-                <Cable d="M132 40 V280 H174 Q180 274 186 280 H224" />
+                <Cable
+                  d={lowSide ? "M132 40 V280 H174 Q180 274 186 280 H224" : "M132 140 V280 H224"}
+                />
                 <Cable d="M336 280 H500 V240" signal high={a} />
-                <Cable d="M380 280 V322" signal high={a} />
-                <Cable d="M380 346 V360 H180" returning />
-                <PullDown x={380} top={322} bottom={346} name="A" />
-                <Terminal x={132} y={40} junction />
-                <Terminal x={380} y={280} junction />
-                <Terminal x={180} y={360} junction />
+                <Terminal x={132} y={lowSide ? 40 : 140} junction />
                 <Terminal x={224} y={280} />
                 <Terminal x={336} y={280} />
                 <Terminal x={500} y={240} />
@@ -315,6 +306,81 @@ export function TransistorSwitches({
 }) {
   return <SwitchExperiment wiring={wiring} fixed={fixed} electrical />;
 }
+/** Opposite gate responses, using two independent native single-transistor circuits. */
+export function TransistorComparison() {
+  const { soundEnabled, toggleSound, playSwitch } = usePanelSound();
+  return (
+    <section className={own.experiment} aria-label="Compare PMOS and NMOS">
+      <div className={own.header}>
+        <h3>PMOS and NMOS</h3>
+        <button
+          type="button"
+          className={own.sound}
+          aria-pressed={soundEnabled}
+          onClick={toggleSound}
+        >
+          SOUND {soundEnabled ? "ON" : "OFF"}
+        </button>
+      </div>
+      <p className={own.comparisonIntro}>
+        Start with both inputs at 0. Close each switch to change its input to 1.
+      </p>
+      <div
+        className={own.comparisonViewport}
+        role="group"
+        aria-label="PMOS and NMOS circuits, scroll sideways on small screens"
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: Side-by-side circuits support keyboard scrolling.
+        tabIndex={0}
+      >
+        <div className={own.comparisonColumns}>
+          <TransistorComparisonHalf kind="pmos" onFlip={playSwitch} />
+          <TransistorComparisonHalf kind="nmos" onFlip={playSwitch} />
+        </div>
+      </div>
+      <p className={own.comparisonScrollHint}>Scroll sideways to compare both circuits.</p>
+      <p className={own.flowLegend}>
+        Input 0: PMOS conducts, NMOS blocks. Input 1: PMOS blocks, NMOS conducts. In this simplified
+        demo, an open switch means input 0. Moving dots show current through the lamp.
+      </p>
+    </section>
+  );
+}
+
+function TransistorComparisonHalf({ kind, onFlip }: { kind: ContactKind; onFlip: () => void }) {
+  const [high, setHigh] = useState(false);
+  const circuit = useMemo(() => transistorLampDemo("single", kind), [kind]);
+  const snapshot = useMemo(
+    () => step(circuit, initialSnapshot(), false, {}, { a: high }),
+    [circuit, high],
+  );
+  const lit = Boolean(snapshot.values.lamp);
+  return (
+    <section className={own.comparisonHalf} aria-label={`${kind.toUpperCase()} lamp circuit`}>
+      <h4>{kind.toUpperCase()}</h4>
+      <p className={own.comparisonCaption}>
+        {kind === "pmos" ? "On at input 0" : "Off at input 0"}
+      </p>
+      <SwitchBoard
+        kind={kind}
+        wiring="single"
+        a={high}
+        b={false}
+        lit={lit}
+        electrical
+        spark={null}
+        snapshot={snapshot}
+        onFlip={() => {
+          setHigh((value) => !value);
+          onFlip();
+        }}
+      />
+      <p className={own.flowStatus} role="status">
+        {`Input ${Number(high)} · ${lit ? "conducting · lamp on" : "blocking · lamp off"}`}
+      </p>
+    </section>
+  );
+}
+
 function SwitchExperiment({
   wiring: initialWiring = "series",
   fixed = false,
@@ -462,7 +528,7 @@ function SwitchExperiment({
       <p className={own.flowLegend}>
         Moving dots follow current from +, through the lamp, back to −.
         {electrical &&
-          " The same knife switches feed A and B from the battery. Pull-down resistors hold an open input at 0; thin wires carry those levels to the transistors."}
+          " The same knife switches feed A and B from the battery. In this demo, open inputs are 0; thin wires carry the input levels to the transistors."}
       </p>
     </section>
   );

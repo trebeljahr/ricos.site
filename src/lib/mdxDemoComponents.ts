@@ -17,6 +17,7 @@ export const MDX_DEMO_COMPONENTS = [
   "DieZoom",
   "SwitchLogic",
   "TransistorSwitches",
+  "TransistorComparison",
   "BooleanOperators",
   "BooleanCircuitDemo",
   "GateTruthTable",

@@ -2,7 +2,7 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { transistorLampDemo } from "../../lib/computer/demoCircuits";
-import { SwitchLogic, TransistorSwitches } from "./SwitchLogic";
+import { SwitchLogic, TransistorComparison, TransistorSwitches } from "./SwitchLogic";
 import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
 
 afterEach(() => {
@@ -137,6 +137,29 @@ describe("switch logic", () => {
     expect(screen.getByTestId("switch-spark")).toBeTruthy();
   });
 
+  it("compares independently controlled PMOS and NMOS lamp paths", () => {
+    render(<TransistorComparison />);
+    const pmos = within(screen.getByRole("region", { name: "PMOS lamp circuit" }));
+    const nmos = within(screen.getByRole("region", { name: "NMOS lamp circuit" }));
+    expect(pmos.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    expect(nmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(pmos.getByRole("img", { name: /PMOS A transistor conducting; gate low/ })).toBeTruthy();
+    expect(nmos.getByRole("img", { name: /NMOS A transistor blocking; gate low/ })).toBeTruthy();
+    fireEvent.click(pmos.getByRole("button", { name: /^Control A: low/ }));
+    expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(nmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    fireEvent.click(nmos.getByRole("button", { name: /^Control A: low/ }));
+    expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(nmos.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    fireEvent.click(pmos.getByRole("button", { name: /^Control A: high/ }));
+    expect(pmos.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    expect(nmos.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    for (const region of screen.getAllByRole("region", { name: /MOS lamp circuit/ })) {
+      expect(Boolean(region.querySelector("[data-current]"))).toBe(true);
+      expect(region.querySelector("[data-signal][data-current]")).toBeNull();
+    }
+  });
+
   it("uses separate battery selectors to control shared transistor gates", () => {
     const { container } = render(<TransistorSwitches />);
     expect(container.textContent).not.toContain("CASES TRIED");
@@ -216,9 +239,6 @@ describe("switch logic", () => {
       }
       for (const node of transistorLampDemo(gate).nodes.filter((node) => node.type === "switch")) {
         expect(container.querySelector(`[data-wire-id="${node.id}-supply"] path`)).toBeTruthy();
-        expect(
-          container.querySelector(`[data-wire-id="${node.id}-bias-ground"] path`),
-        ).toBeTruthy();
       }
     },
   );

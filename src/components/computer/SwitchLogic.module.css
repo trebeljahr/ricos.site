@@ -54,7 +54,6 @@
 .gateLabel { fill: #706e5c; font: 10px ui-monospace, monospace; }
 .deviceLead { fill: none; stroke: #738667; stroke-width: 2; }
 .transistorPart .deviceLead, .transistorSwitch .deviceLead { stroke: #8a8d7c; stroke-width: 5; }
-.resistor { fill: #eee6ce; stroke: #62583e; stroke-width: 2; }
 .currentCable { stroke: #c69839; stroke-width: 4; }
 .currentFlow { stroke: #fff5c3; stroke-width: 2.5; stroke-dasharray: 2 18; animation: currentFlow 1s linear infinite; }
 .flowArrow { stroke: #69501f; stroke-width: 2; }
@@ -201,3 +200,19 @@
 .cmosBoard { min-width: 680px; }
 
 .netLabel { fill: #615d4d; font: 13px ui-monospace, monospace; }
+
+.comparisonIntro { margin: 12px 0 0; font-size: 13px; line-height: 1.5; }
+.comparisonViewport { overflow-x: auto; margin-top: 20px; }
+.comparisonColumns { display: grid; grid-template-columns: 1fr 1fr; min-width: 640px; }
+.comparisonHalf { min-width: 0; padding: 0 12px; }
+.comparisonHalf + .comparisonHalf { border-left: 1px solid #b2b1a3; }
+.comparisonHalf h4 { margin: 0; font-size: 17px; }
+.comparisonCaption { margin: 5px 0 0; font-size: 12px; }
+.comparisonHalf .board { min-width: 0; }
+.comparisonHalf .boardViewport { margin-top: 12px; }
+.comparisonHalf .flowStatus { font-size: 11px; }
+
+.comparisonScrollHint { display: none; margin: 8px 0 0; color: #605940; font-size: 11px; }
+@media (max-width: 760px) {
+  .comparisonScrollHint { display: block; }
+}

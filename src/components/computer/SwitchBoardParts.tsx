@@ -56,26 +56,6 @@ export function KnifeSwitch({
   );
 }
 
-/** Passive input bias; the shared digital simulator already defines open inputs as 0. */
-export function PullDown({
-  x,
-  top,
-  bottom,
-  name,
-}: {
-  x: number;
-  top: number;
-  bottom: number;
-  name: Control;
-}) {
-  return (
-    <g>
-      <title>{`Pull-down resistor for ${name}: holds the open input at 0`}</title>
-      <rect className={own.resistor} x={x - 6} y={top} width="12" height={bottom - top} rx="1" />
-    </g>
-  );
-}
-
 export function Cable({
   d,
   returning = false,

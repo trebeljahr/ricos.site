@@ -86,6 +86,12 @@ export const COMPUTER_MDX_DEMOS = {
     650,
     true,
   ),
+  TransistorComparison: chapterDemo(
+    () => import("./SwitchLogic").then((module) => module.TransistorComparison),
+    "Compare PMOS and NMOS",
+    450,
+    true,
+  ),
   TransistorSwitches: chapterDemo(
     () => import("./SwitchLogic").then((module) => module.TransistorSwitches),
     "Electrically controlled switches",

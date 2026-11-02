@@ -27,7 +27,12 @@ const ExpandButton = () => {
   };
 
   return (
-    <button type="button" onClick={toggleExpand} className="p-2">
+    <button
+      type="button"
+      onClick={toggleExpand}
+      aria-label={expanded ? "Shrink the editor" : "Expand the editor"}
+      className="p-2"
+    >
       {expanded ? <FaCompressArrowsAlt /> : <FaExpandArrowsAlt />}
     </button>
   );

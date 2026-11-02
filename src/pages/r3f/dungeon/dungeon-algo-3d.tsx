@@ -220,7 +220,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
         <button
           type="button"
           onClick={handleClick}
-          className="absolute top-0 right-0 z-20 p-2 bg-slate-500"
+          className="absolute top-0 right-0 z-20 p-2 bg-slate-600"
         >
           Click for new dungeon
         </button>

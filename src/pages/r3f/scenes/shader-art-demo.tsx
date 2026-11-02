@@ -30,6 +30,7 @@ function ShareWithOthersButton() {
     <button
       type="button"
       disabled={disabled}
+      aria-label="Copy a link to these settings"
       onClick={handleClickAndDisable}
       className={`w-fit h-fit absolute p-3 bottom-2 right-2 z-10 flex place-items-center bg-gray-900 rounded-full ${disabled ? "cursor-default" : "hover:bg-gray-700"}`}
     >
@@ -55,6 +56,7 @@ const InfoButton = () => {
       <button
         type="button"
         onClick={toggleInfo}
+        aria-label="About this demo"
         className="w-fit h-fit absolute p-3 bottom-2 left-2 z-10 flex place-items-center bg-gray-900 hover:bg-gray-700  rounded-full"
       >
         <FaInfo className="size-4 text-gray-200" />
@@ -255,7 +257,7 @@ export default function ShaderEditorPage() {
       {nav && <ImmersiveNavbar />}
       <Leva hidden={recording} />
 
-      <div className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">
+      <main className="w-screen h-screen relative bg-leva-medium dark:bg-leva-dark">
         <SceneWithLoadingState
           withKeyboardControls={false}
           orthographic
@@ -275,7 +277,7 @@ export default function ShaderEditorPage() {
 
         {!recording && <ShareWithOthersButton />}
         {!recording && <InfoButton />}
-      </div>
+      </main>
     </>
   );
 }

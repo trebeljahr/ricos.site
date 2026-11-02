@@ -29,7 +29,9 @@ export default function ShaderEditorPage({ seo }: { seo: SeoInfoType | null }) {
     <>
       <SeoInfo {...seoInfo} />
       <ImmersiveNavbar />
-      <CompleteShaderEditor shaderName="shadertoyExample1" />
+      <main className="contents">
+        <CompleteShaderEditor shaderName="shadertoyExample1" />
+      </main>
     </>
   );
 }

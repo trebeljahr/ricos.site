@@ -248,6 +248,7 @@ export const InventoryToggleButton: FC = () => {
     <button
       type="button"
       onClick={openInventory}
+      aria-label="Open inventory"
       className="fixed bottom-4 right-4 bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors"
     >
       <svg aria-hidden="true" viewBox="0 0 24 24" className="w-6 h-6">

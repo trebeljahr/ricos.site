@@ -246,7 +246,7 @@ export default function Page({ seo }: { seo: SeoInfoType | null }) {
     <>
       <SeoInfo {...seoInfo} />
       <ImmersiveNavbar />
-      <div className="w-screen h-screen overscroll-none">
+      <main className="w-screen h-screen overscroll-none">
         <InventoryProvider maxSlots={28} maxWeight={100}>
           <Inventory />
 
@@ -254,7 +254,7 @@ export default function Page({ seo }: { seo: SeoInfoType | null }) {
             <Scene />
           </SceneWithLoadingState>
         </InventoryProvider>
-      </div>
+      </main>
     </>
   );
 }

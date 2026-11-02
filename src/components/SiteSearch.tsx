@@ -55,10 +55,9 @@ export const SiteSearch = ({ onOpen }: SiteSearchProps = {}) => {
         type="button"
         onClick={openSearch}
         className="inline-flex size-9 items-center justify-center gap-2 rounded-md text-sm transition-colors hover:bg-gray-200 sm:mr-1 sm:w-auto sm:justify-start sm:border sm:border-gray-200 sm:bg-gray-50 sm:pr-1.5 sm:pl-3 sm:text-gray-500 dark:hover:bg-gray-700 sm:dark:border-gray-700 sm:dark:bg-gray-800 sm:dark:text-gray-400"
-        aria-label="Search the site"
       >
         <FiSearch className="size-4 shrink-0" />
-        <span className="hidden pr-4 sm:inline">Search</span>
+        <span className="sr-only sm:not-sr-only sm:pr-4">Search</span>
         <kbd className="hidden h-6 items-center rounded border border-gray-200 bg-white px-1.5 font-sans text-xs text-gray-500 sm:inline-flex dark:border-gray-600 dark:bg-gray-900 dark:text-gray-400">
           {isMac ? "⌘" : "Ctrl+"}K
         </kbd>

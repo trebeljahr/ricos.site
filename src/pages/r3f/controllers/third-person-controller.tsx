@@ -1,10 +1,8 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
-const ThirdPersonDemo = dynamic(() => import("@r3f/Scenes/ThirdPersonDemo"), {
-  ssr: false,
-});
+const ThirdPersonDemo = lazy(() => import("@r3f/Scenes/ThirdPersonDemo"));
 
 const defaultSeoInfo = {
   title: "A custom third person controller",

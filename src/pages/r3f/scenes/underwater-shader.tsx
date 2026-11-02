@@ -1,11 +1,10 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
-const UnderwaterShaderDemo = dynamic(
+const UnderwaterShaderDemo = lazy(
   () => import("src/canvas/Scenes/UnderwaterShader/UnderwaterShaderDemo"),
-  { ssr: false },
 );
 
 const defaultSeoInfo = {

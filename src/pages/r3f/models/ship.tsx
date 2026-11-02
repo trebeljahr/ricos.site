@@ -2,15 +2,13 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { Sky } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 
 import { MinecraftSpectatorController } from "src/canvas/Controllers/MinecraftCreativeController";
 import { OceanSurface } from "src/canvas/Scenes/OceanDemo/Ocean";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
-const Ship = dynamic(() => import("@r3f/AllModels/Ship"), {
-  ssr: false,
-});
+const Ship = lazy(() => import("@r3f/AllModels/Ship"));
 
 const defaultSeoInfo = {
   title: "Ship Demo",

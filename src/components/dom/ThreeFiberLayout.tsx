@@ -4,9 +4,9 @@ import { OpenGraph } from "@components/OpenGraph";
 import { nav } from "@r3f/ChunkGenerationSystem/config";
 import { KeyboardControlsProvider } from "@r3f/Controllers/KeyboardControls";
 import { CameraPositionLogger } from "@r3f/Helpers/CameraPositionLogger";
+import { Loader } from "@r3f/Helpers/Loader";
 import { Canvas, type CanvasProps } from "@react-three/fiber";
-import dynamic from "next/dynamic";
-import { type PropsWithChildren, Suspense } from "react";
+import { type PropsWithChildren, Suspense, useCallback, useEffect, useState } from "react";
 import { toTitleCase } from "src/lib/utils/toTitleCase";
 import tunnel from "tunnel-rat";
 
@@ -57,25 +57,32 @@ export const ThreeFiberLayout = ({
   );
 };
 
-const Loader = dynamic(() => import("@r3f/Helpers/Loader"), {
-  ssr: false,
-});
-
 interface SceneLoaderProps extends PropsWithChildren<CanvasProps> {
   withKeyboardControls?: boolean;
 }
+
+// Sits in the scene's Suspense boundary, so it only mounts once the scene's code
+// and suspended assets are in.
+const OnSceneMounted = ({ callback }: { callback: () => void }) => {
+  useEffect(callback, [callback]);
+  return null;
+};
 
 export const SceneWithLoadingState = ({
   children,
   withKeyboardControls = true,
   ...props
 }: SceneLoaderProps) => {
+  const [sceneMounted, setSceneMounted] = useState(false);
+  const onSceneMounted = useCallback(() => setSceneMounted(true), []);
+
   const CanvasContent = (
     <>
       <Canvas {...props} className="overscroll-none">
         <Suspense fallback={null}>
           {children}
           <CameraPositionLogger />
+          <OnSceneMounted callback={onSceneMounted} />
         </Suspense>
       </Canvas>
       {/* r3f-perf removed: enable by dynamically importing when perf flag is true */}
@@ -84,7 +91,7 @@ export const SceneWithLoadingState = ({
 
   return (
     <>
-      <Loader />
+      <Loader sceneMounted={sceneMounted} />
       {withKeyboardControls ? (
         <KeyboardControlsProvider>{CanvasContent}</KeyboardControlsProvider>
       ) : (

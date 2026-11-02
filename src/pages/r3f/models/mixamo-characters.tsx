@@ -2,12 +2,10 @@ import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 
 import { OrbitControls, Stage } from "@react-three/drei";
 
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
-const DynamicCharacter = dynamic(() => import("@r3f/Characters/Character"), {
-  ssr: false,
-});
+const DynamicCharacter = lazy(() => import("@r3f/Characters/Character"));
 
 const defaultSeoInfo = {
   title: "Mixamo Character Demos",

@@ -4,29 +4,37 @@ import { useEffect, useState } from "react";
 
 interface LoaderProps {
   className?: string;
+  /** The scene has mounted, so anything it needed has started loading by now. */
+  sceneMounted: boolean;
 }
 
-export const Loader = ({ className = "" }: LoaderProps) => {
+// Rendered by the server too: a 3D page's scripts take seconds on a phone, and
+// without this the reader looks at an empty page until they have run.
+export const Loader = ({ className = "", sceneMounted }: LoaderProps) => {
   const { progress, errors, item, loaded, total } = useProgress();
   const [showLoader, setShowLoader] = useState(true);
 
-  useEffect(() => {
-    if (progress === 100) {
-      const timeout = setTimeout(() => {
-        setShowLoader(false);
-      }, 1000);
-      return () => clearTimeout(timeout);
-    }
-  }, [progress]);
+  const finished = sceneMounted && (total === 0 || progress === 100);
 
-  if (!showLoader || total === 0) return null;
+  useEffect(() => {
+    if (!finished) {
+      setShowLoader(true);
+      return;
+    }
+    const timeout = setTimeout(() => {
+      setShowLoader(false);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, [finished]);
+
+  if (!showLoader) return null;
 
   return (
     <div
       className={clsx(
         // not-prose: the body carries prose classes, which would restyle the heading.
         "not-prose fixed inset-0 z-50 flex flex-col items-center justify-center bg-white text-gray-900 transition-opacity duration-500 dark:bg-gray-900 dark:text-gray-100",
-        progress === 100 ? "opacity-0" : "opacity-100",
+        finished ? "pointer-events-none opacity-0" : "opacity-100",
         className,
       )}
     >

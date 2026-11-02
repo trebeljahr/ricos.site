@@ -1,12 +1,11 @@
 import { ThreeFiberLayout } from "@components/dom/ThreeFiberLayout";
 import { UnderwaterContextProvider } from "@contexts/UnderwaterContext";
-import dynamic from "next/dynamic";
+import { lazy } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 
-// Dynamically import the WaterDemo component with Suspense
-const WaterDemo = dynamic(() => import("src/canvas/Scenes/OceanDemo/WaterDemo"), {
-  ssr: false,
-});
+// Lazy rather than next/dynamic: this suspends the canvas, which is how the loader
+// knows the scene is still on its way.
+const WaterDemo = lazy(() => import("src/canvas/Scenes/OceanDemo/WaterDemo"));
 
 const defaultSeoInfo = {
   title: "Ocean Demo",

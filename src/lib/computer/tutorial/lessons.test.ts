@@ -6,6 +6,16 @@ import { BUILDER_LESSONS, LESSON_SECTIONS, lessonForCircuit } from "./lessons";
 import { LEARNING_LEVELS, levelById } from "./levels";
 
 describe("builder lessons", () => {
+  it("opens on NOT, with the optional transistor levels after the gates", () => {
+    const ids = LEARNING_LEVELS.map((level) => level.id);
+    expect(ids[0]).toBe("not");
+    expect(ids.slice(4, 7)).toEqual(["nor", "cmos-not", "cmos-nand"]);
+    for (const id of ["cmos-not", "cmos-nand"]) {
+      expect(levelById(id)?.optional, id).toBe(true);
+      expect(levelById(id)?.anytime, id).toBe(true);
+    }
+  });
+
   it("makes every core lesson available in the builder", () => {
     const offered = LESSON_SECTIONS.flatMap((section) => section.levels);
     expect(offered).toEqual(BUILDER_LESSONS);

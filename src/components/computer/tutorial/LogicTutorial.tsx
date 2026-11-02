@@ -57,6 +57,7 @@ const LIVE_ROWS = 16;
 const SAVE_DELAY = 500;
 
 const isOpen = (levels: readonly Level[], index: number, progress: Progress) =>
+  Boolean(levels[index]?.anytime) ||
   levels
     .slice(0, index)
     .every(
@@ -116,7 +117,7 @@ export function LogicTutorial({
   const gatePalette = useMemo(() => [...allowed.gates], [allowed]);
   const reference = useMemo(() => level.reference?.(), [level]);
   const rows = useMemo(() => levelRows(CATALOG, level.palette, progress), [level, progress]);
-  const availableBlocks = level.palette.filter((ref) => ref !== "junction");
+  const availableParts = level.palette.filter((ref) => ref !== "junction");
   // The board's first circuit, read once per level opening (later saves come from the board).
   const [opened, setOpened] = useState(0);
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-read only when a level opens or resets
@@ -394,9 +395,9 @@ export function LogicTutorial({
             </label>
           )}
           <p className={styles.muted}>
-            Available blocks:{" "}
-            {availableBlocks.length
-              ? availableBlocks
+            Available parts:{" "}
+            {availableParts.length
+              ? availableParts
                   .map((ref) =>
                     ref.startsWith("part:")
                       ? CATALOG.parts.get(ref.slice(5))?.label
@@ -405,14 +406,13 @@ export function LogicTutorial({
                   .join(", ")
               : "the designated inputs and outputs"}
             .
-            {level.makes &&
-              " Build the behavior from these blocks; the finished target part is excluded."}
           </p>
           <div className={styles.actions}>
             <button
               type="button"
               disabled={hints >= hintLimit}
               data-tutorial-hint=""
+              title="Hints reveal one clue at a time and leave your wiring unchanged."
               aria-controls={hintId}
               aria-expanded={hints > 0}
               onClick={() => setHints((value) => value + 1)}
@@ -437,9 +437,6 @@ export function LogicTutorial({
               </button>
             )}
           </div>
-          <p className={styles.muted}>
-            Hints reveal one clue at a time and leave your wiring unchanged.
-          </p>
           <div id={hintId} aria-live="polite">
             {shownHints.length > 0 && (
               <ul className={styles.hints} aria-label="Hints">
@@ -486,6 +483,15 @@ export function LogicTutorial({
               <p className={styles.muted}>
                 You solved this level before. Press Check to see the feedback again.
               </p>
+            )}
+            {!fresh && currentCorrect && next && (
+              <button
+                type="button"
+                className={styles.nextButton}
+                onClick={() => openLevel(next.id)}
+              >
+                Next: {next.title} →
+              </button>
             )}
           </div>
           {extra?.({ level, solved, circuit: () => circuitRef.current, handle: handle.current })}

@@ -68,7 +68,6 @@ describe("requested gate construction hints", () => {
   });
 
   it("provides the same NAND-only guidance on the ladder while qualifying earned-part block counts", () => {
-    expect(notLevel.hints).toEqual(gateConstructionHints("nand", "not"));
     for (const level of [andLevel, orLevel, xorLevel, norLevel]) {
       expect(level.hints).toEqual(
         gateConstructionHints("nand", level.id as LogicGate, { reusableParts: true }),
@@ -77,5 +76,11 @@ describe("requested gate construction hints", () => {
         "reusable earned parts can reduce the visible block count",
       );
     }
+  });
+
+  it("gives the first level plain hints that end in its full wiring", () => {
+    expect(notLevel.hints!.map((hint) => hint.title)).toEqual(["Core idea", "Wiring"]);
+    expect(notLevel.hints![1].text).toContain("both NAND inputs");
+    expect(notLevel.hints!.map((hint) => hint.text).join(" ")).not.toMatch(/G1|00|11/);
   });
 });

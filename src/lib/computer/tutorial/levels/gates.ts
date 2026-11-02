@@ -1,6 +1,7 @@
-// Logic gates: two CMOS levels from transistors, then NOT, AND, OR and XOR from
-// NAND, as in NandGame's first section. Each gate the reader builds joins the
-// parts list of the levels after it.
+// Logic gates: NOT, AND, OR and XOR from NAND, as in NandGame's first section,
+// then two optional CMOS levels that look inside NAND. NAND is the given, so the
+// ladder opens on NOT. Each gate the reader builds joins the parts list of the
+// levels after it.
 import { type Circuit, initialSnapshot, step } from "../../logic";
 import { allRows, CircuitKit, defaultStart } from "../kit";
 import type { Level } from "../types";
@@ -132,9 +133,9 @@ export const cmosNotLevel: Level = {
   title: "NOT from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is the opposite of A. Use PMOS, NMOS and the fixed supply rails. Once it works, use the fewest transistors.",
+  goal: "OUT is the opposite of A, built from transistors instead of NAND. Once it works, use the fewest transistors.",
   intro:
-    "PMOS conducts at gate 0; NMOS conducts at gate 1. Each passes its source signal when enabled. To combine transistor branches, drag an output or an existing wire onto another wire. Release at the highlighted target to create a small junction knob. This directed switch model omits resistance, capacitance and voltage thresholds. The check requires a driven rail in every case, without competing rails.",
+    "A transistor is a switch. PMOS conducts, passing its source signal, when its gate is 0. NMOS conducts when its gate is 1. The rails are fixed: VDD is always 1 and GND is always 0. To join two branches, drag an output or a wire onto another wire. Release at the highlighted target to create a small junction knob.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
   start: withRails(() => cmosNotLevel),
@@ -153,8 +154,13 @@ export const cmosNotLevel: Level = {
       title: "Conduction paths",
       text: "Let A control both gates (G). Connect the PMOS source (S) to VDD and the NMOS source (S) to GND. Join their drains (D) at OUT.",
     },
+    {
+      title: "What the check tests",
+      text: "OUT must reach exactly one rail in every case. A floating output fails, and so do two competing rails. This switch model leaves out resistance, capacitance and voltage thresholds.",
+    },
   ],
   optional: true,
+  anytime: true,
 };
 
 export const cmosNandLevel: Level = {
@@ -189,6 +195,7 @@ export const cmosNandLevel: Level = {
     },
   ],
   optional: true,
+  anytime: true,
 };
 
 export const notLevel: Level = {
@@ -197,14 +204,21 @@ export const notLevel: Level = {
   section: SECTION,
   nandgame: "Invert",
   chapter: CHAPTERS.universal,
-  goal: "OUT is the opposite of A. You have one kind of part: NAND.",
+  goal: "Make lamp OUT the opposite of switch A.",
   intro:
-    "NAND outputs 0 only when both inputs are 1. Unlike the transistor model, Boolean gates always produce a defined 0 or 1. Choose a circuit that matches both rows.",
+    "NAND's output is off only when both of its inputs are on. Drag NAND onto the board, then drag from dot to dot to draw wires. Flip A to test your wiring. In the table, 1 means on and 0 means off.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["nand"],
   makes: { part: "not", label: "NOT", builtIn: { gate: "not" } },
   reference: notGate,
-  hints: gateConstructionHints("nand", "not"),
+  // The first level anyone plays: plain words, and the full wiring one request away.
+  hints: [
+    {
+      title: "Core idea",
+      text: "You have one signal, A, and NAND has two inputs. What does NAND do when both inputs get the same signal?",
+    },
+    { title: "Wiring", text: "Wire A to both NAND inputs. Then wire the NAND output to OUT." },
+  ],
 };
 
 export const andLevel: Level = {
@@ -215,7 +229,7 @@ export const andLevel: Level = {
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 only when A and B are both 1.",
   intro:
-    "A NAND has two inputs and one defined Boolean output. Your learned NOT is available as a reusable part. Compare their behavior with the goal.",
+    "NAND's output is 0 only when both inputs are 1. Your NOT is now in the parts list. Compare NAND with this goal.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a && b] },
   palette: ["nand", "part:not"],
   makes: { part: "and", label: "AND", builtIn: { gate: "and" } },
@@ -230,6 +244,8 @@ export const orLevel: Level = {
   nandgame: "Or",
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 when A, B or both are 1.",
+  intro:
+    "NAND's output is 1 when either input is 0. OUT must be 1 when either input is 1. What can your NOT do about that difference?",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a || b] },
   palette: ["nand", "part:not", "part:and"],
   makes: { part: "or", label: "OR", builtIn: { gate: "or" } },
@@ -268,11 +284,11 @@ export const norLevel: Level = {
 };
 
 export const GATE_LEVELS: Level[] = [
-  cmosNotLevel,
-  cmosNandLevel,
   notLevel,
   andLevel,
   orLevel,
   xorLevel,
   norLevel,
+  cmosNotLevel,
+  cmosNandLevel,
 ];

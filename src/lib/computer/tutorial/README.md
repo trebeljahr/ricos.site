@@ -34,6 +34,11 @@ open without sequential locks from the bench. The bench remains mounted with
 its undo history and timeline; opening a lesson pauses it and hides it from
 keyboard and pointer interaction. Lesson drafts use the existing progress store.
 
+The ladder opens on NOT because the builder's promise is NAND. The transistor
+levels come after the gates, stay optional, and carry `anytime`, so a sequential
+ladder never locks them or a reader's saved work in them. Level ids stay stable,
+so saved progress and chapter embeds do not depend on this order.
+
 Construction hints disclose an idea, first step, signal plan, and experiment on
 request. Primitive gate lessons retain their gate-count stage. RAM-cell and bus
 lessons are optional so existing course progress does not acquire a new lock.

@@ -99,7 +99,7 @@ export function contextualHint(level: Level, circuit: Circuit, grade?: Grade): L
     };
   if (!circuit.wires.length)
     return {
-      text: "Start with one input case. What must each output mean, and which available block can express part of that decision?",
+      text: "Start with one input case. What must each output mean, and which available part can express part of that decision?",
     };
   return {
     text: "Compare neighboring input cases. Which single change must affect the output? Check your prediction against the table or test sequence.",

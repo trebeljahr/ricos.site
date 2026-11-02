@@ -39,10 +39,60 @@ function buildNot(b: ReturnType<typeof within>) {
   fireEvent.click(b.getByRole("button", { name: /^Connect to OUT/ }));
 }
 
+describe("first run", () => {
+  it("opens the whole ladder on NOT, with nothing to read about transistors", () => {
+    render(<LogicTutorial sequential />);
+    const [b] = builders();
+    expect(b.getByRole("heading", { name: "NOT" })).toBeTruthy();
+    const panel = b.getByRole("complementary", { name: "Level" }).textContent;
+    expect(panel).not.toMatch(/PMOS|NMOS|Boolean|transistor model/);
+    expect(b.getByRole<HTMLOptionElement>("option", { name: /^1\. NOT/ }).value).toBe("not");
+  });
+  it("keeps the transistor levels open while later main levels stay locked", () => {
+    render(<LogicTutorial sequential />);
+    const option = (id: string) =>
+      document.querySelector<HTMLOptionElement>(
+        `select[aria-label="Level"] option[value="${id}"]`,
+      )!;
+    expect(option("and").disabled).toBe(true);
+    expect(option("cmos-not").disabled).toBe(false);
+    expect(option("cmos-nand").disabled).toBe(false);
+    fireEvent.change(screen.getByRole("combobox", { name: "Level" }), {
+      target: { value: "cmos-not" },
+    });
+    expect(screen.getByRole("heading", { name: "NOT from transistors" })).toBeTruthy();
+    expect(screen.queryByText(/Solve or skip the levels before this one/)).toBeNull();
+  });
+  it("restores saved transistor work for a reader who has not solved the gates", () => {
+    const circuit = levelById("cmos-not")!.reference!();
+    localStorage.setItem(
+      PROGRESS_KEY,
+      JSON.stringify({ solved: { "cmos-not": { at: 1, circuit } }, skipped: ["cmos-nand"] }),
+    );
+    progressStore.reset();
+    render(<LogicTutorial sequential level="cmos-not" />);
+    expect(screen.queryByText(/Solve or skip the levels before this one/)).toBeNull();
+    expect(screen.getByText("Solved ✓")).toBeTruthy();
+    expect(screen.getByText("✓ Correct wiring.")).toBeTruthy();
+    expect(progressStore.get().solved["cmos-not"].at).toBe(1);
+    expect(progressStore.get().skipped).toEqual(["cmos-nand"]);
+  });
+  it("offers the next level as soon as the wiring is right, without pressing Check", () => {
+    render(<LogicTutorial sequential />);
+    const [b] = builders();
+    expect(b.queryByRole("button", { name: /^Next:/ })).toBeNull();
+    buildNot(b);
+    expect(b.getByText("✓ Correct wiring.")).toBeTruthy();
+    fireEvent.click(b.getByRole("button", { name: "Next: AND →" }));
+    expect(builders()[0].getByRole("heading", { name: "AND" })).toBeTruthy();
+    expect(builders()[0].getByTitle(/Your NOT, checked against every row/)).toBeTruthy();
+  });
+});
+
 describe("independent tutorials", () => {
   it("explains automatic junction knobs without advertising a standalone junction block", () => {
     render(<LogicTutorial levels={["cmos-not"]} />);
-    expect(screen.getByText(/Available blocks: PMOS, NMOS/).textContent).not.toContain("JUNCTION");
+    expect(screen.getByText(/Available parts: PMOS, NMOS/).textContent).not.toContain("JUNCTION");
     expect(
       screen.getByText(/Release at the highlighted target to create a small junction knob/),
     ).toBeTruthy();
@@ -53,9 +103,9 @@ describe("independent tutorials", () => {
   it("starts with goal, context, table and available blocks; hints never edit the board", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();
-    expect(b.getByText(/OUT is the opposite of A/)).toBeTruthy();
+    expect(b.getByText(/Make lamp OUT the opposite of switch A/)).toBeTruthy();
     expect(b.getByRole("heading", { name: "Truth table" })).toBeTruthy();
-    expect(b.getByText(/Available blocks: NAND/)).toBeTruthy();
+    expect(b.getByText(/Available parts: NAND/)).toBeTruthy();
     expect(b.queryByRole("list", { name: "Steps" })).toBeNull();
     expect(b.queryByRole("button", { name: "Show me" })).toBeNull();
     expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
@@ -134,8 +184,8 @@ describe("independent tutorials", () => {
     const [nand, nor] = builders();
     expect(nand.queryByRole("combobox", { name: "Construction parameters" })).toBeNull();
     expect(nor.queryByRole("combobox", { name: "Construction parameters" })).toBeNull();
-    expect(nand.getByText("Available blocks: NAND.")).toBeTruthy();
-    expect(nor.getByText("Available blocks: NOR.")).toBeTruthy();
+    expect(nand.getByText("Available parts: NAND.")).toBeTruthy();
+    expect(nor.getByText("Available parts: NOR.")).toBeTruthy();
     expect(nand.queryByRole("list", { name: "Hints" })).toBeNull();
     expect(nor.queryByRole("list", { name: "Hints" })).toBeNull();
     buildNot(nand);
@@ -198,25 +248,25 @@ describe("independent tutorials", () => {
     render(<LogicTutorial levels={["universal-nand-not"]} />);
     expect(boardParts(builders()[0])).toHaveLength(2);
   });
-  it.each([
-    "pagehide",
-    "visibilitychange",
-  ])("saves the last edit on %s before the debounce fires", (event) => {
-    vi.useFakeTimers();
-    const { unmount } = render(<LogicTutorial levels={["not"]} />);
-    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
-    if (event === "pagehide") fireEvent(window, new Event(event));
-    else {
-      const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
-      fireEvent(document, new Event(event));
-      visibility.mockRestore();
-    }
-    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
-    unmount();
-    progressStore.reset();
-    render(<LogicTutorial levels={["not"]} />);
-    expect(boardParts(builders()[0])).toHaveLength(3);
-  });
+  it.each(["pagehide", "visibilitychange"])(
+    "saves the last edit on %s before the debounce fires",
+    (event) => {
+      vi.useFakeTimers();
+      const { unmount } = render(<LogicTutorial levels={["not"]} />);
+      fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+      if (event === "pagehide") fireEvent(window, new Event(event));
+      else {
+        const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+        fireEvent(document, new Event(event));
+        visibility.mockRestore();
+      }
+      expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
+      unmount();
+      progressStore.reset();
+      render(<LogicTutorial levels={["not"]} />);
+      expect(boardParts(builders()[0])).toHaveLength(3);
+    },
+  );
   it("keeps the passing solution when a later attempt is incomplete", () => {
     const { unmount } = render(<LogicTutorial levels={["not"]} />);
     buildNot(builders()[0]);

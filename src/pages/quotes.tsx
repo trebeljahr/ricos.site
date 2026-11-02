@@ -3,44 +3,72 @@ import { FiChevronDown, FiX } from "@components/Icons";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
-import { type NumberedQuote, type Quote, QuoteMosaic } from "@components/QuoteMosaic";
+import {
+  type NumberedQuote,
+  type Quote,
+  QuoteMosaic,
+  ROWS_PER_BATCH,
+  toRowItems,
+} from "@components/QuoteMosaic";
 import { Search } from "@components/SearchBar";
 import { ToTopButton } from "@components/ToTopButton";
 import clsx from "clsx";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSeoInfo, type SeoInfo } from "src/lib/getSeoInfo";
 import { useListTransition } from "src/lib/listTransition";
 import type { Portraits } from "src/lib/quotePortraits";
-import quotesJSON from "../content/Notes/pages/quotes.json";
+import { planQuoteRows, type Row } from "src/lib/quoteRows";
+import { whenIdle } from "src/lib/whenIdle";
 
 // fuzzysort only searches string keys, so the source title gets flattened.
 type SearchableQuote = NumberedQuote & { sourceTitle: string };
 
-const quotes: SearchableQuote[] = (quotesJSON as Quote[]).map((quote, index) => ({
-  ...quote,
-  id: index + 1,
-  sourceTitle: quote.source?.title ?? "",
-}));
+const toSearchable = (list: Quote[]): SearchableQuote[] =>
+  list.map((quote, index) => ({
+    ...quote,
+    id: index + 1,
+    sourceTitle: quote.source?.title ?? "",
+  }));
 
-// Every topic, most used first, for the filter above the quotes.
-const topics = Object.entries(
-  quotes.reduce<Record<string, number>>((counts, quote) => {
-    for (const tag of quote.tags) counts[tag] = (counts[tag] ?? 0) + 1;
-    return counts;
-  }, {}),
-)
-  .sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b))
-  .map(([tag]) => tag);
+type Props = {
+  seo: SeoInfo | null;
+  portraits: Portraits;
+  /** The quotes in the first batch of rows, and those rows, planned over all quotes. */
+  firstQuotes: SearchableQuote[];
+  firstRows: Row[];
+  totalQuotes: number;
+  topics: string[];
+};
 
-export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portraits: Portraits }) {
+export default function Quotes({
+  seo,
+  portraits,
+  firstQuotes,
+  firstRows,
+  totalQuotes,
+  topics,
+}: Props) {
   const listRef = useRef<HTMLDivElement>(null);
-  const [searched, setSearched] = useListTransition(quotes, listRef, "figure", 150);
+  // All quotes are 277 KB. The page paints and hydrates with the first batch, and
+  // the rest arrives before anyone can scroll or search far.
+  const [allQuotes, setAllQuotes] = useState(firstQuotes);
+  useEffect(() => {
+    whenIdle()
+      .then(() => import("../content/Notes/pages/quotes.json"))
+      .then((module) => setAllQuotes(toSearchable(module.default as Quote[])));
+  }, []);
+  const [searched, setSearched] = useListTransition(firstQuotes, listRef, "figure", 150);
   const [topic, setTopic] = useListTransition<string | null>(null, listRef, "figure");
   const [topicsOpen, setTopicsOpen] = useState(false);
+  // Nothing searched yet: follow the list as it grows, without animating that.
+  const unsearched = searched === firstQuotes;
+  const shownBeforeTopic = unsearched ? allQuotes : searched;
   const displayedQuotes = useMemo(
-    () => (topic ? searched.filter((quote) => quote.tags.includes(topic)) : searched),
-    [searched, topic],
+    () =>
+      topic ? shownBeforeTopic.filter((quote) => quote.tags.includes(topic)) : shownBeforeTopic,
+    [shownBeforeTopic, topic],
   );
+  const stillLoading = allQuotes === firstQuotes;
   const url = "quotes";
 
   return (
@@ -64,7 +92,7 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
           />
 
           <Search
-            all={quotes}
+            all={allQuotes}
             setFiltered={setSearched}
             searchKeys={["content", "author", "sourceTitle"]}
             threshold={0.3}
@@ -110,9 +138,13 @@ export default function Quotes({ seo, portraits }: { seo: SeoInfo | null; portra
               ))}
             </fieldset>
           )}
-          <p>Amount: {displayedQuotes.length}</p>
+          <p>Amount: {stillLoading ? totalQuotes : displayedQuotes.length}</p>
           <div ref={listRef}>
-            <QuoteMosaic quotes={displayedQuotes} portraits={portraits} />
+            <QuoteMosaic
+              quotes={displayedQuotes}
+              portraits={portraits}
+              plannedRows={stillLoading ? firstRows : undefined}
+            />
           </div>
         </section>
 
@@ -133,5 +165,30 @@ export async function getStaticProps() {
   try {
     portraits = JSON.parse(await readFile("src/content/Notes/pages/quote-portraits.json", "utf8"));
   } catch {}
-  return { props: { seo: getSeoInfo("/quotes"), portraits } };
+
+  const { default: quotesJSON } = await import("../content/Notes/pages/quotes.json");
+  const quotes = toSearchable(quotesJSON as Quote[]);
+  const firstRows = planQuoteRows(toRowItems(quotes, portraits)).slice(0, ROWS_PER_BATCH);
+  const shownInFirstRows = firstRows.flatMap((row) => row.units.flatMap((unit) => unit.items));
+
+  // Every topic, most used first, for the filter above the quotes.
+  const topics = Object.entries(
+    quotes.reduce<Record<string, number>>((counts, quote) => {
+      for (const tag of quote.tags) counts[tag] = (counts[tag] ?? 0) + 1;
+      return counts;
+    }, {}),
+  )
+    .sort(([a, countA], [b, countB]) => countB - countA || a.localeCompare(b))
+    .map(([tag]) => tag);
+
+  return {
+    props: {
+      seo: getSeoInfo("/quotes"),
+      portraits,
+      firstQuotes: quotes.slice(0, Math.max(...shownInFirstRows) + 1),
+      firstRows,
+      totalQuotes: quotes.length,
+      topics,
+    },
+  };
 }

@@ -34,6 +34,13 @@ export default function Search<T extends Record<string, any>>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
+  // A list that grows under a search already typed: /quotes loads most of its
+  // quotes after the first paint.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `all` is the only trigger
+  useEffect(() => {
+    if (searchTerm.trim() !== "") setFiltered(fuzzySearch(all, searchTerm, searchKeys, threshold));
+  }, [all]);
+
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };

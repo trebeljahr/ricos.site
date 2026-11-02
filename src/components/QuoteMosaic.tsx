@@ -2,7 +2,7 @@ import { FaCheck, FaClipboard } from "@components/Icons";
 import clsx from "clsx";
 import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { cleanAuthor, type Portrait, type Portraits } from "src/lib/quotePortraits";
-import { planQuoteRows } from "src/lib/quoteRows";
+import { planQuoteRows, type Row, type RowItem } from "src/lib/quoteRows";
 
 export type Quote = {
   author: string;
@@ -33,7 +33,13 @@ const FLEX_FROM_MD = "md:[flex:var(--flex)]";
 
 // Rendering all ~900 cards at once makes a huge HTML page and a slow hydration,
 // so rows are revealed in batches as the reader nears the bottom.
-const ROWS_PER_BATCH = 15;
+export const ROWS_PER_BATCH = 15;
+
+export const toRowItems = (quotes: NumberedQuote[], portraits: Portraits): RowItem[] =>
+  quotes.map((quote) => ({
+    length: quote.content.length,
+    tallCaption: Boolean(portraits[cleanAuthor(quote.author)]),
+  }));
 
 // Steps along the newsletter gradient (green-400 -> teal-400 -> blue-600).
 const MARK_COLORS = [
@@ -173,19 +179,16 @@ function QuoteSlip({
 export function QuoteMosaic({
   quotes,
   portraits,
+  plannedRows,
 }: {
   quotes: NumberedQuote[];
   portraits: Portraits;
+  /** Rows planned ahead of time, for when `quotes` is only the start of a longer list. */
+  plannedRows?: Row[];
 }) {
   const rows = useMemo(
-    () =>
-      planQuoteRows(
-        quotes.map((quote) => ({
-          length: quote.content.length,
-          tallCaption: Boolean(portraits[cleanAuthor(quote.author)]),
-        })),
-      ),
-    [quotes, portraits],
+    () => plannedRows ?? planQuoteRows(toRowItems(quotes, portraits)),
+    [plannedRows, quotes, portraits],
   );
 
   // A new list (a search, or clearing one) starts again from the first batch.

@@ -60,6 +60,7 @@ import { BLITTER_OUTPUTS } from "./blitterBlock";
 import { Builder, ports, type Ref, range } from "./blockBuilder";
 import { controlBlockCircuit } from "./controlUnit";
 import { addDataMemory, type DatapathKind, datapathNode } from "./datapathBlocks";
+import { lazyRecord } from "./lazyRecord";
 import type { Circuit } from "./logic";
 
 /** Node ids of the parts a caller (tests, the joined UI) reads state from. */
@@ -637,19 +638,23 @@ function bigScanoutBench(width: 16 | 32, name: string): Circuit {
 const SCANOUT_16_PRESET = "Scanout and monitor, 16×16";
 const SCANOUT_32_PRESET = "Scanout and monitor, 32×32";
 
-/** Builder examples: the CPU running one of the stepper's sample programs. */
-export const CPU_PRESETS: Record<string, Circuit> = {
-  [LOOP_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.LOOP, LOOP_PRESET),
-  [RECURSION_PRESET]: cpuFromSource(RAM_STACK_SAMPLES.RECURSION, RECURSION_PRESET, "ram"),
-  [KEYBOARD_PRESET]: cpuFromSource(INTERRUPT_SAMPLES.KEYBOARD, KEYBOARD_PRESET),
-  [CROSS_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.CROSS, CROSS_PRESET),
-  [SCANOUT_PRESET]: scanoutBench(),
-  [SCANOUT_16_PRESET]: bigScanoutBench(16, SCANOUT_16_PRESET),
-  [SCANOUT_32_PRESET]: bigScanoutBench(32, SCANOUT_32_PRESET),
-  [TEARING_PRESET]: cpuFromSource(VIDEO_SAMPLES.TEARING, TEARING_PRESET),
-  [VSYNC_PRESET]: cpuFromSource(VIDEO_SAMPLES.VSYNC, VSYNC_PRESET),
-  [BLIT_PRESET]: cpuFromSource(SAMPLE_PROGRAMS.BLIT, BLIT_PRESET),
-};
+/**
+ * Builder examples: the CPU running one of the stepper's sample programs. Each
+ * builds on first read: together these whole CPUs hold about 100 MB, and every
+ * page with a circuit demo imports this module.
+ */
+export const CPU_PRESETS: Record<string, Circuit> = lazyRecord({
+  [LOOP_PRESET]: () => cpuFromSource(SAMPLE_PROGRAMS.LOOP, LOOP_PRESET),
+  [RECURSION_PRESET]: () => cpuFromSource(RAM_STACK_SAMPLES.RECURSION, RECURSION_PRESET, "ram"),
+  [KEYBOARD_PRESET]: () => cpuFromSource(INTERRUPT_SAMPLES.KEYBOARD, KEYBOARD_PRESET),
+  [CROSS_PRESET]: () => cpuFromSource(SAMPLE_PROGRAMS.CROSS, CROSS_PRESET),
+  [SCANOUT_PRESET]: () => scanoutBench(),
+  [SCANOUT_16_PRESET]: () => bigScanoutBench(16, SCANOUT_16_PRESET),
+  [SCANOUT_32_PRESET]: () => bigScanoutBench(32, SCANOUT_32_PRESET),
+  [TEARING_PRESET]: () => cpuFromSource(VIDEO_SAMPLES.TEARING, TEARING_PRESET),
+  [VSYNC_PRESET]: () => cpuFromSource(VIDEO_SAMPLES.VSYNC, VSYNC_PRESET),
+  [BLIT_PRESET]: () => cpuFromSource(SAMPLE_PROGRAMS.BLIT, BLIT_PRESET),
+});
 
 export const CPU_HINTS: Record<string, string> = {
   [LOOP_PRESET]:

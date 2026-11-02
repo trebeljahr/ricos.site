@@ -3,6 +3,7 @@
 // inputs, and both share one clock, so each END tick stores one finished row.
 import { Builder, range } from "./blockBuilder";
 import { datapathNode } from "./datapathBlocks";
+import { lazyRecord } from "./lazyRecord";
 import type { Circuit } from "./logic";
 import { compileShader, SAMPLE_SHADERS, WIDE_SHADERS } from "./shader";
 
@@ -65,12 +66,12 @@ const CHECKER_PRESET = "Shader: checkerboard";
 const SQUARE_PRESET = "Shader: filled square";
 const WIDE_SQUARE_PRESET = "Shader: 32×32 square, 8 lanes in 4 passes";
 
-export const SHADER_PRESETS: Record<string, Circuit> = {
-  [STRIPES_PRESET]: shaderDemoCircuit(SAMPLE_SHADERS.STRIPES, STRIPES_PRESET),
-  [CHECKER_PRESET]: shaderDemoCircuit(SAMPLE_SHADERS.CHECKER, CHECKER_PRESET),
-  [SQUARE_PRESET]: shaderDemoCircuit(SAMPLE_SHADERS.SQUARE, SQUARE_PRESET),
-  [WIDE_SQUARE_PRESET]: wideShaderDemoCircuit(WIDE_SHADERS.SQUARE, WIDE_SQUARE_PRESET),
-};
+export const SHADER_PRESETS: Record<string, Circuit> = lazyRecord({
+  [STRIPES_PRESET]: () => shaderDemoCircuit(SAMPLE_SHADERS.STRIPES, STRIPES_PRESET),
+  [CHECKER_PRESET]: () => shaderDemoCircuit(SAMPLE_SHADERS.CHECKER, CHECKER_PRESET),
+  [SQUARE_PRESET]: () => shaderDemoCircuit(SAMPLE_SHADERS.SQUARE, SQUARE_PRESET),
+  [WIDE_SQUARE_PRESET]: () => wideShaderDemoCircuit(WIDE_SHADERS.SQUARE, WIDE_SQUARE_PRESET),
+});
 
 const HOW =
   "One program runs on 8 lanes at once; lane i computes pixel i of row Y in the same tick. At END the shader raises WE and the screen stores the row. Unfold the shader to see one decoder feed all 8 lanes.";

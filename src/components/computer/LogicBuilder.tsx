@@ -92,7 +92,7 @@ import { GateRunPanel, isCpuCircuit } from "./GateRunPanel";
 import { builtinCircuit, remapModulePins, verifiedCircuitIdentity, type SymbolIdentity } from "../../lib/computer/recognition";
 import { SevenSegment } from "./SevenSegment";
 import { isBcdDisplayPackage, segmentBank, segmentPinVisible, visibleInputs } from "../../lib/computer/sevenSegment";
-import { diagram, LIBRARY_SECTIONS, PART_LIBRARY, type RowOpen } from "../../lib/computer/partLibrary";
+import { diagram, laidOutPlacement, LIBRARY_SECTIONS, PART_LIBRARY, type RowOpen } from "../../lib/computer/partLibrary";
 import { DecimalInput, ManualButton } from "./ManualInputs";
 import { RecognitionPanel } from "./RecognitionPanel";
 import { GateSymbol } from "./GateSymbol";
@@ -114,9 +114,14 @@ const PRESET_SYMBOLS: Record<string, SymbolIdentity> = {
   "D flip-flop": "dff", "D latch": "dlatch", "SR latch": "srlatch",
   "4 × 4 SRAM": "memory", "4 × 4 DRAM": "memory", "4 × 4 flash memory": "memory",
 };
-const PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...CPU_PRESETS, ...SHADER_PRESETS, ...BUTTON_PRESETS, ...MATRIX_PRESETS }).map(([name, circuit]) =>
-  [name, layoutCircuit(builtinCircuit(`preset:${name}`, circuit, PRESET_SYMBOLS[name] ?? "module"))]));
-const BLUEPRINTS = Object.fromEntries(Object.entries(sourceBlueprints).map(([name, circuit]) => [name, layoutCircuit(circuit)]));
+// Laying out every preset takes seconds and the whole CPUs hold about 100 MB, so
+// on load this keeps the light ones raw and only the names of the others. They
+// build and lay out when the reader places or opens one.
+const LIGHT_PRESETS = Object.fromEntries(Object.entries({ ...sourcePresets, ...BUTTON_PRESETS, ...MATRIX_PRESETS }).map(([name, circuit]) =>
+  [name, builtinCircuit(`preset:${name}`, circuit, PRESET_SYMBOLS[name] ?? "module")]));
+const PRESET_KEYS = [sourcePresets, CPU_PRESETS, SHADER_PRESETS, BUTTON_PRESETS, MATRIX_PRESETS].flatMap((table) => Object.keys(table));
+const presetCircuit = (key: string) => LIGHT_PRESETS[key] ?? CPU_PRESETS[key] ?? SHADER_PRESETS[key];
+const presetName = (key: string) => LIGHT_PRESETS[key]?.name ?? key;
 const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(builtinCircuit(gate, sourceGateBlueprint(gate, family)));
 type DisplayNode = GeometryNode & { expanded?: boolean };
 const circuitHints: Record<string, string> = {
@@ -311,12 +316,13 @@ const datapathSources = new Map<DatapathKind, Circuit>();
 const datapathSource = (kind: DatapathKind) => {
   if (!datapathSources.has(kind))
     datapathSources.set(kind,
-      layoutCircuit(datapathCircuit(kind, kind === "rom256" ? compileProgram(SAMPLE_PROGRAMS.EXAMPLE).bytes : [])));
+      datapathCircuit(kind, kind === "rom256" ? compileProgram(SAMPLE_PROGRAMS.EXAMPLE).bytes : []));
   return datapathSources.get(kind)!;
 };
-const BLOCK_ROWS = DATAPATH_KINDS.map((kind) => circuitRow(`block:${kind}`, datapathSource(kind), {
-  label: DATAPATH_BLOCKS[kind].label, title: DATAPATH_BLOCKS[kind].hint, keywords: kind,
-  extra: { behaviour: kind, label: DATAPATH_BLOCKS[kind].label },
+const BLOCK_ROWS: PaletteRow[] = DATAPATH_KINDS.map((kind) => ({
+  key: `block:${kind}`, label: DATAPATH_BLOCKS[kind].label, icon: { type: "module" },
+  title: DATAPATH_BLOCKS[kind].hint, keywords: kind, ownPrimary: false,
+  primary: laidOutPlacement(() => datapathSource(kind), { behaviour: kind, label: DATAPATH_BLOCKS[kind].label }),
 }));
 type PortSide = NonNullable<Node["inputSide"]>;
 const portSides: PortSide[] = ["top", "right", "bottom", "left"];
@@ -1313,7 +1319,7 @@ function LogicBuilderWorkspace({
   const persist = useRef(false);
   const progress = useTutorialProgress();
   const history = useHistoryState<BuilderDocument>(() => ({
-    circuit: clone(locked?.circuit ?? challenge?.circuit ?? initialCircuit ?? PRESETS["Half adder"]),
+    circuit: clone(locked?.circuit ?? challenge?.circuit ?? initialCircuit ?? layoutCircuit(LIGHT_PRESETS["Half adder"])),
     saved: {},
     viewPath: [],
     unfolded: [],
@@ -2894,7 +2900,7 @@ function LogicBuilderWorkspace({
     setDrag(null);
   };
   const partsPalette = challenge?.palette ?? palette;
-  const visibleBlueprints = Object.values(BLUEPRINTS).filter((item) =>
+  const visibleBlueprints = Object.values(sourceBlueprints).filter((item) =>
     item.name.endsWith(`from ${BLUEPRINT_FAMILIES[circuitFamily].suffix}`),
   );
   const hasTransistors = circuit.nodes.some((item) => item.type === "nmos" || item.type === "pmos");
@@ -2935,13 +2941,16 @@ function LogicBuilderWorkspace({
       builtInTitle: gateRow(type).title }) : gateRow(type);
   })).filter((row) => !("type" in row.icon && row.icon.type === "junction")), [challengeRows, partsPalette, progress]);
   const searchText = search.toLowerCase().trim();
-  const exampleRows = useMemo(() => challenge ? [] : Object.values(PRESETS).map((example) => {
-    const entry = entryFor(CATALOG, progress, { preset: example.name });
-    const title = circuitHints[example.name];
-    return entry ? partRow(entry, progress.settings.ownParts, { key: `preset:${example.name}`, label: example.name,
-      icon: { circuit: example }, builtIn: { circuit: example, extra: {} },
-      builtInTitle: title || `Drag ${example.name} black box onto canvas or click to add` })
-      : circuitRow(`preset:${example.name}`, example, { title });
+  const exampleRows = useMemo(() => challenge ? [] : PRESET_KEYS.map((key): PaletteRow => {
+    const name = presetName(key);
+    const entry = entryFor(CATALOG, progress, { preset: name });
+    const title = circuitHints[name];
+    const placement = laidOutPlacement(() => presetCircuit(key));
+    return entry ? partRow(entry, progress.settings.ownParts, { key: `preset:${name}`, label: name,
+      icon: { circuit: presetCircuit(key) }, builtIn: placement,
+      builtInTitle: title || `Drag ${name} black box onto canvas or click to add` })
+      : { key: `preset:${name}`, label: name, icon: key in LIGHT_PRESETS ? { circuit: LIGHT_PRESETS[key] } : { type: "module" },
+        title: title ?? `Drag ${name} black box onto canvas or click to add`, keywords: "", primary: placement, ownPrimary: false };
   }), [Boolean(challenge), progress]);
   const savedRows = useMemo(() => Object.values(saved).map((item) =>
     circuitRow(`saved:${item.name}`, item, { title: `Add ${item.name} to canvas` })), [saved]);
@@ -2950,7 +2959,7 @@ function LogicBuilderWorkspace({
     ...savedRows.map((row) => [row.key, { title: "Open circuit", label: (name: string) => `Open ${name}`,
       circuit: () => saved[row.label] }] as const),
     ...PART_LIBRARY.flatMap((item) => item.open ? [[item.row.key, item.open] as const] : []),
-    ...Object.values(PRESETS).map((example) => [`preset:${example.name}`, diagram(example)] as const),
+    ...PRESET_KEYS.map((key) => [`preset:${presetName(key)}`, diagram(() => presetCircuit(key))] as const),
   ]), [savedRows, saved]);
   // Every section of the parts list is a list of rows: one search, one row view, one drop path.
   const sections = useMemo(() => [
@@ -3288,7 +3297,7 @@ function LogicBuilderWorkspace({
                     <button
                       type="button"
                       onClick={() => {
-                        load(blueprint);
+                        load(layoutCircuit(blueprint));
                       }}
                       title={`Open ${blueprint.name} blueprint`}
                     >

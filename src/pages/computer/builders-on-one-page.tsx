@@ -1,14 +1,15 @@
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import { LazyMount } from "@components/computer/LazyMount";
+import { loadCircuitDemos } from "@components/computer/loadCircuitDemos";
 import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutorial";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 import dynamic from "next/dynamic";
 
-const LogicBuilder = dynamic(
-  () => import("@components/computer/LogicBuilder").then((module) => module.LogicBuilder),
-  { ssr: false, loading: () => null },
-);
+const LogicBuilder = dynamic(() => loadCircuitDemos().then((module) => module.LogicBuilder), {
+  ssr: false,
+  loading: () => null,
+});
 
 // A test page for embedding: tutorial builders on different levels and a free
 // builder share one page. Each mounts when it scrolls near; key presses,
@@ -48,7 +49,8 @@ export default function BuildersOnOnePage() {
           <LazyMount
             height={BUILDER_HEIGHT}
             label="Free builder"
-            placeholder={<p className="p-stack">The free builder loads when you scroll here.</p>}
+            preload={loadCircuitDemos}
+            placeholder={<p className="p-stack">Free builder: loading…</p>}
           >
             <LogicBuilder storageKey="ricos-computer-circuits-embed-test" />
           </LazyMount>

@@ -1,4 +1,6 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
 import { getMDXComponent } from "mdx-bundler/client";
@@ -16,7 +18,43 @@ const embeddedChapters = readdirSync(CHAPTER_DIR, { recursive: true, encoding: "
   .filter((file) => CHAPTER_FILE.test(file))
   .filter((file) => hasMdxDemos(chapterToMdx(matter(readChapter(file)).content)));
 
+const COMPONENTS = dirname(fileURLToPath(import.meta.url));
+const SRC = join(COMPONENTS, "../..");
+
+/** Every local file a module reaches through value imports; `import()` starts another chunk. */
+function staticImports(file: string, seen = new Set<string>()) {
+  if (seen.has(file)) return seen;
+  seen.add(file);
+  const statement = /^(?:import|export)\s+(?!type\b)[^;]*?\bfrom\s+"([^"]+)"/gm;
+  for (const [, source] of readFileSync(file, "utf8").matchAll(statement)) {
+    const base = source.startsWith(".")
+      ? join(dirname(file), source)
+      : source.startsWith("src/")
+        ? join(SRC, source.slice(4))
+        : source.startsWith("@components/")
+          ? join(SRC, "components", source.slice(12))
+          : null;
+    const target = base && [".ts", ".tsx"].map((ext) => base + ext).find(existsSync);
+    if (target) staticImports(target, seen);
+  }
+  return seen;
+}
+
 describe("chapter demo integration", () => {
+  // A second `import()` that reaches the builder ships a second copy of it.
+  it("loads the circuit builder only through the one shared import", () => {
+    const builder = join(COMPONENTS, "LogicBuilder.tsx");
+    const registry = readFileSync(join(COMPONENTS, "MdxComputerDemos.tsx"), "utf8");
+    const separate = [...registry.matchAll(/import\("\.\/([^"]+)"\)/g)].map((match) => match[1]);
+    expect(separate.length).toBeGreaterThan(0);
+    for (const demo of separate)
+      expect(
+        staticImports(join(COMPONENTS, `${demo}.tsx`)).has(builder),
+        `${demo} reaches LogicBuilder: load it through loadCircuitDemos`,
+      ).toBe(false);
+    expect(staticImports(join(COMPONENTS, "circuitDemos.ts")).has(builder)).toBe(true);
+  });
+
   it.each(embeddedChapters)("prepares and detects the actual embedded chapter %s", (file) => {
     const source = readChapter(file);
     const prepared = chapterToMdx(matter(source).content);
@@ -68,7 +106,7 @@ describe("chapter demo integration", () => {
     const html = renderToStaticMarkup(
       <Component components={{ ...COMPUTER_MDX_DEMOS, BooleanOperators }} />,
     );
-    expect(html.match(/loads when you scroll here/g)).toHaveLength(
+    expect(html.match(/: loading…/g)).toHaveLength(
       Object.keys(COMPUTER_MDX_DEMOS).filter((name) => name !== "TruthTableScale").length,
     );
     expect(html).toContain("Basic Boolean operators");

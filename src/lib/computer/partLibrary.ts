@@ -1,3 +1,4 @@
+import { layoutCircuit } from "./circuitLayout";
 import {
   COUNTER_CONTRACT,
   COUNTER_MODES,
@@ -6,8 +7,7 @@ import {
   counterDemo,
   counterTitle,
 } from "./counterCircuits";
-import type { Circuit } from "./logic";
-import { layoutCircuit } from "./circuitLayout";
+import type { Circuit, Node } from "./logic";
 import {
   ADD3,
   BCD_DECODER,
@@ -19,7 +19,7 @@ import {
   rawSegmentDemo,
   SEGMENT_CONTRACT,
 } from "./sevenSegment";
-import { circuitRow, type PaletteRow } from "./tutorial/paletteRows";
+import { circuitRow, type PaletteRow, type Placement } from "./tutorial/paletteRows";
 
 /**
  * Configurable components as plain parts-list rows: one row per option, so
@@ -43,10 +43,22 @@ const wiredDemo = (circuit: () => Circuit): RowOpen => ({
   label: (name) => `Open ${name} wired demo`,
   circuit: () => layoutCircuit(circuit()),
 });
-export const diagram = (circuit: Circuit): RowOpen => ({
+export const diagram = (circuit: () => Circuit): RowOpen => ({
   title: "View diagram",
   label: (name) => `View ${name} diagram`,
-  circuit: () => layoutCircuit(circuit),
+  circuit: () => layoutCircuit(circuit()),
+});
+
+/**
+ * Places a circuit laid out, but lays it out only then. A parts list shows
+ * dozens of circuits and a row needs only the raw one's pins to draw itself;
+ * laying them all out up front froze the page for seconds on load.
+ */
+export const laidOutPlacement = (circuit: () => Circuit, extra: Partial<Node> = {}): Placement => ({
+  extra,
+  get circuit() {
+    return layoutCircuit(circuit());
+  },
 });
 
 const counters: LibraryItem[] = COUNTER_MODES.flatMap((mode) =>
@@ -103,7 +115,7 @@ const displays: LibraryItem[] = [
       title: "Double-dabble correction: adds 3 to a BCD nibble of 5 or more before the next shift.",
       keywords: `${SEGMENT_WORDS} bcd add 3 correction double dabble`,
     }),
-    open: diagram(ADD3),
+    open: diagram(() => ADD3),
   },
   ...DIGIT_COUNTS.map((digits): LibraryItem => {
     const circuit = decimalConverter(14, digits);
@@ -114,17 +126,14 @@ const displays: LibraryItem[] = [
         title: "Binary to BCD with gates only. Values past the last digit light OVERFLOW.",
         keywords: `${SEGMENT_WORDS} binary to decimal bcd converter double dabble`,
       }),
-      open: diagram(circuit),
+      open: diagram(() => circuit),
     };
   }),
 ];
 
-export const PART_LIBRARY: LibraryItem[] = [...counters, ...displays].map((item) => ({
-  ...item,
-  row: {
-    ...item.row,
-    primary: item.row.primary && "circuit" in item.row.primary
-      ? { ...item.row.primary, circuit: layoutCircuit(item.row.primary.circuit) }
-      : item.row.primary,
-  },
-}));
+export const PART_LIBRARY: LibraryItem[] = [...counters, ...displays].map((item) => {
+  const { primary } = item.row;
+  if (!primary || !("circuit" in primary)) return item;
+  const { circuit, extra } = primary;
+  return { ...item, row: { ...item.row, primary: laidOutPlacement(() => circuit, extra) } };
+});

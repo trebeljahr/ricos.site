@@ -20,6 +20,9 @@ overrides:
   velite>sharp: 0.35.4
 
 patchedDependencies:
+  leva@0.10.1:
+    hash: 82584b208c6dcddcf797ffa028c0602cf83351c7e1e555d044ed2746e264ef14
+    path: patches/leva@0.10.1.patch
   next@16.3.3:
     hash: eb3af1b57daa6139184f00da5d8ae29e61ac67989719d1bf53e03ffe93e4b893
     path: patches/next@16.3.3.patch
@@ -147,7 +150,7 @@ importers:
         version: 1.2.2(@react-three/fiber@9.8.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(three@0.183.2))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(three@0.183.2)
       leva:
         specifier: ^0.10.1
-        version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.10.1(patch_hash=82584b208c6dcddcf797ffa028c0602cf83351c7e1e555d044ed2746e264ef14)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       mdx-bundler:
         specifier: ^10.1.1
         version: 10.1.1(esbuild@0.28.1)
@@ -8680,7 +8683,7 @@ snapshots:
       '@react-three/fiber': 9.8.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(three@0.183.2)
       '@react-three/rapier': 2.2.0(@react-three/fiber@9.8.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(three@0.183.2))(react@19.3.0)(three@0.183.2)
       '@types/three': 0.177.0
-      leva: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      leva: 0.10.1(patch_hash=82584b208c6dcddcf797ffa028c0602cf83351c7e1e555d044ed2746e264ef14)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       three: 0.183.2
@@ -9638,7 +9641,7 @@ snapshots:
       glsl-token-functions: 1.0.1
       glsl-token-string: 1.0.1
       glsl-tokenizer: 2.1.5
-      leva: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      leva: 0.10.1(patch_hash=82584b208c6dcddcf797ffa028c0602cf83351c7e1e555d044ed2746e264ef14)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       three: 0.183.2
       three-custom-shader-material: 6.4.0(@react-three/fiber@9.8.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(three@0.183.2))(react@19.3.0)(three@0.183.2)
     optionalDependencies:
@@ -9649,7 +9652,7 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  leva@0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  leva@0.10.1(patch_hash=82584b208c6dcddcf797ffa028c0602cf83351c7e1e555d044ed2746e264ef14)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       '@radix-ui/react-portal': 1.1.17(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@radix-ui/react-tooltip': 1.2.16(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

@@ -264,7 +264,8 @@
   "pnpm": {
     "patchedDependencies": {
       "velite@0.3.1": "patches/velite@0.3.1.patch",
-      "next@16.3.3": "patches/next@16.3.3.patch"
+      "next@16.3.3": "patches/next@16.3.3.patch",
+      "leva@0.10.1": "patches/leva@0.10.1.patch"
     },
     "overrides": {
       "fast-xml-parser@5": "5.7.0",

@@ -858,6 +858,11 @@ details.callout-root[open] > summary .callout-chevron {
   content: none;
 }
 
+/* The Leva panel's values are #8c92a4 on #373c4b, 3.53:1. Its theme sits on :root. */
+html:root {
+  --leva-colors-highlight2: #a6acbc;
+}
+
 h1,
 h2,
 h3,

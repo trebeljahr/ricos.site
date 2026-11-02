@@ -1,0 +1,32 @@
+diff --git a/dist/vector-plugin-5e122f40.esm.js b/dist/vector-plugin-5e122f40.esm.js
+index be0bbfbf2bde37ac38cc0f166b2c07d614faacce..48f4ae80fdeff7bf0770aaa987efa3e89fa7ffa6 100644
+--- a/dist/vector-plugin-5e122f40.esm.js
++++ b/dist/vector-plugin-5e122f40.esm.js
+@@ -1575,7 +1575,8 @@ function Number$1({
+   onUpdate,
+   onChange,
+   settings,
+-  innerLabelTrim = 1
++  innerLabelTrim = 1,
++  ariaLabel
+ }) {
+   const InnerLabel = innerLabelTrim > 0 && React.createElement(DraggableLabel, {
+     label: label,
+@@ -1588,7 +1589,8 @@ function Number$1({
+     value: String(displayValue),
+     onUpdate: onUpdate,
+     onChange: onChange,
+-    innerLabel: InnerLabel
++    innerLabel: InnerLabel,
++    'aria-label': ariaLabel
+   });
+ }
+ function NumberComponent() {
+@@ -1964,6 +1966,7 @@ function Coordinate({
+   });
+   return React.createElement(Number$1, {
+     id: id,
++    ariaLabel: id,
+     label: valueKey,
+     value: value[valueKey],
+     displayValue: number.displayValue,

@@ -32,7 +32,7 @@ export const RicosSiteBanner = ({ compact = false }: BannerProps) => {
         <Image
           ref={flaskRef}
           className="h-5 w-auto mr-1"
-          src="/favicon/apple-touch-icon.png"
+          src="/favicon/flask-64.webp"
           alt=""
           aria-hidden="true"
           width={32}

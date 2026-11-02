@@ -375,7 +375,8 @@
 /* Spelled out rather than left to the default, because a nested callout
    inherits its parent's hue otherwise. */
 .callout-root[data-callout="quote"],
-.callout-root[data-callout="aside"] {
+.callout-root[data-callout="aside"],
+.callout-root[data-callout="more"] {
   --callout-accent: var(--color-gray-500, #6b7280);
 }
 
@@ -449,6 +450,24 @@ summary.callout-title:focus-visible {
     margin-block: 0;
     margin-inline: var(--spacing-para) calc(-20ch - var(--spacing-para));
   }
+}
+
+/*
+ * `more` that does not fold has a link for a title and leads to a page of its
+ * own: an arrow where a folded box has its chevron, and the whole row clicks.
+ */
+.callout-root[data-callout="more"] > div.callout-title {
+  position: relative;
+}
+
+.callout-root[data-callout="more"] > div.callout-title > span::after {
+  content: " →";
+}
+
+.callout-root[data-callout="more"] > div.callout-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
 }
 
 @keyframes callout-wiggle {

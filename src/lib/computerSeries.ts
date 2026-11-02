@@ -14,6 +14,11 @@ export const DAILY_GOAL = 1000;
  */
 export const DEFAULT_PARENT_WORDS = 200;
 export const DEFAULT_LEAF_WORDS = 500;
+/** A folded box stays short, or it wants to be a page of its own. */
+export const DEFAULT_BOX_WORDS = 300;
+
+/** The first line of a folded box, the one kind of callout written as a section. */
+const BOX_OPEN = /^>\s*\[!more\]-\s*(.*)$/;
 
 export type ChapterStatus = "idea" | "drafting" | "draft-done" | "revising" | "done";
 
@@ -64,10 +69,13 @@ export function countWords(markdown: string): number {
   return (text.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) ?? []).length;
 }
 
+type Draft = { heading: string; lines: string[] };
+
 /**
  * Splits a chapter body into sections at its headings. Text before the first
- * heading is the chapter's own introduction and counts as a section too. Each
- * section's target is its estimate, or a default for a parent or leaf heading.
+ * heading is the chapter's own introduction and counts as a section too. So
+ * does a folded box, right after the section it sits in. Each section's target
+ * is its estimate, or a default for a box, a parent or a leaf heading.
  */
 export function splitSections(
   markdown: string,
@@ -75,29 +83,49 @@ export function splitSections(
   estimates: Record<string, number> = {},
 ): Section[] {
   const body = stripNav(markdown);
-  const found: { heading: string; depth: number; lines: string[] }[] = [];
-  let current = { heading: title, depth: 1, lines: [] as string[] };
+  const found: { heading: string; depth: number; lines: string[]; boxes: Draft[] }[] = [];
+  let current = { heading: title, depth: 1, lines: [] as string[], boxes: [] as Draft[] };
+  let box: Draft | undefined;
   let inFence = false;
   for (const line of body.split("\n")) {
+    if (box && line.startsWith(">")) {
+      box.lines.push(line);
+      continue;
+    }
+    box = undefined;
     if (line.trimStart().startsWith("```")) inFence = !inFence;
+    const boxOpen = !inFence && BOX_OPEN.exec(line);
+    if (boxOpen) {
+      box = { heading: boxOpen[1].trim(), lines: [] };
+      current.boxes.push(box);
+      continue;
+    }
     const match = !inFence && /^(#{1,6})\s+(.*)$/.exec(line);
     if (match) {
       found.push(current);
-      current = { heading: match[2].trim(), depth: match[1].length, lines: [] };
+      current = { heading: match[2].trim(), depth: match[1].length, lines: [], boxes: [] };
     } else {
       current.lines.push(line);
     }
   }
   found.push(current);
-  return found.map((section, i) => {
+  return found.flatMap((section, i) => {
     const hasChildren = (found[i + 1]?.depth ?? 0) > section.depth;
-    return {
-      heading: section.heading,
-      depth: section.depth,
-      words: countWords(section.lines.join("\n")),
-      target:
-        estimates[section.heading] ?? (hasChildren ? DEFAULT_PARENT_WORDS : DEFAULT_LEAF_WORDS),
-    };
+    return [
+      {
+        heading: section.heading,
+        depth: section.depth,
+        words: countWords(section.lines.join("\n")),
+        target:
+          estimates[section.heading] ?? (hasChildren ? DEFAULT_PARENT_WORDS : DEFAULT_LEAF_WORDS),
+      },
+      ...section.boxes.map(({ heading, lines }) => ({
+        heading,
+        depth: section.depth,
+        words: countWords(lines.join("\n")),
+        target: estimates[heading] ?? DEFAULT_BOX_WORDS,
+      })),
+    ];
   });
 }
 

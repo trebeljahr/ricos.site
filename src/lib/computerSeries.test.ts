@@ -5,6 +5,7 @@ import {
   calendar,
   chapterProgress,
   countWords,
+  DEFAULT_BOX_WORDS,
   DEFAULT_LEAF_WORDS,
   DEFAULT_PARENT_WORDS,
   dailyWords,
@@ -59,6 +60,25 @@ describe("splitSections", () => {
 
   it("ignores heading-like lines inside code fences", () => {
     expect(splitSections("```\n# not a heading\n```", "Bits")).toHaveLength(1);
+  });
+
+  it("counts a folded box as a section and returns to the text around it", () => {
+    const sections = splitSections(
+      `## First\n\none\n\n> [!more]- Box\n>\n> #### Inside\n>\n> two three\n\nfour\n\n## Next\n`,
+      "Bits",
+      { First: 100 },
+    );
+    expect(sections.map((s) => [s.heading, s.depth, s.words, s.target])).toEqual([
+      ["Bits", 1, 0, DEFAULT_PARENT_WORDS],
+      ["First", 2, 2, 100],
+      ["Box", 2, 3, DEFAULT_BOX_WORDS],
+      ["Next", 2, 0, DEFAULT_LEAF_WORDS],
+    ]);
+  });
+
+  it("leaves a link box and other callouts in the section around them", () => {
+    const sections = splitSections(`> [!more] [Page](/x)\n\n> [!tip]- Folded tip\n> two`, "Bits");
+    expect(sections).toHaveLength(1);
   });
 });
 

@@ -133,20 +133,13 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Two numbers and an operation code in, a result and flags out": 450,
     "Picking the operation": 600,
     Flags: 450,
+    Multiplication: 300,
+    Division: 300,
+    "What about square roots and more complex stuff?": 300,
   },
   "3.1a": {
-    Multiplication: 650,
-    "This used to be software, or a different chip entirely": 300,
-  },
-  "3.1b": {
-    Division: 600,
-  },
-  "3.1c": {
     "Floating Point Numbers and how Arithmetic works on them *in hardware*": 700,
     "This used to be a different chip entirely": 350,
-  },
-  "3.1d": {
-    "What about square roots and more complex stuff?": 450,
   },
   "3.2": {
     "Program Counter": 700,

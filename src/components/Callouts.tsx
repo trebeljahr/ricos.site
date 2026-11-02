@@ -54,6 +54,13 @@ const canonicalCallouts = {
     aliases: [],
     icon: null,
   },
+  // An optional detour: folded inside the chapter, or with a link for a title,
+  // a way out to a page of its own. The chevron or arrow is its only mark.
+  more: {
+    label: "More",
+    aliases: [],
+    icon: null,
+  },
   warning: {
     label: "Warning",
     aliases: ["caution", "attention"],

@@ -4049,7 +4049,7 @@
         },
         {
           "id": "yt-Cc33wOBAKDM",
-          "note": "bookmarked as \"Bit Shift Operations: Hardware Implementation and Usage\""
+          "note": "bookmarked as \"Bit Shift Operations: Hardware Implementation and Usage\"; Multiplication box: shifts are half of shift-and-add"
         }
       ],
       "deeper": [
@@ -4073,6 +4073,22 @@
         {
           "id": "nand2tetris-course",
           "note": "chapter 2; an ALU with six control bits"
+        },
+        {
+          "id": "computers-theputhoffs-com-multiply",
+          "note": "Multiplication box"
+        },
+        {
+          "id": "computers-theputhoffs-com-divide",
+          "note": "Division box"
+        },
+        {
+          "id": "yt-v3-a-zqKfgA",
+          "note": "Division box: division written in software for a CPU without a divide instruction"
+        },
+        {
+          "id": "wiki-cordic",
+          "note": "Square roots box: roots, sines and logarithms from shifts and adds"
         }
       ],
       "questions": [
@@ -4080,41 +4096,14 @@
         "The same eight bits can be signed or unsigned. Who decides? What is the difference between the carry flag and the overflow flag?",
         "How does the ALU choose its operation: compute everything and select, or share one adder?",
         "Multiplication is shift-and-add. Why is division the slow one?",
-        "Which flags does the ALU produce, and who reads them?"
-      ]
-    },
-    "multiplication": {
-      "core": [
-        {
-          "id": "computers-theputhoffs-com-multiply"
-        },
-        {
-          "id": "yt-Cc33wOBAKDM",
-          "note": "shifts are half of shift-and-add"
-        }
-      ],
-      "deeper": [],
-      "questions": [
-        "Multiply 6 by 5 in binary by shifting and adding.",
-        "Why does multiplying two 8-bit numbers need 16 bits for the result?",
-        "Early CPUs had no multiply instruction. What did programs do?"
-      ]
-    },
-    "division": {
-      "core": [
-        {
-          "id": "computers-theputhoffs-com-divide"
-        },
-        {
-          "id": "yt-v3-a-zqKfgA",
-          "note": "division written in software for a CPU without a divide instruction"
-        }
-      ],
-      "deeper": [],
-      "questions": [
-        "Do a binary long division by hand.",
-        "Why is division the slowest of the four operations?",
-        "What should happen on a division by zero? (The link to 6.3.)"
+        "Which flags does the ALU produce, and who reads them?",
+        "Multiplication box: Multiply 6 by 5 in binary by shifting and adding.",
+        "Multiplication box: Why does multiplying two 8-bit numbers need 16 bits for the result?",
+        "Multiplication box: Early CPUs had no multiply instruction. What did programs do?",
+        "Division box: Do a binary long division by hand.",
+        "Division box: Why is division the slowest of the four operations?",
+        "Division box: What should happen on a division by zero? (The link to 6.3.)",
+        "Square roots box: How can a circuit that only shifts and adds produce a square root?"
       ]
     },
     "floating-point-in-hardware": {
@@ -4133,17 +4122,6 @@
         "Why was this a separate chip for years?"
       ],
       "note": "No bookmark covers the hardware side."
-    },
-    "square-roots-and-more-complex-stuff": {
-      "core": [
-        {
-          "id": "wiki-cordic",
-          "note": "roots, sines and logarithms from shifts and adds"
-        }
-      ],
-      "deeper": [],
-      "questions": ["How can a circuit that only shifts and adds produce a square root?"],
-      "note": "Nothing collected yet beyond one reference."
     },
     "program-counter": {
       "core": [

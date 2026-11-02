@@ -58,7 +58,7 @@
   --color-lightBlue: rgb(153, 204, 255);
   --color-myBlue: rgb(68, 160, 255);
   /* Link and hover accent. The dark-mode value is set on .dark below. */
-  --color-accent: rgb(25, 128, 232);
+  --color-accent: rgb(22, 115, 209);
   --color-darkBlue: rgb(15, 76, 229);
   /* Near-black with a blue cast, for dark-mode alternate sections on the home page. */
   --color-nightBlue: oklch(15% 0.045 255);

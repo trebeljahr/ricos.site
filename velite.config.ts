@@ -57,14 +57,16 @@ const excerptMarkup = (code: string) => {
   return /^<p>[^<]*<\/p>$/.test(html) ? undefined : html;
 };
 
-// github-dark-dimmed's comment grey (#768390) is 3.87:1 on its own background
-// (#22272e), under the 4.5:1 WCAG AA asks for. This grey is 4.88:1.
-const liftDarkCommentContrast = {
+// Two code colours under the 4.5:1 WCAG AA asks for, on their themes' backgrounds:
+// github-dark-dimmed's comment grey (3.87:1 on #22272e) and github-light's orange
+// (3.48:1 on white). These replacements are 4.88:1 and 5.03:1.
+const liftCodeContrast = {
   span(node: Element) {
     const { style } = node.properties;
-    if (typeof style === "string" && style.includes("--shiki-dark:#768390")) {
-      node.properties.style = style.replace("--shiki-dark:#768390", "--shiki-dark:#8B949E");
-    }
+    if (typeof style !== "string") return;
+    node.properties.style = style
+      .replace("--shiki-dark:#768390", "--shiki-dark:#8B949E")
+      .replace("--shiki-light:#E36209", "--shiki-light:#BC4C00");
   },
 };
 
@@ -574,7 +576,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
         transformers: [
           transformerNotationDiff({ matchAlgorithm: "v3" }),
           transformerNotationHighlight({ matchAlgorithm: "v3" }),
-          liftDarkCommentContrast,
+          liftCodeContrast,
         ],
         theme: {
           dark: "github-dark-dimmed",

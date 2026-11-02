@@ -121,7 +121,7 @@ export function TimelineList({
           <section key={year}>
             <h2 className="m-0 mb-para text-4xl font-bold tracking-normal">
               {year}
-              <span className="ml-3 text-lg font-normal text-gray-400">
+              <span className="ml-3 text-lg font-normal text-gray-500 dark:text-gray-400">
                 {stats.count} {stats.count === 1 ? "work" : "works"}
               </span>
             </h2>

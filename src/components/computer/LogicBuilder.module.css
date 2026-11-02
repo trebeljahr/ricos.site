@@ -356,8 +356,8 @@
 .wireJunction{fill:var(--wire-color);stroke:none;pointer-events:none}
 
 /* Delete by touch: a phone has no Delete key and no right-click on iOS. */
-.touchDelete{display:none}
-@media(pointer:coarse){.touchDelete{display:inline-block}.board{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.wireHit{stroke-width:28}}
+.touchOnly{display:none}
+@media(pointer:coarse){.touchOnly{display:inline-block}.board{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.wireHit{stroke-width:28}.wireHit:focus,.busHit:focus{outline:none}.contextMenu button:not(.colorSwatch){min-height:40px}.contextMenu button:hover{background:transparent;color:#e7edf3}.contextMenu button:active{background:#394d77;color:#fff}.contextColors{flex-wrap:wrap;gap:12px}.contextMenu .colorSwatch{width:28px;height:28px;min-width:28px}.contextDetails input,.contextDetails select{font-size:16px}}
 
 /* A phone page: one document scroll, with the level's goal above the canvas and parts in reach under it. */
 @media(max-width:640px){

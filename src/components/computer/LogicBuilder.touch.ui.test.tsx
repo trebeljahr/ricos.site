@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Circuit } from "../../lib/computer/logic";
 import { LogicBuilder } from "./LogicBuilder";
@@ -76,6 +76,10 @@ function tap(board: HTMLElement, target: HTMLElement, at = location(target)) {
   fireEvent.pointerUp(board, { ...finger, ...at });
   fireEvent.click(board, { detail: 1 });
 }
+const hold = () => act(() => new Promise((resolve) => setTimeout(resolve, 550)));
+const rotate = () => screen.queryByRole("menuitem", { name: /Rotate left/ });
+const body = { clientX: 366, clientY: 98 };
+const gate = () => stored().nodes.find((node) => node.id === "gate")!;
 
 beforeEach(() => {
   localStorage.clear();
@@ -155,8 +159,6 @@ describe("touch on the canvas", () => {
 
   it("moves a part by its body, and a small wobble leaves it in place", () => {
     const board = mount();
-    const body = { clientX: 366, clientY: 98 };
-    const gate = () => stored().nodes.find((node) => node.id === "gate")!;
     fireEvent.pointerDown(part("gate"), { ...finger, ...body });
     fireEvent.pointerMove(board, { ...finger, clientX: 370, clientY: 101 });
     fireEvent.pointerUp(board, { ...finger, clientX: 370, clientY: 101 });
@@ -237,11 +239,110 @@ describe("touch on the canvas", () => {
   it("deletes a tapped part with the Delete button, which only exists with a selection", () => {
     const board = mount();
     expect(screen.queryByRole("button", { name: "Delete" })).toBeNull();
-    const body = { clientX: 366, clientY: 98 };
     fireEvent.pointerDown(part("gate"), { ...finger, ...body });
     fireEvent.pointerUp(board, { ...finger, ...body });
     fireEvent.click(screen.getByRole("button", { name: "Delete" }));
     expect(stored().nodes.map((node) => node.id)).toEqual(["a", "out"]);
     expect(screen.queryByRole("button", { name: "Delete" })).toBeNull();
+  });
+
+  it("opens a part's menu for a finger held still, and lifting it changes nothing else", async () => {
+    const board = mount();
+    fireEvent.pointerDown(part("gate"), { ...finger, ...body });
+    await hold();
+    expect(rotate()).toBeTruthy();
+    fireEvent.pointerUp(board, { ...finger, ...body });
+    // The click some browsers send at the lift lands on the menu, which now lies under the finger.
+    fireEvent.click(rotate()!);
+    expect(rotate()).toBeTruthy();
+    expect(gate().inputSide).toBeUndefined();
+    expect([gate().x, gate().y]).toEqual([300, 40]);
+    await hold();
+    fireEvent.click(rotate()!);
+    expect(rotate()).toBeNull();
+    expect(gate().inputSide).toBeDefined();
+  });
+
+  it("still lets go when the lift lands on the menu, as it does in WebKit", async () => {
+    const board = mount();
+    await hold();
+    fireEvent.pointerDown(part("gate"), { ...finger, ...body });
+    await hold();
+    fireEvent.pointerUp(rotate()!, { ...finger, ...body });
+    await hold();
+    tap(board, output("a"));
+    expect(rotate()).toBeNull();
+    expect(screen.getByText("A Output: now tap an input.")).toBeTruthy();
+  });
+
+  it("recolours a wire from its long-press menu", async () => {
+    const board = mount();
+    const from = location(output("a"));
+    fireEvent.pointerDown(output("a"), { ...finger, ...from });
+    fireEvent.pointerUp(board, { ...finger, ...location(input("out")) });
+    const wire = screen.getByRole("button", { name: /^Select wire from A/ });
+    const middle = { clientX: from.clientX + 120, clientY: from.clientY };
+    fireEvent.pointerDown(wire, { ...finger, ...middle });
+    await hold();
+    fireEvent.pointerUp(board, { ...finger, ...middle });
+    expect(document.querySelector('[class*="pending"]')).toBeNull();
+    await hold();
+    fireEvent.click(screen.getByRole("button", { name: "Color wire coral" }));
+    expect(stored().wires.map((item) => item.color)).toEqual(["coral"]);
+  });
+
+  it("opens the board's menu for a long press on empty canvas", async () => {
+    const board = mount();
+    const empty = { clientX: 450, clientY: 400 };
+    fireEvent.pointerDown(board, { ...finger, ...empty });
+    await hold();
+    fireEvent.pointerUp(board, { ...finger, ...empty });
+    expect(screen.getByRole("menuitem", { name: /Select all parts/ })).toBeTruthy();
+  });
+
+  it("opens no menu once the finger has moved away, or a second finger has joined", async () => {
+    const board = mount();
+    fireEvent.pointerDown(part("gate"), { ...finger, ...body });
+    fireEvent.pointerMove(board, { ...finger, clientX: body.clientX + 30, clientY: body.clientY });
+    await hold();
+    expect(rotate()).toBeNull();
+    fireEvent.pointerUp(board, { ...finger, clientX: body.clientX + 30, clientY: body.clientY });
+    fireEvent.pointerDown(part("gate"), { ...finger, ...body });
+    fireEvent.pointerDown(board, { ...finger, pointerId: 2, clientX: 450, clientY: 300 });
+    await hold();
+    expect(rotate()).toBeNull();
+  });
+
+  it("keeps a dot held long as a slow tap, not a menu", async () => {
+    const board = mount();
+    // The first fit resizes the canvas on the next frame, which would move the dot.
+    await hold();
+    const at = location(output("a"));
+    fireEvent.pointerDown(output("a"), { ...finger, ...at });
+    await hold();
+    expect(rotate()).toBeNull();
+    fireEvent.pointerUp(board, { ...finger, ...at });
+    expect(screen.getByText("A Output: now tap an input.")).toBeTruthy();
+  });
+
+  it("closes the menu and goes on dragging when the held finger moves", async () => {
+    const board = mount();
+    fireEvent.pointerDown(part("gate"), { ...finger, ...body });
+    await hold();
+    expect(rotate()).toBeTruthy();
+    fireEvent.pointerMove(board, { ...finger, clientX: 416, clientY: 138 });
+    expect(rotate()).toBeNull();
+    fireEvent.pointerUp(board, { ...finger, clientX: 416, clientY: 138 });
+    expect([gate().x, gate().y]).toEqual([350, 80]);
+  });
+
+  it("opens the same menu from More, for a reader who has not found the long press", () => {
+    const board = mount();
+    fireEvent.pointerDown(part("gate"), { ...finger, ...body });
+    fireEvent.pointerUp(board, { ...finger, ...body });
+    expect(rotate()).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "More" }));
+    fireEvent.click(rotate()!);
+    expect(gate().inputSide).toBeDefined();
   });
 });

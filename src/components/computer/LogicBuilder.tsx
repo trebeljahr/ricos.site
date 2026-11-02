@@ -158,6 +158,17 @@ const TOUCH_PORT_REACH = 22;
 const DOUBLE_TAP_MS = 350;
 /** A finger wobbles this many CSS px during a tap. */
 const TOUCH_TAP_SLOP = 14;
+/** How long a still finger waits before it opens the menu a right-click opens. */
+const LONG_PRESS_MS = 500;
+/** Chromium sends a click where the finger lifts, and the menu a long press opened now lies there. */
+const swallowLiftClick = () => {
+  const swallow = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  window.addEventListener("click", swallow, { capture: true, once: true });
+  window.setTimeout(() => window.removeEventListener("click", swallow, true), DOUBLE_TAP_MS);
+};
 const GRID_BASE_STEP = 20;
 const gridSpacing = (zoom: number) =>
   GRID_BASE_STEP * 2 ** Math.round(Math.log2(1 / zoom)) * zoom;
@@ -671,6 +682,15 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   const [editingPart, setEditingPart] = useState<string | null>(null);
   const [draftLabel, setDraftLabel] = useState("");
   const [menu, setMenu] = useState<{ x: number; y: number; part?: Node; wire?: string } | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!menu) return;
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as globalThis.Node)) setMenu(null);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer, true);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer, true);
+  }, [menu]);
   const [drag, setDrag] = useState<{ id: string; dx: number; dy: number } | null>(null);
   const [preview, setPreview] = useState<{ port: InlineEndpoint; point: { x: number; y: number }; wire?: WireAnchor; error?: string } | null>(null);
   const interaction = useRef<{
@@ -1169,7 +1189,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
         ))}
       </div>
       {portMessage && <div className={styles.inlinePortStatus} role="status">{portMessage}</div>}
-      {menu && <ViewportContextMenu x={menu.x} y={menu.y}
+      {menu && <ViewportContextMenu menuRef={menuRef} x={menu.x} y={menu.y}
         aria-label="Expanded circuit actions"
         onPointerDown={(event) => event.stopPropagation()}>
         {editable && <>
@@ -1717,6 +1737,7 @@ function LogicBuilderWorkspace({
   const pinch = useRef<{ distance: number; x: number; y: number } | null>(null);
   const touchMoved = useRef(false);
   const zoomTap = useRef<{ x: number; y: number } | null>(null);
+  const heldPress = useRef<{ timer: number; opened: boolean } | null>(null);
   const lastPlacement = useRef(0);
   const lastPaletteTouch = useRef(-Infinity);
   const inputFile = useRef<HTMLInputElement>(null);
@@ -2668,6 +2689,12 @@ function LogicBuilderWorkspace({
     setSelected([]);
     setMenu(null);
   };
+  /** The menu a long press opens, for a reader who has not found the long press. */
+  const openSelectionMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const { left, bottom } = event.currentTarget.getBoundingClientRect();
+    const at = { x: left, y: bottom + 6 };
+    setMenu(selectedWires.length ? { ...at, kind: "wire", id: selectedWires[0] } : { ...at, kind: "node", id: selected[0] });
+  };
   const removeSelection = () => {
     const removed = new Set(selected);
     setCircuit((current) => ({
@@ -2767,10 +2794,58 @@ function LogicBuilderWorkspace({
       setMessage("Could not import that circuit JSON file.");
     }
   };
+  const endPress = () => {
+    const press = heldPress.current;
+    if (press) window.clearTimeout(press.timer);
+    heldPress.current = null;
+    return press;
+  };
+  /**
+   * iOS sends no contextmenu for a long press, so a held finger sends the one a right-click would.
+   * The press follows its finger from the window: WebKit sends the lift to the menu now under it,
+   * which the board's own handlers never see.
+   */
+  const startPress = (event: React.PointerEvent<Element>) => {
+    const target = event.target as Element;
+    const { clientX, clientY, pointerId } = event;
+    const press = { opened: false, timer: window.setTimeout(() => {
+      target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX, clientY }));
+    }, LONG_PRESS_MS) };
+    heldPress.current = press;
+    const follow = (move: PointerEvent) => {
+      if (move.pointerId !== pointerId || heldPress.current !== press ||
+          Math.hypot(move.clientX - clientX, move.clientY - clientY) <= TOUCH_TAP_SLOP) return;
+      endPress();
+      // Moving on after the menu opened closes it, and the drag or pan the press began carries on.
+      if (press.opened) setMenu(null);
+    };
+    const lift = (up: PointerEvent) => {
+      if (up.pointerId !== pointerId) return;
+      window.removeEventListener("pointermove", follow, true);
+      window.removeEventListener("pointerup", lift, true);
+      window.removeEventListener("pointercancel", lift, true);
+      if (heldPress.current !== press) return;
+      endPress();
+      if (!press.opened) return;
+      // The menu stays, and nothing else comes of the press.
+      up.stopPropagation();
+      touchPointers.current.delete(pointerId);
+      if (dragRef.current) endTransaction();
+      setDrag(null);
+      wireDraftRef.current = null;
+      setWireDraft(null);
+      suppressBoardClick.current = false;
+      swallowLiftClick();
+    };
+    window.addEventListener("pointermove", follow, true);
+    window.addEventListener("pointerup", lift, true);
+    window.addEventListener("pointercancel", lift, true);
+  };
   const gestureDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch") {
       touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
       zoomTap.current = null;
+      endPress();
       if (touchPointers.current.size === 1) {
         touchMoved.current = false;
         const near = touchPorts(event);
@@ -2788,6 +2863,10 @@ function LogicBuilderWorkspace({
           const finger = boardPoint(event.clientX, event.clientY);
           beginWireDraft(event, { ...end, x: port.x, y: port.y, originX: finger.x, originY: finger.y });
         }
+        // A dot held long is still a slow tap. Beside a dot, only a part's body opens a menu.
+        const target = event.target as Element;
+        if (!lockedRef.current && !target.closest("button[data-node-id], input, select") &&
+            (!port || target.closest(`.${styles.node}`))) startPress(event);
       }
       if (touchPointers.current.size === 2) {
         const [first, second] = [...touchPointers.current.values()];
@@ -3624,9 +3703,14 @@ function LogicBuilderWorkspace({
                   Select
                 </button>
                 {(selected.length > 0 || selectedWires.length > 0) && (
-                  <button type="button" className={styles.touchDelete} onClick={removeSelection}>
-                    Delete
-                  </button>
+                  <>
+                    <button type="button" className={styles.touchOnly} onClick={removeSelection}>
+                      Delete
+                    </button>
+                    <button type="button" className={styles.touchOnly} onClick={openSelectionMenu}>
+                      More
+                    </button>
+                  </>
                 )}
                 <small>
                   Shift-click or Shift-drag ports to select · Drag selected ports to wire · {embedded ? "Ctrl/⌘ + scroll to zoom" : "Scroll to zoom"}
@@ -3670,6 +3754,13 @@ function LogicBuilderWorkspace({
             onPointerMoveCapture={gestureMove}
             onPointerUpCapture={gestureUp}
             onPointerCancelCapture={gestureUp}
+            onContextMenuCapture={() => {
+              // Android sends its own contextmenu for a long press, so the timer may not be first.
+              const press = heldPress.current;
+              if (!press) return;
+              window.clearTimeout(press.timer);
+              press.opened = true;
+            }}
             onClick={(event) => {
               if ((event.target as Element).closest(`.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`)) return;
               if (portWiring.consumeClick()) return;

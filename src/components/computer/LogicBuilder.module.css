@@ -78,7 +78,7 @@
 .nodePartName,.nodeLabel{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nodePartName{flex-shrink:0}
 .nodeLabel{color:#b8c9df;font-size:10px;font-weight:650;cursor:text;pointer-events:auto}
-.node .editName{flex:none;display:grid;place-items:center;width:20px;height:18px;border:0;background:transparent;color:#b8c9df;padding:1px;cursor:pointer;pointer-events:auto}
+.node .editName{flex:none;display:grid;place-items:center;width:24px;height:24px;margin:-3px -2px;border:0;background:transparent;color:#b8c9df;padding:1px;cursor:pointer;pointer-events:auto}
 .node .editName svg{width:15px;height:15px}
 .node .editName:hover,.node .editName:focus-visible{color:#fff;outline:1px solid #b8c9df;border-radius:3px}
 .nodeNameInput{min-width:0;width:90px;max-width:100%;box-sizing:border-box;padding:1px 3px;border:1px solid #b8c9df;border-radius:3px;background:#17233d;color:#fff;font:700 10px ui-sans-serif,system-ui,sans-serif;pointer-events:auto}

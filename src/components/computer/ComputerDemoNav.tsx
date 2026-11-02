@@ -45,7 +45,7 @@ export function ComputerDemoNav({
               </span>
             </Link>
           ) : (
-            <span className={`${linkClass} cursor-default opacity-40`} aria-hidden="true">
+            <span className={`${linkClass} cursor-default opacity-65`} aria-hidden="true">
               ← <span className="ml-hair hidden sm:inline">Previous</span>
             </span>
           )}
@@ -64,7 +64,7 @@ export function ComputerDemoNav({
               →
             </Link>
           ) : (
-            <span className={`${linkClass} cursor-default opacity-40`} aria-hidden="true">
+            <span className={`${linkClass} cursor-default opacity-65`} aria-hidden="true">
               <span className="mr-hair">Next</span> →
             </span>
           )}

@@ -1,14 +1,8 @@
 import type { CommonMetadata } from "src/@types";
 import { deleteUndefinedValues } from "./deleteUndefinedValues";
 
-/**
- * Card metadata without the compiled MDX excerpt.
- *
- * `markdownExcerpt` is a bundled MDX module (~1.2KB of JS per entry) and only
- * `PostPreview`/`BookPreview` render it. Cards that show the plain-text
- * `excerpt` instead should not ship it into __NEXT_DATA__.
- */
-export type CardMetadata = Omit<CommonMetadata, "markdownExcerpt">;
+/** Card metadata for cards that show the plain-text `excerpt` only. */
+export type CardMetadata = Omit<CommonMetadata, "excerptHtml">;
 
 export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
   const {
@@ -25,7 +19,7 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     number,
     parentFolder,
     bookAuthor,
-    markdownExcerpt,
+    excerptHtml,
     rating,
     published,
     show,
@@ -39,7 +33,7 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
     subtitle,
     excerpt,
     show,
-    markdownExcerpt,
+    excerptHtml,
     episode,
     metadata,
     cover,
@@ -56,6 +50,6 @@ export const toOnlyMetadata = (obj: CommonMetadata): CommonMetadata => {
 };
 
 export const toCardMetadata = (obj: CommonMetadata): CardMetadata => {
-  const { markdownExcerpt: _markdownExcerpt, ...rest } = toOnlyMetadata(obj);
+  const { excerptHtml: _excerptHtml, ...rest } = toOnlyMetadata(obj);
   return rest;
 };

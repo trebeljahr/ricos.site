@@ -17,7 +17,7 @@ import type { CardMetadata } from "src/lib/utils/toOnlyMetadata";
 
 type BacklinkItem = { title: string; link: string; type: string };
 
-// Fields this page renders. link, slug, markdownExcerpt, contentType,
+// Fields this page renders. link, slug, excerptHtml, contentType,
 // published, date-last-updated and hasDemos are dropped before serialisation.
 const NEWSLETTER_FIELDS = [
   "slugTitle",

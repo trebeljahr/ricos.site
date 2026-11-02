@@ -10,7 +10,8 @@ export const PostPreview = ({
   post: {
     title,
     cover,
-    markdownExcerpt,
+    excerpt,
+    excerptHtml,
     slug,
     date,
     metadata: { readingTime },
@@ -21,7 +22,8 @@ export const PostPreview = ({
       layout="horizontal"
       title={title}
       cover={cover}
-      markdownExcerpt={markdownExcerpt}
+      excerpt={excerpt}
+      excerptHtml={excerptHtml}
       link={slug}
       date={date}
       readingTime={readingTime}
@@ -37,7 +39,10 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
   return (
     <div>
       {posts.map(
-        ({ slug, link, title, markdownExcerpt, cover, date, metadata: { readingTime } }, index) => {
+        (
+          { slug, link, title, excerpt, excerptHtml, cover, date, metadata: { readingTime } },
+          index,
+        ) => {
           const priority = index === 0;
 
           return (
@@ -46,7 +51,8 @@ export const OtherPostsPreview = ({ posts }: { posts: CommonMetadata[] }) => {
               key={slug}
               cover={cover}
               link={link}
-              markdownExcerpt={markdownExcerpt}
+              excerpt={excerpt}
+              excerptHtml={excerptHtml}
               priority={priority}
               title={title}
               date={date}

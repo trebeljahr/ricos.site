@@ -1,20 +1,17 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
-import { getMDXComponent } from "mdx-bundler/client";
 import Link from "next/link";
-import { type ComponentPropsWithoutRef, type ReactNode, useMemo } from "react";
-import type { MDXResult } from "src/@types";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { MetadataDisplay } from "./MetadataDisplay";
 
-// The whole card is one <a>, so links inside an excerpt would nest anchors.
-const excerptComponents = {
-  a: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
-};
-
-const MDXExcerpt = ({ source }: { source: MDXResult }) => {
-  const Component = useMemo(() => getMDXComponent(source.code), [source.code]);
-  return <Component components={excerptComponents} />;
-};
+const Excerpt = ({ excerpt, excerptHtml }: { excerpt?: string; excerptHtml?: string }) =>
+  excerptHtml ? (
+    // Our own content, rendered at build time. See excerptMarkup in velite.config.ts.
+    // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted, see above
+    <div className="contents" dangerouslySetInnerHTML={{ __html: excerptHtml }} />
+  ) : (
+    <p>{excerpt}</p>
+  );
 
 /**
  * A card pointing off-site. next/link would prefetch a foreign origin and open
@@ -63,7 +60,7 @@ export type CardProps = {
   headingAs?: "h2" | "h3";
   subtitle?: string;
   excerpt?: string;
-  markdownExcerpt?: MDXResult;
+  excerptHtml?: string;
   typeLabel?: string;
   date?: string;
   readingTime?: number;
@@ -96,7 +93,7 @@ export function Card({
   headingAs: Heading = "h2",
   subtitle,
   excerpt,
-  markdownExcerpt,
+  excerptHtml,
   typeLabel,
   date,
   readingTime,
@@ -118,7 +115,7 @@ export function Card({
   const video = coverAspect === "video";
   const letterboxed = horizontal && video;
   const hasDimensions = cover?.width !== undefined && cover?.height !== undefined;
-  const hasExcerpt = Boolean(markdownExcerpt || excerpt);
+  const hasExcerpt = Boolean(excerptHtml || excerpt);
 
   const Anchor = external ? ExternalAnchor : Link;
 
@@ -233,13 +230,7 @@ export function Card({
           // blurb in the same style: the subtitle when there is one (it already
           // says what the piece is about), otherwise the excerpt.
           <div className="mt-tight line-clamp-3 text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300 [&_p]:my-0">
-            {subtitle ? (
-              <p>{subtitle}</p>
-            ) : markdownExcerpt ? (
-              <MDXExcerpt source={markdownExcerpt} />
-            ) : (
-              <p>{excerpt}</p>
-            )}
+            {subtitle ? <p>{subtitle}</p> : <Excerpt excerpt={excerpt} excerptHtml={excerptHtml} />}
           </div>
         )}
 
@@ -249,7 +240,7 @@ export function Card({
           // The browser draws the "…" when an excerpt overflows, so cards keep
           // a consistent height no matter how long the stored excerpt is.
           <div className="mt-label line-clamp-4 text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400 [&_p]:my-0">
-            {markdownExcerpt ? <MDXExcerpt source={markdownExcerpt} /> : <p>{excerpt}</p>}
+            <Excerpt excerpt={excerpt} excerptHtml={excerptHtml} />
           </div>
         )}
 

@@ -7,7 +7,7 @@ import { Card, type CoverAspect } from "./Card";
 // The subset of CommonMetadata the cards render, so non-content data (e.g.
 // src/lib/projects.ts) can reuse the same galleries.
 export type CardGalleryItem = Pick<CommonMetadata, "slug" | "link" | "title" | "cover"> &
-  Partial<Pick<CommonMetadata, "subtitle" | "markdownExcerpt" | "date">> & {
+  Partial<Pick<CommonMetadata, "subtitle" | "excerptHtml" | "date">> & {
     metadata?: Partial<CommonMetadata["metadata"]>;
   };
 
@@ -32,7 +32,7 @@ export const CardGallery = ({
           readingTime={singlePiece.metadata?.readingTime}
           {...singlePiece}
           coverAspect={coverAspect}
-          markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
+          excerptHtml={withExcerpt ? singlePiece.excerptHtml : undefined}
           subtitle={withSubtitle ? singlePiece.subtitle : undefined}
         />
       ))}
@@ -167,7 +167,7 @@ export const ScrollableCardGallery: FC<CardGalleryProps> = ({
             <Card
               {...singlePiece}
               coverAspect={coverAspect}
-              markdownExcerpt={withExcerpt ? singlePiece.markdownExcerpt : undefined}
+              excerptHtml={withExcerpt ? singlePiece.excerptHtml : undefined}
               subtitle={withDescription ? singlePiece.subtitle : undefined}
               readingTime={singlePiece.metadata?.readingTime}
             />

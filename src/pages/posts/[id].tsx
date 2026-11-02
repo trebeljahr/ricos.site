@@ -30,7 +30,7 @@ type BacklinkItem = { title: string; link: string; type: string };
 const LONG_POST_WORDS = 1500;
 
 // Fields the layout below actually reads. The rest of the velite entry (link,
-// excerpt, markdownExcerpt, contentType, published, date-last-updated) is
+// excerpt, excerptHtml, contentType, published, date-last-updated) is
 // dropped so it never lands in __NEXT_DATA__.
 const POST_FIELDS = [
   "slug",

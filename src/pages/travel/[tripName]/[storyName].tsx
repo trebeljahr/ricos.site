@@ -22,7 +22,7 @@ import type { CardMetadata } from "src/lib/utils/toOnlyMetadata";
 type BacklinkItem = { title: string; link: string; type: string };
 
 // Everything the layout below reads off the entry. Anything not listed here
-// (the build-time source path, link, excerpt, markdownExcerpt, contentType,
+// (the build-time source path, link, excerpt, excerptHtml, contentType,
 // published, date-last-updated, hasDemos) never reaches __NEXT_DATA__.
 const POST_FIELDS = [
   "slug",

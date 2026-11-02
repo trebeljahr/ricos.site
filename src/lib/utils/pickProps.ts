@@ -4,7 +4,7 @@
  * getStaticProps serialises whatever it returns into __NEXT_DATA__, so handing
  * a velite document straight through ships every field the collection happens
  * to carry — including build-only ones like the absolute source `path`, and
- * bulky ones the page never renders (`markdownExcerpt`, unused excerpts).
+ * bulky ones the page never renders (`excerptHtml`, unused excerpts).
  * Listing the fields a route actually reads keeps the payload honest.
  *
  * `undefined` values are dropped rather than copied: Next refuses to serialise

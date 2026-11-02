@@ -19,7 +19,7 @@ import type { CardMetadata } from "src/lib/utils/toOnlyMetadata";
 type BacklinkItem = { title: string; link: string; type: string };
 
 // Fields this page renders. Everything else on the entry (link, excerpt,
-// markdownExcerpt, detailedNotes, amazonAffiliateLink, contentType, published,
+// excerptHtml, detailedNotes, amazonAffiliateLink, contentType, published,
 // date-last-updated, hasDemos) stays out of __NEXT_DATA__.
 const BOOKNOTE_FIELDS = [
   "slug",

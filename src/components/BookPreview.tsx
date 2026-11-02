@@ -7,7 +7,7 @@ type Props = {
 };
 
 export function BookPreview({ book, index }: Props) {
-  const { link, title, cover, excerpt, subtitle, bookAuthor, markdownExcerpt, rating, date } = book;
+  const { link, title, cover, excerpt, subtitle, bookAuthor, excerptHtml, rating, date } = book;
 
   return (
     <Card
@@ -18,7 +18,7 @@ export function BookPreview({ book, index }: Props) {
       cover={cover}
       subtitle={subtitle}
       excerpt={excerpt}
-      markdownExcerpt={markdownExcerpt}
+      excerptHtml={excerptHtml}
       date={date}
       readingTime={book.metadata.readingTime}
       // Only the first cover is a real LCP candidate. Multiple priority images

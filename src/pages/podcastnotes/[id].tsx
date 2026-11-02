@@ -14,7 +14,7 @@ import { pickProps } from "src/lib/utils/pickProps";
 
 type BacklinkItem = { title: string; link: string; type: string };
 
-// Fields this page renders. link, excerpt, markdownExcerpt, seoOgImage*,
+// Fields this page renders. link, excerpt, excerptHtml, seoOgImage*,
 // contentType, published, date-last-updated and hasDemos stay out of
 // __NEXT_DATA__.
 const PODCASTNOTE_FIELDS = [

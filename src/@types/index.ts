@@ -38,7 +38,8 @@ export type CommonMetadata = {
 
   date: string;
   excerpt: string;
-  markdownExcerpt: MDXResult;
+  /** The excerpt as HTML. Only set when it has inline markup, see velite.config.ts. */
+  excerptHtml?: string;
   link: string;
   tags: string;
   cover: {

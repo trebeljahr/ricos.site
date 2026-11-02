@@ -24,7 +24,7 @@ const sortByNumbers = (arr: CommonMetadata[]) => {
 };
 
 const toNiceCard = (
-  { link, title, markdownExcerpt, cover, date, metadata: { readingTime } }: CommonMetadata,
+  { link, title, excerpt, excerptHtml, cover, date, metadata: { readingTime } }: CommonMetadata,
   index: number,
 ) => {
   const priority = index === 0;
@@ -35,7 +35,8 @@ const toNiceCard = (
       key={link}
       cover={cover}
       link={link}
-      markdownExcerpt={markdownExcerpt}
+      excerpt={excerpt}
+      excerptHtml={excerptHtml}
       priority={priority}
       title={title}
       date={date}

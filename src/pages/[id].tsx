@@ -31,7 +31,7 @@ const needlestackRenderers = {
   ),
 };
 
-// Fields this page renders. link, excerpt, markdownExcerpt, contentType,
+// Fields this page renders. link, excerpt, excerptHtml, contentType,
 // published and date-last-updated are dropped before serialisation.
 const PAGE_FIELDS = [
   "slug",

@@ -7,7 +7,10 @@ import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
 import type { Handler } from "mdast-util-to-hast";
 import { bundleMDX } from "mdx-bundler";
+import { getMDXComponent } from "mdx-bundler/client/index.js";
 import pLimit from "p-limit";
+import { createElement, type ReactNode } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeCodeTitles from "rehype-code-titles";
 import rehypeKatex from "rehype-katex";
@@ -38,6 +41,21 @@ declare module "mdast" {
     SimpleGallery: Node;
   }
 }
+
+// A card's excerpt as HTML, for the few that have inline markup. Everything else
+// is the plain `excerpt` string. Cards used to compile this in the browser: 1.2 KB
+// of JavaScript per card in __NEXT_DATA__ and a `new Function` per card on hydration.
+const excerptMarkup = (code: string) => {
+  const html = renderToStaticMarkup(
+    createElement(getMDXComponent(code), {
+      // The whole card is one <a>, so links inside an excerpt would nest anchors.
+      components: {
+        a: ({ children }: { children?: ReactNode }) => createElement("span", null, children),
+      },
+    }),
+  );
+  return /^<p>[^<]*<\/p>$/.test(html) ? undefined : html;
+};
 
 // github-dark-dimmed's comment grey (#768390) is 3.87:1 on its own background
 // (#22272e), under the 4.5:1 WCAG AA asks for. This grey is 4.88:1.
@@ -491,7 +509,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
   T & {
     content: MDXResult;
     excerpt: string;
-    markdownExcerpt: MDXResult;
+    excerptHtml?: string;
     metaDescription: string;
     seoTitle: string;
     seoKeywords: string[];
@@ -627,7 +645,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
       return options;
     },
   });
-  const markdownExcerpt: MDXResult = { code: excerptCode };
+  const excerptHtml = excerptMarkup(excerptCode);
 
   // SEO metadata: JSON override → frontmatter/content fallback → ""
   const metaDescription = seoEntry.metaDescription || generateMetaDescription(excerptString) || "";
@@ -651,7 +669,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     ...data,
     content: mdxSource,
     excerpt: excerptString,
-    markdownExcerpt,
+    excerptHtml,
     metaDescription,
     seoTitle,
     seoKeywords,

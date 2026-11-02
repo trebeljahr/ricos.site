@@ -1,7 +1,31 @@
 import { ClockEgg } from "@components/EasterEggs/Clock";
 import { PenEgg } from "@components/EasterEggs/Pen";
 import { Sprite } from "@components/Sprite";
-import { format } from "date-fns";
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+// A card or post with a date otherwise pulls date-fns and its English locale
+// tables, 30 KB of JavaScript, into the page for these two formats.
+const formatDate = (date: string, longForm: boolean) => {
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) throw new RangeError(`Invalid date: ${date}`);
+  const month = MONTHS[parsed.getMonth()];
+  const dayAndYear = `${parsed.getDate()}, ${parsed.getFullYear()}`;
+  return longForm ? `${month} ${dayAndYear}` : `${month.slice(0, 3)} ${dayAndYear}`;
+};
 
 type Props = {
   date?: string;
@@ -25,7 +49,7 @@ const _MetadataDisplay = ({
     <>
       {longFormDate && `Published on `}
       <time dateTime={date} suppressHydrationWarning>
-        {format(new Date(date), longFormDate ? "LLLL	d, yyyy" : "MMM d, yyyy")}
+        {formatDate(date, longFormDate)}
       </time>
       {withAuthorInfo && " by Rico Trebeljahr"}
     </>

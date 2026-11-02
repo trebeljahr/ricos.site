@@ -40,58 +40,74 @@ function buildNot(b: ReturnType<typeof within>) {
 }
 
 describe("first run", () => {
-  it("opens the whole ladder on NOT, with nothing to read about transistors", () => {
+  const wireATo = (b: ReturnType<typeof within>, target: string) => {
+    fireEvent.click(b.getByRole("button", { name: "Wire from A Output" }));
+    fireEvent.click(b.getByRole("button", { name: target }));
+  };
+  it("opens the whole ladder on transistors, with only A left to wire", () => {
     render(<LogicTutorial sequential />);
     const [b] = builders();
-    expect(b.getByRole("heading", { name: "NOT" })).toBeTruthy();
+    expect(b.getByRole("heading", { name: "NOT from transistors" })).toBeTruthy();
+    expect(
+      b.getByRole<HTMLOptionElement>("option", { name: /^1\. NOT from transistors/ }).value,
+    ).toBe("cmos-not");
     const panel = b.getByRole("complementary", { name: "Level" }).textContent;
-    expect(panel).not.toMatch(/PMOS|NMOS|Boolean|transistor model/);
-    expect(b.getByRole<HTMLOptionElement>("option", { name: /^1\. NOT/ }).value).toBe("not");
+    expect(panel).not.toMatch(/conduct|rail|CMOS|junction|Boolean/i);
+    for (const part of ["PMOS", "NMOS"])
+      expect(b.getByRole("button", { name: `Connect to ${part} Gate (G)` })).toBeTruthy();
+    expect(b.queryAllByRole("button", { name: /^Select wire from A / })).toHaveLength(0);
   });
-  it("keeps the transistor levels open while later main levels stay locked", () => {
+  it("solves the first level with two wires and offers the next without pressing Check", () => {
+    render(<LogicTutorial sequential />);
+    const [b] = builders();
+    expect(b.queryByRole("button", { name: /^Next:/ })).toBeNull();
+    wireATo(b, "Connect to PMOS Gate (G)");
+    expect(b.queryByText("✓ Correct wiring.")).toBeNull();
+    wireATo(b, "Connect to NMOS Gate (G)");
+    expect(b.getByText("✓ Correct wiring.")).toBeTruthy();
+    expect(progressStore.get().solved["cmos-not"]).toBeTruthy();
+    fireEvent.click(b.getByRole("button", { name: "Next: NAND from transistors →" }));
+    expect(builders()[0].getByRole("heading", { name: "NAND from transistors" })).toBeTruthy();
+    expect(boardParts(builders()[0])).toHaveLength(5);
+  });
+  it("opens NOT without the transistor levels, while the levels after it stay locked", () => {
     render(<LogicTutorial sequential />);
     const option = (id: string) =>
       document.querySelector<HTMLOptionElement>(
         `select[aria-label="Level"] option[value="${id}"]`,
       )!;
+    expect(option("not").disabled).toBe(false);
     expect(option("and").disabled).toBe(true);
-    expect(option("cmos-not").disabled).toBe(false);
-    expect(option("cmos-nand").disabled).toBe(false);
-    fireEvent.change(screen.getByRole("combobox", { name: "Level" }), {
-      target: { value: "cmos-not" },
-    });
-    expect(screen.getByRole("heading", { name: "NOT from transistors" })).toBeTruthy();
-    expect(screen.queryByText(/Solve or skip the levels before this one/)).toBeNull();
   });
-  it("restores saved transistor work for a reader who has not solved the gates", () => {
-    const circuit = levelById("cmos-not")!.reference!();
+  it("restores a saved transistor board as it was, without the new starting parts", () => {
+    const reference = levelById("cmos-not")!.reference!();
+    const rename = (id: string) => (/^n\d+$/.test(id) ? `mine-${id}` : id);
+    const circuit = {
+      ...reference,
+      nodes: reference.nodes.map((node) => ({ ...node, id: rename(node.id) })),
+      wires: reference.wires.map((wire) => ({
+        ...wire,
+        from: rename(wire.from),
+        to: rename(wire.to),
+      })),
+    };
     localStorage.setItem(
       PROGRESS_KEY,
       JSON.stringify({ solved: { "cmos-not": { at: 1, circuit } }, skipped: ["cmos-nand"] }),
     );
     progressStore.reset();
-    render(<LogicTutorial sequential level="cmos-not" />);
-    expect(screen.queryByText(/Solve or skip the levels before this one/)).toBeNull();
+    render(<LogicTutorial sequential />);
     expect(screen.getByText("Solved ✓")).toBeTruthy();
     expect(screen.getByText("✓ Correct wiring.")).toBeTruthy();
+    expect(boardParts(builders()[0])).toHaveLength(reference.nodes.length);
     expect(progressStore.get().solved["cmos-not"].at).toBe(1);
     expect(progressStore.get().skipped).toEqual(["cmos-nand"]);
-  });
-  it("offers the next level as soon as the wiring is right, without pressing Check", () => {
-    render(<LogicTutorial sequential />);
-    const [b] = builders();
-    expect(b.queryByRole("button", { name: /^Next:/ })).toBeNull();
-    buildNot(b);
-    expect(b.getByText("✓ Correct wiring.")).toBeTruthy();
-    fireEvent.click(b.getByRole("button", { name: "Next: AND →" }));
-    expect(builders()[0].getByRole("heading", { name: "AND" })).toBeTruthy();
-    expect(builders()[0].getByTitle(/Your NOT, checked against every row/)).toBeTruthy();
   });
 });
 
 describe("independent tutorials", () => {
   it("explains automatic junction knobs without advertising a standalone junction block", () => {
-    render(<LogicTutorial levels={["cmos-not"]} />);
+    render(<LogicTutorial levels={["cmos-nand"]} />);
     expect(screen.getByText(/Available parts: PMOS, NMOS/).textContent).not.toContain("JUNCTION");
     expect(
       screen.getByText(/Release at the highlighted target to create a small junction knob/),
@@ -103,7 +119,7 @@ describe("independent tutorials", () => {
   it("starts with goal, context, table and available blocks; hints never edit the board", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();
-    expect(b.getByText(/Make lamp OUT the opposite of switch A/)).toBeTruthy();
+    expect(b.getByText(/OUT is the opposite of A/)).toBeTruthy();
     expect(b.getByRole("heading", { name: "Truth table" })).toBeTruthy();
     expect(b.getByText(/Available parts: NAND/)).toBeTruthy();
     expect(b.queryByRole("list", { name: "Steps" })).toBeNull();

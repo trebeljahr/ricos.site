@@ -57,7 +57,6 @@ const LIVE_ROWS = 16;
 const SAVE_DELAY = 500;
 
 const isOpen = (levels: readonly Level[], index: number, progress: Progress) =>
-  Boolean(levels[index]?.anytime) ||
   levels
     .slice(0, index)
     .every(

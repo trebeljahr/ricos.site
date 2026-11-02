@@ -31,7 +31,7 @@ export default function TransistorGatesPage() {
           </p>
           <p>
             <Link href="/computer/build-from-nand?level=cmos-not">
-              Design a transistor inverter →
+              Wire a transistor inverter →
             </Link>
           </p>
           <TransistorGates />

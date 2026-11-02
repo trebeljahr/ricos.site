@@ -63,36 +63,35 @@ it("shows restored correctness without celebrating or changing its saved solve",
   ).toHaveLength(3);
 });
 
-it.each([
-  "universal-nand-and",
-  "universal-nor-and",
-  "cmos-not",
-  "cmos-nand",
-])("%s shows the size challenge on live success and Check, then recognizes a minimum", (id) => {
-  const level = levelById(id)!;
-  const reference = level.reference!();
-  const type = level.palette[0] === "pmos" ? "pmos" : level.palette[0] === "nand" ? "nand" : "nor";
-  const spare: Node = { id: "spare", type, x: 300, y: 500 };
-  const circuit = { ...reference, nodes: [...reference.nodes, spare] };
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [id]: circuit } }));
-  progressStore.reset();
-  const { unmount } = render(<LogicTutorial levels={[id]} />);
-  const status = () => screen.getByText("✓ Correct wiring.").closest("p")!;
-  expect(status().textContent).toContain("Can you find the simplest solution?");
-  expect(status().textContent).toContain(
-    `Aim for ${level.sizeGoal!.minimum} ${level.sizeGoal!.unit}`,
-  );
-  fireEvent.click(screen.getByRole("button", { name: "Check" }));
-  expect(progressStore.get().solved[id]).toBeTruthy();
-  expect(screen.getAllByText(/Can you find the simplest solution\?/)).toHaveLength(2);
-  if (id.startsWith("universal-nor")) {
-    expect(screen.getByText(/Yours:/).textContent).toContain("NOR gates");
-    expect(screen.getByText(/Yours:/).textContent).not.toContain("NAND");
-  }
-  unmount();
-  localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [id]: reference } }));
-  progressStore.reset();
-  render(<LogicTutorial levels={[id]} />);
-  expect(status().textContent).toContain("Simplest solution found");
-  expect(status().textContent).not.toContain("Can you find the simplest solution?");
-});
+it.each(["universal-nand-and", "universal-nor-and", "cmos-nand"])(
+  "%s shows the size challenge on live success and Check, then recognizes a minimum",
+  (id) => {
+    const level = levelById(id)!;
+    const reference = level.reference!();
+    const type =
+      level.palette[0] === "pmos" ? "pmos" : level.palette[0] === "nand" ? "nand" : "nor";
+    const spare: Node = { id: "spare", type, x: 300, y: 500 };
+    const circuit = { ...reference, nodes: [...reference.nodes, spare] };
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [id]: circuit } }));
+    progressStore.reset();
+    const { unmount } = render(<LogicTutorial levels={[id]} />);
+    const status = () => screen.getByText("✓ Correct wiring.").closest("p")!;
+    expect(status().textContent).toContain("Can you find the simplest solution?");
+    expect(status().textContent).toContain(
+      `Aim for ${level.sizeGoal!.minimum} ${level.sizeGoal!.unit}`,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Check" }));
+    expect(progressStore.get().solved[id]).toBeTruthy();
+    expect(screen.getAllByText(/Can you find the simplest solution\?/)).toHaveLength(2);
+    if (id.startsWith("universal-nor")) {
+      expect(screen.getByText(/Yours:/).textContent).toContain("NOR gates");
+      expect(screen.getByText(/Yours:/).textContent).not.toContain("NAND");
+    }
+    unmount();
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [id]: reference } }));
+    progressStore.reset();
+    render(<LogicTutorial levels={[id]} />);
+    expect(status().textContent).toContain("Simplest solution found");
+    expect(status().textContent).not.toContain("Can you find the simplest solution?");
+  },
+);

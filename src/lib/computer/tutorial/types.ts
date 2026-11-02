@@ -158,8 +158,6 @@ export type Level = {
   rules?: (circuit: Circuit) => string[];
   /** Off the main path: the next level opens without it. */
   optional?: boolean;
-  /** Needs no level before it: a sequential ladder never locks it. */
-  anytime?: boolean;
   /** One core construction with parameterized mastery challenges. Stable ids retain progress. */
   practice?: { family: string; core?: boolean; label: string };
   /** A compact form of unfinished work, for big circuits. Default: the circuit itself. */

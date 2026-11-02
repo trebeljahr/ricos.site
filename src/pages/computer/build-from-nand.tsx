@@ -20,8 +20,8 @@ export default function BuildFromNandPage() {
   const inputPractice = INPUT_DEVICE_LESSONS.includes(level ?? "");
   return (
     <Layout
-      title="Build a computer from NAND"
-      description="Wire every part of a computer yourself, from one NAND gate up through adders, an ALU and memory. Each level checks your circuit against its truth table."
+      title="Build a computer from transistors"
+      description="Wire every part of a computer yourself, from transistors up through NAND, adders, an ALU and memory. Each level checks your circuit against its truth table."
       keywords={[]}
       url="computer/build-from-nand"
       noindex
@@ -29,7 +29,7 @@ export default function BuildFromNandPage() {
       <PageMain>
         <ComputerDemoNav current="build-from-nand" />
         <Header
-          title="Build a computer from NAND"
+          title="Build a computer from transistors"
           subtitle="Each level asks for one part and gives you the parts you built before. Check your wiring against the truth table, then use your own part in the next level."
         />
         {/* Full bleed: the builder needs the room of the whole window. */}

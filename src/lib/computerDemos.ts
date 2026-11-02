@@ -153,7 +153,7 @@ export const computerDemos = [
   },
   {
     slug: "build-from-nand",
-    title: "Build a computer from NAND",
+    title: "Build a computer from transistors",
   },
   {
     slug: "builders-on-one-page",

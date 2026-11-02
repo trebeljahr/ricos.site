@@ -1,7 +1,7 @@
-// Logic gates: NOT, AND, OR and XOR from NAND, as in NandGame's first section,
-// then two optional CMOS levels that look inside NAND. NAND is the given, so the
-// ladder opens on NOT. Each gate the reader builds joins the parts list of the
-// levels after it.
+// Logic gates: two CMOS levels from transistors, then NOT, AND, OR and XOR from
+// NAND, as in NandGame's first section. The ladder goes from transistors up, so
+// the first level is the first thing a new reader meets. Each gate the reader
+// builds joins the parts list of the levels after it.
 import { type Circuit, initialSnapshot, step } from "../../logic";
 import { allRows, CircuitKit, defaultStart } from "../kit";
 import type { Level } from "../types";
@@ -19,6 +19,15 @@ const withRails = (level: () => Level) => () => {
   return {
     circuit: { ...start.circuit, nodes: [...start.circuit.nodes, ...rails] },
     locked: [...start.locked, ...rails.map((node) => node.id)],
+  };
+};
+
+/** The whole reference on the board, with only A left to wire: one idea, not a construction. */
+const withOnlyInputsToWire = (level: () => Level) => () => {
+  const reference = level().reference!();
+  return {
+    circuit: { ...reference, wires: reference.wires.filter((wire) => wire.from !== "a") },
+    locked: withRails(level)().locked,
   };
 };
 
@@ -60,7 +69,7 @@ const cmosRules = (circuit: Circuit) => {
     const driven = rails("out");
     if (driven.size !== 1) {
       problems.push(
-        `For ${inputs.map((n, i) => `${n.label}=${Number(bits[i])}`).join(", ")}, OUT ${driven.size ? "has competing VDD and GND paths" : "has no conducting path to a rail"}. Compare which branches conduct in this case.`,
+        `For ${inputs.map((n, i) => `${n.label}=${Number(bits[i])}`).join(", ")}, OUT ${driven.size ? "has competing VDD and GND paths" : "has no conducting path to VDD or GND"}. Compare which branches conduct in this case.`,
       );
       break;
     }
@@ -133,34 +142,29 @@ export const cmosNotLevel: Level = {
   title: "NOT from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is the opposite of A, built from transistors instead of NAND. Once it works, use the fewest transistors.",
+  goal: "Make lamp OUT the opposite of switch A.",
   intro:
-    "A transistor is a switch. PMOS conducts, passing its source signal, when its gate is 0. NMOS conducts when its gate is 1. The rails are fixed: VDD is always 1 and GND is always 0. To join two branches, drag an output or a wire onto another wire. Release at the highlighted target to create a small junction knob.",
+    "A transistor is a switch, and its G dot controls it. PMOS turns on when G is 0 and connects OUT to VDD, which is always 1. NMOS turns on when G is 1 and connects OUT to GND, which is always 0. Drag from dot to dot to draw wires, so A controls both transistors. Flip A to test. In the table, 1 means on and 0 means off.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
-  start: withRails(() => cmosNotLevel),
+  start: withOnlyInputsToWire(() => cmosNotLevel),
   reference: cmosNot,
-  sizeGoal: { metric: "transistors", minimum: 2, unit: "transistor" },
   rules: cmosRules,
   hints: [
     {
-      text: "For each value of A, which transistor conducts? Which rail must be reachable, and which must be isolated?",
+      title: "Core idea",
+      text: "When A is 0, which transistor turns on, and what does OUT connect to? Ask the same when A is 1.",
     },
     {
-      title: "Transistor count",
-      text: "The simplest CMOS inverter uses two transistors: one PMOS and one NMOS. Junctions and supply rails do not count.",
-    },
-    {
-      title: "Conduction paths",
-      text: "Let A control both gates (G). Connect the PMOS source (S) to VDD and the NMOS source (S) to GND. Join their drains (D) at OUT.",
+      title: "Wiring",
+      text: "Drag from A's dot to the G dot on PMOS. Then drag from A's dot to the G dot on NMOS.",
     },
     {
       title: "What the check tests",
-      text: "OUT must reach exactly one rail in every case. A floating output fails, and so do two competing rails. This switch model leaves out resistance, capacitance and voltage thresholds.",
+      text: "OUT must connect to exactly one of VDD and GND in every row. This switch model leaves out resistance, capacitance and voltage thresholds.",
     },
   ],
   optional: true,
-  anytime: true,
 };
 
 export const cmosNandLevel: Level = {
@@ -168,9 +172,9 @@ export const cmosNandLevel: Level = {
   title: "NAND from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is 0 only when A and B are both 1. Build a driven CMOS output, then use the fewest transistors.",
+  goal: "OUT is 0 only when A and B are both 1. Once it works, use the fewest transistors.",
   intro:
-    "Use the transistor conduction rules from the inverter challenge. Drag a transistor output or wire onto another wire to join branches with a small junction knob. In each input case, OUT must reach the required rail. A floating output and competing high/low rails both fail. Choose the branch topology yourself.",
+    "The rules from the last level still hold, and now you place the transistors. In every row, OUT must connect to VDD or GND, never both and never neither. To join two wires, drag an output or a wire onto another wire. Release at the highlighted target to create a small junction knob.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a && b)] },
   palette: ["pmos", "nmos", "junction"],
   makes: { part: "nand", label: "NAND", builtIn: { gate: "nand" } },
@@ -195,7 +199,6 @@ export const cmosNandLevel: Level = {
     },
   ],
   optional: true,
-  anytime: true,
 };
 
 export const notLevel: Level = {
@@ -204,14 +207,14 @@ export const notLevel: Level = {
   section: SECTION,
   nandgame: "Invert",
   chapter: CHAPTERS.universal,
-  goal: "Make lamp OUT the opposite of switch A.",
+  goal: "OUT is the opposite of A, this time built from NAND.",
   intro:
-    "NAND's output is off only when both of its inputs are on. Drag NAND onto the board, then drag from dot to dot to draw wires. Flip A to test your wiring. In the table, 1 means on and 0 means off.",
+    "From here on you build with NAND instead of transistors. NAND's output is 0 only when both of its inputs are 1. Drag NAND onto the board, then drag from dot to dot to draw wires.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["nand"],
   makes: { part: "not", label: "NOT", builtIn: { gate: "not" } },
   reference: notGate,
-  // The first level anyone plays: plain words, and the full wiring one request away.
+  // Plain words for a reader who may have skipped the transistors, with the full wiring one request away.
   hints: [
     {
       title: "Core idea",
@@ -284,11 +287,11 @@ export const norLevel: Level = {
 };
 
 export const GATE_LEVELS: Level[] = [
+  cmosNotLevel,
+  cmosNandLevel,
   notLevel,
   andLevel,
   orLevel,
   xorLevel,
   norLevel,
-  cmosNotLevel,
-  cmosNandLevel,
 ];

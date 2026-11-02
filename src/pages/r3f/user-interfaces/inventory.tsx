@@ -129,7 +129,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
               <div className="bg-gray-900 rounded-lg p-6 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div className="bg-gray-800 p-4 rounded-lg">
-                    <h3 className="text-lg font-medium mb-2">Random Items</h3>
+                    <h2 className="text-lg font-medium mb-2">Random Items</h2>
                     <p className="text-sm text-gray-400 mb-3">Search the area for useful items</p>
                     <button
                       type="button"
@@ -141,7 +141,7 @@ const GameWorld: FC<{ seo: SeoInfo | null }> = ({ seo }) => {
                   </div>
 
                   <div className="bg-gray-800 p-4 rounded-lg">
-                    <h3 className="text-lg font-medium mb-2">Mana Potions</h3>
+                    <h2 className="text-lg font-medium mb-2">Mana Potions</h2>
                     <p className="text-sm text-gray-400 mb-3">Pickup mana potions</p>
                     <button
                       type="button"

@@ -26,6 +26,7 @@ import {
   getImgWidthAndHeightDuringBuild,
 } from "src/lib/getImgWidthAndHeightDuringBuild";
 import { rehypeBooknoteHeadings } from "src/lib/rehypeBooknoteHeadings";
+import { rehypeHeadingOrder } from "src/lib/rehypeHeadingOrder";
 import { rehypeTocSpy } from "src/lib/rehypeTocSpy";
 import { remarkResolveRedirects } from "src/lib/remarkResolveRedirects";
 import type { Pluggable } from "unified";
@@ -566,6 +567,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
     rehypeKatex,
     rehypeSlug,
     ...(data.contentType === "Booknote" ? [rehypeBooknoteHeadings] : []),
+    rehypeHeadingOrder,
     rehypeTocSpy,
     rehypeAccessibleEmojis,
     [

@@ -122,8 +122,8 @@ export const BlogLayout = ({
             <ImageWithLoader
               priority
               src={cover.src}
-              width={780}
-              height={780}
+              width={cover.width}
+              height={cover.height}
               alt={cover.alt}
               // Full `max-w-5xl px-3` column, i.e. min(100vw - 24px, 1000px).
               sizes="(max-width: 1024px) calc(100vw - 24px), 1000px"

@@ -119,8 +119,8 @@ export const TravelBlogLayout = ({
           <ImageWithLoader
             priority
             src={cover.src}
-            width={780}
-            height={780}
+            width={cover.width}
+            height={cover.height}
             alt={cover.alt}
             // Renders in `max-w-5xl px-3` (1000px), not full-bleed — `100vw`
             // pulled the 3840 variant into a 2000-device-pixel slot.

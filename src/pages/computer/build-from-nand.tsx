@@ -39,6 +39,7 @@ export default function BuildFromNandPage() {
               level={level}
               levels={inputPractice ? INPUT_DEVICE_CORE_LESSONS : undefined}
               sequential={!inputPractice}
+              chapterLinks={process.env.NODE_ENV !== "production"}
               onLevelChange={(id) =>
                 router.replace({ query: { level: id } }, undefined, {
                   shallow: true,
@@ -52,9 +53,4 @@ export default function BuildFromNandPage() {
       </PageMain>
     </Layout>
   );
-}
-
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === "production") return { notFound: true } as const;
-  return { props: {} };
 }

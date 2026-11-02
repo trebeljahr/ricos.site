@@ -1,6 +1,6 @@
 import { ByteExplorer } from "@components/computer/ByteExplorer";
-import Layout from "@components/Layout";
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
+import Layout from "@components/Layout";
 
 export default function ByteExplorerPage() {
   return (
@@ -24,9 +24,4 @@ export default function ByteExplorerPage() {
       </main>
     </Layout>
   );
-}
-
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === "production") return { notFound: true } as const;
-  return { props: {} };
 }

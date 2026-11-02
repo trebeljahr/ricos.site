@@ -35,9 +35,9 @@ export const navGroups: NavGroup[] = [
       { label: "art", href: "/art" },
       { label: "midjourney", href: "/midjourney" },
       { label: "1-month projects", href: "/1-month-projects" },
-      // /computer 404s in production until the demos are ready to publish.
+      // The full demo list stays development-only; /computer is the public home.
       ...(process.env.NODE_ENV === "development"
-        ? [{ label: "computer demos", href: "/computer" }]
+        ? [{ label: "computer demos", href: "/computer/demos" }]
         : []),
     ],
   },

@@ -162,3 +162,28 @@ export const computerDemos = [
 ] as const;
 
 export type ComputerDemoSlug = (typeof computerDemos)[number]["slug"];
+
+// The demos that answer in production, gentlest first. Every other demo page
+// stays development-only until the chapter it belongs to is out.
+export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = [
+  { slug: "abstraction-layers", blurb: "Open each layer of a computer to find the next one." },
+  { slug: "die-zoom", blurb: "Zoom into a real Pentium II die, with a coin to scale." },
+  { slug: "byte-explorer", blurb: "Read the same eight bits in different ways." },
+  {
+    slug: "build-from-nand",
+    blurb:
+      "The hard one. Wire every part yourself, from transistors up to a CPU. Each level checks your circuit. Best on a computer with a mouse.",
+  },
+];
+
+const isProduction = process.env.NODE_ENV === "production";
+
+/** The demos a reader can reach from another demo on this build. */
+export const reachableComputerDemos = isProduction
+  ? computerDemos.filter((demo) => publicComputerDemos.some(({ slug }) => slug === demo.slug))
+  : computerDemos;
+
+/** Where a demo page links back to on this build. */
+export const computerDemosHome = isProduction
+  ? { href: "/computer", label: "How computers work" }
+  : { href: "/computer/demos", label: "All computer demos" };

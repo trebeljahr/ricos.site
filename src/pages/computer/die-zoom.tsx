@@ -19,19 +19,9 @@ export default function DieZoomPage() {
             ZOOM INTO A CHIP
           </h1>
         </header>
-        <div>
-          <h2>
-            <code>{"<DieZoom />"}</code>
-          </h2>
-          <DieZoom />
-        </div>
+        <DieZoom />
         <ComputerDemoNav current="die-zoom" bottom />
       </main>
     </Layout>
   );
-}
-
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === "production") return { notFound: true } as const;
-  return { props: {} };
 }

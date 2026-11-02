@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-import { type ComputerDemoSlug, computerDemos } from "../../lib/computerDemos";
+import {
+  type ComputerDemoSlug,
+  computerDemosHome,
+  reachableComputerDemos,
+} from "../../lib/computerDemos";
 
 const linkClass =
   "inline-flex min-h-10 min-w-0 items-center rounded border border-gray-300 px-3 text-sm font-medium text-gray-800 transition-colors hover:border-cyan-500 hover:text-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500 dark:border-gray-700 dark:text-gray-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300";
@@ -12,9 +16,9 @@ export function ComputerDemoNav({
   current: ComputerDemoSlug;
   bottom?: boolean;
 }) {
-  const index = computerDemos.findIndex((demo) => demo.slug === current);
-  const previous = computerDemos[index - 1];
-  const next = computerDemos[index + 1];
+  const index = reachableComputerDemos.findIndex((demo) => demo.slug === current);
+  const previous = reachableComputerDemos[index - 1];
+  const next = reachableComputerDemos[index + 1];
 
   return (
     <nav
@@ -23,10 +27,10 @@ export function ComputerDemoNav({
     >
       <div className="flex flex-wrap items-center justify-between gap-label">
         <Link
-          href="/computer"
+          href={computerDemosHome.href}
           className="text-sm text-gray-500 hover:text-cyan-600 dark:hover:text-cyan-300"
         >
-          All computer demos
+          {computerDemosHome.label}
         </Link>
         <div className="flex min-w-0 max-w-full items-center gap-tight">
           {previous ? (
@@ -46,7 +50,7 @@ export function ComputerDemoNav({
             </span>
           )}
           <span className="min-w-12 shrink-0 text-center font-mono text-xs text-gray-500 dark:text-gray-400">
-            {index + 1} / {computerDemos.length}
+            {index + 1} / {reachableComputerDemos.length}
           </span>
           {next ? (
             <Link

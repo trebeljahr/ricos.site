@@ -5,7 +5,7 @@ import { confirmAddress } from "src/lib/newsletter/subscribe";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const link = await readConfirmLink(req.query);
+    const link = readConfirmLink(req.query);
     if (!link.ok) {
       console.info(
         JSON.stringify({ scope: "newsletter.confirm", event: "rejected", reason: link.reason }),

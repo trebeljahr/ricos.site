@@ -2,49 +2,19 @@ import { createHmac } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   CONFIRM_TOKEN_TTL_MS,
-  checkLegacyHash,
   confirmLink,
-  getLegacyHash,
   mintConfirmToken,
   readConfirmLink,
   verifyConfirmToken,
 } from "./confirmLink";
 
 beforeEach(() => {
-  process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
 });
 
 afterEach(() => {
   delete process.env.VERCEL_ENV;
   delete process.env.VERCEL_BRANCH_URL;
-});
-
-describe("legacy hash links", () => {
-  it("accepts the hash getLegacyHash put into the link", async () => {
-    const hash = await getLegacyHash("reader@example.com");
-    expect(hash).toMatch(/^[0-9a-f]{64}$/);
-    await expect(checkLegacyHash("reader@example.com", hash)).resolves.toBe(true);
-  });
-
-  it("rejects a hash made for another address", async () => {
-    const hash = await getLegacyHash("someone-else@example.com");
-    await expect(checkLegacyHash("reader@example.com", hash)).resolves.toBe(false);
-  });
-
-  it("rejects hashes of the wrong shape", async () => {
-    const hash = await getLegacyHash("reader@example.com");
-    for (const bad of [
-      "",
-      "anything",
-      hash.slice(0, 62),
-      `${hash}00`,
-      `${hash}zz`,
-      "0".repeat(128),
-    ]) {
-      await expect(checkLegacyHash("reader@example.com", bad), bad).resolves.toBe(false);
-    }
-  });
 });
 
 describe("signed tokens", () => {
@@ -153,40 +123,18 @@ describe("signed tokens", () => {
 });
 
 describe("readConfirmLink", () => {
-  it("reads a new token link", async () => {
+  it("reads a token link", () => {
     const token = new URL(confirmLink("reader@example.com")).searchParams.get("token");
-    await expect(readConfirmLink({ token })).resolves.toEqual({
+    expect(readConfirmLink({ token })).toEqual({
       ok: true,
       email: "reader@example.com",
       lists: ["live-and-learn"],
     });
   });
 
-  it("reads an old hash link", async () => {
-    const hash = await getLegacyHash("reader@example.com");
-    await expect(readConfirmLink({ hash, email: "reader@example.com" })).resolves.toEqual({
-      ok: true,
-      email: "reader@example.com",
-      lists: ["live-and-learn"],
-    });
-  });
-
-  it("reads a plus address from an old unencoded link", async () => {
-    const hash = await getLegacyHash("reader+news@example.com");
-    // `?email=reader+news@example.com` parses to "reader news@example.com".
-    await expect(readConfirmLink({ hash, email: "reader news@example.com" })).resolves.toEqual({
-      ok: true,
-      email: "reader+news@example.com",
-      lists: ["live-and-learn"],
-    });
-  });
-
-  it("does not confirm an address with a made-up hash", async () => {
-    for (const hash of ["anything", "0".repeat(64), undefined, ["0".repeat(64)]]) {
-      await expect(readConfirmLink({ hash, email: "victim@example.com" })).resolves.toMatchObject({
-        ok: false,
-      });
-    }
-    await expect(readConfirmLink({})).resolves.toEqual({ ok: false, reason: "missing" });
+  it("rejects a query without a token, old hash links included", () => {
+    const missing = { ok: false, reason: "missing" };
+    expect(readConfirmLink({})).toEqual(missing);
+    expect(readConfirmLink({ hash: "0".repeat(64), email: "reader@example.com" })).toEqual(missing);
   });
 });

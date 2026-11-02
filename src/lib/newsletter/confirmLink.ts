@@ -1,31 +1,13 @@
-import { createHmac, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
-import { promisify } from "node:util";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { baseUrl } from "src/lib/urlUtils";
 import { DEFAULT_LIST, isListKey, type ListKey } from "./lists";
 
 /**
- * The link in the double-opt-in email: `/api/confirm-email?...`.
- *
- * Two formats confirm:
- *
- *   - `?token=` — HMAC-signed `{email, expiry, lists}`, sent since the move
- *     to ListMonk. Expires after `CONFIRM_TOKEN_TTL_MS`. Tokens minted
- *     before lists existed carry no `lists` and confirm Live and Learn.
- *   - `?hash=&email=` — the Mailgun-era link: a keyed scrypt hash of the
- *     address, no expiry. Nothing sends it any more; links already sitting
- *     in inboxes keep working. Always Live and Learn.
+ * The link in the double-opt-in email: `/api/confirm-email?token=...`, an
+ * HMAC-signed `{email, expiry, lists}`. Expires after `CONFIRM_TOKEN_TTL_MS`.
+ * Tokens minted before lists existed carry no `lists` and confirm Live and
+ * Learn.
  */
-
-const scrypt = promisify(scryptCallback) as (
-  password: string,
-  salt: string,
-  keylen: number,
-) => Promise<Buffer>;
-
-function getSalt() {
-  if (!process.env.SALT) throw Error("Please provide SALT in the .env file!");
-  return process.env.SALT;
-}
 
 /**
  * Links are built from configuration, never from the request's origin. In
@@ -43,38 +25,6 @@ export function siteUrl(): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Mailgun-era hash links
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Every legacy link carries a 32-byte scrypt hash as 64 hex chars.
-const HASH_BYTES = 32;
-const HASH_PATTERN = new RegExp(`^[0-9a-f]{${HASH_BYTES * 2}}$`, "i");
-
-export async function getLegacyHash(email: string): Promise<string> {
-  const hash = await scrypt(email, getSalt(), HASH_BYTES);
-  return hash.toString("hex");
-}
-
-export async function checkLegacyHash(email: string, hashFromUrl: string): Promise<boolean> {
-  const salt = getSalt();
-  // Buffer.from(hex) stops at the first non-hex char instead of failing, so
-  // check the shape first or a valid hash with junk appended would pass.
-  if (!HASH_PATTERN.test(hashFromUrl)) return false;
-
-  const expected = await scrypt(email, salt, HASH_BYTES);
-  const given = Buffer.from(hashFromUrl, "hex");
-  if (given.length !== expected.length) return false;
-  return timingSafeEqual(expected, given);
-}
-
-// Old links put the address into the query unencoded, so a "+" in it
-// arrives as a space. Addresses can't contain bare spaces, so undo that.
-export function emailFromQuery(value: unknown): string | null {
-  if (typeof value !== "string" || value.length === 0) return null;
-  return value.replace(/ /g, "+");
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Signed tokens
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -84,8 +34,8 @@ export function emailFromQuery(value: unknown): string | null {
 export const CONFIRM_TOKEN_TTL_MS = 21 * 24 * 60 * 60 * 1000;
 
 function tokenSecret(): string {
-  const secret = process.env.NEWSLETTER_TOKEN_SECRET || process.env.SALT;
-  if (!secret) throw new Error("Missing NEWSLETTER_TOKEN_SECRET (or SALT fallback)");
+  const secret = process.env.NEWSLETTER_TOKEN_SECRET;
+  if (!secret) throw new Error("Missing NEWSLETTER_TOKEN_SECRET");
   return secret;
 }
 
@@ -159,15 +109,11 @@ export function verifyConfirmToken(token: string, now: number = Date.now()): Ver
   return { ok: true, email: payload.e, lists };
 }
 
-/** Read whichever link format the query carries. */
-export async function readConfirmLink(
+/** Read the token the query carries. */
+export function readConfirmLink(
   query: Record<string, unknown>,
   now: number = Date.now(),
-): Promise<VerifyResult> {
-  if (typeof query.token === "string") return verifyConfirmToken(query.token, now);
-
-  const email = emailFromQuery(query.email);
-  if (!email || typeof query.hash !== "string") return { ok: false, reason: "missing" };
-  if (!(await checkLegacyHash(email, query.hash))) return { ok: false, reason: "bad_signature" };
-  return { ok: true, email, lists: [DEFAULT_LIST] };
+): VerifyResult {
+  if (typeof query.token !== "string") return { ok: false, reason: "missing" };
+  return verifyConfirmToken(query.token, now);
 }

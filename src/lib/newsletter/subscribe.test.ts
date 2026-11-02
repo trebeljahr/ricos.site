@@ -26,7 +26,6 @@ function hrefs(html: string): string[] {
 }
 
 beforeEach(() => {
-  process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
   process.env.LISTMONK_LIST_ID = "15";
   delete process.env.LISTMONK_COMPUTER_LIST_ID;

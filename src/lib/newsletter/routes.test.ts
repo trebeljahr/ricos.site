@@ -15,7 +15,7 @@ vi.mock("src/lib/newsletter/listmonk", () => listmonk);
 import announceHandler from "src/pages/api/announce-signup";
 import confirmHandler from "src/pages/api/confirm-email";
 import signupHandler from "src/pages/api/signup";
-import { confirmLink, getLegacyHash } from "./confirmLink";
+import { confirmLink } from "./confirmLink";
 import { _resetRateLimit } from "./subscribe";
 
 type Captured = {
@@ -71,7 +71,6 @@ function call(
 }
 
 beforeEach(() => {
-  process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
   process.env.LISTMONK_LIST_ID = "15";
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
@@ -199,14 +198,13 @@ describe("GET /api/confirm-email", () => {
     expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 31);
   });
 
-  it("confirms a Mailgun-era hash link", async () => {
-    const hash = await getLegacyHash("Reader@Example.com");
+  it("sends an old Mailgun-era hash link to the error page", async () => {
     const res = await call(confirmHandler, {
       method: "GET",
-      query: { hash, email: "Reader@Example.com" },
+      query: { hash: "0".repeat(64), email: "reader@example.com" },
     });
-    expect(res.redirect).toBe("/email-signup-success");
-    expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 15);
+    expect(res.redirect).toBe("/email-signup-error");
+    expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
   });
 
   it("sends the reader to the error page when ListMonk fails", async () => {

@@ -263,6 +263,93 @@ describe("touch on the canvas", () => {
     expect(gate().inputSide).toBeDefined();
   });
 
+  it("offers to carry a wire on along its series, as one undoable step", () => {
+    localStorage.setItem(
+      STORAGE,
+      JSON.stringify({
+        current: {
+          name: "Series",
+          nodes: [
+            ...[0, 1, 2].map((bit) => ({
+              id: `a${bit}`,
+              type: "switch",
+              label: `A${bit}`,
+              x: 40,
+              y: 40 + bit * 150,
+            })),
+            ...[0, 1, 2].map((bit) => ({
+              id: `q${bit}`,
+              type: "lamp",
+              label: `Q${bit}`,
+              x: 500,
+              y: 40 + bit * 150,
+            })),
+          ],
+          wires: [],
+        },
+        saved: {},
+      }),
+    );
+    render(<LogicBuilder />);
+    const board = screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;
+    tap(board, output("a0"));
+    tap(board, input("q0"));
+    const wires = () => stored().wires.map(({ from, to }) => [from, to]);
+    expect(wires()).toEqual([["a0", "q0"]]);
+    fireEvent.click(screen.getByRole("button", { name: "Also wire 2 more (Q1–Q2)" }));
+    expect(wires()).toEqual([
+      ["a0", "q0"],
+      ["a1", "q1"],
+      ["a2", "q2"],
+    ]);
+    expect(screen.getByText("Connected 2 more wires. Undo removes them.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Also wire/ })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(wires()).toEqual([["a0", "q0"]]);
+  });
+
+  it("takes the offer away when the reader moves on, or there is nothing to offer", () => {
+    const board = mount();
+    tap(board, output("a"));
+    tap(board, input("gate", 0));
+    expect(screen.getByText("Wire connected.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^Also wire/ })).toBeNull();
+    cleanup();
+    localStorage.setItem(
+      STORAGE,
+      JSON.stringify({
+        current: {
+          name: "Series",
+          nodes: [
+            ...[0, 1].map((bit) => ({
+              id: `a${bit}`,
+              type: "switch",
+              label: `A${bit}`,
+              x: 40,
+              y: 40 + bit * 150,
+            })),
+            ...[0, 1].map((bit) => ({
+              id: `q${bit}`,
+              type: "lamp",
+              label: `Q${bit}`,
+              x: 500,
+              y: 40 + bit * 150,
+            })),
+          ],
+          wires: [],
+        },
+        saved: {},
+      }),
+    );
+    render(<LogicBuilder />);
+    const next = screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;
+    tap(next, output("a0"));
+    tap(next, input("q0"));
+    expect(screen.getByRole("button", { name: "Also wire 1 more (Q1)" })).toBeTruthy();
+    tap(next, output("a1"));
+    expect(screen.queryByRole("button", { name: /^Also wire/ })).toBeNull();
+  });
+
   it("still lets go when the lift lands on the menu, as it does in WebKit", async () => {
     const board = mount();
     await hold();

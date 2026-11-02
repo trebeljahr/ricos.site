@@ -13,8 +13,11 @@ import {
 export type PortKind = "input" | "output";
 export type PortRef = { nodeId: string; kind: PortKind; index: number };
 export type PortPoint = { x: number; y: number };
+/** A port's place in a numbered run, e.g. A3 among A0–A7. `name` is what a reader calls it. */
+export type PortSeries = { key: string; number: number; name: string };
 /** `width` is 8 for a bus port, which only joins other bus ports. */
-export type WiringPort = PortRef & PortPoint & { bank: string; label: string; width: 1 | 8 };
+export type WiringPort = PortRef &
+  PortPoint & { bank: string; label: string; width: 1 | 8; series?: PortSeries };
 export type PortConnection = Pick<Wire, "from" | "to" | "input"> & { output: number };
 export type PortPlan = {
   connections: PortConnection[];
@@ -26,6 +29,18 @@ export const portKey = (port: PortRef) => JSON.stringify([port.nodeId, port.kind
 /** Numbered operands stay separate; adjacent unnumbered ports form a general-purpose bank. */
 export const portLabelBank = (label: string) => label.match(/^(.*?)[ _]?(\d+)$/)?.[1] ?? "";
 
+/**
+ * A part's own numbered ports run together, and so does a row of one-port parts labelled in order,
+ * like switches A0–A7. "Input 2" on a gate only says which pin it is, so it runs with nothing.
+ */
+function portSeries(node: Node, kind: PortKind, label: string, count: number) {
+  const [name, owner] =
+    count === 1 && node.label ? [node.label, `row:${node.type}`] : [label, node.id];
+  const number = name.match(/\d+$/)?.[0];
+  if (number === undefined || /^(Input|Output) \d+$/.test(name)) return undefined;
+  return { key: JSON.stringify([owner, kind, portLabelBank(name)]), number: Number(number), name };
+}
+
 export function wiringPorts<T extends Node>(
   nodes: T[],
   point: (node: T, index: number, kind: PortKind) => PortPoint,
@@ -34,24 +49,23 @@ export function wiringPorts<T extends Node>(
     (["input", "output"] as const).flatMap((kind) => {
       let previous = "";
       let bankStart = 0;
-      return Array.from(
-        { length: kind === "input" ? inputCount(node) : outputCount(node) },
-        (_, index) => {
-          const label = kind === "input" ? inputLabel(node, index) : outputLabel(node, index);
-          const group = portLabelBank(label);
-          if (group !== previous) bankStart = index;
-          previous = group;
-          return {
-            nodeId: node.id,
-            kind,
-            index,
-            ...point(node, index, kind),
-            bank: JSON.stringify([node.id, kind, bankStart]),
-            width: kind === "input" ? inputWidth(node, index) : outputWidth(node, index),
-            label: `${node.label || node.module?.name || LABELS[node.type]} ${label}`,
-          };
-        },
-      );
+      const count = kind === "input" ? inputCount(node) : outputCount(node);
+      return Array.from({ length: count }, (_, index) => {
+        const label = kind === "input" ? inputLabel(node, index) : outputLabel(node, index);
+        const group = portLabelBank(label);
+        if (group !== previous) bankStart = index;
+        previous = group;
+        return {
+          nodeId: node.id,
+          kind,
+          index,
+          ...point(node, index, kind),
+          bank: JSON.stringify([node.id, kind, bankStart]),
+          width: kind === "input" ? inputWidth(node, index) : outputWidth(node, index),
+          label: `${node.label || node.module?.name || LABELS[node.type]} ${label}`,
+          series: portSeries(node, kind, label, count),
+        };
+      });
     }),
   );
 }
@@ -128,6 +142,61 @@ export function planPortConnections(
   if (wires.length + additions.length > 800)
     return fail("This circuit can hold up to 800 wires.", connections);
   return { connections, additions };
+}
+
+/**
+ * The wires that carry on from one finished wire along its numbered series: with A0 → OUT0 wired,
+ * A1 → OUT1 and so on. An input something else already drives keeps its wire and is left out.
+ */
+export function planSeriesRest(
+  wire: PortConnection,
+  ports: WiringPort[],
+  wires: Wire[],
+): { connections: PortConnection[]; names: string } | null {
+  const from = ports.find(
+    (port) => port.kind === "output" && port.nodeId === wire.from && port.index === wire.output,
+  )?.series;
+  const to = ports.find(
+    (port) => port.kind === "input" && port.nodeId === wire.to && port.index === wire.input,
+  )?.series;
+  const wired = wires.some(
+    (item) =>
+      item.from === wire.from &&
+      (item.output ?? 0) === wire.output &&
+      item.to === wire.to &&
+      item.input === wire.input,
+  );
+  if (!from || !to || !wired) return null;
+  const run = (kind: PortKind, key: string) => {
+    const found = new Map<number, WiringPort | null>();
+    for (const port of ports)
+      if (port.kind === kind && port.series?.key === key)
+        // Two parts with one number leave it unclear which the reader means.
+        found.set(port.series.number, found.has(port.series.number) ? null : port);
+    return [...found].sort(([a], [b]) => a - b).map(([, port]) => port);
+  };
+  const place = (run: (WiringPort | null)[], series: PortSeries) =>
+    run.findIndex((port) => port?.series?.number === series.number);
+  const sources = run("output", from.key);
+  const inputs = run("input", to.key);
+  // Places in a run line up, not numbers: bit 2 belongs with WEIGHT 4.
+  const offset = place(inputs, to) - place(sources, from);
+  if (place(inputs, to) < 0 || place(sources, from) < 0) return null;
+  const rest = sources.flatMap((source, index) => {
+    const target = inputs[index + offset];
+    if (!source || !target) return [];
+    return planPortConnections([source], target, ports, wires).additions.map((connection) => ({
+      connection,
+      name: target.series?.name,
+    }));
+  });
+  if (!rest.length || wires.length + rest.length > 800) return null;
+  const first = rest[0].name;
+  const last = rest[rest.length - 1].name;
+  return {
+    connections: rest.map((item) => item.connection),
+    names: first === last ? `${first}` : `${first}–${last}`,
+  };
 }
 
 export function distanceToSegment(point: PortPoint, start: PortPoint, end: PortPoint) {

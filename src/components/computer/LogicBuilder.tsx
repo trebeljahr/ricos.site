@@ -22,7 +22,7 @@ import { BUILDER_LESSON_IDS, LESSON_SECTIONS, lessonForCircuit } from "../../lib
 import { CATALOG } from "../../lib/computer/tutorial/levels";
 import { circuitRow, entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, rowMatches, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
 import { type OwnPartsMode, setOwnPartsMode } from "../../lib/computer/tutorial/progress";
-import { type PortRef, portLabelBank, type WiringPort, wiringPorts } from "../../lib/computer/portWiring";
+import { type PortConnection, type PortRef, planSeriesRest, portLabelBank, type WiringPort, wiringPorts } from "../../lib/computer/portWiring";
 import { type Timeline, type TimelineFrame, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
 import {
   BLUEPRINT_FAMILIES,
@@ -160,6 +160,7 @@ const DOUBLE_TAP_MS = 350;
 const TOUCH_TAP_SLOP = 14;
 /** How long a still finger waits before it opens the menu a right-click opens. */
 const LONG_PRESS_MS = 500;
+const WIRE_CONNECTED = "Wire connected.";
 /** Chromium sends a click where the finger lifts, and the menu a long press opened now lies there. */
 const swallowLiftClick = () => {
   const swallow = (event: MouseEvent) => {
@@ -2539,6 +2540,7 @@ function LogicBuilderWorkspace({
     circuit, nodes: selected, wires: selectedWires, unfolded: [...unfolded], center: insertionCenter,
     insert: (clip, point) => Boolean(pasteCircuit(clip, point)), message: setMessage,
   });
+  const [lastWire, setLastWire] = useState<PortConnection | null>(null);
   const connect = (from: string | null, to: string, input: number, output = 0) => {
     if (!from) {
       setMessage("Choose an output first.");
@@ -2570,7 +2572,8 @@ function LogicBuilderWorkspace({
       ],
     }));
     setPending(null);
-    setMessage("Wire connected.");
+    setLastWire({ from, to, input, output });
+    setMessage(WIRE_CONNECTED);
   };
   const connectEightBits = (sourceId: string, targetId: string, startInput: number) => {
     const source = circuit.nodes.find((item) => item.id === sourceId);
@@ -2591,6 +2594,10 @@ function LogicBuilderWorkspace({
     }));
     setMessage(`Connected bits 0–7 to ${target.label || target.module?.name || LABELS[target.type]}.`);
   };
+  const addWires = (connections: PortConnection[]) => setCircuit((current) => ({ ...current, wires: [
+    ...current.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(),
+      color: sourceWireColor(connection.from, connection.output) })),
+  ] }));
   const availablePorts = useMemo(() => wiringPorts(displayNodes.filter((node) => !node.splice &&
     (showVdd || node.type !== "high") && (showGround || node.type !== "ground")), portPoint).filter(port => port.kind !== "input" || segmentPinVisible(displayNodes.find(n => n.id === port.nodeId), port.index, segmentBanks)),
     [displayNodes, showVdd, showGround, segmentBanks]);
@@ -2601,12 +2608,20 @@ function LogicBuilderWorkspace({
       setSelected([]); setSelectedWires([]); setMenu(null); setPending(null);
       setWireDraft(null); wireDraftRef.current = null; setActiveInlinePath(null);
     },
-    onConnect: (connections) => setCircuit((current) => ({ ...current, wires: [
-      ...current.wires, ...connections.map((connection) => ({ ...connection, id: crypto.randomUUID(),
-        color: sourceWireColor(connection.from, connection.output) })),
-    ] })),
+    onConnect: (connections) => addWires(connections),
     onMessage: setMessage,
   });
+  // The offer lasts only while the status line still reports the wire it carries on from.
+  const seriesRest = useMemo(() => lastWire && message === WIRE_CONNECTED
+    ? planSeriesRest(lastWire, availablePorts, circuit.wires) : null,
+    [lastWire, message, availablePorts, circuit.wires]);
+  const wireSeriesRest = () => {
+    if (!seriesRest) return;
+    const count = seriesRest.connections.length;
+    addWires(seriesRest.connections);
+    setLastWire(null);
+    setMessage(`Connected ${count} more ${count === 1 ? "wire. Undo removes it" : "wires. Undo removes them"}.`);
+  };
   const showSegmentBank = (id: string, bank: number) => {
     portWiring.clear();
     setSegmentBanks((current) => ({ ...current, [id]: bank }));
@@ -4396,6 +4411,11 @@ function LogicBuilderWorkspace({
                 : busConflicts.length
                   ? `Bus conflict on ${busConflicts.join(", ")}: two enabled drivers send different values. Turn one driver off.`
                   : message}
+              {seriesRest && !snapshot.unstable && !busConflicts.length && (
+                <button type="button" className={styles.seriesRest} onClick={wireSeriesRest}>
+                  Also wire {seriesRest.connections.length} more ({seriesRest.names})
+                </button>
+              )}
             </span>
             <span>
               {canvasCounts.parts} parts · {canvasCounts.wires} wires

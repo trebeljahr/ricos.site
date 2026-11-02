@@ -355,6 +355,10 @@
 /* MOSFET faces and real lead targets share the same square geometry. */
 .wireJunction{fill:var(--wire-color);stroke:none;pointer-events:none}
 
+/* Carries one wire on along its numbered series, beside the status line that reports it. */
+.seriesRest{margin:-5px 0 -5px 8px;padding:4px 7px;border:1px solid #607899;border-radius:4px;background:#2a3b5e;color:#e8f2ff;font-size:11px;font-weight:700;cursor:pointer}
+@media(pointer:coarse){.seriesRest{min-height:36px;touch-action:manipulation}}
+
 /* Delete by touch: a phone has no Delete key and no right-click on iOS. */
 .touchOnly{display:none}
 @media(pointer:coarse){.touchOnly{display:inline-block}.board{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.wireHit{stroke-width:28}.wireHit:focus,.busHit:focus{outline:none}.contextMenu button:not(.colorSwatch){min-height:40px}.contextMenu button:hover{background:transparent;color:#e7edf3}.contextMenu button:active{background:#394d77;color:#fff}.contextColors{flex-wrap:wrap;gap:12px}.contextMenu .colorSwatch{width:28px;height:28px;min-width:28px}.contextDetails input,.contextDetails select{font-size:16px}}
@@ -373,6 +377,7 @@
   [data-phone-flow] .boardScroll{flex:none;height:clamp(240px,46svh,460px);scroll-margin-top:72px}
   [data-phone-flow] .status{order:1;min-height:52px;padding:6px 12px}
   [data-phone-flow] .status>span:last-child{display:none}
+  [data-phone-flow] .seriesRest{display:block;margin:6px 0 0}
   [data-phone-flow] .challengeFeedback{order:2;border-top:1px solid #455677}
   /* A double tap must not zoom the page. WebKit restarts touch-action at each scroller, so the strip and control row need it too. The strip's draggable parts also need the handler on the aside. */
   [data-phone-flow] .layoutWithCoach>.sidebar{order:3;flex:none;flex-direction:row;align-items:center;gap:8px;max-height:none;margin:0;padding:8px 12px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:manipulation;border:0;border-bottom:1px solid #405071}

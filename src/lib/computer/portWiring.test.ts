@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { type Node, PRESETS, type Wire } from "./logic";
-import { planPortConnections, wiringPorts } from "./portWiring";
+import {
+  type PortConnection,
+  planPortConnections,
+  planSeriesRest,
+  wiringPorts,
+} from "./portWiring";
 
 const nodes: Node[] = [
   { id: "source", type: "input8", x: 0, y: 0 },
@@ -10,6 +15,92 @@ const nodes: Node[] = [
 const ports = wiringPorts(nodes, (node, index) => ({ x: node.x, y: node.y + index * 25 }));
 const outputs = ports.filter((port) => port.nodeId === "source");
 const inputs = ports.filter((port) => port.nodeId === "target");
+
+describe("carrying a wire on along its numbered series", () => {
+  const row = (type: Node["type"], prefix: string, count: number, first = 0): Node[] =>
+    Array.from({ length: count }, (_, index) => ({
+      id: `${prefix}${index + first}`,
+      type,
+      label: `${prefix}${index + first}`,
+      x: 0,
+      y: index * 100,
+    }));
+  const wired = ({ from, to, input, output }: PortConnection, id = "done"): Wire => ({
+    id,
+    from,
+    to,
+    input,
+    output,
+  });
+  const rest = (parts: Node[], wire: PortConnection, wires: Wire[] = []) =>
+    planSeriesRest(
+      wire,
+      wiringPorts(parts, (node) => node),
+      [wired(wire), ...wires],
+    );
+  const pairs = (plan: ReturnType<typeof rest>) =>
+    plan?.connections.map((wire) => `${wire.from}.${wire.output}>${wire.to}.${wire.input}`);
+
+  it("lines a row of switches up with a row of lamps", () => {
+    const plan = rest([...row("switch", "A", 3), ...row("lamp", "OUT", 3)], {
+      from: "A0",
+      output: 0,
+      to: "OUT0",
+      input: 0,
+    });
+    expect(pairs(plan)).toEqual(["A1.0>OUT1.0", "A2.0>OUT2.0"]);
+    expect(plan?.names).toBe("OUT1–OUT2");
+  });
+  it("runs through a part's own numbered ports, in both directions from the wire", () => {
+    const plan = rest(nodes, { from: "source", output: 3, to: "target", input: 3 });
+    expect(pairs(plan)).toEqual([0, 1, 2, 4, 5, 6, 7].map((bit) => `source.${bit}>target.${bit}`));
+    expect(plan?.names).toBe("Bit 0–Bit 7");
+  });
+  it("lines up places in a run, so bits find their binary weights", () => {
+    const weights = [1, 2, 4, 8].map((weight, index) => ({
+      id: `w${weight}`,
+      type: "lamp" as const,
+      label: `WEIGHT ${weight}`,
+      x: 0,
+      y: index * 100,
+    }));
+    const plan = rest([nodes[0], ...weights], { from: "source", output: 0, to: "w1", input: 0 });
+    expect(pairs(plan)).toEqual(["source.1>w2.0", "source.2>w4.0", "source.3>w8.0"]);
+    expect(plan?.names).toBe("WEIGHT 2–WEIGHT 8");
+  });
+  it("keeps the offset of the wire it carries on from, and stops where a series ends", () => {
+    const parts = [...row("switch", "A", 8), ...row("lamp", "OUT", 4)];
+    expect(pairs(rest(parts, { from: "A4", output: 0, to: "OUT0", input: 0 }))).toEqual([
+      "A5.0>OUT1.0",
+      "A6.0>OUT2.0",
+      "A7.0>OUT3.0",
+    ]);
+  });
+  it("leaves out an input something else drives, and a wire already there", () => {
+    const parts = [...row("switch", "A", 4), ...row("switch", "B", 1), ...row("lamp", "OUT", 4)];
+    const plan = rest(parts, { from: "A0", output: 0, to: "OUT0", input: 0 }, [
+      { id: "other", from: "B0", to: "OUT1", input: 0 },
+      { id: "same", from: "A2", to: "OUT2", input: 0 },
+    ]);
+    expect(pairs(plan)).toEqual(["A3.0>OUT3.0"]);
+    expect(plan?.names).toBe("OUT3");
+  });
+  it("offers nothing for a gate's plain inputs", () => {
+    const gate: Node = { id: "gate", type: "nand", x: 0, y: 0 };
+    expect(
+      rest([...row("switch", "A", 2), gate], { from: "A0", output: 0, to: "gate", input: 0 }),
+    ).toBeNull();
+  });
+  it("offers nothing where two parts share a number, or once the wire is gone", () => {
+    const twins = [...row("switch", "A", 2), { ...row("switch", "A", 1, 1)[0], id: "twin" }];
+    expect(
+      rest([...twins, ...row("lamp", "OUT", 2)], { from: "A0", output: 0, to: "OUT0", input: 0 }),
+    ).toBeNull();
+    const parts = [...row("switch", "A", 2), ...row("lamp", "OUT", 2)];
+    const ports = wiringPorts(parts, (node) => node);
+    expect(planSeriesRest({ from: "A0", output: 0, to: "OUT0", input: 0 }, ports, [])).toBeNull();
+  });
+});
 
 describe("port connection planning", () => {
   it("orders a sparse selection logically and slides it into the last fitting range", () => {
@@ -127,17 +218,22 @@ describe("bus port wiring", () => {
   it("connects 8 bits into a merger and buses to bus inputs", () => {
     const bits = all.filter((item) => item.nodeId === "bits");
     expect(planPortConnections(bits, port("merge", "input"), all, []).connections).toHaveLength(8);
-    expect(planPortConnections([port("merge", "output")], port("drive", "input"), all, []).error)
-      .toBeUndefined();
-    expect(planPortConnections([port("drive", "output")], port("bus", "input", 1), all, []).error)
-      .toBeUndefined();
+    expect(
+      planPortConnections([port("merge", "output")], port("drive", "input"), all, []).error,
+    ).toBeUndefined();
+    expect(
+      planPortConnections([port("drive", "output")], port("bus", "input", 1), all, []).error,
+    ).toBeUndefined();
   });
   it("refuses to join a bus port with a single-bit port", () => {
-    expect(planPortConnections([port("bus", "output")], port("lamp", "input"), all, []).error)
-      .toContain("Bus ports");
-    expect(planPortConnections([port("bits", "output")], port("drive", "input"), all, []).error)
-      .toContain("Bus ports");
-    expect(planPortConnections([port("bits", "output")], port("drive", "input", 1), all, []).error)
-      .toBeUndefined();
+    expect(
+      planPortConnections([port("bus", "output")], port("lamp", "input"), all, []).error,
+    ).toContain("Bus ports");
+    expect(
+      planPortConnections([port("bits", "output")], port("drive", "input"), all, []).error,
+    ).toContain("Bus ports");
+    expect(
+      planPortConnections([port("bits", "output")], port("drive", "input", 1), all, []).error,
+    ).toBeUndefined();
   });
 });

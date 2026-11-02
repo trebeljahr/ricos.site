@@ -31,7 +31,7 @@ The sentence is Rico's and is used word for word.
 ```html
 <form class="announce-signup" novalidate>
   <label for="announce-email">
-    I make a new thing every month or two. Want one email when the next one is out? Nothing else.
+    I make a new thing every month or two. Want to receive an email when the next one is out?
   </label>
   <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
     <input type="text" name="website" tabindex="-1" autocomplete="off" />

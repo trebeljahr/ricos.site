@@ -85,8 +85,8 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
             heading={<h2 className="flush-top">New things from Rico</h2>}
             text={
               <p className="mb-para">
-                I make a new thing every month or two. Want one email when the next one is out?
-                Nothing else.
+                I make a new thing every month or two. Want to receive an email when the next one is
+                out?
               </p>
             }
           />

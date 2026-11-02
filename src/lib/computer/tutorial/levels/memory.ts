@@ -317,7 +317,6 @@ export const srLatchLevel: Level = {
   id: "sr-latch",
   title: "SR latch",
   section: SECTION,
-  nandgame: "SR Latch",
   chapter: CHAPTERS.memory,
   goal: "SET turns Q on and RESET turns Q off. While both are off, Q keeps its value, and Q̅ is always the opposite of Q.",
   intro:
@@ -338,7 +337,6 @@ export const dLatchLevel: Level = {
   id: "d-latch",
   title: "D latch",
   section: SECTION,
-  nandgame: "D Latch",
   chapter: CHAPTERS.memory,
   goal: "While ENABLE is on, Q follows DATA. While ENABLE is off, Q keeps its value. Q̅ is the opposite of Q.",
   intro:
@@ -359,7 +357,6 @@ export const dFlipFlopLevel: Level = {
   id: "d-flip-flop",
   title: "D flip-flop",
   section: SECTION,
-  nandgame: "Data Flip-Flop",
   chapter: CHAPTERS.clock,
   goal: "When CLOCK rises from 0 to 1, Q takes the value of DATA. At every other moment Q keeps its value, whatever DATA does.",
   intro:
@@ -405,7 +402,6 @@ export const register8Level: Level = {
   id: "register8",
   title: "8-bit register",
   section: SECTION,
-  nandgame: "Register",
   chapter: CHAPTERS.register,
   goal: "When CLOCK rises and LOAD is 1, Q0–Q7 take D0–D7. When LOAD is 0, Q0–Q7 keep their values.",
   intro: "A register holds a whole byte. Eight register bits share one CLOCK and one LOAD.",
@@ -434,7 +430,6 @@ export const counter8Level: Level = {
   id: "counter8",
   title: "Counter",
   section: SECTION,
-  nandgame: "Counter",
   chapter: CHAPTERS.counter,
   goal: "Q0–Q7 start at 0 and count up by one each time CLOCK rises.",
   intro:
@@ -539,7 +534,6 @@ export const ramLevel: Level = {
   id: "ram",
   title: "RAM",
   section: SECTION,
-  nandgame: "RAM",
   chapter: CHAPTERS.ram,
   goal: "While WRITE ENABLE is on, the address on ADDRESS 1 and ADDRESS 0 stores DATA IN. While READ ENABLE is on, DATA OUT shows what that address holds, and it is 0 otherwise.",
   intro:

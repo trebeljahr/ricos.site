@@ -103,7 +103,6 @@ export const selectorLevel: Level = {
   id: "selector",
   title: "Selector",
   section: SECTION,
-  nandgame: "Selector",
   chapter: CHAPTERS.muxes,
   goal: "OUT copies A when SELECT is 0. OUT copies B when SELECT is 1.",
   intro:
@@ -129,7 +128,6 @@ export const switchLevel: Level = {
   id: "switch",
   title: "Switch",
   section: SECTION,
-  nandgame: "Switch",
   chapter: CHAPTERS.muxes,
   goal: "DATA goes to TO A when SELECT is 0 and to TO B when SELECT is 1. The other output stays 0.",
   intro: "A switch is a selector turned around. It has one data input and two outputs.",

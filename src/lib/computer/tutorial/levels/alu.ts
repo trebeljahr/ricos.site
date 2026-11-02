@@ -150,7 +150,6 @@ export const logicUnitLevel: Level = {
   id: "logic-unit",
   title: "Logic unit",
   section: SECTION,
-  nandgame: "Logic Unit",
   chapter: CHAPTERS.alu,
   goal: "OP1 and OP0 pick what OUT shows. 00 gives A AND B, 01 gives A OR B, 10 gives A XOR B and 11 gives NOT A.",
   intro:
@@ -176,7 +175,6 @@ export const aluSliceLevel: Level = {
   id: "alu-slice",
   title: "ALU slice",
   section: SECTION,
-  nandgame: "Arithmetic Unit",
   chapter: CHAPTERS.alu,
   goal: "OP1 and OP0 pick RESULT: 00 gives A AND B, 01 A OR B, 10 A XOR B and 11 the sum bit of A + B + CARRY IN. CARRY OUT is always the carry of A + B + CARRY IN.",
   intro:
@@ -214,7 +212,6 @@ export const alu8Level: Level = {
   id: "alu8",
   title: "8-bit ALU",
   section: SECTION,
-  nandgame: "ALU",
   chapter: CHAPTERS.alu,
   goal: "OUT0–OUT7 show the operation that OP1 and OP0 pick, done on all eight bits of A and B: 00 AND, 01 OR, 10 XOR, 11 A + B + CARRY IN. CARRY OUT is the carry out of the 8-bit sum.",
   spec: {
@@ -239,7 +236,6 @@ export const conditionLevel: Level = {
   id: "condition",
   title: "Condition",
   section: SECTION,
-  nandgame: "Condition",
   chapter: CHAPTERS.alu,
   goal: "Read X0–X3 as a two's complement number. JUMP is 1 when LT is 1 and X is below zero, when EQ is 1 and X is zero, or when GT is 1 and X is above zero.",
   intro:

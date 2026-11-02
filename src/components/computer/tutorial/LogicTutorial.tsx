@@ -315,10 +315,7 @@ export function LogicTutorial({
   const panel = (
     <div className={styles.panel}>
       <header className={styles.header}>
-        <span className={styles.eyebrow}>
-          {level.section}
-          {level.nandgame ? ` · NandGame: ${level.nandgame}` : ""}
-        </span>
+        <span className={styles.eyebrow}>{level.section}</span>
         <div className={styles.titleRow}>
           <h2 className={styles.title}>{level.title}</h2>
           {solved && <span className={styles.badge}>Solved ✓</span>}

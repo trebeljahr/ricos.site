@@ -140,7 +140,6 @@ export const halfAdderLevel: Level = {
   id: "half-adder",
   title: "Half adder",
   section: SECTION,
-  nandgame: "Half Adder",
   chapter: CHAPTERS.arithmetic,
   goal: "SUM and CARRY show A + B as a two-bit number. CARRY is the high bit.",
   intro:
@@ -166,7 +165,6 @@ export const fullAdderLevel: Level = {
   id: "full-adder",
   title: "Full adder",
   section: SECTION,
-  nandgame: "Full Adder",
   chapter: CHAPTERS.arithmetic,
   goal: "SUM and CARRY show A + B + CARRY IN as a two-bit number.",
   intro:
@@ -195,7 +193,6 @@ export const adder4Level: Level = {
   id: "adder4",
   title: "4-bit adder",
   section: SECTION,
-  nandgame: "Multi-bit Adder",
   chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT3 and CARRY OUT show A + B + CARRY IN. Bit 0 is the lowest bit of each number.",
   spec: {
@@ -243,7 +240,6 @@ export const increment4Level: Level = {
   id: "increment4",
   title: "Increment",
   section: SECTION,
-  nandgame: "Increment",
   chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT3 show A + 1. After 15 comes 0: the carry out of bit 3 is dropped.",
   intro:
@@ -269,7 +265,6 @@ export const subtract4Level: Level = {
   id: "subtract4",
   title: "Subtraction",
   section: SECTION,
-  nandgame: "Subtraction",
   chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT3 show A − B. Below 0 the result wraps around, so 2 − 3 gives 15.",
   spec: {
@@ -293,7 +288,6 @@ export const isZero4Level: Level = {
   id: "is-zero4",
   title: "Equal to zero",
   section: SECTION,
-  nandgame: "Equal to Zero",
   chapter: CHAPTERS.arithmetic,
   goal: "ZERO is 1 when all four bits of A are 0.",
   spec: {
@@ -317,7 +311,6 @@ export const isNegative4Level: Level = {
   id: "is-negative4",
   title: "Less than zero",
   section: SECTION,
-  nandgame: "Less than Zero",
   chapter: CHAPTERS.arithmetic,
   goal: "NEGATIVE is 1 when A, read as a two's complement number, is below zero. You get no parts, only wires.",
   intro:

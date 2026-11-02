@@ -130,8 +130,6 @@ export type Level = {
   id: string;
   title: string;
   section: string;
-  /** The NandGame level this one follows, if any. */
-  nandgame?: string;
   chapter?: ChapterLink;
   /** One or two sentences: what the outputs must do. */
   goal: string;

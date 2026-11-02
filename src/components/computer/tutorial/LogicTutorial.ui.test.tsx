@@ -128,6 +128,12 @@ describe("first run", () => {
 });
 
 describe("independent tutorials", () => {
+  it("names only this site's section above a level", () => {
+    render(<LogicTutorial levels={["not", "and"]} />);
+    const panel = builders()[0].getByRole("complementary", { name: "Level" });
+    expect(within(panel).getByText("Logic gates")).toBeTruthy();
+    expect(panel.textContent).not.toMatch(/NandGame/i);
+  });
   it("explains automatic junction knobs without advertising a standalone junction block", () => {
     render(<LogicTutorial levels={["cmos-nand"]} />);
     expect(screen.getByText(/Available parts: PMOS, NMOS/).textContent).not.toContain("JUNCTION");

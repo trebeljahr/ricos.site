@@ -203,7 +203,6 @@ export const notLevel: Level = {
   id: "not",
   title: "NOT",
   section: SECTION,
-  nandgame: "Invert",
   chapter: CHAPTERS.universal,
   goal: "OUT is the opposite of A, this time built from NAND.",
   intro:
@@ -226,7 +225,6 @@ export const andLevel: Level = {
   id: "and",
   title: "AND",
   section: SECTION,
-  nandgame: "And",
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 only when A and B are both 1.",
   intro:
@@ -242,7 +240,6 @@ export const orLevel: Level = {
   id: "or",
   title: "OR",
   section: SECTION,
-  nandgame: "Or",
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 when A, B or both are 1.",
   intro:
@@ -258,7 +255,6 @@ export const xorLevel: Level = {
   id: "xor",
   title: "XOR",
   section: SECTION,
-  nandgame: "Xor",
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 when exactly one of A and B is 1.",
   intro:

@@ -350,6 +350,165 @@ describe("touch on the canvas", () => {
     expect(screen.queryByRole("button", { name: /^Also wire/ })).toBeNull();
   });
 
+  it("zooms once for a pinch on iOS, where Safari's own gesture events fire as well", () => {
+    const board = mount();
+    const zoom = () =>
+      screen.getByRole("toolbar", { name: "Canvas view controls" }).querySelector("span")!
+        .textContent;
+    const gesture = (type: string, scale?: number) =>
+      board.dispatchEvent(
+        Object.assign(new Event(type, { bubbles: true, cancelable: true }), { scale }),
+      );
+    const before = zoom();
+    fireEvent.pointerDown(board, { ...finger, clientX: 300, clientY: 300 });
+    fireEvent.pointerDown(board, { ...finger, pointerId: 2, clientX: 400, clientY: 300 });
+    act(() => {
+      gesture("gesturestart", 1);
+      gesture("gesturechange", 1.5);
+    });
+    expect(zoom()).toBe(before);
+    fireEvent.pointerMove(board, { ...finger, pointerId: 2, clientX: 500, clientY: 300 });
+    expect(zoom()).not.toBe(before);
+    fireEvent.pointerUp(board, { ...finger, clientX: 300, clientY: 300 });
+    fireEvent.pointerUp(board, { ...finger, pointerId: 2, clientX: 500, clientY: 300 });
+    const pinched = zoom();
+    // A Mac's trackpad sends the same events with no finger on the page.
+    act(() => {
+      gesture("gesturestart", 1);
+      gesture("gesturechange", 0.5);
+    });
+    expect(zoom()).not.toBe(pinched);
+  });
+
+  describe("with Select on", () => {
+    const select = () => fireEvent.click(screen.getByRole("button", { name: "Select" }));
+    const spot = (board: HTMLElement, id: string, x: number, y: number) => {
+      const owner = part(id);
+      return {
+        clientX: (parseFloat(board.style.width) * parseFloat(owner.style.left)) / 100 + x,
+        clientY: (parseFloat(board.style.height) * parseFloat(owner.style.top)) / 100 + y,
+      };
+    };
+    const swipe = (
+      board: HTMLElement,
+      from: { clientX: number; clientY: number },
+      to: { clientX: number; clientY: number },
+    ) => {
+      fireEvent.pointerDown(board, { ...finger, ...from });
+      fireEvent.pointerMove(board, { ...finger, ...to });
+      fireEvent.pointerUp(board, { ...finger, ...to });
+    };
+    const tapBody = (board: HTMLElement, id: string) => {
+      const at = spot(board, id, 66, 58);
+      fireEvent.pointerDown(part(id), { ...finger, ...at });
+      fireEvent.pointerUp(board, { ...finger, ...at });
+      fireEvent.click(part(id), { detail: 1 });
+    };
+    const count = () => document.querySelector('[class*="status"] > span:last-child')?.textContent;
+
+    it("draws a box with one finger and selects what it touches, for Delete to remove", () => {
+      const board = mount();
+      select();
+      swipe(board, spot(board, "a", -20, -20), spot(board, "gate", 10, 40));
+      expect(screen.getByText(/^2 parts selected\./)).toBeTruthy();
+      expect(count()).toContain("2 selected");
+      fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+      expect(stored().nodes.map((node) => node.id)).toEqual(["out"]);
+    });
+
+    it("says so when a box catches nothing", () => {
+      const board = mount();
+      select();
+      swipe(board, spot(board, "a", -30, 400), spot(board, "a", 60, 500));
+      expect(screen.getByText("No parts in that box.")).toBeTruthy();
+    });
+
+    it("drops the box when a second finger joins", () => {
+      const board = mount();
+      select();
+      const from = spot(board, "a", -20, -20);
+      fireEvent.pointerDown(board, { ...finger, ...from });
+      expect(document.querySelector('[class*="marquee"]')).toBeTruthy();
+      fireEvent.pointerDown(board, { ...finger, pointerId: 2, clientX: 450, clientY: 300 });
+      expect(document.querySelector('[class*="marquee"]')).toBeNull();
+      fireEvent.pointerUp(board, { ...finger, ...from });
+      fireEvent.pointerUp(board, { ...finger, pointerId: 2, clientX: 450, clientY: 300 });
+      expect(count()).not.toContain("selected");
+    });
+
+    it("adds and removes parts one tap at a time", () => {
+      const board = mount();
+      select();
+      tapBody(board, "gate");
+      expect(count()).toContain("1 selected");
+      expect(screen.getByText(/^1 part selected\./)).toBeTruthy();
+      tapBody(board, "out");
+      expect(count()).toContain("2 selected");
+      expect(screen.getByText(/^2 parts selected\./)).toBeTruthy();
+      tapBody(board, "gate");
+      expect(count()).toContain("1 selected");
+      tapBody(board, "out");
+      expect(screen.getByText("No parts selected.")).toBeTruthy();
+    });
+
+    it("moves everything selected when a selected part is dragged", () => {
+      const board = mount();
+      select();
+      tapBody(board, "gate");
+      tapBody(board, "out");
+      const from = spot(board, "gate", 66, 58);
+      const to = { clientX: from.clientX + 50, clientY: from.clientY + 40 };
+      fireEvent.pointerDown(part("gate"), { ...finger, ...from });
+      fireEvent.pointerMove(board, { ...finger, ...to });
+      fireEvent.pointerUp(board, { ...finger, ...to });
+      const at = (id: string) => stored().nodes.find((node) => node.id === id)!;
+      expect([at("gate").x, at("gate").y, at("out").x, at("out").y]).toEqual([350, 80, 650, 80]);
+    });
+
+    it("starts a box on a wire, while a tap on the wire still selects it", () => {
+      const board = mount();
+      const from = location(output("a"));
+      const end = location(input("out"));
+      fireEvent.pointerDown(output("a"), { ...finger, ...from });
+      fireEvent.pointerUp(board, { ...finger, ...end });
+      select();
+      const wire = screen.getByRole("button", { name: /^Select wire from A/ });
+      const middle = { clientX: from.clientX + 100, clientY: from.clientY };
+      expect(wire.getAttribute("aria-pressed")).toBe("false");
+      fireEvent.pointerDown(wire, { ...finger, ...middle });
+      expect(document.querySelector('[class*="marquee"]')).toBeTruthy();
+      fireEvent.pointerUp(board, { ...finger, ...middle });
+      fireEvent.click(wire, { detail: 1 });
+      expect(wire.getAttribute("aria-pressed")).toBe("true");
+    });
+
+    it("still wires from the dot itself, but not from beside it", () => {
+      const board = mount();
+      select();
+      const dot = location(output("a"));
+      tap(board, board, off(dot, 9, -6));
+      expect(document.querySelector('[class*="pending"]')).toBeNull();
+      tap(board, output("a"));
+      expect(screen.getByText("A Output: now tap an input.")).toBeTruthy();
+    });
+
+    it("explains itself on a touch screen, and goes back to the usual hint", () => {
+      Object.defineProperty(window, "matchMedia", {
+        configurable: true,
+        value: () => ({ matches: true }),
+      });
+      try {
+        mount();
+        select();
+        expect(screen.getByText(/^Drag across parts to select them\./)).toBeTruthy();
+        select();
+        expect(screen.getByText(/^Tap a part to add it\./)).toBeTruthy();
+      } finally {
+        Reflect.deleteProperty(window, "matchMedia");
+      }
+    });
+  });
+
   it("still lets go when the lift lands on the menu, as it does in WebKit", async () => {
     const board = mount();
     await hold();

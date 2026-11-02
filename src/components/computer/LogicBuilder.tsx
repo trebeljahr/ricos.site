@@ -1739,6 +1739,8 @@ function LogicBuilderWorkspace({
   const touchMoved = useRef(false);
   const zoomTap = useRef<{ x: number; y: number } | null>(null);
   const heldPress = useRef<{ timer: number; opened: boolean } | null>(null);
+  // iOS reports the click after a tap as a mouse's, so the press says what the finger was.
+  const pressedByTouch = useRef(false);
   const lastPlacement = useRef(0);
   const lastPaletteTouch = useRef(-Infinity);
   const inputFile = useRef<HTMLInputElement>(null);
@@ -1895,6 +1897,8 @@ function LogicBuilderWorkspace({
       event.preventDefault();
       const scale = (event as Event & { scale?: number }).scale;
       if (!scale || !Number.isFinite(scale)) return;
+      // On iOS these fire beside the pointers that already pinch; they are for a Mac's trackpad.
+      if (touchPointers.current.size) return;
       const anchor = gestureAnchor(event);
       zoomAt(zoomRef.current * (scale / gestureScale), anchor.x, anchor.y);
       gestureScale = scale;
@@ -2849,6 +2853,7 @@ function LogicBuilderWorkspace({
       setDrag(null);
       wireDraftRef.current = null;
       setWireDraft(null);
+      setMarquee(null);
       suppressBoardClick.current = false;
       swallowLiftClick();
     };
@@ -2857,13 +2862,15 @@ function LogicBuilderWorkspace({
     window.addEventListener("pointercancel", lift, true);
   };
   const gestureDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    pressedByTouch.current = event.pointerType === "touch";
     if (event.pointerType === "touch") {
       touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
       zoomTap.current = null;
       endPress();
       if (touchPointers.current.size === 1) {
         touchMoved.current = false;
-        const near = touchPorts(event);
+        // While selecting, a box may start anywhere beside a dot; only the dot itself still wires.
+        const near = selectMode && !(event.target as Element).closest("button[data-node-id]") ? [] : touchPorts(event);
         const port = near[0];
         if (near.length > 1 && zoomRef.current < READABLE_ZOOM && !embedded) {
           // These dots are too close to tell which one a finger means, so the tap zooms in first.
@@ -2932,7 +2939,7 @@ function LogicBuilderWorkspace({
     const previous = touchPointers.current.get(event.pointerId);
     if (previous) touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     // One finger on a wire end or a part belongs to the board, not the viewport.
-    if (touchPointers.current.size < 2 && (wireDraftRef.current || dragRef.current)) return;
+    if (touchPointers.current.size < 2 && (wireDraftRef.current || dragRef.current || marquee)) return;
     event.stopPropagation();
     if (!previous) return;
     if (touchPointers.current.size === 2) {
@@ -2971,7 +2978,7 @@ function LogicBuilderWorkspace({
         event.currentTarget.releasePointerCapture(event.pointerId);
     }
     if (event.pointerType === "touch") {
-      if (!wireDraftRef.current && !dragRef.current) event.stopPropagation();
+      if (!wireDraftRef.current && !dragRef.current && !marquee) event.stopPropagation();
       touchPointers.current.delete(event.pointerId);
       pinch.current = null;
       if (zoomTap.current && !touchMoved.current && event.type === "pointerup") {
@@ -3035,6 +3042,10 @@ function LogicBuilderWorkspace({
     const node = circuit.nodes.find((item) => item.id === id);
     return node ? `${node.label || LABELS[node.type]} ${outputLabel(node, output)}` : "Output";
   };
+  /** A phone hides the status line's count, so the message carries it. */
+  const reportParts = (count: number) => setMessage(count === 0 ? "No parts selected."
+    : count === 1 ? "1 part selected. Drag it to move it, or use Delete or More."
+    : `${count} parts selected. Drag one to move them, or use Delete or More.`);
   const finishPointer = (event: React.PointerEvent<HTMLDivElement>) => {
     if (portWiring.pointerUp(event)) return;
     const draft = wireDraftRef.current;
@@ -3086,19 +3097,26 @@ function LogicBuilderWorkspace({
       const right = Math.max(marquee.x, marquee.endX);
       const top = Math.min(marquee.y, marquee.endY);
       const bottom = Math.max(marquee.y, marquee.endY);
-      setSelected(
-        circuit.nodes
-          .filter(
-            (node) =>
-              node.x < right &&
-              node.x + nodeWidth(node) > left &&
-              node.y < bottom &&
-              node.y + nodeHeight(node) > top,
-          )
-          .map((node) => node.id),
-      );
+      const boxed = circuit.nodes
+        .filter(
+          (node) =>
+            node.x < right &&
+            node.x + nodeWidth(node) > left &&
+            node.y < bottom &&
+            node.y + nodeHeight(node) > top,
+        )
+        .map((node) => node.id);
       setMarquee(null);
-      suppressBoardClick.current = true;
+      if (event.pointerType !== "touch") {
+        setSelected(boxed);
+        suppressBoardClick.current = true;
+      } else if (Math.hypot(right - left, bottom - top) * zoom >= TOUCH_TAP_SLOP) {
+        setSelected(boxed);
+        if (boxed.length) reportParts(boxed.length);
+        else setMessage("No parts in that box.");
+        // A finger's drag may send no click at all, so this clears itself, unlike suppressBoardClick.
+        touchMoved.current = true;
+      }
     }
     if (dragRef.current) endTransaction();
     setDrag(null);
@@ -3703,7 +3721,7 @@ function LogicBuilderWorkspace({
             <button type="button" onClick={() => frameCanvas()}>
               Fit
             </button>
-            <button type="button" onClick={() => zoomFromCenter(1)}>
+            <button type="button" className={styles.fullZoom} onClick={() => zoomFromCenter(1)}>
               100%
             </button>
             {locked ? (
@@ -3713,7 +3731,12 @@ function LogicBuilderWorkspace({
                 <button
                   type="button"
                   aria-pressed={selectMode}
-                  onClick={() => setSelectMode((value) => !value)}
+                  onClick={() => {
+                    setSelectMode(!selectMode);
+                    if (window.matchMedia?.("(pointer: coarse)")?.matches)
+                      setMessage(selectMode ? TOUCH_HINT
+                        : "Drag across parts to select them. Tap a part to add or remove it. Two fingers pan.");
+                  }}
                 >
                   Select
                 </button>
@@ -3809,7 +3832,7 @@ function LogicBuilderWorkspace({
               <div
                 ref={board}
                 data-port-surface="main"
-                className={styles.board}
+                className={clsx(styles.board, selectMode && styles.boxing)}
                 style={{
                   width: canvasWidth * boardRatio,
                   height: canvasHeight * boardRatio,
@@ -3831,14 +3854,17 @@ function LogicBuilderWorkspace({
                 onPointerMove={pointerMove}
                 onPointerDown={(event) => {
                   setActiveInlinePath(null);
+                  const touch = event.pointerType === "touch";
+                  // A wire covers much of a phone's board, so a finger may start a box on one. A tap still selects it.
+                  const onWire = (event.target as Element).closest(`.${styles.wireHit}, .${styles.busHit}`);
                   if (
-                    event.pointerType === "touch" ||
+                    (touch && touchPointers.current.size > 1) ||
                     event.button !== 0 ||
                     spaceHeld.current ||
                     (!event.shiftKey && !selectMode) ||
-                    (event.target as Element).closest(
+                    (!(touch && onWire) && (event.target as Element).closest(
                       `.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`,
-                    )
+                    ))
                   )
                     return;
                   event.currentTarget.setPointerCapture(event.pointerId);
@@ -4136,6 +4162,7 @@ function LogicBuilderWorkspace({
                         portWiring.clear();
                         event.currentTarget.setPointerCapture(event.pointerId);
                         const ids = selected.includes(node.id) ? selected : [node.id];
+                        const collecting = selectMode && event.pointerType === "touch";
                         beginTransaction();
                         setDrag({
                           x: event.clientX,
@@ -4146,7 +4173,8 @@ function LogicBuilderWorkspace({
                               .map((item) => [item.id, { x: item.x, y: item.y }]),
                           ),
                         });
-                        setSelected(ids);
+                        // A finger collecting parts keeps what it has; its tap decides, on the click.
+                        if (!collecting) setSelected(ids);
                         setSelectedWires([]);
                         setMenu(null);
                       }}
@@ -4163,7 +4191,12 @@ function LogicBuilderWorkspace({
                           if (!expandedDetails.has(node.id) && isUnfoldable(node)) toggleUnfolded(node.id);
                           return;
                         }
-                        if ((event.nativeEvent as PointerEvent).pointerType === "touch")
+                        if (selectMode && pressedByTouch.current) {
+                          const next = selected.includes(node.id)
+                            ? selected.filter((id) => id !== node.id) : [...selected, node.id];
+                          setSelected(next);
+                          reportParts(next.length);
+                        } else if ((event.nativeEvent as PointerEvent).pointerType === "touch")
                           setSelected([node.id]);
                       }}
                       onDoubleClick={(event) => {

@@ -24,8 +24,11 @@ export function SingleMenuItem({ link, onSelect }: SingleMenuItemProps) {
   };
 
   return (
+    // No viewport prefetch: closed menus still count as visible, so every page on
+    // the site downloaded the code of every page in the menus. Hover still prefetches.
     <Link
       href={link.href}
+      prefetch={false}
       className="block whitespace-nowrap rounded-md px-3 py-2 text-left transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       onClick={handleClick}
     >

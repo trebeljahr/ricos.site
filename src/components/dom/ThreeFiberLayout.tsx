@@ -49,10 +49,10 @@ export const ThreeFiberLayout = ({
     <>
       <SeoInfo {...seoInfo} />
       {nav && <ImmersiveNavbar />}
-      <div className="w-full h-screen overscoll-none">
+      <main className="w-full h-screen overscoll-none">
         <Out />
         <SceneWithLoadingState {...sceneWithLoadingStateProps}>{children}</SceneWithLoadingState>
-      </div>
+      </main>
     </>
   );
 };

@@ -1,3 +1,5 @@
+// biome-ignore-all format: not biome-formatted; the commit hook's rewrite would bury every change to this file
+// biome-ignore-all assist/source/organizeImports: same reason
 import Link from "next/link";
 import clsx from "clsx";
 import { type MutableRefObject, type ReactNode, lazy, Suspense, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -20,7 +22,7 @@ import { BUILDER_LESSON_IDS, LESSON_SECTIONS, lessonForCircuit } from "../../lib
 import { CATALOG } from "../../lib/computer/tutorial/levels";
 import { circuitRow, entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, rowMatches, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
 import { type OwnPartsMode, setOwnPartsMode } from "../../lib/computer/tutorial/progress";
-import { type PortRef, portLabelBank, wiringPorts } from "../../lib/computer/portWiring";
+import { type PortRef, portLabelBank, type WiringPort, wiringPorts } from "../../lib/computer/portWiring";
 import { type Timeline, type TimelineFrame, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
 import {
   BLUEPRINT_FAMILIES,
@@ -146,6 +148,12 @@ const circuitHints: Record<string, string> = {
 };
 const MIN_ZOOM = 1e-9;
 const MAX_ZOOM = 1e9;
+/** A canvas narrower than this frames its parts, not the empty sheet, and places parts in view. */
+const NARROW_BOARD = 520;
+/** A fingertip covers the port it aims at, so a touch takes the nearest port within this many CSS px. */
+const TOUCH_PORT_REACH = 22;
+/** A finger wobbles this many CSS px during a tap. */
+const TOUCH_TAP_SLOP = 14;
 const GRID_BASE_STEP = 20;
 const gridSpacing = (zoom: number) =>
   GRID_BASE_STEP * 2 ** Math.round(Math.log2(1 / zoom)) * zoom;
@@ -169,6 +177,17 @@ const frameBounds = (left: number, top: number, zoom: number, width: number, hei
   right: left + (3 * width) / zoom,
   bottom: top + (3 * height) / zoom,
 });
+/** A spot near `center` that no part covers, nearest first. */
+const openSpot = (center: { x: number; y: number }, nodes: readonly Node[]) => {
+  for (const column of [0, 1, -1])
+    for (const row of [0, 1, -1, 2, -2]) {
+      const x = center.x + column * (NODE_WIDTH + 16);
+      const y = center.y + row * (NODE_HEIGHT + 16);
+      if (!nodes.some((node) => x - NODE_WIDTH / 2 < node.x + nodeWidth(node) && x + NODE_WIDTH / 2 > node.x &&
+        y - NODE_HEIGHT / 2 < node.y + nodeHeight(node) && y + NODE_HEIGHT / 2 > node.y)) return { x, y };
+    }
+  return center;
+};
 const wireColorNames = Object.keys(WIRE_COLORS) as WireColor[];
 const partColors: Record<GateType, string> = {
   switch: "#ffc76a",
@@ -213,6 +232,7 @@ type WireDraft = {
   y: number;
   originX: number;
   originY: number;
+  touch?: boolean;
 };
 /** The value on a bus part: hex when driven, Z when floating, X on a conflict. */
 function BusReadout({ value }: { value: BusValue }) {
@@ -1470,6 +1490,10 @@ function LogicBuilderWorkspace({
   const [message, setMessage] = useState(
     "Shift-click or Shift-drag across ports to select them. Drag a selected port to connect multiple wires.",
   );
+  useEffect(() => {
+    if (window.matchMedia?.("(pointer: coarse)")?.matches)
+      setMessage("Tap a part to add it. Tap an output, then an input, to wire them.");
+  }, []);
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
   const expandedDetails = useMemo(() => new Map(circuit.nodes.flatMap((node) => {
@@ -1755,12 +1779,14 @@ function LogicBuilderWorkspace({
     if (!viewport?.clientWidth || !viewport.clientHeight) return;
     const nodes = focusIds ? displayNodes.filter((node) => focusIds.includes(node.id)) : displayNodes;
     if (focusIds && !nodes.length) return;
+    const narrow = viewport.clientWidth < NARROW_BOARD && nodes.length > 0;
+    const snug = focusIds || narrow;
     const wireBounds = focusIds && nodes.length !== displayNodes.length ? undefined : routes.bounds;
-    const left = Math.min(focusIds ? Infinity : 0, wireBounds?.left ?? Infinity, ...nodes.map((node) => node.x)) - 40;
-    const top = Math.min(focusIds ? Infinity : 0, wireBounds?.top ?? Infinity, ...nodes.map((node) => node.y)) - 40;
-    const right = Math.max(focusIds ? -Infinity : WIDTH, wireBounds?.right ?? -Infinity, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
-    const bottom = Math.max(focusIds ? -Infinity : HEIGHT, wireBounds?.bottom ?? -Infinity, ...nodes.map((node) => node.y + nodeHeight(node))) + 40;
-    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM,
+    const left = Math.min(snug ? Infinity : 0, wireBounds?.left ?? Infinity, ...nodes.map((node) => node.x)) - 40;
+    const top = Math.min(snug ? Infinity : 0, wireBounds?.top ?? Infinity, ...nodes.map((node) => node.y)) - 40;
+    const right = Math.max(snug ? -Infinity : WIDTH, wireBounds?.right ?? -Infinity, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
+    const bottom = Math.max(snug ? -Infinity : HEIGHT, wireBounds?.bottom ?? -Infinity, ...nodes.map((node) => node.y + nodeHeight(node))) + 40;
+    const next = Math.max(MIN_ZOOM, Math.min(narrow ? 1 : MAX_ZOOM,
       (viewport.clientWidth - 24) / (right - left),
       (viewport.clientHeight - 24) / (bottom - top)));
     const visibleLeft = left - (viewport.clientWidth / next - (right - left)) / 2;
@@ -2545,20 +2571,47 @@ function LogicBuilderWorkspace({
   };
   const clearPortSelection = portWiring.clear;
   useEffect(() => { if (activeInlinePath) clearPortSelection(); }, [activeInlinePath, clearPortSelection]);
+  const beginWireDraft = (event: React.PointerEvent<Element>, draft: WireDraft) => {
+    event.stopPropagation();
+    board.current?.setPointerCapture(event.pointerId);
+    const touch = event.pointerType === "touch";
+    const next = touch ? { ...draft, touch } : draft;
+    wireDraftRef.current = next;
+    setWireDraft(next);
+    suppressBoardClick.current = true;
+    // A phone sends the click late, after suppressBoardClick clears; gestureUp's timer resets this.
+    if (touch) touchMoved.current = true;
+    setMenu(null);
+  };
+  /** The port a touch aims at: an input first while an output waits for one. */
+  const touchPort = (event: React.PointerEvent<Element>) => {
+    if (lockedRef.current || (event.target as Element).closest(
+      "button:not([data-node-id]), input, select, label, a, [data-inline-path]")) return null;
+    const point = boardPoint(event.clientX, event.clientY);
+    // A short wire lies wholly within reach of its ports, so a touch on the wire reaches less far.
+    const onWire = (event.target as Element).closest(`.${styles.wireHit}, .${styles.busHit}`);
+    const nearestOf = (ports: WiringPort[]) => {
+      let best: WiringPort | null = null;
+      let reach = (onWire ? TOUCH_PORT_REACH / 2 : TOUCH_PORT_REACH) / zoomRef.current;
+      for (const port of ports) {
+        const distance = Math.hypot(point.x - port.x, point.y - port.y);
+        if (distance < reach) { best = port; reach = distance; }
+      }
+      return best;
+    };
+    return (pending && nearestOf(availablePorts.filter((port) => port.kind === "input")))
+      || nearestOf(availablePorts);
+  };
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
     if (lockedRef.current) return;
     setActiveInlinePath(null);
     if (portWiring.pointerDown(event, draftPort(draft))) return;
     if (event.button !== 0 || event.pointerType === "touch") return;
-    event.stopPropagation();
-    board.current?.setPointerCapture(event.pointerId);
-    wireDraftRef.current = draft;
-    setWireDraft(draft);
-    suppressBoardClick.current = true;
-    setMenu(null);
+    beginWireDraft(event, draft);
   };
   const nearestConnector = (point: { x: number; y: number }, draft: WireDraft) => {
     let best: { id: string; input?: number; output?: number; distance: number } | null = null;
+    const reach = (draft.touch ? TOUCH_PORT_REACH + 10 : 20) / zoom;
     for (const node of displayNodes) {
       if (node.splice) continue;
       if (draft.from && node.id !== draft.from) {
@@ -2566,7 +2619,7 @@ function LogicBuilderWorkspace({
           if (!segmentPinVisible(node, input, segmentBanks)) continue;
           const port = portPoint(node, input, "input");
           const distance = Math.hypot(point.x - port.x, point.y - port.y);
-          if (distance < 20 / zoom && (!best || distance < best.distance))
+          if (distance < reach && (!best || distance < best.distance))
             best = { id: node.id, input, distance };
         }
       }
@@ -2574,7 +2627,7 @@ function LogicBuilderWorkspace({
         for (let output = 0; output < outputCount(node); output++) {
           const port = portPoint(node, output, "output");
           const distance = Math.hypot(point.x - port.x, point.y - port.y);
-          if (distance < 20 / zoom && (!best || distance < best.distance))
+          if (distance < reach && (!best || distance < best.distance))
             best = { id: node.id, output, distance };
         }
       }
@@ -2597,6 +2650,30 @@ function LogicBuilderWorkspace({
         .filter((group) => group.nodeIds.length),
     }));
     setSelected([]);
+    setMenu(null);
+  };
+  const removeSelection = () => {
+    const removed = new Set(selected);
+    setCircuit((current) => ({
+      ...current,
+      nodes: current.nodes.filter((node) => !removed.has(node.id)),
+      wires: current.wires.filter(
+        (wire) =>
+          !removed.has(wire.from) &&
+          !removed.has(wire.to) &&
+          !selectedWires.includes(wire.id),
+      ),
+      groups: current.groups
+        ?.map((group) => ({
+          ...group,
+          nodeIds: group.nodeIds.filter((id) => !removed.has(id)),
+          activeWhen: group.activeWhen && removed.has(group.activeWhen) ? undefined : group.activeWhen,
+        }))
+        .filter((group) => group.nodeIds.length),
+    }));
+    setSelected([]);
+    setSelectedWires([]);
+    setPending(null);
     setMenu(null);
   };
   useEffect(() => {
@@ -2641,27 +2718,7 @@ function LogicBuilderWorkspace({
         !(event.target instanceof HTMLTextAreaElement)
       ) {
         event.preventDefault();
-        const removed = new Set(selected);
-        setCircuit((current) => ({
-          ...current,
-          nodes: current.nodes.filter((node) => !removed.has(node.id)),
-          wires: current.wires.filter(
-            (wire) =>
-              !removed.has(wire.from) &&
-              !removed.has(wire.to) &&
-              !selectedWires.includes(wire.id),
-          ),
-          groups: current.groups
-            ?.map((group) => ({
-              ...group,
-              nodeIds: group.nodeIds.filter((id) => !removed.has(id)),
-          activeWhen: group.activeWhen && removed.has(group.activeWhen) ? undefined : group.activeWhen,
-            }))
-            .filter((group) => group.nodeIds.length),
-        }));
-        setSelected([]);
-        setSelectedWires([]);
-        setMenu(null);
+        removeSelection();
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -2697,7 +2754,17 @@ function LogicBuilderWorkspace({
   const gestureDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch") {
       touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-      if (touchPointers.current.size === 1) touchMoved.current = false;
+      if (touchPointers.current.size === 1) {
+        touchMoved.current = false;
+        const port = touchPort(event);
+        if (port) {
+          portWiring.clear();
+          setActiveInlinePath(null);
+          const end = port.kind === "output"
+            ? { from: port.nodeId, output: port.index } : { to: port.nodeId, input: port.index };
+          beginWireDraft(event, { ...end, x: port.x, y: port.y, originX: port.x, originY: port.y });
+        }
+      }
       if (touchPointers.current.size === 2) {
         const [first, second] = [...touchPointers.current.values()];
         pinch.current = {
@@ -2744,10 +2811,12 @@ function LogicBuilderWorkspace({
       return;
     }
     if (event.pointerType !== "touch") return;
-    event.stopPropagation();
     const previous = touchPointers.current.get(event.pointerId);
+    if (previous) touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    // One finger on a wire end or a part belongs to the board, not the viewport.
+    if (touchPointers.current.size < 2 && (wireDraftRef.current || dragRef.current)) return;
+    event.stopPropagation();
     if (!previous) return;
-    touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (touchPointers.current.size === 2) {
       const [first, second] = [...touchPointers.current.values()];
       const current = {
@@ -2784,7 +2853,7 @@ function LogicBuilderWorkspace({
         event.currentTarget.releasePointerCapture(event.pointerId);
     }
     if (event.pointerType === "touch") {
-      event.stopPropagation();
+      if (!wireDraftRef.current && !dragRef.current) event.stopPropagation();
       touchPointers.current.delete(event.pointerId);
       pinch.current = null;
       if (touchPointers.current.size === 0)
@@ -2816,6 +2885,10 @@ function LogicBuilderWorkspace({
     }
     const active = dragRef.current;
     if (!active || !board.current) return;
+    if (event.pointerType === "touch" && !touchMoved.current) {
+      if (Math.hypot(event.clientX - active.x, event.clientY - active.y) < TOUCH_TAP_SLOP) return;
+      touchMoved.current = true;
+    }
     const rect = board.current.getBoundingClientRect();
     const dx = ((event.clientX - active.x) * canvasWidth) / rect.width;
     const dy = ((event.clientY - active.y) * canvasHeight) / rect.height;
@@ -2839,7 +2912,8 @@ function LogicBuilderWorkspace({
     const draft = wireDraftRef.current;
     if (draft) {
       const point = boardPoint(event.clientX, event.clientY);
-      const moved = Math.hypot(point.x - draft.originX, point.y - draft.originY) > 8;
+      const moved = Math.hypot(point.x - draft.originX, point.y - draft.originY) >
+        (draft.touch ? Math.max(8, TOUCH_TAP_SLOP / zoom) : 8);
       const connector = moved ? nearestConnector(point, draft) : null;
       const wireTarget = moved && !connector ? nearestWire(point, draft.anchor?.wire) : null;
       if (moved && (draft.anchor || wireTarget)) {
@@ -2866,7 +2940,9 @@ function LogicBuilderWorkspace({
         connect(connector.id, draft.to, draft.input!, connector.output);
       else if (!moved && draft.from) {
         setPending({ from: draft.from, output: draft.output ?? 0 });
-        setMessage("Drag to an input, or click one to connect.");
+        setMessage(!draft.touch ? "Drag to an input, or click one to connect."
+          : draft.anchor ? "Wire selected. Tap an input to branch from it, or press Delete."
+          : "Now tap an input to connect.");
       } else if (!moved && draft.to)
         connect(pending?.from ?? null, draft.to, draft.input!, pending?.output);
       else setMessage("Wire cancelled. Drop on a compatible connector.");
@@ -2910,9 +2986,13 @@ function LogicBuilderWorkspace({
   const ownMode = progress.settings.ownParts;
   const placeRow = (placement: Placement, position?: { x: number; y: number }, inlineTarget?: string | null) => {
     if ("type" in placement) {
-      addNode(placement.type, position && {
-        x: position.x - NODE_WIDTH / 2,
-        y: position.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
+      let spot = position;
+      // A narrow canvas shows little of the default grid, so a tap places the part in view.
+      if (!spot && !activeInlinePath && (boardViewport.current?.clientWidth ?? NARROW_BOARD) < NARROW_BOARD)
+        spot = openSpot(insertionCenter(), circuit.nodes);
+      addNode(placement.type, spot && {
+        x: spot.x - NODE_WIDTH / 2,
+        y: spot.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
       }, inlineTarget, placement.extra);
       return;
     }
@@ -3035,8 +3115,7 @@ function LogicBuilderWorkspace({
     const draft: WireDraft = { from: wire.from, output: wire.output ?? 0, anchor: { wire: wire.id, point, path },
       ...point, originX: point.x, originY: point.y };
     portWiring.clear(); setActiveInlinePath(null);
-    board.current?.setPointerCapture(event.pointerId);
-    wireDraftRef.current = draft; setWireDraft(draft); suppressBoardClick.current = true; setMenu(null);
+    beginWireDraft(event, draft);
   };
   const menuNode = menu?.kind === "node"
     ? circuit.nodes.find((node) => node.id === menu.id)
@@ -3498,6 +3577,11 @@ function LogicBuilderWorkspace({
                 >
                   Select
                 </button>
+                {(selected.length > 0 || selectedWires.length > 0) && (
+                  <button type="button" className={styles.touchDelete} onClick={removeSelection}>
+                    Delete
+                  </button>
+                )}
                 <small>
                   Shift-click or Shift-drag ports to select · Drag selected ports to wire · {embedded ? "Ctrl/⌘ + scroll to zoom" : "Scroll to zoom"}
                 </small>
@@ -3893,7 +3977,6 @@ function LogicBuilderWorkspace({
                       onPointerDown={(event) => {
                         if (
                           locked ||
-                          event.pointerType === "touch" ||
                           event.button !== 0 ||
                           (event.target as HTMLElement).closest("button, input, select, label")
                         )

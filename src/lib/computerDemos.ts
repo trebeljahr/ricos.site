@@ -172,7 +172,7 @@ export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = 
   {
     slug: "build-from-nand",
     blurb:
-      "Wire every part yourself, from transistors up to a CPU. Each level checks your circuit. Best on a computer with a mouse.",
+      "Wire every part yourself, from transistors up to a CPU. Each level checks your circuit.",
   },
 ];
 

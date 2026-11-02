@@ -185,6 +185,7 @@ export class CircuitKit {
 }
 
 const spaceForParts = 560;
+const PHONE_SPACE_FOR_PARTS = 250;
 
 /** Ports of a level, from its spec; custom levels define their own start circuit. */
 export function levelPorts(level: Level): { inputs: LevelPort[]; outputs: LevelPort[] } {
@@ -246,6 +247,30 @@ export function levelStart(level: Level): LevelStart {
     locked: start.locked,
     enforce:
       start.enforce ?? ((circuit: Circuit) => enforceStart(circuit, start.circuit, start.locked)),
+  };
+}
+
+/**
+ * The same start with its lamps pulled in, for a phone: the room `defaultStart`
+ * leaves would shrink every port on a narrow canvas below a fingertip's reach.
+ * Locked parts may move, so this changes only where they begin.
+ */
+export function compactStart(start: LevelStart): LevelStart {
+  const { nodes } = start.circuit;
+  const lamps = nodes.filter((node) => node.type === "lamp");
+  const others = nodes.filter((node) => node.type !== "lamp");
+  if (!lamps.length || !others.length) return start;
+  const shift =
+    Math.min(...lamps.map((node) => node.x)) -
+    Math.max(...others.map((node) => node.x + nodeWidth(node))) -
+    PHONE_SPACE_FOR_PARTS;
+  if (shift <= 0) return start;
+  return {
+    ...start,
+    circuit: {
+      ...start.circuit,
+      nodes: nodes.map((node) => (node.type === "lamp" ? { ...node, x: node.x - shift } : node)),
+    },
   };
 }
 

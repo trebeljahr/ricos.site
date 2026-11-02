@@ -53,3 +53,6 @@
 .switchRow input:focus-visible{outline:2px solid #86ded5;outline-offset:3px}
 .setting small{display:block;margin-top:8px;color:#91a1b9;font-size:10px;line-height:1.4}
 @media(prefers-reduced-motion:reduce){.switchRow input,.switchRow input:before{transition:none}}
+
+/* The level's title stands right below on a phone page, and the page nav links back. */
+@media(max-width:640px){[data-phone-flow] .identitySlot{display:none}[data-phone-flow] .headerRow{min-height:0;padding:4px 10px;justify-content:space-between}}

@@ -499,3 +499,30 @@
 .rowButton { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 .rowButton::after { content: ""; position: absolute; inset: 0; }
 .rowButton:focus-visible { outline: none; }
+
+/* A phone page lays the panel's blocks out around the canvas (see LogicBuilder.module.css). */
+@media (max-width: 640px) {
+  [data-phone-flow] .panel {
+    display: contents;
+  }
+
+  [data-phone-flow] .panel > * {
+    order: 4;
+    margin: 10px 12px 0;
+  }
+
+  [data-phone-flow] .panel > .header,
+  [data-phone-flow] .panel > .goal,
+  [data-phone-flow] .panel > .notice {
+    order: 1;
+  }
+
+  [data-phone-flow] .panel > .goal {
+    margin-bottom: 12px;
+  }
+
+  /* WebKit's select would otherwise widen the implicit column past the screen. */
+  [data-phone-flow] .panel > .header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

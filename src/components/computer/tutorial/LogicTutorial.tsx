@@ -6,7 +6,7 @@ import { type Circuit, LABELS, validateCircuit } from "../../../lib/computer/log
 import { feedback, type Note, simplificationNote } from "../../../lib/computer/tutorial/analysis";
 import { type Grade, gradeLevel, gradePassed } from "../../../lib/computer/tutorial/grade";
 import { requestedHints } from "../../../lib/computer/tutorial/hints";
-import { levelStart } from "../../../lib/computer/tutorial/kit";
+import { compactStart, levelStart } from "../../../lib/computer/tutorial/kit";
 import { CATALOG, LEARNING_LEVELS, LEVELS, levelById } from "../../../lib/computer/tutorial/levels";
 import { levelRows } from "../../../lib/computer/tutorial/paletteRows";
 import {
@@ -76,6 +76,11 @@ function restoreDraft(level: Level, progress: Progress, start: ReturnType<typeof
   }
 }
 
+const fitPhone = (start: ReturnType<typeof levelStart>) =>
+  typeof window !== "undefined" && window.matchMedia?.("(max-width: 640px)")?.matches
+    ? compactStart(start)
+    : start;
+
 const statusOf = (level: Level, progress: Progress) =>
   progress.solved[level.id] ? "✓" : progress.skipped.includes(level.id) ? "↷" : "";
 
@@ -111,7 +116,7 @@ export function LogicTutorial({
       item.id === level.id || (item.practice && item.practice.family === level.practice?.family),
   );
   const progress = useTutorialProgress();
-  const start = useMemo(() => levelStart(level), [level]);
+  const start = useMemo(() => fitPhone(levelStart(level)), [level]);
   const allowed = useMemo(() => CATALOG.allowed(level), [level]);
   const gatePalette = useMemo(() => [...allowed.gates], [allowed]);
   const reference = useMemo(() => level.reference?.(), [level]);

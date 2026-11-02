@@ -1,29 +1,24 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
 import { getMDXComponent } from "mdx-bundler/client";
 import { renderToStaticMarkup } from "react-dom/server";
-import { chapterToMdx } from "src/lib/computerSeriesLinks";
+import { CHAPTER_FILE, chapterToMdx } from "src/lib/computerSeriesLinks";
 import { hasMdxDemos, MDX_DEMO_COMPONENTS } from "src/lib/mdxDemoComponents";
 import { describe, expect, it } from "vitest";
 import { BooleanOperators } from "./BooleanOperators";
 import { COMPUTER_MDX_DEMOS } from "./MdxComputerDemos";
 
+const CHAPTER_DIR = new URL("../../content/Notes/computer/", import.meta.url);
+const readChapter = (file: string) => readFileSync(new URL(encodeURI(file), CHAPTER_DIR), "utf8");
+/** Every chapter file with a demo in it, wherever the outline has moved it. */
+const embeddedChapters = readdirSync(CHAPTER_DIR, { recursive: true, encoding: "utf8" })
+  .filter((file) => CHAPTER_FILE.test(file))
+  .filter((file) => hasMdxDemos(chapterToMdx(matter(readChapter(file)).content)));
+
 describe("chapter demo integration", () => {
-  it.each([
-    "Part 1 - The Basics/1.0 Whirlwind Tour.md",
-    "Part 1 - The Basics/1.2 Transistors into Gates.md",
-    "Part 1 - The Basics/1.2a The universalness of some logic gates.md",
-    "Part 1 - The Basics/1.2b How does a transistor work.md",
-    "Part 1 - The Basics/1.3 Gates to arithmetic.md",
-    "Part 1 - The Basics/1.4 The Clock.md",
-    "Part 2 - The CPU/2.3 Multiplexers and Decoders.md",
-    "Part 2 - The CPU/2.4 The ALU.md",
-  ])("prepares and detects the actual embedded chapter %s", (file) => {
-    const source = readFileSync(
-      new URL(`../../content/Notes/computer/${file}`, import.meta.url),
-      "utf8",
-    );
+  it.each(embeddedChapters)("prepares and detects the actual embedded chapter %s", (file) => {
+    const source = readChapter(file);
     const prepared = chapterToMdx(matter(source).content);
     expect(prepared).not.toMatch(/<!--|nav:/);
     expect(hasMdxDemos(prepared)).toBe(true);

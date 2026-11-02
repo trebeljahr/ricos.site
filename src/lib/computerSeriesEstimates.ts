@@ -57,6 +57,10 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Construction of an 8-Bit Full Bit Adder (or one byte adder)": 650,
   },
   "1.4": {
+    "Putting it All Together": 150,
+    "From One Switch to a Circuit that Adds.": 700,
+  },
+  "2.1": {
     "The Clock": 150,
     "Why we need a time-keeper.": 600,
     'How it wires into everything else so that stuff can "click" at a set frequency.': 600,
@@ -66,20 +70,20 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     'Clock Multipliers, or How "Slower" Things Still Sync to the CPUs Rhythm, also Frequency Dividers as the Opposite of That': 600,
     "How fast can a clock tick? Propagation delay and the slowest path": 600,
   },
-  "1.4a": {
+  "2.1a": {
     "Some Clock Designs Can Use More than one Wire - Single Phase vs. Two and Four Phase Clock Designs": 500,
   },
-  "1.4b": {
+  "2.1b": {
     "How a clock is made? What makes it tick? The Crystal Oscillator": 700,
   },
-  "1.4c": {
+  "2.1c": {
     "When timing goes wrong: Clock Skew, Jitter and Metastability": 800,
   },
-  "1.4d": {
+  "2.1d": {
     "Overclocking, or how software gets to change the clock": 500,
   },
-  "1.5": {
-    Memory: 150,
+  "2.2": {
+    "1-Bit of Memory": 150,
     'How do we "store a bit"?': 600,
     "Differences between long term memory and short term memory/volatile memory.": 400,
     "Reading and writing into memory, different architectures and how they work, their trade-offs and so on.": 250,
@@ -88,30 +92,15 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Flip Flop": 800,
     "Read and write enable signals.": 400,
   },
-  "1.5a": {
+  "2.2a": {
     "How does an SSD work?": 800,
   },
-  "1.5b": {
+  "2.2b": {
     "How does an HDD work?": 600,
     "Follow one address of long term storage request through the toy RAM and into the magnetic disk": 600,
   },
-  "1.5c": {
+  "2.2c": {
     "ROM, or Memory that is Written Once": 700,
-  },
-  "1.6": {
-    "Putting it All Together": 150,
-    "From One Switch to a Circuit that Adds and Remembers.": 1200,
-  },
-  "2.1": {
-    Register: 250,
-    'Combining memory cells for one bytes into a "single 8-bit register"': 500,
-    'What is a "word"? Why a register has a width': 450,
-  },
-  "2.2": {
-    RAM: 200,
-    "Combining those 8-bit registers into RAM.": 200,
-    "Why RAM is so fast and easily accessible.": 450,
-    "Addressing schemes for RAM.": 600,
   },
   "2.3": {
     "Multiplexers and Decoders": 150,
@@ -121,6 +110,20 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Multiplexer vs. multiplexing: two ideas with one name": 250,
   },
   "2.4": {
+    Memory: 250,
+    'Combining memory cells for one bytes into a "single 8-bit register"': 500,
+    'What is a "word"? Why a register has a width': 450,
+    "Combining those 8-bit registers into RAM.": 200,
+    "Why RAM is so fast and easily accessible.": 450,
+    "Addressing schemes for RAM.": 600,
+    "How to read and write into memory in an easy and efficient way?": 900,
+    "The system bus: address lines, data lines and control lines and how this all ties together": 500,
+  },
+  "2.5": {
+    "Putting it All Together": 150,
+    "From One Switch to a Circuit that Adds and Remembers.": 1200,
+  },
+  "3.1": {
     "The ALU": 250,
     "How do we get to the other operations?": 150,
     Subtraction: 250,
@@ -131,56 +134,73 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Picking the operation": 600,
     Flags: 450,
   },
-  "2.4a": {
+  "3.1a": {
     Multiplication: 650,
     "This used to be software, or a different chip entirely": 300,
   },
-  "2.4b": {
+  "3.1b": {
     Division: 600,
   },
-  "2.4c": {
+  "3.1c": {
     "Floating Point Numbers and how Arithmetic works on them *in hardware*": 700,
     "This used to be a different chip entirely": 350,
   },
-  "2.4d": {
+  "3.1d": {
     "What about square roots and more complex stuff?": 450,
   },
-  "2.5": {
+  "3.2": {
     "Program Counter": 700,
   },
-  "2.6": {
-    "Buses and Tri State logic": 900,
-    "The system bus: address lines, data lines and control lines": 500,
-  },
-  "2.7": {
+  "3.3": {
     "The Control Unit": 250,
     "The instruction register": 500,
     "One instruction takes several clock ticks: the step counter": 700,
     "From opcode to control signals": 1000,
     "Flags and conditional jumps": 700,
   },
-  "2.7a": {
+  "3.3a": {
     Microcode: 800,
   },
-  "2.8": {
+  "3.4": {
     "Tying it together": 300,
     "The basic idea:": 200,
     "The components that need to be there to hang together:": 150,
     "How do these hang together?": 150,
+  },
+  "3.4a": {
+    'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
+  },
+  "4.1": {
+    "The Fetch-Decode-Execute Cycle": 150,
     "What is the fetch decode execute cycle?": 1000,
     "Assuming you have this set of 0s and 1s that correspond to instructions of a program, how do you get to the next level": 500,
   },
-  "2.8a": {
-    'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
+  "4.1a": {
+    Pipelining: 800,
   },
-  "2.9": {
+  "4.1b": {
+    "Predictive Branching": 800,
+  },
+  "4.1c": {
+    "SIMD stuff": 700,
+  },
+  "4.1d": {
+    "More than one Core": 700,
+  },
+  "4.2": {
     "Machine Code and Assembly": 200,
     "What does one instruction look like as bits? Opcode and operand": 700,
     "Instruction Set Architectures (or Why Every CPU is *slightly* different, again the importance of protocols)": 700,
     "Assembly: machine code with names": 600,
     'What "8-bit", "32-bit" and "64-bit" actually refer to': 500,
   },
-  "2.10": {
+  "4.3": {
+    "Functions and the Stack": 200,
+    "How does a function call find its way back?": 600,
+    "The stack and the stack pointer": 700,
+    "The heap, and why it is slower than the stack": 500,
+  },
+  "4.4": {
     "How does a program get turned into these instructions for the CPU?": 200,
     Compilers: 200,
     "What even is a Programming Language?": 600,
@@ -192,61 +212,43 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Frontend vs. Backend": 400,
     "Compiled vs. interpreted, and what a linker does": 600,
   },
-  "2.11": {
+  "4.4a": {
+    "Compiler Optimizations => leaving out stuff that is unnecessary": 800,
+  },
+  "4.4b": {
+    "Crazy Compilers (how they are Hardware Agnostic)": 700,
+  },
+  "4.5": {
     "Our Toy Language + It's Very Simple Compiler": 1100,
   },
-  "2.12": {
-    "Functions and the Stack": 200,
-    "How does a function call find its way back?": 600,
-    "The stack and the stack pointer": 700,
-    "The heap, and why it is slower than the stack": 500,
-  },
-  "2.13": {
+  "4.6": {
     "Putting it All Together": 150,
     "From Transistors to a Simple Program.": 1200,
   },
-  "2.14a": {
-    Pipelining: 800,
-  },
-  "2.14b": {
-    "Predictive Branching": 800,
-  },
-  "2.14c": {
-    "Compiler Optimizations => leaving out stuff that is unnecessary": 800,
-  },
-  "2.14d": {
-    "Crazy Compilers (how they are Hardware Agnostic)": 700,
-  },
-  "2.14e": {
-    "SIMD stuff": 700,
-  },
-  "2.14f": {
-    "More than one Core": 700,
-  },
-  "2.14g": {
+  "4.6a": {
     "Turing Machines, and Turing Completeness": 1000,
   },
-  "3.1": {
+  "5.1": {
     "How a device talks to the CPU": 200,
     "framebuffers and memory-mapped I/O": 800,
     "Device registers: status, command and data": 600,
     "Memory-mapped vs. port-mapped I/O": 450,
     "DMA, or letting a device write into memory by itself": 600,
   },
-  "3.1a": {
-    "Operating Systems: Polling vs. Interrupts": 700,
-    "What is an interrupt in hardware? A wire, a check between instructions and a table of handlers": 700,
-  },
-  "3.1b": {
+  "5.1a": {
     "Ports and Cables: USB, HDMI, VGA, DVI and what travels over them": 800,
   },
-  "3.2": {
+  "5.2": {
+    "Polling vs. Interrupts": 700,
+    "What is an interrupt in hardware? A wire, a check between instructions and a table of handlers": 700,
+  },
+  "5.3": {
     "How does a keyboard work?": 900,
   },
-  "3.3": {
+  "5.4": {
     "How does a mouse work?": 900,
   },
-  "3.4": {
+  "5.5": {
     "Getting Pixels onto a screen": 150,
     "How does a screen work?": 400,
     "Problems of why this is slow for traditional CPU writing.": 500,
@@ -256,16 +258,16 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "The Art of Mixing Light, Mixing Light vs. Mixing Paint, Random Stuff about Human Eyes": 700,
     "Text before framebuffers: text mode and character sets": 600,
   },
-  "3.4a": {
+  "5.5a": {
     "Color Encodings and the Vagaries of it and how color is *really bloody difficult* to get right": 1100,
   },
-  "3.4b": {
+  "5.5b": {
     "Typesetting and Text Rendering": 1000,
   },
-  "3.4c": {
+  "5.5c": {
     "Video Encoding, or what ffmpeg is doing": 900,
   },
-  "3.5": {
+  "5.6": {
     "What is a GPU?": 200,
     "Before GPUs: blitters, bit masks and why they were not enough": 600,
     "How is it different from a CPU?": 300,
@@ -273,7 +275,7 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Edit a tiny shader and trace data upload, draw call, execution": 700,
     "How is *it* wired?": 650,
   },
-  "3.5a": {
+  "5.6a": {
     "Exploration of the 3D Pipeline": 200,
     "Affine Matrix Transformations": 900,
     "What is a Mesh?": 400,
@@ -285,7 +287,7 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     Depth: 500,
     "Fragment shading": 600,
   },
-  "3.6": {
+  "5.7": {
     Sound: 200,
     "Sampling: turning a wave into numbers and back (ADC and DAC)": 700,
     "Different audio encodings.": 900,
@@ -293,11 +295,11 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     'How the signal get\'s "written to" the speaker.': 600,
     "What is a microphone even, or... the inverted speaker.": 450,
   },
-  "3.7": {
+  "5.8": {
     "Putting it All Together": 150,
     "One key press, one pixel: following a signal from the keyboard to the screen": 1300,
   },
-  "4.1": {
+  "6.1": {
     "Operating Systems": 250,
     "What problem do we even try to solve here?": 300,
     "The diversity of physical systems": 250,
@@ -305,43 +307,43 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "How do we communicate with the screen?": 450,
     "How does a key press reach software? Flashback to polling + interrupts and how the operating system handles the orchestration of this stuff via drivers": 700,
   },
-  "4.2": {
+  "6.2": {
     "The Kernel": 800,
     "User mode and kernel mode: one bit in the CPU": 600,
   },
-  "4.3": {
+  "6.3": {
     "Syscalls OR How programs ask the operating system to do stuff for them": 800,
   },
-  "4.4": {
+  "6.4": {
     "Processes and Scheduling": 200,
     "Who runs programs and handles devices? | Scheduler timeline with user/kernel mode, interrupt, context switch": 1000,
     "How can we run multiple programs at the same time?": 600,
     "Threads, and what changes with more than one core": 600,
   },
-  "4.5": {
+  "6.5": {
     "Virtual Memory": 200,
     "What is virtual memroy? What is physical memory?": 600,
     "Why isn't all memory one big array? Page table/TLB translation and fault": 900,
   },
-  "4.6": {
+  "6.6": {
     "Files and File Systems": 200,
     "What is a file? From blocks on a drive to something with a name": 700,
     "Folders, paths and the bookkeeping of a file system": 700,
   },
-  "4.7": {
+  "6.7": {
     "Saving and loading programs": 150,
     "How are stored bytes different from a running process?": 500,
     "Following it: Save a compiled executable to storage, load it into RAM, then run it": 700,
     "Handoff with the operating system. Compare stored artifact and live CPU/process state": 500,
   },
-  "4.8": {
+  "6.8": {
     "But how does the Operating System Get Loaded?": 150,
     "Firmware, BIOS and UEFI: the program that is already there": 700,
     "POST, cold boot and warm boot": 450,
     "Boot Loaders and Operating Systems from a USB Stick": 700,
     "How *physically* does it work to go from one to the other?": 650,
   },
-  "4.9": {
+  "6.9": {
     "Differences Between Operating Systems": 150,
     "Why does a Windows program not run on a Mac with the same CPU?": 700,
     "Unix and it's flavors, I guess": 400,
@@ -352,33 +354,33 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     OpenBSD: 250,
     Windows: 400,
   },
-  "4.10": {
+  "6.10": {
     "Putting it All Together: What happens from the point when you power on your machine to you playing Minecraft or whatever": 1500,
   },
-  "5.1": {
+  "7.1": {
     "What even is networking?": 300,
     "Different Protocols / The Networking Stack:": 450,
     "What is a server?": 400,
   },
-  "5.1a": {
+  "7.1a": {
     "What is a Database?": 700,
   },
-  "5.2": {
+  "7.2": {
     "Bits on a Wire: Copper, Fiber and Radio": 200,
     "physical (copper, fiber, radio)": 400,
     "What is a fiber optic cable and how does that work?": 500,
     "Modems: the handoff between digital and analog": 500,
     "Multiplexing: many conversations on one wire or one radio band": 600,
   },
-  "5.2a": {
+  "7.2a": {
     "Error Correcting Codes (Especially Hamming)": 900,
   },
-  "5.3": {
+  "7.3": {
     "Ethernet and WiFi": 150,
     "link (Ethernet/WiFi)": 300,
     "What even is WiFi???": 650,
   },
-  "5.4": {
+  "7.4": {
     "IP and Routing": 150,
     "IP and routing": 200,
     "What even is a packet?": 450,
@@ -386,34 +388,40 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "IPv4 vs IPv6": 450,
     "What a home router does: NAT and DHCP": 700,
   },
-  "5.4a": {
+  "7.4a": {
     "What is an ISP and what does it do?": 500,
   },
-  "5.4b": {
+  "7.4b": {
     "What is a VPN?": 500,
   },
-  "5.5": {
+  "7.5": {
     "TCP and UDP": 150,
     "UDP/TCP": 900,
     "Ports: which program gets the packet?": 400,
     "What is a socket?": 400,
   },
-  "5.6": {
+  "7.6": {
     DNS: 500,
   },
-  "5.7": {
+  "7.7": {
     "HTTP/HTTPS and TLS": 1000,
   },
-  "5.8": {
+  "7.8": {
     "Putting it All Together": 100,
     "What is a WLAN router? What does it do? How does it traverse the layers of the stack. A journey from our MacBook or whatever to Google.com, end to end.": 1200,
   },
-  "6.1": {
+  "8.1": {
     "How chips are made?": 200,
     "How does sand become transistors?": 800,
     "How does silicon and transistors become circuits? How do they get arranged and manufactured at these ultra small scales?": 900,
     "How does a CPU clock work?": 150,
     "Or in other words how quartz crystals can pulse with electricity.": 500,
     "Layer-by-layer mask/etch/deposition/doping schematic": 700,
+  },
+  "8.2": {
+    "Verilog and Standard Cells": 150,
+    "Describing circuits in Verilog instead of wiring them by hand": 700,
+    "Standard cells, and how they help manufacturing": 500,
+    "Zero to ASIC: getting your own design printed by a real fab": 500,
   },
 };

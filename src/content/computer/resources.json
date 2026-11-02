@@ -3284,6 +3284,12 @@
       "by": "jdh",
       "minutes": 51,
       "origin": "tab"
+    },
+    "zerotoasiccourse-com": {
+      "title": "Zero to ASIC Course",
+      "url": "https://www.zerotoasiccourse.com/",
+      "kind": "course",
+      "origin": "added"
     }
   },
   "chapters": {
@@ -3424,7 +3430,7 @@
         },
         {
           "id": "yt-Pwc1b-Y7lm0",
-          "note": "signed integers; the outline keeps them in 2.4, see structure finding 4"
+          "note": "signed integers; the outline keeps them in 3.1, see structure finding 4"
         },
         {
           "id": "yt-4qH4unVtJkE"
@@ -3487,7 +3493,7 @@
         },
         {
           "id": "yt-_ZKNOKHpqE4",
-          "note": "lossy audio; reuse in 3.6"
+          "note": "lossy audio; reuse in 5.7"
         }
       ],
       "questions": [
@@ -3534,7 +3540,7 @@
         },
         {
           "id": "wiki-coding-theory",
-          "note": "recently closed tab; the link to 5.1d"
+          "note": "recently closed tab; the link to 7.2"
         },
         {
           "id": "hartley-nyquist-kolmogorov",
@@ -3562,7 +3568,7 @@
       "questions": [
         "Why is information log(1/p)? Why must surprise add when probabilities multiply?",
         "\"English carries about one bit per letter.\" What does that mean, and what does it say about how far text can compress?",
-        "Source coding and channel coding are two different theorems. Which one bounds compression (1.1c) and which one bounds sending over noise (5.1d)?",
+        "Source coding and channel coding are two different theorems. Which one bounds compression (1.1c) and which one bounds sending over noise (7.2)?",
         "Bit, nat and hartley: what is the only difference?",
         "Two bits that depend on each other carry less than two bits. How does mutual information put a number on that?"
       ],
@@ -3729,7 +3735,7 @@
       "questions": [
         "Why is the sum bit an XOR and the carry bit an AND?",
         "What does a full adder have that a half adder lacks, and where does that third input come from?",
-        "In a ripple-carry adder the top bit waits for every bit below it. What does that do to the maximum clock speed? (This is the link to 1.4.)",
+        "In a ripple-carry adder the top bit waits for every bit below it. What does that do to the maximum clock speed? (This is the link to 2.1.)",
         "What happens to the carry out of the eighth bit?"
       ]
     },
@@ -3878,90 +3884,6 @@
         "Why does a higher voltage allow a higher frequency, and what sets the limit?"
       ]
     },
-    "memory": {
-      "core": [
-        {
-          "id": "yt-KM0DdEaY5sY"
-        },
-        {
-          "id": "yt-peCh_859q7Q"
-        },
-        {
-          "id": "yt-YW-_GkUguMM"
-        },
-        {
-          "id": "yt-rM9BjciBLmg"
-        },
-        {
-          "id": "yt-I0-izyq6q5s"
-        },
-        {
-          "id": "cs-n10u-jp-logic-latch"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "uvm-edu-latch-and-flip-flop"
-        },
-        {
-          "id": "ranger-uta-edu-sr-latch-timing-diagrams"
-        },
-        {
-          "id": "nxp-com-an219-metastability-primer"
-        },
-        {
-          "id": "ti-com-sn74hc02-ep",
-          "note": "a real NOR gate's power connections and propagation delay"
-        },
-        {
-          "id": "ti-com-video-usb-layout-basics",
-          "note": "PCB signal travel time: a rule of thumb of 165 picoseconds per inch"
-        },
-        {
-          "id": "worldradiohistory-mullard-transistor-circuits",
-          "note": "the multivibrator chapter explains the name's connection to square-wave harmonics"
-        },
-        {
-          "id": "tubes-mit-edu-fluidic-oscillators",
-          "note": "pages 2–3 compare the original oscillating multivibrator with the bistable flip-flop"
-        },
-        {
-          "id": "yt-7WnbIeMgWYA",
-          "note": "DRAM: one transistor and a leaking capacitor"
-        },
-        {
-          "id": "yt-7J7X7aZvMXQ"
-        },
-        {
-          "id": "yt-TfhL5kBiQVI",
-          "note": "volatile and long-term memory side by side"
-        },
-        {
-          "id": "yt-F1OC5e7Tn_o"
-        },
-        {
-          "id": "yt-st3mUEub99E"
-        },
-        {
-          "id": "yt-rXHSB5w7CyE"
-        },
-        {
-          "id": "petzold-code",
-          "note": "\"Feedback and Flip-Flops\""
-        },
-        {
-          "id": "nand2tetris-course",
-          "note": "chapter 3"
-        }
-      ],
-      "questions": [
-        "Two cross-coupled NOR gates remember a bit. Trace set, then release, by hand.",
-        "Why is S = R = 1 not allowed on an SR latch?",
-        "What does a D latch add to an SR latch, and what does a flip-flop add to a D latch? Why does a counter need the flip-flop?",
-        "SRAM cell, DRAM cell, flash cell: what holds the bit in each, and what does each give up?",
-        "What physically keeps a bit when the power is off?"
-      ]
-    },
     "how-does-an-ssd-work": {
       "core": [
         {
@@ -4020,7 +3942,7 @@
       "questions": [
         "How does one block number become a place on a platter?",
         "Seek time and rotational delay: why is a random read about a hundred times slower than a sequential one?",
-        "For the \"follow one address\" section: what does the drive's own controller do between the request and the bytes arriving? (Links to DMA in 3.1.)"
+        "For the \"follow one address\" section: what does the drive's own controller do between the request and the bytes arriving? (Links to DMA in 5.1.)"
       ]
     },
     "rom-read-only-memory": {
@@ -4051,109 +3973,12 @@
     "putting-the-basics-together": {
       "core": [
         {
-          "id": "yt-QZwneRb-zqA"
-        },
-        {
-          "id": "hcaw",
-          "note": "all eleven steps"
-        },
-        {
           "id": "nand2tetris-course",
-          "note": "chapters 1–3"
+          "note": "chapters 1–2"
         }
       ],
       "deeper": [],
-      "questions": [
-        "Explain in five sentences how one switch becomes something that adds and something that remembers."
-      ]
-    },
-    "register": {
-      "core": [
-        {
-          "id": "yt-QzWW-CBugZo"
-        },
-        {
-          "id": "yt--arYx_oVIj8"
-        },
-        {
-          "id": "yt-CiMaWbz_6E8"
-        },
-        {
-          "id": "wiki-hardware-register"
-        },
-        {
-          "id": "wiki-word-computer-architecture"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-9WE3Obdjtv0"
-        },
-        {
-          "id": "yt-I0-izyq6q5s",
-          "note": "goes on from latches to a register"
-        },
-        {
-          "id": "petzold-code",
-          "note": "\"Registers and Busses\""
-        }
-      ],
-      "questions": [
-        "What does the load-enable input do, and why is gating the clock the wrong way to build it?",
-        "Why is register width the \"word size\", and what does \"64-bit CPU\" refer to?",
-        "How does a register differ from a RAM cell?"
-      ]
-    },
-    "ram": {
-      "core": [
-        {
-          "id": "yt-FnxPIZR1ybs"
-        },
-        {
-          "id": "yt-HGkuRp5HfH8"
-        },
-        {
-          "id": "wiki-memory-address"
-        },
-        {
-          "id": "yt-7WnbIeMgWYA",
-          "note": "why the RAM in a real machine is not built from flip-flops"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-uYXwCBo40iA"
-        },
-        {
-          "id": "yt-KNve2LCcSRc"
-        },
-        {
-          "id": "yt-5rl1tEFXKt0"
-        },
-        {
-          "id": "yt-i_wrxBdXTgM"
-        },
-        {
-          "id": "wiki-dynamic-random-access-memory"
-        },
-        {
-          "id": "wiki-memory-controller"
-        },
-        {
-          "id": "yt-7J7X7aZvMXQ"
-        },
-        {
-          "id": "petzold-code",
-          "note": "\"An Assemblage of Memory\""
-        }
-      ],
-      "questions": [
-        "How do n address bits select one of 2ⁿ cells? (Decoder on the way in, multiplexer on the way out: the link to 2.3.)",
-        "\"Random access\": every address costs the same. Compared with what?",
-        "Why is real RAM a grid of rows and columns and not one giant decoder?",
-        "What is on the data bus during a read, and during a write?",
-        "Why do both SRAM and DRAM still exist?"
-      ]
+      "questions": ["Explain in five sentences how one switch becomes something that adds."]
     },
     "multiplexers-and-decoders": {
       "core": [
@@ -4191,14 +4016,14 @@
         },
         {
           "id": "wiki-multiplexing",
-          "note": "the other idea with the same name; it belongs to 5.2"
+          "note": "the other idea with the same name; it belongs to 7.2"
         }
       ],
       "questions": [
         "Build a 2-to-1 multiplexer from AND, OR and NOT. Then a 4-to-1 from three of those.",
         "Multiplexer, demultiplexer, decoder: which has n inputs and 2ⁿ outputs?",
         "A multiplexer is an if-statement in hardware. Name three places in the CPU where one sits.",
-        "A multiplexer and a tri-state bus both let many sources share one destination. What does each cost? (The link to 2.6.)",
+        "A multiplexer and a tri-state bus both let many sources share one destination. What does each cost? (The link to 2.4.)",
         "Feed constants into a multiplexer's data inputs and it becomes a lookup table. Why does that mean it can compute any truth table?",
         "A demultiplexer is the same switch the other way round. Where does the CPU need one?"
       ],
@@ -4289,7 +4114,7 @@
       "questions": [
         "Do a binary long division by hand.",
         "Why is division the slowest of the four operations?",
-        "What should happen on a division by zero? (The link to 4.3.)"
+        "What should happen on a division by zero? (The link to 6.3.)"
       ]
     },
     "floating-point-in-hardware": {
@@ -4348,58 +4173,6 @@
         "Why is a jump nothing more than loading the program counter?",
         "How does a conditional jump use a flag from the ALU?",
         "What does the counter's width say about how much memory the machine can address?"
-      ]
-    },
-    "buses-and-tri-state-logic": {
-      "core": [
-        {
-          "id": "yt-QzWW-CBugZo"
-        },
-        {
-          "id": "yt-faAjse109Q8"
-        },
-        {
-          "id": "yt-_3cNcmli6xQ"
-        },
-        {
-          "id": "wiki-three-state-logic"
-        },
-        {
-          "id": "wiki-bus-contention"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt--6JAgFWCL9w"
-        },
-        {
-          "id": "wiki-bus-mastering",
-          "note": "in Still to Read twice"
-        },
-        {
-          "id": "wiki-arbiter-electronics"
-        },
-        {
-          "id": "wiki-advanced-microcontroller-bus-architecture",
-          "note": "in Still to Read twice"
-        },
-        {
-          "id": "wiki-peripheral-component-interconnect"
-        },
-        {
-          "id": "petzold-code",
-          "note": "\"Registers and Busses\""
-        },
-        {
-          "id": "wiki-bus-computing",
-          "note": "the system bus"
-        }
-      ],
-      "questions": [
-        "What happens electrically when two outputs drive one wire to different values?",
-        "The third state is \"disconnected\". Who guarantees that only one output is connected at a time?",
-        "Breadboard CPUs use a shared bus; most logic inside a modern chip uses multiplexers instead. Why?",
-        "Address bus, data bus, control lines: what travels on each?"
       ]
     },
     "the-control-unit": {
@@ -4469,18 +4242,8 @@
     "tying-it-together": {
       "core": [
         {
-          "id": "yt-GYlNoAMBY6o"
-        },
-        {
-          "id": "yt-HjneAhCy2N4"
-        },
-        {
-          "id": "djhworld-cpu",
-          "note": "djhworld: I don't know how CPUs work so I simulated one in code; a programmer learning by building, which is your position too"
-        },
-        {
           "id": "ben-eater-8bit",
-          "note": "Ben Eater: Build an 8-bit computer; read the overview; the individual videos are listed under 2.1–2.6"
+          "note": "Ben Eater: Build an 8-bit computer; read the overview; the individual videos are listed under Parts 2 and 3"
         },
         {
           "id": "yt-16zrEPOsIcI"
@@ -4514,13 +4277,6 @@
           "note": "also open in a tab; a real CPU chip on a breadboard, watched one clock tick at a time"
         },
         {
-          "id": "yt-yl8vPW5hydQ"
-        },
-        {
-          "id": "visual6502-org-jssim",
-          "note": "a real 1975 CPU simulated transistor by transistor in the browser"
-        },
-        {
           "id": "petzold-code",
           "note": "\"Automating Arithmetic\"; the cleanest account of how an adder plus memory becomes a machine that follows a list"
         },
@@ -4530,8 +4286,6 @@
         }
       ],
       "questions": [
-        "Instructions and data sit in the same RAM. What tells them apart?",
-        "Name every register one fetch touches, and what moves where on each clock tick.",
         "What is the difference between the datapath (where bits can flow) and control (which paths are open now)?",
         "What is the smallest set of instructions that makes the machine useful?"
       ]
@@ -4873,7 +4627,7 @@
       "questions": [
         "One instruction, many lanes: what does a 256-bit register hold?",
         "Why are if-statements awkward in SIMD code, and what replaces them?",
-        "How is SIMD related to what a GPU does? (The bridge to 3.3.)"
+        "How is SIMD related to what a GPU does? (The bridge to 5.6.)"
       ]
     },
     "more-than-one-core": {
@@ -4996,7 +4750,7 @@
       ],
       "note": "Your Still to Read folder goes much deeper here than the outline did: DMA, bus mastering, PCI and the IOMMU are all in it."
     },
-    "operating-systems-polling-vs-interrupts": {
+    "polling-vs-interrupts": {
       "core": [
         {
           "id": "yt-DlEa8kd7n3Q"
@@ -5096,7 +4850,7 @@
         },
         {
           "id": "wiki-charlieplexing",
-          "note": "many LEDs on few pins; a relative of the key matrix that leans on the third state from 2.6"
+          "note": "many LEDs on few pins; a relative of the key matrix that leans on the third state from 2.4"
         }
       ],
       "questions": [
@@ -5121,7 +4875,7 @@
       "questions": [
         "An optical mouse is a small camera. What does it compare, and how often?",
         "A mouse reports movement, not position. Who keeps the position, and who draws the cursor?",
-        "A USB mouse is polled by the computer. How does that square with 3.1a?"
+        "A USB mouse is polled by the computer. How does that square with 5.2?"
       ]
     },
     "getting-pixels-onto-a-screen": {
@@ -5451,7 +5205,7 @@
         "Why 44,100 samples per second?",
         "Follow a number from a file to moving air: which parts does it pass?",
         "A speaker and a microphone are the same device run in opposite directions. Explain.",
-        "Why does audio need a buffer and an interrupt? (The link to 3.1.)"
+        "Why does audio need a buffer and an interrupt? (The link to 5.2.)"
       ]
     },
     "putting-input-and-output-together": {
@@ -5839,7 +5593,7 @@
       "deeper": [],
       "questions": [
         "Why is a folder of files not enough? Name three things a database adds.",
-        "Why is a B-tree node the size of one disk block? (The link to 1.5a and 1.5b.)"
+        "Why is a B-tree node the size of one disk block? (The link to 2.2a and 2.2b.)"
       ],
       "note": "Nothing in the bookmark folder covers databases."
     },
@@ -6160,6 +5914,265 @@
         "One layer is: deposit, coat, expose, develop, etch, strip. Which step sets the smallest feature?",
         "Why did the industry need EUV light?",
         "Transistors are built first, wiring after. How many layers of wiring sit on top?"
+      ]
+    },
+    "one-bit-of-memory": {
+      "core": [
+        {
+          "id": "yt-KM0DdEaY5sY"
+        },
+        {
+          "id": "yt-peCh_859q7Q"
+        },
+        {
+          "id": "yt-YW-_GkUguMM"
+        },
+        {
+          "id": "yt-rM9BjciBLmg"
+        },
+        {
+          "id": "yt-I0-izyq6q5s"
+        },
+        {
+          "id": "cs-n10u-jp-logic-latch"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "uvm-edu-latch-and-flip-flop"
+        },
+        {
+          "id": "ranger-uta-edu-sr-latch-timing-diagrams"
+        },
+        {
+          "id": "nxp-com-an219-metastability-primer"
+        },
+        {
+          "id": "ti-com-sn74hc02-ep",
+          "note": "a real NOR gate's power connections and propagation delay"
+        },
+        {
+          "id": "ti-com-video-usb-layout-basics",
+          "note": "PCB signal travel time: a rule of thumb of 165 picoseconds per inch"
+        },
+        {
+          "id": "worldradiohistory-mullard-transistor-circuits",
+          "note": "the multivibrator chapter explains the name's connection to square-wave harmonics"
+        },
+        {
+          "id": "tubes-mit-edu-fluidic-oscillators",
+          "note": "pages 2–3 compare the original oscillating multivibrator with the bistable flip-flop"
+        },
+        {
+          "id": "yt-7WnbIeMgWYA",
+          "note": "DRAM: one transistor and a leaking capacitor"
+        },
+        {
+          "id": "yt-7J7X7aZvMXQ"
+        },
+        {
+          "id": "yt-TfhL5kBiQVI",
+          "note": "volatile and long-term memory side by side"
+        },
+        {
+          "id": "yt-F1OC5e7Tn_o"
+        },
+        {
+          "id": "yt-st3mUEub99E"
+        },
+        {
+          "id": "yt-rXHSB5w7CyE"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Feedback and Flip-Flops\""
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapter 3"
+        }
+      ],
+      "questions": [
+        "Two cross-coupled NOR gates remember a bit. Trace set, then release, by hand.",
+        "Why is S = R = 1 not allowed on an SR latch?",
+        "What does a D latch add to an SR latch, and what does a flip-flop add to a D latch? Why does a counter need the flip-flop?",
+        "SRAM cell, DRAM cell, flash cell: what holds the bit in each, and what does each give up?",
+        "What physically keeps a bit when the power is off?"
+      ]
+    },
+    "memory": {
+      "core": [
+        {
+          "id": "yt-QzWW-CBugZo"
+        },
+        {
+          "id": "yt--arYx_oVIj8"
+        },
+        {
+          "id": "yt-CiMaWbz_6E8"
+        },
+        {
+          "id": "wiki-hardware-register"
+        },
+        {
+          "id": "wiki-word-computer-architecture"
+        },
+        {
+          "id": "yt-FnxPIZR1ybs"
+        },
+        {
+          "id": "yt-HGkuRp5HfH8"
+        },
+        {
+          "id": "wiki-memory-address"
+        },
+        {
+          "id": "yt-7WnbIeMgWYA",
+          "note": "why the RAM in a real machine is not built from flip-flops"
+        },
+        {
+          "id": "yt-faAjse109Q8"
+        },
+        {
+          "id": "yt-_3cNcmli6xQ"
+        },
+        {
+          "id": "wiki-three-state-logic"
+        },
+        {
+          "id": "wiki-bus-contention"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-9WE3Obdjtv0"
+        },
+        {
+          "id": "yt-I0-izyq6q5s",
+          "note": "goes on from latches to a register"
+        },
+        {
+          "id": "petzold-code",
+          "note": "\"Registers and Busses\""
+        },
+        {
+          "id": "yt-uYXwCBo40iA"
+        },
+        {
+          "id": "yt-KNve2LCcSRc"
+        },
+        {
+          "id": "yt-5rl1tEFXKt0"
+        },
+        {
+          "id": "yt-i_wrxBdXTgM"
+        },
+        {
+          "id": "wiki-dynamic-random-access-memory"
+        },
+        {
+          "id": "wiki-memory-controller"
+        },
+        {
+          "id": "yt-7J7X7aZvMXQ"
+        },
+        {
+          "id": "yt--6JAgFWCL9w"
+        },
+        {
+          "id": "wiki-bus-mastering",
+          "note": "in Still to Read twice"
+        },
+        {
+          "id": "wiki-arbiter-electronics"
+        },
+        {
+          "id": "wiki-advanced-microcontroller-bus-architecture",
+          "note": "in Still to Read twice"
+        },
+        {
+          "id": "wiki-peripheral-component-interconnect"
+        },
+        {
+          "id": "wiki-bus-computing",
+          "note": "the system bus"
+        }
+      ],
+      "questions": [
+        "What does the load-enable input do, and why is gating the clock the wrong way to build it?",
+        "Why is register width the \"word size\", and what does \"64-bit CPU\" refer to?",
+        "How does a register differ from a RAM cell?",
+        "How do n address bits select one of 2ⁿ cells? (Decoder on the way in, multiplexer on the way out: the link to 2.3.)",
+        "\"Random access\": every address costs the same. Compared with what?",
+        "Why is real RAM a grid of rows and columns and not one giant decoder?",
+        "What is on the data bus during a read, and during a write?",
+        "Why do both SRAM and DRAM still exist?",
+        "What happens electrically when two outputs drive one wire to different values?",
+        "The third state is \"disconnected\". Who guarantees that only one output is connected at a time?",
+        "Breadboard CPUs use a shared bus; most logic inside a modern chip uses multiplexers instead. Why?",
+        "Address bus, data bus, control lines: what travels on each?"
+      ]
+    },
+    "putting-memory-together": {
+      "core": [
+        {
+          "id": "yt-QZwneRb-zqA"
+        },
+        {
+          "id": "hcaw",
+          "note": "all eleven steps"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "chapters 1–3"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "Explain in five sentences how one switch becomes something that adds and something that remembers."
+      ]
+    },
+    "fetch-decode-execute": {
+      "core": [
+        {
+          "id": "yt-GYlNoAMBY6o"
+        },
+        {
+          "id": "yt-HjneAhCy2N4"
+        },
+        {
+          "id": "djhworld-cpu",
+          "note": "djhworld: I don't know how CPUs work so I simulated one in code; a programmer learning by building, which is your position too"
+        }
+      ],
+      "deeper": [
+        {
+          "id": "yt-yl8vPW5hydQ"
+        },
+        {
+          "id": "visual6502-org-jssim",
+          "note": "a real 1975 CPU simulated transistor by transistor in the browser"
+        }
+      ],
+      "questions": [
+        "Instructions and data sit in the same RAM. What tells them apart?",
+        "Name every register one fetch touches, and what moves where on each clock tick."
+      ]
+    },
+    "verilog-and-standard-cells": {
+      "core": [
+        {
+          "id": "zerotoasiccourse-com"
+        },
+        {
+          "id": "tinytapeout-com",
+          "note": "get your own small design onto a real chip"
+        }
+      ],
+      "deeper": [],
+      "questions": [
+        "What does Verilog describe that a hand-wired circuit diagram does not, and who turns it into gates?",
+        "What is a standard cell, and why does a fab want designs built from a fixed set of them?"
       ]
     }
   }

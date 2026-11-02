@@ -4,6 +4,9 @@ import { type Circuit, PRESETS } from "../../logic";
 import type { PartCatalog } from "../parts";
 import type { ChapterLink, LevelPort, PartId } from "../types";
 
+// Registers, RAM and buses share one chapter.
+const MEMORY_CHAPTER: ChapterLink = { number: "2.4", title: "Memory", href: "/computer/memory" };
+
 export const CHAPTERS = {
   transistors: {
     number: "1.2",
@@ -25,24 +28,20 @@ export const CHAPTERS = {
     title: "Gates to arithmetic",
     href: "/computer/gates-to-arithmetic",
   },
-  clock: { number: "1.4", title: "The Clock", href: "/computer/the-clock" },
-  memory: { number: "1.5", title: "Memory", href: "/computer/memory" },
-  register: { number: "2.1", title: "Register", href: "/computer/register" },
-  ram: { number: "2.2", title: "RAM", href: "/computer/ram" },
+  clock: { number: "2.1", title: "The Clock", href: "/computer/the-clock" },
+  memory: { number: "2.2", title: "1-Bit of Memory", href: "/computer/one-bit-of-memory" },
+  register: MEMORY_CHAPTER,
+  ram: MEMORY_CHAPTER,
   muxes: {
     number: "2.3",
     title: "Multiplexers and Decoders",
     href: "/computer/multiplexers-and-decoders",
   },
-  alu: { number: "2.4", title: "The ALU", href: "/computer/the-alu" },
-  counter: { number: "2.5", title: "Program Counter", href: "/computer/program-counter" },
-  buses: {
-    number: "2.6",
-    title: "Buses and Tri State logic",
-    href: "/computer/buses-and-tri-state-logic",
-  },
-  control: { number: "2.7", title: "The Control Unit", href: "/computer/the-control-unit" },
-  together: { number: "2.8", title: "Tying it together", href: "/computer/tying-it-together" },
+  alu: { number: "3.1", title: "The ALU", href: "/computer/the-alu" },
+  counter: { number: "3.2", title: "Program Counter", href: "/computer/program-counter" },
+  buses: MEMORY_CHAPTER,
+  control: { number: "3.3", title: "The Control Unit", href: "/computer/the-control-unit" },
+  together: { number: "3.4", title: "Tying it together", href: "/computer/tying-it-together" },
 } satisfies Record<string, ChapterLink>;
 
 export const port = (id: string, label: string, short?: string): LevelPort =>

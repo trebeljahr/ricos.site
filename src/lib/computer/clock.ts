@@ -1,5 +1,5 @@
 /**
- * The numbers behind the clock demos of chapter 1.4: how big a clock speed is,
+ * The numbers behind the clock demos of chapter 2.1: how big a clock speed is,
  * what one tick means in time and distance, and the signal a gate has to read.
  */
 

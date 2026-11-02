@@ -5,6 +5,7 @@ export interface S3Object {
   Key: string;
   ETag: string;
   Size: number;
+  LastModified?: Date;
 }
 
 /**
@@ -31,6 +32,7 @@ export async function listAllObjects(bucket: string, prefix = ""): Promise<S3Obj
         Key: obj.Key,
         ETag: (obj.ETag ?? "").replaceAll('"', ""),
         Size: obj.Size ?? 0,
+        LastModified: obj.LastModified,
       });
     }
     token = resp.IsTruncated ? resp.NextContinuationToken : undefined;

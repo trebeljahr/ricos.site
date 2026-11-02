@@ -51,6 +51,7 @@
     "checkLinks": "tsx src/scripts/checkInternalLinks.ts",
     "checkLinks:external": "tsx src/scripts/checkInternalLinks.ts --external",
     "checkAlt": "tsx src/scripts/checkImageAlt.ts",
+    "checkImageGps": "tsx src/scripts/checkImageGps.ts",
     "start": "next start",
     "typecheck": "tsc",
     "test": "vitest run",
@@ -259,6 +260,9 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css}": [
       "biome check --write --no-errors-on-unmatched"
+    ],
+    "*.{jpg,jpeg,png,webp,gif,avif,heic,heif,tif,tiff,dng,JPG,JPEG,PNG,WEBP,GIF,AVIF,HEIC,HEIF,TIF,TIFF,DNG}": [
+      "tsx src/scripts/checkImageGps.ts"
     ]
   },
   "pnpm": {

@@ -1,4 +1,5 @@
-import { DonationCard, DonationThanks, useDonationSupportedAt } from "@components/DonationCard";
+import { DonationCard, DonationThanks } from "@components/DonationCard";
+import { useDonationSupportedAt } from "@components/DonationStrip";
 import { BreadcrumbJsonLd } from "@components/JsonLd";
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";

@@ -51,7 +51,7 @@ const chapterComponents = {
     { ssr: false },
   ),
   DonationStrip: dynamic(
-    () => import("@components/DonationCard").then((module) => module.DonationStrip),
+    () => import("@components/DonationStrip").then((module) => module.DonationStrip),
     { ssr: false },
   ),
   DonationCard: dynamic(

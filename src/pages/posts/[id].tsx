@@ -10,7 +10,7 @@ const MDXContentWithDemos = dynamic(
 );
 
 import { Backlinks } from "@components/Backlinks";
-import { DonationStrip } from "@components/DonationCard";
+import { DonationStrip } from "@components/DonationStrip";
 import { MetadataDisplay } from "@components/MetadataDisplay";
 import { ReadMore } from "@components/MoreStories";
 import { NewsletterForm } from "@components/NewsletterForm";

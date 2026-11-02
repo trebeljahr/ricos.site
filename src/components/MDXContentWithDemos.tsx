@@ -22,7 +22,8 @@ import { Triangulation } from "./Demos/collisionDetection/Triangulation";
 import { UnitVectorDemo } from "./Demos/collisionDetection/UnitVectorDemo";
 import { CompleteShaderEditor } from "./Demos/FullscreenShader";
 import { ThreeFiberDemo } from "./Demos/ThreeFiberDemo";
-import { DonationCard, DonationStrip } from "./DonationCard";
+import { DonationCard } from "./DonationCard";
+import { DonationStrip } from "./DonationStrip";
 import { MarkdownRenderers } from "./MarkdownRenderers";
 import { NewsletterForm } from "./NewsletterForm";
 

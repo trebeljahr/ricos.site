@@ -1,5 +1,6 @@
-import { DonationCard, DonationStrip, DonationThanks } from "@components/DonationCard";
+import { DonationCard, DonationThanks } from "@components/DonationCard";
 import { DonationSourceHeader, donationBrandStyle } from "@components/DonationSourceHeader";
+import { DonationStrip } from "@components/DonationStrip";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 import clsx from "clsx";

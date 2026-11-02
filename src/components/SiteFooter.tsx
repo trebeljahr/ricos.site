@@ -39,7 +39,10 @@ export const SiteFooter = () => {
           <span className="order-first mb-1 basis-full lg:order-none lg:mb-0">
             Made with <Heart /> by Rico Trebeljahr
           </span>
-          <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-self-end">
+          <nav
+            aria-label="Footer"
+            className="flex flex-wrap justify-center gap-x-5 gap-y-2 lg:justify-self-end"
+          >
             <a
               href="/rss.xml"
               className="hover:text-accent"

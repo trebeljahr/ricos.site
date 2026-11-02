@@ -98,7 +98,10 @@ export function TailwindNavbar({ withProgressBar = false, secondary }: TailwindN
         !withProgressBar && "pb-2",
       )}
     >
-      <nav className="mx-auto flex items-center justify-between gap-4 px-3 pb-1 xl:px-10">
+      <nav
+        aria-label="Main"
+        className="mx-auto flex items-center justify-between gap-4 px-3 pb-1 xl:px-10"
+      >
         <div className="flex min-w-0 items-center gap-1 xl:shrink-0">
           <RicosSiteBanner compact={Boolean(secondary)} />
           {secondary}

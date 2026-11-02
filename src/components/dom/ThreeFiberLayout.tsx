@@ -47,9 +47,9 @@ export const ThreeFiberLayout = ({
 }: SceneLoaderProps & { seoInfo: SeoProps }) => {
   return (
     <>
-      <SeoInfo {...seoInfo} />
       {nav && <ImmersiveNavbar />}
       <main className="w-full h-screen overscoll-none">
+        <SeoInfo {...seoInfo} />
         <Out />
         <SceneWithLoadingState {...sceneWithLoadingStateProps}>{children}</SceneWithLoadingState>
       </main>

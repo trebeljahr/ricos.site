@@ -93,7 +93,7 @@ export function CollapsibleMenuDesktop({ links, text }: DesktopMenuProps) {
         {links.map((item) => (
           <Fragment key={item.href}>
             {item.dividerBefore && <MenuDivider className="mx-2 my-hair" />}
-            <SingleMenuItem link={item} onSelect={() => close()} />
+            <SingleMenuItem link={item} menuOpen={open} onSelect={() => close()} />
           </Fragment>
         ))}
       </div>
@@ -144,7 +144,7 @@ export function CollapsibleMenuMobile({ links, text, closeNav }: MobileMenuProps
             {links.map((item) => (
               <Fragment key={item.href}>
                 {item.dividerBefore && <MenuDivider className="my-hair mr-3" />}
-                <SingleMenuItem link={item} onSelect={handleSelect} />
+                <SingleMenuItem link={item} menuOpen={open} onSelect={handleSelect} />
               </Fragment>
             ))}
           </div>

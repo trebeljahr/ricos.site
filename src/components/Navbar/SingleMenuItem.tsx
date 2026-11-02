@@ -6,10 +6,11 @@ import type { NavItem } from "./navItems";
 
 type SingleMenuItemProps = {
   link: NavItem;
+  menuOpen: boolean;
   onSelect?: () => void;
 };
 
-export function SingleMenuItem({ link, onSelect }: SingleMenuItemProps) {
+export function SingleMenuItem({ link, menuOpen, onSelect }: SingleMenuItemProps) {
   const router = useRouter();
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -24,11 +25,12 @@ export function SingleMenuItem({ link, onSelect }: SingleMenuItemProps) {
   };
 
   return (
-    // No viewport prefetch: closed menus still count as visible, so every page on
-    // the site downloaded the code of every page in the menus. Hover still prefetches.
+    // A closed menu still counts as visible to next/link, so without this every page
+    // on the site would download the code of every page in the menus. Opening a menu
+    // loads its pages, ahead of the click.
     <Link
       href={link.href}
-      prefetch={false}
+      prefetch={menuOpen}
       className="block whitespace-nowrap rounded-md px-3 py-2 text-left transition-colors duration-300 ease-out hover:bg-accent/10 hover:text-accent motion-reduce:transition-none"
       onClick={handleClick}
     >

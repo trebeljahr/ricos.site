@@ -34,6 +34,10 @@ CACHE = ROOT / f"node_modules/.cache/sprites/noto-3d-{NOTO_COMMIT[:8]}"
 # lets the art fill the sprite like a glyph fills its em box.
 NOTO_ART_BOX = (16, 16, 496, 496)
 SIZE = 160
+# Nearly every page shows these at text size, and React preloads them ahead of
+# the first paint, where every byte delays the stylesheet: 27 KB at 160px, 15 at 96.
+PRELOADED = {"🕓", "✏️", "🌱", "🦉"}
+PRELOADED_SIZE = 96
 SUPERSAMPLE = 4
 WEBP = {"quality": 90, "method": 6}
 
@@ -63,7 +67,8 @@ def render(emoji: str) -> Image.Image:
         CACHE.mkdir(parents=True, exist_ok=True)
         cached.write_bytes(data)
     image = Image.open(BytesIO(cached.read_bytes())).convert("RGBA")
-    return image.crop(NOTO_ART_BOX).resize((SIZE, SIZE), Image.LANCZOS)
+    size = PRELOADED_SIZE if emoji in PRELOADED else SIZE
+    return image.crop(NOTO_ART_BOX).resize((size, size), Image.LANCZOS)
 
 
 # --- Painted Easter eggs -----------------------------------------------------

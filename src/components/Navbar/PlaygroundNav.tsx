@@ -274,15 +274,16 @@ export function PlaygroundScenesPanel({ open, onClose, restoreFocus }: PanelProp
 export function PlaygroundSceneGrid() {
   return (
     <div className="not-prose">
-      {sections.map(([section, scenes]) => (
+      {sections.map(([section, scenes], sectionIndex) => (
         <section key={section} className="mt-sub">
           <h2 className="text-2xl font-bold">{section}</h2>
           <ul className="mt-stack grid grid-cols-1 gap-para sm:grid-cols-2 lg:grid-cols-3">
-            {scenes.map((scene) => (
+            {scenes.map((scene, sceneIndex) => (
               <li key={scene.url} className="flex">
                 <Card
                   link={scene.url}
                   prefetch={false}
+                  priority={sectionIndex === 0 && sceneIndex === 0}
                   title={turnKebabIntoTitleCase(scene.name)}
                   headingAs="h3"
                   size="compact"

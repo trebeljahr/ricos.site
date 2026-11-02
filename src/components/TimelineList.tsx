@@ -130,6 +130,7 @@ export function TimelineList({
                 <Card
                   layout="horizontal"
                   key={entry.id}
+                  priority={entry === visibleEntries[0]}
                   cover={entry.cover || FALLBACK_COVER}
                   coverAspect={entry.coverAspect}
                   link={entry.href}

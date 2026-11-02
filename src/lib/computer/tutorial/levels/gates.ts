@@ -144,7 +144,7 @@ export const cmosNotLevel: Level = {
   chapter: CHAPTERS.transistors,
   goal: "Make lamp OUT the opposite of switch A.",
   intro:
-    "A transistor is a switch, and its G dot controls it. PMOS turns on when G is 0 and connects OUT to VDD, which is always 1. NMOS turns on when G is 1 and connects OUT to GND, which is always 0. Drag from dot to dot to draw wires, so A controls both transistors. Flip A to test. In the table, 1 means on and 0 means off.",
+    "A transistor is a switch, and its G dot controls it. PMOS turns on when G is 0 and connects OUT to VDD, which is always 1. NMOS turns on when G is 1 and connects OUT to GND, which is always 0. Draw wires from dot to dot, so A controls both transistors. Flip A to test. In the table, 1 means on and 0 means off.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
   start: withOnlyInputsToWire(() => cmosNotLevel),
@@ -157,7 +157,7 @@ export const cmosNotLevel: Level = {
     },
     {
       title: "Wiring",
-      text: "Drag from A's dot to the G dot on PMOS. Then drag from A's dot to the G dot on NMOS.",
+      text: "Draw a wire from A's dot to the G dot on PMOS. Draw another from A's dot to the G dot on NMOS.",
     },
     {
       title: "What the check tests",
@@ -207,7 +207,7 @@ export const notLevel: Level = {
   chapter: CHAPTERS.universal,
   goal: "OUT is the opposite of A, this time built from NAND.",
   intro:
-    "From here on you build with NAND instead of transistors. NAND's output is 0 only when both of its inputs are 1. Drag NAND onto the board, then drag from dot to dot to draw wires.",
+    "From here on you build with NAND instead of transistors. NAND's output is 0 only when both of its inputs are 1. Add NAND to the board, then draw wires from dot to dot.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["nand"],
   makes: { part: "not", label: "NOT", builtIn: { gate: "not" } },

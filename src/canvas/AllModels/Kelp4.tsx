@@ -7,20 +7,17 @@ title: Water plant
 */
 
 import { useGLTF } from "@react-three/drei";
-import { useRef } from "react";
-import type { Bone, Group, MeshStandardMaterial, SkinnedMesh } from "three";
+import type { Mesh } from "three";
 import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
   nodes: {
-    Object_7: SkinnedMesh;
-    _rootJoint: Bone;
-  };
-  materials: {
-    lambert2: MeshStandardMaterial;
+    Object_7: Mesh;
   };
 };
 
+// The file holds only positions and normals: the ocean floor draws this geometry
+// on an instanced mesh, so the skeleton, animation and UVs were dropped (1 MB).
 export function useKelp() {
   const {
     nodes: {
@@ -28,38 +25,6 @@ export function useKelp() {
     },
   } = useGLTF("/3d-assets/glb/kelp4.glb") as unknown as unknown as unknown as GLTFResult;
   return { geometry };
-}
-
-export function Kelp4(props: JSX.IntrinsicElements["group"]) {
-  const group = useRef<Group>(null!);
-  const { nodes, materials } = useGLTF(
-    "/3d-assets/glb/kelp4.glb",
-  ) as unknown as unknown as unknown as GLTFResult;
-  return (
-    <group ref={group} {...props} dispose={null}>
-      <group name="Sketchfab_Scene">
-        <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]}>
-          <group name="937408ce40ee488c894ed9e13b34a375fbx" rotation={[Math.PI / 2, 0, 0]}>
-            <group name="Object_2">
-              <group name="RootNode">
-                <group name="Object_4">
-                  <primitive object={nodes._rootJoint} />
-                  <group name="Object_6" />
-                  <group name="seaweed_2" />
-                  <skinnedMesh
-                    name="Object_7"
-                    geometry={nodes.Object_7.geometry}
-                    material={materials.lambert2}
-                    skeleton={nodes.Object_7.skeleton}
-                  />
-                </group>
-              </group>
-            </group>
-          </group>
-        </group>
-      </group>
-    </group>
-  );
 }
 
 useGLTF.preload("/3d-assets/glb/kelp4.glb");

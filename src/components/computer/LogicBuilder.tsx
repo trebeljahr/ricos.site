@@ -3524,7 +3524,7 @@ function LogicBuilderWorkspace({
           </label>
           {!challenge && (
             <p className={styles.ownPartsNote}>
-              {ownCount ? `You built ${ownCount} part${ownCount === 1 ? "" : "s"}. ` : "Build parts yourself, from NAND up. "}
+              {ownCount ? `You built ${ownCount} part${ownCount === 1 ? "" : "s"}. ` : "Build parts yourself, from transistors up. "}
               <Link href={TUTORIAL_PATH}>{ownCount ? "Build more" : "Start"} →</Link>
             </p>
           )}

@@ -236,9 +236,7 @@ export function DonationCard({
   reference = SITE_REFERENCE,
   title = "Buy me a coffee ☕",
 }: FullCardProps) {
-  const isMounted = useIsMounted();
   const [mode, setMode] = useState<DonationMode>(defaultDonationMode);
-  const showStripe = isMounted && hasAnyStripeLinks;
   // The monthly/once toggle only earns its place when both exist.
   const showToggle = hasMonthlyLinks && hasOneTimeLink;
   const monthlyTiles = monthlyOptions.filter((option) => option.href);
@@ -261,7 +259,7 @@ export function DonationCard({
             Give once, or set up a small monthly gift.
           </p>
 
-          {showStripe && (
+          {hasAnyStripeLinks && (
             <>
               {showToggle && <ModeToggle mode={mode} onChange={setMode} />}
 

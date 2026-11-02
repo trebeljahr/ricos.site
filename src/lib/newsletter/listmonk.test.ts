@@ -2,14 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   addToList,
   confirmSubscription,
-  createSuppressed,
   escapeGoTemplate,
   findSubscriber,
   isConfirmedOnList,
   resolveFromAddress,
   sendCampaign,
   sendTransactional,
-  unsubscribeFromList,
 } from "./listmonk";
 
 const subscriber = {
@@ -204,66 +202,10 @@ describe("confirmSubscription", () => {
   });
 });
 
-describe("createSuppressed", () => {
-  it("creates a bounce or complaint blocklisted, preconfirmed so ListMonk mails nothing", async () => {
-    const fetchMock = mockFetch(jsonResponse({ data: subscriber }));
-
-    await createSuppressed("Bounced@Example.com", 15, "blocklisted");
-
-    expect(writes(fetchMock.mock.calls)).toEqual(["POST /api/subscribers"]);
-    expect(body(fetchMock.mock.calls[0])).toEqual({
-      email: "bounced@example.com",
-      name: "bounced@example.com",
-      status: "blocklisted",
-      lists: [15],
-      preconfirm_subscriptions: true,
-    });
-  });
-
-  it("creates an unsubscribe on no list, then adds it to the list as unsubscribed", async () => {
-    const fetchMock = mockFetch(jsonResponse({ data: subscriber }));
-
-    await createSuppressed("left@example.com", 15, "unsubscribed");
-
-    expect(writes(fetchMock.mock.calls)).toEqual([
-      "POST /api/subscribers",
-      "PUT /api/subscribers/lists",
-    ]);
-    expect(body(fetchMock.mock.calls[0])).toMatchObject({ status: "enabled", lists: [] });
-    expect(body(fetchMock.mock.calls[1])).toEqual({
-      ids: [42],
-      action: "add",
-      target_list_ids: [15],
-      status: "unsubscribed",
-    });
-  });
-});
-
 describe("addToList", () => {
   it("sends nothing for an empty batch", async () => {
     const fetchMock = mockFetch();
     await addToList([], 15, "unsubscribed");
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("unsubscribeFromList", () => {
-  it("unsubscribes the given subscribers from that one list", async () => {
-    const fetchMock = mockFetch();
-
-    await unsubscribeFromList([42, 43], 15);
-
-    expect(writes(fetchMock.mock.calls)).toEqual(["PUT /api/subscribers/lists"]);
-    expect(body(fetchMock.mock.calls[0])).toEqual({
-      ids: [42, 43],
-      action: "unsubscribe",
-      target_list_ids: [15],
-    });
-  });
-
-  it("sends nothing for an empty batch", async () => {
-    const fetchMock = mockFetch();
-    await unsubscribeFromList([], 15);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

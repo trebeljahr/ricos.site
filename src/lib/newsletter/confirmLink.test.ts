@@ -5,7 +5,6 @@ import {
   checkLegacyHash,
   confirmLink,
   getLegacyHash,
-  legacyConfirmLink,
   mintConfirmToken,
   readConfirmLink,
   verifyConfirmToken,
@@ -45,11 +44,6 @@ describe("legacy hash links", () => {
     ]) {
       await expect(checkLegacyHash("reader@example.com", bad), bad).resolves.toBe(false);
     }
-  });
-
-  it("encodes the address in new legacy-format links", async () => {
-    const link = new URL(await legacyConfirmLink("reader+news@example.com"));
-    expect(link.searchParams.get("email")).toBe("reader+news@example.com");
   });
 });
 

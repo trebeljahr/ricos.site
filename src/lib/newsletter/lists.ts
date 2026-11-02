@@ -78,12 +78,10 @@ export function listIdFor(key: ListKey): number | null {
 
 /**
  * Server side: the lists a signup may join right now. Live and Learn always;
- * the others only on ListMonk (the Mailgun pin has one list) and once their
- * list id is configured.
+ * the others once their list id is configured.
  */
 export function availableListKeys(): ListKey[] {
-  const onMailgun = process.env.NEWSLETTER_PROVIDER?.trim().toLowerCase() === "mailgun";
-  return LIST_KEYS.filter((key) => key === DEFAULT_LIST || (!onMailgun && listIdFor(key) !== null));
+  return LIST_KEYS.filter((key) => key === DEFAULT_LIST || listIdFor(key) !== null);
 }
 
 /**

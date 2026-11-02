@@ -7,8 +7,6 @@
  *
  * Creates a ListMonk campaign on LISTMONK_TEST_LIST_ID or, in production,
  * LISTMONK_LIVE_LIST_ID, and starts it; ListMonk then sends through SES.
- * Until the cutover, NEWSLETTER_PROVIDER=mailgun mails the Mailgun list
- * address instead.
  */
 import slugify from "@sindresorhus/slugify";
 import "dotenv/config";
@@ -21,11 +19,9 @@ import rehypeRewrite from "rehype-rewrite";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { newsletterListMail, sendEmail } from "src/lib/mailgun.js";
 import { nextImageUrl } from "src/lib/mapToImageProps.js";
 import { finalizeIssueBody, UNSUBSCRIBE_PLACEHOLDER } from "src/lib/newsletter/issueBody.js";
 import { escapeGoTemplate, getList, sendCampaign } from "src/lib/newsletter/listmonk.js";
-import { type NewsletterProvider, newsletterProvider } from "src/lib/newsletter/subscribe.js";
 import { baseUrl } from "src/lib/urlUtils.js";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
@@ -80,7 +76,6 @@ async function main() {
     console.error(USAGE);
     process.exit(1);
   }
-  const provider: NewsletterProvider = newsletterProvider();
   const production = process.env.NODE_ENV === "production";
 
   const emailHandlebarsFile = await readFile(
@@ -230,9 +225,8 @@ async function main() {
   });
 
   const subject = `🌱 ${title.trim()}`;
-  const html = finalizeIssueBody(htmlEmail, provider);
-  const text = finalizeIssueBody(
-    `
+  const html = finalizeIssueBody(htmlEmail);
+  const text = finalizeIssueBody(`
 🌱 ${realTitle.trim()}
 
 
@@ -247,56 +241,36 @@ ${content}
 [Unsubscribe](${UNSUBSCRIBE_PLACEHOLDER})
 
 Thanks for reading plaintext emails. You're cool!
-`,
-    provider,
-  );
+`);
 
   console.info(`${title.trim()}: newsletter ${number}`);
-  console.info(`provider: ${provider}, NODE_ENV=${process.env.NODE_ENV ?? "(unset)"}`);
+  console.info(`NODE_ENV=${process.env.NODE_ENV ?? "(unset)"}`);
 
-  if (provider === "listmonk") {
-    const list = await resolveCampaignList(production);
-    const confirmed = list.subscriber_statuses?.confirmed ?? 0;
-    // ListMonk refreshes list counts every few minutes, so this can lag.
-    console.info(`target: ListMonk list ${list.id} "${list.name}", ~${confirmed} confirmed`);
-    // An empty live list means the Mailgun readers are not imported yet:
-    // the issue would reach nobody while they wait for it on Mailgun.
-    if (production && confirmed === 0) {
-      throw new Error(
-        `Live list ${list.id} "${list.name}" has no confirmed subscribers. ` +
-          "Import them first (pnpm newsletter:import), or send this issue with NEWSLETTER_PROVIDER=mailgun.",
-      );
-    }
-    if (dryRun) {
-      console.info(`dry run: nothing sent (html ${html.length} bytes, text ${text.length} bytes)`);
-      return;
-    }
-    const campaign = await sendCampaign({
-      listId: list.id,
-      name: production
-        ? `Live and Learn #${number}`
-        : `[TEST ${new Date().toISOString().slice(0, 16)}] Live and Learn #${number}`,
-      subject: escapeGoTemplate(production ? subject : `[TEST] ${subject}`),
-      html,
-      text,
-    });
-    console.info(`campaign ${campaign.id} started: ${campaign.url}`);
-    return;
+  const list = await resolveCampaignList(production);
+  const confirmed = list.subscriber_statuses?.confirmed ?? 0;
+  // ListMonk refreshes list counts every few minutes, so this can lag.
+  console.info(`target: ListMonk list ${list.id} "${list.name}", ~${confirmed} confirmed`);
+  // An empty live list means the wrong list or a broken one: the issue
+  // would reach nobody.
+  if (production && confirmed === 0) {
+    throw new Error(
+      `Live list ${list.id} "${list.name}" has no confirmed subscribers. Check LISTMONK_LIVE_LIST_ID.`,
+    );
   }
-
-  console.info(`target: Mailgun list ${newsletterListMail}`);
   if (dryRun) {
     console.info(`dry run: nothing sent (html ${html.length} bytes, text ${text.length} bytes)`);
     return;
   }
-  await sendEmail({
-    from: "Rico Trebeljahr <rico@trebeljahr.com>",
-    to: newsletterListMail,
-    subject,
+  const campaign = await sendCampaign({
+    listId: list.id,
+    name: production
+      ? `Live and Learn #${number}`
+      : `[TEST ${new Date().toISOString().slice(0, 16)}] Live and Learn #${number}`,
+    subject: escapeGoTemplate(production ? subject : `[TEST] ${subject}`),
     html,
     text,
   });
-  console.info("Successfully sent email!");
+  console.info(`campaign ${campaign.id} started: ${campaign.url}`);
 }
 
 main().catch((err) => {

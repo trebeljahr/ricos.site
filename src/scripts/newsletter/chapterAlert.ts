@@ -17,7 +17,6 @@ import {
 } from "src/lib/newsletter/chapterAlert.js";
 import { createDraftCampaign, getList } from "src/lib/newsletter/listmonk.js";
 import { listIdFor } from "src/lib/newsletter/lists.js";
-import { newsletterProvider } from "src/lib/newsletter/subscribe.js";
 
 const USAGE = "usage: pnpm newsletter:chapter <slug> [--dry-run]";
 
@@ -40,11 +39,6 @@ async function main() {
     return;
   }
 
-  if (newsletterProvider() !== "listmonk") {
-    throw new Error(
-      "Chapter alerts live on ListMonk; unset NEWSLETTER_PROVIDER=mailgun to draft one.",
-    );
-  }
   const listId = listIdFor("computer");
   if (listId === null) {
     throw new Error("Set LISTMONK_COMPUTER_LIST_ID to the chapter alerts list id first.");

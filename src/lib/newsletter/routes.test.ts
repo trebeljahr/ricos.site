@@ -4,14 +4,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Tests for src/pages/api/{signup,announce-signup,confirm-email}.ts. They
 // live here because every file under src/pages becomes a route.
 
-const mailgun = vi.hoisted(() => ({
-  activateEmailListMember: vi.fn(async (_email: string) => {}),
-  addNewMemberToEmailList: vi.fn(async (_member: unknown) => {}),
-  isAlreadySubscribed: vi.fn(async (_email: string) => false),
-  sendEmail: vi.fn(async (_data: unknown) => {}),
-}));
-vi.mock("src/lib/mailgun", () => mailgun);
-
 const listmonk = vi.hoisted(() => ({
   confirmSubscription: vi.fn(async (_email: string, _listId?: number) => {}),
   findSubscriber: vi.fn(async (_email: string): Promise<{ status: string } | null> => null),
@@ -81,11 +73,10 @@ function call(
 beforeEach(() => {
   process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
-  delete process.env.NEWSLETTER_PROVIDER;
   process.env.LISTMONK_LIST_ID = "15";
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
   delete process.env.LISTMONK_ANNOUNCE_LIST_ID;
-  for (const mock of [...Object.values(mailgun), ...Object.values(listmonk)]) mock.mockClear();
+  for (const mock of Object.values(listmonk)) mock.mockClear();
   _resetRateLimit();
 });
 

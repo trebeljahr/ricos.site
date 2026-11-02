@@ -12,9 +12,8 @@ import { DEFAULT_LIST, isListKey, type ListKey } from "./lists";
  *     to ListMonk. Expires after `CONFIRM_TOKEN_TTL_MS`. Tokens minted
  *     before lists existed carry no `lists` and confirm Live and Learn.
  *   - `?hash=&email=` — the Mailgun-era link: a keyed scrypt hash of the
- *     address, no expiry. Mailgun mode still sends it, and links already
- *     sitting in inboxes must keep working through the cutover. Always
- *     Live and Learn.
+ *     address, no expiry. Nothing sends it any more; links already sitting
+ *     in inboxes keep working. Always Live and Learn.
  */
 
 const scrypt = promisify(scryptCallback) as (
@@ -66,11 +65,6 @@ export async function checkLegacyHash(email: string, hashFromUrl: string): Promi
   const given = Buffer.from(hashFromUrl, "hex");
   if (given.length !== expected.length) return false;
   return timingSafeEqual(expected, given);
-}
-
-export async function legacyConfirmLink(email: string): Promise<string> {
-  const hash = await getLegacyHash(email);
-  return `${siteUrl()}/api/confirm-email?hash=${hash}&email=${encodeURIComponent(email)}`;
 }
 
 // Old links put the address into the query unencoded, so a "+" in it

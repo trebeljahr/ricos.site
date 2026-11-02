@@ -7,9 +7,7 @@
  * must be on that domain (see `SENDER_DOMAIN`).
  *
  *   - Subscribers and list memberships live in ListMonk. An address is
- *     written to ListMonk only once it confirms (see `confirmSubscription`),
- *     or by the one-off Mailgun import to keep a bounce, complaint or
- *     unsubscribe (see `createSuppressed`).
+ *     written to ListMonk only once it confirms (see `confirmSubscription`).
  *   - The double-opt-in email goes through `POST /api/tx` against the
  *     `ricos.site-tx` passthrough template (`{{ .Tx.Data.body | Safe }}`;
  *     tx bodies compile with html/template, so without `Safe` the HTML
@@ -165,11 +163,7 @@ export async function isConfirmedOnList(email: string, listId = resolveListId())
 
 type CreateResp = { data: ListmonkSubscriber };
 
-async function createSubscriber(
-  email: string,
-  listIds: number[],
-  status: "enabled" | "blocklisted" = "enabled",
-): Promise<ListmonkSubscriber> {
+async function createSubscriber(email: string, listIds: number[]): Promise<ListmonkSubscriber> {
   const created = await listmonkFetch<CreateResp>("/api/subscribers", {
     method: "POST",
     body: JSON.stringify({
@@ -177,8 +171,7 @@ async function createSubscriber(
       // ListMonk requires a non-empty name. The form only asks for the
       // address, so reuse it.
       name: email.toLowerCase(),
-      // `blocklisted` makes every membership in `listIds` `unsubscribed`.
-      status,
+      status: "enabled",
       lists: listIds,
       // Marks every list in `listIds` as `confirmed`, and stops ListMonk's
       // own opt-in email for them (with `false` it mails one per double
@@ -212,11 +205,10 @@ export async function addToList(
 }
 
 /**
- * Add `email` to a list as `confirmed`. Only the confirm route (after the
- * link proved the reader owns the address) and the one-off Mailgun import
- * call this. Idempotent: an existing membership, whatever its status,
- * becomes `confirmed`. An address new to ListMonk is created on the list,
- * preconfirmed.
+ * Add `email` to a list as `confirmed`. Only the confirm route calls this,
+ * after the link proved the reader owns the address. Idempotent: an existing
+ * membership, whatever its status, becomes `confirmed`. An address new to
+ * ListMonk is created on the list, preconfirmed.
  */
 export async function confirmSubscription(email: string, listId = resolveListId()): Promise<void> {
   const existing = await findSubscriber(email);
@@ -239,45 +231,6 @@ export async function confirmSubscription(email: string, listId = resolveListId(
     }
     await addToList([created.id], listId, "confirmed");
   }
-}
-
-/**
- * Carry a Mailgun suppression over for an address ListMonk does not have,
- * without mailing it: `blocklisted` (a hard bounce or a spam complaint)
- * creates it blocklisted, `unsubscribed` creates it with an
- * `unsubscribed` membership on `listId`. Only the one-off import calls this.
- */
-export async function createSuppressed(
-  email: string,
-  listId: number,
-  mark: "blocklisted" | "unsubscribed",
-): Promise<void> {
-  if (mark === "blocklisted") {
-    await createSubscriber(email, [listId], "blocklisted");
-    return;
-  }
-  // Created on no list first, so the address is never confirmed on one,
-  // not even between two calls. If the second call fails, a re-run finds
-  // it listless and adds the membership.
-  const created = await createSubscriber(email, []);
-  await addToList([created.id], listId, "unsubscribed");
-}
-
-/**
- * Mark subscribers `unsubscribed` on `listId` only. Their memberships on
- * other lists (other projects on the shared instance) stay as they are,
- * and a membership already `unsubscribed` stays so.
- */
-export async function unsubscribeFromList(subscriberIds: number[], listId: number): Promise<void> {
-  if (subscriberIds.length === 0) return;
-  await listmonkFetch("/api/subscribers/lists", {
-    method: "PUT",
-    body: JSON.stringify({
-      ids: subscriberIds,
-      action: "unsubscribe",
-      target_list_ids: [listId],
-    }),
-  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -327,18 +280,6 @@ export type ListmonkList = {
 export async function getList(listId: number): Promise<ListmonkList> {
   const res = await listmonkFetch<{ data: ListmonkList }>(`/api/lists/${listId}`);
   return res.data;
-}
-
-/** The production list (LISTMONK_LIVE_LIST_ID), for the Mailgun import and sync scripts. */
-export async function getLiveList(): Promise<ListmonkList> {
-  const list = await getList(
-    positiveId("LISTMONK_LIVE_LIST_ID", required("LISTMONK_LIVE_LIST_ID")),
-  );
-  // A test list gets test campaigns: real readers must never land on one.
-  if (list.name.endsWith("-test")) {
-    throw new Error(`LISTMONK_LIVE_LIST_ID points at test list "${list.name}"`);
-  }
-  return list;
 }
 
 /**

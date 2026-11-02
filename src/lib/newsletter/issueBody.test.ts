@@ -5,14 +5,8 @@ const body = `<p>Code: {{ .Secret }}</p><a href="${UNSUBSCRIBE_PLACEHOLDER}">Uns
 
 describe("finalizeIssueBody", () => {
   it("gives ListMonk its unsubscribe tag and quotes the issue's own braces", () => {
-    expect(finalizeIssueBody(body, "listmonk")).toBe(
+    expect(finalizeIssueBody(body)).toBe(
       '<p>Code: {{"{{"}} .Secret }}</p><a href="{{ UnsubscribeURL }}">Unsubscribe</a>',
-    );
-  });
-
-  it("gives Mailgun its list unsubscribe variable and leaves the rest alone", () => {
-    expect(finalizeIssueBody(body, "mailgun")).toBe(
-      '<p>Code: {{ .Secret }}</p><a href="%mailing_list_unsubscribe_url%">Unsubscribe</a>',
     );
   });
 });

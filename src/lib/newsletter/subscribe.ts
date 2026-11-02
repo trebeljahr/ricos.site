@@ -1,13 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import Handlebars from "handlebars";
-import {
-  activateEmailListMember,
-  addNewMemberToEmailList,
-  isAlreadySubscribed as isOnMailgunList,
-  sendEmail as sendMailgunEmail,
-} from "src/lib/mailgun";
-import { confirmLink, getLegacyHash, legacyConfirmLink } from "./confirmLink";
+import { confirmLink } from "./confirmLink";
 import {
   confirmSubscription,
   findSubscriber,
@@ -20,21 +14,8 @@ import { DEFAULT_LIST, type ListKey, listIdFor, listNames, NEWSLETTER_LISTS } fr
  * Double opt-in for the site's mailing lists (see `./lists`). One signup can
  * join several lists; one confirm click confirms all of them.
  *
- * ListMonk, sending through SES, is the backend. `NEWSLETTER_PROVIDER=mailgun`
- * pins a deployment to Mailgun until the cutover: Vercel Production keeps
- * it until SES has production access and the subscribers are imported, and
- * removing it is the cutover. The Mailgun branches go once Mailgun is
- * decommissioned. Confirm links of both formats work under either provider.
- * Mailgun only has the Live and Learn list.
+ * ListMonk, sending through SES, is the backend.
  */
-export type NewsletterProvider = "listmonk" | "mailgun";
-
-export function newsletterProvider(): NewsletterProvider {
-  const raw = process.env.NEWSLETTER_PROVIDER?.trim().toLowerCase();
-  if (!raw || raw === "listmonk") return "listmonk";
-  if (raw === "mailgun") return "mailgun";
-  throw new Error(`Unknown NEWSLETTER_PROVIDER: ${raw}`);
-}
 
 // The HTML5 form check. The confirm click is the real proof of ownership,
 // this only keeps obvious garbage from turning into a bounce.
@@ -58,9 +39,6 @@ export async function isAlreadySubscribed(
   list: ListKey = DEFAULT_LIST,
 ): Promise<boolean> {
   try {
-    if (newsletterProvider() === "mailgun") {
-      return list === DEFAULT_LIST && (await isOnMailgunList(email));
-    }
     const listId = listIdFor(list);
     return listId !== null && (await isConfirmedOnList(email, listId));
   } catch {
@@ -105,7 +83,6 @@ async function renderConfirmEmail(link: string, lists: readonly ListKey[]) {
   return {
     subject,
     html: Handlebars.compile(source)({ confirmLink: link, heading, intro }),
-    text: `You signed up for ${listNames(lists)}. You can confirm your subscription by clicking this link ${link}`,
   };
 }
 
@@ -119,34 +96,14 @@ export async function sendConfirmationEmail(
   email: string,
   lists: readonly ListKey[] = [DEFAULT_LIST],
 ): Promise<void> {
-  if (newsletterProvider() === "listmonk") {
-    if ((await findSubscriber(email))?.status === "blocklisted") {
-      console.info(
-        JSON.stringify({ scope: "newsletter.signup", event: "skipped", reason: "blocklisted" }),
-      );
-      return;
-    }
-    const { subject, html } = await renderConfirmEmail(confirmLink(email, lists), lists);
-    await sendTransactional({ to: email, subject, html });
+  if ((await findSubscriber(email))?.status === "blocklisted") {
+    console.info(
+      JSON.stringify({ scope: "newsletter.signup", event: "skipped", reason: "blocklisted" }),
+    );
     return;
   }
-
-  // The hash link only knows Live and Learn; `availableListKeys` keeps the
-  // other lists away from a Mailgun-pinned signup.
-  if (lists.some((list) => list !== DEFAULT_LIST)) {
-    throw new Error(`Mailgun only has the ${DEFAULT_LIST} list, got ${lists.join(", ")}`);
-  }
-  await addNewMemberToEmailList({ email, name: "", vars: { hash: await getLegacyHash(email) } });
-  const { subject, html, text } = await renderConfirmEmail(await legacyConfirmLink(email), [
-    DEFAULT_LIST,
-  ]);
-  await sendMailgunEmail({
-    from: "Rico Trebeljahr <rico@trebeljahr.com>",
-    to: email,
-    subject,
-    html,
-    text,
-  });
+  const { subject, html } = await renderConfirmEmail(confirmLink(email, lists), lists);
+  await sendTransactional({ to: email, subject, html });
 }
 
 /**
@@ -160,14 +117,6 @@ export async function confirmAddress(
 ): Promise<void> {
   const skip = (list: ListKey) =>
     console.warn(JSON.stringify({ scope: "newsletter.confirm", event: "skipped", list }));
-
-  if (newsletterProvider() === "mailgun") {
-    for (const list of lists) {
-      if (list === DEFAULT_LIST) await activateEmailListMember(email);
-      else skip(list);
-    }
-    return;
-  }
 
   for (const list of lists) {
     const listId = listIdFor(list);

@@ -1,13 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mailgun = vi.hoisted(() => ({
-  activateEmailListMember: vi.fn(async (_email: string) => {}),
-  addNewMemberToEmailList: vi.fn(async (_member: unknown) => {}),
-  isAlreadySubscribed: vi.fn(async (_email: string) => false),
-  sendEmail: vi.fn(async (_data: unknown) => {}),
-}));
-vi.mock("src/lib/mailgun", () => mailgun);
-
 const listmonk = vi.hoisted(() => ({
   confirmSubscription: vi.fn(async (_email: string, _listId?: number) => {}),
   findSubscriber: vi.fn(async (_email: string): Promise<{ status: string } | null> => null),
@@ -22,7 +14,6 @@ import {
   confirmAddress,
   isAlreadySubscribed,
   listsToConfirm,
-  newsletterProvider,
   normalizeEmail,
   sendConfirmationEmail,
 } from "./subscribe";
@@ -37,29 +28,15 @@ function hrefs(html: string): string[] {
 beforeEach(() => {
   process.env.SALT = "test-salt";
   process.env.NEWSLETTER_TOKEN_SECRET = "test-token-secret";
-  delete process.env.NEWSLETTER_PROVIDER;
   process.env.LISTMONK_LIST_ID = "15";
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
-  for (const mock of [...Object.values(mailgun), ...Object.values(listmonk)]) mock.mockClear();
+  for (const mock of Object.values(listmonk)) mock.mockClear();
   _resetRateLimit();
 });
 
 afterEach(() => {
-  delete process.env.NEWSLETTER_PROVIDER;
   delete process.env.LISTMONK_LIST_ID;
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
-});
-
-describe("newsletterProvider", () => {
-  it("is ListMonk unless a deployment is pinned to Mailgun", () => {
-    expect(newsletterProvider()).toBe("listmonk");
-    process.env.NEWSLETTER_PROVIDER = " ListMonk ";
-    expect(newsletterProvider()).toBe("listmonk");
-    process.env.NEWSLETTER_PROVIDER = "Mailgun";
-    expect(newsletterProvider()).toBe("mailgun");
-    process.env.NEWSLETTER_PROVIDER = "sendgrid";
-    expect(() => newsletterProvider()).toThrow(/Unknown NEWSLETTER_PROVIDER/);
-  });
 });
 
 describe("normalizeEmail", () => {
@@ -88,8 +65,6 @@ describe("with the ListMonk default", () => {
     expect(hrefs(html)).toContainEqual(
       expect.stringMatching(/^https:\/\/ricos\.site\/api\/confirm-email\?token=[\w.-]+$/),
     );
-    expect(mailgun.addNewMemberToEmailList).not.toHaveBeenCalled();
-    expect(mailgun.sendEmail).not.toHaveBeenCalled();
   });
 
   it("still mails an existing subscriber, unsubscribed from our list or not", async () => {
@@ -113,7 +88,6 @@ describe("with the ListMonk default", () => {
   it("confirms into ListMonk", async () => {
     await confirmAddress("reader@example.com");
     expect(listmonk.confirmSubscription).toHaveBeenCalledWith("reader@example.com", 15);
-    expect(mailgun.activateEmailListMember).not.toHaveBeenCalled();
   });
 
   it("confirms every list the link names", async () => {
@@ -183,47 +157,6 @@ describe("with the ListMonk default", () => {
     const { html } = listmonk.sendTransactional.mock.calls[0][0];
     expect(html).toContain("Welcome to Live and Learn.");
     expect(html).toContain("Double Opt-In is a thing these days, you know.");
-  });
-});
-
-describe("pinned with NEWSLETTER_PROVIDER=mailgun", () => {
-  beforeEach(() => {
-    process.env.NEWSLETTER_PROVIDER = "mailgun";
-  });
-
-  it("keeps the Mailgun flow and its hash link", async () => {
-    await sendConfirmationEmail("reader@example.com");
-
-    expect(mailgun.addNewMemberToEmailList).toHaveBeenCalledWith({
-      email: "reader@example.com",
-      name: "",
-      vars: { hash: expect.stringMatching(/^[0-9a-f]{64}$/) },
-    });
-    const sent = mailgun.sendEmail.mock.calls[0][0] as { from: string; html: string };
-    expect(sent.from).toBe("Rico Trebeljahr <rico@trebeljahr.com>");
-    expect(hrefs(sent.html)).toContainEqual(
-      expect.stringMatching(
-        /^https:\/\/ricos\.site\/api\/confirm-email\?hash=[0-9a-f]{64}&email=reader%40example\.com$/,
-      ),
-    );
-    expect(listmonk.findSubscriber).not.toHaveBeenCalled();
-    expect(listmonk.sendTransactional).not.toHaveBeenCalled();
-  });
-
-  it("confirms into Mailgun", async () => {
-    await confirmAddress("reader@example.com");
-    expect(mailgun.activateEmailListMember).toHaveBeenCalledWith("reader@example.com");
-    expect(listmonk.confirmSubscription).not.toHaveBeenCalled();
-  });
-
-  it("only knows Live and Learn", async () => {
-    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
-    await expect(sendConfirmationEmail("reader@example.com", ["computer"])).rejects.toThrow(
-      /only has the live-and-learn list/,
-    );
-    expect(mailgun.sendEmail).not.toHaveBeenCalled();
-    mailgun.isAlreadySubscribed.mockResolvedValueOnce(true);
-    await expect(isAlreadySubscribed("reader@example.com", "computer")).resolves.toBe(false);
   });
 });
 

@@ -14,14 +14,12 @@ beforeEach(() => {
   process.env.LISTMONK_LIST_ID = "15";
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
   delete process.env.LISTMONK_ANNOUNCE_LIST_ID;
-  delete process.env.NEWSLETTER_PROVIDER;
 });
 
 afterEach(() => {
   delete process.env.LISTMONK_LIST_ID;
   delete process.env.LISTMONK_COMPUTER_LIST_ID;
   delete process.env.LISTMONK_ANNOUNCE_LIST_ID;
-  delete process.env.NEWSLETTER_PROVIDER;
   vi.unstubAllEnvs();
 });
 
@@ -81,13 +79,6 @@ describe("availableListKeys", () => {
     process.env.LISTMONK_ANNOUNCE_LIST_ID = "31";
     expect(availableListKeys()).toEqual(["live-and-learn", "announce"]);
     expect(listIdFor("announce")).toBe(31);
-  });
-
-  it("offers only Live and Learn while pinned to Mailgun", () => {
-    process.env.LISTMONK_COMPUTER_LIST_ID = "21";
-    process.env.LISTMONK_ANNOUNCE_LIST_ID = "31";
-    process.env.NEWSLETTER_PROVIDER = "mailgun";
-    expect(availableListKeys()).toEqual(["live-and-learn"]);
   });
 });
 

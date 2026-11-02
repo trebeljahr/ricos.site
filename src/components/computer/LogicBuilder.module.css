@@ -359,6 +359,9 @@
 .seriesRest{margin:-5px 0 -5px 8px;padding:4px 7px;border:1px solid #607899;border-radius:4px;background:#2a3b5e;color:#e8f2ff;font-size:11px;font-weight:700;cursor:pointer}
 @media(pointer:coarse){.seriesRest{min-height:36px;touch-action:manipulation}}
 
+/* The board's scale shrinks a part's buttons below a finger, so the hit area grows up and left, away from the ports. A rotated part's buttons sit mid-part, where a bigger area would take its body's taps. */
+@media(pointer:coarse){.node>.nodeActions button{position:relative}.node>.nodeActions button::after{content:"";position:absolute;inset:calc(-12px / var(--board-scale,1)) 0 calc(-3px / var(--board-scale,1)) calc(-12px / var(--board-scale,1))}.node.topPorts>.nodeActions button::after{inset:0}}
+
 /* The narrowest phones trade the zoom readout for keeping every action in reach. */
 @media(max-width:359px){[data-phone-flow] .canvasControls{gap:4px}[data-phone-flow] .canvasControls>span{display:none}}
 
@@ -366,7 +369,7 @@
 .touchOnly{display:none}
 /* Select turned on is the reader's choice to draw boxes, even where a finger would scroll the chapter. */
 .embedded .board.boxing{touch-action:none}
-@media(pointer:coarse){.touchOnly{display:inline-block}.board{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.wireHit{stroke-width:28}.wireHit:focus,.busHit:focus{outline:none}.contextMenu button:not(.colorSwatch){min-height:40px}.contextMenu button:hover{background:transparent;color:#e7edf3}.contextMenu button:active{background:#394d77;color:#fff}.contextColors{flex-wrap:wrap;gap:12px}.contextMenu .colorSwatch{width:28px;height:28px;min-width:28px}.contextDetails input,.contextDetails select{font-size:16px}}
+@media(pointer:coarse){.touchOnly{display:inline-block}.board{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.wireHit{stroke-width:28}.wireHit:focus,.busHit:focus{outline:none}.contextMenu button:not(.colorSwatch){min-height:40px}.contextMenu button:hover{background:transparent;color:#e7edf3}.contextMenu button:active{background:#394d77;color:#fff}.canvasControls button:hover:not([aria-pressed="true"]){border-color:#607899;background:#2a3b5e}.canvasControls button:active{border-color:#b7a1ff;background:#465784}.contextColors{flex-wrap:wrap;gap:12px}.contextMenu .colorSwatch{width:28px;height:28px;min-width:28px}.contextDetails input,.contextDetails select{font-size:16px}}
 
 /* A phone page: one document scroll, with the level's goal above the canvas and parts in reach under it. */
 @media(max-width:640px){
@@ -379,6 +382,8 @@
   [data-phone-flow] .canvasControls{flex-wrap:nowrap;overflow-x:auto;touch-action:manipulation;border-top:1px solid #455677}
   [data-phone-flow] .canvasControls button{flex:none;min-height:36px;min-width:36px}
   [data-phone-flow] .canvasControls .fullZoom,[data-phone-flow] .canvasControls small{display:none}
+  /* Inside a part, ← beside the canvas stays in reach, where the depth bar above the level would scroll away. */
+  [data-phone-flow] .viewPath,[data-phone-flow] .canvasControls:has(.partBack)>span{display:none}
   [data-phone-flow] .boardScroll{flex:none;height:clamp(240px,46svh,460px);scroll-margin-top:72px}
   [data-phone-flow] .status{order:1;min-height:52px;padding:6px 12px}
   [data-phone-flow] .status>span:last-child{display:none}

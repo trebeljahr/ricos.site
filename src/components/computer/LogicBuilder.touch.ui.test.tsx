@@ -380,6 +380,70 @@ describe("touch on the canvas", () => {
     expect(zoom()).not.toBe(pinched);
   });
 
+  describe("opening a part on a phone", () => {
+    const phone = () =>
+      Object.defineProperty(window, "matchMedia", {
+        configurable: true,
+        value: (query: string) => ({ matches: query.includes("max-width") }),
+      });
+    const box = {
+      id: "box",
+      type: "module",
+      label: "BOX",
+      x: 300,
+      y: 40,
+      module: {
+        name: "Inner",
+        nodes: [
+          { id: "in", type: "switch", label: "IN", x: 40, y: 40 },
+          { id: "out", type: "lamp", label: "OUT", x: 400, y: 40 },
+        ],
+        wires: [],
+      },
+    };
+    const open = (nodes: unknown[], props = {}) => {
+      localStorage.setItem(
+        STORAGE,
+        JSON.stringify({ current: { name: "Top", nodes, wires: [] }, saved: {} }),
+      );
+      render(<LogicBuilder {...props} />);
+      return screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;
+    };
+    afterEach(() => Reflect.deleteProperty(window, "matchMedia"));
+
+    it("enters the part as a board of its own, wires inside it, and carries the wire back", () => {
+      phone();
+      const board = open([box]);
+      expect(screen.queryByRole("button", { name: /^Unfold BOX/ })).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: "Enter BOX" }));
+      expect(screen.getByText("Inside BOX. Tap ← to return.")).toBeTruthy();
+      tap(board, output("in"));
+      tap(board, input("out"));
+      fireEvent.click(screen.getByRole("button", { name: "Back to Top" }));
+      expect(screen.queryByRole("button", { name: "Back to Top" })).toBeNull();
+      const stored_ = stored().nodes.find((node) => node.id === "box");
+      expect(stored_?.module?.wires.map(({ from, to }) => [from, to])).toEqual([["in", "out"]]);
+    });
+
+    it("keeps a gate's inside in place, since a gate has no board of its own to edit", () => {
+      phone();
+      open([{ id: "gate", type: "nand", label: "GATE", x: 40, y: 40 }]);
+      expect(screen.getByRole("button", { name: "Unfold GATE in place" })).toBeTruthy();
+    });
+
+    it("leaves a chapter's embed unfolding in place", () => {
+      phone();
+      open([box], { embedded: true });
+      expect(screen.getByRole("button", { name: "Unfold BOX in place" })).toBeTruthy();
+    });
+
+    it("leaves a wider screen with both buttons", () => {
+      open([box]);
+      expect(screen.getByRole("button", { name: "Unfold BOX in place" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Enter BOX" }).textContent).toBe("↗");
+    });
+  });
+
   describe("with Select on", () => {
     const select = () => fireEvent.click(screen.getByRole("button", { name: "Select" }));
     const spot = (board: HTMLElement, id: string, x: number, y: number) => {

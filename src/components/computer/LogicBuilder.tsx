@@ -1564,6 +1564,17 @@ function LogicBuilderWorkspace({
     return boxes;
   }, [displayNodes, expandedDetails]);
   const [selectMode, setSelectMode] = useState(false);
+  const [phoneWidth, setPhoneWidth] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia?.("(max-width: 640px)");
+    if (!query) return;
+    const update = () => setPhoneWidth(query.matches);
+    update();
+    query.addEventListener?.("change", update);
+    return () => query.removeEventListener?.("change", update);
+  }, []);
+  // Touch can only wire on a board of its own, so a phone opens a part as one. A chapter keeps its unfolding.
+  const phoneBoard = phoneWidth && !embedded;
   const [bounds, setBounds] = useState({ left: -2000, top: -2000, right: 3000, bottom: 2500 });
   const boundsRef = useRef(bounds);
   boundsRef.current = bounds;
@@ -1831,7 +1842,10 @@ function LogicBuilderWorkspace({
     const spillsY = readable && (bottom - top) * next > viewport.clientHeight;
     const visibleLeft = spillsX ? left : left - (viewport.clientWidth / next - (right - left)) / 2;
     const visibleTop = spillsY ? top : top - (viewport.clientHeight / next - (bottom - top)) / 2;
-    if (spillsX || spillsY) setMessage(TOUCH_HINT + " Drag empty canvas to see the rest.");
+    if (spillsX || spillsY) {
+      const inside = viewPathRef.current.at(-1)?.via;
+      setMessage(`${inside ? `Inside ${inside}. Tap ← to return.` : TOUCH_HINT} Drag empty canvas to see the rest.`);
+    }
     const framed = frameBounds(visibleLeft, visibleTop, next,
       viewport.clientWidth, viewport.clientHeight);
     const target = {
@@ -2307,7 +2321,7 @@ function LogicBuilderWorkspace({
       NO_UNFOLDED,
     );
     restartTimeline(inner);
-    setMessage(`Inside ${via}. Use Back to return.`);
+    setMessage(`Inside ${via}. ${phoneBoard ? "Tap ← to return" : "Use Back to return"}.`);
   };
   const returnToDepth = (depth: number) => {
     if (depth < 0 || depth >= viewPath.length) return;
@@ -3703,6 +3717,10 @@ function LogicBuilderWorkspace({
           <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
             >
             {locked?.controls}
+            {phoneBoard && !locked && viewPath.length > 0 && (
+              <button type="button" className={styles.partBack} onClick={goBack}
+                aria-label={`Back to ${viewPath[viewPath.length - 1].parent.name}`}>←</button>
+            )}
             <button
               type="button"
               onClick={() => zoomFromCenter(zoomRef.current / 1.25)}
@@ -3839,7 +3857,8 @@ function LogicBuilderWorkspace({
                   position: "absolute",
                   transform: `scale(${renderScale})`,
                   transformOrigin: "top left",
-                }}
+                  "--board-scale": renderScale,
+                } as React.CSSProperties}
                 role="application"
                 aria-label="Circuit canvas"
                 onFocus={() => setActiveInlinePath(null)}
@@ -4352,13 +4371,17 @@ function LogicBuilderWorkspace({
                       <NodeNote text={locked?.note?.(node, boardSnapshot)} />
                       {!expandedDetails.has(node.id) && isUnfoldable(node) && (
                         <div className={styles.nodeActions}>
-                          <button type="button" title={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
-                            aria-label={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
-                            onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}><ActionIcon name={unfolded.has(node.id) ? "fold" : "unfold"} /></button>
+                          {!(phoneBoard && !locked && node.type === "module" && node.module && !unfolded.has(node.id)) && (
+                            <button type="button" title={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
+                              aria-label={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
+                              onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}><ActionIcon name={unfolded.has(node.id) ? "fold" : "unfold"} /></button>
+                          )}
                           {!locked && node.type === "module" && node.module && (
                             <button type="button" title={`Enter ${node.label || node.module.name}`}
                               aria-label={`Enter ${node.label || node.module.name}`}
-                              onClick={(event) => { event.stopPropagation(); enterCircuit(node.module!, node.label || node.module!.name, node.id); }}>↗</button>
+                              onClick={(event) => { event.stopPropagation(); enterCircuit(node.module!, node.label || node.module!.name, node.id); }}>
+                              {phoneBoard && !unfolded.has(node.id) ? <ActionIcon name="unfold" /> : "↗"}
+                            </button>
                           )}
                         </div>
                       )}

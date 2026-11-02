@@ -361,6 +361,7 @@ function NextStepCard({
       {section ? (
         <>
           <p className="mt-hair text-2xl font-bold text-gray-900 dark:text-white">
+            {section.box && <span className="font-normal text-gray-500">Box: </span>}
             {section.heading}
           </p>
           <p className="mt-hair text-sm text-gray-600 dark:text-gray-300">
@@ -756,7 +757,10 @@ function ChapterRow({
                   className="grid grid-cols-[1fr_6rem_6rem] items-center gap-tight text-sm"
                   style={{ paddingLeft: `${(s.depth - 1) * 0.75}rem` }}
                 >
-                  <span className="truncate">{s.heading}</span>
+                  <span className="truncate">
+                    {s.box && <span className="text-gray-500">Box: </span>}
+                    {s.heading}
+                  </span>
                   <Bar value={s.words} max={s.target} />
                   <span className="text-right tabular-nums text-gray-500">
                     {fmt(s.words)} / {fmt(s.target)}

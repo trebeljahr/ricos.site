@@ -67,7 +67,14 @@ export type ChapterMeta = {
   published?: boolean;
 };
 
-export type Section = { heading: string; depth: number; words: number; target: number };
+export type Section = {
+  heading: string;
+  depth: number;
+  words: number;
+  target: number;
+  /** A folded box: optional reading inside a chapter, written after the chapters like an aside. */
+  box?: boolean;
+};
 
 export type ChapterProgress = ChapterMeta & {
   path: string;
@@ -146,6 +153,7 @@ export function splitSections(
         depth: section.depth,
         words: countWords(lines.join("\n")),
         target: estimates[heading] ?? DEFAULT_BOX_WORDS,
+        box: true,
       })),
     ];
   });
@@ -160,11 +168,13 @@ export function chapterProgress(
   const estimated = splitSections(body, meta.title, estimates);
   // Once the draft is done, what a section got is what it needed: its target
   // drops to the words written, so every section of the chapter is complete.
+  // An empty box stays open, because boxes get written after the chapters.
   const sections = isDrafted(meta.status)
-    ? estimated.map((s) => ({
-        ...s,
-        target: Math.min(s.target, Math.floor(s.words / LOCK_STEP) * LOCK_STEP),
-      }))
+    ? estimated.map((s) =>
+        s.box && s.words === 0
+          ? s
+          : { ...s, target: Math.min(s.target, Math.floor(s.words / LOCK_STEP) * LOCK_STEP) },
+      )
     : estimated;
   const words = sections.reduce((sum, s) => sum + s.words, 0);
   const target = sections.reduce((sum, s) => sum + s.target, 0);
@@ -192,7 +202,17 @@ export function stepDone(chapter: Pick<ChapterMeta, "status" | "published">, ste
   return Boolean(chapter.published);
 }
 
-/** What a part's deadline covers: a part ships without its asides. */
+/** What a chapter's boxes add to its totals. They count with the asides, not the chapter. */
+const boxTotals = (chapter: Pick<ChapterProgress, "sections">) => {
+  const boxes = chapter.sections.filter((s) => s.box);
+  return {
+    count: boxes.length,
+    credited: boxes.reduce((sum, s) => sum + Math.min(s.words, s.target), 0),
+    target: boxes.reduce((sum, s) => sum + s.target, 0),
+  };
+};
+
+/** What a part's deadline covers: a part ships without its asides or boxes. */
 export const partChapters = <T extends Pick<ChapterMeta, "part" | "kind">>(
   chapters: T[],
   part: number,
@@ -235,28 +255,41 @@ export function partPace(
     lead: stepsDone - expected,
     daysLeft,
     neededPerWeek: daysLeft > 0 ? Math.ceil((stepsLeft * 70) / daysLeft) / 10 : stepsLeft,
-    wordsLeft: chapters.reduce((sum, c) => sum + Math.max(c.target - c.credited, 0), 0),
+    wordsLeft: chapters.reduce((sum, c) => {
+      const boxes = boxTotals(c);
+      return sum + Math.max(c.target - boxes.target - (c.credited - boxes.credited), 0);
+    }, 0),
   };
 }
 
 export type Tally = { count: number; credited: number; target: number };
 
 /**
- * Chapters and asides counted apart. Asides are written last, so a part whose
- * chapters are drafted is where it should be, whatever its asides say.
+ * Chapters and asides counted apart, with a chapter's boxes among the asides.
+ * Both are written last, so a part whose chapters are drafted is where it
+ * should be, whatever its asides say.
  */
 export function tallyByKind(
-  chapters: Pick<ChapterProgress, "kind" | "credited" | "target">[],
+  chapters: Pick<ChapterProgress, "kind" | "credited" | "target" | "sections">[],
 ): Record<ChapterMeta["kind"], Tally> {
-  const tally = (kind: ChapterMeta["kind"]): Tally => {
-    const ofKind = chapters.filter((c) => c.kind === kind);
-    return {
-      count: ofKind.length,
-      credited: ofKind.reduce((sum, c) => sum + c.credited, 0),
-      target: ofKind.reduce((sum, c) => sum + c.target, 0),
-    };
+  const ofKind = (kind: ChapterMeta["kind"]) => chapters.filter((c) => c.kind === kind);
+  const inChapters = ofKind("chapter").map(boxTotals);
+  const boxes = (key: "count" | "credited" | "target") =>
+    inChapters.reduce((total, b) => total + b[key], 0);
+  const sum = (kind: ChapterMeta["kind"], key: "credited" | "target") =>
+    ofKind(kind).reduce((total, c) => total + c[key], 0);
+  return {
+    chapter: {
+      count: ofKind("chapter").length,
+      credited: sum("chapter", "credited") - boxes("credited"),
+      target: sum("chapter", "target") - boxes("target"),
+    },
+    aside: {
+      count: ofKind("aside").length + boxes("count"),
+      credited: sum("aside", "credited") + boxes("credited"),
+      target: sum("aside", "target") + boxes("target"),
+    },
   };
-  return { chapter: tally("chapter"), aside: tally("aside") };
 }
 
 export type NextStep = {
@@ -283,7 +316,7 @@ export function nextStep(chapters: ChapterProgress[]): NextStep | null {
     const chapter = ordered.find((c) => !stepDone(c, step));
     if (!chapter) continue;
     const section =
-      step === "drafted" ? chapter.sections.find((s) => s.words < s.target) : undefined;
+      step === "drafted" ? chapter.sections.find((s) => !s.box && s.words < s.target) : undefined;
     // getStaticProps refuses an undefined value, so the key stays out.
     return section ? { step, chapter, section } : { step, chapter };
   }

@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useState } from "react";
 import {
   UNIVERSAL_FAMILIES,
@@ -13,10 +14,11 @@ export function UniversalGates({
   headingLevel = 2,
 }: {
   showEmbedTags?: boolean;
-  headingLevel?: 2 | 3;
+  /** 5 sits under a heading inside a folded box, so it is smaller as well. */
+  headingLevel?: 2 | 3 | 5;
 } = {}) {
   const [family, setFamily] = useState<UniversalFamily>("nand");
-  const Heading = headingLevel === 3 ? "h3" : "h2";
+  const Heading = `h${headingLevel}` as "h2" | "h3" | "h5";
   return (
     <div className="not-prose">
       <fieldset className="mb-8 flex flex-wrap gap-2 border-0 p-0">
@@ -46,7 +48,12 @@ export function UniversalGates({
             className="mb-16 border-t border-gray-300 pt-6 dark:border-gray-700"
             aria-label={title}
           >
-            <Heading className="mb-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white">
+            <Heading
+              className={clsx(
+                "mb-3 font-semibold tracking-tight text-gray-950 dark:text-white",
+                headingLevel === 5 ? "text-lg" : "text-2xl",
+              )}
+            >
               {title}
             </Heading>
             {showEmbedTags && (

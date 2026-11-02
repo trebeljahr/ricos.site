@@ -39,13 +39,7 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Showing how *once you have these things* you can combine them in very clever ways to climb the mountain of complexity and do everything.": 600,
   },
   "1.2a": {
-    "The universalness of some logic gates": 700,
-  },
-  "1.2b": {
     "How does a transistor work?": 900,
-  },
-  "1.2c": {
-    "Karnaugh Maps": 700,
   },
   "1.3": {
     "Gates to arithmetic": 150,
@@ -70,18 +64,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     'Clock Multipliers, or How "Slower" Things Still Sync to the CPUs Rhythm, also Frequency Dividers as the Opposite of That': 600,
     "How fast can a clock tick? Propagation delay and the slowest path": 600,
   },
-  "2.1a": {
-    "Some Clock Designs Can Use More than one Wire - Single Phase vs. Two and Four Phase Clock Designs": 500,
-  },
-  "2.1b": {
-    "How a clock is made? What makes it tick? The Crystal Oscillator": 700,
-  },
-  "2.1c": {
-    "When timing goes wrong: Clock Skew, Jitter and Metastability": 800,
-  },
-  "2.1d": {
-    "Overclocking, or how software gets to change the clock": 500,
-  },
   "2.2": {
     "1-Bit of Memory": 150,
     'How do we "store a bit"?': 600,
@@ -98,9 +80,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
   "2.2b": {
     "How does an HDD work?": 600,
     "Follow one address of long term storage request through the toy RAM and into the magnetic disk": 600,
-  },
-  "2.2c": {
-    "ROM, or Memory that is Written Once": 700,
   },
   "2.3": {
     "Multiplexers and Decoders": 150,
@@ -133,9 +112,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Two numbers and an operation code in, a result and flags out": 450,
     "Picking the operation": 600,
     Flags: 450,
-    Multiplication: 300,
-    Division: 300,
-    "What about square roots and more complex stuff?": 300,
   },
   "3.1a": {
     "Floating Point Numbers and how Arithmetic works on them *in hardware*": 700,
@@ -151,17 +127,11 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "From opcode to control signals": 1000,
     "Flags and conditional jumps": 700,
   },
-  "3.3a": {
-    Microcode: 800,
-  },
   "3.4": {
     "Tying it together": 300,
     "The basic idea:": 200,
     "The components that need to be there to hang together:": 150,
     "How do these hang together?": 150,
-  },
-  "3.4a": {
-    'Caches, why they are useful, what they do, hits/misses, not "reading" the same thing again': 900,
   },
   "4.1": {
     "The Fetch-Decode-Execute Cycle": 150,
@@ -170,15 +140,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
   },
   "4.1a": {
     Pipelining: 800,
-  },
-  "4.1b": {
-    "Predictive Branching": 800,
-  },
-  "4.1c": {
-    "SIMD stuff": 700,
-  },
-  "4.1d": {
-    "More than one Core": 700,
   },
   "4.2": {
     "Machine Code and Assembly": 200,
@@ -205,12 +166,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Frontend vs. Backend": 400,
     "Compiled vs. interpreted, and what a linker does": 600,
   },
-  "4.4a": {
-    "Compiler Optimizations => leaving out stuff that is unnecessary": 800,
-  },
-  "4.4b": {
-    "Crazy Compilers (how they are Hardware Agnostic)": 700,
-  },
   "4.5": {
     "Our Toy Language + It's Very Simple Compiler": 1100,
   },
@@ -218,18 +173,12 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Putting it All Together": 150,
     "From Transistors to a Simple Program.": 1200,
   },
-  "4.6a": {
-    "Turing Machines, and Turing Completeness": 1000,
-  },
   "5.1": {
     "How a device talks to the CPU": 200,
     "framebuffers and memory-mapped I/O": 800,
     "Device registers: status, command and data": 600,
     "Memory-mapped vs. port-mapped I/O": 450,
     "DMA, or letting a device write into memory by itself": 600,
-  },
-  "5.1a": {
-    "Ports and Cables: USB, HDMI, VGA, DVI and what travels over them": 800,
   },
   "5.2": {
     "Polling vs. Interrupts": 700,
@@ -355,18 +304,12 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     "Different Protocols / The Networking Stack:": 450,
     "What is a server?": 400,
   },
-  "7.1a": {
-    "What is a Database?": 700,
-  },
   "7.2": {
     "Bits on a Wire: Copper, Fiber and Radio": 200,
     "physical (copper, fiber, radio)": 400,
     "What is a fiber optic cable and how does that work?": 500,
     "Modems: the handoff between digital and analog": 500,
     "Multiplexing: many conversations on one wire or one radio band": 600,
-  },
-  "7.2a": {
-    "Error Correcting Codes (Especially Hamming)": 900,
   },
   "7.3": {
     "Ethernet and WiFi": 150,
@@ -380,12 +323,6 @@ export const SECTION_ESTIMATES: Record<string, Record<string, number>> = {
     'How does one computer know where the other one *is*, without being "directly" connected to it?': 700,
     "IPv4 vs IPv6": 450,
     "What a home router does: NAT and DHCP": 700,
-  },
-  "7.4a": {
-    "What is an ISP and what does it do?": 500,
-  },
-  "7.4b": {
-    "What is a VPN?": 500,
   },
   "7.5": {
     "TCP and UDP": 150,

@@ -13,13 +13,14 @@ export const CHAPTERS = {
     title: "Transistors into Gates",
     href: "/computer/transistors-into-gates",
   },
+  // A folded box in 1.2: the link opens it.
   universal: {
-    number: "1.2a",
+    number: "1.2",
     title: "The universalness of some logic gates",
-    href: "/computer/the-universalness-of-some-logic-gates",
+    href: "/computer/transistors-into-gates#callout-the-universalness-of-some-logic-gates",
   },
   transistor: {
-    number: "1.2b",
+    number: "1.2a",
     title: "How does a transistor work",
     href: "/computer/how-does-a-transistor-work",
   },

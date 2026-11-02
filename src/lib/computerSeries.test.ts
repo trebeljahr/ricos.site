@@ -9,6 +9,7 @@ import {
   DEFAULT_LEAF_WORDS,
   DEFAULT_PARENT_WORDS,
   dailyWords,
+  LOCK_STEP,
   nextStep,
   partChapters,
   partPace,
@@ -190,6 +191,12 @@ describe("partPace", () => {
       over.target - over.credited + DEFAULT_PARENT_WORDS - 50 + DEFAULT_LEAF_WORDS,
     );
   });
+
+  it("leaves boxes out of the words a part has left", () => {
+    const body = `${words(DEFAULT_LEAF_WORDS)}\n\n> [!more]- Box\n`;
+    const p = partPace([chapterProgress(meta(), body, "a.md")], "2026-01-01", deadline);
+    expect(p.wordsLeft).toBe(0);
+  });
 });
 
 describe("nextStep", () => {
@@ -236,6 +243,26 @@ describe("nextStep", () => {
       "late-aside.md",
     ]);
   });
+
+  it("never asks for a box while a chapter is in draft", () => {
+    const body = `${words(DEFAULT_LEAF_WORDS)}\n\n> [!more]- Box\n`;
+    expect(nextStep([chapterProgress(meta(), `${body}\n## Later\n`, "a.md")])).toMatchObject({
+      step: "drafted",
+      section: { heading: "Later" },
+    });
+    const next = nextStep([chapterProgress(meta(), body, "a.md")]);
+    expect(next?.step).toBe("drafted");
+    expect(next?.section).toBeUndefined();
+  });
+
+  it("closes a box with words when its chapter is drafted and keeps an empty one open", () => {
+    const body = `> [!more]- Empty\n\n> [!more]- Started\n> ${words(LOCK_STEP + 1)}\n`;
+    const drafted = chapterProgress(meta({ status: "draft-done" }), body, "a.md");
+    expect(drafted.sections.filter((s) => s.box).map((s) => [s.heading, s.target])).toEqual([
+      ["Empty", DEFAULT_BOX_WORDS],
+      ["Started", LOCK_STEP],
+    ]);
+  });
 });
 
 describe("tallyByKind", () => {
@@ -252,6 +279,15 @@ describe("tallyByKind", () => {
       aside: { count: 2, credited: 0, target: 2 * DEFAULT_LEAF_WORDS },
     });
     expect(tallyByKind([chapter]).aside).toEqual({ count: 0, credited: 0, target: 0 });
+  });
+
+  it("counts a chapter's boxes among the asides", () => {
+    const body = `${words(DEFAULT_LEAF_WORDS)}\n\n> [!more]- Box\n> ${words(100)}\n`;
+    const chapter = chapterProgress(meta(), body, "a.md");
+    expect(tallyByKind([chapter])).toEqual({
+      chapter: { count: 1, credited: DEFAULT_LEAF_WORDS, target: DEFAULT_LEAF_WORDS },
+      aside: { count: 1, credited: 100, target: DEFAULT_BOX_WORDS },
+    });
   });
 });
 

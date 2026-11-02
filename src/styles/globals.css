@@ -460,6 +460,22 @@ summary.callout-title:focus-visible {
   position: relative;
 }
 
+/* A box can hold a wide demo, which bleeds out of the text column here as it
+   does on the page. So the box does not clip, and its title rounds its own corners. */
+.callout-root[data-callout="more"],
+details.callout-root[data-callout="more"][open]::details-content {
+  overflow: visible;
+}
+
+.callout-root[data-callout="more"] > .callout-title {
+  border-radius: inherit;
+}
+
+details.callout-root[data-callout="more"][open] > summary.callout-title {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
 .callout-root[data-callout="more"] > div.callout-title > span::after {
   content: " →";
 }

@@ -127,6 +127,27 @@ const slugify = (text: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 
+const HOLD_MS = 3000;
+const READER_TAKES_OVER = ["wheel", "touchstart", "keydown", "pointerdown"];
+
+/**
+ * Keeps a linked callout in place while the page grows around it, because the
+ * demos above and inside it mount only after the first scroll. Stops after a
+ * few seconds or when the reader takes over, and returns how to stop it sooner.
+ */
+function holdInView(el: HTMLElement) {
+  const observer = new ResizeObserver(() => el.scrollIntoView());
+  const stop = () => {
+    observer.disconnect();
+    clearTimeout(timer);
+    for (const event of READER_TAKES_OVER) window.removeEventListener(event, stop);
+  };
+  const timer = setTimeout(stop, HOLD_MS);
+  for (const event of READER_TAKES_OVER) window.addEventListener(event, stop, { passive: true });
+  observer.observe(document.body);
+  return stop;
+}
+
 /**
  * Names a callout after its own title so it can be linked to, opens it when the
  * page is loaded on that link, and remembers whether this reader left it open.
@@ -160,6 +181,7 @@ function useCalloutAnchor() {
     const isTarget = () => decodeURIComponent(window.location.hash.slice(1)) === id;
 
     let scrollFrame = 0;
+    let stopHolding = () => {};
     const openOnTarget = () => {
       if (!isTarget()) return;
       if (details) details.open = true;
@@ -167,7 +189,11 @@ function useCalloutAnchor() {
       // scroll position of its own accord on the first one.
       cancelAnimationFrame(scrollFrame);
       scrollFrame = requestAnimationFrame(() => {
-        scrollFrame = requestAnimationFrame(() => el.scrollIntoView());
+        scrollFrame = requestAnimationFrame(() => {
+          el.scrollIntoView();
+          stopHolding();
+          stopHolding = holdInView(el);
+        });
       });
     };
 
@@ -195,6 +221,7 @@ function useCalloutAnchor() {
     window.addEventListener("hashchange", openOnTarget);
     return () => {
       cancelAnimationFrame(scrollFrame);
+      stopHolding();
       details?.removeEventListener("toggle", remember);
       window.removeEventListener("hashchange", openOnTarget);
     };

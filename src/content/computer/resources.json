@@ -3619,7 +3619,27 @@
         },
         {
           "id": "nandgame",
-          "note": "play the first levels"
+          "note": "play the first levels; Universal gates box: the first levels build NOT, AND, OR and XOR from NAND; this aside as a game"
+        },
+        {
+          "id": "cs-n10u-jp-logic-not-and-or",
+          "note": "Universal gates box"
+        },
+        {
+          "id": "cs-n10u-jp-logic-xor",
+          "note": "Universal gates box"
+        },
+        {
+          "id": "nand2tetris-course",
+          "note": "Universal gates box: project 1"
+        },
+        {
+          "id": "wiki-karnaugh-map",
+          "note": "Karnaugh maps box: from your reading notes"
+        },
+        {
+          "id": "yt-7zffjsXqATg",
+          "note": "Karnaugh maps box: the same job done by hand: from a truth table to a circuit"
         }
       ],
       "questions": [
@@ -3627,32 +3647,15 @@
         "Real gates are CMOS: a pull-up network of pMOS and a pull-down network of nMOS. Why does that make NAND and NOR the cheap gates and AND the expensive one?",
         "Ben Eater builds gates from bipolar transistors and resistors; chips use MOSFETs. What is the same and what differs?",
         "Where does \"0\" or \"1\" live physically? Why is there a forbidden voltage band, and what does it buy?",
-        "Can you go from a truth table to a Boolean expression to a circuit, and back?"
-      ]
-    },
-    "the-universalness-of-some-logic-gates": {
-      "core": [
-        {
-          "id": "cs-n10u-jp-logic-not-and-or"
-        },
-        {
-          "id": "cs-n10u-jp-logic-xor"
-        },
-        {
-          "id": "nandgame",
-          "note": "the first levels build NOT, AND, OR and XOR from NAND; this aside as a game"
-        },
-        {
-          "id": "nand2tetris-course",
-          "note": "project 1"
-        }
+        "Can you go from a truth table to a Boolean expression to a circuit, and back?",
+        "Universal gates box: Why is NAND alone enough, while AND and OR together are not?",
+        "Universal gates box: Build XOR from four NANDs on paper.",
+        "Universal gates box: If NAND is enough, why do real chips use dozens of cell types?",
+        "Karnaugh maps box: Why does a group of two neighbouring 1s remove one variable from the expression?",
+        "Karnaugh maps box: What do \"don't care\" cells buy you?",
+        "Karnaugh maps box: Karnaugh maps stop being practical at about six variables. What do design tools do instead?"
       ],
-      "deeper": [],
-      "questions": [
-        "Why is NAND alone enough, while AND and OR together are not?",
-        "Build XOR from four NANDs on paper.",
-        "If NAND is enough, why do real chips use dozens of cell types?"
-      ]
+      "note": "Karnaugh maps box: Nothing in the bookmarks covers this; one reference and one worked example."
     },
     "how-does-a-transistor-work": {
       "core": [
@@ -3683,25 +3686,6 @@
         "In a MOSFET, what does the voltage on the gate change between source and drain?",
         "Ben Eater's breadboard transistors are bipolar; a chip uses MOSFETs. What is the practical difference for building logic?"
       ]
-    },
-    "karnaugh-maps": {
-      "core": [
-        {
-          "id": "wiki-karnaugh-map",
-          "note": "from your reading notes"
-        },
-        {
-          "id": "yt-7zffjsXqATg",
-          "note": "the same job done by hand: from a truth table to a circuit"
-        }
-      ],
-      "deeper": [],
-      "questions": [
-        "Why does a group of two neighbouring 1s remove one variable from the expression?",
-        "What do \"don't care\" cells buy you?",
-        "Karnaugh maps stop being practical at about six variables. What do design tools do instead?"
-      ],
-      "note": "Nothing in the bookmarks covers this; one reference and one worked example."
     },
     "gates-to-arithmetic": {
       "core": [
@@ -3743,11 +3727,11 @@
       "core": [
         {
           "id": "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele",
-          "note": "new bookmark; race conditions, edges and the slowest path, which are the headings you added"
+          "note": "new bookmark; race conditions, edges and the slowest path, which are the headings you added; Skew and jitter box"
         },
         {
           "id": "wiki-clock-signal",
-          "note": "new bookmark; distribution networks, multipliers and dividers"
+          "note": "new bookmark; distribution networks, multipliers and dividers; Clock phases box: the sections on single-phase, two-phase and four-phase clocks; Overclocking box"
         },
         {
           "id": "yt-PVNAPWUxZ0g"
@@ -3756,7 +3740,8 @@
           "id": "cs-n10u-jp-logic-dff"
         },
         {
-          "id": "yt-kRlSFm519Bo"
+          "id": "yt-kRlSFm519Bo",
+          "note": "Crystal oscillator box: the alternative: a resistor and a capacitor set the pace"
         },
         {
           "id": "yt-SmQ5K7UQPMM"
@@ -3775,6 +3760,54 @@
         {
           "id": "petzold-code",
           "note": "\"Let's Build a Clock!\""
+        },
+        {
+          "id": "yt-_2By2ane2I4",
+          "note": "Crystal oscillator box"
+        },
+        {
+          "id": "yt-3XDH-fZKnQk",
+          "note": "Crystal oscillator box: a crystal as the signal source of a clock built on breadboards"
+        },
+        {
+          "id": "yt-RT0mp4f4QIs",
+          "note": "Crystal oscillator box"
+        },
+        {
+          "id": "yt-gnmrKDpTM7o",
+          "note": "Crystal oscillator box"
+        },
+        {
+          "id": "yt-oEC5fIw0bL0",
+          "note": "Crystal oscillator box"
+        },
+        {
+          "id": "wiki-crystal-oscillator",
+          "note": "Crystal oscillator box"
+        },
+        {
+          "id": "wiki-clock-skew",
+          "note": "Skew and jitter box: from your reading notes"
+        },
+        {
+          "id": "wiki-jitter",
+          "note": "Skew and jitter box: from your reading notes"
+        },
+        {
+          "id": "wiki-metastability-electronics",
+          "note": "Skew and jitter box: from your reading notes"
+        },
+        {
+          "id": "nxp-com-an219-metastability-primer",
+          "note": "Skew and jitter box"
+        },
+        {
+          "id": "wiki-overclocking",
+          "note": "Overclocking box: from your reading notes"
+        },
+        {
+          "id": "wiki-bios",
+          "note": "Overclocking box"
         }
       ],
       "questions": [
@@ -3784,105 +3817,19 @@
         "Where does the tick physically come from, and why is it then divided or multiplied?",
         "What does \"3 GHz\" not tell you about how fast a computer is?",
         "What is the clock distribution network for?",
-        "How does a slow part stay in step with a fast clock, and how does a fast clock come out of a slow crystal?"
-      ]
-    },
-    "single-phase-vs-two-and-four-phase-clocks": {
-      "core": [
-        {
-          "id": "wiki-clock-signal",
-          "note": "the sections on single-phase, two-phase and four-phase clocks"
-        }
+        "How does a slow part stay in step with a fast clock, and how does a fast clock come out of a slow crystal?",
+        "Clock phases box: Why would a design want two clock signals that are never high at the same time?",
+        "Clock phases box: What does a single-phase design need in its place? (Edge-triggered flip-flops.)",
+        "Crystal oscillator box: Why does a piece of quartz vibrate at one frequency?",
+        "Crystal oscillator box: Why 32,768 ticks per second in a watch?",
+        "Crystal oscillator box: A 555 timer and a crystal both make a clock. Why does a computer use the crystal?",
+        "Skew and jitter box: Skew and jitter both move a clock edge. Which one is fixed and which one changes from tick to tick?",
+        "Skew and jitter box: What are setup time and hold time?",
+        "Skew and jitter box: A flip-flop's input changes inside that window. What can the output do, and how do two flip-flops in a row lower the risk?",
+        "Overclocking box: What exactly is changed when a CPU is overclocked, and which program changes it?",
+        "Overclocking box: Why does a higher voltage allow a higher frequency, and what sets the limit?"
       ],
-      "deeper": [],
-      "questions": [
-        "Why would a design want two clock signals that are never high at the same time?",
-        "What does a single-phase design need in its place? (Edge-triggered flip-flops.)"
-      ],
-      "note": "One source so far."
-    },
-    "the-crystal-oscillator": {
-      "core": [
-        {
-          "id": "yt-_2By2ane2I4"
-        },
-        {
-          "id": "yt-3XDH-fZKnQk",
-          "note": "a crystal as the signal source of a clock built on breadboards"
-        },
-        {
-          "id": "yt-RT0mp4f4QIs"
-        },
-        {
-          "id": "yt-gnmrKDpTM7o"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-oEC5fIw0bL0"
-        },
-        {
-          "id": "wiki-crystal-oscillator"
-        },
-        {
-          "id": "yt-kRlSFm519Bo",
-          "note": "the alternative: a resistor and a capacitor set the pace"
-        }
-      ],
-      "questions": [
-        "Why does a piece of quartz vibrate at one frequency?",
-        "Why 32,768 ticks per second in a watch?",
-        "A 555 timer and a crystal both make a clock. Why does a computer use the crystal?"
-      ]
-    },
-    "clock-skew-jitter-and-metastability": {
-      "core": [
-        {
-          "id": "wiki-clock-skew",
-          "note": "from your reading notes"
-        },
-        {
-          "id": "wiki-jitter",
-          "note": "from your reading notes"
-        },
-        {
-          "id": "wiki-metastability-electronics",
-          "note": "from your reading notes"
-        },
-        {
-          "id": "resources-pcb-cadence-com-blog-2023-clock-in-digital-ele"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "nxp-com-an219-metastability-primer"
-        }
-      ],
-      "questions": [
-        "Skew and jitter both move a clock edge. Which one is fixed and which one changes from tick to tick?",
-        "What are setup time and hold time?",
-        "A flip-flop's input changes inside that window. What can the output do, and how do two flip-flops in a row lower the risk?"
-      ]
-    },
-    "overclocking": {
-      "core": [
-        {
-          "id": "wiki-overclocking",
-          "note": "from your reading notes"
-        },
-        {
-          "id": "wiki-clock-signal"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "wiki-bios"
-        }
-      ],
-      "questions": [
-        "What exactly is changed when a CPU is overclocked, and which program changes it?",
-        "Why does a higher voltage allow a higher frequency, and what sets the limit?"
-      ]
+      "note": "Clock phases box: One source so far."
     },
     "how-does-an-ssd-work": {
       "core": [
@@ -3943,31 +3890,6 @@
         "How does one block number become a place on a platter?",
         "Seek time and rotational delay: why is a random read about a hundred times slower than a sequential one?",
         "For the \"follow one address\" section: what does the drive's own controller do between the request and the bytes arriving? (Links to DMA in 5.1.)"
-      ]
-    },
-    "rom-read-only-memory": {
-      "core": [
-        {
-          "id": "yt-K88pgWhEb1M"
-        },
-        {
-          "id": "yt-BA12Z7gQ4P0",
-          "note": "a ROM as a lookup table that replaces logic gates"
-        },
-        {
-          "id": "wiki-read-only-memory"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-0q6Ujn_zNH8",
-          "note": "what lives in a ROM: the first program a computer runs"
-        }
-      ],
-      "questions": [
-        "ROM, PROM, EPROM, EEPROM, flash: what changed at each step?",
-        "Why does a computer need memory that survives power-off before it can read any drive?",
-        "A ROM answers every address with a stored value. Why does that make it a replacement for any truth table?"
       ]
     },
     "putting-the-basics-together": {
@@ -4179,42 +4101,33 @@
           "id": "yt-FCscQGBIL-Y"
         },
         {
-          "id": "yt-WtlGB-YVLOg"
+          "id": "yt-WtlGB-YVLOg",
+          "note": "Microcode box"
         },
         {
           "id": "petzold-code",
           "note": "\"CPU Control Signals\" and \"Loops, Jumps, and Calls\""
+        },
+        {
+          "id": "yt-JUVt_KYAp-I",
+          "note": "Microcode box"
+        },
+        {
+          "id": "wiki-microcode",
+          "note": "Microcode box: from your reading notes"
+        },
+        {
+          "id": "yt-eNtADpJ2EC4",
+          "note": "Microcode box: instruction set versus microarchitecture"
         }
       ],
       "questions": [
         "Inputs: the opcode, a step counter, the flags. Output: one bit per control line. Why is the control unit \"just a lookup table\"?",
         "Walk one instruction, for example \"load the value at address 14\", through every step. Which control lines are on at each?",
-        "What is microcode, and what is the alternative?"
-      ]
-    },
-    "microcode": {
-      "core": [
-        {
-          "id": "yt-JUVt_KYAp-I"
-        },
-        {
-          "id": "wiki-microcode",
-          "note": "from your reading notes"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-WtlGB-YVLOg"
-        },
-        {
-          "id": "yt-eNtADpJ2EC4",
-          "note": "instruction set versus microarchitecture"
-        }
-      ],
-      "questions": [
-        "What does a microcode ROM store for each instruction?",
-        "How can a microcode update fix a CPU bug after the chip has shipped?",
-        "Hardwired control and microcoded control: what does each one cost?"
+        "What is microcode, and what is the alternative?",
+        "Microcode box: What does a microcode ROM store for each instruction?",
+        "Microcode box: How can a microcode update fix a CPU bug after the chip has shipped?",
+        "Microcode box: Hardwired control and microcoded control: what does each one cost?"
       ]
     },
     "tying-it-together": {
@@ -4261,52 +4174,48 @@
         {
           "id": "nand2tetris-course",
           "note": "chapters 4–5"
+        },
+        {
+          "id": "yt-TfhL5kBiQVI",
+          "note": "Caches box"
+        },
+        {
+          "id": "yt-xFMXIgvlgcY",
+          "note": "Caches box: bookmarked as \"Linear Data Structures: Arrays, Linked Lists and Vectors\"; it is a video about cache locality"
+        },
+        {
+          "id": "yt-_61YOh7QcP0",
+          "note": "Caches box"
+        },
+        {
+          "id": "en-algorithmica-org-hpc-cpu-cache",
+          "note": "Caches box: measured experiments for every effect"
+        },
+        {
+          "id": "nand2web-arch",
+          "note": "Caches box"
+        },
+        {
+          "id": "wiki-cache-coherence",
+          "note": "Caches box: also in Still to Read; the multi-core problem"
+        },
+        {
+          "id": "fgiesen-wordpress-com-2016-08-07-why-do-cpus-have-multip",
+          "note": "Caches box"
+        },
+        {
+          "id": "people-freebsd-org-lstewart-articles-cpumemory",
+          "note": "Caches box: section 3 only"
         }
       ],
       "questions": [
         "What is the difference between the datapath (where bits can flow) and control (which paths are open now)?",
-        "What is the smallest set of instructions that makes the machine useful?"
-      ]
-    },
-    "caches-why-they-are-useful-what": {
-      "core": [
-        {
-          "id": "yt-TfhL5kBiQVI"
-        },
-        {
-          "id": "yt-xFMXIgvlgcY",
-          "note": "bookmarked as \"Linear Data Structures: Arrays, Linked Lists and Vectors\"; it is a video about cache locality"
-        },
-        {
-          "id": "yt-_61YOh7QcP0"
-        },
-        {
-          "id": "en-algorithmica-org-hpc-cpu-cache",
-          "note": "measured experiments for every effect"
-        },
-        {
-          "id": "nand2web-arch"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "wiki-cache-coherence",
-          "note": "also in Still to Read; the multi-core problem"
-        },
-        {
-          "id": "fgiesen-wordpress-com-2016-08-07-why-do-cpus-have-multip"
-        },
-        {
-          "id": "people-freebsd-org-lstewart-articles-cpumemory",
-          "note": "section 3 only"
-        }
-      ],
-      "questions": [
-        "Why is there a speed gap between CPU and RAM at all?",
-        "What is a cache line, and why does asking for one byte fetch 64?",
-        "How does a cache know whether it holds an address? (Tag, index, offset.)",
-        "Why three levels instead of one large cache?",
-        "Why does walking a linked list cost more than walking an array of the same length?"
+        "What is the smallest set of instructions that makes the machine useful?",
+        "Caches box: Why is there a speed gap between CPU and RAM at all?",
+        "Caches box: What is a cache line, and why does asking for one byte fetch 64?",
+        "Caches box: How does a cache know whether it holds an address? (Tag, index, offset.)",
+        "Caches box: Why three levels instead of one large cache?",
+        "Caches box: Why does walking a linked list cost more than walking an array of the same length?"
       ]
     },
     "machine-code-and-assembly": {
@@ -4372,7 +4281,7 @@
       "deeper": [
         {
           "id": "engineering-a-compiler",
-          "note": "also open in a tab; chapter 1 for the shape, the rest as reference"
+          "note": "also open in a tab; chapter 1 for the shape, the rest as reference; Compiler optimizations box: the optimization chapters"
         },
         {
           "id": "dragon-book",
@@ -4391,14 +4300,41 @@
         {
           "id": "nand2tetris-book",
           "note": "chapters 7–8 (virtual machine) and 10–11 (compiler)"
+        },
+        {
+          "id": "godbolt-org",
+          "note": "Compiler optimizations box: type C on the left, read assembly on the right, toggle -O0 and -O2"
+        },
+        {
+          "id": "yt-bSkpMdDe4g4",
+          "note": "Compiler optimizations box: long; the first half is enough"
+        },
+        {
+          "id": "gcc-gimple-and-rtl",
+          "note": "Compiler optimizations box: both in your Compilers folder; what an optimizer's working format looks like"
+        },
+        {
+          "id": "aosabook-org-en-v1-llvm",
+          "note": "Crazy compilers box: the M-languages × N-machines argument from the person who built it"
+        },
+        {
+          "id": "yt-eP_P4KOjwhs",
+          "note": "Crazy compilers box: the other half of portability: the operating system"
         }
       ],
       "questions": [
         "What does the parser's tree give you that a flat list of tokens does not?",
         "Turn a = b + c 2 into toy-CPU instructions. Where do the intermediate values live?",
         "Compiler, interpreter, JIT: where does each one do the translation?",
-        "Two source files become one program. What does the linker have to fix up?"
-      ]
+        "Two source files become one program. What does the linker have to fix up?",
+        "Compiler optimizations box: Do constant folding, dead-code elimination and inlining by hand on five lines of code.",
+        "Compiler optimizations box: Why do optimizers work on an intermediate form and not on source text or on assembly?",
+        "Compiler optimizations box: The compiler may change anything as long as the visible behaviour stays the same. What counts as visible?",
+        "Crazy compilers box: Five languages and four CPU families: how many translators without a shared intermediate form, how many with one?",
+        "Crazy compilers box: What must a backend know about its target? (Instructions, registers, calling convention.)",
+        "Crazy compilers box: WebAssembly and Java bytecode are instruction sets for machines that do not exist. What problem does that solve?"
+      ],
+      "note": "Compiler optimizations box: No bookmark in the Computer from Scratch folder covers this."
     },
     "our-toy-language-and-its-compiler": {
       "core": [
@@ -4491,10 +4427,25 @@
         {
           "id": "djhworld-cpu",
           "note": "djhworld: I don't know how CPUs work so I simulated one in code; second read, now as a check on your own version"
+        },
+        {
+          "id": "yt-AqNDk_UJW4k",
+          "note": "Turing machines box: the moment the breadboard computer gets a conditional jump"
+        },
+        {
+          "id": "yt-dNRDvLACg5Q",
+          "note": "Turing machines box"
+        },
+        {
+          "id": "petzold-annotated-turing",
+          "note": "Turing machines box: Turing's 1936 paper with a guide"
         }
       ],
       "questions": [
-        "Take one line of your toy language down to transistors. At each layer, what is the representation, and what translates it to the next?"
+        "Take one line of your toy language down to transistors. At each layer, what is the representation, and what translates it to the next?",
+        "Turing machines box: What is the least a machine needs to be Turing complete?",
+        "Turing machines box: Your toy CPU and a laptop can compute the same things. What is the one thing that differs?",
+        "Turing machines box: The halting problem in one paragraph."
       ]
     },
     "pipelining": {
@@ -4514,150 +4465,6 @@
       "questions": [
         "A pipeline makes no single instruction faster. What does it make faster?",
         "What is a hazard, and what does the pipeline do when it meets one?"
-      ]
-    },
-    "predictive-branching": {
-      "core": [
-        {
-          "id": "en-algorithmica-org-hpc-pipelining-branching"
-        },
-        {
-          "id": "danluu-com-branch-prediction",
-          "note": "predictors from simplest to modern, each with its accuracy"
-        },
-        {
-          "id": "stackoverflow-com-questions-11227809-why-is-processing-a",
-          "note": "the demo your readers can run"
-        }
-      ],
-      "deeper": [],
-      "questions": [
-        "Why does a pipelined CPU have to guess at all?",
-        "What does a wrong guess cost?",
-        "How does a two-bit counter predict a loop correctly on all but the first and last pass?"
-      ],
-      "note": "No bookmark covers this."
-    },
-    "compiler-optimizations-leaving-out-stuff-that": {
-      "core": [
-        {
-          "id": "godbolt-org",
-          "note": "type C on the left, read assembly on the right, toggle -O0 and -O2"
-        },
-        {
-          "id": "yt-bSkpMdDe4g4",
-          "note": "long; the first half is enough"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "engineering-a-compiler",
-          "note": "the optimization chapters"
-        },
-        {
-          "id": "gcc-gimple-and-rtl",
-          "note": "both in your Compilers folder; what an optimizer's working format looks like"
-        }
-      ],
-      "questions": [
-        "Do constant folding, dead-code elimination and inlining by hand on five lines of code.",
-        "Why do optimizers work on an intermediate form and not on source text or on assembly?",
-        "The compiler may change anything as long as the visible behaviour stays the same. What counts as visible?"
-      ],
-      "note": "No bookmark in the Computer from Scratch folder covers this."
-    },
-    "crazy-compilers-how-they-are-hardware": {
-      "core": [
-        {
-          "id": "aosabook-org-en-v1-llvm",
-          "note": "the M-languages × N-machines argument from the person who built it"
-        },
-        {
-          "id": "yt-eP_P4KOjwhs",
-          "note": "the other half of portability: the operating system"
-        }
-      ],
-      "deeper": [],
-      "questions": [
-        "Five languages and four CPU families: how many translators without a shared intermediate form, how many with one?",
-        "What must a backend know about its target? (Instructions, registers, calling convention.)",
-        "WebAssembly and Java bytecode are instruction sets for machines that do not exist. What problem does that solve?"
-      ]
-    },
-    "simd-stuff": {
-      "core": [
-        {
-          "id": "yt-ryfbBB3pHfI",
-          "note": "Core Dumped's video on SIMD"
-        },
-        {
-          "id": "en-algorithmica-org-hpc-simd"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "wiki-single-instruction-multiple-data"
-        },
-        {
-          "id": "wiki-cell-processor"
-        }
-      ],
-      "questions": [
-        "One instruction, many lanes: what does a 256-bit register hold?",
-        "Why are if-statements awkward in SIMD code, and what replaces them?",
-        "How is SIMD related to what a GPU does? (The bridge to 5.6.)"
-      ]
-    },
-    "more-than-one-core": {
-      "core": [
-        {
-          "id": "yt-5sw9XJokAqw"
-        },
-        {
-          "id": "yt-3X93PnKRNUo"
-        },
-        {
-          "id": "wiki-cache-coherence",
-          "note": "two cores, one piece of memory"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-IMceN4_rieo"
-        },
-        {
-          "id": "yt-UXwoAKB-SvE"
-        },
-        {
-          "id": "wiki-multi-core-processor"
-        }
-      ],
-      "questions": [
-        "Clock speeds stopped rising around 2005 and core counts started to. Why?",
-        "What does a program have to do before a second core helps it?",
-        "Two cores write to the same cache line. What goes wrong?"
-      ]
-    },
-    "turing-machines-and-turing-completeness": {
-      "core": [
-        {
-          "id": "yt-AqNDk_UJW4k",
-          "note": "the moment the breadboard computer gets a conditional jump"
-        },
-        {
-          "id": "yt-dNRDvLACg5Q"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "petzold-annotated-turing",
-          "note": "Turing's 1936 paper with a guide"
-        }
-      ],
-      "questions": [
-        "What is the least a machine needs to be Turing complete?",
-        "Your toy CPU and a laptop can compute the same things. What is the one thing that differs?",
-        "The halting problem in one paragraph."
       ]
     },
     "how-a-device-talks-to-the": {
@@ -4718,13 +4525,53 @@
         {
           "id": "petzold-code",
           "note": "\"Peripherals\""
+        },
+        {
+          "id": "yt-AHYNxpqKqwo",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "yt-MCi7dCBhVpQ",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "yt-N0O5Uwc3C0o",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "yt-l7rce6IQDWs",
+          "note": "Ports and cables box: what a VGA cable carries, signal by signal"
+        },
+        {
+          "id": "yt-oLYLnb7kpLg",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "wiki-usb",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "wiki-hdmi",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "wiki-digital-visual-interface",
+          "note": "Ports and cables box"
+        },
+        {
+          "id": "wiki-video-graphics-array",
+          "note": "Ports and cables box"
         }
       ],
       "questions": [
         "The CPU writes to an address where there is no RAM. What happens, and which circuit decides?",
         "A device is a few registers: status, command, data. Write the polling loop for a keyboard in pseudocode.",
         "With DMA, who copies the bytes, and how does the CPU learn the copy is done?",
-        "USB, SATA and PCIe are all serial. Why did one fast wire beat many parallel ones?"
+        "USB, SATA and PCIe are all serial. Why did one fast wire beat many parallel ones?",
+        "Ports and cables box: One wire sending bits in a row beat many wires sending them side by side. Why?",
+        "Ports and cables box: What does a protocol on a cable have to fix? (Voltages, timing, where a message starts.)",
+        "Ports and cables box: VGA is analog and HDMI is digital. What actually differs on the wire?",
+        "Ports and cables box: You plug something in. How does the computer find out what it is?"
       ],
       "note": "Your Still to Read folder goes much deeper here than the outline did: DMA, bus mastering, PCI and the IOMMU are all in it."
     },
@@ -4759,46 +4606,6 @@
         "How does the CPU find the right handler?",
         "When is polling the better choice?",
         "One mechanism, three uses: a device has data, a timer fires, a program asks the kernel for something. What is the same in all three?"
-      ]
-    },
-    "ports-and-cables": {
-      "core": [
-        {
-          "id": "yt-AHYNxpqKqwo"
-        },
-        {
-          "id": "yt-MCi7dCBhVpQ"
-        },
-        {
-          "id": "yt-N0O5Uwc3C0o"
-        },
-        {
-          "id": "yt-l7rce6IQDWs",
-          "note": "what a VGA cable carries, signal by signal"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-oLYLnb7kpLg"
-        },
-        {
-          "id": "wiki-usb"
-        },
-        {
-          "id": "wiki-hdmi"
-        },
-        {
-          "id": "wiki-digital-visual-interface"
-        },
-        {
-          "id": "wiki-video-graphics-array"
-        }
-      ],
-      "questions": [
-        "One wire sending bits in a row beat many wires sending them side by side. Why?",
-        "What does a protocol on a cable have to fix? (Voltages, timing, where a message starts.)",
-        "VGA is analog and HDMI is digital. What actually differs on the wire?",
-        "You plug something in. How does the computer find out what it is?"
       ]
     },
     "how-does-a-keyboard-work": {
@@ -5553,27 +5360,20 @@
         {
           "id": "what-happens-when",
           "note": "alex/what-happens-when"
+        },
+        {
+          "id": "cstack-github-io-db-tutorial",
+          "note": "Database box: an SQLite clone from scratch; the early parts and the B-tree introduction"
         }
       ],
       "questions": [
         "Why is networking built in layers, and what does each layer hide from the one above?",
         "What is encapsulation? Draw one message with all its headers.",
-        "A server is a program, not a machine. What does it spend most of its time doing?"
-      ]
-    },
-    "what-is-a-database": {
-      "core": [
-        {
-          "id": "cstack-github-io-db-tutorial",
-          "note": "an SQLite clone from scratch; the early parts and the B-tree introduction"
-        }
+        "A server is a program, not a machine. What does it spend most of its time doing?",
+        "Database box: Why is a folder of files not enough? Name three things a database adds.",
+        "Database box: Why is a B-tree node the size of one disk block? (The link to 2.2a and 2.2b.)"
       ],
-      "deeper": [],
-      "questions": [
-        "Why is a folder of files not enough? Name three things a database adds.",
-        "Why is a B-tree node the size of one disk block? (The link to 2.2a and 2.2b.)"
-      ],
-      "note": "Nothing in the bookmark folder covers databases."
+      "note": "Database box: Nothing in the bookmark folder covers databases."
     },
     "bits-on-a-wire": {
       "core": [
@@ -5617,53 +5417,53 @@
         },
         {
           "id": "yt-1I1vxu5qIUM"
+        },
+        {
+          "id": "yt-eq5YpKHXJDM",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-MgkhrBSjhag",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-ppU41c15Xho",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-izG7qT0EpBw",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-h0jloehRKas",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-X8jsijhllIA",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-b3NxrZOu_CE",
+          "note": "Error correction box"
+        },
+        {
+          "id": "yt-sNkERQlK8j8",
+          "note": "Error correction box"
+        },
+        {
+          "id": "wiki-coding-theory",
+          "note": "Error correction box: recently closed tab"
         }
       ],
       "questions": [
         "Sender and receiver share no clock. How does the receiver find where one bit ends?",
         "What does a modem do, and why is the handoff between digital and analog needed at all?",
         "Many phones share one radio band, many conversations share one fibre. Name three ways to share.",
-        "Why does light stay inside a glass fibre?"
-      ]
-    },
-    "error-correcting-codes-especially-hamming": {
-      "core": [
-        {
-          "id": "yt-eq5YpKHXJDM"
-        },
-        {
-          "id": "yt-MgkhrBSjhag"
-        },
-        {
-          "id": "yt-ppU41c15Xho"
-        },
-        {
-          "id": "yt-izG7qT0EpBw"
-        },
-        {
-          "id": "yt-h0jloehRKas"
-        },
-        {
-          "id": "yt-X8jsijhllIA"
-        },
-        {
-          "id": "yt-b3NxrZOu_CE"
-        }
-      ],
-      "deeper": [
-        {
-          "id": "yt-sNkERQlK8j8"
-        },
-        {
-          "id": "wiki-coding-theory",
-          "note": "recently closed tab"
-        }
-      ],
-      "questions": [
-        "Detecting an error and correcting it: what extra information does correction need?",
-        "What is Hamming distance, and how far apart must valid codewords be to fix one flipped bit?",
-        "Place the parity bits of a (7,4) Hamming code and correct one error by hand.",
-        "Networks mostly detect and resend; RAM, SSDs and space probes correct. Why the difference?"
+        "Why does light stay inside a glass fibre?",
+        "Error correction box: Detecting an error and correcting it: what extra information does correction need?",
+        "Error correction box: What is Hamming distance, and how far apart must valid codewords be to fix one flipped bit?",
+        "Error correction box: Place the parity bits of a (7,4) Hamming code and correct one error by hand.",
+        "Error correction box: Networks mostly detect and resend; RAM, SSDs and space probes correct. Why the difference?"
       ]
     },
     "ethernet-and-wifi": {
@@ -5707,50 +5507,36 @@
       "deeper": [
         {
           "id": "yt--wMU8vmfaYo",
-          "note": "routing between networks and DNS, told through one outage"
+          "note": "routing between networks and DNS, told through one outage; ISP box"
+        },
+        {
+          "id": "wiki-modem",
+          "note": "ISP box"
+        },
+        {
+          "id": "arstechnica-com-information-technology-2016-05-how-the-i",
+          "note": "ISP box"
+        },
+        {
+          "id": "submarinecablemap-com",
+          "note": "ISP box"
+        },
+        {
+          "id": "wireguard-com",
+          "note": "VPN box"
         }
       ],
       "questions": [
         "Why does a machine have both a hardware address and an IP address?",
         "What does a router do with one packet?",
         "Ten devices at home, one public address. How?",
-        "What ran out with IPv4, and what does IPv6 change?"
-      ]
-    },
-    "what-is-an-isp-and-what": {
-      "core": [
-        {
-          "id": "yt--wMU8vmfaYo"
-        },
-        {
-          "id": "wiki-modem"
-        },
-        {
-          "id": "arstechnica-com-information-technology-2016-05-how-the-i"
-        }
+        "What ran out with IPv4, and what does IPv6 change?",
+        "ISP box: What does a modem modulate, and why is it needed at all?",
+        "ISP box: Your provider does not reach every network itself. How does your packet get to one it does not reach?",
+        "VPN box: A VPN puts a packet inside a packet. Draw both headers.",
+        "VPN box: With a VPN on, what does your internet provider still see, and what does the VPN provider see?"
       ],
-      "deeper": [
-        {
-          "id": "submarinecablemap-com"
-        }
-      ],
-      "questions": [
-        "What does a modem modulate, and why is it needed at all?",
-        "Your provider does not reach every network itself. How does your packet get to one it does not reach?"
-      ]
-    },
-    "what-is-a-vpn": {
-      "core": [
-        {
-          "id": "wireguard-com"
-        }
-      ],
-      "deeper": [],
-      "questions": [
-        "A VPN puts a packet inside a packet. Draw both headers.",
-        "With a VPN on, what does your internet provider still see, and what does the VPN provider see?"
-      ],
-      "note": "Nothing in the bookmark folder covers VPNs. A full answer to \"what does it protect\" needs encryption, which the series leaves out."
+      "note": "VPN box: Nothing in the bookmark folder covers VPNs. A full answer to \"what does it protect\" needs encryption, which the series leaves out."
     },
     "tcp-and-udp": {
       "core": [
@@ -5968,6 +5754,22 @@
         {
           "id": "nand2tetris-course",
           "note": "chapter 3"
+        },
+        {
+          "id": "yt-K88pgWhEb1M",
+          "note": "ROM box"
+        },
+        {
+          "id": "yt-BA12Z7gQ4P0",
+          "note": "ROM box: a ROM as a lookup table that replaces logic gates"
+        },
+        {
+          "id": "wiki-read-only-memory",
+          "note": "ROM box"
+        },
+        {
+          "id": "yt-0q6Ujn_zNH8",
+          "note": "ROM box: what lives in a ROM: the first program a computer runs"
         }
       ],
       "questions": [
@@ -5975,7 +5777,10 @@
         "Why is S = R = 1 not allowed on an SR latch?",
         "What does a D latch add to an SR latch, and what does a flip-flop add to a D latch? Why does a counter need the flip-flop?",
         "SRAM cell, DRAM cell, flash cell: what holds the bit in each, and what does each give up?",
-        "What physically keeps a bit when the power is off?"
+        "What physically keeps a bit when the power is off?",
+        "ROM box: ROM, PROM, EPROM, EEPROM, flash: what changed at each step?",
+        "ROM box: Why does a computer need memory that survives power-off before it can read any drive?",
+        "ROM box: A ROM answers every address with a stored value. Why does that make it a replacement for any truth table?"
       ]
     },
     "memory": {
@@ -6130,12 +5935,74 @@
         {
           "id": "visual6502-org-jssim",
           "note": "a real 1975 CPU simulated transistor by transistor in the browser"
+        },
+        {
+          "id": "en-algorithmica-org-hpc-pipelining-branching",
+          "note": "Branch prediction box"
+        },
+        {
+          "id": "danluu-com-branch-prediction",
+          "note": "Branch prediction box: predictors from simplest to modern, each with its accuracy"
+        },
+        {
+          "id": "stackoverflow-com-questions-11227809-why-is-processing-a",
+          "note": "Branch prediction box: the demo your readers can run"
+        },
+        {
+          "id": "yt-ryfbBB3pHfI",
+          "note": "SIMD box: Core Dumped's video on SIMD"
+        },
+        {
+          "id": "en-algorithmica-org-hpc-simd",
+          "note": "SIMD box"
+        },
+        {
+          "id": "wiki-single-instruction-multiple-data",
+          "note": "SIMD box"
+        },
+        {
+          "id": "wiki-cell-processor",
+          "note": "SIMD box"
+        },
+        {
+          "id": "yt-5sw9XJokAqw",
+          "note": "More than one core box"
+        },
+        {
+          "id": "yt-3X93PnKRNUo",
+          "note": "More than one core box"
+        },
+        {
+          "id": "wiki-cache-coherence",
+          "note": "More than one core box: two cores, one piece of memory"
+        },
+        {
+          "id": "yt-IMceN4_rieo",
+          "note": "More than one core box"
+        },
+        {
+          "id": "yt-UXwoAKB-SvE",
+          "note": "More than one core box"
+        },
+        {
+          "id": "wiki-multi-core-processor",
+          "note": "More than one core box"
         }
       ],
       "questions": [
         "Instructions and data sit in the same RAM. What tells them apart?",
-        "Name every register one fetch touches, and what moves where on each clock tick."
-      ]
+        "Name every register one fetch touches, and what moves where on each clock tick.",
+        "Branch prediction box: Why does a pipelined CPU have to guess at all?",
+        "Branch prediction box: What does a wrong guess cost?",
+        "Branch prediction box: How does a two-bit counter predict a loop correctly on all but the first and last pass?",
+        "SIMD box: One instruction, many lanes: what does a 256-bit register hold?",
+        "SIMD box: Why are if-statements awkward in SIMD code, and what replaces them?",
+        "SIMD box: How is SIMD related to what a GPU does? (The bridge to 5.6.)",
+        "More than one core box: Clock speeds stopped rising around 2005 and core counts started to. Why?",
+        "More than one core box: What does a program have to do before a second core helps it?",
+        "More than one core box: Two cores write to the same cache line. What goes wrong?"
+      ],
+      "note": "Branch prediction box: No bookmark covers this."
     },
     "verilog-and-standard-cells": {
       "core": [

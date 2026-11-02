@@ -39,6 +39,17 @@ declare module "mdast" {
   }
 }
 
+// github-dark-dimmed's comment grey (#768390) is 3.87:1 on its own background
+// (#22272e), under the 4.5:1 WCAG AA asks for. This grey is 4.88:1.
+const liftDarkCommentContrast = {
+  span(node: Element) {
+    const { style } = node.properties;
+    if (typeof style === "string" && style.includes("--shiki-dark:#768390")) {
+      node.properties.style = style.replace("--shiki-dark:#768390", "--shiki-dark:#8B949E");
+    }
+  },
+};
+
 const unknown = 1;
 const containsImage = 2;
 const containsOther = 3;
@@ -545,6 +556,7 @@ const addBundledMDXContent = async <T extends Record<string, any>>(
         transformers: [
           transformerNotationDiff({ matchAlgorithm: "v3" }),
           transformerNotationHighlight({ matchAlgorithm: "v3" }),
+          liftDarkCommentContrast,
         ],
         theme: {
           dark: "github-dark-dimmed",

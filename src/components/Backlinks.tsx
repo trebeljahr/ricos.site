@@ -45,7 +45,7 @@ export const Backlinks = ({ items }: { items: BacklinkItem[] }) => {
           const label = TYPE_LABELS[type] || type;
           return (
             <div key={type}>
-              <p className="mb-hair text-sm font-medium text-gray-400 dark:text-gray-500">
+              <p className="mb-hair text-sm font-medium text-gray-500 dark:text-gray-400">
                 {label}
               </p>
               <ul className="list-none space-y-hair pl-0">

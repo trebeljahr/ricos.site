@@ -1,8 +1,3 @@
-import dynamic from "next/dynamic";
-import type { SearchProps } from "./SearchBar";
-
-export const Search = dynamic(() => import("./SearchBar"), { ssr: false }) as <
-  T extends Record<string, any>,
->(
-  props: SearchProps<T>,
-) => React.JSX.Element;
+// A plain re-export, not next/dynamic with `ssr: false`: the input appeared only
+// after its chunk loaded, and that pushed the whole list down by 66-78 px.
+export { default as Search } from "./SearchBar";

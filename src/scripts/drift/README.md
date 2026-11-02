@@ -49,6 +49,10 @@ Each step re-scans state so later steps see the result of earlier ones.
 
 ## Notes
 
+- CloudFront tells browsers to keep every variant for a year
+  (`Cache-Control: public, max-age=31536000, immutable`, set by the
+  `image-cache-control` function on the distribution). A variant URL has to
+  keep its content, so give a changed image a new file name.
 - ETags in the source bucket are raw MD5 (no multipart uploads), which is
   why `check.ts` can do content-dupe detection without downloading
   anything.

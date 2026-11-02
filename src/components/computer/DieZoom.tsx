@@ -454,9 +454,12 @@ export function DieZoom({
                 const width = item.rect.width * view.scale;
                 const height = item.rect.height * view.scale;
                 return (
+                  // A pointer shortcut: every outlined block also has its own button below the
+                  // map, so these stay out of the tab order. Their boxes overlap on purpose.
                   <button
                     key={item.id}
                     type="button"
+                    tabIndex={-1}
                     className={clsx(own.spotTarget, item.candidate && own.candidateSpot)}
                     aria-label={`Zoom to ${item.candidate ? "candidate " : ""}${item.label.toLowerCase()}`}
                     style={{ left: corner.x, top: corner.y, width, height }}

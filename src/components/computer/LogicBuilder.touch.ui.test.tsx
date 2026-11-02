@@ -26,20 +26,28 @@ function mount() {
   localStorage.setItem(STORAGE, JSON.stringify({ current: fixture(), saved: {} }));
   render(<LogicBuilder />);
   const board = screen.getByRole("application", { name: "Circuit canvas" }) as HTMLDivElement;
-  const width = parseFloat(board.style.width);
-  const height = parseFloat(board.style.height);
-  vi.spyOn(board, "getBoundingClientRect").mockReturnValue({
-    left: 0,
-    top: 0,
-    right: width,
-    bottom: height,
-    width,
-    height,
-    x: 0,
-    y: 0,
-    toJSON: () => ({}),
+  vi.spyOn(board, "getBoundingClientRect").mockImplementation(() => {
+    const width = parseFloat(board.style.width);
+    const height = parseFloat(board.style.height);
+    return {
+      left: 0,
+      top: 0,
+      right: width,
+      bottom: height,
+      width,
+      height,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    };
   });
   return board;
+}
+/** A phone's canvas: jsdom lays nothing out, so it reports no size of its own. */
+function narrowCanvas() {
+  vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(351);
+  vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(374);
+  Element.prototype.scrollIntoView = () => {};
 }
 function location(port: HTMLElement) {
   const owner = port.closest('[role="group"]') as HTMLElement;
@@ -82,7 +90,7 @@ describe("touch on the canvas", () => {
   it("wires an output to an input with two taps", () => {
     const board = mount();
     tap(board, output("a"));
-    expect(screen.getByText("Now tap an input to connect.")).toBeTruthy();
+    expect(screen.getByText("A Output: now tap an input.")).toBeTruthy();
     tap(board, input("gate", 1));
     expect(stored().wires.map(({ from, to, input }) => [from, to, input])).toEqual([
       ["a", "gate", 1],
@@ -109,7 +117,7 @@ describe("touch on the canvas", () => {
   it("takes the nearest port when a tap lands beside it, and prefers an input while an output waits", () => {
     const board = mount();
     tap(board, board, off(location(output("a")), 9, -6));
-    expect(screen.getByText("Now tap an input to connect.")).toBeTruthy();
+    expect(screen.getByText("A Output: now tap an input.")).toBeTruthy();
     const beside = off(location(input("gate", 0)), -10, -4);
     tap(board, part("gate"), beside);
     expect(stored().wires.map(({ to, input }) => [to, input])).toEqual([["gate", 0]]);
@@ -121,7 +129,7 @@ describe("touch on the canvas", () => {
     fireEvent.pointerDown(output("a"), { ...finger, ...at });
     fireEvent.pointerMove(board, { ...finger, ...off(at, 6, 5) });
     fireEvent.pointerUp(board, { ...finger, ...off(at, 6, 5) });
-    expect(screen.getByText("Now tap an input to connect.")).toBeTruthy();
+    expect(screen.getByText("A Output: now tap an input.")).toBeTruthy();
   });
 
   it("drags a wire from an output to an input", () => {
@@ -142,7 +150,7 @@ describe("touch on the canvas", () => {
     fireEvent.pointerUp(board, { ...finger, ...from });
     fireEvent.pointerUp(board, { ...finger, pointerId: 2, clientX: 450, clientY: 300 });
     expect(stored().wires).toEqual([]);
-    expect(screen.queryByText("Now tap an input to connect.")).toBeNull();
+    expect(screen.queryByText("A Output: now tap an input.")).toBeNull();
   });
 
   it("moves a part by its body, and a small wobble leaves it in place", () => {
@@ -171,6 +179,59 @@ describe("touch on the canvas", () => {
     expect(screen.getByText(/^Wire selected\./)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Delete" }));
     expect(stored().wires).toEqual([]);
+  });
+
+  it("zooms in when a tap lands on dots too close to tell apart, and keeps the waiting output", () => {
+    const board = mount();
+    tap(board, output("a"));
+    fireEvent.click(screen.getByRole("button", { name: "Zoom out" }));
+    fireEvent.click(screen.getByRole("button", { name: "Zoom out" }));
+    fireEvent.click(screen.getByRole("button", { name: "Zoom out" }));
+    fireEvent.click(screen.getByRole("button", { name: "Zoom out" }));
+    expect(screen.getByText("41%")).toBeTruthy();
+    const between = off(location(input("gate", 0)), 0, 6);
+    fireEvent.pointerDown(part("gate"), { ...finger, ...between });
+    fireEvent.pointerUp(board, { ...finger, ...between });
+    expect(screen.getByText("50%")).toBeTruthy();
+    expect(stored().wires).toEqual([]);
+    expect(document.querySelector('[class*="pending"]')).toBeTruthy();
+  });
+
+  it("adds one part for an accidental double tap on a narrow canvas, and says so", () => {
+    narrowCanvas();
+    mount();
+    const add = screen.getByTitle("Drag NAND onto canvas or click to add");
+    fireEvent.click(add);
+    fireEvent.click(add);
+    expect(stored().nodes).toHaveLength(4);
+    expect(screen.getByText("NAND added. Tap one of its dots to wire it.")).toBeTruthy();
+  });
+
+  it("opens a board too big for a phone at a tappable zoom, while Fit still shows all of it", () => {
+    narrowCanvas();
+    const nodes = Array.from({ length: 8 }, (_, row) => ({
+      id: `a${row}`,
+      type: "switch" as const,
+      label: `A${row}`,
+      x: 40,
+      y: 40 + row * 150,
+    }));
+    localStorage.setItem(
+      STORAGE,
+      JSON.stringify({ current: { name: "Tall", nodes, wires: [] }, saved: {} }),
+    );
+    render(<LogicBuilder />);
+    const zoom = () =>
+      parseInt(
+        screen.getByRole("toolbar", { name: "Canvas view controls" }).querySelector("span")!
+          .textContent!,
+        10,
+      );
+    fireEvent.click(screen.getByRole("button", { name: "Arrange by signal flow" }));
+    expect(zoom()).toBeGreaterThanOrEqual(50);
+    expect(screen.getByText(/Drag empty canvas to see the rest\./)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Fit" }));
+    expect(zoom()).toBeLessThan(50);
   });
 
   it("deletes a tapped part with the Delete button, which only exists with a selection", () => {

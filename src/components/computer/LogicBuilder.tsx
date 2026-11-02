@@ -148,10 +148,14 @@ const circuitHints: Record<string, string> = {
 };
 const MIN_ZOOM = 1e-9;
 const MAX_ZOOM = 1e9;
+const TOUCH_HINT = "Tap a part to add it. Tap an output, then an input, to wire them.";
 /** A canvas narrower than this frames its parts, not the empty sheet, and places parts in view. */
 const NARROW_BOARD = 520;
+/** At this zoom the closest ports stand about 12 CSS px apart, so a finger can tell them apart. */
+const READABLE_ZOOM = 0.5;
 /** A fingertip covers the port it aims at, so a touch takes the nearest port within this many CSS px. */
 const TOUCH_PORT_REACH = 22;
+const DOUBLE_TAP_MS = 350;
 /** A finger wobbles this many CSS px during a tap. */
 const TOUCH_TAP_SLOP = 14;
 const GRID_BASE_STEP = 20;
@@ -1492,7 +1496,7 @@ function LogicBuilderWorkspace({
   );
   useEffect(() => {
     if (window.matchMedia?.("(pointer: coarse)")?.matches)
-      setMessage("Tap a part to add it. Tap an output, then an input, to wire them.");
+      setMessage(TOUCH_HINT);
   }, []);
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -1712,6 +1716,9 @@ function LogicBuilderWorkspace({
   const touchPointers = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef<{ distance: number; x: number; y: number } | null>(null);
   const touchMoved = useRef(false);
+  const zoomTap = useRef<{ x: number; y: number } | null>(null);
+  const lastPlacement = useRef(0);
+  const lastPaletteTouch = useRef(-Infinity);
   const inputFile = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const circuitRef = useRef(circuit);
@@ -1774,7 +1781,11 @@ function LogicBuilderWorkspace({
     zoomAt(next, rect.left + rect.width / 2, rect.top + rect.height / 2);
   };
   const pendingFit = useRef(false);
-  const frameCanvas = useCallback((focusIds?: readonly string[]) => {
+  const narrowBoard = () => {
+    const width = boardViewport.current?.clientWidth ?? 0;
+    return width > 0 && width < NARROW_BOARD;
+  };
+  const frameCanvas = useCallback((focusIds?: readonly string[], opening = false) => {
     const viewport = boardViewport.current;
     if (!viewport?.clientWidth || !viewport.clientHeight) return;
     const nodes = focusIds ? displayNodes.filter((node) => focusIds.includes(node.id)) : displayNodes;
@@ -1786,11 +1797,17 @@ function LogicBuilderWorkspace({
     const top = Math.min(snug ? Infinity : 0, wireBounds?.top ?? Infinity, ...nodes.map((node) => node.y)) - 40;
     const right = Math.max(snug ? -Infinity : WIDTH, wireBounds?.right ?? -Infinity, ...nodes.map((node) => node.x + nodeWidth(node))) + 40;
     const bottom = Math.max(snug ? -Infinity : HEIGHT, wireBounds?.bottom ?? -Infinity, ...nodes.map((node) => node.y + nodeHeight(node))) + 40;
-    const next = Math.max(MIN_ZOOM, Math.min(narrow ? 1 : MAX_ZOOM,
-      (viewport.clientWidth - 24) / (right - left),
-      (viewport.clientHeight - 24) / (bottom - top)));
-    const visibleLeft = left - (viewport.clientWidth / next - (right - left)) / 2;
-    const visibleTop = top - (viewport.clientHeight / next - (bottom - top)) / 2;
+    const fitWidth = (viewport.clientWidth - 24) / (right - left);
+    const fitAll = Math.min(fitWidth, (viewport.clientHeight - 24) / (bottom - top));
+    // A board too big for a phone opens at its top left, big enough to tap, rather than whole and tiny.
+    const readable = opening && narrow && fitAll < READABLE_ZOOM;
+    const next = readable ? Math.max(READABLE_ZOOM, Math.min(1, fitWidth))
+      : Math.max(MIN_ZOOM, Math.min(narrow ? 1 : MAX_ZOOM, fitAll));
+    const spillsX = readable && (right - left) * next > viewport.clientWidth;
+    const spillsY = readable && (bottom - top) * next > viewport.clientHeight;
+    const visibleLeft = spillsX ? left : left - (viewport.clientWidth / next - (right - left)) / 2;
+    const visibleTop = spillsY ? top : top - (viewport.clientHeight / next - (bottom - top)) / 2;
+    if (spillsX || spillsY) setMessage(TOUCH_HINT + " Drag empty canvas to see the rest.");
     const framed = frameBounds(visibleLeft, visibleTop, next,
       viewport.clientWidth, viewport.clientHeight);
     const target = {
@@ -1803,7 +1820,7 @@ function LogicBuilderWorkspace({
     setZoom(next);
     setBounds(framed);
   }, [displayNodes, routes.bounds]);
-  const fitCanvas = useCallback(() => frameCanvas(), [frameCanvas]);
+  const fitCanvas = useCallback(() => frameCanvas(undefined, !embedded && !lockedRef.current), [frameCanvas, embedded]);
   const refitPreview = useRef(() => {});
   refitPreview.current = () => frameCanvas(initialFocus);
   useEffect(() => {
@@ -1908,7 +1925,11 @@ function LogicBuilderWorkspace({
   useEffect(() => {
     if (challenge) {
       pendingFit.current = true;
-      requestAnimationFrame(() => fitCanvas());
+      requestAnimationFrame(() => {
+        // Left set, the reader's first edit refits the view, and on a phone that throws away where they had panned to.
+        if (narrowBoard()) pendingFit.current = false;
+        fitCanvas();
+      });
       setReady(true);
       return;
     }
@@ -2583,24 +2604,19 @@ function LogicBuilderWorkspace({
     if (touch) touchMoved.current = true;
     setMenu(null);
   };
-  /** The port a touch aims at: an input first while an output waits for one. */
-  const touchPort = (event: React.PointerEvent<Element>) => {
+  /** The ports a touch may aim at, nearest first: inputs first while an output waits for one. */
+  const touchPorts = (event: React.PointerEvent<Element>) => {
     if (lockedRef.current || (event.target as Element).closest(
-      "button:not([data-node-id]), input, select, label, a, [data-inline-path]")) return null;
+      "button:not([data-node-id]), input, select, label, a, [data-inline-path]")) return [];
     const point = boardPoint(event.clientX, event.clientY);
     // A short wire lies wholly within reach of its ports, so a touch on the wire reaches less far.
     const onWire = (event.target as Element).closest(`.${styles.wireHit}, .${styles.busHit}`);
-    const nearestOf = (ports: WiringPort[]) => {
-      let best: WiringPort | null = null;
-      let reach = (onWire ? TOUCH_PORT_REACH / 2 : TOUCH_PORT_REACH) / zoomRef.current;
-      for (const port of ports) {
-        const distance = Math.hypot(point.x - port.x, point.y - port.y);
-        if (distance < reach) { best = port; reach = distance; }
-      }
-      return best;
-    };
-    return (pending && nearestOf(availablePorts.filter((port) => port.kind === "input")))
-      || nearestOf(availablePorts);
+    const reach = (onWire ? TOUCH_PORT_REACH / 2 : TOUCH_PORT_REACH) / zoomRef.current;
+    const distance = (port: WiringPort) => Math.hypot(point.x - port.x, point.y - port.y);
+    const near = availablePorts.filter((port) => distance(port) < reach)
+      .sort((a, b) => distance(a) - distance(b));
+    const inputs = pending ? near.filter((port) => port.kind === "input") : [];
+    return inputs.length ? inputs : near;
   };
   const startWire = (event: React.PointerEvent<HTMLButtonElement>, draft: WireDraft) => {
     if (lockedRef.current) return;
@@ -2754,15 +2770,23 @@ function LogicBuilderWorkspace({
   const gestureDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "touch") {
       touchPointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      zoomTap.current = null;
       if (touchPointers.current.size === 1) {
         touchMoved.current = false;
-        const port = touchPort(event);
-        if (port) {
+        const near = touchPorts(event);
+        const port = near[0];
+        if (near.length > 1 && zoomRef.current < READABLE_ZOOM && !embedded) {
+          // These dots are too close to tell which one a finger means, so the tap zooms in first.
+          event.stopPropagation();
+          zoomTap.current = { x: event.clientX, y: event.clientY };
+        } else if (port) {
           portWiring.clear();
           setActiveInlinePath(null);
           const end = port.kind === "output"
             ? { from: port.nodeId, output: port.index } : { to: port.nodeId, input: port.index };
-          beginWireDraft(event, { ...end, x: port.x, y: port.y, originX: port.x, originY: port.y });
+          // A tap is measured from where the finger came down, which can be well beside the port.
+          const finger = boardPoint(event.clientX, event.clientY);
+          beginWireDraft(event, { ...end, x: port.x, y: port.y, originX: finger.x, originY: finger.y });
         }
       }
       if (touchPointers.current.size === 2) {
@@ -2856,6 +2880,12 @@ function LogicBuilderWorkspace({
       if (!wireDraftRef.current && !dragRef.current) event.stopPropagation();
       touchPointers.current.delete(event.pointerId);
       pinch.current = null;
+      if (zoomTap.current && !touchMoved.current && event.type === "pointerup") {
+        zoomAt(READABLE_ZOOM, zoomTap.current.x, zoomTap.current.y);
+        touchMoved.current = true;
+        setMessage("Zoomed in so the dots are far enough apart. Tap one now.");
+      }
+      zoomTap.current = null;
       if (touchPointers.current.size === 0)
         window.setTimeout(() => {
           touchMoved.current = false;
@@ -2907,6 +2937,10 @@ function LogicBuilderWorkspace({
       ),
     }));
   };
+  const portName = (id: string, output: number) => {
+    const node = circuit.nodes.find((item) => item.id === id);
+    return node ? `${node.label || LABELS[node.type]} ${outputLabel(node, output)}` : "Output";
+  };
   const finishPointer = (event: React.PointerEvent<HTMLDivElement>) => {
     if (portWiring.pointerUp(event)) return;
     const draft = wireDraftRef.current;
@@ -2942,7 +2976,7 @@ function LogicBuilderWorkspace({
         setPending({ from: draft.from, output: draft.output ?? 0 });
         setMessage(!draft.touch ? "Drag to an input, or click one to connect."
           : draft.anchor ? "Wire selected. Tap an input to branch from it, or press Delete."
-          : "Now tap an input to connect.");
+          : `${portName(draft.from, draft.output ?? 0)}: now tap an input.`);
       } else if (!moved && draft.to)
         connect(pending?.from ?? null, draft.to, draft.input!, pending?.output);
       else setMessage("Wire cancelled. Drop on a compatible connector.");
@@ -2985,15 +3019,21 @@ function LogicBuilderWorkspace({
   // Parts made by tutorial levels come in two versions: built-in, and the reader's own.
   const ownMode = progress.settings.ownParts;
   const placeRow = (placement: Placement, position?: { x: number; y: number }, inlineTarget?: string | null) => {
+    const tapped = !position && !activeInlinePath && narrowBoard();
+    if (tapped) {
+      // One accidental double tap should not make two parts.
+      if (performance.now() - lastPlacement.current < DOUBLE_TAP_MS) return;
+      lastPlacement.current = performance.now();
+      if (!embedded) boardViewport.current?.scrollIntoView({ block: "nearest" });
+    }
     if ("type" in placement) {
-      let spot = position;
       // A narrow canvas shows little of the default grid, so a tap places the part in view.
-      if (!spot && !activeInlinePath && (boardViewport.current?.clientWidth ?? NARROW_BOARD) < NARROW_BOARD)
-        spot = openSpot(insertionCenter(), circuit.nodes);
+      const spot = tapped ? openSpot(insertionCenter(), circuit.nodes) : position;
       addNode(placement.type, spot && {
         x: spot.x - NODE_WIDTH / 2,
         y: spot.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
       }, inlineTarget, placement.extra);
+      if (tapped) setMessage(`${LABELS[placement.type]} added. Tap one of its dots to wire it.`);
       return;
     }
     const source = placement.circuit;
@@ -3007,10 +3047,12 @@ function LogicBuilderWorkspace({
       return;
     }
     // A click lands in the middle of what the reader is looking at; inside an unfolded part, beside its parts.
-    const center = position ?? ((inlineTarget === undefined ? activeInlinePath : inlineTarget) ? undefined : insertionCenter());
+    const center = tapped ? openSpot(insertionCenter(), circuit.nodes)
+      : position ?? ((inlineTarget === undefined ? activeInlinePath : inlineTarget) ? undefined : insertionCenter());
     const height = nodeHeight({ id: "drop", type: "module", module: source, x: 0, y: 0 });
     addModule(source, center && { x: center.x - MODULE_WIDTH / 2, y: center.y - height / 2 },
       inlineTarget, placement.extra);
+    if (tapped) setMessage(`${source.name} added. Tap one of its dots to wire it.`);
   };
   // Rows depend on the palette, the reader's progress and the search, not on every render.
   const challengeRows = challenge?.rows;
@@ -3503,7 +3545,11 @@ function LogicBuilderWorkspace({
         </nav>
       )}
       <div className={clsx(styles.layout, locked && styles.lockedLayout, sidePanel && styles.layoutWithCoach)}>
-        {!locked && <aside className={styles.sidebar} aria-label="Gate palette">
+        {!locked && <aside className={styles.sidebar} aria-label="Gate palette" onTouchEnd={(event) => {
+          // iOS zooms the page on a double tap on a draggable part, whatever touch-action says.
+          if (event.timeStamp - lastPaletteTouch.current < DOUBLE_TAP_MS) event.preventDefault();
+          lastPaletteTouch.current = event.timeStamp;
+        }}>
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
           <input
@@ -3560,7 +3606,7 @@ function LogicBuilderWorkspace({
             >
               +
             </button>
-            <button type="button" onClick={fitCanvas}>
+            <button type="button" onClick={() => frameCanvas()}>
               Fit
             </button>
             <button type="button" onClick={() => zoomFromCenter(1)}>

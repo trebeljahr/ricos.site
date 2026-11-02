@@ -3,6 +3,7 @@ import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
+import { getSeriesStatusProps } from "src/lib/computerSeriesStatus";
 import {
   INPUT_DEVICE_CORE_LESSONS,
   INPUT_DEVICE_LESSONS,
@@ -14,7 +15,7 @@ const LogicTutorial = dynamic(
   { ssr: false, loading: () => <p className="p-stack">Loading the builder…</p> },
 );
 
-export default function BuildFromNandPage() {
+export default function BuildFromNandPage({ seriesIsOut }: { seriesIsOut: boolean }) {
   const router = useRouter();
   const level = typeof router.query.level === "string" ? router.query.level : undefined;
   const inputPractice = INPUT_DEVICE_LESSONS.includes(level ?? "");
@@ -24,7 +25,7 @@ export default function BuildFromNandPage() {
       description="Wire every part of a computer yourself, from transistors up through NAND, adders, an ALU and memory. Each level checks your circuit against its truth table."
       keywords={[]}
       url="computer/build-from-nand"
-      noindex
+      noindex={!seriesIsOut}
     >
       <PageMain>
         <ComputerDemoNav current="build-from-nand" />
@@ -60,3 +61,5 @@ export default function BuildFromNandPage() {
     </Layout>
   );
 }
+
+export const getStaticProps = getSeriesStatusProps;

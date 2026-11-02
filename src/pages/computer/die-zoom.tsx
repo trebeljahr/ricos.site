@@ -1,15 +1,16 @@
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import { DieZoom } from "@components/computer/DieZoom";
 import Layout from "@components/Layout";
+import { getSeriesStatusProps } from "src/lib/computerSeriesStatus";
 
-export default function DieZoomPage() {
+export default function DieZoomPage({ seriesIsOut }: { seriesIsOut: boolean }) {
   return (
     <Layout
       title="Zoom into a real chip"
       description="Zoom from a coin down to the wires of a Pentium II die."
       keywords={[]}
       url="computer/die-zoom"
-      noindex
+      noindex={!seriesIsOut}
       fillViewport
     >
       <main className="mx-auto w-full max-w-[1440px] px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
@@ -25,3 +26,5 @@ export default function DieZoomPage() {
     </Layout>
   );
 }
+
+export const getStaticProps = getSeriesStatusProps;

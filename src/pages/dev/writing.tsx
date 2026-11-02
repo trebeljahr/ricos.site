@@ -17,13 +17,18 @@ import {
   dayKey,
   type History,
   LOCK_STEP,
-  type NextUp,
-  nextUp,
-  type Pace,
-  pace,
+  NEXT_DEADLINE,
+  type NextStep,
+  nextStep,
+  type PartPace,
+  partChapters,
+  partPace,
   progressColor,
   recordDay,
   SERIES_START,
+  STEPS,
+  type Step,
+  stepDone,
   streak,
   type Tally,
   tallyByKind,
@@ -42,9 +47,9 @@ import {
 } from "src/lib/computerSeriesResources";
 import { readStudyDone } from "src/lib/computerSeriesStudyStore";
 
-// A dev-only writing dashboard for the "how computers work" series: what to
-// write next, how far each chapter is, and when the daily goal would finish it.
-// Reads the chapter files in src/content/Notes/computer/ on every request
+// A dev-only writing dashboard for the "how computers work" series: what to do
+// next for the part with the next deadline, whether that date still holds, and
+// how far each chapter is. Reads the chapter files in src/content/Notes/computer/ on every request
 // (getStaticProps reruns per request under `next dev`) and keeps one word
 // total per day in .writing-progress.json, which is gitignored. An open tab
 // follows the files: see trackChapterEdits below. Each chapter also shows what
@@ -61,8 +66,8 @@ const CATALOG_FILE = path.join("src", "content", "computer", "resources.json");
 
 type Props = {
   chapters: ChapterProgress[];
-  pace: Pace;
-  next: NextUp | null;
+  deadline: PartPace;
+  next: NextStep | null;
   today: number;
   streak: number;
   best: number;
@@ -175,13 +180,13 @@ function Stat({
   label,
   value,
   note,
-  good,
+  tone,
   children,
 }: {
   label: string;
   value: string;
   note: string;
-  good?: boolean;
+  tone?: "good" | "bad";
   children?: ReactNode;
 }) {
   return (
@@ -190,7 +195,9 @@ function Stat({
       <p
         className={clsx(
           "mt-hair text-3xl font-bold tabular-nums",
-          good ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white",
+          tone === "good" && "text-green-600 dark:text-green-400",
+          tone === "bad" && "text-red-600 dark:text-red-400",
+          !tone && "text-gray-900 dark:text-white",
         )}
       >
         {value}
@@ -299,37 +306,77 @@ function StudyPanel({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) {
   );
 }
 
-function NextUpCard({
+const STEP_NAME: Record<Step, string> = { drafted: "Draft", polished: "Polish", live: "Live" };
+const NEXT_LABEL: Record<Step, string> = {
+  drafted: "Write next",
+  polished: "Polish next",
+  live: "Put live next",
+};
+const STEP_HINT: Record<Step, ReactNode> = {
+  drafted: (
+    <>
+      Every section has reached its target. Set <code>status: draft-done</code> when the draft reads
+      as finished.
+    </>
+  ),
+  polished: (
+    <>
+      A polish pass, its demos on a phone, test readers. Then set <code>status: done</code>.
+    </>
+  ),
+  live: (
+    <>
+      Set <code>published: true</code> and deploy.
+    </>
+  ),
+};
+
+function NextStepCard({
   next,
+  partName,
   plan,
   onToggle,
 }: {
-  next: NextUp | null;
+  next: NextStep | null;
+  partName: string;
   plan?: StudyPlan;
   onToggle: Toggle;
 }) {
   if (!next) {
     return (
-      <p className="text-lg font-semibold">Every section has reached its target. Time to revise.</p>
+      <p className="text-lg font-semibold">
+        {partName} is live. Set the next deadline in <code>src/lib/computerSeries.ts</code>.
+      </p>
     );
   }
-  const { chapter, section } = next;
+  const { step, chapter, section } = next;
   return (
-    <div className="rounded-lg border-2 border-accent p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Write next</p>
+    <div className="self-start rounded-lg border-2 border-accent p-5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+        {NEXT_LABEL[step]}
+      </p>
       <p className="mt-label text-sm text-gray-600 dark:text-gray-300">
-        {chapter.number} · {chapter.kind === "aside" ? "Aside: " : ""}
-        {chapter.title}
+        {chapter.number} · {chapter.title}
       </p>
-      <p className="mt-hair text-2xl font-bold text-gray-900 dark:text-white">{section.heading}</p>
-      <p className="mt-hair text-sm text-gray-600 dark:text-gray-300">
-        {fmt(section.words)} of {fmt(section.target)} words in this section
-      </p>
-      <Bar value={section.words} max={section.target} className="mt-label" />
+      {section ? (
+        <>
+          <p className="mt-hair text-2xl font-bold text-gray-900 dark:text-white">
+            {section.heading}
+          </p>
+          <p className="mt-hair text-sm text-gray-600 dark:text-gray-300">
+            {fmt(section.words)} of {fmt(section.target)} words in this section
+          </p>
+          <Bar value={section.words} max={section.target} className="mt-label" />
+        </>
+      ) : (
+        <p className="mt-hair text-lg text-gray-900 dark:text-white">{STEP_HINT[step]}</p>
+      )}
       <div className="mt-para">
         <OpenLinks chapter={chapter} size="big" />
       </div>
-      {plan && plan.core.length > 0 && <NextUpStudy plan={plan} onToggle={onToggle} />}
+      {step === "drafted" && plan && plan.core.length > 0 && (
+        <NextUpStudy plan={plan} onToggle={onToggle} />
+      )}
     </div>
   );
 }
@@ -359,23 +406,42 @@ function NextUpStudy({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) 
   );
 }
 
-/** A half-circle gauge: how much of today's word goal is written. */
-function DailyMeter({ today, streak }: { today: number; streak: number }) {
-  const reached = today >= DAILY_GOAL;
-  const shown = Math.min(Math.max(today / DAILY_GOAL, 0), 1);
+/**
+ * The next deadline: a half-circle gauge of its steps, with a tick where a
+ * straight line to the date says they should be, and each chapter's steps below.
+ */
+function DeadlineCard({
+  deadline,
+  chapters,
+  partName,
+}: {
+  deadline: PartPace;
+  chapters: ChapterProgress[];
+  partName: string;
+}) {
+  const { stepsDone, stepsTotal, expected } = deadline;
+  const shown = stepsTotal ? stepsDone / stepsTotal : 0;
   const radius = 80;
   const arc = Math.PI * radius;
   const color = progressColor(shown);
+  const angle = Math.PI * (stepsTotal ? Math.min(expected / stepsTotal, 1) : 0);
+  const onArc = (r: number) => ({
+    x: (100 - r * Math.cos(angle)).toFixed(2),
+    y: (100 - r * Math.sin(angle)).toFixed(2),
+  });
   return (
     <div className="flex flex-col items-center rounded-lg border border-gray-200 p-5 dark:border-gray-700">
       <p className="self-start text-xs font-semibold uppercase tracking-wide text-gray-500">
-        Today's goal
+        Next deadline · {deadline.daysLeft} days left
+      </p>
+      <p className="mt-label self-start text-lg font-bold text-gray-900 dark:text-white">
+        {partName}, polished and live by {fmtDay(NEXT_DEADLINE.date)}
       </p>
       <svg
         viewBox="0 0 200 112"
         className="mt-label w-full max-w-xs"
         role="img"
-        aria-label={`${percent(today, DAILY_GOAL)}% of today's words`}
+        aria-label={`${stepsDone} of ${stepsTotal} steps done, ${Math.floor(expected)} expected by now`}
       >
         <path
           d="M 20 100 A 80 80 0 0 1 180 100"
@@ -392,7 +458,16 @@ function DailyMeter({ today, streak }: { today: number; streak: number }) {
           strokeLinecap="round"
           strokeDasharray={`${arc * shown} ${arc}`}
           className="transition-[stroke-dasharray] duration-700"
-          style={reached ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined}
+          style={shown >= 1 ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined}
+        />
+        <line
+          x1={onArc(66).x}
+          y1={onArc(66).y}
+          x2={onArc(94).x}
+          y2={onArc(94).y}
+          strokeWidth="3"
+          strokeLinecap="round"
+          className="stroke-gray-900 dark:stroke-white"
         />
         <text
           x="100"
@@ -400,16 +475,48 @@ function DailyMeter({ today, streak }: { today: number; streak: number }) {
           textAnchor="middle"
           className="fill-gray-900 text-[34px] font-bold dark:fill-white"
         >
-          {percent(today, DAILY_GOAL)}%
+          {percent(stepsDone, stepsTotal)}%
         </text>
       </svg>
       <p className="mt-hair text-sm tabular-nums text-gray-600 dark:text-gray-300">
-        {fmt(today)} of {fmt(DAILY_GOAL)} words
-        {reached ? " · done for today" : ` · ${fmt(DAILY_GOAL - today)} to go`}
+        {stepsDone} of {stepsTotal} steps
       </p>
       <p className="mt-hair text-xs text-gray-500">
-        {streak > 0 ? `${streak}-day streak` : "No streak yet"}
+        The tick is where a straight line to the date says you should be.
       </p>
+      <ul className="mt-para grid w-full gap-hair border-t border-gray-200 pt-label text-sm dark:border-gray-800">
+        <li className="grid grid-cols-[1fr_repeat(3,3rem)] items-baseline text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <span>Chapter</span>
+          {STEPS.map((step) => (
+            <span key={step} className="text-center">
+              {STEP_NAME[step]}
+            </span>
+          ))}
+        </li>
+        {chapters.map((chapter) => (
+          <li key={chapter.path} className="grid grid-cols-[1fr_repeat(3,3rem)] items-baseline">
+            <span className="truncate">
+              <span className="font-mono text-gray-500">{chapter.number}</span> {chapter.title}
+            </span>
+            {STEPS.map((step) => {
+              const done = stepDone(chapter, step);
+              return (
+                <span
+                  key={step}
+                  role="img"
+                  aria-label={`${STEP_NAME[step]}: ${done ? "done" : "open"}`}
+                  className={clsx(
+                    "text-center",
+                    done ? "font-bold text-green-600 dark:text-green-400" : "text-gray-400",
+                  )}
+                >
+                  {done ? "✓" : "○"}
+                </span>
+              );
+            })}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -544,7 +651,7 @@ function StreakGrid({
                     key={d.day}
                     title={
                       d.inRange
-                        ? `${d.day}: ${d.words === null ? "to come" : `${fmt(d.words)} words`}`
+                        ? `${d.day}: ${d.words === null ? "to come" : `${fmt(d.words)} words`}${d.day === NEXT_DEADLINE.date ? " · deadline" : ""}`
                         : d.day
                     }
                     className={clsx(
@@ -552,6 +659,8 @@ function StreakGrid({
                       !d.inRange && "opacity-0",
                       d.inRange && !cellColor(d) && !d.future && "bg-gray-200 dark:bg-gray-800",
                       d.future && "border border-dashed border-gray-300 dark:border-gray-700",
+                      d.day === NEXT_DEADLINE.date &&
+                        "ring-2 ring-red-500 ring-offset-1 ring-offset-white dark:ring-offset-gray-950",
                       d.day === todayKey &&
                         "ring-2 ring-accent ring-offset-1 ring-offset-white dark:ring-offset-gray-950",
                     )}
@@ -573,8 +682,8 @@ function StreakGrid({
             />
           ))}
           <span>
-            More · full green = the day's goal ({fmt(DAILY_GOAL)} words). Days you don't open this
-            page count towards the next day you do.
+            More · full green = the day's goal ({fmt(DAILY_GOAL)} words). Red ring = the deadline.
+            Days you don't open this page count towards the next day you do.
           </span>
         </div>
       </div>
@@ -664,7 +773,7 @@ function ChapterRow({
 }
 
 export default function WritingDevPage(props: Props) {
-  const { chapters, pace: p, next, today, indexPath } = props;
+  const { chapters, deadline, next, today, indexPath } = props;
   const [done, setDone] = useState(props.done);
   const planFor = (chapter: ChapterProgress) => {
     const plan = chapter.slug ? props.plans[chapter.slug] : undefined;
@@ -692,6 +801,10 @@ export default function WritingDevPage(props: Props) {
     return { part, title: inPart[0].partTitle, chapters: inPart, tally: tallyByKind(inPart) };
   });
   const tally = tallyByKind(chapters);
+  const scope = partChapters(chapters, NEXT_DEADLINE.part);
+  const partName = `Part ${NEXT_DEADLINE.part}${scope[0] ? `: ${scope[0].partTitle}` : ""}`;
+  // A step takes days, so the line only counts as passed by a whole step.
+  const lead = Math.trunc(deadline.lead);
 
   return (
     <Layout
@@ -706,7 +819,7 @@ export default function WritingDevPage(props: Props) {
           <Header
             breadcrumbs={{ path: "dev/writing" }}
             title="How computers work"
-            subtitle={`Writing progress. Goal: ${fmt(DAILY_GOAL)} words a day. Projected finish: ${fmtDay(p.finish)}.`}
+            subtitle={`Writing progress. Next deadline: ${partName}, polished and live by ${fmtDay(NEXT_DEADLINE.date)}.`}
           />
 
           {chapters.length === 0 ? (
@@ -716,12 +829,13 @@ export default function WritingDevPage(props: Props) {
           ) : (
             <div className="not-prose">
               <section className="mt-section grid gap-para lg:grid-cols-[3fr_2fr]">
-                <NextUpCard
+                <NextStepCard
                   next={next}
+                  partName={partName}
                   plan={next ? planFor(next.chapter) : undefined}
                   onToggle={toggle}
                 />
-                <DailyMeter today={today} streak={props.streak} />
+                <DeadlineCard deadline={deadline} chapters={scope} partName={partName} />
               </section>
 
               <section className="mt-section grid gap-stack sm:grid-cols-2 lg:grid-cols-4">
@@ -729,28 +843,32 @@ export default function WritingDevPage(props: Props) {
                   label="Today"
                   value={fmt(today)}
                   note={`${props.streak}-day streak · goal ${fmt(DAILY_GOAL)}`}
-                  good={today >= DAILY_GOAL}
+                  tone={today >= DAILY_GOAL ? "good" : undefined}
                 />
                 <Stat
-                  label="Words left"
-                  value={fmt(p.remaining)}
-                  note={`of ${fmt(p.target)}, against per-section estimates`}
+                  label={lead > 0 ? "Ahead" : lead < 0 ? "Behind" : "On pace"}
+                  value={fmt(Math.abs(lead))}
+                  note={`steps against a straight line to ${fmtDay(NEXT_DEADLINE.date)}, before today`}
+                  tone={lead >= 0 ? "good" : "bad"}
                 />
                 <Stat
-                  label="Projected finish"
-                  value={fmtDay(p.finish)}
-                  note={`${fmt(p.daysLeft)} days from today, at ${fmt(DAILY_GOAL)} a day`}
+                  label="Needed per week"
+                  value={deadline.neededPerWeek.toFixed(1)}
+                  note={`steps, with ${deadline.stepsTotal - deadline.stepsDone} left and ${deadline.daysLeft} days left, today included`}
                 />
                 <Stat
-                  label="Done"
-                  value={`${percent(p.credited, p.target)}%`}
-                  note="chapters and asides, against per-section estimates"
-                >
-                  <Bar value={p.credited} max={p.target} className="mt-label" />
-                </Stat>
+                  label="Words to draft"
+                  value={fmt(deadline.wordsLeft)}
+                  note={`left in the chapters of ${partName}, without its asides`}
+                />
               </section>
 
-              <GlobalTrack parts={parts} tally={tally} credited={p.credited} target={p.target} />
+              <GlobalTrack
+                parts={parts}
+                tally={tally}
+                credited={tally.chapter.credited + tally.aside.credited}
+                target={tally.chapter.target + tally.aside.target}
+              />
 
               <StreakGrid
                 days={props.days}
@@ -787,12 +905,15 @@ export default function WritingDevPage(props: Props) {
               ))}
 
               <p className="mt-section text-sm text-gray-500">
-                Order, titles and status come from each file's frontmatter. "Write next" takes the
-                chapters first, in that order, and the asides after the last chapter, so each bar
-                follows the chapters and the asides are counted apart. Set{" "}
-                <code>status: draft-done</code> (or <code>revising</code>, <code>done</code>) to
-                count a chapter as finished: each section short of its estimate then takes its own
-                word count, rounded down to {LOCK_STEP}, as its target. The study lists come from{" "}
+                Order, titles and status come from each file's frontmatter. The next deadline is{" "}
+                <code>NEXT_DEADLINE</code> in <code>src/lib/computerSeries.ts</code>, and only its
+                part's chapters count towards it. The first card takes every draft, then every
+                polish, then each chapter live, so each bar follows the chapters and the asides are
+                counted apart. Each chapter has three steps. <code>status: draft-done</code> (or{" "}
+                <code>revising</code>, <code>done</code>) counts it as drafted: each section short
+                of its estimate then takes its own word count, rounded down to {LOCK_STEP}, as its
+                target. <code>status: done</code> counts it as polished and{" "}
+                <code>published: true</code> as live. The study lists come from{" "}
                 <code>src/content/computer/resources.json</code>, by chapter slug; ticks are saved
                 in <code>.study-progress.json</code>.{" "}
                 <a href={obsidianLink(indexPath)}>Open the index in Obsidian</a>.
@@ -874,16 +995,20 @@ export async function getStaticProps() {
     const plan = studyPlan(chapter.slug, catalog);
     if (plan && chapter.slug) plans[chapter.slug] = plan;
   }
-  const today = daily.find((d) => d.day === todayKey)?.words ?? 0;
-  const seriesPace = pace(chapters, todayKey, today);
+  const scope = partChapters(chapters, NEXT_DEADLINE.part);
   const props: Props = {
     chapters,
-    pace: seriesPace,
-    next: nextUp(chapters),
-    today,
+    deadline: partPace(scope, todayKey),
+    next: nextStep(scope),
+    today: daily.find((d) => d.day === todayKey)?.words ?? 0,
     streak: streak(history, todayKey),
     best: bestStreak(daily),
-    days: calendar(daily, todayKey, SERIES_START, seriesPace.finish),
+    days: calendar(
+      daily,
+      todayKey,
+      SERIES_START,
+      todayKey > NEXT_DEADLINE.date ? todayKey : NEXT_DEADLINE.date,
+    ),
     todayKey,
     indexPath: path.resolve(dir, "Index.md"),
     seriesDir: dir,

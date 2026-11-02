@@ -9,11 +9,13 @@ import {
   DEFAULT_LEAF_WORDS,
   DEFAULT_PARENT_WORDS,
   dailyWords,
-  nextUp,
-  pace,
+  nextStep,
+  partChapters,
+  partPace,
   progressColor,
   recordDay,
   splitSections,
+  stepDone,
   streak,
   tallyByKind,
   writingOrder,
@@ -122,82 +124,117 @@ describe("estimates", () => {
   });
 });
 
-describe("pace", () => {
-  // A chapter that targets 1,700 words, with `leafWords` of them in its first leaf.
-  const written = (leafWords: number) =>
-    chapterProgress(
-      meta(),
-      `${words(DEFAULT_PARENT_WORDS)}\n## A\n${words(leafWords)}\n## B\n## C\n`,
-      "x.md",
-    );
-
-  it("projects the finish from the words left at the daily goal", () => {
-    const p = pace([written(0)], "2026-01-05", 0, 100);
-    expect(p.target).toBe(DEFAULT_PARENT_WORDS + 3 * DEFAULT_LEAF_WORDS);
-    expect(p.credited).toBe(DEFAULT_PARENT_WORDS);
-    expect(p.remaining).toBe(1500);
-    // 100 of the 1,500 go to today, the other 1,400 take 14 more days.
-    expect(p.daysLeft).toBe(14);
-    expect(p.finish).toBe("2026-01-19");
+describe("chapter steps", () => {
+  it("reads drafted and polished from the status and live from published", () => {
+    const steps = (overrides: Partial<ChapterMeta>) =>
+      (["drafted", "polished", "live"] as const).map((step) => stepDone(meta(overrides), step));
+    expect(steps({ status: "drafting" })).toEqual([false, false, false]);
+    expect(steps({ status: "revising" })).toEqual([true, false, false]);
+    expect(steps({ status: "done" })).toEqual([true, true, false]);
+    expect(steps({ status: "done", published: true })).toEqual([true, true, true]);
   });
 
-  it("uses the fixed goal by default and crosses month ends", () => {
-    const p = pace([written(0)], "2026-01-31");
-    expect(p.daysLeft).toBe(1);
-    expect(p.finish).toBe("2026-02-01");
-  });
-
-  it("keeps the finish while today's goal fills up", () => {
-    expect(pace([written(40)], "2026-01-05", 40, 100).finish).toBe("2026-01-19");
-    expect(pace([written(100)], "2026-01-05", 100, 100).finish).toBe("2026-01-19");
-  });
-
-  it("brings the finish closer for words past the goal", () => {
-    expect(pace([written(300)], "2026-01-05", 300, 100).finish).toBe("2026-01-17");
-  });
-
-  it("moves the finish a day later for a day without words", () => {
-    expect(pace([written(0)], "2026-01-06", 0, 100).finish).toBe("2026-01-20");
-  });
-
-  it("does not stretch today's goal when words were deleted today", () => {
-    expect(pace([written(0)], "2026-01-05", -50, 100).finish).toBe("2026-01-19");
-  });
-
-  it("finishes today when nothing is left", () => {
-    const p = pace([], "2026-01-05");
-    expect(p.remaining).toBe(0);
-    expect(p.daysLeft).toBe(0);
-    expect(p.finish).toBe("2026-01-05");
+  it("leaves other parts and asides out of a part's deadline", () => {
+    const chapters = [
+      { part: 1, kind: "chapter" as const, order: 1 },
+      { part: 1, kind: "aside" as const, order: 2 },
+      { part: 2, kind: "chapter" as const, order: 3 },
+    ];
+    expect(partChapters(chapters, 1).map((c) => c.order)).toEqual([1]);
   });
 });
 
-describe("nextUp", () => {
-  it("returns the first unfinished section in reading order, skipping drafted chapters", () => {
-    const later = chapterProgress(meta({ order: 2, title: "Later" }), "", "b.md");
-    const done = chapterProgress(meta({ order: 0, status: "draft-done" }), "", "a.md");
-    const first = chapterProgress(
-      meta({ order: 1 }),
-      `${words(DEFAULT_PARENT_WORDS)}\n## Next\n`,
-      "c.md",
-    );
-    const next = nextUp([later, done, first]);
-    expect(next?.chapter.path).toBe("c.md");
-    expect(next?.section.heading).toBe("Next");
+describe("partPace", () => {
+  const deadline = { part: 1, date: "2026-01-10", start: "2026-01-01", stepsAtStart: 2 };
+  const drafted = chapterProgress(meta({ status: "draft-done" }), "", "a.md");
+  const idea = chapterProgress(meta(), "", "b.md");
+  // 12 steps, 2 of them done, which is where the line starts.
+  const part = [drafted, drafted, idea, idea];
+
+  it("starts on the line, however many steps were done before the deadline was set", () => {
+    const p = partPace(part, "2026-01-01", deadline);
+    expect(p.stepsTotal).toBe(12);
+    expect(p.stepsDone).toBe(2);
+    expect(p.expected).toBe(2);
+    expect(p.lead).toBe(0);
+    expect(p.daysLeft).toBe(10);
+    expect(p.neededPerWeek).toBe(7);
   });
 
-  it("leaves every aside until the last chapter is drafted", () => {
+  it("falls behind and needs more per week with every day without a step", () => {
+    const p = partPace(part, "2026-01-06", deadline);
+    expect(p.expected).toBe(7);
+    expect(p.lead).toBe(-5);
+    expect(p.daysLeft).toBe(5);
+    expect(p.neededPerWeek).toBe(14);
+  });
+
+  it("goes ahead of the line for steps done early", () => {
+    const polished = chapterProgress(meta({ status: "done" }), "", "c.md");
+    const p = partPace([polished, polished, idea, idea], "2026-01-01", deadline);
+    expect(p.lead).toBe(2);
+  });
+
+  it("puts every step left on the last day once the date has passed", () => {
+    const p = partPace(part, "2026-02-01", deadline);
+    expect(p.expected).toBe(12);
+    expect(p.daysLeft).toBe(0);
+    expect(p.neededPerWeek).toBe(10);
+  });
+
+  it("counts the words the chapters are still short of, not what they went over", () => {
+    const over = chapterProgress(meta(), words(DEFAULT_PARENT_WORDS * 2), "d.md");
+    const short = chapterProgress(meta(), `${words(50)}\n## A\n`, "e.md");
+    const p = partPace([over, short], "2026-01-01", deadline);
+    expect(p.wordsLeft).toBe(
+      over.target - over.credited + DEFAULT_PARENT_WORDS - 50 + DEFAULT_LEAF_WORDS,
+    );
+  });
+});
+
+describe("nextStep", () => {
+  const chapter = (overrides: Partial<ChapterMeta>, body = "") =>
+    chapterProgress(meta(overrides), body, `${overrides.order}.md`);
+
+  it("returns the first short section of the first chapter not yet drafted", () => {
+    const next = nextStep([
+      chapter({ order: 2, title: "Later" }),
+      chapter({ order: 0, status: "draft-done" }),
+      chapter({ order: 1 }, `${words(DEFAULT_PARENT_WORDS)}\n## Next\n`),
+    ]);
+    expect(next?.step).toBe("drafted");
+    expect(next?.chapter.order).toBe(1);
+    expect(next?.section?.heading).toBe("Next");
+  });
+
+  it("leaves the section key out when every section reached its target but the status lags", () => {
+    const next = nextStep([chapter({ order: 1 }, words(DEFAULT_LEAF_WORDS))]);
+    expect(next?.step).toBe("drafted");
+    expect(next).not.toHaveProperty("section");
+  });
+
+  it("moves to polishing once every chapter is drafted, then to putting them live", () => {
+    const revising = chapter({ order: 1, status: "revising" });
+    const done = chapter({ order: 2, status: "done" });
+    expect(nextStep([done, revising])).toMatchObject({ step: "polished", chapter: { order: 1 } });
+    const finished = { ...revising, status: "done" as const };
+    expect(nextStep([done, finished])).toMatchObject({ step: "live", chapter: { order: 1 } });
+    expect(nextStep([{ ...done, published: true }, finished])?.chapter.order).toBe(1);
+  });
+
+  it("returns nothing when every chapter is live", () => {
+    expect(nextStep([chapter({ order: 1, status: "done", published: true })])).toBeNull();
+  });
+
+  it("orders asides after every chapter", () => {
     const aside = chapterProgress(meta({ order: 2, kind: "aside", parent: "1.1" }), "", "aside.md");
     const lateAside = chapterProgress(meta({ order: 4, kind: "aside" }), "", "late-aside.md");
-    const chapter = chapterProgress(meta({ order: 3 }), "", "chapter.md");
-    expect(writingOrder([lateAside, chapter, aside]).map((c) => c.path)).toEqual([
+    const main = chapterProgress(meta({ order: 3 }), "", "chapter.md");
+    expect(writingOrder([lateAside, main, aside]).map((c) => c.path)).toEqual([
       "chapter.md",
       "aside.md",
       "late-aside.md",
     ]);
-    expect(nextUp([aside, lateAside, chapter])?.chapter.path).toBe("chapter.md");
-    const drafted = { ...chapter, status: "draft-done" as const };
-    expect(nextUp([aside, lateAside, drafted])?.chapter.path).toBe("aside.md");
   });
 });
 

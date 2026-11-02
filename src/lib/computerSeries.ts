@@ -5,9 +5,30 @@
 import { SECTION_ESTIMATES } from "./computerSeriesEstimates";
 import { stripNav } from "./computerSeriesLinks";
 
-/** The goal: a fixed number of new words a day, for as long as the series takes. */
 export const SERIES_START = "2026-10-08";
+/** New words a day, while there is something to draft. The deadline counts steps instead. */
 export const DAILY_GOAL = 1000;
+
+export type PartDeadline = {
+  part: number;
+  date: string;
+  /** Where the straight line to `date` starts: the day it was set and the steps done by then. */
+  start: string;
+  stepsAtStart: number;
+};
+
+/**
+ * The goal: one part at a time, polished and live by its own date. Only the next
+ * part has a date; set the following one here when this one ships. The date is
+ * private to this dashboard: readers get a chapter when it is ready.
+ */
+export const NEXT_DEADLINE: PartDeadline = {
+  part: 1,
+  date: "2026-11-30",
+  start: "2026-11-02",
+  stepsAtStart: 2,
+};
+
 /**
  * Targets for a heading with no estimate in computerSeriesEstimates.ts (new or
  * renamed): a heading with sub-headings mostly frames them, a leaf carries the text.
@@ -22,7 +43,7 @@ const BOX_OPEN = /^>\s*\[!more\]-\s*(.*)$/;
 
 export type ChapterStatus = "idea" | "drafting" | "draft-done" | "revising" | "done";
 
-/** The goal is a finished draft, so every status from "draft-done" on counts as drafted. */
+/** Every status from "draft-done" on counts as drafted. */
 const DRAFTED: ChapterStatus[] = ["draft-done", "revising", "done"];
 export const isDrafted = (status: ChapterStatus) => DRAFTED.includes(status);
 /**
@@ -43,6 +64,7 @@ export type ChapterMeta = {
   summary?: string;
   order: number;
   status: ChapterStatus;
+  published?: boolean;
 };
 
 export type Section = { heading: string; depth: number; words: number; target: number };
@@ -159,36 +181,62 @@ export function dayKey(date: Date): string {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const daysBetween = (from: string, to: string) =>
   Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS);
-const addDays = (day: string, days: number) =>
-  new Date(Date.parse(`${day}T12:00:00Z`) + days * DAY_MS).toISOString().slice(0, 10);
 
-export type Pace = {
-  credited: number;
-  target: number;
-  remaining: number;
-  /** The day the last section gets its words, writing the daily goal from today on. */
-  finish: string;
-  /** Days from today to `finish`. */
+/** What a chapter goes through before readers get it, in order. */
+export const STEPS = ["drafted", "polished", "live"] as const;
+export type Step = (typeof STEPS)[number];
+
+export function stepDone(chapter: Pick<ChapterMeta, "status" | "published">, step: Step) {
+  if (step === "drafted") return isDrafted(chapter.status);
+  if (step === "polished") return chapter.status === "done";
+  return Boolean(chapter.published);
+}
+
+/** What a part's deadline covers: a part ships without its asides. */
+export const partChapters = <T extends Pick<ChapterMeta, "part" | "kind">>(
+  chapters: T[],
+  part: number,
+) => chapters.filter((c) => c.part === part && c.kind === "chapter");
+
+export type PartPace = {
+  stepsDone: number;
+  stepsTotal: number;
+  /** Steps a straight line from the deadline's start to its date expects by the start of today. */
+  expected: number;
+  /** Positive when ahead of that line, negative when behind. */
+  lead: number;
   daysLeft: number;
+  /** Steps per week, from today on, that still meet the deadline. */
+  neededPerWeek: number;
+  /** Words the part's chapters are still short of their targets. */
+  wordsLeft: number;
 };
 
-/**
- * What is left of today's goal counts towards the words remaining, so writing
- * up to the goal keeps the finish where it is. Writing past it brings the finish
- * closer, and a day without words moves it a day later.
- */
-export function pace(
+export function partPace(
   chapters: ChapterProgress[],
   today: string,
-  writtenToday = 0,
-  goal = DAILY_GOAL,
-): Pace {
-  const credited = chapters.reduce((sum, c) => sum + c.credited, 0);
-  const target = chapters.reduce((sum, c) => sum + c.target, 0);
-  const remaining = Math.max(target - credited, 0);
-  const openToday = Math.min(Math.max(goal - writtenToday, 0), goal);
-  const daysLeft = Math.ceil(Math.max(remaining - openToday, 0) / goal);
-  return { credited, target, remaining, finish: addDays(today, daysLeft), daysLeft };
+  deadline = NEXT_DEADLINE,
+): PartPace {
+  const stepsTotal = chapters.length * STEPS.length;
+  const stepsDone = chapters.reduce(
+    (sum, c) => sum + STEPS.filter((step) => stepDone(c, step)).length,
+    0,
+  );
+  const totalDays = daysBetween(deadline.start, deadline.date) + 1;
+  const elapsed = Math.min(Math.max(daysBetween(deadline.start, today), 0), totalDays);
+  const expected =
+    deadline.stepsAtStart + ((stepsTotal - deadline.stepsAtStart) * elapsed) / totalDays;
+  const daysLeft = Math.max(daysBetween(today, deadline.date) + 1, 0);
+  const stepsLeft = stepsTotal - stepsDone;
+  return {
+    stepsDone,
+    stepsTotal,
+    expected,
+    lead: stepsDone - expected,
+    daysLeft,
+    neededPerWeek: daysLeft > 0 ? Math.ceil((stepsLeft * 70) / daysLeft) / 10 : stepsLeft,
+    wordsLeft: chapters.reduce((sum, c) => sum + Math.max(c.target - c.credited, 0), 0),
+  };
 }
 
 export type Tally = { count: number; credited: number; target: number };
@@ -211,7 +259,12 @@ export function tallyByKind(
   return { chapter: tally("chapter"), aside: tally("aside") };
 }
 
-export type NextUp = { chapter: ChapterProgress; section: Section };
+export type NextStep = {
+  step: Step;
+  chapter: ChapterProgress;
+  /** While drafting: the first section still short of its target. */
+  section?: Section;
+};
 
 /**
  * The order to write in: every chapter in reading order, then the asides in
@@ -223,12 +276,16 @@ export function writingOrder<T extends Pick<ChapterMeta, "kind" | "order">>(chap
   return [...chapters].sort((a, b) => rank(a) - rank(b) || a.order - b.order);
 }
 
-/** The first section, in writing order, still short of its target. */
-export function nextUp(chapters: ChapterProgress[]): NextUp | null {
-  for (const chapter of writingOrder(chapters)) {
-    if (isDrafted(chapter.status)) continue;
-    const section = chapter.sections.find((s) => s.words < s.target);
-    if (section) return { chapter, section };
+/** What to do next: every draft first, then every polish, then each chapter live. */
+export function nextStep(chapters: ChapterProgress[]): NextStep | null {
+  const ordered = writingOrder(chapters);
+  for (const step of STEPS) {
+    const chapter = ordered.find((c) => !stepDone(c, step));
+    if (!chapter) continue;
+    const section =
+      step === "drafted" ? chapter.sections.find((s) => s.words < s.target) : undefined;
+    // getStaticProps refuses an undefined value, so the key stays out.
+    return section ? { step, chapter, section } : { step, chapter };
   }
   return null;
 }

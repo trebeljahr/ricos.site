@@ -79,6 +79,7 @@ const nextSitemapConfig = {
     // up in the route manifest
     "/dev/alt-review",
     "/dev/needlestack",
+    "/dev/diary",
   ],
   changefreq: null,
   priority: null,

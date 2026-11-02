@@ -88,6 +88,12 @@ const PLAUSIBLE_SCRIPT =
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  // Notes/texts holds diaries and other private writing that only /dev/diary
+  // reads, under `next dev`. Keep it out of every deployed function bundle,
+  // whatever a trace of the server code finds.
+  outputFileTracingExcludes: {
+    "*": ["src/content/Notes/texts/**"],
+  },
   env: {
     NEWSLETTER_OFFERED_LISTS: offeredNewsletterLists(),
   },

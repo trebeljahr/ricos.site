@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import Image, { type ImageProps } from "next/image";
 import { useCallback, useMemo, useState } from "react";
 
-const Sparkles = dynamic(import("./Sparkles"), { ssr: false });
+const Sparkles = dynamic(() => import("./Sparkles"), { ssr: false });
 
 export const ImageWithLoader = ({ id, ...props }: Omit<ImageProps, "onLoadingComplete">) => {
   const [isSkeleton, setIsSkeleton] = useState(true);

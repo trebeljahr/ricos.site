@@ -1,6 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
-  "plugins": ["./biome-plugins/decorative-image-alt.grit"],
+  "plugins": [
+    "./biome-plugins/decorative-image-alt.grit",
+    "./biome-plugins/eager-next-dynamic.grit"
+  ],
   "vcs": {
     "enabled": true,
     "clientKind": "git",

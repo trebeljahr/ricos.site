@@ -6,8 +6,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import styles from "./ComputerChapter.module.css";
 
-const MDXContentWithDemos = dynamic(() =>
-  import("@components/MDXContentWithDemos").then((m) => m.MDXContentWithDemos),
+const ChapterMdxContent = dynamic(() =>
+  import("@components/computer/ChapterMdxContent").then((m) => m.ChapterMdxContent),
 );
 
 // One chapter or aside of the "how computers work" series, from
@@ -54,7 +54,7 @@ function NeighbourLink({ neighbour, label }: { neighbour: Neighbour | null; labe
 }
 
 export default function ComputerChapterPage({ chapter, prev, next }: Props) {
-  const Content = chapter.hasDemos ? MDXContentWithDemos : MDXContent;
+  const Content = chapter.hasDemos ? ChapterMdxContent : MDXContent;
   return (
     <Layout
       title={chapter.title}

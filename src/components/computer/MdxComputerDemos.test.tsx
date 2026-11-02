@@ -34,7 +34,8 @@ function staticImports(file: string, seen = new Set<string>()) {
         : source.startsWith("@components/")
           ? join(SRC, "components", source.slice(12))
           : null;
-    const target = base && [".ts", ".tsx"].map((ext) => base + ext).find(existsSync);
+    const target =
+      base && [".ts", ".tsx", "/index.ts", "/index.tsx"].map((ext) => base + ext).find(existsSync);
     if (target) staticImports(target, seen);
   }
   return seen;
@@ -53,6 +54,16 @@ describe("chapter demo integration", () => {
         `${demo} reaches LogicBuilder: load it through loadCircuitDemos`,
       ).toBe(false);
     expect(staticImports(join(COMPONENTS, "circuitDemos.ts")).has(builder)).toBe(true);
+  });
+
+  // Chapters render neither, and every chapter would load them with its first paint.
+  it("keeps the collision demos and motion out of a chapter's first load", () => {
+    const reached = [...staticImports(join(COMPONENTS, "ChapterMdxContent.tsx"))];
+    expect(reached.length).toBeGreaterThan(1);
+    for (const file of reached) {
+      expect(file).not.toContain("collisionDetection");
+      expect(readFileSync(file, "utf8"), file).not.toMatch(/from "motion\//);
+    }
   });
 
   it.each(embeddedChapters)("prepares and detects the actual embedded chapter %s", (file) => {

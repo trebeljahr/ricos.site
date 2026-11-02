@@ -1,6 +1,7 @@
 // Components an MDX page can use by name. A page whose text mentions one of
-// them renders through MDXContentWithDemos, which must provide every name here
-// (checked at compile time there); other pages use the lighter MDXContent.
+// them renders through MDXContentWithDemos, or ChapterMdxContent on a chapter;
+// both must provide every name here (checked at compile time there). Other
+// pages use the lighter MDXContent.
 
 export const MDX_DEMO_COMPONENTS = [
   "ByteExplorer",

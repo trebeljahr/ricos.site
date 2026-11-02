@@ -1,0 +1,13 @@
+language js
+
+// dynamic(import("./X")) passes a promise, so the import runs as soon as this
+// module loads, on every page that imports it, rendered or not.
+or {
+  `dynamic(import($source))`,
+  `dynamic(import($source), $options)`
+} where {
+  register_diagnostic(
+    span=$source,
+    message="This import runs when the module loads, not when the component renders. Pass a function: dynamic(() => import(...))."
+  )
+}

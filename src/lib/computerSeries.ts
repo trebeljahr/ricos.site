@@ -5,9 +5,9 @@
 import { SECTION_ESTIMATES } from "./computerSeriesEstimates";
 import { stripNav } from "./computerSeriesLinks";
 
-/** The goal: every section of every chapter drafted by the deadline. */
+/** The goal: a fixed number of new words a day, for as long as the series takes. */
 export const SERIES_START = "2026-10-08";
-export const SERIES_DEADLINE = "2026-12-31";
+export const DAILY_GOAL = 1000;
 /**
  * Targets for a heading with no estimate in computerSeriesEstimates.ts (new or
  * renamed): a heading with sub-headings mostly frames them, a leaf carries the text.
@@ -131,40 +131,36 @@ export function dayKey(date: Date): string {
 const DAY_MS = 24 * 60 * 60 * 1000;
 const daysBetween = (from: string, to: string) =>
   Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS);
+const addDays = (day: string, days: number) =>
+  new Date(Date.parse(`${day}T12:00:00Z`) + days * DAY_MS).toISOString().slice(0, 10);
 
 export type Pace = {
   credited: number;
   target: number;
-  /** Credited words a straight line from start to deadline expects by the start of today. */
-  expected: number;
-  /** Positive when ahead of that line, negative when behind. */
-  lead: number;
+  remaining: number;
+  /** The day the last section gets its words, writing the daily goal from today on. */
+  finish: string;
+  /** Days from today to `finish`. */
   daysLeft: number;
-  /** Words per day, from today on, that still meet the deadline. */
-  neededPerDay: number;
 };
 
+/**
+ * What is left of today's goal counts towards the words remaining, so writing
+ * up to the goal keeps the finish where it is. Writing past it brings the finish
+ * closer, and a day without words moves it a day later.
+ */
 export function pace(
   chapters: ChapterProgress[],
   today: string,
-  start = SERIES_START,
-  deadline = SERIES_DEADLINE,
+  writtenToday = 0,
+  goal = DAILY_GOAL,
 ): Pace {
   const credited = chapters.reduce((sum, c) => sum + c.credited, 0);
   const target = chapters.reduce((sum, c) => sum + c.target, 0);
-  const totalDays = daysBetween(start, deadline) + 1;
-  const elapsed = Math.min(Math.max(daysBetween(start, today), 0), totalDays);
-  const expected = Math.round((target * elapsed) / totalDays);
-  const daysLeft = Math.max(daysBetween(today, deadline) + 1, 0);
   const remaining = Math.max(target - credited, 0);
-  return {
-    credited,
-    target,
-    expected,
-    lead: credited - expected,
-    daysLeft,
-    neededPerDay: daysLeft > 0 ? Math.ceil(remaining / daysLeft) : remaining,
-  };
+  const openToday = Math.min(Math.max(goal - writtenToday, 0), goal);
+  const daysLeft = Math.ceil(Math.max(remaining - openToday, 0) / goal);
+  return { credited, target, remaining, finish: addDays(today, daysLeft), daysLeft };
 }
 
 export type Tally = { count: number; credited: number; target: number };
@@ -259,25 +255,25 @@ export function progressColor(fraction: number): string {
 export type CalendarDay = { day: string; words: number | null; future: boolean; inRange: boolean };
 
 /**
- * Days from the Monday on or before `start` to the Sunday on or after
- * `deadline`, so the grid fills whole weeks.
+ * Days from the Monday on or before `start` to the Sunday on or after `end`,
+ * so the grid fills whole weeks.
  */
 export function calendar(
   daily: { day: string; words: number }[],
   today: string,
-  start = SERIES_START,
-  deadline = SERIES_DEADLINE,
+  start: string,
+  end: string,
 ): CalendarDay[] {
   const byDay = new Map(daily.map((d) => [d.day, d.words]));
   const noon = (key: string) => new Date(`${key}T12:00:00Z`);
   const first = noon(start);
   first.setUTCDate(first.getUTCDate() - ((first.getUTCDay() + 6) % 7));
-  const last = noon(deadline);
+  const last = noon(end);
   last.setUTCDate(last.getUTCDate() + ((7 - last.getUTCDay()) % 7));
   const days: CalendarDay[] = [];
   for (const d = first; d <= last; d.setUTCDate(d.getUTCDate() + 1)) {
     const day = d.toISOString().slice(0, 10);
-    const inRange = day >= start && day <= deadline;
+    const inRange = day >= start && day <= end;
     const future = day > today;
     days.push({ day, inRange, future, words: inRange && !future ? (byDay.get(day) ?? 0) : null });
   }

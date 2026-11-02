@@ -12,6 +12,7 @@ import {
   type ChapterProgress,
   calendar,
   chapterProgress,
+  DAILY_GOAL,
   dailyWords,
   dayKey,
   type History,
@@ -22,7 +23,7 @@ import {
   pace,
   progressColor,
   recordDay,
-  SERIES_DEADLINE,
+  SERIES_START,
   streak,
   type Tally,
   tallyByKind,
@@ -42,7 +43,7 @@ import {
 import { readStudyDone } from "src/lib/computerSeriesStudyStore";
 
 // A dev-only writing dashboard for the "how computers work" series: what to
-// write next, how far each chapter is, and whether the deadline still holds.
+// write next, how far each chapter is, and when the daily goal would finish it.
 // Reads the chapter files in src/content/Notes/computer/ on every request
 // (getStaticProps reruns per request under `next dev`) and keeps one word
 // total per day in .writing-progress.json, which is gitignored. An open tab
@@ -81,6 +82,13 @@ const siteLink = (chapter: ChapterProgress) =>
   chapter.slug ? `/computer/${chapter.slug}` : undefined;
 const fmt = (n: number) => n.toLocaleString("en-US");
 const percent = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0);
+const fmtDay = (day: string) =>
+  new Date(`${day}T12:00:00Z`).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
 type KindTally = Record<ChapterMeta["kind"], Tally>;
 
@@ -167,13 +175,13 @@ function Stat({
   label,
   value,
   note,
-  tone,
+  good,
   children,
 }: {
   label: string;
   value: string;
   note: string;
-  tone?: "good" | "bad";
+  good?: boolean;
   children?: ReactNode;
 }) {
   return (
@@ -182,9 +190,7 @@ function Stat({
       <p
         className={clsx(
           "mt-hair text-3xl font-bold tabular-nums",
-          tone === "good" && "text-green-600 dark:text-green-400",
-          tone === "bad" && "text-red-600 dark:text-red-400",
-          !tone && "text-gray-900 dark:text-white",
+          good ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white",
         )}
       >
         {value}
@@ -353,23 +359,23 @@ function NextUpStudy({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) 
   );
 }
 
-/** A half-circle gauge: how much of today's word budget is written. */
-function DailyMeter({ today, needed, streak }: { today: number; needed: number; streak: number }) {
-  const fraction = needed > 0 ? today / needed : 1;
-  const shown = Math.min(fraction, 1);
+/** A half-circle gauge: how much of today's word goal is written. */
+function DailyMeter({ today, streak }: { today: number; streak: number }) {
+  const reached = today >= DAILY_GOAL;
+  const shown = Math.min(Math.max(today / DAILY_GOAL, 0), 1);
   const radius = 80;
   const arc = Math.PI * radius;
   const color = progressColor(shown);
   return (
     <div className="flex flex-col items-center rounded-lg border border-gray-200 p-5 dark:border-gray-700">
       <p className="self-start text-xs font-semibold uppercase tracking-wide text-gray-500">
-        Today's budget
+        Today's goal
       </p>
       <svg
         viewBox="0 0 200 112"
         className="mt-label w-full max-w-xs"
         role="img"
-        aria-label={`${percent(today, needed)}% of today's words`}
+        aria-label={`${percent(today, DAILY_GOAL)}% of today's words`}
       >
         <path
           d="M 20 100 A 80 80 0 0 1 180 100"
@@ -386,7 +392,7 @@ function DailyMeter({ today, needed, streak }: { today: number; needed: number; 
           strokeLinecap="round"
           strokeDasharray={`${arc * shown} ${arc}`}
           className="transition-[stroke-dasharray] duration-700"
-          style={fraction >= 1 ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined}
+          style={reached ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined}
         />
         <text
           x="100"
@@ -394,12 +400,12 @@ function DailyMeter({ today, needed, streak }: { today: number; needed: number; 
           textAnchor="middle"
           className="fill-gray-900 text-[34px] font-bold dark:fill-white"
         >
-          {percent(today, needed)}%
+          {percent(today, DAILY_GOAL)}%
         </text>
       </svg>
       <p className="mt-hair text-sm tabular-nums text-gray-600 dark:text-gray-300">
-        {fmt(today)} of {fmt(needed)} words
-        {fraction >= 1 ? " · done for today" : ` · ${fmt(Math.max(needed - today, 0))} to go`}
+        {fmt(today)} of {fmt(DAILY_GOAL)} words
+        {reached ? " · done for today" : ` · ${fmt(DAILY_GOAL - today)} to go`}
       </p>
       <p className="mt-hair text-xs text-gray-500">
         {streak > 0 ? `${streak}-day streak` : "No streak yet"}
@@ -476,35 +482,33 @@ function GlobalTrack({
 
 const WEEKDAYS = ["Mon", "", "Wed", "", "Fri", "", "Sun"];
 
-/** GitHub-style grid: one square per day, darker green the more of the daily budget was written. */
+/** GitHub-style grid: one square per day, darker green the more of the daily goal was written. */
 function StreakGrid({
   days,
   todayKey,
-  needed,
   streak,
   best,
 }: {
   days: CalendarDay[];
   todayKey: string;
-  needed: number;
   streak: number;
   best: number;
 }) {
   const weeks: CalendarDay[][] = [];
   for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
-  const hit = days.filter((d) => (d.words ?? 0) >= needed && needed > 0).length;
+  const hit = days.filter((d) => (d.words ?? 0) >= DAILY_GOAL).length;
   const written = days.filter((d) => (d.words ?? 0) > 0).length;
   const cellColor = (d: CalendarDay) => {
     if (!d.inRange) return undefined;
     if (d.words === null || d.words <= 0) return undefined;
-    return progressColor(Math.min(d.words / Math.max(needed, 1), 1) * 0.75 + 0.25);
+    return progressColor(Math.min(d.words / DAILY_GOAL, 1) * 0.75 + 0.25);
   };
   return (
     <section className="mt-section">
       <div className="mb-label flex flex-wrap items-baseline justify-between gap-tight">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Days</h2>
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          {streak}-day streak · best {best} · {written} days written · {hit} at budget
+          {streak}-day streak · best {best} · {written} days written · {hit} at goal
         </p>
       </div>
       <div className="overflow-x-auto rounded-lg border border-gray-200 p-4 dark:border-gray-700">
@@ -569,7 +573,7 @@ function StreakGrid({
             />
           ))}
           <span>
-            More · full green = the day's budget ({fmt(needed)} words). Days you don't open this
+            More · full green = the day's goal ({fmt(DAILY_GOAL)} words). Days you don't open this
             page count towards the next day you do.
           </span>
         </div>
@@ -702,7 +706,7 @@ export default function WritingDevPage(props: Props) {
           <Header
             breadcrumbs={{ path: "dev/writing" }}
             title="How computers work"
-            subtitle={`Writing progress. Goal: every section drafted by ${SERIES_DEADLINE}.`}
+            subtitle={`Writing progress. Goal: ${fmt(DAILY_GOAL)} words a day. Projected finish: ${fmtDay(p.finish)}.`}
           />
 
           {chapters.length === 0 ? (
@@ -717,26 +721,25 @@ export default function WritingDevPage(props: Props) {
                   plan={next ? planFor(next.chapter) : undefined}
                   onToggle={toggle}
                 />
-                <DailyMeter today={today} needed={p.neededPerDay} streak={props.streak} />
+                <DailyMeter today={today} streak={props.streak} />
               </section>
 
               <section className="mt-section grid gap-stack sm:grid-cols-2 lg:grid-cols-4">
                 <Stat
                   label="Today"
                   value={fmt(today)}
-                  note={`${props.streak}-day streak · ${fmt(p.neededPerDay)} needed`}
-                  tone={today >= p.neededPerDay ? "good" : undefined}
+                  note={`${props.streak}-day streak · goal ${fmt(DAILY_GOAL)}`}
+                  good={today >= DAILY_GOAL}
                 />
                 <Stat
-                  label={p.lead > 0 ? "Ahead" : p.lead < 0 ? "Behind" : "On pace"}
-                  value={fmt(Math.abs(p.lead))}
-                  note={`words against a straight line to ${SERIES_DEADLINE}, before today`}
-                  tone={p.lead >= 0 ? "good" : "bad"}
+                  label="Words left"
+                  value={fmt(p.remaining)}
+                  note={`of ${fmt(p.target)}, against per-section estimates`}
                 />
                 <Stat
-                  label="Needed per day"
-                  value={fmt(p.neededPerDay)}
-                  note={`${p.daysLeft} days left, today included`}
+                  label="Projected finish"
+                  value={fmtDay(p.finish)}
+                  note={`${fmt(p.daysLeft)} days from today, at ${fmt(DAILY_GOAL)} a day`}
                 />
                 <Stat
                   label="Done"
@@ -752,7 +755,6 @@ export default function WritingDevPage(props: Props) {
               <StreakGrid
                 days={props.days}
                 todayKey={props.todayKey}
-                needed={p.neededPerDay}
                 streak={props.streak}
                 best={props.best}
               />
@@ -872,14 +874,16 @@ export async function getStaticProps() {
     const plan = studyPlan(chapter.slug, catalog);
     if (plan && chapter.slug) plans[chapter.slug] = plan;
   }
+  const today = daily.find((d) => d.day === todayKey)?.words ?? 0;
+  const seriesPace = pace(chapters, todayKey, today);
   const props: Props = {
     chapters,
-    pace: pace(chapters, todayKey),
+    pace: seriesPace,
     next: nextUp(chapters),
-    today: daily.find((d) => d.day === todayKey)?.words ?? 0,
+    today,
     streak: streak(history, todayKey),
     best: bestStreak(daily),
-    days: calendar(daily, todayKey),
+    days: calendar(daily, todayKey, SERIES_START, seriesPace.finish),
     todayKey,
     indexPath: path.resolve(dir, "Index.md"),
     seriesDir: dir,

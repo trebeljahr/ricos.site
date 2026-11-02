@@ -103,21 +103,52 @@ describe("estimates", () => {
 });
 
 describe("pace", () => {
-  const chapter = chapterProgress(meta(), `${words(100)}\n## A\n## B\n## C\n`, "x.md");
+  // A chapter that targets 1,700 words, with `leafWords` of them in its first leaf.
+  const written = (leafWords: number) =>
+    chapterProgress(
+      meta(),
+      `${words(DEFAULT_PARENT_WORDS)}\n## A\n${words(leafWords)}\n## B\n## C\n`,
+      "x.md",
+    );
 
-  it("expects a straight line from start to deadline, up to the start of today", () => {
-    const p = pace([chapter], "2026-01-05", "2026-01-01", "2026-01-10");
+  it("projects the finish from the words left at the daily goal", () => {
+    const p = pace([written(0)], "2026-01-05", 0, 100);
     expect(p.target).toBe(DEFAULT_PARENT_WORDS + 3 * DEFAULT_LEAF_WORDS);
-    expect(p.expected).toBe(Math.round((p.target * 4) / 10));
-    expect(p.lead).toBe(100 - p.expected);
-    expect(p.daysLeft).toBe(6);
-    expect(p.neededPerDay).toBe(Math.ceil((p.target - 100) / 6));
+    expect(p.credited).toBe(DEFAULT_PARENT_WORDS);
+    expect(p.remaining).toBe(1500);
+    // 100 of the 1,500 go to today, the other 1,400 take 14 more days.
+    expect(p.daysLeft).toBe(14);
+    expect(p.finish).toBe("2026-01-19");
   });
 
-  it("puts everything on the last day once the deadline has passed", () => {
-    const p = pace([chapter], "2026-02-01", "2026-01-01", "2026-01-10");
-    expect(p.expected).toBe(p.target);
+  it("uses the fixed goal by default and crosses month ends", () => {
+    const p = pace([written(0)], "2026-01-31");
+    expect(p.daysLeft).toBe(1);
+    expect(p.finish).toBe("2026-02-01");
+  });
+
+  it("keeps the finish while today's goal fills up", () => {
+    expect(pace([written(40)], "2026-01-05", 40, 100).finish).toBe("2026-01-19");
+    expect(pace([written(100)], "2026-01-05", 100, 100).finish).toBe("2026-01-19");
+  });
+
+  it("brings the finish closer for words past the goal", () => {
+    expect(pace([written(300)], "2026-01-05", 300, 100).finish).toBe("2026-01-17");
+  });
+
+  it("moves the finish a day later for a day without words", () => {
+    expect(pace([written(0)], "2026-01-06", 0, 100).finish).toBe("2026-01-20");
+  });
+
+  it("does not stretch today's goal when words were deleted today", () => {
+    expect(pace([written(0)], "2026-01-05", -50, 100).finish).toBe("2026-01-19");
+  });
+
+  it("finishes today when nothing is left", () => {
+    const p = pace([], "2026-01-05");
+    expect(p.remaining).toBe(0);
     expect(p.daysLeft).toBe(0);
+    expect(p.finish).toBe("2026-01-05");
   });
 });
 

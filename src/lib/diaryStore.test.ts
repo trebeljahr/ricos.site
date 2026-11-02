@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { blockHash } from "./diary";
-import { clientAddresses, readEntries, readLog, servesPrivateNotes, writeLog } from "./diaryStore";
+import { clientAddresses, readArchive, readLog, servesPrivateNotes, writeLog } from "./diaryStore";
 
 const dev = { NODE_ENV: "development" };
 
@@ -40,7 +40,7 @@ describe("clientAddresses", () => {
   });
 });
 
-describe("readEntries", () => {
+describe("readArchive", () => {
   let dir: string | undefined;
   afterEach(() => {
     if (dir) fs.rmSync(dir, { recursive: true, force: true });
@@ -58,7 +58,7 @@ describe("readEntries", () => {
     write("misc/some-note.md", body);
     write("notion/Workspace/Todo Lists/List.md", body);
     const read = vi.spyOn(fs, "readFileSync");
-    const entries = readEntries(dir);
+    const { entries } = readArchive(dir);
     expect(entries.map((e) => [e.rel, e.title, e.date])).toEqual([
       ["diary-entries/2019-11-02-example.md", "Talks", "2019-11-02"],
     ]);
@@ -78,7 +78,23 @@ describe("readEntries", () => {
       path.join(dir, "diary-retro-picks.json"),
       JSON.stringify({ "2023/2023 - CW45.md": [blockHash(thought)] }),
     );
-    expect(readEntries(dir).map((e) => e.body)).toEqual([thought]);
+    expect(readArchive(dir).entries.map((e) => e.body)).toEqual([thought]);
+  });
+
+  it("takes the morning page drops from the texts folder and still counts their words", () => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), "diary-"));
+    const month = path.join(dir, "morning-pages/2026-03-March");
+    fs.mkdirSync(month, { recursive: true });
+    const thought = Array.from({ length: 60 }, () => "thought").join(" ");
+    const admin = Array.from({ length: 60 }, () => "admin").join(" ");
+    fs.writeFileSync(path.join(month, "2026-03-05.md"), `${thought}\n\n${admin}\n`);
+    fs.writeFileSync(
+      path.join(dir, "diary-morning-drops.json"),
+      JSON.stringify({ "2026-03-March/2026-03-05.md": [blockHash(admin)] }),
+    );
+    const { entries, written } = readArchive(dir);
+    expect(entries.map((e) => e.body)).toEqual([thought]);
+    expect(written).toEqual({ "2026-03-05": 120 });
   });
 });
 

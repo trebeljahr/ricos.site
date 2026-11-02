@@ -14,13 +14,13 @@ import {
   dailyOrder,
   diaryStats,
   KIND_LABEL,
+  readByDay,
   readToday,
   todaysPick,
-  wordsByDay,
 } from "src/lib/diary";
 import {
   clientAddresses,
-  readEntries,
+  readArchive,
   readLog,
   readMorningPage,
   servesPrivateNotes,
@@ -363,10 +363,10 @@ export default function DiaryDevPage(props: Props) {
               <p className="not-prose mt-section break-words text-sm text-gray-500">
                 Entries come from diary-entries, morning-pages, the Notion weekly retros, dreams,
                 essays and tiny-thoughts.md in <code>{props.dir}</code>; long ones are served in
-                parts. Weekly retros show only their picked blocks, word for word; "Edit in
-                Obsidian" opens the whole file. An entry you read rests for a year. Reads and skips
-                are saved in <code>{DIARY_LOG_FILE}</code>. "Wrote" counts dated entries by their
-                file name.
+                parts. Weekly retros show only their picked blocks and morning pages hide their
+                noise, both word for word; "Edit in Obsidian" opens the whole file. An entry you
+                read rests for a year. Reads and skips are saved in <code>{DIARY_LOG_FILE}</code>.
+                "Wrote" counts dated entries by their file name.
               </p>
             </>
           )}
@@ -384,10 +384,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req }) => 
 
   const dir = textsDir();
   const todayKey = dayKey(new Date());
-  const entries = readEntries(dir);
+  const { entries, written } = readArchive(dir);
   const log = readLog();
   const byId = new Map(entries.map((e) => [e.id, e]));
-  const { written, read } = wordsByDay(entries, log);
   const daily = (byDay: Record<string, number>) =>
     Object.entries(byDay).map(([day, words]) => ({ day, words }));
   const start = new Date(Date.parse(`${todayKey}T12:00:00Z`) - (WEEKS * 7 - 1) * 86_400_000)
@@ -406,9 +405,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req }) => 
         title: byId.get(e.id)?.title ?? e.id,
         words: e.words,
       })),
-      stats: diaryStats(entries, log, todayKey),
+      stats: diaryStats(entries, log, todayKey, written),
       wrote: calendar(daily(written), todayKey, start, todayKey),
-      readDays: calendar(daily(read), todayKey, start, todayKey),
+      readDays: calendar(daily(readByDay(log)), todayKey, start, todayKey),
     },
   };
 };

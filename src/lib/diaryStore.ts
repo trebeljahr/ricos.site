@@ -3,7 +3,7 @@
 // this machine, so every caller checks servesPrivateNotes() first, and
 // next.config.mjs keeps Notes/texts out of every deployed function. This repo is
 // public, so everything this page saves stays in Notes/texts as well: the
-// retro picks and the read log.
+// curation files and the read log.
 
 import fs from "node:fs";
 import type { IncomingMessage } from "node:http";
@@ -12,6 +12,7 @@ import matter from "gray-matter";
 import { countWords } from "./computerSeries";
 import {
   buildEntries,
+  type Curation,
   cleanBody,
   DIARY_LOG_FILE,
   type DiaryEntry,
@@ -19,13 +20,14 @@ import {
   type DiaryLog,
   kindOf,
   morningPageRel,
-  type RetroPicks,
+  writtenByDay,
 } from "./diary";
 
 export const textsDir = () =>
   process.env.DIARY_TEXTS_DIR ?? path.join("src", "content", "Notes", "texts");
 
 const RETRO_PICKS_FILE = "diary-retro-picks.json";
+const MORNING_DROPS_FILE = "diary-morning-drops.json";
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
@@ -52,9 +54,18 @@ export function servesPrivateNotes(
   return addresses.length > 0 && addresses.every((a) => LOOPBACK.has(a));
 }
 
-export function readEntries(dir: string): DiaryEntry[] {
+/** What the page serves, and how much was written per day whatever it hides. */
+export function readArchive(dir: string): {
+  entries: DiaryEntry[];
+  written: Record<string, number>;
+} {
+  const files = readFiles(dir);
+  return { entries: buildEntries(files, readCuration(dir)), written: writtenByDay(files) };
+}
+
+function readFiles(dir: string): DiaryFile[] {
   if (!fs.existsSync(dir)) return [];
-  const files: DiaryFile[] = fs
+  return fs
     .readdirSync(dir, { recursive: true, encoding: "utf8" })
     .map((file) => file.split(path.sep).join("/"))
     .filter((rel) => kindOf(rel) !== null)
@@ -68,15 +79,21 @@ export function readEntries(dir: string): DiaryEntry[] {
         return [];
       }
     });
-  return buildEntries(files, readRetroPicks(dir));
 }
 
-function readRetroPicks(dir: string): RetroPicks {
+function readHashes(file: string): Record<string, string[]> {
   try {
-    return JSON.parse(fs.readFileSync(path.join(dir, RETRO_PICKS_FILE), "utf8")) as RetroPicks;
+    return JSON.parse(fs.readFileSync(file, "utf8")) as Record<string, string[]>;
   } catch {
     return {};
   }
+}
+
+function readCuration(dir: string): Curation {
+  return {
+    retroPicks: readHashes(path.join(dir, RETRO_PICKS_FILE)),
+    morningDrops: readHashes(path.join(dir, MORNING_DROPS_FILE)),
+  };
 }
 
 /** Today's morning page and its word count, or null words while it does not exist yet. */

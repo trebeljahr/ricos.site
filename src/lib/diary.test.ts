@@ -12,10 +12,12 @@ import {
   kindOf,
   morningPageRel,
   PART_TARGET,
-  retroBlocks,
   splitParts,
+  stripBlocks,
+  textBlocks,
   todaysPick,
   undoToday,
+  writtenByDay,
 } from "./diary";
 
 const words = (n: number, word = "word") => Array.from({ length: n }, () => word).join(" ");
@@ -152,7 +154,7 @@ describe("buildEntries headings", () => {
   });
 });
 
-describe("retroBlocks", () => {
+describe("textBlocks", () => {
   const retro = [
     "## Summary",
     "",
@@ -176,7 +178,7 @@ describe("retroBlocks", () => {
   ].join("\n");
 
   it("keeps a bullet with everything under it, and each block's text word for word", () => {
-    expect(retroBlocks(retro).map((b) => [b.heading, b.text])).toEqual([
+    expect(textBlocks(retro).map((b) => [b.heading, b.text])).toEqual([
       ["## Summary", "- chill week"],
       ["## Learnings:", "- first thought\n    - nested under it\n\n    ⇒ and a paragraph under it"],
       ["## Learnings:", "- second thought\ncontinues on the next line"],
@@ -234,7 +236,8 @@ describe("buildEntries for retros", () => {
 
   it("shows the picked blocks and remembers how long the whole file is", () => {
     const [entry] = buildEntries([{ rel, path: "/n/r.md", content }], {
-      "2023 - Example/2023 - CW45.md": [blockHash(insight)],
+      retroPicks: { "2023 - Example/2023 - CW45.md": [blockHash(insight)] },
+      morningDrops: {},
     });
     expect(entry.title).toBe("2023 - CW45");
     expect(entry.body).toBe(insight);
@@ -243,8 +246,11 @@ describe("buildEntries for retros", () => {
   });
 
   it("leaves out a retro with nothing picked", () => {
-    const picks = { "2023 - Example/2023 - CW45.md": [] };
-    expect(buildEntries([{ rel, path: "/n/r.md", content }], picks)).toEqual([]);
+    const curation = {
+      retroPicks: { "2023 - Example/2023 - CW45.md": [] },
+      morningDrops: {},
+    };
+    expect(buildEntries([{ rel, path: "/n/r.md", content }], curation)).toEqual([]);
   });
 
   it("does not touch other kinds of entries", () => {
@@ -252,6 +258,73 @@ describe("buildEntries for retros", () => {
     const [entry] = buildEntries([{ rel: "dreams/a.md", path: "/n/a.md", content: text }]);
     expect(entry.body).toBe(text);
     expect(entry.fullWords).toBeNull();
+  });
+});
+
+describe("stripBlocks", () => {
+  const thought = `A thought ${words(60, "thought")}`;
+  const admin = `The tax office ${words(60, "admin")}`;
+  const page = `${thought}\n\n\n${admin}\n\n## Evening\n\nMore ${words(60, "evening")}\n`;
+
+  it("leaves a page with nothing flagged exactly as written", () => {
+    expect(stripBlocks(page)).toBe(page);
+    expect(stripBlocks(page, [])).toBe(page);
+    expect(stripBlocks(page, ["00000000"])).toBe(page);
+  });
+
+  it("hides flagged blocks and keeps the rest word for word, with their headings", () => {
+    expect(stripBlocks(page, [blockHash(admin)])).toBe(
+      [thought, "## Evening", `More ${words(60, "evening")}`].join("\n\n"),
+    );
+  });
+
+  it("drops a heading with nothing left under it", () => {
+    const evening = `More ${words(60, "evening")}`;
+    expect(stripBlocks(page, [blockHash(evening)])).toBe([thought, admin].join("\n\n"));
+  });
+});
+
+describe("buildEntries for morning pages", () => {
+  const rel = "morning-pages/2026-03-March/2026-03-05.md";
+  const thought = `A thought ${words(60, "thought")}`;
+  const admin = `The tax office ${words(60, "admin")}`;
+  const content = `${thought}\n\n${admin}\n`;
+
+  it("hides flagged blocks and says how long the page was", () => {
+    const [entry] = buildEntries([{ rel, path: "/n/m.md", content }], {
+      retroPicks: {},
+      morningDrops: { "2026-03-March/2026-03-05.md": [blockHash(admin)] },
+    });
+    expect(entry.body).toBe(thought);
+    expect(entry.words).toBe(62);
+    expect(entry.fullWords).toBe(125);
+  });
+
+  it("does not serve a page that is all noise", () => {
+    const curation = {
+      retroPicks: {},
+      morningDrops: { "2026-03-March/2026-03-05.md": [blockHash(thought), blockHash(admin)] },
+    };
+    expect(buildEntries([{ rel, path: "/n/m.md", content }], curation)).toEqual([]);
+  });
+
+  it("shows a page nobody has flagged whole", () => {
+    const [entry] = buildEntries([{ rel, path: "/n/m.md", content }]);
+    expect(entry.body).toBe(content.trim());
+    expect(entry.fullWords).toBeNull();
+  });
+});
+
+describe("writtenByDay", () => {
+  it("counts every dated file in full, even when the page hides all of it", () => {
+    const text = words(60, "admin");
+    const files = [
+      { rel: "morning-pages/2026-03-March/2026-03-05.md", path: "/n/a.md", content: text },
+      { rel: "diary-entries/2026-03-05-talk.md", path: "/n/b.md", content: words(10) },
+      { rel: "essays/Curiosity.md", path: "/n/c.md", content: text },
+      { rel: "misc/2026-03-06-notes.md", path: "/n/d.md", content: text },
+    ];
+    expect(writtenByDay(files)).toEqual({ "2026-03-05": 70 });
   });
 });
 
@@ -317,7 +390,8 @@ describe("diaryStats", () => {
         { day: "2026-11-02", id: "b", action: "skip", words: 500 },
       ],
     };
-    expect(diaryStats(entries, log, "2026-11-02")).toEqual({
+    const written = { "2026-11-01": 500, "2026-10-20": 500, "2020-01-01": 500 };
+    expect(diaryStats(entries, log, "2026-11-02", written)).toEqual({
       written: 1000,
       read: 500,
       daysWritten: 2,

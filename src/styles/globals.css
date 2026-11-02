@@ -380,8 +380,10 @@
   --callout-accent: var(--color-gray-500, #6b7280);
 }
 
+/* 62%, not more: yellow and orange titles need that much black to reach 4.5:1 on
+   their own tint. */
 .callout-title {
-  color: color-mix(in oklab, var(--callout-accent) 84%, black);
+  color: color-mix(in oklab, var(--callout-accent) 62%, black);
 }
 
 .dark .callout-title {
@@ -1137,8 +1139,14 @@ code[data-line-numbers] {
 }
 
 pre[data-theme~="github-light"] code .diff.add {
-  background-color: rgba(18, 208, 145, 0.272);
+  background-color: rgba(18, 208, 145, 0.12);
   color: #24292e;
+}
+
+/* Darker than the code block, not lighter: on a brighter tint, the theme's comment
+   grey and red fall under 4.5:1. */
+.dark pre[data-theme~="github-light"] code .diff.add {
+  background-color: #0f2e27;
 }
 
 pre[data-theme~="github-light"] code .diff {
@@ -1163,8 +1171,12 @@ pre[data-theme~="github-light"] code .diff.add:after {
 
 pre[data-theme~="github-light"] code .diff.remove {
   display: flex;
-  background-color: rgba(249, 66, 30, 0.272);
+  background-color: rgba(249, 66, 30, 0.08);
   color: #24292e;
+}
+
+.dark pre[data-theme~="github-light"] code .diff.remove {
+  background-color: #3b1618;
 }
 
 pre[data-theme~="github-light"] code .diff.remove:after {

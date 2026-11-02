@@ -1,3 +1,15 @@
-// A plain re-export: MetadataDisplay is already loaded lazily, and a second
-// lazy layer inside it made Turbopack ask for a chunk that does not exist.
-export { default as ClockEgg } from "./ClockEgg";
+import { Sprite } from "@components/Sprite";
+import dynamic from "next/dynamic";
+import { whenIdle } from "src/lib/whenIdle";
+import { EmojiButton } from "../EmojiButton";
+
+export const ClockEgg = dynamic(() => whenIdle().then(() => import("./ClockEgg")), {
+  ssr: false,
+  loading: () => (
+    <EmojiButton label="Clock" nudge={false}>
+      <span className="inline-block">
+        <Sprite name="🕓" />
+      </span>
+    </EmojiButton>
+  ),
+});

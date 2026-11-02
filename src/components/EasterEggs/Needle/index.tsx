@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import { whenIdle } from "src/lib/whenIdle";
 import { Haystack } from "./Haystack";
 import { PILE, PILE_H, PILE_W, SIZE } from "./pile";
 
@@ -20,7 +21,10 @@ const StillPile = () => (
 
 // Client only, which keeps motion out of the page bundle. The server renders
 // the same bales standing still, so nothing pops in or shifts.
-const Pile = dynamic(() => import("./NeedleEgg"), { ssr: false, loading: StillPile });
+const Pile = dynamic(() => whenIdle().then(() => import("./NeedleEgg")), {
+  ssr: false,
+  loading: StillPile,
+});
 
 /**
  * Easter egg for /needlestack: a pile of hay bales with a fixed place in the

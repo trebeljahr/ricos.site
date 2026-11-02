@@ -79,7 +79,7 @@ function TagCloud({ tags }: { tags: TagEntry[] }) {
           className="text-accent no-underline transition-colors hover:underline"
         >
           {toTitleCase(tag)}
-          <span className="ml-1 text-gray-400 dark:text-gray-500 text-xs align-baseline">
+          <span className="ml-1 text-gray-500 dark:text-gray-400 text-xs align-baseline">
             {items.length}
           </span>
         </Link>
@@ -138,7 +138,9 @@ export default function CategoriesPage({ themes, tags, seo }: Props) {
             <div key={tag} id={tag} className="scroll-mt-24">
               <h3 className="flush-top mb-stack">
                 {toTitleCase(tag)}{" "}
-                <span className="text-gray-500 text-base font-normal">({items.length})</span>
+                <span className="text-gray-500 dark:text-gray-400 text-base font-normal">
+                  ({items.length})
+                </span>
               </h3>
               <ul className="not-prose m-0 list-none p-0">
                 {items.map((item) => (

@@ -1,7 +1,12 @@
 import { ImageWithLoader } from "@components/ImageWithLoader";
 import clsx from "clsx";
 import Link from "next/link";
-import type { AnchorHTMLAttributes, ImgHTMLAttributes, TableHTMLAttributes } from "react";
+import type {
+  AnchorHTMLAttributes,
+  ImgHTMLAttributes,
+  InputHTMLAttributes,
+  TableHTMLAttributes,
+} from "react";
 import { resolveAlt } from "src/lib/imageAlt";
 import { CalloutBody, CalloutRoot, CalloutTitle } from "./Callouts";
 import { CodeWithCopyButton } from "./CodeCopyButton";
@@ -100,9 +105,15 @@ const handleDivs = (props: any) => {
   return <div {...props} className={clsx(props.className, "wrapper")} />;
 };
 
+// A Markdown task list is the only way a bare input gets here, and it has no label.
+const InputRenderer = (props: InputHTMLAttributes<HTMLInputElement>) => (
+  <input {...props} aria-label={props.checked ? "Done" : "Not done yet"} />
+);
+
 export const MarkdownRenderers = {
   a: LinkRenderer,
   img: ImageRenderer,
+  input: InputRenderer,
   pre: CodeWithCopyButton,
   table: TableRenderer,
   div: handleDivs,

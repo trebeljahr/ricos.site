@@ -45,6 +45,7 @@ export const RotationDemo = () => {
       <SimpleReactCanvasComponent setCnv={setCnv} />
       <input
         type="range"
+        aria-label="Rotation"
         min={0}
         max={100}
         defaultValue={0}

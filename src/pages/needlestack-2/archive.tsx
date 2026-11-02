@@ -272,6 +272,7 @@ export default function ArchivePage({ seo, needles }: Props) {
 
               <div ref={listRef} className="mt-group">
                 <NeedleList
+                  headingAs="h2"
                   needles={displayed}
                   highlightId={picked?.id ?? null}
                   empty="No needle matches all of that. Drop a filter."

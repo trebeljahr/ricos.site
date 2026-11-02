@@ -30,9 +30,9 @@ export function ContentListRow({ item }: { item: Item }) {
           <div className="mb-hair text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
             {meta.join(" · ")}
           </div>
-          <h4 className="m-0 text-base font-semibold text-gray-950 transition-colors group-hover:text-accent dark:text-white">
+          <h3 className="m-0 text-base font-semibold text-gray-950 transition-colors group-hover:text-accent dark:text-white">
             {item.title}
-          </h4>
+          </h3>
           {item.excerpt && (
             <p className="m-0 mt-hair line-clamp-2 text-sm text-gray-600 dark:text-gray-300">
               {item.excerpt}

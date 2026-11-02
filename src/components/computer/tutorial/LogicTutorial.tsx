@@ -56,12 +56,16 @@ type StatsLine = { mine: string; reference?: string };
 const LIVE_ROWS = 16;
 const SAVE_DELAY = 500;
 
-const isOpen = (levels: readonly Level[], index: number, progress: Progress) =>
-  levels
+const isDone = (level: Level, progress: Progress) =>
+  Boolean(progress.solved[level.id]) || progress.skipped.includes(level.id);
+
+/** Opens once the main levels before it are done. A required level added later never locks a reader already past it. */
+const isOpen = (levels: readonly Level[], index: number, progress: Progress) => {
+  const furthest = levels.findLastIndex((level) => isDone(level, progress));
+  return levels
     .slice(0, index)
-    .every(
-      (level) => level.optional || progress.solved[level.id] || progress.skipped.includes(level.id),
-    );
+    .every((level, before) => level.optional || before < furthest || isDone(level, progress));
+};
 
 function restoreDraft(level: Level, progress: Progress, start: ReturnType<typeof levelStart>) {
   const draft = progress.drafts[level.id];

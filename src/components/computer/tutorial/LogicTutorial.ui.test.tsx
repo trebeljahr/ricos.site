@@ -70,14 +70,36 @@ describe("first run", () => {
     expect(builders()[0].getByRole("heading", { name: "NAND from transistors" })).toBeTruthy();
     expect(boardParts(builders()[0])).toHaveLength(5);
   });
-  it("opens NOT without the transistor levels, while the levels after it stay locked", () => {
+  const levelOption = (id: string) =>
+    document.querySelector<HTMLOptionElement>(`select[aria-label="Level"] option[value="${id}"]`)!;
+  it("requires the transistor levels: NOT opens once they are solved or skipped", () => {
     render(<LogicTutorial sequential />);
-    const option = (id: string) =>
-      document.querySelector<HTMLOptionElement>(
-        `select[aria-label="Level"] option[value="${id}"]`,
-      )!;
-    expect(option("not").disabled).toBe(false);
-    expect(option("and").disabled).toBe(true);
+    expect(
+      screen.getByRole<HTMLOptionElement>("option", { name: /^1\. / }).textContent,
+    ).not.toMatch(/optional/);
+    expect(levelOption("cmos-nand").disabled).toBe(true);
+    expect(levelOption("not").disabled).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(screen.getByRole("heading", { name: "NAND from transistors" })).toBeTruthy();
+    expect(levelOption("not").disabled).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+    expect(screen.getByRole("heading", { name: "NOT" })).toBeTruthy();
+    expect(screen.queryByText(/Solve or skip the levels before this one/)).toBeNull();
+    expect(levelOption("not").disabled).toBe(false);
+    expect(levelOption("and").disabled).toBe(true);
+  });
+  it("keeps a reader with progress further up open, up to the next unsolved level", () => {
+    const solved = Object.fromEntries(
+      ["not", "and"].map((id) => [id, { at: 1, circuit: levelById(id)!.reference!() }]),
+    );
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ solved }));
+    progressStore.reset();
+    render(<LogicTutorial sequential level="or" />);
+    expect(screen.getByRole("heading", { name: "OR" })).toBeTruthy();
+    expect(screen.queryByText(/Solve or skip the levels before this one/)).toBeNull();
+    for (const id of ["cmos-not", "cmos-nand", "not", "and", "or"])
+      expect(levelOption(id).disabled, id).toBe(false);
+    expect(levelOption("xor").disabled).toBe(true);
   });
   it("restores a saved transistor board as it was, without the new starting parts", () => {
     const reference = levelById("cmos-not")!.reference!();

@@ -164,7 +164,6 @@ export const cmosNotLevel: Level = {
       text: "OUT must connect to exactly one of VDD and GND in every row. This switch model leaves out resistance, capacitance and voltage thresholds.",
     },
   ],
-  optional: true,
 };
 
 export const cmosNandLevel: Level = {
@@ -198,7 +197,6 @@ export const cmosNandLevel: Level = {
       text: "Put the PMOS pair in parallel from VDD and the NMOS pair in series from GND. Each pair has gates controlled by A and B. Join the two paths at OUT.",
     },
   ],
-  optional: true,
 };
 
 export const notLevel: Level = {

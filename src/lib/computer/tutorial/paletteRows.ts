@@ -7,7 +7,9 @@ import { chosenVersion, type PaletteEntry, type PartCatalog, partNode } from "./
 import type { OwnPartsMode, Progress } from "./progress";
 
 /** What a click or drop places: a built-in part type, or a boxed circuit. */
-export type Placement = { type: GateType; extra?: Partial<Node> } | { circuit: Circuit; extra: Partial<Node> };
+export type Placement =
+  | { type: GateType; extra?: Partial<Node> }
+  | { circuit: Circuit; extra: Partial<Node> };
 
 export type PaletteRow = {
   /** Unique within one palette; also the hint anchor, e.g. "part:xor" or "nand". */
@@ -82,7 +84,7 @@ export function partRow(
 ): PaletteRow {
   const label = options.label ?? entry.label;
   let version = chosenVersion(entry, mode);
-  // Optional levels (the CMOS gates) never lock their part: NAND stays the given.
+  // Optional levels never lock their part: the path to the parts after them stays open.
   if (version === "locked" && entry.level.optional) version = "built-in";
   const own = entry.own ? placementOf(partNode(entry, "own")) : undefined;
   const builtIn = options.builtIn ?? placementOf(partNode(entry, "built-in"));

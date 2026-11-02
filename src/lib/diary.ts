@@ -1,6 +1,7 @@
 // The reading loop behind /dev/diary: Rico's diaries, morning pages, weekly
 // retros, dreams, essays and tiny thoughts, served back one entry a day so old
-// thoughts get read again instead of only piling up. Pure functions;
+// thoughts get read again instead of only piling up. Weekly retros show only
+// their interesting blocks, word for word (see curateRetro). Pure functions;
 // diaryStore.ts reads the files and the read log.
 
 import { countWords } from "./computerSeries";
@@ -130,6 +131,98 @@ export function splitParts(body: string): string[] {
   return parts.map((p) => p.join("\n\n"));
 }
 
+/** FNV-1a, as an unsigned 32-bit number. */
+function fnv1a(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/** One top-level bullet with everything nested under it, or one paragraph, word for word. */
+export type RetroBlock = { heading: string; text: string; hash: string };
+
+/**
+ * A block's identity in the picks file. Only its opening counts, so a sentence
+ * added at the end later on keeps the block picked.
+ */
+export function blockHash(text: string): string {
+  const opening = text.replace(/\s+/g, " ").trim().slice(0, 80);
+  return fnv1a(opening).toString(16).padStart(8, "0");
+}
+
+const LIST_ITEM = /^([-*+]|\d+[.)])\s/;
+const SECTION_LINE = /^(#{1,6}\s.*|\*\*[^*]+\*\*:?\s*)$/;
+
+/** Cuts a retro into blocks, each under the heading line it sits below. */
+export function retroBlocks(markdown: string): RetroBlock[] {
+  const blocks: { heading: string; lines: string[] }[] = [];
+  let heading = "";
+  let current: string[] | null = null;
+  let inItem = false;
+  let afterBlank = false;
+  for (const line of markdown.split("\n")) {
+    if (!line.trim()) {
+      afterBlank = true;
+      continue;
+    }
+    if (SECTION_LINE.test(line)) {
+      heading = line.trim();
+      current = null;
+      afterBlank = false;
+      continue;
+    }
+    const startsItem = LIST_ITEM.test(line);
+    const nested = inItem && /^(\s{2,}|\t)/.test(line);
+    if (current && (nested || (!startsItem && !afterBlank))) {
+      if (afterBlank) current.push("");
+      current.push(line);
+    } else {
+      current = [line];
+      inItem = startsItem;
+      blocks.push({ heading, lines: current });
+    }
+    afterBlank = false;
+  }
+  return blocks.map((block) => {
+    const text = block.lines.join("\n");
+    return { heading: block.heading, text, hash: blockHash(text) };
+  });
+}
+
+/** Hand-picked block hashes per retro, keyed by retroKey. Empty: nothing worth rereading. */
+export type RetroPicks = Record<string, string[]>;
+
+export const retroKey = (rel: string) => rel.split("/Weekly Retros/").pop() ?? rel;
+
+/** A retro nobody has picked through yet shows its Learnings, minus the one-liners. */
+const UNPICKED_SECTION = /learning/i;
+const UNPICKED_MIN_WORDS = 25;
+
+/**
+ * Takes the updates, goals and time charts out of a weekly retro and leaves the
+ * thinking. It only ever drops whole blocks: what stays is word for word.
+ */
+export function curateRetro(body: string, picked?: string[]): string {
+  const blocks = retroBlocks(body);
+  const keep = picked
+    ? blocks.filter((b) => picked.includes(b.hash))
+    : blocks.filter(
+        (b) => UNPICKED_SECTION.test(b.heading) && countWords(b.text) >= UNPICKED_MIN_WORDS,
+      );
+  const headings = new Set(keep.map((b) => b.heading));
+  const shown: string[] = [];
+  let last = "";
+  for (const block of keep) {
+    if (headings.size > 1 && block.heading && block.heading !== last) shown.push(block.heading);
+    last = block.heading;
+    shown.push(block.text);
+  }
+  return shown.join("\n\n");
+}
+
 export type DiaryEntry = {
   /** Path under Notes/texts/; a part adds "#" and its first few words. */
   id: string;
@@ -140,6 +233,8 @@ export type DiaryEntry = {
   title: string;
   date: string | null;
   words: number;
+  /** The whole file's words where the page shows only a selection of it. */
+  fullWords: number | null;
   body: string;
   part: { index: number; count: number } | null;
 };
@@ -149,18 +244,20 @@ export type DiaryFile = { rel: string; path: string; title?: unknown; content: s
 const fingerprint = (text: string) =>
   (text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).slice(0, 6).join("-");
 
-export function buildEntries(files: DiaryFile[]): DiaryEntry[] {
+export function buildEntries(files: DiaryFile[], picks: RetroPicks = {}): DiaryEntry[] {
   const entries: DiaryEntry[] = [];
   for (const file of files) {
     const kind = kindOf(file.rel);
     if (!kind) continue;
     const cleaned = cleanBody(file.content);
-    if (countWords(cleaned) < MIN_WORDS) continue;
     const title = entryTitle(file.rel, kind, file.title, cleaned);
     // The page shows the title above the text; a heading that repeats it goes.
-    const body = cleaned.replace(/^#{1,3}\s+(.+)\n*/, (line, text: string) =>
+    const whole = cleaned.replace(/^#{1,3}\s+(.+)\n*/, (line, text: string) =>
       text.trim() === title ? "" : line,
     );
+    const body = kind === "retro" ? curateRetro(whole, picks[retroKey(file.rel)]) : whole;
+    if (countWords(body) < MIN_WORDS) continue;
+    const fullWords = kind === "retro" ? countWords(whole) : null;
     const date = entryDate(file.rel);
     const parts = splitParts(body);
     const seen = new Set<string>();
@@ -179,6 +276,7 @@ export function buildEntries(files: DiaryFile[]): DiaryEntry[] {
         title,
         date,
         words: countWords(part),
+        fullWords,
         body: part,
         part: parts.length > 1 ? { index: index + 1, count: parts.length } : null,
       });
@@ -187,8 +285,8 @@ export function buildEntries(files: DiaryFile[]): DiaryEntry[] {
   return entries;
 }
 
-/** Which entries were read or skipped on which day, gitignored like .writing-progress.json. */
-export const DIARY_LOG_FILE = ".diary-progress.json";
+/** Which entries were read or skipped on which day. Lives with the texts, in private Notes. */
+export const DIARY_LOG_FILE = "diary-progress.json";
 
 export type DiaryEvent = { day: string; id: string; action: "read" | "skip"; words: number };
 export type DiaryLog = { events: DiaryEvent[] };
@@ -219,15 +317,8 @@ function yearDayGap(a: string, b: string): number {
 
 const daysBetween = (from: string, to: string) => Math.round((noon(to) - noon(from)) / DAY_MS);
 
-/** Deterministic number in (0, 1) per string: FNV-1a. */
-function unit(text: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < text.length; i++) {
-    h ^= text.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return ((h >>> 0) + 0.5) / 2 ** 32;
-}
+/** Deterministic number in (0, 1) per string. */
+const unit = (text: string) => (fnv1a(text) + 0.5) / 2 ** 32;
 
 const monthYear = (day: string) =>
   new Date(noon(day)).toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  blockHash,
   buildEntries,
+  curateRetro,
   type DiaryEntry,
   type DiaryLog,
   dailyOrder,
@@ -10,6 +12,7 @@ import {
   kindOf,
   morningPageRel,
   PART_TARGET,
+  retroBlocks,
   splitParts,
   todaysPick,
   undoToday,
@@ -25,6 +28,7 @@ const entry = (id: string, date: string | null, extra: Partial<DiaryEntry> = {})
   title: id,
   date,
   words: 500,
+  fullWords: null,
   body: words(500),
   part: null,
   ...extra,
@@ -136,15 +140,118 @@ describe("buildEntries", () => {
 
 describe("buildEntries headings", () => {
   it("drops a first heading that only repeats the title", () => {
-    const [retro] = buildEntries([
+    const [dream] = buildEntries([
       {
-        rel: "notion/Workspace/Weekly Retros/2023/2023 - CW45.md",
-        path: "/n/r.md",
-        content: `# 2023 - CW45\n\n## Summary\n\n${words(60)}`,
+        rel: "dreams/flying.md",
+        path: "/n/flying.md",
+        content: `# Flying\n\n## Over the city\n\n${words(60)}`,
       },
     ]);
-    expect(retro.title).toBe("2023 - CW45");
-    expect(retro.body.startsWith("## Summary")).toBe(true);
+    expect(dream.title).toBe("Flying");
+    expect(dream.body.startsWith("## Over the city")).toBe(true);
+  });
+});
+
+describe("retroBlocks", () => {
+  const retro = [
+    "## Summary",
+    "",
+    "- chill week",
+    "",
+    "## Learnings:",
+    "",
+    "- first thought",
+    "    - nested under it",
+    "",
+    "    ⇒ and a paragraph under it",
+    "- second thought",
+    "continues on the next line",
+    "",
+    "A paragraph on its own",
+    "over two lines",
+    "",
+    "**Kinda:**",
+    "",
+    "- started something",
+  ].join("\n");
+
+  it("keeps a bullet with everything under it, and each block's text word for word", () => {
+    expect(retroBlocks(retro).map((b) => [b.heading, b.text])).toEqual([
+      ["## Summary", "- chill week"],
+      ["## Learnings:", "- first thought\n    - nested under it\n\n    ⇒ and a paragraph under it"],
+      ["## Learnings:", "- second thought\ncontinues on the next line"],
+      ["## Learnings:", "A paragraph on its own\nover two lines"],
+      ["**Kinda:**", "- started something"],
+    ]);
+  });
+
+  it("hashes a block by its opening, so text added at the end keeps it picked", () => {
+    const long = `- ${words(30)}`;
+    expect(blockHash(`${long} and a later addition`)).toBe(blockHash(long));
+    expect(blockHash("- one thing")).not.toBe(blockHash("- another thing"));
+    expect(blockHash("- one thing")).toMatch(/^[0-9a-f]{8}$/);
+  });
+});
+
+describe("curateRetro", () => {
+  const long = (word: string) => `- ${words(30, word)}`;
+  const retro = [
+    "## Highlights",
+    long("party"),
+    "- met a friend",
+    "## Learnings",
+    long("insight"),
+    "- too short to count",
+    long("taxes"),
+    "## Next Week's Goals",
+    long("goal"),
+  ].join("\n");
+
+  it("shows only the picked blocks, word for word, and names their sections if there are several", () => {
+    const picked = [blockHash(long("party")), blockHash(long("insight"))];
+    expect(curateRetro(retro, picked)).toBe(
+      ["## Highlights", long("party"), "## Learnings", long("insight")].join("\n\n"),
+    );
+  });
+
+  it("leaves out the section name when only one section stays", () => {
+    expect(curateRetro(retro, [blockHash(long("insight"))])).toBe(long("insight"));
+  });
+
+  it("shows nothing for a retro with an empty pick list", () => {
+    expect(curateRetro(retro, [])).toBe("");
+  });
+
+  it("falls back to long Learnings for a retro without picks", () => {
+    expect(curateRetro(retro)).toBe([long("insight"), long("taxes")].join("\n\n"));
+  });
+});
+
+describe("buildEntries for retros", () => {
+  const rel = "notion/Workspace/Weekly Retros/2023 - Example/2023 - CW45.md";
+  const insight = `- ${words(50, "insight")}`;
+  const content = `# 2023 - CW45\n\n## Highlights\n\n- ${words(50, "update")}\n\n## Learnings\n\n${insight}\n`;
+
+  it("shows the picked blocks and remembers how long the whole file is", () => {
+    const [entry] = buildEntries([{ rel, path: "/n/r.md", content }], {
+      "2023 - Example/2023 - CW45.md": [blockHash(insight)],
+    });
+    expect(entry.title).toBe("2023 - CW45");
+    expect(entry.body).toBe(insight);
+    expect(entry.words).toBe(50);
+    expect(entry.fullWords).toBeGreaterThan(100);
+  });
+
+  it("leaves out a retro with nothing picked", () => {
+    const picks = { "2023 - Example/2023 - CW45.md": [] };
+    expect(buildEntries([{ rel, path: "/n/r.md", content }], picks)).toEqual([]);
+  });
+
+  it("does not touch other kinds of entries", () => {
+    const text = `Some prose first.\n\n## Highlights\n\n- ${words(50, "update")}`;
+    const [entry] = buildEntries([{ rel: "dreams/a.md", path: "/n/a.md", content: text }]);
+    expect(entry.body).toBe(text);
+    expect(entry.fullWords).toBeNull();
   });
 });
 

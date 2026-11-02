@@ -31,7 +31,7 @@ import {
 // then read one old entry (diary, morning page, weekly retro, dream, essay or
 // a stretch of tiny thoughts) and edit it in place if something wants
 // changing. The pick is the same all day; see dailyOrder in src/lib/diary.ts.
-// Reads and skips go to .diary-progress.json through /api/dev/diary.
+// Reads and skips go to Notes/texts/diary-progress.json through /api/dev/diary.
 //
 // Private: getServerSideProps 404s outside `next dev`, on Vercel and for any
 // request from another machine, and next.config.mjs keeps Notes/texts out of
@@ -182,7 +182,9 @@ function Reader({
     KIND_LABEL[entry.kind],
     entry.date ? longDate(entry.date) : null,
     entry.part ? `part ${entry.part.index} of ${entry.part.count}` : null,
-    `${fmt(entry.words)} words · ${minutes(entry.words)} min`,
+    entry.fullWords && entry.fullWords > entry.words
+      ? `${fmt(entry.words)} of ${fmt(entry.fullWords)} words · ${minutes(entry.words)} min`
+      : `${fmt(entry.words)} words · ${minutes(entry.words)} min`,
   ].filter(Boolean);
   return (
     <section id="reading" className="mt-section">
@@ -361,8 +363,10 @@ export default function DiaryDevPage(props: Props) {
               <p className="not-prose mt-section break-words text-sm text-gray-500">
                 Entries come from diary-entries, morning-pages, the Notion weekly retros, dreams,
                 essays and tiny-thoughts.md in <code>{props.dir}</code>; long ones are served in
-                parts. An entry you read rests for a year. Reads and skips are saved in{" "}
-                <code>{DIARY_LOG_FILE}</code>. "Wrote" counts dated entries by their file name.
+                parts. Weekly retros show only their picked blocks, word for word; "Edit in
+                Obsidian" opens the whole file. An entry you read rests for a year. Reads and skips
+                are saved in <code>{DIARY_LOG_FILE}</code>. "Wrote" counts dated entries by their
+                file name.
               </p>
             </>
           )}

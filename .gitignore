@@ -98,6 +98,3 @@ venv/
 
 # Which study resources are done, for /dev/writing
 .study-progress.json
-
-# Which diary entries were read again, for /dev/diary
-.diary-progress.json

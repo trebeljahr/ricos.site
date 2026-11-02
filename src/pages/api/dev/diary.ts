@@ -1,8 +1,8 @@
 /**
  * Dev-only endpoint behind the buttons on /dev/diary: records that today's
  * entry was read or skipped, or takes that back. The record lives in
- * .diary-progress.json (see diaryStore.ts). It never reads the texts
- * themselves; the page sends the word count along.
+ * Notes/texts/diary-progress.json (see diaryStore.ts). It never reads the
+ * texts themselves; the page sends the word count along.
  *
  * 404s in production and for any request from another machine.
  */

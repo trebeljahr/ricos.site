@@ -1,7 +1,9 @@
 // Server side of /dev/diary: reads Rico's private texts and the read log.
 // Server-only (node:fs). Diaries, morning pages and retros must never leave
 // this machine, so every caller checks servesPrivateNotes() first, and
-// next.config.mjs keeps Notes/texts out of every deployed function.
+// next.config.mjs keeps Notes/texts out of every deployed function. This repo is
+// public, so everything this page saves stays in Notes/texts as well: the
+// retro picks and the read log.
 
 import fs from "node:fs";
 import type { IncomingMessage } from "node:http";
@@ -17,10 +19,13 @@ import {
   type DiaryLog,
   kindOf,
   morningPageRel,
+  type RetroPicks,
 } from "./diary";
 
 export const textsDir = () =>
   process.env.DIARY_TEXTS_DIR ?? path.join("src", "content", "Notes", "texts");
+
+const RETRO_PICKS_FILE = "diary-retro-picks.json";
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
@@ -63,7 +68,15 @@ export function readEntries(dir: string): DiaryEntry[] {
         return [];
       }
     });
-  return buildEntries(files);
+  return buildEntries(files, readRetroPicks(dir));
+}
+
+function readRetroPicks(dir: string): RetroPicks {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(dir, RETRO_PICKS_FILE), "utf8")) as RetroPicks;
+  } catch {
+    return {};
+  }
 }
 
 /** Today's morning page and its word count, or null words while it does not exist yet. */
@@ -82,9 +95,11 @@ export function readMorningPage(
   }
 }
 
+const logFile = () => path.join(textsDir(), DIARY_LOG_FILE);
+
 export function readLog(): DiaryLog {
   try {
-    const log = JSON.parse(fs.readFileSync(DIARY_LOG_FILE, "utf8")) as DiaryLog;
+    const log = JSON.parse(fs.readFileSync(logFile(), "utf8")) as DiaryLog;
     return Array.isArray(log.events) ? log : { events: [] };
   } catch {
     return { events: [] };
@@ -92,5 +107,5 @@ export function readLog(): DiaryLog {
 }
 
 export function writeLog(log: DiaryLog): void {
-  fs.writeFileSync(DIARY_LOG_FILE, `${JSON.stringify(log, undefined, 2)}\n`);
+  fs.writeFileSync(logFile(), `${JSON.stringify(log, undefined, 2)}\n`);
 }

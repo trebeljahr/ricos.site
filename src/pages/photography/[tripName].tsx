@@ -1,12 +1,10 @@
 import { GalleryPage } from "@components/GalleryPage";
 import Layout from "@components/Layout";
-import Link from "next/link";
+import { NextAndPrevArrows } from "@components/NextAndPrevArrows";
 import type { ImageProps } from "src/@types";
 import { getPhotographyGalleryImages, getPhotographyTripNames } from "src/lib/imageMetadata";
 import { turnKebabIntoTitleCase } from "src/lib/utils/turnKebapIntoTitleCase";
 import { trips } from "../photography";
-
-type AlbumLink = { name: string; title: string };
 
 export default function SinglePhotographyShowcasePage({
   images,
@@ -16,8 +14,8 @@ export default function SinglePhotographyShowcasePage({
 }: {
   images: ImageProps[];
   tripName: string;
-  previousAlbum: AlbumLink | null;
-  nextAlbum: AlbumLink | null;
+  previousAlbum: string | null;
+  nextAlbum: string | null;
 }) {
   const tripMeta = trips.find(({ name }) => name === tripName) || {
     src: "/assets/blog/photography.png",
@@ -58,22 +56,7 @@ export default function SinglePhotographyShowcasePage({
       fullScreen={true}
     >
       <GalleryPage path={`photography/${tripName}`} title={readableName} images={images}>
-        <nav
-          aria-label="Photography albums"
-          className="mb-group flex flex-wrap justify-between gap-4 text-sm"
-        >
-          {previousAlbum && (
-            <Link href={`/photography/${previousAlbum.name}`} rel="prev">
-              ← {previousAlbum.title}
-            </Link>
-          )}
-          <Link href="/photography">All albums</Link>
-          {nextAlbum && (
-            <Link href={`/photography/${nextAlbum.name}`} rel="next">
-              {nextAlbum.title} →
-            </Link>
-          )}
-        </nav>
+        <NextAndPrevArrows nextPost={nextAlbum} prevPost={previousAlbum} immediate />
       </GalleryPage>
     </Layout>
   );
@@ -106,15 +89,13 @@ export async function getStaticProps({ params }: StaticProps) {
     ...galleryNames.filter((name) => !curated.has(name)),
   ];
   const currentIndex = orderedNames.indexOf(tripName);
-  const albumLink = (name: string | undefined): AlbumLink | null =>
-    name ? { name, title: turnKebabIntoTitleCase(name) } : null;
 
   return {
     props: {
       images,
       tripName,
-      previousAlbum: albumLink(orderedNames[currentIndex - 1]),
-      nextAlbum: albumLink(orderedNames[currentIndex + 1]),
+      previousAlbum: orderedNames[currentIndex - 1] ?? null,
+      nextAlbum: orderedNames[currentIndex + 1] ?? null,
     },
   };
 }

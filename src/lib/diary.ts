@@ -1,9 +1,9 @@
 // The reading loop behind /dev/diary: Rico's diaries, morning pages, weekly
 // retros, dreams, essays and tiny thoughts, served back one entry a day so old
-// thoughts get read again instead of only piling up. Weekly retros show only
-// their interesting blocks and morning pages hide their noise, always word for
-// word (see curateRetro, stripBlocks). Pure functions; diaryStore.ts reads the
-// files and the read log.
+// thoughts get read again instead of only piling up. Everything shows whole and
+// long texts arrive in order; only weekly retros are narrowed to their
+// interesting blocks, word for word and with their gaps marked (see curateRetro).
+// Pure functions; diaryStore.ts reads the files and the read log.
 
 import { countWords } from "./computerSeries";
 
@@ -101,7 +101,8 @@ export const PART_TARGET = 1200;
 /** Shorter than this is an empty stub, e.g. a retro marked "MISSED". */
 export const MIN_WORDS = 40;
 
-const isHeading = (block: string) => /^#{1,6}\s/.test(block);
+/** A block that is only a heading line; one with text right under it has its own words. */
+const isHeading = (block: string) => /^#{1,6}\s[^\n]*$/.test(block.trim());
 
 /**
  * Splits a long text at paragraph breaks into parts of at least PART_TARGET
@@ -133,7 +134,7 @@ export function splitParts(body: string): string[] {
 }
 
 /** FNV-1a, as an unsigned 32-bit number. */
-function fnv1a(text: string): number {
+export function fnv1a(text: string): number {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {
     h ^= text.charCodeAt(i);
@@ -193,56 +194,48 @@ export function textBlocks(markdown: string): TextBlock[] {
   });
 }
 
-/** Block hashes per file, chosen by a reading pass; the files live in private Notes. */
+/** Block hashes per retro, chosen by a reading pass; the file lives in private Notes. */
 export type Curation = {
   /** The only blocks a retro shows, keyed by retroKey. Empty: nothing worth rereading. */
   retroPicks: Record<string, string[]>;
-  /** The blocks a morning page hides, keyed by morningKey. Unlisted: shown whole. */
-  morningDrops: Record<string, string[]>;
 };
 
 export const retroKey = (rel: string) => rel.split("/Weekly Retros/").pop() ?? rel;
-export const morningKey = (rel: string) => rel.replace(/^morning-pages\//, "");
-
-function renderBlocks(blocks: TextBlock[], showHeadings: boolean): string {
-  const shown: string[] = [];
-  let last = "";
-  for (const block of blocks) {
-    if (showHeadings && block.heading && block.heading !== last) shown.push(block.heading);
-    last = block.heading;
-    shown.push(block.text);
-  }
-  return shown.join("\n\n");
-}
 
 /** A retro nobody has picked through yet shows its Learnings, minus the one-liners. */
 const UNPICKED_SECTION = /learning/i;
 const UNPICKED_MIN_WORDS = 25;
 
+/** Stands where a retro's unpicked blocks were, so a jump never reads as continuous text. */
+export const GAP = "\u22ef";
+
 /**
  * Takes the updates, goals and time charts out of a weekly retro and leaves the
- * thinking. It only ever drops whole blocks: what stays is word for word.
+ * thinking. It only ever drops whole blocks: what stays is word for word, and
+ * every stretch left out between two blocks shows as a gap.
  */
 export function curateRetro(body: string, picked?: string[]): string {
   const blocks = textBlocks(body);
-  const keep = picked
-    ? blocks.filter((b) => picked.includes(b.hash))
-    : blocks.filter(
-        (b) => UNPICKED_SECTION.test(b.heading) && countWords(b.text) >= UNPICKED_MIN_WORDS,
-      );
-  return renderBlocks(keep, new Set(keep.map((b) => b.heading)).size > 1);
-}
-
-/**
- * Hides a morning page's flagged blocks: to-do lists, admin and plain recaps.
- * Morning pages are mostly prose, so they keep everything else, and a page with
- * nothing flagged stays exactly as written.
- */
-export function stripBlocks(body: string, flagged?: string[]): string {
-  if (!flagged?.length) return body;
-  const blocks = textBlocks(body);
-  const keep = blocks.filter((b) => !flagged.includes(b.hash));
-  return keep.length === blocks.length ? body : renderBlocks(keep, true);
+  const kept = (b: TextBlock) =>
+    picked
+      ? picked.includes(b.hash)
+      : UNPICKED_SECTION.test(b.heading) && countWords(b.text) >= UNPICKED_MIN_WORDS;
+  const showHeadings = new Set(blocks.filter(kept).map((b) => b.heading)).size > 1;
+  const shown: string[] = [];
+  let last = "";
+  let skipped = false;
+  blocks.forEach((block) => {
+    if (!kept(block)) {
+      skipped = true;
+      return;
+    }
+    if (skipped && shown.length > 0) shown.push(GAP);
+    skipped = false;
+    if (showHeadings && block.heading && block.heading !== last) shown.push(block.heading);
+    last = block.heading;
+    shown.push(block.text);
+  });
+  return shown.join("\n\n");
 }
 
 export type DiaryEntry = {
@@ -266,15 +259,9 @@ export type DiaryFile = { rel: string; path: string; title?: unknown; content: s
 const fingerprint = (text: string) =>
   (text.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []).slice(0, 6).join("-");
 
-function curate(kind: DiaryKind, rel: string, whole: string, curation: Curation): string {
-  if (kind === "retro") return curateRetro(whole, curation.retroPicks[retroKey(rel)]);
-  if (kind === "morning-pages") return stripBlocks(whole, curation.morningDrops[morningKey(rel)]);
-  return whole;
-}
-
 export function buildEntries(
   files: DiaryFile[],
-  curation: Curation = { retroPicks: {}, morningDrops: {} },
+  curation: Curation = { retroPicks: {} },
 ): DiaryEntry[] {
   const entries: DiaryEntry[] = [];
   for (const file of files) {
@@ -286,7 +273,8 @@ export function buildEntries(
     const whole = cleaned.replace(/^#{1,3}\s+(.+)\n*/, (line, text: string) =>
       text.trim() === title ? "" : line,
     );
-    const body = curate(kind, file.rel, whole, curation);
+    const body =
+      kind === "retro" ? curateRetro(whole, curation.retroPicks[retroKey(file.rel)]) : whole;
     if (countWords(body) < MIN_WORDS) continue;
     const fullWords = body === whole ? null : countWords(whole);
     const date = entryDate(file.rel);
@@ -360,7 +348,9 @@ export type Candidate = { entry: DiaryEntry; reason: string };
  * Today's reading order: a weighted shuffle, the same all day, so reloading
  * the page does not change the pick. Entries from this week in earlier years
  * weigh most, older entries more than recent ones, and anything read in the
- * last year sits out.
+ * last year sits out. A long text is one item: its unread parts stay in file
+ * order, and a text already started comes first, so no part ever arrives
+ * without the ones before it.
  */
 export function dailyOrder(entries: DiaryEntry[], log: DiaryLog, today: string): Candidate[] {
   const lastRead = new Map<string, string>();
@@ -368,11 +358,26 @@ export function dailyOrder(entries: DiaryEntry[], log: DiaryLog, today: string):
     if (e.action !== "read" || e.day >= today) continue;
     if ((lastRead.get(e.id) ?? "") < e.day) lastRead.set(e.id, e.day);
   }
+  const resting = (id: string) => {
+    const read = lastRead.get(id);
+    return read !== undefined && daysBetween(read, today) < REST_DAYS;
+  };
+  const texts = new Map<string, DiaryEntry[]>();
+  for (const entry of entries) texts.set(entry.rel, [...(texts.get(entry.rel) ?? []), entry]);
+
   const year = Number(today.slice(0, 4));
-  const ranked: { candidate: Candidate; key: number }[] = [];
-  for (const entry of entries) {
+  const ranked: { parts: Candidate[]; started: string; key: number }[] = [];
+  for (const [rel, parts] of texts) {
+    const unread = parts.filter((p) => !resting(p.id));
+    const entry = unread[0];
+    if (!entry) continue;
+    const started = parts
+      .filter((p) => resting(p.id))
+      .reduce((latest, p) => {
+        const read = lastRead.get(p.id) ?? "";
+        return read > latest ? read : latest;
+      }, "");
     const read = lastRead.get(entry.id);
-    if (read && daysBetween(read, today) < REST_DAYS) continue;
     let weight = 1.5;
     let reason = "Not re-read yet";
     if (entry.date) {
@@ -390,18 +395,33 @@ export function dailyOrder(entries: DiaryEntry[], log: DiaryLog, today: string):
       weight *= 0.5;
       reason = `Last read ${monthYear(read)}`;
     }
+    if (started) reason = "A text you started";
     ranked.push({
-      candidate: { entry, reason },
-      key: -Math.log(unit(`${today}|${entry.id}`)) / weight,
+      parts: unread.map((part) => ({ entry: part, reason })),
+      started,
+      key: -Math.log(unit(`${today}|${rel}`)) / weight,
     });
   }
-  return ranked.sort((a, b) => a.key - b.key).map((r) => r.candidate);
+  return ranked
+    .sort((a, b) => b.started.localeCompare(a.started) || a.key - b.key)
+    .flatMap((r) => r.parts);
 }
 
-/** The first entry in today's order not yet read or skipped today. */
+/**
+ * The first entry in today's order not yet read or skipped today. Skipping a
+ * part sets its whole text aside for the day, because the next part would
+ * start in the middle of it.
+ */
 export function todaysPick(order: Candidate[], log: DiaryLog, today: string): Candidate | null {
-  const handled = new Set(log.events.filter((e) => e.day === today).map((e) => e.id));
-  return order.find((c) => !handled.has(c.entry.id)) ?? null;
+  const events = log.events.filter((e) => e.day === today);
+  const handled = new Set(events.map((e) => e.id));
+  const rels = (action: DiaryEvent["action"]) =>
+    new Set(events.filter((e) => e.action === action).map((e) => e.id.split("#")[0]));
+  const skipped = rels("skip");
+  const open = order.filter((c) => !handled.has(c.entry.id) && !skipped.has(c.entry.rel));
+  const reading = rels("read");
+  const next = open.find((c) => reading.has(c.entry.rel));
+  return next ? { ...next, reason: "A text you started" } : (open[0] ?? null);
 }
 
 export function readToday(log: DiaryLog, today: string): DiaryEvent[] {

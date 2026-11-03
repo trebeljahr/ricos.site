@@ -9,11 +9,11 @@ import {
   diaryStats,
   entryDate,
   entryTitle,
+  GAP,
   kindOf,
   morningPageRel,
   PART_TARGET,
   splitParts,
-  stripBlocks,
   textBlocks,
   todaysPick,
   undoToday,
@@ -140,6 +140,21 @@ describe("buildEntries", () => {
   });
 });
 
+describe("splitParts keeps every word", () => {
+  it("counts a heading with text right under it as text, so it can end a part", () => {
+    const body = [
+      `Opening ${words(1250)}`,
+      `## Short\n${words(100)}`,
+      `## Long\n${words(1300)}`,
+      `Closing ${words(500)}`,
+    ].join("\n\n");
+    const parts = splitParts(body);
+    expect(parts.join("\n\n")).toBe(body);
+    expect(parts[1].startsWith("## Short")).toBe(true);
+    expect(parts[1]).toContain("## Long");
+  });
+});
+
 describe("buildEntries headings", () => {
   it("drops a first heading that only repeats the title", () => {
     const [dream] = buildEntries([
@@ -212,7 +227,7 @@ describe("curateRetro", () => {
   it("shows only the picked blocks, word for word, and names their sections if there are several", () => {
     const picked = [blockHash(long("party")), blockHash(long("insight"))];
     expect(curateRetro(retro, picked)).toBe(
-      ["## Highlights", long("party"), "## Learnings", long("insight")].join("\n\n"),
+      ["## Highlights", long("party"), GAP, "## Learnings", long("insight")].join("\n\n"),
     );
   });
 
@@ -225,7 +240,7 @@ describe("curateRetro", () => {
   });
 
   it("falls back to long Learnings for a retro without picks", () => {
-    expect(curateRetro(retro)).toBe([long("insight"), long("taxes")].join("\n\n"));
+    expect(curateRetro(retro)).toBe([long("insight"), GAP, long("taxes")].join("\n\n"));
   });
 });
 
@@ -237,7 +252,6 @@ describe("buildEntries for retros", () => {
   it("shows the picked blocks and remembers how long the whole file is", () => {
     const [entry] = buildEntries([{ rel, path: "/n/r.md", content }], {
       retroPicks: { "2023 - Example/2023 - CW45.md": [blockHash(insight)] },
-      morningDrops: {},
     });
     expect(entry.title).toBe("2023 - CW45");
     expect(entry.body).toBe(insight);
@@ -246,10 +260,7 @@ describe("buildEntries for retros", () => {
   });
 
   it("leaves out a retro with nothing picked", () => {
-    const curation = {
-      retroPicks: { "2023 - Example/2023 - CW45.md": [] },
-      morningDrops: {},
-    };
+    const curation = { retroPicks: { "2023 - Example/2023 - CW45.md": [] } };
     expect(buildEntries([{ rel, path: "/n/r.md", content }], curation)).toEqual([]);
   });
 
@@ -261,56 +272,12 @@ describe("buildEntries for retros", () => {
   });
 });
 
-describe("stripBlocks", () => {
-  const thought = `A thought ${words(60, "thought")}`;
-  const admin = `The tax office ${words(60, "admin")}`;
-  const page = `${thought}\n\n\n${admin}\n\n## Evening\n\nMore ${words(60, "evening")}\n`;
-
-  it("leaves a page with nothing flagged exactly as written", () => {
-    expect(stripBlocks(page)).toBe(page);
-    expect(stripBlocks(page, [])).toBe(page);
-    expect(stripBlocks(page, ["00000000"])).toBe(page);
-  });
-
-  it("hides flagged blocks and keeps the rest word for word, with their headings", () => {
-    expect(stripBlocks(page, [blockHash(admin)])).toBe(
-      [thought, "## Evening", `More ${words(60, "evening")}`].join("\n\n"),
-    );
-  });
-
-  it("drops a heading with nothing left under it", () => {
-    const evening = `More ${words(60, "evening")}`;
-    expect(stripBlocks(page, [blockHash(evening)])).toBe([thought, admin].join("\n\n"));
-  });
-});
-
 describe("buildEntries for morning pages", () => {
-  const rel = "morning-pages/2026-03-March/2026-03-05.md";
-  const thought = `A thought ${words(60, "thought")}`;
-  const admin = `The tax office ${words(60, "admin")}`;
-  const content = `${thought}\n\n${admin}\n`;
-
-  it("hides flagged blocks and says how long the page was", () => {
-    const [entry] = buildEntries([{ rel, path: "/n/m.md", content }], {
-      retroPicks: {},
-      morningDrops: { "2026-03-March/2026-03-05.md": [blockHash(admin)] },
-    });
-    expect(entry.body).toBe(thought);
-    expect(entry.words).toBe(62);
-    expect(entry.fullWords).toBe(125);
-  });
-
-  it("does not serve a page that is all noise", () => {
-    const curation = {
-      retroPicks: {},
-      morningDrops: { "2026-03-March/2026-03-05.md": [blockHash(thought), blockHash(admin)] },
-    };
-    expect(buildEntries([{ rel, path: "/n/m.md", content }], curation)).toEqual([]);
-  });
-
-  it("shows a page nobody has flagged whole", () => {
+  it("shows a page whole", () => {
+    const content = `A thought ${words(60, "thought")}\n\n- [ ] the tax office ${words(60, "admin")}`;
+    const rel = "morning-pages/2026-03-March/2026-03-05.md";
     const [entry] = buildEntries([{ rel, path: "/n/m.md", content }]);
-    expect(entry.body).toBe(content.trim());
+    expect(entry.body).toBe(content);
     expect(entry.fullWords).toBeNull();
   });
 });
@@ -378,6 +345,48 @@ describe("dailyOrder and todaysPick", () => {
     const skipped: DiaryLog = { events: [{ day: today, id: first, action: "skip", words: 500 }] };
     expect(todaysPick(order, skipped, today)?.entry.id).toBe(order[1].entry.id);
     expect(todaysPick(order, undoToday(skipped, first, today), today)?.entry.id).toBe(first);
+  });
+});
+
+describe("long texts in order", () => {
+  const today = "2026-11-02";
+  const part = (index: number, rel = "long") =>
+    entry(`${rel}#${index}`, "2023-03-01", { rel, part: { index, count: 3 } });
+  const parts = [part(1), part(2), part(3), entry("other", "2019-05-10")];
+  const read = (day: string, id: string): DiaryLog["events"][number] => ({
+    day,
+    id,
+    action: "read",
+    words: 500,
+  });
+  const ids = (log: DiaryLog) => dailyOrder(parts, log, today).map((c) => c.entry.id);
+
+  it("keeps a text's parts together and in file order", () => {
+    for (const day of ["2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05"]) {
+      const order = dailyOrder(parts, { events: [] }, day).map((c) => c.entry.id);
+      expect(order.filter((id) => id !== "other")).toEqual(["long#1", "long#2", "long#3"]);
+      expect(order[1]).not.toBe("other");
+    }
+  });
+
+  it("puts a started text first, at its first unread part, even if read out of order", () => {
+    const log = { events: [read("2026-10-30", "long#2")] };
+    expect(ids(log)[0]).toBe("long#1");
+    expect(ids(log)).not.toContain("long#2");
+    expect(dailyOrder(parts, log, today)[0].reason).toBe("A text you started");
+  });
+
+  it("goes on with the same text after reading a part today", () => {
+    const log = { events: [read(today, "long#1")] };
+    const pick = todaysPick(dailyOrder(parts, log, today), log, today);
+    expect(pick?.entry.id).toBe("long#2");
+    expect(pick?.reason).toBe("A text you started");
+  });
+
+  it("sets the whole text aside for the day when a part is skipped", () => {
+    const log: DiaryLog = { events: [{ ...read(today, "long#1"), action: "skip" }] };
+    const pick = todaysPick(dailyOrder(parts, log, today), log, today);
+    expect(pick?.entry.id).toBe("other");
   });
 });
 

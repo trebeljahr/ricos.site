@@ -1,4 +1,4 @@
-// /dev/diary and /api/dev/diary serve private writing: check that both turn
+// /dev/diary and its API serve private writing: check that all of them turn
 // away a production build and any other machine before they touch a file.
 import fs from "node:fs";
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next";
@@ -8,7 +8,13 @@ vi.mock("@components/Layout", () => ({ default: () => null }));
 vi.mock("@components/PostHeader", () => ({ default: () => null, PageMain: () => null }));
 
 const { getServerSideProps } = await import("src/pages/dev/diary");
-const { default: handler } = await import("src/pages/api/dev/diary");
+const { getServerSideProps: deskPage } = await import("src/pages/dev/diary/desk");
+const { getServerSideProps: textPage } = await import("src/pages/dev/diary/text");
+const handlers = [
+  (await import("src/pages/api/dev/diary")).default,
+  (await import("src/pages/api/dev/diary/marks")).default,
+  (await import("src/pages/api/dev/diary/search")).default,
+];
 
 const request = (remoteAddress: string) => ({
   socket: { remoteAddress },
@@ -17,17 +23,31 @@ const request = (remoteAddress: string) => ({
   body: { id: "diary-entries/x.md", action: "read", words: 10 },
 });
 
-const page = (remoteAddress: string) =>
-  getServerSideProps({ req: request(remoteAddress) } as unknown as GetServerSidePropsContext);
+async function page(remoteAddress: string) {
+  const context = {
+    req: request(remoteAddress),
+    query: { rel: "texts/diary-entries/x.md" },
+  } as unknown as GetServerSidePropsContext;
+  const results = await Promise.all(
+    [getServerSideProps, deskPage, textPage].map((serve) => serve(context)),
+  );
+  expect(results[1]).toEqual(results[0]);
+  expect(results[2]).toEqual(results[0]);
+  return results[0];
+}
 
 function api(remoteAddress: string) {
-  const res = { statusCode: 0, status: vi.fn(), json: vi.fn(), setHeader: vi.fn() };
-  res.status.mockImplementation((code: number) => {
-    res.statusCode = code;
-    return res;
+  const codes = handlers.map((handler) => {
+    const res = { statusCode: 0, status: vi.fn(), json: vi.fn(), setHeader: vi.fn() };
+    res.status.mockImplementation((code: number) => {
+      res.statusCode = code;
+      return res;
+    });
+    handler(request(remoteAddress) as unknown as NextApiRequest, res as unknown as NextApiResponse);
+    return res.statusCode;
   });
-  handler(request(remoteAddress) as unknown as NextApiRequest, res as unknown as NextApiResponse);
-  return res.statusCode;
+  expect(new Set(codes).size).toBe(1);
+  return codes[0];
 }
 
 describe("private diary routes", () => {

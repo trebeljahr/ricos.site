@@ -93,6 +93,9 @@ const nextConfig = {
   // whatever a trace of the server code finds.
   outputFileTracingExcludes: {
     "*": ["src/content/Notes/texts/**"],
+    // Their whole-Notes search only runs under `next dev`.
+    "/api/dev/diary/*": ["src/content/Notes/**"],
+    "/dev/diary/*": ["src/content/Notes/**"],
   },
   env: {
     NEWSLETTER_OFFERED_LISTS: offeredNewsletterLists(),

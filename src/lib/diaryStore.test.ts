@@ -81,7 +81,7 @@ describe("readArchive", () => {
     expect(readArchive(dir).entries.map((e) => e.body)).toEqual([thought]);
   });
 
-  it("takes the morning page drops from the texts folder and still counts their words", () => {
+  it("shows a morning page whole, whatever an old list of drops says", () => {
     dir = fs.mkdtempSync(path.join(os.tmpdir(), "diary-"));
     const month = path.join(dir, "morning-pages/2026-03-March");
     fs.mkdirSync(month, { recursive: true });
@@ -93,7 +93,7 @@ describe("readArchive", () => {
       JSON.stringify({ "2026-03-March/2026-03-05.md": [blockHash(admin)] }),
     );
     const { entries, written } = readArchive(dir);
-    expect(entries.map((e) => e.body)).toEqual([thought]);
+    expect(entries.map((e) => e.body)).toEqual([`${thought}\n\n${admin}`]);
     expect(written).toEqual({ "2026-03-05": 120 });
   });
 });

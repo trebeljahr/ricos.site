@@ -2,10 +2,16 @@ import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
 import clsx from "clsx";
 import type { GetServerSideProps } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import {
+  Markable,
+  MarkStyles,
+  MarksHere,
+  sendMarks,
+  wholeTextHref,
+} from "src/components/diary/Markable";
 import { type CalendarDay, calendar, dayKey, progressColor } from "src/lib/computerSeries";
 import {
   type Candidate,
@@ -18,6 +24,7 @@ import {
   readToday,
   todaysPick,
 } from "src/lib/diary";
+import type { MarkBook } from "src/lib/diaryMarks";
 import {
   clientAddresses,
   readArchive,
@@ -26,12 +33,14 @@ import {
   servesPrivateNotes,
   textsDir,
 } from "src/lib/diaryStore";
+import { readMarks } from "src/lib/notesStore";
 
 // A dev-only reading loop for Rico's own writing: write today's morning page,
 // then read one old entry (diary, morning page, weekly retro, dream, essay or
 // a stretch of tiny thoughts) and edit it in place if something wants
-// changing. The pick is the same all day; see dailyOrder in src/lib/diary.ts.
-// Reads and skips go to Notes/texts/diary-progress.json through /api/dev/diary.
+// changing, or mark a passage to write from later (see /dev/diary/desk). The pick
+// is the same all day; see dailyOrder in src/lib/diary.ts. Reads and skips go to
+// Notes/texts/diary-progress.json through /api/dev/diary.
 //
 // Private: getServerSideProps 404s outside `next dev`, on Vercel and for any
 // request from another machine, and next.config.mjs keeps Notes/texts out of
@@ -49,6 +58,7 @@ type Props = {
   stats: DiaryStats;
   wrote: CalendarDay[];
   readDays: CalendarDay[];
+  book: MarkBook;
 };
 
 const WEEKS = 16;
@@ -162,22 +172,28 @@ function ReadCard({
   );
 }
 
-// Images in the texts point into Obsidian or Notion exports, not at anything
-// this server can show.
-const readerComponents = { img: () => null };
-
 function Reader({
   pick,
   busy,
   onRead,
   onSkip,
+  book,
+  setBook,
 }: {
   pick: Candidate;
   busy: boolean;
   onRead: () => void;
   onSkip: () => void;
+  book: MarkBook;
+  setBook: (book: MarkBook) => void;
 }) {
   const { entry, reason } = pick;
+  const rel = `texts/${entry.rel}`;
+  const marks = book.marks.filter((m) => m.rel === rel);
+  const save = (body: Record<string, unknown>) =>
+    sendMarks(body)
+      .then((result) => setBook(result.book))
+      .catch((error) => console.warn("Could not save the mark:", error));
   const meta = [
     KIND_LABEL[entry.kind],
     entry.date ? longDate(entry.date) : null,
@@ -194,10 +210,19 @@ function Reader({
         <p className="mt-hair text-sm text-gray-500">{meta.join(" · ")}</p>
       </div>
       <div className="mt-group max-w-prose break-words border-l-2 border-gray-200 pl-6 dark:border-gray-700">
-        <Markdown remarkPlugins={[remarkGfm]} components={readerComponents}>
-          {entry.body}
-        </Markdown>
+        <Markable
+          markdown={entry.body}
+          quotes={marks.map((m) => m.quote)}
+          onMark={(quote) =>
+            save({ action: "add", quote, rel, title: entry.title, date: entry.date })
+          }
+        />
       </div>
+      <MarksHere
+        marks={marks}
+        onRemove={(id) => save({ action: "remove", id })}
+        className="mt-para max-w-prose"
+      />
       <div className="not-prose mt-group flex flex-wrap gap-tight border-t border-gray-200 pt-para dark:border-gray-700">
         <button type="button" disabled={busy} onClick={onRead} className={primary}>
           Mark as read
@@ -205,6 +230,11 @@ function Reader({
         <a href={obsidianOpen(entry.path)} className={secondary}>
           Edit in Obsidian
         </a>
+        {(entry.part || entry.fullWords) && (
+          <Link href={wholeTextHref(rel)} className={secondary}>
+            {entry.part ? "Whole text" : "Whole retro"}
+          </Link>
+        )}
         <button type="button" disabled={busy} onClick={onSkip} className={secondary}>
           Something else
         </button>
@@ -268,6 +298,7 @@ export default function DiaryDevPage(props: Props) {
   const router = useRouter();
   const [more, setMore] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [book, setBook] = useState(props.book);
 
   const send = async (id: string, action: "read" | "skip" | "undo", words = 0) => {
     setBusy(true);
@@ -306,6 +337,12 @@ export default function DiaryDevPage(props: Props) {
             title="Diary"
             subtitle="Write today's page, then read one from the past."
           />
+          <MarkStyles />
+          <p className="not-prose mt-label text-sm">
+            <Link href="/dev/diary/desk" className="font-semibold text-accent">
+              The desk: search everything, sort your marks →
+            </Link>
+          </p>
 
           {props.entries === 0 ? (
             <p className="not-prose mt-section break-words">
@@ -331,6 +368,8 @@ export default function DiaryDevPage(props: Props) {
                     busy={busy}
                     onRead={() => send(pick.entry.id, "read", pick.entry.words)}
                     onSkip={() => send(pick.entry.id, "skip", pick.entry.words)}
+                    book={book}
+                    setBook={setBook}
                   />
                 ) : (
                   <p className="not-prose mt-section">Nothing left to read today.</p>
@@ -362,11 +401,11 @@ export default function DiaryDevPage(props: Props) {
 
               <p className="not-prose mt-section break-words text-sm text-gray-500">
                 Entries come from diary-entries, morning-pages, the Notion weekly retros, dreams,
-                essays and tiny-thoughts.md in <code>{props.dir}</code>; long ones are served in
-                parts. Weekly retros show only their picked blocks and morning pages hide their
-                noise, both word for word; "Edit in Obsidian" opens the whole file. An entry you
+                essays and tiny-thoughts.md in <code>{props.dir}</code>. Long ones come in parts, in
+                order, until the text is done. Weekly retros show only their picked blocks, word for
+                word, with a ⋯ where blocks are left out; everything else shows whole. An entry you
                 read rests for a year. Reads and skips are saved in <code>{DIARY_LOG_FILE}</code>.
-                "Wrote" counts dated entries by their file name.
+                "Wrote" counts dated entries by their file name. Select text to mark it.
               </p>
             </>
           )}
@@ -402,12 +441,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req }) => 
       pick: todaysPick(dailyOrder(entries, log, todayKey), log, todayKey),
       read: readToday(log, todayKey).map((e) => ({
         id: e.id,
-        title: byId.get(e.id)?.title ?? e.id,
+        // A part's id goes stale when its text is edited; its file still names it.
+        title: byId.get(e.id)?.title ?? entries.find((x) => e.id.startsWith(x.rel))?.title ?? e.id,
         words: e.words,
       })),
       stats: diaryStats(entries, log, todayKey, written),
       wrote: calendar(daily(written), todayKey, start, todayKey),
       readDays: calendar(daily(readByDay(log)), todayKey, start, todayKey),
+      book: readMarks(),
     },
   };
 };

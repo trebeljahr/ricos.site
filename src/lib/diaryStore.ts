@@ -3,7 +3,7 @@
 // this machine, so every caller checks servesPrivateNotes() first, and
 // next.config.mjs keeps Notes/texts out of every deployed function. This repo is
 // public, so everything this page saves stays in Notes/texts as well: the
-// curation files and the read log.
+// retro picks and the read log.
 
 import fs from "node:fs";
 import type { IncomingMessage } from "node:http";
@@ -27,7 +27,6 @@ export const textsDir = () =>
   process.env.DIARY_TEXTS_DIR ?? path.join("src", "content", "Notes", "texts");
 
 const RETRO_PICKS_FILE = "diary-retro-picks.json";
-const MORNING_DROPS_FILE = "diary-morning-drops.json";
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
@@ -92,7 +91,6 @@ function readHashes(file: string): Record<string, string[]> {
 function readCuration(dir: string): Curation {
   return {
     retroPicks: readHashes(path.join(dir, RETRO_PICKS_FILE)),
-    morningDrops: readHashes(path.join(dir, MORNING_DROPS_FILE)),
   };
 }
 

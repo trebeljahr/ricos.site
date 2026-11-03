@@ -218,21 +218,29 @@ const KIND_VERB: Record<ResourceKind, string> = {
   code: "Code",
 };
 
-function StudyRow({ item, onToggle }: { item: StudyItem; onToggle: Toggle }) {
+/** Without `onToggle` the row is read-only: no checkbox, for a list already finished. */
+function StudyRow({ item, onToggle }: { item: StudyItem; onToggle?: Toggle }) {
   const meta = [item.by, item.minutes ? formatMinutes(item.minutes) : undefined].filter(Boolean);
   return (
-    <li className="grid grid-cols-[1rem_4.5rem_1fr] items-baseline gap-tight text-sm">
-      <input
-        type="checkbox"
-        checked={Boolean(item.done)}
-        onChange={(event) => onToggle(item.id, event.target.checked)}
-        aria-label={`Done: ${item.title}`}
-        className="size-4 translate-y-0.5 cursor-pointer accent-accent"
-      />
+    <li
+      className={clsx(
+        "grid items-baseline gap-tight text-sm",
+        onToggle ? "grid-cols-[1rem_4.5rem_1fr]" : "grid-cols-[4.5rem_1fr]",
+      )}
+    >
+      {onToggle && (
+        <input
+          type="checkbox"
+          checked={Boolean(item.done)}
+          onChange={(event) => onToggle(item.id, event.target.checked)}
+          aria-label={`Done: ${item.title}`}
+          className="size-4 translate-y-0.5 cursor-pointer accent-accent"
+        />
+      )}
       <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
         {KIND_VERB[item.kind]}
       </span>
-      <span className={clsx("min-w-0", item.done && "opacity-50")}>
+      <span className={clsx("min-w-0", onToggle && item.done && "opacity-50")}>
         {item.url ? (
           <a href={item.url} target="_blank" rel="noreferrer" className="font-medium">
             {item.title}
@@ -253,14 +261,13 @@ function studySummary(plan: StudyPlan) {
   return `${plan.coreDone} of ${plan.core.length} core items done${left}`;
 }
 
+const studied = (plan: StudyPlan) => plan.core.length > 0 && plan.coreDone === plan.core.length;
+
 /** What to read and watch before writing a chapter, and the questions to try cold afterwards. */
-function StudyPanel({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) {
+function StudyLists({ plan, onToggle }: { plan: StudyPlan; onToggle?: Toggle }) {
   const [deeper, setDeeper] = useState(false);
   return (
-    <div className="mt-para border-t border-gray-200 pt-label dark:border-gray-800">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-        Study first{plan.core.length > 0 && ` · ${studySummary(plan)}`}
-      </p>
+    <>
       {plan.note && <p className="mt-hair text-xs text-gray-500">{plan.note}</p>}
       {plan.core.length > 0 && (
         <ul className="mt-label grid gap-tight">
@@ -298,6 +305,41 @@ function StudyPanel({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) {
               <li key={question}>{question}</li>
             ))}
           </ul>
+        </>
+      )}
+    </>
+  );
+}
+
+/** A finished study list: folded away, still there to look things up in. */
+function StudiedFold({ plan }: { plan: StudyPlan }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-gray-500 hover:text-accent"
+      >
+        {open ? "▾" : "▸"} Studied ({plan.core.length})
+      </button>
+      {open && <StudyLists plan={plan} />}
+    </>
+  );
+}
+
+function StudyPanel({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) {
+  return (
+    <div className="mt-para border-t border-gray-200 pt-label dark:border-gray-800">
+      {studied(plan) ? (
+        <StudiedFold plan={plan} />
+      ) : (
+        <>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Study first{plan.core.length > 0 && ` · ${studySummary(plan)}`}
+          </p>
+          <StudyLists plan={plan} onToggle={onToggle} />
         </>
       )}
     </div>
@@ -386,20 +428,24 @@ function NextUpStudy({ plan, onToggle }: { plan: StudyPlan; onToggle: Toggle }) 
   const shown = open.slice(0, 4);
   return (
     <div className="mt-para border-t border-gray-200 pt-label dark:border-gray-700">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-        Study first · {studySummary(plan)}
-      </p>
-      {shown.length > 0 && (
-        <ul className="mt-label grid gap-tight">
-          {shown.map((item) => (
-            <StudyRow key={item.id} item={item} onToggle={onToggle} />
-          ))}
-        </ul>
-      )}
-      {open.length > shown.length && (
-        <p className="mt-label text-xs text-gray-500">
-          {open.length - shown.length} more, with the questions, in the chapter's row below.
-        </p>
+      {studied(plan) ? (
+        <StudiedFold plan={plan} />
+      ) : (
+        <>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Study first · {studySummary(plan)}
+          </p>
+          <ul className="mt-label grid gap-tight">
+            {shown.map((item) => (
+              <StudyRow key={item.id} item={item} onToggle={onToggle} />
+            ))}
+          </ul>
+          {open.length > shown.length && (
+            <p className="mt-label text-xs text-gray-500">
+              {open.length - shown.length} more, with the questions, in the chapter's row below.
+            </p>
+          )}
+        </>
       )}
     </div>
   );

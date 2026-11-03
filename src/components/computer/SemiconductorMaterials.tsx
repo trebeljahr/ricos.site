@@ -539,10 +539,6 @@ export function RealTransistorsView() {
           <p className={styles.state} aria-live="polite">
             {pins.find((item) => item.id === pin)?.description}
           </p>
-          <p className={styles.caption}>
-            Pin order applies to this BC547 example. Other three-leg transistors can use a different
-            order. <a href={DATASHEET}>Check the part’s datasheet.</a>
-          </p>
         </>
       ) : (
         <>
@@ -562,14 +558,6 @@ export function RealTransistorsView() {
               unchanged.
             </figcaption>
           </figure>
-          <p className={styles.state}>
-            Two gold contacts touch a small slab of high-purity germanium. A third connection
-            reaches the slab.
-          </p>
-          <p className={styles.caption}>
-            John Bardeen and Walter Brattain made the first working transistor at Bell Labs in
-            December 1947.
-          </p>
           <Diagram label="Simplified 1947 point-contact transistor: emitter and collector are two closely spaced gold contacts on germanium; the base contact connects to the slab.">
             <rect className={styles.nRegion} x={170} y={240} width={320} height={60} rx={4} />
             <text x={330} y={278} textAnchor="middle">

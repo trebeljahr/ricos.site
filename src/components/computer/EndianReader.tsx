@@ -305,11 +305,6 @@ export function EndianReader() {
                   .toUpperCase()}, decimal ${selectedReading.value}.`
               : "No valid input."}
           </p>
-          <p className={styles.caveat}>
-            Almost all hardware fixes the bit order inside a byte. The choice programmers meet is
-            byte order, row 1 against row 4. Bit order matters on serial links, where bits travel
-            one at a time.
-          </p>
         </div>
       </div>
     </section>

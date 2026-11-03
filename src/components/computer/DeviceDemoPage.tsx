@@ -8,12 +8,10 @@ import { ComputerDemoNav } from "./ComputerDemoNav";
 export function DeviceDemoPage({
   slug,
   description,
-  intro,
   children,
 }: {
   slug: ComputerDemoSlug;
   description: string;
-  intro: string;
   children: ReactNode;
 }) {
   const title = computerDemos.find((item) => item.slug === slug)?.title;
@@ -33,7 +31,6 @@ export function DeviceDemoPage({
           <h1 className="text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             {title}
           </h1>
-          <p className="text-gray-700 dark:text-gray-300">{intro}</p>
         </header>
         {children}
         <ComputerDemoNav current={slug} bottom />

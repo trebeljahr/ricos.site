@@ -19,11 +19,6 @@ export default function CpuCircuitPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             Run a program on the CPU circuit
           </h1>
-          <p className="text-gray-700 dark:text-gray-300">
-            Each clock tick moves both views one micro-step: the source line and instruction on the
-            left, and the circuit below. Control lines that are on glow yellow. Click a block in the
-            circuit to see its gates.
-          </p>
         </header>
         <CpuCircuitStepper />
         <ComputerDemoNav current="cpu-circuit" bottom />

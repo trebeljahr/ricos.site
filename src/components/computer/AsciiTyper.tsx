@@ -133,12 +133,8 @@ export function AsciiTyper() {
             autoComplete="off"
             autoCapitalize="off"
             autoCorrect="off"
-            aria-describedby={`${id}-help`}
           />
           <div className={styles.notes}>
-            <p id={`${id}-help`} hidden={notice !== null}>
-              Press Enter to add a line feed (LF).
-            </p>
             <p className={styles.refusal} role="status">
               {notice && (
                 <span key={notice.serial}>

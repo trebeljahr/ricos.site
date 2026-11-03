@@ -35,10 +35,6 @@ export function UniversalGates({
           </button>
         ))}
       </fieldset>
-      <p className="mb-10 max-w-prose text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-        Each challenge starts with inputs and an output. Use only {family.toUpperCase()} gates to
-        match its truth table.
-      </p>
       {universalTargets(family).map((target) => {
         const id = universalGateId(family, target);
         const title = `${target.toUpperCase()} from ${family.toUpperCase()}`;

@@ -37,10 +37,6 @@ export function BooleanCircuitDemo() {
     <section className="not-prose my-6" aria-label="Boolean expression and matching circuit">
       <div className={styles.lesson}>
         <h2>Choose one of two values</h2>
-        <p>
-          A CPU uses multiplexers to choose which value reaches its arithmetic unit. This circuit
-          makes that choice for one bit: S = 0 selects A; S = 1 selects B.
-        </p>
         <div className={styles.formula} role="math" aria-label="Y equals not S and A, or S and B">
           <span aria-hidden="true">
             Y ={" "}
@@ -52,17 +48,6 @@ export function BooleanCircuitDemo() {
               S · B
             </span>
           </span>
-        </div>
-        <div className={styles.paths}>
-          <p>
-            <strong>
-              <span className={styles.overline}>S</span> · A
-            </strong>{" "}
-            passes A when S is 0.
-          </p>
-          <p>
-            <strong>S · B</strong> passes B when S is 1.
-          </p>
         </div>
         {reading ? (
           <div className={styles.reading} aria-live="polite">
@@ -99,11 +84,6 @@ export function BooleanCircuitDemo() {
             ))}
           </fieldset>
         )}
-        <p className={styles.hint}>
-          {editing
-            ? "Change the wiring, then compare Y with the expression."
-            : "Flip S to choose A or B. Open a gate to see its wiring."}
-        </p>
         <button
           className={styles.edit}
           type="button"

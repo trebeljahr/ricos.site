@@ -19,11 +19,6 @@ export default function BigScreensPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             Why bigger screens need a GPU
           </h1>
-          <p className="text-gray-700 dark:text-gray-300">
-            One job: light every pixel. The toy CPU can do it one byte at a time, through a bank
-            window or an auto-increment port. A blitter and a shader do it without the CPU. Pick a
-            screen size and compare the clock ticks.
-          </p>
         </header>
         <ScreenScaleDemo />
         <ComputerDemoNav current="big-screens" bottom />

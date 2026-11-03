@@ -78,8 +78,6 @@
 .hex { grid-area: hex; }
 .dec { grid-area: dec; min-width: 5.6em; text-align: right; }
 
-.caveat { margin: 14px 0 0; color: #2b3b2f; font-size: 12px; font-weight: 500; line-height: 1.5; letter-spacing: .01em; }
-
 /* Too narrow for order, bits and values on one line: stack them. */
 @container (max-width: 640px) {
   .row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "head head" "glyph glyph" "bits bits" "hex dec"; gap: 7px 12px; padding: 9px 10px 10px; }

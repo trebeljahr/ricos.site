@@ -11,7 +11,7 @@ const summary =
 
 export default function KeyboardMatrixPage() {
   return (
-    <DeviceDemoPage slug="keyboard-matrix" description={summary} intro={summary}>
+    <DeviceDemoPage slug="keyboard-matrix" description={summary}>
       <KeyboardMatrixDemo />
     </DeviceDemoPage>
   );

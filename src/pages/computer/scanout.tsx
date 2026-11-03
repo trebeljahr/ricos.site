@@ -19,11 +19,6 @@ export default function ScanoutPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             Read the screen out like a display
           </h1>
-          <p className="text-gray-700 dark:text-gray-300">
-            A display does not show the framebuffer all at once. A beam reads it one pixel per clock
-            tick, and the monitor only changes where the beam passes. Write screen rows through the
-            memory bus, then run or scrub the clock to follow the beam.
-          </p>
         </header>
         <ScanoutDemo />
         <ComputerDemoNav current="scanout" bottom />

@@ -1,9 +1,8 @@
-import { useMemo, useState } from "react";
-import Link from "next/link";
 import clsx from "clsx";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useDemoState } from "../../hooks/useDemoState";
 import {
-  BUTTON_POLICY,
   BUTTON_PROGRAM,
   buttonBench,
   buttonCounterDisplay,
@@ -14,15 +13,14 @@ import {
 import { CPU_PARTS } from "../../lib/computer/cpuPreset";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
 import { type CompiledProgram, hex } from "../../lib/computerStepper";
+import { CircuitDemo } from "./CircuitDemo";
 import {
   builderClass,
   buttonClass,
   captionClass,
   controlsClass,
-  noteClass,
   summaryClass,
 } from "./DeviceDemoParts";
-import { CircuitDemo } from "./CircuitDemo";
 import { LogicBuilder } from "./LogicBuilder";
 import { LazyLogicTutorial } from "./tutorial/LazyLogicTutorial";
 
@@ -65,17 +63,6 @@ export function ButtonInterruptDemo() {
     <div className="flex flex-col gap-section">
       <section className="flow-para" aria-label="Button interrupt CPU">
         <h2>Let a real CPU service the request</h2>
-        <p>
-          Press BUTTON on the canvas, then run or step the builder’s clock. BUTTON supplies input
-          code 1. Follow CAPTURED → KEY READY → IRQ → INT. Between instructions, the CPU saves PC,
-          masks interrupts and jumps through the handler vector.
-        </p>
-        <p>
-          The handler reads IN to acknowledge the request, writes screen row 3 and increments OUT.
-          It restores ACC and carry. RETI restores PC and enables interrupts, so the background loop
-          resumes. Edit the handler below, or build the interrupt wiring in the construction
-          section.
-        </p>
         <div className={builderClass}>
           <LogicBuilder
             key={loaded}
@@ -84,15 +71,6 @@ export function ButtonInterruptDemo() {
             storageKey={demoStorageKey("button-cpu-builder", loaded)}
           />
         </div>
-        <p>
-          Before EI, a pending request waits. Multiple presses before IN coalesce; this is one event
-          mailbox, not a queue. IN clears it. A new press after ACK can wait while the handler is
-          masked. The existing key-interrupt stepper also lets you compare polling with key().
-        </p>
-        <p className={noteClass}>
-          This demo uses explicit interrupt enabling: initialize shared variables, then execute
-          interrupts_on(). A request arriving during initialization stays pending.
-        </p>
         <div className={controlsClass}>
           <button
             type="button"
@@ -151,27 +129,8 @@ export function ButtonInterruptDemo() {
       </section>
       <section className="flow-para">
         <h2>Count presses through the shared circuit parts</h2>
-        <p>
-          Start with a direct button → 8-bit counter → binary-to-BCD converter → three seven-segment
-          digits. Each click counts once; held mode counts only on its rising edge. Values wrap from
-          255 to 0.
-        </p>
         <CircuitDemo makeCircuit={buttonCounterDisplay} label="Button counter circuit" />
         <h2>Catch a press while the CPU is busy</h2>
-        <p>{BUTTON_POLICY}</p>
-        <p className={noteClass}>
-          Physical switches need conditioning before this ideal capture input. See{" "}
-          <a href="https://www.ti.com/document-viewer/lit/html/scea094">TI on contact bounce</a> and{" "}
-          <a href="https://www.intel.com/content/www/us/en/docs/programmable/683068/18-1/metastability-analysis.html">
-            Intel on synchronization chains
-          </a>
-          . Real circuits also need pulse-width and reset-release timing constraints.
-        </p>
-        <p>
-          CAPTURED remembers a brief press. SAMPLED HOLD follows the held level after two sample
-          clocks; a brief press can leave it low. REQUEST samples the capture instead. Inspect its
-          flip-flops on the canvas.
-        </p>
         <CircuitDemo makeCircuit={buttonBench} label="Button capture circuit" />
         <p>
           <Link href="/computer/build-from-nand?level=button-capture">
@@ -181,11 +140,6 @@ export function ButtonInterruptDemo() {
       </section>
       <section className="flow-para" aria-label="Build the interrupt path">
         <h2>Build this out</h2>
-        <p>
-          Build the capture latch, connect its request and acknowledge wires, then wire the CPU’s
-          interrupt control. Each stage checks your circuit. The final stage runs the handler and
-          checks that the CPU resumes its interrupted work.
-        </p>
         <LazyLogicTutorial
           title="Build the interrupt path"
           level="button-capture"

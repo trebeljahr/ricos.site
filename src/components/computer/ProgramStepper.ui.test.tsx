@@ -71,8 +71,6 @@ describe("the program stepper", () => {
     write("fn bump(n) {\n  return n + 1;\n}\nprint(bump(2));");
     expect(screen.queryByRole("alert")).toBeNull();
     expect(screen.getByText("CALL STACK / TOP AT RIGHT")).toBeTruthy();
-    // The long explanation of the stack belongs to the demos about the stack.
-    expect(screen.queryByText(/CALL pushes the code address/)).toBeNull();
     toEnd();
     expect(screen.getByText("3", { selector: "div" })).toBeTruthy();
     write("screen[0] = 255;");
@@ -84,7 +82,6 @@ describe("the program stepper", () => {
     show(demoAt("call-stack"));
     const stack = () => screen.getByText("CALL STACK / TOP AT RIGHT").parentElement!.textContent;
     expect(stack()).toContain("EMPTY");
-    expect(screen.getByText(/CALL pushes the code address/)).toBeTruthy();
     // Step until the first CALL has pushed its return address.
     let step = 0;
     while (stack()?.includes("EMPTY") && step < Number(slider().max))

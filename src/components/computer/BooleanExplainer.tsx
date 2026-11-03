@@ -84,9 +84,6 @@ export function TruthTableScale() {
           </dd>
         </div>
       </dl>
-      <p>
-        Flip any output below. Each different complete output column is another Boolean function.
-      </p>
       <div className={styles.tableScroll}>
         <table className={styles.table}>
           <caption>Choose the output for each input case.</caption>
@@ -145,7 +142,6 @@ export function TruthTableScale() {
         </span>
         <code>{column}</code>
       </div>
-      {inputs === 0 && <p>One empty input case, two constant functions: always 0 and always 1.</p>}
       <BooleanExplanation topic="rows-and-functions">
         <BooleanExplanation topic="constants" />
       </BooleanExplanation>

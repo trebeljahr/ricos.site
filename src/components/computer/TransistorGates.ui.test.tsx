@@ -41,7 +41,7 @@ it("exposes real MOSFET terminals and shows conduction independently of drain le
 });
 
 it("preserves the fixed gate and legend options", () => {
-  const { container } = render(<TransistorGates gate="nor" fixed legend={false} />);
+  const { container } = render(<TransistorGates gate="nor" fixed />);
   expect(screen.queryByLabelText("Show the NOT gate")).toBeNull();
   expect(container.textContent).not.toContain("PMOS conducts at 0");
   expect(screen.getByRole("application", { name: "Circuit canvas" })).toBeTruthy();

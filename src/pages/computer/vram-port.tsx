@@ -6,7 +6,6 @@ export default function VramPortPage() {
     <DeviceDemoPage
       slug="vram-port"
       description="Three addresses reach all 128 bytes of the 32×32 screen: each store to DATA writes one byte and moves ADDR on."
-      intro="Drive the device through the CPU's memory bus. Set an address and a byte, store on a clock edge, then open the blocks to follow the gates."
     >
       <VramPortDemo />
     </DeviceDemoPage>

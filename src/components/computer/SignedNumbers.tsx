@@ -1,6 +1,5 @@
-import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
-
 import clsx from "clsx";
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   bitMask,
@@ -379,17 +378,8 @@ function ArithmeticBench({ width }: { width: SignedWidth }) {
             </code>
           </p>
         )}
-        <p className={styles.hint}>
-          Carry out records the extra unsigned bit. Signed overflow is the carry into the sign bit
-          XOR the carry out. For subtraction, carry out 1 means no unsigned borrow. Click a full
-          adder below to unfold its gates.
-        </p>
         <details className={styles.comparison}>
           <summary>Why does the encoding matter to addition?</summary>
-          <p className={styles.hint}>
-            The fields above use two’s complement. This experiment reads the same input and result
-            wires using other encodings.
-          </p>
           <div className={styles.controls}>
             <button
               type="button"
@@ -453,12 +443,6 @@ function ArithmeticBench({ width }: { width: SignedWidth }) {
               </div>
             </>
           )}
-          <p className={styles.hint}>
-            The sign-magnitude example expects −3, but ordinary binary addition produces bits that
-            mean −7 in that encoding. Its sign bit needs separate handling. Ones’ complement
-            addition needs a carry from the top place added back at the bottom. The current
-            subtraction wiring and signed overflow flag use two’s complement rules.
-          </p>
         </details>
       </div>
       <section className={styles.circuit} aria-label={`${width}-bit signed adder circuit`}>

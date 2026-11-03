@@ -10,7 +10,7 @@ const summary = "Capture a button press, service it on the CPU, acknowledge it a
 
 export default function ButtonInterruptsPage() {
   return (
-    <DeviceDemoPage slug="button-interrupts" description={summary} intro={summary}>
+    <DeviceDemoPage slug="button-interrupts" description={summary}>
       <ButtonInterruptDemo />
     </DeviceDemoPage>
   );

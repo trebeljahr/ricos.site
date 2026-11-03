@@ -19,14 +19,6 @@ const ms = (ticks: number) => {
   return value < 1 ? `${value.toFixed(3)} ms` : `${number(Math.round(value * 10) / 10)} ms`;
 };
 
-const LESSONS: Record<ScaleSize, string> = {
-  "8×8": "At 8×8 everything is fast: 8 bytes, and even the CPU finishes in under 100 ticks.",
-  "32×32":
-    "At 32×32 the CPU needs over 2,000 ticks for 128 bytes, 17 to 21 per byte, whichever way it writes. The port is no faster than the window for a plain fill: it saves address work, not stores, and its loop costs more. The big blitter needs the CPU for 60 ticks and then writes a byte per tick by itself.",
-  "512×512":
-    "At 512×512 the CPU would need over half a second for one fill: more than 30 frames at 60 Hz. A blitter takes about two frames, and a shader with a lane per pixel of a row well under one. Past a small screen, the CPU cannot afford to touch every pixel.",
-};
-
 /**
  * One job — light every pixel — done every way the toy computer offers, at
  * three screen sizes. One bar per method: its ticks to finish, on one scale
@@ -66,9 +58,6 @@ export function ScreenScaleDemo() {
             {number(screen.width * screen.height)} pixels, {number(frameBytes(screen))} bytes
           </figcaption>
         </figure>
-        <p className="m-0 max-w-prose flex-1 text-sm text-gray-700 dark:text-gray-300">
-          {LESSONS[size]}
-        </p>
       </div>
 
       <ol
@@ -122,10 +111,6 @@ export function ScreenScaleDemo() {
           );
         })}
       </ol>
-      <p className="mt-para text-xs text-gray-600 dark:text-gray-400">
-        A tick is one clock cycle. At 1 MHz, the clock of many 8-bit home computers, a tick is 1 µs,
-        and one frame at 60 Hz is about 16,667 ticks.
-      </p>
     </section>
   );
 }

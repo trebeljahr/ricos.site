@@ -6,7 +6,6 @@ export default function BlitterPage() {
     <DeviceDemoPage
       slug="blitter"
       description="The blitter takes a position and a command from the CPU, then draws one row or pixel per clock tick by itself."
-      intro="Drive the device through the CPU's memory bus. Set an address and a byte, store on a clock edge, then open the blocks to follow the gates."
     >
       <BlitterDemo />
     </DeviceDemoPage>

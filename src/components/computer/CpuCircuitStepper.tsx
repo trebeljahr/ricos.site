@@ -531,11 +531,6 @@ export function CpuCircuitStepper() {
                       pressKey(event.key.charCodeAt(0));
                     }}
                   />
-                  <small>
-                    One clock tick with the code on KEY BIT 0–7 and KEY PRESS on. The glowing wires
-                    then show KEY READY → IRQ → INT, and the interrupt box lights while the control
-                    unit pushes PC and jumps to {hex(INTERRUPT_VECTOR)}.
-                  </small>
                 </label>
               )}
               <p className={styles.sync} data-match={mismatches.length === 0}>

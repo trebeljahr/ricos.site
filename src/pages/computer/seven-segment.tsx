@@ -16,12 +16,7 @@ export default function SevenSegmentPage() {
     <DeviceDemoPage
       slug="seven-segment"
       description="Wire each bar, decode BCD, then build decimal displays with one to four digits."
-      intro="Start with the seven switches. Each letter lights one bar. The display palette opens a BCD decoder demo and decimal demos with one to four digits. Open each converter to trace its gates."
     >
-      <p>
-        BCD uses 0–9; 10–15 blanks. Decimal displays keep leading zeroes. On overflow, the low
-        digits remain and OVERFLOW lights. Eight bits reach 255; fourteen bits reach 16383.
-      </p>
       <p>
         <Link href="/computer/build-from-nand?level=raw-seven-segment">
           Build and check these circuits yourself →

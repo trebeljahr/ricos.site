@@ -32,7 +32,6 @@ import {
   hex,
   INTERRUPT_VECTOR,
   type IsaEntry,
-  KEY_HANDLER,
   type KeySchedule,
   type MicrocodeTable,
   microcodeIsa,
@@ -88,10 +87,6 @@ function saveTables(tables: Tables) {
     // Storage blocked: the edit still works until the page reloads.
   }
 }
-/** Whether the program has a key handler: the compiler then puts a jump at the interrupt vector. */
-const hasHandler = (program: CompiledProgram | null) =>
-  Boolean(program?.instructions.some(({ label }) => label === "INTERRUPT VECTOR"));
-
 type Props = {
   /**
    * The part of the CPU this demo is about. Its readout always shows; the
@@ -166,7 +161,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
   const shows = (part: StepperPart) => part === focus || Boolean(used?.has(part));
   // An interrupt pushes PC, so the key port brings the stack readout with it.
   const showStack = inRam || shows("calls") || shows("ramStack") || shows("interrupts");
-  const explainStack = focus === "calls" || focus === "ramStack";
   // The pixel port and the blitter draw on the screen; the port and the big blitter on the big one.
   const showScreen = shows("screen") || shows("pixelPort") || shows("blitter");
   const showBigScreen = shows("bankWindow") || shows("vramPort") || shows("bigBlitter");
@@ -442,11 +436,9 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
                       </li>
                     ))}
                   </ol>
-                  <small>
-                    {state.keyPress !== null
-                      ? `Key ${keyLabel(state.keyPress)} arrived during this step.`
-                      : "A key you type arrives on the next clock tick. The CPU finishes its instruction first; if interrupts are on, it then pushes PC and jumps to the handler instead of fetching."}
-                  </small>
+                  {state.keyPress !== null && (
+                    <small>{`Key ${keyLabel(state.keyPress)} arrived during this step.`}</small>
+                  )}
                 </div>
               )}
               {showStack &&
@@ -462,16 +454,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
                           : "EMPTY"}
                       </strong>
                     </div>
-                    {explainStack && (
-                      <small>
-                        SP starts at 20, just past the last RAM byte, and counts down. CALL moves SP
-                        down one byte and stores the return address there; RET reads it back and
-                        moves SP up. Each function then moves SP down once more to make its frame:
-                        the parameter at SP+0, then each local. Every call gets a fresh frame, so a
-                        function can call itself. Too many calls and the stack runs into the
-                        variables at the bottom of RAM.
-                      </small>
-                    )}
                   </div>
                 ) : (
                   <div className={styles.stackReadout}>
@@ -483,14 +465,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
                           : "EMPTY"}
                       </strong>
                     </div>
-                    {explainStack && (
-                      <small>
-                        CALL pushes the code address to come back to; RET pops it. The stack holds
-                        only return addresses. Variables, parameters and loop counters each get one
-                        fixed RAM address, which is why a function cannot call itself.
-                        {focus === "ramStack" && " Switch the CPU to STACK IN RAM to compare."}
-                      </small>
-                    )}
                   </div>
                 ))}
               <div className={styles.lowerReadouts}>
@@ -737,7 +711,6 @@ export function ProgramSource({
   const instructionListRef = useRef<HTMLOListElement>(null);
   const sourceMirrorRef = useRef<HTMLDivElement>(null);
   const sourceLines = source.split("\n");
-  const inRam = stack === "ram";
   const active =
     activeAddress === null
       ? null
@@ -945,28 +918,6 @@ export function ProgramSource({
               </li>
             ))}
           </ol>
-          <p className={styles.hint}>
-            Each instruction is two bytes: opcode, then operand. <b>#5</b> is the number 5 itself.{" "}
-            <b>[00]</b> is RAM address 00, so the CPU uses the value stored there. <b>→0A</b> is a
-            code address to jump to.
-            {inRam && (
-              <>
-                {" "}
-                <b>[SP+1]</b> is the byte at RAM address SP + 1, inside the current function's stack
-                frame.
-              </>
-            )}{" "}
-            {assembly
-              ? "In assembly, every line is one instruction: L3 is line 3."
-              : "GEN is code the compiler adds."}
-            {hasHandler(compilation.program) && (
-              <>
-                {" "}
-                <b>{KEY_HANDLER}</b> is the key handler: address {hex(INTERRUPT_VECTOR)} jumps to
-                it, and it saves ACC and the carry flag before it runs your code.
-              </>
-            )}
-          </p>
           <details className={styles.isaDetails}>
             <summary>INSTRUCTION SET / VIEW KEY</summary>
             <div className={styles.isaList}>

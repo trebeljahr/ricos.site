@@ -19,7 +19,6 @@ describe("truth table scale", () => {
 
     fireEvent.change(screen.getByRole("slider"), { target: { value: "0" } });
     expect(screen.getAllByRole("button", { name: /Flip output/ })).toHaveLength(1);
-    expect(container.textContent).toContain("One empty input case, two constant functions");
     fireEvent.click(screen.getByRole("button", { name: "Row no inputs output: 0. Flip output." }));
     expect(container.textContent).toContain("Complete output column1");
   });

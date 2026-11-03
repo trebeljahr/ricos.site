@@ -594,10 +594,6 @@ export function DieZoom({
                 : ". Outline approximate."}
             </p>
           )}
-          <p className={own.note}>
-            At full zoom one photo pixel is about {formatLength(perPixel)}. The transistors on this
-            chip are 0.25 µm, smaller than one pixel.
-          </p>
           <p className={own.credit}>
             Photo:{" "}
             <a href={shot.credit.url} target="_blank" rel="noreferrer">

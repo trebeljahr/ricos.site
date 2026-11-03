@@ -26,10 +26,6 @@ export default function TransistorGatesPage() {
             <code>{"<TransistorGates />"}</code>
           </h2>
           <p>
-            Edit the transistor circuits below, or build one from a behavior goal in the
-            construction challenge.
-          </p>
-          <p>
             <Link href="/computer/build-from-nand?level=cmos-not">
               Wire a transistor inverter →
             </Link>

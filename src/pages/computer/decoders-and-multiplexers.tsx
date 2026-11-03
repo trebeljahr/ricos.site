@@ -24,18 +24,11 @@ export default function AddressRoutingPage() {
         <ComputerDemoNav current="decoders-and-multiplexers" />
         <header className="mx-auto my-8 max-w-prose">
           <h1 className="text-3xl font-semibold tracking-tight">Decoders and multiplexers</h1>
-          <p className="mt-3">
-            An address picks a wire. A multiplexer picks the data that travels along it.
-          </p>
         </header>
         <BooleanCircuitDemo />
         <section className="mb-10" aria-label="Build a decoder first">
           <div className="mx-auto">
             <h2 className="text-xl font-semibold">Build a decoder first</h2>
-            <p className="my-3">
-              Use two address bits to light exactly one of four outputs. Try your circuit before
-              revealing the wiring below.
-            </p>
             <button
               type="button"
               className="rounded border border-current px-4 py-3 text-sm hover:bg-gray-100 focus-visible:outline-2 dark:hover:bg-gray-800"

@@ -142,14 +142,20 @@ export function FourByteExplorer() {
               <button
                 type="button"
                 aria-pressed={!littleEndian}
-                onClick={() => { setLittleEndian(false); playSwitch(); }}
+                onClick={() => {
+                  setLittleEndian(false);
+                  playSwitch();
+                }}
               >
                 BIG ENDIAN
               </button>
               <button
                 type="button"
                 aria-pressed={littleEndian}
-                onClick={() => { setLittleEndian(true); playSwitch(); }}
+                onClick={() => {
+                  setLittleEndian(true);
+                  playSwitch();
+                }}
               >
                 LITTLE ENDIAN
               </button>
@@ -171,7 +177,6 @@ export function FourByteExplorer() {
           <p id="four-byte-help" className={panel.inputHelp}>
             {bytes ? "" : "ENTER EIGHT HEX DIGITS · SPACES OK"}
           </p>
-          <p className={styles.endianHint}>BYTE ORDER CHANGES INT32 + FLOAT32; TEXT + RGBA USE BYTES AS SHOWN.</p>
           <div className={styles.byteRows}>
             {[0, 1, 2, 3].map((byteIndex) => (
               <fieldset
@@ -228,7 +233,14 @@ export function FourByteExplorer() {
               <span>BINARY / 32 BITS</span>
               {!bytes && <span>INPUT ERROR</span>}
             </div>
-            <div className={styles.binaryScreenText} aria-label={bytes ? `Binary: ${[...bytes].map((byte) => byte.toString(2).padStart(8, "0")).join(" ")}` : "No valid binary value"}>
+            <div
+              className={styles.binaryScreenText}
+              aria-label={
+                bytes
+                  ? `Binary: ${[...bytes].map((byte) => byte.toString(2).padStart(8, "0")).join(" ")}`
+                  : "No valid binary value"
+              }
+            >
               {bytes
                 ? [...bytes].map((byte, index) => (
                     <span key={index}>{byte.toString(2).padStart(8, "0")}</span>

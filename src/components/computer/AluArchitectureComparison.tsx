@@ -64,11 +64,6 @@ export function AluArchitectureComparison() {
   return (
     <section className="not-prose my-8" aria-label="Compare ALU architectures">
       <h3 className="mb-4 text-xl font-semibold">Follow the same jobs through two ALU drawings</h3>
-      <p className="mb-5 text-sm leading-relaxed">
-        Scott’s diagram separates operations into boxes. The 74181 schematic shares Boolean terms
-        across four bit positions and a carry network. Choose a job to locate its corresponding
-        region.
-      </p>
       <fieldset className={`${controlsClass} mb-5 border-0 p-0`}>
         <legend className="sr-only">Schematic region</legend>
         {REGIONS.map((item) => (
@@ -127,8 +122,7 @@ export function AluArchitectureComparison() {
           </svg>
         </div>
         <figcaption className="mt-3 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
-          Highlighted: {region.title}. Highlights identify regions; they do not calculate 74181
-          signal values.{" "}
+          Highlighted: {region.title}.{" "}
           <a
             className="underline"
             href="/images/computer/74181-schematic.jpg"
@@ -148,7 +142,7 @@ export function AluArchitectureComparison() {
           >
             Drawing source on Wikimedia Commons
           </a>
-          . Rico supplied this raster screenshot; highlights were added for this comparison.
+          . Highlights added.
         </figcaption>
       </figure>
       <details className="my-6 text-sm leading-relaxed">
@@ -189,17 +183,8 @@ export function AluArchitectureComparison() {
         <summary className="cursor-pointer py-3 text-sm font-medium underline underline-offset-4">
           Try the teaching ALU’s reusable bit slice
         </summary>
-        {sliceOpen && (
-          <CircuitDemo makeCircuit={teachingSlice} label="Teaching ALU bit slice">
-            This project’s existing bit slice uses its own smaller operation set and control codes.
-            Flip its inputs and open the logic unit, full adder and selector to follow their gates.
-          </CircuitDemo>
-        )}
+        {sliceOpen && <CircuitDemo makeCircuit={teachingSlice} label="Teaching ALU bit slice" />}
       </details>
-      <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-        A gate schematic describes Boolean structure. It does not specify transistor layout or
-        silicon area.
-      </p>
     </section>
   );
 }

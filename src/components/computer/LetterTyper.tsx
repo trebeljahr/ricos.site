@@ -152,12 +152,8 @@ export function LetterTyper() {
             autoComplete="off"
             autoCapitalize="characters"
             autoCorrect="off"
-            aria-describedby={`${id}-help`}
           />
           <div className={typer.notes}>
-            <p id={`${id}-help`} hidden={notice !== null}>
-              Every character you type becomes five bits.
-            </p>
             <p
               className={clsx((rejected.length > 0 || notice?.overflow) && typer.refusal)}
               role="status"

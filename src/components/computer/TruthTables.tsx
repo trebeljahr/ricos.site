@@ -177,7 +177,6 @@ export function GateTruthTable({
           <p>
             {GATE_LABELS[gate]}: {GATE_RULES[gate]}
           </p>
-          <p className={tutorial.muted}>Choose a row or flip a circuit switch.</p>
         </div>,
       )}
     </section>
@@ -246,7 +245,6 @@ export function AdditionTable() {
               ? `${GATE_LABELS[trial]} matches SUM in ${matches("sum")} of 4 rows and CARRY in ${matches("carry")} of 4.`
               : "Which gate gives the SUM column? Which one gives CARRY?"}
           </p>
-          <p className={tutorial.muted}>Choose a row or flip a circuit switch.</p>
         </div>,
       )}
     </section>
@@ -283,11 +281,6 @@ export function FullAdderTable() {
             {bit(a)} + {bit(b)} + {bit(carryIn)} = {bit(carry)}
             {bit(sum)}
           </p>
-          <p className={tutorial.muted}>CIN is the carry in. COUT is the carry out.</p>
-          <p className={tutorial.muted}>
-            Read COUT and SUM together to count how many inputs are 1.
-          </p>
-          <p className={tutorial.muted}>Choose a row or flip a circuit switch.</p>
         </div>,
       )}
     </section>

@@ -312,12 +312,7 @@ export function MicrocodeEditor({ table, onChange, problems, onExercise }: Props
         </ul>
 
         <div className={styles.detail}>
-          {isInterrupt ? (
-            <p className={stepper.hint}>
-              The interrupt entry runs from T0 instead of a fetch when a key is waiting and
-              interrupts are on. It must push PC, turn interrupts off and load the vector.
-            </p>
-          ) : (
+          {!isInterrupt && (
             <div className={styles.fields}>
               <label>
                 <span>MNEMONIC</span>
@@ -494,12 +489,6 @@ export function MicrocodeEditor({ table, onChange, problems, onExercise }: Props
             </div>
           ))}
           {tooLong && <p className={stepper.error}>More T-states than the ROM has.</p>}
-          <p className={stepper.hint}>
-            T0–T{FETCH - 1} fetch the opcode and operand for every instruction and cannot be edited.
-            One line per T-state may drive the bus (→BUS); a line that reads it (BUS→) needs a
-            driver in the same T-state. STEP_RESET ends the instruction. ALU_AND makes the ALU
-            output ACC AND OPR.
-          </p>
         </div>
       </div>
 

@@ -25,7 +25,6 @@ export function StepperDemoPage({ slug }: { slug: ComputerDemoSlug }) {
           <h1 className="text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
             {title}
           </h1>
-          <p className="text-gray-700 dark:text-gray-300">{demo.intro}</p>
         </header>
         <ProgramStepper key={slug} focus={demo.focus ?? undefined} presets={demo.presets} />
         <ComputerDemoNav current={slug} bottom />

@@ -105,11 +105,6 @@ export function GateRunPanel({ circuit }: { circuit: Circuit }) {
         <input type="checkbox" checked={on} onChange={(event) => setOn(event.target.checked)} />
         Run as gates
       </label>
-      {!on && (
-        <small className={styles.note}>
-          Unfold every block down to gates and run them in a background thread.
-        </small>
-      )}
       {on && error && <small className={styles.error}>{error}</small>}
       {on && !error && !stats && <small className={styles.note}>Compiling the netlist…</small>}
       {on && stats && (

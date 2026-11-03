@@ -78,7 +78,6 @@
 .demo .lcd { margin-top: 12px; }
 .lcdText { min-height: 2.7em; margin: 5px 0 0; font-size: 13px; line-height: 1.35; letter-spacing: .01em; }
 .lcdFacts { display: flex; flex-wrap: wrap; gap: 2px 16px; margin-top: 6px; font-size: 11px; }
-.note { margin: 8px 0 0; font-size: 11px; line-height: 1.45; letter-spacing: .01em; }
 .credit { margin: 6px 0 0; font-size: 10px; letter-spacing: .02em; opacity: .85; }
 .credit a { color: inherit; text-decoration: underline; }
 

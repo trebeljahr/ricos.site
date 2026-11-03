@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
+import { useCallback, useMemo, useState } from "react";
 import { ghostMatrixCircuit, keyId, type MatrixSize } from "../../lib/computer/keyboardMatrix";
 import { keyboardScannerCircuit } from "../../lib/computer/keyboardScanner";
 import { CircuitDemo } from "./CircuitDemo";
@@ -33,12 +33,6 @@ export function KeyboardMatrixDemo() {
     <div className="flex flex-col gap-section">
       <section className="flow-para">
         <h2>Scan keys inside the circuit</h2>
-        <p>
-          Toggle the key contacts on the canvas to hold a chord. Run the builder’s clock or step
-          through its half cycles. The row sequencer selects one row at a time. Column lamps show
-          which contacts pull a column low. Pan right to follow the samples and character map. Fit
-          shows the whole circuit.
-        </p>
         <div className={controlsClass}>
           <label>
             Rows{" "}
@@ -86,41 +80,13 @@ export function KeyboardMatrixDemo() {
           label="Keyboard scanner circuit"
           initialFocus={focus}
         />
-        <p>
-          Each contact stores its column reading on the falling clock edge. After a complete scan,
-          the shared frame clock updates every key’s two-sample filter together. STABLE remembers
-          the accepted state. PRESS and RELEASE mark one frame each. Holding a key produces no
-          repeat presses.
-        </p>
-        <p>
-          Shift commits with the letters. FRAME CHARACTER shows the ASCII code of the first
-          character pressed in that frame: a = 97, A = 65. Simultaneous character presses use
-          position priority. Every key still exposes its own transition signals. Unfold the filter
-          modules to edit their flip-flops and gates.
-        </p>
-        <p>
-          {ansi
-            ? "US QWERTY uses a 6 × 15 electrical grid. Empty slots have no switch. Letters, punctuation and Space map to ASCII."
-            : "Row 1, column 0 is Shift. Other contacts map to letters."}{" "}
-          ROW ACTIVE = 1 represents a row driven to electrical 0. Other rows release to Z. SENSE LOW
-          = 1 represents a pulled-up column reading electrical 0.
-        </p>
       </section>
       <section className="flow-para">
         <h2>Follow the ghosting path</h2>
-        <p>
-          This circuit removes the isolation diodes. Turn on R1 ACTIVE and close contacts (0,0),
-          (0,1), and (1,1). Both columns read low, although contact (1,0) stays open. Follow the
-          indirect path through the other row. Two diagonal contacts alone do not ghost.
-        </p>
         <CircuitDemo makeCircuit={ghostMatrixCircuit} label="Matrix ghosting circuit" />
       </section>
       <section className="flow-para" aria-label="Build the keyboard controller">
         <h2>Build this out</h2>
-        <p>
-          Wire an isolated row, select a scan row, filter sampled contacts, then map a press and
-          Shift to a character. Each stage runs in the circuit builder and checks your wiring.
-        </p>
         <LazyLogicTutorial
           title="Build the keyboard controller"
           level="matrix-row-2"

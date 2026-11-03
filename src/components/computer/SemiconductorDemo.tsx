@@ -1161,9 +1161,6 @@ export function SemiconductorDemo() {
         <div hidden={view !== "real"}>
           <RealTransistorsView />
         </div>
-        <p className={styles.modelNote}>
-          Qualitative model · motion shows charge transport, not atomic trajectories.
-        </p>
       </section>
     </MotionContext.Provider>
   );

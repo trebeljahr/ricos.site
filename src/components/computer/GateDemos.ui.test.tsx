@@ -145,9 +145,14 @@ describe("switch logic", () => {
     expect(nmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     expect(pmos.getByRole("img", { name: /PMOS A transistor conducting; gate low/ })).toBeTruthy();
     expect(nmos.getByRole("img", { name: /NMOS A transistor blocking; gate low/ })).toBeTruthy();
+    const pmosRegion = screen.getByRole("region", { name: "PMOS lamp circuit" });
+    expect(pmosRegion.querySelector("[data-gate-pulse]")).toBeNull();
     fireEvent.click(pmos.getByRole("button", { name: /^Control A: low/ }));
     expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     expect(nmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    // A closed control switch charges the gate once; no steady current runs in that wire.
+    expect(pmosRegion.querySelector("[data-gate-pulse]")).toBeTruthy();
+    expect(pmosRegion.querySelector("[data-current]")).toBeNull();
     fireEvent.click(nmos.getByRole("button", { name: /^Control A: low/ }));
     expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     expect(nmos.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();

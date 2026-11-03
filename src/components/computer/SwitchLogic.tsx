@@ -54,16 +54,23 @@ function conducts(contact: Contact, a: boolean, b: boolean) {
   return contact.kind === "nmos" ? high : !high;
 }
 
-/** Transistors retain their package drawing; only the separate controls are switches. */
+/**
+ * The package shows why the gate wire is not a loop: the gate plate never touches
+ * the channel, so its voltage opens or closes the channel without current crossing.
+ */
 function TransistorSwitch({
   contact,
   high,
   closed,
+  active,
+  reversed,
   boardHeight,
 }: {
   contact: Contact;
   high: boolean;
   closed: boolean;
+  active: boolean;
+  reversed: boolean;
   boardHeight: number;
 }) {
   return (
@@ -74,15 +81,20 @@ function TransistorSwitch({
       aria-label={`${contact.kind.toUpperCase()} ${contact.name} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}`}
     >
       <svg viewBox="-60 -60 120 120" aria-hidden="true">
-        <path className={own.deviceLead} d="M-56 0 H-32 M32 0 H56 M0 24 V60" />
+        <path className={own.deviceLead} d="M-56 0 H-32 M32 0 H56" />
         <rect className={own.chip} x="-36" y="-34" width="72" height="62" rx="9" />
-        <text className={own.chipKind} x="0" y="-11">
-          {contact.kind.toUpperCase()}
+        <text className={own.chipKind} x="0" y="-14">
+          {`${contact.kind.toUpperCase()} ${contact.name}`}
         </text>
-        <text className={own.chipName} x="0" y="12">
-          {contact.name}
-        </text>
-        <circle className={own.stateLight} data-on={closed} cx="24" cy="-23" r="3" />
+        <path className={own.channel} d="M-32 0 H-12 M12 0 H32" />
+        <path className={own.channelBridge} data-closed={closed} d="M-12 0 H12" />
+        {active && (
+          <>
+            <path className={own.currentCable} d={reversed ? "M56 0 H-56" : "M-56 0 H56"} />
+            <path className={own.currentFlow} d={reversed ? "M56 0 H-56" : "M-56 0 H56"} />
+          </>
+        )}
+        <path className={own.gatePlate} data-high={high} d="M-22 11 H22 M0 11 V60" />
         <text className={own.gateLabel} x="10" y="55">
           G
         </text>
@@ -119,6 +131,7 @@ function SwitchBoard({
   const rows = branched ? [140, 360] : electrical ? [180] : [140];
   const boardHeight = branched ? 480 : electrical ? 400 : 360;
   const returnY = boardHeight - 30;
+  const [gatePulse, setGatePulse] = useState(0);
   // The native simulator decides which complete branches conduct. These are
   // presentation paths, not a second circuit or current simulation.
   const activeRows = rows.map((y, branch) => {
@@ -236,6 +249,8 @@ function SwitchBoard({
                 contact={contact}
                 high={contact.name === "A" ? a : b}
                 closed={conducts(contact, a, b)}
+                active={activeRows[rows.indexOf(contact.y)]}
+                reversed={lowSide}
                 boardHeight={boardHeight}
               />
             ) : (
@@ -259,8 +274,22 @@ function SwitchBoard({
               closed={a}
               control
               boardHeight={boardHeight}
-              onFlip={() => onFlip("A")}
+              onFlip={() => {
+                if (!a) setGatePulse((count) => count + 1);
+                onFlip("A");
+              }}
             />
+          )}
+          {/* The gate wire ends at the insulated plate: charge moves once, then stops. */}
+          {gatePulse > 0 && (
+            <svg className={own.gatePulse} viewBox={`0 0 800 ${boardHeight}`} aria-hidden="true">
+              <path
+                key={gatePulse}
+                data-gate-pulse
+                pathLength={100}
+                d={`${lowSide ? "M132 40" : "M132 140"} V280 H500 V191`}
+              />
+            </svg>
           )}
           {spark && (
             <span

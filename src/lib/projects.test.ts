@@ -43,6 +43,17 @@ describe("projects catalogue", () => {
     ]);
   });
 
+  it("keeps unlisted projects off every public list", () => {
+    const unlisted = PROJECTS.filter((p) => p.unlisted).map((p) => p.slug);
+    const listed = [
+      ...PROJECT_SECTIONS.flatMap(({ title }) => projectsInSection(title)),
+      ...FEATURED_PROJECTS,
+    ].map((p) => p.slug);
+    for (const slug of unlisted) expect(listed, slug).not.toContain(slug);
+    for (const { title } of PROJECT_SECTIONS)
+      expect(projectsInSection(title), title).not.toEqual([]);
+  });
+
   it("lists each section newest first", () => {
     for (const { title } of PROJECT_SECTIONS) {
       const dates = projectsInSection(title).map((p) => p.date);

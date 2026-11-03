@@ -17,6 +17,9 @@ export type Project = Pick<CommonMetadata, "slug" | "title" | "link" | "cover"> 
   sprints?: ProjectSprint[];
   section: ProjectSection;
   featured?: boolean;
+  // Still in the works: left off /projects, the home page and /timeline, while
+  // the project's own donation link keeps working.
+  unlisted?: boolean;
 };
 
 // /projects is the one hub for everything Rico made, in the order he ranks the
@@ -37,12 +40,13 @@ export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   },
   {
     title: "Everyday apps",
-    intro: "Apps for work and daily life, from time tracking to bookmarks.",
+    intro: "Apps for work and daily life.",
   },
 ];
 
-// 16:9 webp files committed under public/projects/ (1280x720, cropped from
-// each project's own screenshots), shown with coverAspect="video". They are
+// 16:9 webp files committed under public/projects/ (1280x720, text-free art
+// from each project's own store and press assets where it has some), shown
+// with coverAspect="video". They are
 // served straight from public/ (the image loader passes non-/assets/ paths
 // through), so they behave the same in dev and production.
 const screenshot = (slug: string, alt: string): Project["cover"] => ({
@@ -64,7 +68,7 @@ export const PROJECTS: Project[] = [
     section: "Games",
     cover: screenshot(
       "mesozoic-protocol",
-      "Mesozoic Protocol screenshot of turrets defending a forest path",
+      "Mesozoic Protocol art: a mech and turrets holding off dinosaurs on a burning shore",
     ),
   },
   {
@@ -75,7 +79,7 @@ export const PROJECTS: Project[] = [
       "A board game for two. Play with a friend at the same screen, online, or against the computer.",
     link: "https://playtiao.com",
     section: "Games",
-    cover: screenshot("tiao", "Tiao start screen with options to play over the board or online"),
+    cover: screenshot("tiao", "Tiao board at an angle with black and white stones"),
     featured: true,
   },
   {
@@ -94,7 +98,7 @@ export const PROJECTS: Project[] = [
     section: "Games",
     cover: screenshot(
       "raptor-runner",
-      "Raptor Runner at dusk: a raptor in a cowboy hat runs toward a coin under a pterodactyl",
+      "Raptor Runner art: a raptor in a cowboy hat runs across desert dunes",
     ),
     featured: true,
   },
@@ -112,7 +116,7 @@ export const PROJECTS: Project[] = [
       "My take on Minecraft in the browser, with generated landscapes, caves and blocks you can place.",
     link: "https://mc.trebeljahr.com",
     section: "Games",
-    cover: screenshot("minecraft-clone", "Voxel landscape with grassy hills and a block toolbar"),
+    cover: screenshot("minecraft-clone", "Stack of grass, dirt and stone blocks over a blue sky"),
   },
   {
     slug: "asteroids",
@@ -128,7 +132,7 @@ export const PROJECTS: Project[] = [
     subtitle: "The classic asteroid shooter. Play on your own or against other people online.",
     link: "https://asteroids.trebeljahr.com",
     section: "Games",
-    cover: screenshot("asteroids", "Spaceship flying between asteroids in a dark starfield"),
+    cover: screenshot("asteroids", "Orange spaceship flying between asteroids in deep blue space"),
   },
   {
     slug: "online-chess",
@@ -140,7 +144,7 @@ export const PROJECTS: Project[] = [
     subtitle: "Play chess online with a friend, with a lobby and a chat.",
     link: "https://chess.trebeljahr.com",
     section: "Games",
-    cover: screenshot("online-chess", "Online chess board next to match status and chat panels"),
+    cover: screenshot("online-chess", "Chess board in its starting position"),
   },
 
   // Art & 3D
@@ -153,7 +157,7 @@ export const PROJECTS: Project[] = [
     section: "Art & 3D",
     cover: screenshot(
       "collection-of-beauty",
-      "Collage of classic paintings next to the Collection of Beauty title",
+      "Collage of classic paintings, including The Great Wave and Girl with a Pearl Earring",
     ),
     featured: true,
   },
@@ -206,6 +210,7 @@ export const PROJECTS: Project[] = [
       "Shows your Claude Code and Codex usage in a local dashboard, with a daily heatmap and token costs.",
     link: "https://vibestats.trebeljahr.com",
     section: "Dev tools",
+    unlisted: true,
     cover: screenshot(
       "vibestats",
       "vibestats landing page: your Claude Code and Codex usage in one dashboard",
@@ -219,6 +224,7 @@ export const PROJECTS: Project[] = [
       "A searchable collection of free game assets. You can look at the 3D models and listen to the sounds right on the page.",
     link: "https://gamedev.trebeljahr.com",
     section: "Dev tools",
+    unlisted: true,
     cover: screenshot("gamedev-asset-library", "Grid of asset packs in the GameDev Asset Library"),
   },
   {
@@ -229,6 +235,7 @@ export const PROJECTS: Project[] = [
       "Checks if a name is still free at trademark offices, domain registries, social networks, app stores and package registries.",
     link: "https://names.trebeljahr.com",
     section: "Dev tools",
+    unlisted: true,
     cover: screenshot("name-check", "name-check landing page with a search box for a product name"),
   },
   {
@@ -238,7 +245,7 @@ export const PROJECTS: Project[] = [
     subtitle: "One command sets up a full-stack TypeScript app and puts it on your own server.",
     link: "https://hatchkit.trebeljahr.com",
     section: "Dev tools",
-    cover: screenshot("hatchkit", "Hatchkit landing page with a terminal running npx hatchkit"),
+    cover: screenshot("hatchkit", "Hatchkit logo on a dark background"),
     featured: true,
   },
   {
@@ -248,7 +255,7 @@ export const PROJECTS: Project[] = [
     subtitle: "Turns sprite sheets into assets you can drop straight into a game.",
     link: "https://sprites.trebeljahr.com",
     section: "Dev tools",
-    cover: screenshot("sprite-tools", "sprite-tools landing page with a sprite preview"),
+    cover: screenshot("sprite-tools", "Pixel art character sprite on a transparency grid"),
   },
   {
     slug: "conv3d",
@@ -263,7 +270,7 @@ export const PROJECTS: Project[] = [
     subtitle: "Turns 3D models into small GLB files and ready-to-use React components.",
     link: "https://conv3d.trebeljahr.com",
     section: "Dev tools",
-    cover: screenshot("conv3d", "Terminal output of conv3D converting a model to GLB and TSX"),
+    cover: screenshot("conv3d", "Textured low-poly barbarian model converted by conv3D"),
   },
 
   // Everyday apps
@@ -275,6 +282,7 @@ export const PROJECTS: Project[] = [
       "Tracks timed practice, like piano, writing or drawing. Two minutes are enough for the day to count.",
     link: "https://streaks.trebeljahr.com",
     section: "Everyday apps",
+    unlisted: true,
     cover: screenshot("streaks", "Streaks landing page headed Two minutes counts"),
   },
   {
@@ -285,10 +293,7 @@ export const PROJECTS: Project[] = [
       "A simple time tracker for freelancers. It turns your hours into reports and invoices, and you can host it yourself.",
     link: "https://trackyourtime.dev",
     section: "Everyday apps",
-    cover: screenshot(
-      "track-your-time",
-      "Track Your Time banner: time tracking on your own server",
-    ),
+    cover: screenshot("track-your-time", "Track Your Time logo on a dark purple background"),
     featured: true,
   },
   {
@@ -299,6 +304,7 @@ export const PROJECTS: Project[] = [
       "A small app for quick mood check-ins and tiny rituals that help people come back to each other.",
     link: "https://mood-magic.trebeljahr.com",
     section: "Everyday apps",
+    unlisted: true,
     cover: screenshot(
       "mood-magic",
       "Mood Magic landing page next to a phone showing a Restless check-in",
@@ -319,6 +325,7 @@ export const PROJECTS: Project[] = [
       "A Chrome extension that adds tags, ratings and notes to the bookmarks you already have. For now you install it from source.",
     link: "https://bookmarks.trebeljahr.com",
     section: "Everyday apps",
+    unlisted: true,
     cover: screenshot("better-bookmarks", "Better Bookmarks landing page on a dark background"),
   },
   {
@@ -337,6 +344,7 @@ export const PROJECTS: Project[] = [
       "A chemical structure editor. Draw a molecule once and export its skeletal, Lewis and formula views as one figure.",
     link: "https://hydroxyl.app",
     section: "Everyday apps",
+    unlisted: true,
     cover: screenshot(
       "chemistry-sketcher",
       "Hydroxyl landing page with acetic acid drawn as skeletal, Lewis and formula views",
@@ -344,8 +352,10 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-export const FEATURED_PROJECTS: Project[] = PROJECTS.filter((p) => p.featured);
+export const LISTED_PROJECTS: Project[] = PROJECTS.filter((p) => !p.unlisted);
+
+export const FEATURED_PROJECTS: Project[] = LISTED_PROJECTS.filter((p) => p.featured);
 
 // Newest first, by the date each project started.
 export const projectsInSection = (section: ProjectSection): Project[] =>
-  PROJECTS.filter((p) => p.section === section).sort((a, b) => b.date.localeCompare(a.date));
+  LISTED_PROJECTS.filter((p) => p.section === section).sort((a, b) => b.date.localeCompare(a.date));

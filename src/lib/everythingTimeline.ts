@@ -1,7 +1,7 @@
 import type { CommonMetadata } from "src/@types";
 import hiddenR3fRoutes from "src/content/r3f-hidden-routes.json";
 import seoMetadata from "src/content/seo-metadata.json";
-import { PROJECTS } from "./projects";
+import { LISTED_PROJECTS } from "./projects";
 import type { TimelineEntry } from "./timeline";
 import { sortTimelineEntries } from "./timeline";
 import { turnKebabIntoTitleCase } from "./utils/turnKebapIntoTitleCase";
@@ -131,7 +131,7 @@ export function getR3fTimelineEntries(): TimelineEntry[] {
 }
 
 export function getProjectTimelineEntries(): TimelineEntry[] {
-  return PROJECTS.flatMap((project) => {
+  return LISTED_PROJECTS.flatMap((project) => {
     const shared = {
       href: project.link,
       type: "project" as const,

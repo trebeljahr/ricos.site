@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Circuit } from "../../lib/computer/logic";
+import { nodeHeight, nodeWidth } from "../../lib/computer/nodeGeometry";
 import { LogicBuilder } from "./LogicBuilder";
 
 const STORAGE = "ricos-computer-circuits-v1";
@@ -207,6 +208,40 @@ describe("touch on the canvas", () => {
     fireEvent.click(add);
     expect(stored().nodes).toHaveLength(4);
     expect(screen.getByText("NAND added. Tap one of its dots to wire it.")).toBeTruthy();
+  });
+
+  it("lands each tapped part clear of the others, big or small", () => {
+    narrowCanvas();
+    let clock = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => (clock += 1000));
+    const box = {
+      name: "Wide box",
+      nodes: [
+        { id: "in", type: "switch", label: "IN", x: 40, y: 40 },
+        { id: "out", type: "lamp", label: "OUT", x: 400, y: 40 },
+      ],
+      wires: [{ id: "w", from: "in", to: "out", input: 0 }],
+    };
+    localStorage.setItem(
+      STORAGE,
+      JSON.stringify({ current: fixture(), saved: { "Wide box": box } }),
+    );
+    render(<LogicBuilder />);
+    const palette = screen.getByLabelText("Gate palette");
+    const nand = screen.getByTitle("Drag NAND onto canvas or click to add");
+    const wide = within(palette).getAllByRole("button", { name: /Wide box/ })[0];
+    for (const target of [wide, nand, wide, nand, wide]) fireEvent.click(target);
+    const nodes = stored().nodes;
+    expect(nodes).toHaveLength(8);
+    for (const [index, one] of nodes.entries())
+      for (const other of nodes.slice(index + 1))
+        expect(
+          one.x < other.x + nodeWidth(other) &&
+            one.x + nodeWidth(one) > other.x &&
+            one.y < other.y + nodeHeight(other) &&
+            one.y + nodeHeight(one) > other.y,
+          `${one.label ?? one.type} overlaps ${other.label ?? other.type}`,
+        ).toBe(false);
   });
 
   it("opens a board too big for a phone at a tappable zoom, while Fit still shows all of it", () => {

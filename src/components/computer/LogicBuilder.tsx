@@ -11,6 +11,7 @@ import { ToolbarSwitch } from "./ToolbarSwitch";
 import { useHistoryState } from "../../hooks/useHistoryState";
 import { useCircuitClipboard } from "../../hooks/useCircuitClipboard";
 import { type CircuitClip, copyCircuit, insertCircuitCopy, remapCircuitPath } from "../../lib/computer/circuitClipboard";
+import { openSpot } from "../../lib/computer/partPlacement";
 import { bridgeWirePaths, closestPathPoint, explicitWirePath, fanOutBranchPath, pathPoints, polylinePath, wireJunctions } from "../../lib/computer/wireGeometry";
 import { wireNetKeys } from "../../lib/computer/wireTopology";
 import { connectWireEnds, wireJoinError, type WireAnchor, type WireEnd } from "../../lib/computer/wireEditing";
@@ -193,17 +194,6 @@ const frameBounds = (left: number, top: number, zoom: number, width: number, hei
   right: left + (3 * width) / zoom,
   bottom: top + (3 * height) / zoom,
 });
-/** A spot near `center` that no part covers, nearest first. */
-const openSpot = (center: { x: number; y: number }, nodes: readonly Node[]) => {
-  for (const column of [0, 1, -1])
-    for (const row of [0, 1, -1, 2, -2]) {
-      const x = center.x + column * (NODE_WIDTH + 16);
-      const y = center.y + row * (NODE_HEIGHT + 16);
-      if (!nodes.some((node) => x - NODE_WIDTH / 2 < node.x + nodeWidth(node) && x + NODE_WIDTH / 2 > node.x &&
-        y - NODE_HEIGHT / 2 < node.y + nodeHeight(node) && y + NODE_HEIGHT / 2 > node.y)) return { x, y };
-    }
-  return center;
-};
 const wireColorNames = Object.keys(WIRE_COLORS) as WireColor[];
 const partColors: Record<GateType, string> = {
   switch: "#ffc76a",
@@ -3144,6 +3134,32 @@ function LogicBuilderWorkspace({
     (node.type !== "high" || showVdd) && (node.type !== "ground" || showGround);
   // Parts made by tutorial levels come in two versions: built-in, and the reader's own.
   const ownMode = progress.settings.ownParts;
+  /** Room for a part in the reader's view, and the view moved only when it holds no room at all. */
+  const freeSpot = (node: Omit<Node, "id" | "x" | "y">) => {
+    const camera = captureViewport();
+    const viewport = boardViewport.current;
+    const box = { ...node, id: "drop", x: 0, y: 0 };
+    const width = nodeWidth(box);
+    const height = nodeHeight(box);
+    // A dot sticks out past its part, and a finger needs to reach it.
+    const inset = 12 / camera.zoom;
+    const view = {
+      left: camera.left / camera.zoom + inset,
+      top: camera.top / camera.zoom + inset,
+      right: (camera.left + (viewport?.clientWidth || 900)) / camera.zoom - inset,
+      bottom: (camera.top + (viewport?.clientHeight || 520)) / camera.zoom - inset,
+    };
+    const spot = openSpot(insertionCenter(), { width, height }, displayNodes, view);
+    const left = spot.x - width / 2;
+    const top = spot.y - height / 2;
+    const shiftX = left < view.left ? left - view.left : left + width > view.right
+      ? Math.min(left - view.left, left + width - view.right) : 0;
+    const shiftY = top < view.top ? top - view.top : top + height > view.bottom
+      ? Math.min(top - view.top, top + height - view.bottom) : 0;
+    if (shiftX || shiftY) restoreViewport({ ...camera,
+      left: camera.left + shiftX * camera.zoom, top: camera.top + shiftY * camera.zoom });
+    return { x: left, y: top };
+  };
   const placeRow = (placement: Placement, position?: { x: number; y: number }, inlineTarget?: string | null) => {
     const tapped = !position && !activeInlinePath && narrowBoard();
     if (tapped) {
@@ -3154,10 +3170,9 @@ function LogicBuilderWorkspace({
     }
     if ("type" in placement) {
       // A narrow canvas shows little of the default grid, so a tap places the part in view.
-      const spot = tapped ? openSpot(insertionCenter(), circuit.nodes) : position;
-      addNode(placement.type, spot && {
-        x: spot.x - NODE_WIDTH / 2,
-        y: spot.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
+      addNode(placement.type, tapped ? freeSpot({ type: placement.type, ...placement.extra }) : position && {
+        x: position.x - NODE_WIDTH / 2,
+        y: position.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
       }, inlineTarget, placement.extra);
       if (tapped) setMessage(`${LABELS[placement.type]} added. Tap one of its dots to wire it.`);
       return;
@@ -3172,11 +3187,11 @@ function LogicBuilderWorkspace({
       insertCircuit(source, position ?? insertionCenter(), inlineTarget === undefined ? activeInlinePath : inlineTarget);
       return;
     }
-    // A click lands in the middle of what the reader is looking at; inside an unfolded part, beside its parts.
-    const center = tapped ? openSpot(insertionCenter(), circuit.nodes)
-      : position ?? ((inlineTarget === undefined ? activeInlinePath : inlineTarget) ? undefined : insertionCenter());
+    // A click lands in the free space nearest the middle of the view; inside an unfolded part, beside its parts.
     const height = nodeHeight({ id: "drop", type: "module", module: source, x: 0, y: 0 });
-    addModule(source, center && { x: center.x - MODULE_WIDTH / 2, y: center.y - height / 2 },
+    addModule(source, position ? { x: position.x - MODULE_WIDTH / 2, y: position.y - height / 2 }
+      : (inlineTarget === undefined ? activeInlinePath : inlineTarget) ? undefined
+      : freeSpot({ type: "module", module: source, ...placement.extra }),
       inlineTarget, placement.extra);
     if (tapped) setMessage(`${source.name} added. Tap one of its dots to wire it.`);
   };

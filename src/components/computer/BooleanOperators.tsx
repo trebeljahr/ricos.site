@@ -8,7 +8,7 @@ import {
 export function BooleanOperators() {
   return (
     <div className="not-prose my-6 overflow-x-auto" data-computer-embed="wide">
-      <table className="w-full min-w-[620px] border-collapse text-left text-sm">
+      <table className="mx-auto min-w-[620px] border-collapse text-left text-sm">
         <caption className="mb-3 text-left font-medium">Basic Boolean operators</caption>
         <thead>
           <tr className="border-b border-gray-300 dark:border-gray-600">

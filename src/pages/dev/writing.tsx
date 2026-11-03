@@ -16,7 +16,6 @@ import {
   dailyWords,
   dayKey,
   type History,
-  LOCK_STEP,
   NEXT_DEADLINE,
   type NextStep,
   nextStep,
@@ -73,7 +72,6 @@ type Props = {
   best: number;
   days: CalendarDay[];
   todayKey: string;
-  indexPath: string;
   seriesDir: string;
   /** Study lists by chapter slug, without ticks; `done` carries those. */
   plans: Record<string, StudyPlan>;
@@ -777,7 +775,7 @@ function ChapterRow({
 }
 
 export default function WritingDevPage(props: Props) {
-  const { chapters, deadline, next, today, indexPath } = props;
+  const { chapters, deadline, next, today } = props;
   const [done, setDone] = useState(props.done);
   const planFor = (chapter: ChapterProgress) => {
     const plan = chapter.slug ? props.plans[chapter.slug] : undefined;
@@ -907,21 +905,6 @@ export default function WritingDevPage(props: Props) {
                   ))}
                 </section>
               ))}
-
-              <p className="mt-section text-sm text-gray-500">
-                Order, titles and status come from each file's frontmatter. The next deadline is{" "}
-                <code>NEXT_DEADLINE</code> in <code>src/lib/computerSeries.ts</code>, and only its
-                part's chapters count towards it. The first card takes every draft, then every
-                polish, then each chapter live, so each bar follows the chapters and the asides are
-                counted apart. Each chapter has three steps. <code>status: draft-done</code> (or{" "}
-                <code>revising</code>, <code>done</code>) counts it as drafted: each section short
-                of its estimate then takes its own word count, rounded down to {LOCK_STEP}, as its
-                target. <code>status: done</code> counts it as polished and{" "}
-                <code>published: true</code> as live. The study lists come from{" "}
-                <code>src/content/computer/resources.json</code>, by chapter slug; ticks are saved
-                in <code>.study-progress.json</code>.{" "}
-                <a href={obsidianLink(indexPath)}>Open the index in Obsidian</a>.
-              </p>
             </div>
           )}
         </article>
@@ -1014,7 +997,6 @@ export async function getStaticProps() {
       todayKey > NEXT_DEADLINE.date ? todayKey : NEXT_DEADLINE.date,
     ),
     todayKey,
-    indexPath: path.resolve(dir, "Index.md"),
     seriesDir: dir,
     plans,
     done: readStudyDone(),

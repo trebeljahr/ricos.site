@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
-import type { Circuit } from "../../lib/computer/logic";
+import { type Circuit, gateIds } from "../../lib/computer/logic";
 import { type LockedView, LogicBuilder } from "./LogicBuilder";
 
 /** Editable chapter circuit with its own save slot, separate from the reader's lab. */
@@ -12,6 +12,7 @@ export function CircuitDemo({
   initialFocus,
   revision,
   onFrame,
+  openGates = false,
 }: {
   makeCircuit: () => Circuit;
   children?: ReactNode;
@@ -20,6 +21,8 @@ export function CircuitDemo({
   /** A changed starter circuit gets a fresh slot; older reader edits stay saved. */
   revision?: string;
   onFrame?: (view: LockedView) => void;
+  /** Start with the circuit's gates opened on their transistors. */
+  openGates?: boolean;
 }) {
   const circuit = useMemo(makeCircuit, [makeCircuit]);
   const defaultFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
@@ -31,6 +34,7 @@ export function CircuitDemo({
         <LogicBuilder
           key={storageKey}
           initialCircuit={circuit}
+          initialUnfolded={openGates ? gateIds(circuit) : undefined}
           initialFocus={initialFocus ?? defaultFocus}
           storageKey={storageKey}
           onFrame={onFrame}

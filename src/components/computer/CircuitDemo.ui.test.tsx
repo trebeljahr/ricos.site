@@ -49,6 +49,15 @@ it("adds two editable bytes and keeps their controls when a bit stage unfolds", 
   ).toBeTruthy();
 });
 
+it("opens an adder's gates on their transistors, and a reader can refold them", () => {
+  render(<HalfAdder />);
+  expect(screen.getByLabelText("XOR from CMOS transistors expanded circuit")).toBeTruthy();
+  const and = screen.getByLabelText("AND from CMOS transistors expanded circuit");
+  fireEvent.click(within(and).getByRole("button", { name: "Refold box" }));
+  expect(screen.queryByLabelText("AND from CMOS transistors expanded circuit")).toBeNull();
+  expect(screen.getByLabelText("XOR from CMOS transistors expanded circuit")).toBeTruthy();
+});
+
 it("stores into the native screen through the CPU address decoder", () => {
   render(<MemoryMappedScreenDemo />);
   const data = screen.getByLabelText("DATA decimal input");

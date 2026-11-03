@@ -13,7 +13,7 @@ import {
   TRUTH_GATES,
   type TruthGate,
 } from "src/lib/computer/gateLogic";
-import type { Circuit } from "src/lib/computer/logic";
+import { type Circuit, gateIds } from "src/lib/computer/logic";
 import panel from "./ByteExplorer.module.css";
 import toolbar from "./CircuitToolbar.module.css";
 import gates from "./GateDemos.module.css";
@@ -67,15 +67,13 @@ function CircuitPicker({ label, children }: { label: string; children: ReactNode
 
 const port = (name: string) => ({ id: name.toLowerCase(), label: name });
 
-/** The gate demos open on their transistors; the fold button closes them to a box. */
-const OPEN_GATE = ["gate"] as const;
-
 /** Use the builder's switches and timeline as the source of the selected row. */
-function useTableCircuit(circuit: Circuit, controls?: ReactNode, unfolded?: readonly string[]) {
+function useTableCircuit(circuit: Circuit, controls?: ReactNode) {
   const clock = useRef<LockedClock | null>(null);
   const switches = useMemo(() => circuit.nodes.filter((node) => node.type === "switch"), [circuit]);
   const [inputs, setInputs] = useState(() => switches.map((node) => Boolean(node.value)));
   const initialFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
+  const unfolded = useMemo(() => gateIds(circuit), [circuit]);
   const render = (sidebar: ReactNode) => (
     <div className={table.circuit}>
       <LogicBuilder
@@ -151,7 +149,6 @@ export function GateTruthTable({
         ))}
       </CircuitPicker>
     ),
-    OPEN_GATE,
   );
   const names = gate === "not" ? ["A"] : ["A", "B"];
 

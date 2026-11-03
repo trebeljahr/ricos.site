@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { booleanSelectorDemo } from "src/lib/computer/demoCircuits";
+import { gateIds } from "src/lib/computer/logic";
 import styles from "./BooleanCircuitDemo.module.css";
 import { CircuitDemo } from "./CircuitDemo";
 import { type LockedClock, type LockedView, LogicBuilder } from "./LogicBuilder";
@@ -12,6 +13,7 @@ export function BooleanCircuitDemo() {
   const [editing, setEditing] = useState(false);
   const circuit = useMemo(booleanSelectorDemo, []);
   const focus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
+  const unfolded = useMemo(() => gateIds(circuit), [circuit]);
   const clock = useRef<LockedClock | null>(null);
   const [reading, setReading] = useState<Reading | null>(null);
   const onFrame = useCallback(({ frame }: LockedView) => {
@@ -98,6 +100,7 @@ export function BooleanCircuitDemo() {
           makeCircuit={booleanSelectorDemo}
           label="Editable Boolean selector"
           onFrame={onFrame}
+          openGates
         />
       ) : (
         <div className={styles.preview}>
@@ -106,7 +109,7 @@ export function BooleanCircuitDemo() {
             embedded
             storageKey={null}
             initialFocus={focus}
-            locked={{ circuit, clockRef: clock, interactiveInputs: true, onFrame }}
+            locked={{ circuit, clockRef: clock, unfolded, interactiveInputs: true, onFrame }}
           />
         </div>
       )}

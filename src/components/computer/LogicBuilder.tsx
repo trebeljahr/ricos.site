@@ -1810,6 +1810,18 @@ function LogicBuilderWorkspace({
     const width = boardViewport.current?.clientWidth ?? 0;
     return width > 0 && width < NARROW_BOARD;
   };
+  // A part can bring or take away the clock controls above a phone's canvas. The canvas stays where it
+  // was, so the reader's next tap lands on what they aimed at.
+  const canvasTop = useRef<number | null>(null);
+  const holdCanvas = () => {
+    if (narrowBoard()) canvasTop.current = boardViewport.current?.getBoundingClientRect().top ?? null;
+  };
+  useLayoutEffect(() => {
+    if (canvasTop.current === null) return;
+    const moved = (boardViewport.current?.getBoundingClientRect().top ?? canvasTop.current) - canvasTop.current;
+    canvasTop.current = null;
+    if (Math.abs(moved) > 1) window.scrollBy(0, moved);
+  });
   const frameCanvas = useCallback((focusIds?: readonly string[], opening = false) => {
     const viewport = boardViewport.current;
     if (!viewport?.clientWidth || !viewport.clientHeight) return;
@@ -2719,6 +2731,7 @@ function LogicBuilderWorkspace({
     setMenu(selectedWires.length ? { ...at, kind: "wire", id: selectedWires[0] } : { ...at, kind: "node", id: selected[0] });
   };
   const removeSelection = () => {
+    holdCanvas();
     const removed = new Set(selected);
     setCircuit((current) => ({
       ...current,
@@ -3167,6 +3180,7 @@ function LogicBuilderWorkspace({
       if (performance.now() - lastPlacement.current < DOUBLE_TAP_MS) return;
       lastPlacement.current = performance.now();
       if (!embedded) boardViewport.current?.scrollIntoView({ block: "nearest" });
+      holdCanvas();
     }
     if ("type" in placement) {
       // A narrow canvas shows little of the default grid, so a tap places the part in view.

@@ -379,23 +379,26 @@
   [data-phone-flow] .layoutWithCoach{display:flex;flex-direction:column;min-height:0;padding-bottom:16px;overflow:visible;background:#1a2440}
   [data-phone-flow] .coach{display:contents}
   [data-phone-flow] .layoutWithCoach>.workspace{order:2;flex:none;min-height:0}
-  [data-phone-flow] .canvasControls{flex-wrap:nowrap;overflow-x:auto;touch-action:manipulation;border-top:1px solid #455677}
-  [data-phone-flow] .canvasControls button{flex:none;min-height:36px;min-width:36px}
-  [data-phone-flow] .canvasControls .fullZoom,[data-phone-flow] .canvasControls small{display:none}
+  :is([data-phone-flow],.embedded) .canvasControls{flex-wrap:nowrap;overflow-x:auto;touch-action:manipulation;border-top:1px solid #455677}
+  :is([data-phone-flow],.embedded) .canvasControls button{flex:none;min-height:36px;min-width:36px}
+  :is([data-phone-flow],.embedded) .canvasControls .fullZoom,:is([data-phone-flow],.embedded) .canvasControls small{display:none}
   /* Inside a part, ← beside the canvas stays in reach, where the depth bar above the level would scroll away. */
   [data-phone-flow] .viewPath,[data-phone-flow] .canvasControls:has(.partBack)>span{display:none}
   [data-phone-flow] .boardScroll{flex:none;height:clamp(240px,46svh,460px);scroll-margin-top:72px}
   [data-phone-flow] .status{order:1;min-height:52px;padding:6px 12px}
   [data-phone-flow] .status>span:last-child{display:none}
-  [data-phone-flow] .seriesRest{display:block;margin:6px 0 0}
+  :is([data-phone-flow],.embedded) .seriesRest{display:block;margin:6px 0 0}
   [data-phone-flow] .challengeFeedback{order:2;border-top:1px solid #455677}
   /* A double tap must not zoom the page. WebKit restarts touch-action at each scroller, so the strip and control row need it too. The strip's draggable parts also need the handler on the aside. */
-  [data-phone-flow] .layoutWithCoach>.sidebar{order:3;flex:none;flex-direction:row;align-items:center;gap:8px;max-height:none;margin:0;padding:8px 12px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:manipulation;border:0;border-bottom:1px solid #405071}
-  [data-phone-flow] .layoutWithCoach>.sidebar>h2,[data-phone-flow] .layoutWithCoach>.sidebar>.ownParts,[data-phone-flow] .layoutWithCoach>.sidebar .partsSection{display:none}
+  [data-phone-flow] .layoutWithCoach>.sidebar{order:3}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar{flex:none;flex-direction:row;align-items:center;gap:8px;max-height:none;margin:0;padding:8px 12px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;touch-action:manipulation;border:0;border-bottom:1px solid #405071}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar>:is(h2,p,.ownParts),:is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar .partsSection{display:none}
   /* Long lists only: a font under 16px makes iOS zoom the page when the field takes focus. */
-  [data-phone-flow] .layoutWithCoach>.sidebar>.search{flex:0 0 112px;margin:0;font-size:16px}
-  [data-phone-flow] .layoutWithCoach>.sidebar:not(:has(.parts>:nth-child(9)))>.search{display:none}
-  [data-phone-flow] .layoutWithCoach>.sidebar .parts{display:flex;flex:none;gap:8px;overflow:visible}
-  [data-phone-flow] .layoutWithCoach>.sidebar .savedPart{flex:none;border:1px solid #405071;border-radius:8px}
-  [data-phone-flow] .layoutWithCoach>.sidebar .savedPart>button:first-child{min-height:44px;padding:2px 10px 2px 4px}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar>.search{flex:0 0 112px;margin:0;font-size:16px}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar:not(:has(.parts>:nth-child(9))):not(:has(>.search:not(:placeholder-shown)))>.search{display:none}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar .parts{display:flex;flex:none;gap:8px;overflow:visible}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar .savedPart{flex:none;border:1px solid #405071;border-radius:8px}
+  :is([data-phone-flow] .layoutWithCoach,.embedded .layout)>.sidebar .savedPart>button:first-child{min-height:44px;padding:2px 10px 2px 4px}
 }
+/* Just above phone width a chapter keeps the column list, and 170px would leave its rows no room below the heading and search. */
+@media(min-width:641px) and (max-width:650px){.embedded .layout>.sidebar{flex:0 0 340px}}

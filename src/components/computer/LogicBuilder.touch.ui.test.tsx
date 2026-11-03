@@ -210,6 +210,24 @@ describe("touch on the canvas", () => {
     expect(screen.getByText("NAND added. Tap one of its dots to wire it.")).toBeTruthy();
   });
 
+  it("holds the canvas still when a clocked part brings or takes away the clock controls", () => {
+    narrowCanvas();
+    const board = mount();
+    const scroll = vi.spyOn(window, "scrollBy").mockImplementation(() => {});
+    const controls = () => screen.queryByRole("button", { name: /Run clock/ });
+    const viewport = board.parentElement!.parentElement!;
+    vi.spyOn(viewport, "getBoundingClientRect").mockImplementation(
+      () => ({ top: controls() ? 376 : 300 }) as DOMRect,
+    );
+    expect(controls()).toBeNull();
+    fireEvent.click(screen.getByTitle("Drag BUTTON onto canvas or click to add"));
+    expect(controls()).toBeTruthy();
+    expect(scroll).toHaveBeenLastCalledWith(0, 76);
+    fireEvent.click(screen.getByRole("button", { name: "Delete" }));
+    expect(controls()).toBeNull();
+    expect(scroll).toHaveBeenLastCalledWith(0, -76);
+  });
+
   it("lands each tapped part clear of the others, big or small", () => {
     narrowCanvas();
     let clock = 0;

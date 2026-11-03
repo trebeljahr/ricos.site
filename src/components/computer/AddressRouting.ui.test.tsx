@@ -18,11 +18,15 @@ it("routes native switches through the shared decoder and supports undo", () => 
   expect(within(screen.getByLabelText("Y0 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
 });
 
-it("unfolds the same selector parts used by the tutorial", () => {
+it("opens on the tutorial's selector parts, which a reader can refold and reopen", () => {
   render(<MultiplexerDemo />);
+  const expanded = () => screen.queryAllByLabelText("SELECTOR expanded circuit").length;
+  expect(expanded()).toBe(3);
   const part = screen.getByLabelText("LOW PAIR — SELECTOR part");
+  fireEvent.click(testButton("Refold box", part));
+  expect(expanded()).toBe(2);
   fireEvent.click(testButton("Unfold LOW PAIR in place", part));
-  expect(screen.getByLabelText("SELECTOR expanded circuit")).toBeTruthy();
+  expect(expanded()).toBe(3);
 });
 
 it("stores RAM on the native clock and keeps saved lab circuits untouched", () => {

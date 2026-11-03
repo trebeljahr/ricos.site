@@ -32,7 +32,8 @@ it("runs keys, sampling, Shift mapping and rewind in the actual editable circuit
   expect(
     localStorage.getItem(demoStorageKey("Keyboard scanner circuit", "2 × 2 keyboard scanner")),
   ).toBeTruthy();
-});
+  // About 4s alone, and past 20s in a full run on a busy machine.
+}, 60000);
 
 it("uses canvas wiring for ghosting and saves edits separately from the reader's lab", () => {
   localStorage.setItem("ricos-computer-circuits-v1", "saved lab");

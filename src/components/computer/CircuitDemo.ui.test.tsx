@@ -59,7 +59,8 @@ it("stores into the native screen through the CPU address decoder", () => {
   expect(screen.getByLabelText("SCREEN (F0–F7) rows FF 00 00 00 00 00 00 00")).toBeTruthy();
   fireEvent.click(testButton("Unfold SCREEN (F0–F7) in place"));
   expect(screen.getByLabelText("8×8 screen expanded circuit")).toBeTruthy();
-});
+  // About 8s on an idle machine and 39s at a load average of 180.
+}, 60000);
 
 it("restores unfinished demo edits in separate slots without touching the saved lab", () => {
   localStorage.setItem("ricos-computer-circuits-v1", "existing lab");

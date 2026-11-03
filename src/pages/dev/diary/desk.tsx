@@ -32,6 +32,12 @@ function metaOf(p: { title: string; date: string | null; heading?: string }) {
   return [p.date, title, p.heading?.replace(/^#+\s*|\*\*/g, "")].filter(Boolean).join(" · ");
 }
 
+type Found = {
+  passages: Passage[];
+  total: number;
+  meaning: { on: boolean; missing: number };
+};
+
 async function findPassages(body: Record<string, unknown>) {
   const response = await fetch("/api/dev/diary/search", {
     method: "POST",
@@ -39,7 +45,7 @@ async function findPassages(body: Record<string, unknown>) {
     body: JSON.stringify(body),
   });
   if (!response.ok) throw new Error(`${response.status}`);
-  return (await response.json()) as { passages: Passage[]; total: number };
+  return (await response.json()) as Found;
 }
 
 function PassageRow({
@@ -61,6 +67,7 @@ function PassageRow({
       <p className="not-prose text-xs text-gray-500">
         {source && <span className="font-semibold">{passage.source} · </span>}
         {metaOf(passage)}
+        {passage.viaMeaning && <span className="text-accent"> · similar meaning</span>}
       </p>
       <div className="mt-hair break-words text-base [&>div>*]:my-1">
         <Markable
@@ -198,7 +205,7 @@ export default function DiaryDeskPage({ book: initial, sources, passages }: Prop
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("");
   const [sort, setSort] = useState<"rank" | "date">("rank");
-  const [results, setResults] = useState<{ passages: Passage[]; total: number } | null>(null);
+  const [results, setResults] = useState<Found | null>(null);
   const [draft, setDraft] = useState<string | null>(null);
 
   useEffect(() => {
@@ -300,6 +307,10 @@ export default function DiaryDeskPage({ book: initial, sources, passages }: Prop
               {results && (
                 <span className="text-gray-500">
                   {fmt(results.passages.length)} of {fmt(results.total)} passages
+                  {results.meaning.on ? "" : " · words only, the local model is not answering"}
+                  {results.meaning.on && results.meaning.missing > 0
+                    ? ` · ${fmt(results.meaning.missing)} new passages by words only until pnpm notes:embed`
+                    : ""}
                 </span>
               )}
             </div>

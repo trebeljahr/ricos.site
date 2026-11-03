@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   buildIndex,
   type NoteFile,
+  nearest,
   passagesOf,
+  quantize,
   related,
   search,
   sourceOf,
@@ -96,6 +98,42 @@ describe("related", () => {
     expect(found.map((p) => p.rel)).toContain("texts/essays/on-envy.md");
     expect(found.every((p) => p.rel !== "texts/diary-entries/2019-05-01-a.md")).toBe(true);
     expect(found.map((p) => p.rel)).not.toContain("booknotes/some-book.md");
+  });
+});
+
+describe("meaning", () => {
+  const seaAt = index.passages.findIndex((p) => p.text.includes("sea"));
+  const taxesAt = index.passages.findIndex((p) => p.text.includes("Taxes"));
+
+  it("finds what shares no word, says so, and keeps word matches unmarked", () => {
+    const { passages } = search(index, "ocean", { near: [seaAt] });
+    expect(passages[0].rel).toBe("texts/morning-pages/2024-02-02.md");
+    expect(passages[0].viaMeaning).toBe(true);
+    const both = search(index, "cello", { near: [seaAt, taxesAt] });
+    expect(both.passages[0].viaMeaning).toBeUndefined();
+    expect(both.passages.find((p) => p.source === "Booknotes")?.viaMeaning).toBe(true);
+  });
+
+  it("still lets exact words and sources filter what meaning found", () => {
+    expect(search(index, '"cello player"', { near: [taxesAt] }).passages).toHaveLength(1);
+    expect(search(index, "ocean", { near: [seaAt], source: "Essays" }).passages).toEqual([]);
+  });
+
+  it("orders by similarity, skips passages without a vector, and cuts off the unrelated", () => {
+    const store = {
+      data: Int8Array.from([...quantize([1, 0]), ...quantize([1, 1]), ...quantize([0, 1])]),
+      slots: Int32Array.from([0, -1, 2, 4]),
+      dims: 2,
+    };
+    expect(nearest(store, quantize([1, 0.1]), 10)).toEqual([0, 2]);
+    expect(nearest(store, quantize([1, 0.1]), 1)).toEqual([0]);
+  });
+
+  it("adds meaning to related passages, never from the same file", () => {
+    const rel = "texts/essays/on-envy.md";
+    const found = related(index, "ocean", rel, 8, [seaAt, 0]);
+    expect(found.map((p) => p.viaMeaning)).toEqual([true]);
+    expect(found.every((p) => p.rel !== rel)).toBe(true);
   });
 });
 

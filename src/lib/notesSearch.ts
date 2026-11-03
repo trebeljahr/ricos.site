@@ -1,7 +1,8 @@
 // Search across everything in private Notes, down to the passage: diaries and
-// morning pages, essays, ideas, booknotes, posts. Keyword ranking (BM25) and
-// "more like this" run in-process, so no text leaves this machine. Pure
-// functions; notesStore.ts reads the files.
+// morning pages, essays, ideas, booknotes, posts. Keyword ranking (BM25) can be
+// fused with a nearest-by-meaning list, so "envy" also finds "jealous"; that
+// list comes from a local model (notesVectors.ts), so no text leaves this
+// machine. Pure functions; notesStore.ts reads the files.
 
 import { cleanBody, entryDate, type TextBlock, textBlocks } from "./diary";
 
@@ -13,6 +14,8 @@ export type Passage = {
   date: string | null;
   heading: string;
   text: string;
+  /** Found by meaning alone, without sharing a searched word. */
+  viaMeaning?: boolean;
 };
 
 export type NoteFile = { rel: string; title: unknown; content: string };
@@ -48,6 +51,8 @@ export function sourceOf(rel: string): string {
 export const SEARCHED_FOLDERS = ["texts", ...Object.keys(SOURCE).filter((k) => !k.includes("/"))];
 
 const wordsIn = (text: string) => text.split(/\s+/).filter(Boolean).length;
+
+export const passageWords = (passage: Passage) => wordsIn(passage.text);
 
 /** A passage longer than this is cut at sentence ends into chunks of about CHUNK_WORDS. */
 const PASSAGE_MAX = 180;
@@ -154,7 +159,64 @@ function score(index: NotesIndex, terms: string[]): Map<number, number> {
   return scores;
 }
 
-export type SearchOptions = { source?: string; sort?: "rank" | "date"; limit?: number };
+/** Normalizes a model's vector and packs it into one byte per dimension. */
+export function quantize(vector: number[]): Int8Array {
+  const length = Math.sqrt(vector.reduce((sum, v) => sum + v * v, 0)) || 1;
+  return Int8Array.from(vector, (v) => Math.round((v / length) * 127));
+}
+
+/** Below this, a nearest passage has little to do with the question. */
+export const MIN_SIMILARITY = 0.6;
+
+/**
+ * Passage numbers closest to a query vector, best first. `slots` holds each
+ * passage's offset into `data`, or -1 for a passage without a vector.
+ */
+export function nearest(
+  store: { data: Int8Array; slots: Int32Array; dims: number },
+  query: Int8Array,
+  limit: number,
+  minSimilarity = MIN_SIMILARITY,
+): number[] {
+  const { data, slots, dims } = store;
+  const scored: { at: number; score: number }[] = [];
+  for (let at = 0; at < slots.length; at++) {
+    const offset = slots[at];
+    if (offset < 0) continue;
+    let dot = 0;
+    for (let d = 0; d < dims; d++) dot += data[offset + d] * query[d];
+    const score = dot / (127 * 127);
+    if (score >= minSimilarity) scored.push({ at, score });
+  }
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((s) => s.at);
+}
+
+/** Reciprocal rank fusion: a passage high on either list ranks high. */
+const FUSION = 60;
+
+function fuse(lists: number[][]): number[] {
+  const scores = new Map<number, number>();
+  for (const list of lists) {
+    list.forEach((at, rank) => {
+      scores.set(at, (scores.get(at) ?? 0) + 1 / (FUSION + rank));
+    });
+  }
+  return [...scores].sort((a, b) => b[1] - a[1]).map(([at]) => at);
+}
+
+const byScore = (scores: Map<number, number>) =>
+  [...scores].sort((a, b) => b[1] - a[1]).map(([at]) => at);
+
+export type SearchOptions = {
+  source?: string;
+  sort?: "rank" | "date";
+  limit?: number;
+  /** Passage numbers nearest by meaning, best first. */
+  near?: number[];
+};
 export type SearchResult = { passages: Passage[]; total: number };
 
 const squeezed = (text: string) => text.toLowerCase().replace(/\s+/g, " ");
@@ -169,26 +231,28 @@ export function search(
   options: SearchOptions = {},
 ): SearchResult {
   const phrases = [...query.matchAll(/"([^"]+)"/g)].map((m) => squeezed(m[1]));
-  const terms = [...new Set(tokenize(query))];
-  const ranked = [...score(index, terms)]
-    .map(([at, value]) => ({ passage: index.passages[at], value }))
+  const words = byScore(score(index, [...new Set(tokenize(query))]));
+  const hasWord = new Set(words);
+  const ranked = fuse(options.near ? [words, options.near] : [words])
+    .map((at) => ({ at, passage: index.passages[at] }))
     .filter(({ passage }) => !options.source || passage.source === options.source)
     .filter(({ passage }) => {
       const text = squeezed(`${passage.heading} ${passage.text}`);
       return phrases.every((phrase) => text.includes(phrase));
-    })
-    .sort((a, b) => b.value - a.value);
-  if (options.sort === "date") {
-    // The strongest matches only, so a timeline is not padded with passing mentions.
-    const top = ranked.slice(0, 200);
-    top.sort((a, b) => (a.passage.date ?? "9").localeCompare(b.passage.date ?? "9"));
-    return {
-      passages: top.slice(0, options.limit ?? 60).map((r) => r.passage),
-      total: ranked.length,
-    };
-  }
+    });
+  const limit = options.limit ?? 60;
+  // By date, the strongest matches only, so a timeline is not padded with passing mentions.
+  const chosen =
+    options.sort === "date"
+      ? ranked
+          .slice(0, 200)
+          .sort((a, b) => (a.passage.date ?? "9").localeCompare(b.passage.date ?? "9"))
+          .slice(0, limit)
+      : ranked.slice(0, limit);
   return {
-    passages: ranked.slice(0, options.limit ?? 60).map((r) => r.passage),
+    passages: chosen.map(({ at, passage }) =>
+      hasWord.has(at) ? passage : { ...passage, viaMeaning: true },
+    ),
     total: ranked.length,
   };
 }
@@ -197,8 +261,14 @@ const RELATED_TERMS = 14;
 const MIN_RELATED_WORDS = 15;
 const PER_FILE = 2;
 
-/** Passages elsewhere that share a text's rarest words. */
-export function related(index: NotesIndex, text: string, rel: string, limit = 8): Passage[] {
+/** Passages elsewhere that share a text's rarest words or sit near it in meaning. */
+export function related(
+  index: NotesIndex,
+  text: string,
+  rel: string,
+  limit = 8,
+  near?: number[],
+): Passage[] {
   const counts = new Map<string, number>();
   for (const token of tokenize(text)) counts.set(token, (counts.get(token) ?? 0) + 1);
   const terms = [...counts]
@@ -209,14 +279,15 @@ export function related(index: NotesIndex, text: string, rel: string, limit = 8)
     .map(({ term }) => term);
   const perFile = new Map<string, number>();
   const found: Passage[] = [];
-  const ranked = [...score(index, terms)].sort((a, b) => b[1] - a[1]);
-  for (const [at] of ranked) {
+  const words = byScore(score(index, terms));
+  const hasWord = new Set(words);
+  for (const at of fuse(near ? [words, near] : [words])) {
     const passage = index.passages[at];
     if (passage.rel === rel || wordsIn(passage.text) < MIN_RELATED_WORDS) continue;
     const seen = perFile.get(passage.rel) ?? 0;
     if (seen >= PER_FILE) continue;
     perFile.set(passage.rel, seen + 1);
-    found.push(passage);
+    found.push(hasWord.has(at) ? passage : { ...passage, viaMeaning: true });
     if (found.length >= limit) break;
   }
   return found;

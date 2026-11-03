@@ -28,6 +28,7 @@
     "quotes:portraits": "tsx src/scripts/quotes/authorPortraits.ts resolve",
     "quotes:portraits:apply": "tsx src/scripts/quotes/authorPortraits.ts apply",
     "quotes:apply": "tsx src/scripts/quotes/quoteReview.ts apply",
+    "notes:embed": "tsx src/scripts/notes/embedNotes.ts",
     "needles:import": "tsx src/scripts/needles/import.ts",
     "needles:fetch": "tsx src/scripts/needles/fetch.ts",
     "computer:links": "tsx src/scripts/computer/links.ts",

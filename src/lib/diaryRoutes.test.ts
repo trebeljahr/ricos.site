@@ -37,6 +37,7 @@ async function page(remoteAddress: string) {
 }
 
 function api(remoteAddress: string) {
+  const fetchSpy = vi.spyOn(globalThis, "fetch");
   const codes = handlers.map((handler) => {
     const res = { statusCode: 0, status: vi.fn(), json: vi.fn(), setHeader: vi.fn() };
     res.status.mockImplementation((code: number) => {
@@ -46,6 +47,8 @@ function api(remoteAddress: string) {
     handler(request(remoteAddress) as unknown as NextApiRequest, res as unknown as NextApiResponse);
     return res.statusCode;
   });
+  // The guards answer before any await, so none of them can reach the model.
+  expect(fetchSpy).not.toHaveBeenCalled();
   expect(new Set(codes).size).toBe(1);
   return codes[0];
 }

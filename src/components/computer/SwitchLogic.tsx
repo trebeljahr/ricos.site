@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
+import { SELECTOR_THROW } from "src/lib/computer/cmosLampLayout";
 import {
   type SwitchLampWiring,
   switchLampDemo,
@@ -132,6 +133,8 @@ function SwitchBoard({
   const boardHeight = branched ? 480 : electrical ? 400 : 360;
   const returnY = boardHeight - 30;
   const [gatePulse, setGatePulse] = useState(0);
+  const selectorHigh = 280 - SELECTOR_THROW;
+  const selectorLow = 280 + SELECTOR_THROW;
   // The native simulator decides which complete branches conduct. These are
   // presentation paths, not a second circuit or current simulation.
   const activeRows = rows.map((y, branch) => {
@@ -215,11 +218,21 @@ function SwitchBoard({
             {electrical && (
               <>
                 <Cable
-                  d={lowSide ? "M132 40 V280 H174 Q180 274 186 280 H224" : "M132 140 V280 H224"}
+                  d={
+                    lowSide
+                      ? `M132 40 V${selectorHigh} H174 Q180 ${selectorHigh - 6} 186 ${selectorHigh} H224`
+                      : `M132 140 V${selectorHigh} H224`
+                  }
+                />
+                <Cable
+                  d={lowSide ? `M180 ${selectorLow} H224` : `M224 ${returnY} V${selectorLow}`}
+                  returning
                 />
                 <Cable d="M336 280 H500 V240" signal high={a} />
                 <Terminal x={132} y={lowSide ? 40 : 140} junction />
-                <Terminal x={224} y={280} />
+                <Terminal x={lowSide ? 180 : 224} y={lowSide ? selectorLow : returnY} junction />
+                <Terminal x={224} y={selectorHigh} />
+                <Terminal x={224} y={selectorLow} />
                 <Terminal x={336} y={280} />
                 <Terminal x={500} y={240} />
               </>
@@ -275,19 +288,23 @@ function SwitchBoard({
               control
               boardHeight={boardHeight}
               onFlip={() => {
-                if (!a) setGatePulse((count) => count + 1);
+                setGatePulse((count) => count + 1);
                 onFlip("A");
               }}
             />
           )}
-          {/* The gate wire ends at the insulated plate: charge moves once, then stops. */}
+          {/* The gate wire ends at the insulated plate: charge moves in or out once, then stops. */}
           {gatePulse > 0 && (
             <svg className={own.gatePulse} viewBox={`0 0 800 ${boardHeight}`} aria-hidden="true">
               <path
                 key={gatePulse}
                 data-gate-pulse
                 pathLength={100}
-                d={`${lowSide ? "M132 40" : "M132 140"} V280 H500 V191`}
+                d={
+                  a
+                    ? `${lowSide ? "M132 40" : "M132 140"} V${selectorHigh} H224 L336 280 H500 V191`
+                    : `M500 191 V280 H336 L224 ${selectorLow} ${lowSide ? "H180" : `V${returnY}`}`
+                }
               />
             </svg>
           )}

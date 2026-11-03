@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { cmosLampLayout } from "./cmosLampLayout";
+import { cmosLampLayout, SELECTOR_THROW } from "./cmosLampLayout";
 import { transistorLampDemo } from "./demoCircuits";
 import { isMosfet } from "./transistorGeometry";
 
@@ -51,8 +51,12 @@ it.each(["series", "parallel", "not", "nand", "nor", "xor", "xnor"] as const)(
     for (const input of layout.inputSwitches) {
       const supply = layout.inputWires.find((wire) => wire.id === `${input.id}-supply`)!;
       expect(supply.points[0]).toEqual(layout.positions.get("vcc"));
-      expect(supply.points.at(-1)).toEqual(input.input);
-      expect(input.input).toEqual({ x: input.x - 56, y: input.y });
+      expect(supply.points.at(-1)).toEqual(input.high);
+      const ground = layout.inputWires.find((wire) => wire.id === `${input.id}-ground`)!;
+      expect(ground.points[0].y).toEqual(layout.groundY);
+      expect(ground.points.at(-1)).toEqual(input.low);
+      expect(input.high).toEqual({ x: input.x - 56, y: input.y - SELECTOR_THROW });
+      expect(input.low).toEqual({ x: input.x - 56, y: input.y + SELECTOR_THROW });
       expect(input.output).toEqual({ x: input.x + 56, y: input.y });
       for (const wire of layout.wires.filter((wire) => wire.from === input.id)) {
         expect(wire.points[0]).toEqual(input.output);

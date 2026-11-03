@@ -4,6 +4,9 @@ import { isMosfet } from "./transistorGeometry";
 import type { Point } from "./wireRouting";
 import { wireNetKeys } from "./wireTopology";
 
+/** How far a selector's battery contacts sit above and below its centre line. */
+export const SELECTOR_THROW = 28;
+
 /** Presentation coordinates for the actual CMOS graph. No gates or wires are synthesized here. */
 export function cmosLampLayout(circuit: Circuit) {
   const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
@@ -104,7 +107,8 @@ export function cmosLampLayout(circuit: Circuit) {
         x,
         y,
         lane,
-        input: { x: x - 56, y },
+        high: { x: x - 56, y: y - SELECTOR_THROW },
+        low: { x: x - 56, y: y + SELECTOR_THROW },
         output: { x: x + 56, y },
       };
     });
@@ -146,15 +150,26 @@ export function cmosLampLayout(circuit: Circuit) {
             : [{ x: end.x, y: start.y }];
     return compact([start, ...bends, end]);
   };
-  const inputWires = inputSwitches.map((input) => ({
-    id: `${input.id}-supply`,
-    from: "vcc",
-    to: input.id,
-    net: nets[circuit.wires.find((wire) => wire.from === "vcc")!.id],
-    currentSource: input.id,
-    signal: false,
-    points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.input],
-  }));
+  const inputWires = inputSwitches.flatMap((input) => [
+    {
+      id: `${input.id}-supply`,
+      from: "vcc",
+      to: input.id,
+      net: nets[circuit.wires.find((wire) => wire.from === "vcc")!.id],
+      currentSource: input.id,
+      signal: false,
+      points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.high.y }, input.high],
+    },
+    // The low contact ties the gate to the ground rail, so no input is left floating.
+    {
+      id: `${input.id}-ground`,
+      from: "gnd",
+      to: input.id,
+      net: nets[circuit.wires.find((wire) => wire.from === "gnd")!.id],
+      signal: false,
+      points: [{ x: 118, y: groundY }, { x: 118, y: input.low.y }, input.low],
+    },
+  ]);
   const devices = circuit.nodes.filter(isMosfet);
   const horizontalClear = (x1: number, x2: number, y: number) =>
     !devices.some((node) => {

@@ -150,7 +150,7 @@ describe("switch logic", () => {
     fireEvent.click(pmos.getByRole("button", { name: /^Control A: low/ }));
     expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     expect(nmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    // A closed control switch charges the gate once; no steady current runs in that wire.
+    // Selecting battery plus charges the gate once; no steady current runs in that wire.
     expect(pmosRegion.querySelector("[data-gate-pulse]")).toBeTruthy();
     expect(pmosRegion.querySelector("[data-current]")).toBeNull();
     fireEvent.click(nmos.getByRole("button", { name: /^Control A: low/ }));

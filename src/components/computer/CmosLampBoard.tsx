@@ -112,17 +112,20 @@ export function CmosLampBoard({
             viewBox={`0 0 ${layout.width} ${layout.height}`}
             aria-hidden="true"
           >
-            {paths.map((wire) => (
-              <g key={wire.id} data-wire-id={wire.id}>
-                <Cable
-                  d={bridged[wire.id]}
-                  color={colors.get(wire.net) ?? "#7a705d"}
-                  active={wire.active}
-                  signal={"signal" in wire && wire.signal}
-                  high={"high" in wire && wire.high}
-                />
-              </g>
-            ))}
+            {/* Inputs share a supply trunk, so draw live wires last or a dead one hides them. */}
+            {[...paths]
+              .sort((first, second) => Number(first.active) - Number(second.active))
+              .map((wire) => (
+                <g key={wire.id} data-wire-id={wire.id}>
+                  <Cable
+                    d={bridged[wire.id]}
+                    color={colors.get(wire.net) ?? "#7a705d"}
+                    active={wire.active}
+                    signal={"signal" in wire && wire.signal}
+                    high={"high" in wire && wire.high}
+                  />
+                </g>
+              ))}
             {lit && (
               <path
                 className={own.flowArrow}
@@ -169,7 +172,8 @@ export function CmosLampBoard({
             })}
             {layout.inputSwitches.map((input) => (
               <g key={input.id}>
-                <Terminal x={input.input.x} y={input.input.y} />
+                <Terminal x={input.high.x} y={input.high.y} />
+                <Terminal x={input.low.x} y={input.low.y} />
                 <Terminal x={input.output.x} y={input.output.y} />
               </g>
             ))}

@@ -1,6 +1,10 @@
 import own from "./SwitchLogic.module.css";
 export type Control = "A" | "B";
-/** One component and geometry for the first lamp demo and every transistor input. */
+/**
+ * One component and geometry for the first lamp demo and every transistor input.
+ * A control is a two-way selector: its common contact on the right joins either
+ * battery contact on the left, so a gate is always driven and never left floating.
+ */
 export function KnifeSwitch({
   name,
   x,
@@ -35,18 +39,25 @@ export function KnifeSwitch({
       aria-pressed={closed}
       aria-label={
         control
-          ? `Control ${name}: ${closed ? "high" : "low"}; switch ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`
+          ? `Control ${name}: ${closed ? "high" : "low"}; selector on battery ${closed ? "plus" : "minus"}. Click to select battery ${closed ? "minus" : "plus"}.`
           : `Switch ${name}: ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`
       }
       onClick={onFlip}
     >
       <span className={own.switchBase} aria-hidden="true">
-        <i className={own.contactLeft} />
+        {control ? (
+          <>
+            <i className={own.contactLeft} data-throw="high" />
+            <i className={own.contactLeft} data-throw="low" />
+          </>
+        ) : (
+          <i className={own.contactLeft} />
+        )}
         <i className={own.contactRight} />
-        <span className={own.blade} data-closed={closed}>
+        <span className={control ? own.selectorBlade : own.blade} data-closed={closed}>
           <i />
         </span>
-        {active && <span className={own.currentContact} />}
+        {active && <span className={control ? own.selectorCurrent : own.currentContact} />}
       </span>
       <span className={own.contactName}>
         {name}

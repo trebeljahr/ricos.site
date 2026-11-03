@@ -16,6 +16,7 @@ export const RESOURCE_KINDS = [
   "book",
   "paper",
   "reference",
+  "spec",
   "interactive",
   "course",
   "tool",

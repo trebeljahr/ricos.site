@@ -3290,6 +3290,151 @@
       "url": "https://www.zerotoasiccourse.com/",
       "kind": "course",
       "origin": "added"
+    },
+    "rfc-20": {
+      "title": "RFC 20: ASCII format for Network Interchange",
+      "url": "https://www.rfc-editor.org/rfc/rfc20.html",
+      "kind": "spec",
+      "by": "Vint Cerf",
+      "origin": "added"
+    },
+    "rfc-3629": {
+      "title": "RFC 3629: UTF-8, a transformation format of ISO 10646",
+      "url": "https://www.rfc-editor.org/rfc/rfc3629.html",
+      "kind": "spec",
+      "by": "François Yergeau",
+      "origin": "added"
+    },
+    "rfc-2781": {
+      "title": "RFC 2781: UTF-16, an encoding of ISO 10646",
+      "url": "https://www.rfc-editor.org/rfc/rfc2781.html",
+      "kind": "spec",
+      "by": "Paul Hoffman and François Yergeau",
+      "origin": "added"
+    },
+    "ecma-6": {
+      "title": "ECMA-6: 7-bit Coded Character Set",
+      "url": "https://ecma-international.org/wp-content/uploads/ECMA-6_6th_edition_december_1991.pdf",
+      "kind": "spec",
+      "by": "Ecma International",
+      "origin": "added"
+    },
+    "unicode-18-core-spec": {
+      "title": "The Unicode Standard, Version 18.0: Core Specification",
+      "url": "https://www.unicode.org/versions/Unicode18.0.0/core-spec/",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-18-code-points": {
+      "title": "The Unicode Standard 18.0, 2.4 Code Points and Characters",
+      "url": "https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-2/#G25564",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-18-encoding-forms-overview": {
+      "title": "The Unicode Standard 18.0, 2.5 Encoding Forms",
+      "url": "https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-2/#G13708",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-18-encoding-forms": {
+      "title": "The Unicode Standard 18.0, 3.9 Unicode Encoding Forms",
+      "url": "https://www.unicode.org/versions/Unicode18.0.0/core-spec/chapter-3/#G7404",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-code-charts": {
+      "title": "Unicode Code Charts",
+      "url": "https://www.unicode.org/charts/",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-uax-29": {
+      "title": "UAX #29: Unicode Text Segmentation",
+      "url": "https://www.unicode.org/reports/tr29/",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-uax-15": {
+      "title": "UAX #15: Unicode Normalization Forms",
+      "url": "https://www.unicode.org/reports/tr15/",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "unicode-utr-17": {
+      "title": "UTR #17: Unicode Character Encoding Model",
+      "url": "https://www.unicode.org/reports/tr17/",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "yt-vpSkBV5vydg": {
+      "title": "UTF-8, Explained Simply",
+      "url": "https://www.youtube.com/watch?v=vpSkBV5vydg",
+      "kind": "video",
+      "by": "Nic Barker",
+      "minutes": 38,
+      "origin": "tab"
+    },
+    "yt-70b9ineDgLU": {
+      "title": "Understanding text for C Programmers (UTF-8, Unicode, ASCII)",
+      "url": "https://www.youtube.com/watch?v=70b9ineDgLU",
+      "kind": "video",
+      "by": "Gregg Ink",
+      "minutes": 15,
+      "origin": "tab"
+    },
+    "yt-ut74oHojxqo": {
+      "title": "Unicode, in friendly terms: ASCII, UTF-8, code points, character encodings, and more",
+      "url": "https://www.youtube.com/watch?v=ut74oHojxqo",
+      "kind": "video",
+      "by": "Studying With Alex",
+      "minutes": 11,
+      "origin": "tab"
+    },
+    "yt-7taRssuPB8E": {
+      "title": "I Wrote a UTF-8 Validator in Pure Bash",
+      "url": "https://www.youtube.com/watch?v=7taRssuPB8E",
+      "kind": "video",
+      "by": "You Suck at Programming",
+      "minutes": 81,
+      "origin": "tab"
+    },
+    "yt-i90D9irbc04": {
+      "title": "If You Can't Explain UTF 8 vs Unicode, Watch This",
+      "url": "https://www.youtube.com/watch?v=i90D9irbc04",
+      "kind": "video",
+      "by": "LearnThatStack",
+      "minutes": 5,
+      "origin": "still-to-read"
+    },
+    "yt-DntKZ9xJ1sM": {
+      "title": "ASCII, Unicode, UTF-8: Explained Simply",
+      "url": "https://www.youtube.com/watch?v=DntKZ9xJ1sM",
+      "kind": "video",
+      "by": "LeetCoder",
+      "minutes": 3,
+      "origin": "still-to-read"
+    },
+    "yt-qBex3IDaUbU": {
+      "title": "EXTRA BITS - UTF-8 'nearly' works - Computerphile",
+      "url": "https://www.youtube.com/watch?v=qBex3IDaUbU",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 2,
+      "origin": "still-to-read"
+    },
+    "how-do-codes-work-tab": {
+      "title": "How Do Codes Work | Programming Basics",
+      "kind": "video",
+      "origin": "tab"
     }
   },
   "chapters": {
@@ -3358,11 +3503,87 @@
           "id": "joelonsoftware-com-2003-10-08-the-absolute-minimum-every"
         },
         {
+          "id": "yt-vpSkBV5vydg",
+          "note": "the long walk through the design before the specs"
+        },
+        {
+          "id": "rfc-20",
+          "note": "very short: 7 bits in an 8-bit byte with the high bit 0, plus the full table. That high bit is what UTF-8 later reuses."
+        },
+        {
+          "id": "unicode-18-code-points",
+          "note": "code points, the seven character types, and the code space up to U+10FFFF"
+        },
+        {
+          "id": "unicode-18-encoding-forms-overview",
+          "note": "why one code point space has three encoding forms"
+        },
+        {
+          "id": "rfc-3629",
+          "note": "all of it is short. Sec. 3 is the bit table, Sec. 4 the grammar, Sec. 6 the BOM, Sec. 10 why a decoder must reject illegal sequences."
+        },
+        {
+          "id": "unicode-18-encoding-forms",
+          "note": "the normative definition; the UTF-8 entry and Table 3-7 (well-formed byte sequences), the table a validator implements"
+        },
+        {
           "id": "cl-cam-ac-uk-mgk25-ucs-utf-8-history-txt",
           "note": "primary source; short"
         }
       ],
       "deeper": [
+        {
+          "id": "unicode-uax-29",
+          "note": "what a user-perceived character is; answers the grapheme question"
+        },
+        {
+          "id": "unicode-uax-15",
+          "note": "why two byte strings can be the same text"
+        },
+        {
+          "id": "unicode-utr-17",
+          "note": "the layers from abstract character to bytes on a wire"
+        },
+        {
+          "id": "rfc-2781",
+          "note": "surrogates and the BOM, for the UTF-16 question"
+        },
+        {
+          "id": "ecma-6",
+          "note": "free twin of the ASCII standard itself: ANSI X3.4 is sold, not free. RFC 20 only copies its table."
+        },
+        {
+          "id": "unicode-18-core-spec",
+          "note": "the whole thing, to browse: chapters 2 and 3 are the ones that matter here"
+        },
+        {
+          "id": "unicode-code-charts"
+        },
+        {
+          "id": "yt-70b9ineDgLU",
+          "note": "from the C side: what a string really holds"
+        },
+        {
+          "id": "yt-ut74oHojxqo"
+        },
+        {
+          "id": "yt-7taRssuPB8E",
+          "note": "long; Table 3-7 turned into a working program"
+        },
+        {
+          "id": "yt-i90D9irbc04"
+        },
+        {
+          "id": "yt-DntKZ9xJ1sM"
+        },
+        {
+          "id": "yt-qBex3IDaUbU",
+          "note": "the Computerphile follow-up"
+        },
+        {
+          "id": "how-do-codes-work-tab",
+          "note": "open tab, address not captured; the title is the rewritten one Chrome shows"
+        },
         {
           "id": "utf8everywhere-org",
           "note": "the argument against UTF-16"
@@ -3396,7 +3617,9 @@
         "Why is every ASCII file already a valid UTF-8 file, and why did that settle which encoding won?",
         "Code point, code unit, grapheme: why can one visible character have three different lengths?",
         "Why does UTF-16 need a byte-order mark and UTF-8 does not? (Ties back to the endianness section of 1.1.)",
-        "What is an overlong encoding, and why must a decoder reject it?"
+        "What is an overlong encoding, and why must a decoder reject it?",
+        "RFC 20 fixes the high bit at 0. How does RFC 3629 use that one spare bit to stay compatible with every ASCII file?",
+        "Which byte sequences does Table 3-7 forbid that the plain bit layout in RFC 3629 Sec. 3 would seem to allow, and why each one?"
       ]
     },
     "number-encodings-and-what-floats-mean": {

@@ -212,6 +212,7 @@ const KIND_VERB: Record<ResourceKind, string> = {
   book: "Book",
   paper: "Paper",
   reference: "Look up",
+  spec: "Spec",
   interactive: "Play",
   course: "Course",
   tool: "Tool",

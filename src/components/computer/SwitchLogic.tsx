@@ -44,8 +44,9 @@ function contactsFor(wiring: SwitchWiring | "single", kind: ContactKind = "nmos"
         { name: "B", kind: "nmos", x: 510, y: 140 },
       ]
     : [
-        { name: "A", kind: "nmos", x: 330, y: 140 },
-        { name: "B", kind: "nmos", x: 510, y: 360 },
+        // Stacked, halfway between the branch rails at x=180 and x=610.
+        { name: "A", kind: "nmos", x: 395, y: 140 },
+        { name: "B", kind: "nmos", x: 395, y: 360 },
       ];
 }
 function conducts(contact: Contact, a: boolean, b: boolean) {
@@ -192,10 +193,6 @@ function SwitchBoard({
                         d={lowSide ? `M610 250 V${y}` : `M610 ${y} V250`}
                         returning={lowSide}
                         active
-                      />
-                      <path
-                        className={own.flowArrow}
-                        d={`M${lowSide ? 200 : 590} ${y} l${lowSide ? 8 : -8} -5 m${lowSide ? -8 : 8} 5 l${lowSide ? 8 : -8} 5`}
                       />
                     </>
                   )}

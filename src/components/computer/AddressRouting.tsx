@@ -6,11 +6,11 @@ const mux = () => routingDemo("mux");
 const memory = () => routingDemo("memory");
 
 export function DecoderDemo() {
-  return <CircuitDemo makeCircuit={decoder} label="Two-to-four decoder" />;
+  return <CircuitDemo makeCircuit={decoder} label="Two-to-four decoder" openModules />;
 }
 
 export function MultiplexerDemo() {
-  return <CircuitDemo makeCircuit={mux} label="Four-to-one multiplexer" />;
+  return <CircuitDemo makeCircuit={mux} label="Four-to-one multiplexer" openModules />;
 }
 
 export function MemoryAddressDemo() {

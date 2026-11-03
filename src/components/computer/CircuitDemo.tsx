@@ -12,6 +12,7 @@ export function CircuitDemo({
   initialFocus,
   revision,
   onFrame,
+  openModules = false,
 }: {
   makeCircuit: () => Circuit;
   children?: ReactNode;
@@ -20,9 +21,15 @@ export function CircuitDemo({
   /** A changed starter circuit gets a fresh slot; older reader edits stay saved. */
   revision?: string;
   onFrame?: (view: LockedView) => void;
+  /** Start one level down: the circuit's modules open, the gates inside them still closed. */
+  openModules?: boolean;
 }) {
   const circuit = useMemo(makeCircuit, [makeCircuit]);
   const defaultFocus = useMemo(() => circuit.nodes.map((node) => node.id), [circuit]);
+  const modules = useMemo(
+    () => circuit.nodes.filter((node) => node.type === "module").map((node) => node.id),
+    [circuit],
+  );
   const storageKey = demoStorageKey(label, circuit.name, ...(revision ? [revision] : []));
   return (
     <section className="not-prose my-6" aria-label={label}>
@@ -31,6 +38,7 @@ export function CircuitDemo({
         <LogicBuilder
           key={storageKey}
           initialCircuit={circuit}
+          initialUnfolded={openModules ? modules : undefined}
           initialFocus={initialFocus ?? defaultFocus}
           storageKey={storageKey}
           onFrame={onFrame}

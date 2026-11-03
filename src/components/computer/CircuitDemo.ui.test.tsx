@@ -4,6 +4,7 @@ import { afterEach, expect, it } from "vitest";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
 import type { Circuit } from "../../lib/computer/logic";
 import { EightBitAdder, FullAdder, HalfAdder } from "./Adders";
+import { DecoderDemo } from "./AddressRouting";
 import { CircuitDemo } from "./CircuitDemo";
 import { MemoryMappedScreenDemo } from "./MemoryMappedScreenDemo";
 import { testButton } from "./testButton";
@@ -47,6 +48,12 @@ it("adds two editable bytes and keeps their controls when a bit stage unfolds", 
   expect(
     within(screen.getByLabelText("CARRY OUT — LAMP part")).getByLabelText("LED on"),
   ).toBeTruthy();
+});
+
+it("opens a decoder's modules down to its gates, and stops there", () => {
+  render(<DecoderDemo />);
+  expect(screen.getAllByLabelText(/expanded circuit$/).length).toBe(2);
+  expect(screen.queryByLabelText(/from CMOS transistors expanded circuit$/)).toBeNull();
 });
 
 it("stores into the native screen through the CPU address decoder", () => {

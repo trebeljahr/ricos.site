@@ -1275,6 +1275,8 @@ export type LogicBuilderProps = {
   embedded?: boolean;
   /** Editable starting circuit; demos use a separate storageKey from the main lab. */
   initialCircuit?: Circuit;
+  /** Parts opened in place on mount; readers can still refold them. */
+  initialUnfolded?: readonly string[];
   /** Parts to frame on mount, e.g. a device and its manual bus controls. */
   initialFocus?: readonly string[];
   /**
@@ -1346,6 +1348,7 @@ export function LogicBuilder(props: BuilderProps = {}) {
 function LogicBuilderWorkspace({
   challenge,
   initialCircuit,
+  initialUnfolded,
   initialFocus,
   autoFit = false,
   embedded: requestedEmbedded,
@@ -1372,7 +1375,7 @@ function LogicBuilderWorkspace({
     circuit: clone(locked?.circuit ?? challenge?.circuit ?? initialCircuit ?? layoutCircuit(LIGHT_PRESETS["Half adder"])),
     saved: {},
     viewPath: [],
-    unfolded: [...(locked?.unfolded ?? [])],
+    unfolded: [...(locked?.unfolded ?? initialUnfolded ?? [])],
   }));
   const { circuit, saved, viewPath } = history.state;
   const unfolded = useMemo(() => new Set(history.state.unfolded ?? []), [history.state.unfolded]);

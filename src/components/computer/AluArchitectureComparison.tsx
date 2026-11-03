@@ -183,7 +183,9 @@ export function AluArchitectureComparison() {
         <summary className="cursor-pointer py-3 text-sm font-medium underline underline-offset-4">
           Try the teaching ALU’s reusable bit slice
         </summary>
-        {sliceOpen && <CircuitDemo makeCircuit={teachingSlice} label="Teaching ALU bit slice" />}
+        {sliceOpen && (
+          <CircuitDemo makeCircuit={teachingSlice} label="Teaching ALU bit slice" openModules />
+        )}
       </details>
     </section>
   );

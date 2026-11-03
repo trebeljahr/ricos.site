@@ -6,8 +6,9 @@ import {
   validateCircuit,
   type Wire,
 } from "./logic";
-import { closestPathPoint } from "./wireGeometry";
-import { type Point, wirePath } from "./wireRouting";
+import { nodeHeight, nodeWidth } from "./nodeGeometry";
+import { closestPathPoint, pathPoints } from "./wireGeometry";
+import { orientedWirePath, type Point, type PortSide } from "./wireRouting";
 
 export type WireAnchor = { wire: string; point: Point; path: string };
 export type PortAnchor = { node: string; port: number; kind: "input" | "output" };
@@ -85,6 +86,29 @@ export function wireJoinError(
       : "Cannot join separate one-bit drivers. Use a gate to combine signals.";
 }
 
+type PathHit = ReturnType<typeof closestPathPoint>;
+const nodeCentre = (node: Node): Point => ({
+  x: node.x + nodeWidth(node) / 2,
+  y: node.y + nodeHeight(node) / 2,
+});
+/** The drawn route on either side of a hit, so a split never redraws what the reader sees. */
+const splitRoute = ({ points, index, point }: PathHit) => ({
+  before: [...points.slice(0, index), point],
+  after: [point, ...points.slice(index)],
+});
+/** Leave a route square across it, toward the other end, instead of running along it. */
+function sideToward({ points, index, point }: PathHit, toward: Point): PortSide {
+  const a = points[index - 1],
+    b = points[index];
+  return Math.abs(b.x - a.x) >= Math.abs(b.y - a.y)
+    ? toward.y < point.y
+      ? "top"
+      : "bottom"
+    : toward.x < point.x
+      ? "left"
+      : "right";
+}
+
 /** Merge complete splice nets, so every fan-out consumer reads the resolved value. */
 function joinNets(
   circuit: Circuit,
@@ -109,6 +133,23 @@ function joinNets(
   const leaves = circuit.wires.filter((wire) => affected(wire) && !splices.has(wire.to));
   const targetHit = closestPathPoint(second.path, second.point);
   const sourceHit = isWire(first) ? closestPathPoint(first.path, first.point) : null;
+  const targetWire = circuit.wires.find((wire) => wire.id === second.wire);
+  const sourceWire = isWire(first) ? circuit.wires.find((wire) => wire.id === first.wire) : null;
+  const targetRoute = splitRoute(targetHit);
+  const sourceRoute = sourceHit && splitRoute(sourceHit);
+  const drives = (wire: Wire | null | undefined, driver: Driver) =>
+    wire?.from === driver.from && (wire.output ?? 0) === driver.output;
+  const link =
+    sourceHit &&
+    pathPoints(
+      orientedWirePath(
+        sourceHit.point,
+        targetHit.point,
+        sideToward(sourceHit, targetHit.point),
+        sideToward(targetHit, sourceHit.point),
+      ),
+    )[0];
+  const portSource = isWire(first) ? undefined : circuit.nodes.find((n) => n.id === first.node);
   const newNode = (point: Point, splice = true): Node => ({
     id: crypto.randomUUID(),
     type: width === 8 ? "bus" : "junction",
@@ -120,13 +161,20 @@ function joinNets(
   // electrical junction. It remains distinct from a one-driver wire splice.
   const join = newNode(targetHit.point, !(width === 1 && isTransistorJoin(circuit, roots))),
     start = sourceHit ? newNode(sourceHit.point) : null;
+  // Only the wire dropped from a port is routed; it arrives across the wire it joins.
+  if (portSource) join.inputSide = sideToward(targetHit, nodeCentre(portSource));
   const wires = circuit.wires.filter((wire) => !affected(wire));
   roots.forEach((driver, index) => {
+    const toStart = index === 0 && start;
+    const points = toStart
+      ? drives(sourceWire, driver) && sourceRoute?.before
+      : drives(targetWire, driver) && targetRoute.before;
     wires.push({
       id: crypto.randomUUID(),
       ...driver,
-      to: index === 0 && start ? start.id : join.id,
-      input: index === 0 && start ? 0 : index,
+      to: toStart ? start.id : join.id,
+      input: toStart ? 0 : index,
+      ...(points ? { points } : {}),
     });
   });
   if (start)
@@ -135,11 +183,18 @@ function joinNets(
       from: start.id,
       to: join.id,
       input: 0,
-      points: closestPathPoint(wirePath(sourceHit!.point, targetHit.point), sourceHit!.point)
-        .points,
+      points: link!,
     });
-  leaves.forEach((wire) => {
-    wires.push({ ...wire, from: join.id, output: 0 });
+  leaves.forEach(({ points: _moved, ...wire }) => {
+    // Every consumer now reads the join. Its old route began somewhere else,
+    // except the two wires under the drop, which keep their drawn tails.
+    const points =
+      wire.id === targetWire?.id
+        ? targetRoute.after
+        : wire.id === sourceWire?.id && link && sourceRoute
+          ? [...[...link].reverse(), ...sourceRoute.after.slice(1)]
+          : undefined;
+    wires.push({ ...wire, from: join.id, output: 0, ...(points ? { points } : {}) });
   });
   const next: Circuit = {
     ...circuit,
@@ -162,7 +217,12 @@ function joinNets(
 }
 
 /** Split exactly the route under the pointer; no topology change until a drop succeeds. */
-export function splitWire(circuit: Circuit, anchor: WireAnchor, id = () => crypto.randomUUID()) {
+export function splitWire(
+  circuit: Circuit,
+  anchor: WireAnchor,
+  id = () => crypto.randomUUID(),
+  branchToward?: Point,
+) {
   const wire = circuit.wires.find((wire) => wire.id === anchor.wire);
   if (!wire) return null;
   const hit = closestPathPoint(anchor.path, anchor.point);
@@ -179,9 +239,9 @@ export function splitWire(circuit: Circuit, anchor: WireAnchor, id = () => crypt
     splice: true,
     x: hit.point.x - 5,
     y: hit.point.y - 5,
+    ...(branchToward ? { outputSide: sideToward(hit, branchToward) } : {}),
   };
-  const before = [...hit.points.slice(0, hit.index), hit.point];
-  const after = [hit.point, ...hit.points.slice(hit.index)];
+  const { before, after } = splitRoute(hit);
   const tail: Wire = { ...wire, id: id(), from: node.id, output: 0, points: after };
   return {
     node,
@@ -242,7 +302,7 @@ export function connectWireEnds(
   if (occupied)
     return { error: "This input already has a driver. Remove its wire before connecting another." };
   if (!isWire(first)) return { error: "Choose a wire to branch." };
-  const split = splitWire(circuit, first);
+  const split = splitWire(circuit, first, undefined, nodeCentre(target));
   if (!split) return { error: "Could not find the wire under the pointer." };
   const next = {
     ...split.circuit,

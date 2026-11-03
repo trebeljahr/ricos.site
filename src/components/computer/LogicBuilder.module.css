@@ -341,13 +341,9 @@
 .learningPanel details>summary{display:flex;justify-content:flex-start;gap:7px;list-style:none}
 .learningPanel details>summary::before{content:"▸";color:#aebbd3}
 .learningPanel details[open]>summary::before{content:"▾"}
-.node.transistorNode,.node.transistorNode.active{background:transparent;box-shadow:none;border-color:transparent;border-radius:0}
-.node.transistorNode:before{display:none}
-.node.transistorNode:hover{border-color:#53658b;box-shadow:none}
 .nodeBody.transistorBody,.inlinePart .nodeBody.transistorBody{padding:0;overflow:visible}
 .transistorSymbol{position:absolute;inset:0;width:100%;height:100%;color:var(--part-accent);pointer-events:none}
-.transistorBody .nodeNameRow{position:absolute;top:100%;left:0;right:0;max-width:none;min-height:16px;font-size:9px;line-height:16px}
-.transistorBody .nodeNameRow:has(.editName){padding:0 18px 0 0}
+.transistorBody .nodeNameRow,.transistorBody .nodeNameRow:has(.nodeLabel):has(.editName){position:absolute;top:7px;left:9px;right:52px;width:auto;max-width:none;min-height:16px;padding:0;justify-content:flex-start;text-align:left;font-size:10px;line-height:16px}
 .transistorBody .nodePartName{display:none}
 .transistorBody .editName{opacity:0}
 .transistorNode:hover .editName,.transistorNode:focus-within .editName{opacity:1}

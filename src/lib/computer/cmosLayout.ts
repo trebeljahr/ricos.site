@@ -23,7 +23,8 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
   const pullDownY = outputY + outputGap / 2;
   const stageColumns = new Map<string, number>();
   const gateControls = new Map<string, string[]>();
-  let nextStageX = 380;
+  const firstStageX = 380;
+  let nextStageX = firstStageX;
   for (const stage of stages) {
     const x = nextStageX;
     // Junction coordinates describe the dot's box; its centre must share the drain axis.
@@ -70,7 +71,8 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         const feedsTransistor = circuit.wires.some(
           (wire) => wire.from === root.id && wire.input === 1 && isMosfet(byId.get(wire.to)!),
         );
-        root.x = x + 198 - 5;
+        // A plain parallel pair ties straight into its stage's drain axis.
+        root.x = (feedsTransistor ? x + 198 : x + 88) - 5;
         const maxRank = Math.max(...upstream.map(rank));
         const outerY =
           type === "pmos"
@@ -79,7 +81,14 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         root.y = (feedsTransistor ? outerY : outputY + (type === "pmos" ? -24 : 24)) - 5;
       }
     }
-    nextStageX = Math.max(...branch(stage.id).filter(isMosfet).map((part) => part.x)) + 132 + 180;
+    nextStageX =
+      Math.max(
+        ...branch(stage.id)
+          .filter(isMosfet)
+          .map((part) => part.x),
+      ) +
+      132 +
+      180;
   }
   const supply = byId.get("vcc")!,
     ground = byId.get("gnd")!;
@@ -87,18 +96,24 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
   switches.forEach((node, index) => {
     Object.assign(node, { x: 40, y: outputY - 63 + (index - (switches.length - 1) / 2) * 164 });
   });
-  // Keep power beside the controls; the outer rails still enter transistor sources from outside.
-  Object.assign(supply, { x: 40, y: switches[0].y - 116 - 32, outputSide: "top" });
-  Object.assign(ground, { x: 40, y: switches.at(-1)!.y + 126 + 32, outputSide: "bottom" });
-  const supplyRail =
-    Math.min(supply.y, ...nodes.filter((node) => node.type === "pmos").map((node) => node.y)) - 24;
-  const groundRail =
+  // Each rail runs straight out of its power part, with the controls entering between the rails.
+  const powerHeight = 116;
+  const supplyRail = Math.min(
+    switches[0].y - 32 - powerHeight / 2,
+    ...nodes.filter((node) => node.type === "pmos").map((node) => node.y - 24),
+  );
+  const groundRail = Math.max(
+    switches.at(-1)!.y + 126 + 32 + powerHeight / 2,
+    ...nodes.filter((node) => node.type === "nmos").map((node) => node.y + transistorHeight + 24),
+  );
+  Object.assign(supply, { x: 40, y: supplyRail - powerHeight / 2, outputSide: "right" });
+  Object.assign(ground, { x: 40, y: groundRail - powerHeight / 2, outputSide: "right" });
+  const outputX =
     Math.max(
-      ground.y + 116,
-      ...nodes.filter((node) => node.type === "nmos").map((node) => node.y + transistorHeight),
-    ) + 24;
-  const outputX = Math.max(...branch(stages.at(-1)!.id).filter(isMosfet)
-    .map((node) => node.x + 132)) + 64;
+      ...branch(stages.at(-1)!.id)
+        .filter(isMosfet)
+        .map((node) => node.x + 132),
+    ) + 64;
   Object.assign(byId.get("out")!, { x: outputX, y: outputY - 63 });
   const point = (node: Node, input?: number) =>
     isMosfet(node)
@@ -106,28 +121,20 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
       : node.type === "junction"
         ? { x: node.x + 5, y: node.y + 5 }
         : {
-            x:
-              node.x +
-              (node.type === "high" || node.type === "ground"
-                ? 132 / 2
-                : input === undefined
-                  ? 132
-                  : 0),
-            y:
-              node.y +
-              (node.type === "high" || node.type === "ground"
-                ? node.outputSide === "top"
-                  ? 0
-                  : 116
-                : (node.type === "lamp" || node.type === "switch" ? 126 : 116) / 2),
+            x: node.x + (input === undefined ? 132 : 0),
+            y: node.y + (node.type === "lamp" || node.type === "switch" ? 126 : powerHeight) / 2,
           };
   return {
     ...circuit,
     nodes,
-    groups: circuit.groups?.map((group) => group.id === "construction" ? {
-      ...group,
-      nodeIds: [...new Set([...group.nodeIds, ...switches.map((node) => node.id)])],
-    } : group),
+    groups: circuit.groups?.map((group) =>
+      group.id === "construction"
+        ? {
+            ...group,
+            nodeIds: [...new Set([...group.nodeIds, ...switches.map((node) => node.id)])],
+          }
+        : group,
+    ),
     wires: circuit.wires.map((wire) => {
       const from = byId.get(wire.from)!,
         to = byId.get(wire.to)!;
@@ -135,24 +142,31 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         end = point(to, wire.input);
       let bends: { x: number; y: number }[];
       if (from.type === "high" || from.type === "ground") {
-        const y = from.type === "high" ? supplyRail : groundRail;
-        bends = [
-          { x: start.x, y },
-          { x: end.x, y },
-        ];
+        bends = [{ x: end.x, y: start.y }];
       } else if (isMosfet(to) && wire.input === 0) {
         const stageX = stageColumns.get(to.id)!;
         const controls = gateControls.get(to.id)!;
         const controlIndex = controls.indexOf(wire.from);
-        const x = stageX - 45 - controlIndex * 30;
+        // A farther column's gate climbs beside the stage, so it crosses the other control once.
+        const x = to.x === stageX ? stageX - 45 - controlIndex * 30 : stageX - 20;
         const entryX = to.x - 55;
-        const railY = to.type === "pmos" ? to.y + transistorHeight + 24 : to.y - 24;
         const sourceStage = stages.findIndex((stage) => stage.id === from.id);
-        const straightControl = controls.length === 1 &&
-          (from.type === "junction" || switches.length === 1);
+        const straightControl =
+          controls.length === 1 && (from.type === "junction" || switches.length === 1);
         const signalY =
-          outputY + (straightControl ? 0
-            : wire.from === "a" ? -40 : wire.from === "b" ? 40 : sourceStage === 0 ? -8 : 8);
+          outputY +
+          (straightControl
+            ? 0
+            : wire.from === "a"
+              ? -40
+              : wire.from === "b"
+                ? 40
+                : sourceStage === 0
+                  ? -8
+                  : 8);
+        // A control already level with the gap between the stage's parts stays on its line.
+        const gapY = to.type === "pmos" ? to.y + transistorHeight + 24 : to.y - 24;
+        const railY = Math.abs(gapY - signalY) < 24 ? signalY : gapY;
         const exitX = from.type === "switch" ? (wire.from === "a" ? 210 : 240) : start.x + 35;
         bends = [
           { x: exitX, y: start.y },
@@ -172,7 +186,8 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
         (from.type === "switch" || (from.type === "junction" && kinds(from.id).size === 2))
       ) {
         const y = to.type === "pmos" ? supplyRail - 28 : groundRail + 28;
-        const x = from.type === "switch" ? 210 : start.x + 160;
+        // A pass source from a switch leaves the rail's entry clear, beside the first stage.
+        const x = from.type === "switch" ? firstStageX - 75 : start.x + 160;
         bends = [
           { x, y: start.y },
           { x, y },
@@ -185,7 +200,10 @@ export function layoutCmosBlueprint(circuit: Circuit): Circuit {
       } else {
         bends = [{ x: end.x, y: start.y }];
       }
-      return { ...wire, points: [start, ...bends, end] };
+      // Power keeps one colour in every gate instead of taking its turn in the wire palette.
+      const railColor = { high: "coral", ground: "violet" } as const;
+      const color = wire.color ?? railColor[from.type as keyof typeof railColor];
+      return { ...wire, color, points: [start, ...bends, end] };
     }),
   };
 }

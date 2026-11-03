@@ -18,7 +18,14 @@ export function TransistorSymbol({
       )
     : false;
   const on = node.type === "pmos" ? !high : high;
-  const rotation = ["left", "top", "right", "bottom"].indexOf(node.inputSide ?? "left") * 90;
+  const turns = ["left", "top", "right", "bottom"].indexOf(node.inputSide ?? "left");
+  const type = node.type.toUpperCase();
+  // The drawing turns with the part; its text moves with it but stays upright.
+  const upright = (x: number, y: number) => {
+    let point = { x, y };
+    for (let turn = 0; turn < turns; turn++) point = { x: 132 - point.y, y: point.x };
+    return point;
+  };
   return (
     <svg
       className={styles.transistorSymbol}
@@ -29,9 +36,9 @@ export function TransistorSymbol({
       strokeLinecap="round"
       strokeLinejoin="round"
       role="img"
-      aria-label={`${node.type.toUpperCase()} ideal switch, ${on ? "conducting" : "open"}; gate, source and drain`}
+      aria-label={`${type} ideal switch, ${on ? "conducting" : "open"}; gate, source and drain`}
     >
-      <g transform={`rotate(${rotation} 66 66)`}>
+      <g transform={`rotate(${turns * 90} 66 66)`}>
         <path
           d={`M0 66 H${node.type === "pmos" ? 38 : 50} M50 42 V90 M88 0 V42 H70 M70 90 H88 V132`}
         />
@@ -40,25 +47,32 @@ export function TransistorSymbol({
           d="M70 42 V90"
           stroke={on ? "currentColor" : "#71829b"}
           strokeWidth={on ? 4 : 2.5}
-          opacity={on ? 1 : 0.4}
+          opacity={on ? 1 : 0.6}
         />
-        <g fill="currentColor" stroke="none" fontSize="16" fontFamily="ui-monospace, monospace">
-          <text x="12" y="55">
-            G
-          </text>
-          <text x="99" y="20">
-            {node.type === "pmos" ? "S" : "D"}
-          </text>
-          <text x="99" y="124">
-            {node.type === "pmos" ? "D" : "S"}
-          </text>
-          <text x="90" y="69" fontSize="10">
-            {node.type.toUpperCase()}
-          </text>
-          <text x="8" y="96" fontSize="12">
-            {on ? "ON" : "OFF"}
-          </text>
-        </g>
+      </g>
+      <g
+        fill="currentColor"
+        stroke="none"
+        fontSize="14"
+        fontFamily="ui-monospace, monospace"
+        textAnchor="middle"
+        dominantBaseline="central"
+      >
+        <text {...upright(20, 54)}>G</text>
+        <text {...upright(102, 20)}>{node.type === "pmos" ? "S" : "D"}</text>
+        <text {...upright(102, 112)}>{node.type === "pmos" ? "D" : "S"}</text>
+        {/* A custom label takes the box's title line, as the part's own name row. */}
+        <text
+          {...(node.label && node.label.toUpperCase() !== type
+            ? upright(110, 66)
+            : upright(26, 16))}
+          fontSize="10"
+        >
+          {type}
+        </text>
+        <text {...upright(26, 114)} fontSize="11">
+          {on ? "ON" : "OFF"}
+        </text>
       </g>
     </svg>
   );

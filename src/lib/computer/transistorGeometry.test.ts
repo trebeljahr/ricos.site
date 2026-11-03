@@ -45,6 +45,29 @@ describe("MOSFET schematic terminals", () => {
   );
 
   it.each(["not", "nand", "nor", "and", "or", "xor", "xnor"] as const)(
+    "runs %s's power rails straight out of their parts, clear of the controls",
+    (gate) => {
+      const circuit = gateBlueprint(gate, "transistor");
+      const switches = circuit.nodes.filter((node) => node.type === "switch");
+      for (const [id, side] of [
+        ["vcc", -1],
+        ["gnd", 1],
+      ] as const) {
+        const power = circuit.nodes.find((node) => node.id === id)!;
+        const railY = power.y + nodeHeight(power) / 2;
+        const rails = circuit.wires.filter((wire) => wire.from === id);
+        expect(rails.length).toBeGreaterThan(0);
+        for (const wire of rails) {
+          expect(wire.points?.[0]).toEqual({ x: power.x + nodeWidth(power), y: railY });
+          expect(wire.points?.[1].y).toBe(railY);
+        }
+        for (const control of switches)
+          expect(Math.sign(railY - (control.y + nodeHeight(control) / 2))).toBe(side);
+      }
+    },
+  );
+
+  it.each(["not", "nand", "nor", "and", "or", "xor", "xnor"] as const)(
     "draws %s with pull-ups above and pull-downs below its output",
     (gate) => {
       const circuit = gateBlueprint(gate, "transistor");

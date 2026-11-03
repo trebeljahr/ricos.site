@@ -19,6 +19,16 @@ const currentRow = (name: string) =>
     .find((row) => row.getAttribute("data-current") === "true");
 
 describe("truth tables", () => {
+  it("opens each gate on its transistors, and the reader can refold it", () => {
+    render(<GateTruthTable />);
+    expect(screen.getByLabelText("AND from CMOS transistors expanded circuit")).toBeTruthy();
+    click("Refold box");
+    expect(screen.queryByLabelText("AND from CMOS transistors expanded circuit")).toBeNull();
+    fireEvent.click(screen.getByText("Gate: AND", { selector: "summary" }));
+    click("XOR");
+    expect(screen.getByLabelText("XOR from CMOS transistors expanded circuit")).toBeTruthy();
+  });
+
   it("marks the row of the current inputs and sets inputs from a row", () => {
     render(<GateTruthTable />);
     expect(currentRow("Truth table of AND")?.textContent).toBe("000");

@@ -126,7 +126,8 @@ const PRESET_KEYS = [sourcePresets, CPU_PRESETS, SHADER_PRESETS, BUTTON_PRESETS,
 const presetCircuit = (key: string) => LIGHT_PRESETS[key] ?? CPU_PRESETS[key] ?? SHADER_PRESETS[key];
 const presetName = (key: string) => LIGHT_PRESETS[key]?.name ?? key;
 const gateBlueprint = (gate: LogicGate, family: BlueprintFamily) => layoutCircuit(builtinCircuit(gate, sourceGateBlueprint(gate, family)));
-type DisplayNode = GeometryNode & { expanded?: boolean };
+type PortOffsets = { input: number[]; output: number[] };
+type DisplayNode = GeometryNode & { expanded?: boolean; portOffsets?: PortOffsets };
 const circuitHints: Record<string, string> = {
   ...BUTTON_HINTS,
   ...MATRIX_HINTS,
@@ -374,7 +375,8 @@ const portPoint = (node: DisplayNode, index: number, kind: "input" | "output") =
   const bitRow = isNumberInput(node.type) || node.type === "display4" || node.type === "display8";
   const orderedIndex = horizontal && bitRow ? count - portIndex - 1 : portIndex;
   const edge = horizontal ? 16 : node.expanded ? 88 : node.type === "module" ? 42 : 40;
-  const offset = count === 1 ? length / 2 : edge + orderedIndex * ((length - edge - 24) / (count - 1));
+  const offset = (!horizontal && node.portOffsets?.[kind][index]) ||
+    (count === 1 ? length / 2 : edge + orderedIndex * ((length - edge - 24) / (count - 1)));
   return {
     x: node.x + (horizontal ? offset : side === "left" ? 0 : nodeWidth(node)),
     y: node.y + (horizontal ? side === "top" ? 0 : nodeHeight(node) : offset),
@@ -505,7 +507,9 @@ function NodeReadout({ node, snapshot, wires, bank, onBank, onUpdate, manual }: 
 
 type InlinePart = DisplayNode & { path: string; child?: InlineLayout; inner?: Circuit; expandable: boolean };
 type InlineLayout = { width: number; height: number; originX: number; originY: number;
-  parts: InlinePart[]; inputs: Node[]; outputs: Node[]; canExpand: boolean };
+  parts: InlinePart[]; inputs: Node[]; outputs: Node[]; canExpand: boolean;
+  /** Set for a drawn schematic: its host's pins line up with the schematic's own wires. */
+  portOffsets?: PortOffsets };
 const INLINE_X = 12;
 const INLINE_Y = 56;
 const EMPTY_SNAPSHOT = initialSnapshot();
@@ -603,23 +607,31 @@ const layoutInlineCircuit = (
   const outputs = moduleOutputs(circuit);
   const boundary = new Set([...inputs, ...outputs].map((node) => node.id));
   const visible = circuit.nodes.filter((node) => !boundary.has(node.id));
-  const minX = Math.min(0, ...visible.map((node) => node.x));
-  const minY = Math.min(0, ...visible.map((node) => node.y));
+  // CMOS blueprints draw their own wires, so their parts must stay where those wires expect them.
+  const schematic = circuit.name.endsWith(" from CMOS transistors");
+  const minX = Math.min(...(schematic ? [] : [0]), ...visible.map((node) => node.x));
+  const minY = Math.min(...(schematic ? [] : [0]), ...visible.map((node) => node.y));
+  // An input pin sits level with its control wire's run across the schematic.
+  const pinOffsets = (ports: Node[]) => ports.map((port) => (circuit.wires.find((wire) =>
+    wire.from === port.id && wire.input === 0 && wire.points)?.points?.[2]?.y ??
+    port.y + nodeHeight(port) / 2) - minY + 52 + INLINE_Y);
   const sizes = visible.filter((node) => !node.splice).map((node) => {
     const path = `${prefix}${node.id}`;
     const inner = unfolded.has(path) && depth < 6 ? innerCircuit(node) : undefined;
     const child = inner ? layoutInlineCircuit(inner, `${path}/`, unfolded, depth + 1) : undefined;
     return { node, path, inner, child,
       width: Math.max(nodeWidth(node), child ? child.width + INLINE_X * 2 : 0),
-      height: Math.max(nodeHeight(node), child ? child.height + INLINE_Y + 12 : 148) };
+      height: Math.max(nodeHeight(node), child ? child.height + INLINE_Y + 12 : schematic ? 0 : 148) };
   });
-  const parts = [...spaceExpandedNodes<InlinePart>(sizes.map((item) => ({
+  const placed = sizes.map((item): InlinePart => ({
     ...item.node, x: item.node.x - minX + 72, y: item.node.y - minY + 52,
     path: item.path, inner: item.inner, child: item.child,
     expandable: isUnfoldable(item.node), expanded: Boolean(item.child),
-    displayWidth: item.width, displayHeight: item.height,
-  })), visible.map((node) => ({ ...node, displayHeight: Math.max(nodeHeight(node), 148) })),
-    28, circuit.wires, portPoint), ...visible.filter((node) => node.splice).map((node): InlinePart => ({
+    displayWidth: item.width, displayHeight: item.height, portOffsets: item.child?.portOffsets,
+  }));
+  const parts = [...(schematic && !sizes.some((item) => item.child) ? placed : spaceExpandedNodes<InlinePart>(placed,
+    visible.map((node) => ({ ...node, displayHeight: Math.max(nodeHeight(node), 148) })),
+    28, circuit.wires, portPoint)), ...visible.filter((node) => node.splice).map((node): InlinePart => ({
       ...node, x: node.x - minX + 72, y: node.y - minY + 52,
       path: `${prefix}${node.id}`, expandable: false,
     }))];
@@ -629,6 +641,7 @@ const layoutInlineCircuit = (
       ...parts.map((part) => part.y + nodeHeight(part) + 70)),
     parts, inputs, outputs, originX: 72 - minX, originY: 52 - minY,
     canExpand: parts.some((part) => part.expandable && (!part.child || part.child.canExpand)),
+    portOffsets: schematic ? { input: pinOffsets(inputs), output: pinOffsets(outputs) } : undefined,
   };
 };
 
@@ -1145,7 +1158,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
               part.type === "module" && styles.moduleBody, isMosfet(part) && styles.transistorBody)}>
               {isMosfet(part) && <TransistorSymbol node={part} snapshot={snapshot} wires={circuit.wires} />}
               <div className={styles.nodeNameRow}>
-                {editingPart === part.id ? labelInput(part) : part.label &&
+                {editingPart === part.id ? labelInput(part) : part.label && !(isMosfet(part) && part.label === LABELS[part.type]) &&
                   <span className={styles.nodeLabel} title="Double-click to edit label"
                     onDoubleClick={() => beginLabel(part)}>{part.label}</span>}
               </div>
@@ -1273,6 +1286,8 @@ export type LogicBuilderProps = {
   locked?: {
     circuit: Circuit;
     clockRef: MutableRefObject<LockedClock | null>;
+    /** Parts opened in place whenever a circuit loads; readers can still refold them. */
+    unfolded?: readonly string[];
     /** Let readers operate top-level switches without editing the circuit. */
     interactiveInputs?: boolean;
     /** Demo-specific controls shown beside the shared zoom controls. */
@@ -1357,7 +1372,7 @@ function LogicBuilderWorkspace({
     circuit: clone(locked?.circuit ?? challenge?.circuit ?? initialCircuit ?? layoutCircuit(LIGHT_PRESETS["Half adder"])),
     saved: {},
     viewPath: [],
-    unfolded: [],
+    unfolded: [...(locked?.unfolded ?? [])],
   }));
   const { circuit, saved, viewPath } = history.state;
   const unfolded = useMemo(() => new Set(history.state.unfolded ?? []), [history.state.unfolded]);
@@ -1537,7 +1552,8 @@ function LogicBuilderWorkspace({
   const displayNodes = useMemo<DisplayNode[]>(() => {
     const nodes = circuit.nodes.map((node) => {
       const detail = expandedDetails.get(node.id);
-      return { ...node, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height };
+      return { ...node, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height,
+        portOffsets: detail?.layout.portOffsets };
     });
     return expandedDetails.size ? [...spaceExpandedNodes(nodes.filter((node) => !node.splice),
       circuit.nodes.filter((node) => !node.splice), 36, circuit.wires, portPoint), ...nodes.filter((node) => node.splice)] : nodes;
@@ -2230,7 +2246,7 @@ function LogicBuilderWorkspace({
     pendingFit.current = true;
     const copy = clone(next);
     circuitRef.current = copy;
-    publish({ ...history.current(), circuit: copy, viewPath: [], unfolded: [] });
+    publish({ ...history.current(), circuit: copy, viewPath: [], unfolded: [...(lockedRef.current?.unfolded ?? [])] });
     setPending(null);
     setWireDraft(null);
     wireDraftRef.current = null;

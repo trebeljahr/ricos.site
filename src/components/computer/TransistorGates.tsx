@@ -45,7 +45,7 @@ export function TransistorGates({
       <CircuitDemo
         makeCircuit={makeCircuit}
         label={`${GATE_LABELS[gate]} from transistors`}
-        revision="video-HaBMAD-Dr8M-compact-v2"
+        revision="video-HaBMAD-Dr8M-compact-v3"
       >
         {legend && (
           <div className="space-y-2">

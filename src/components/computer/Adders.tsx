@@ -12,13 +12,12 @@ export function HalfAdder({ sumOnly = false }: { sumOnly?: boolean }) {
     <CircuitDemo
       makeCircuit={sumOnly ? sum : half}
       label={sumOnly ? "The sum bit" : "Half adder"}
-      openGates
     />
   );
 }
 
 export function FullAdder({ unfolded = true }: { unfolded?: boolean }) {
-  return <CircuitDemo makeCircuit={unfolded ? full : boxedFull} label="Full adder" openGates />;
+  return <CircuitDemo makeCircuit={unfolded ? full : boxedFull} label="Full adder" />;
 }
 
 export function EightBitAdder() {

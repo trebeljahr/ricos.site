@@ -3435,6 +3435,886 @@
       "title": "How Do Codes Work | Programming Basics",
       "kind": "video",
       "origin": "tab"
+    },
+    "yt-NcaiHcBvDR4": {
+      "title": "Endianness Explained With an Egg - Computerphile",
+      "url": "https://www.youtube.com/watch?v=NcaiHcBvDR4",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 11,
+      "origin": "added"
+    },
+    "yt-1GSjbWt0c9M": {
+      "title": "Representing Numbers and Letters with Binary: Crash Course Computer Science #4",
+      "url": "https://www.youtube.com/watch?v=1GSjbWt0c9M",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 11,
+      "origin": "added"
+    },
+    "yt-ixJCo0cyAuA": {
+      "title": "Where did Bytes Come From? - Computerphile",
+      "url": "https://www.youtube.com/watch?v=ixJCo0cyAuA",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-f4ekifyijIg": {
+      "title": "Floating Point Numbers (Part1: Fp vs Fixed) - Computerphile",
+      "url": "https://www.youtube.com/watch?v=f4ekifyijIg",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 16,
+      "origin": "added"
+    },
+    "yt-782QWNOD_Z0": {
+      "title": "Floating Point Numbers (Part2: Fp Addition) - Computerphile",
+      "url": "https://www.youtube.com/watch?v=782QWNOD_Z0",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 8,
+      "origin": "added"
+    },
+    "yt-gI-qXk7XojA": {
+      "title": "Boolean Logic & Logic Gates: Crash Course Computer Science #3",
+      "url": "https://www.youtube.com/watch?v=gI-qXk7XojA",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 10,
+      "origin": "added"
+    },
+    "yt-1I5ZMmrOfnA": {
+      "title": "How Computers Calculate - the ALU: Crash Course Computer Science #5",
+      "url": "https://www.youtube.com/watch?v=1I5ZMmrOfnA",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 11,
+      "origin": "added"
+    },
+    "yt-fpnE6UAfbtU": {
+      "title": "Registers and RAM: Crash Course Computer Science #6",
+      "url": "https://www.youtube.com/watch?v=fpnE6UAfbtU",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-6JpLD3PUAZk": {
+      "title": "Why do CPUs Need Caches? - Computerphile",
+      "url": "https://www.youtube.com/watch?v=6JpLD3PUAZk",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 6,
+      "origin": "added"
+    },
+    "yt-SAk-6gVkio0": {
+      "title": "How CPU Memory & Caches Work - Computerphile",
+      "url": "https://www.youtube.com/watch?v=SAk-6gVkio0",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 35,
+      "origin": "added"
+    },
+    "yt-FZGugFqdr60": {
+      "title": "The Central Processing Unit (CPU): Crash Course Computer Science #7",
+      "url": "https://www.youtube.com/watch?v=FZGugFqdr60",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-BVNx3wtJ9vs": {
+      "title": "CPU Pipeline - Computerphile",
+      "url": "https://www.youtube.com/watch?v=BVNx3wtJ9vs",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 22,
+      "origin": "added"
+    },
+    "yt-nczJ58WvtYo": {
+      "title": "How Branch Prediction Works in CPUs - Computerphile",
+      "url": "https://www.youtube.com/watch?v=nczJ58WvtYo",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 26,
+      "origin": "added"
+    },
+    "yt-_qvOlL8nhN4": {
+      "title": "CPUs Are Out of Order - Computerphile",
+      "url": "https://www.youtube.com/watch?v=_qvOlL8nhN4",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 15,
+      "origin": "added"
+    },
+    "yt-jNC9LPc3BI0": {
+      "title": "How CPUs do Out Of Order Operations - Computerphile",
+      "url": "https://www.youtube.com/watch?v=jNC9LPc3BI0",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 24,
+      "origin": "added"
+    },
+    "yt-Me0GF5zMfAk": {
+      "title": "Modern CPUs Assign Registers To Speed Up Your Code - Computerphile",
+      "url": "https://www.youtube.com/watch?v=Me0GF5zMfAk",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 22,
+      "origin": "added"
+    },
+    "yt--HNpim5x-IE": {
+      "title": "What Every Programmer Should Know about How CPUs Work • Matt Godbolt • GOTO 2024",
+      "url": "https://www.youtube.com/watch?v=-HNpim5x-IE",
+      "kind": "video",
+      "by": "GOTO Conferences",
+      "minutes": 43,
+      "origin": "added"
+    },
+    "yt-rtAlC5J1U40": {
+      "title": "Advanced CPU Designs: Crash Course Computer Science #9",
+      "url": "https://www.youtube.com/watch?v=rtAlC5J1U40",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-lJf2i87jgFA": {
+      "title": "Self Compiling Compilers - Computerphile",
+      "url": "https://www.youtube.com/watch?v=lJf2i87jgFA",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 13,
+      "origin": "added"
+    },
+    "yt-PjeE8Bc96HY": {
+      "title": "Bootstrapping with T-Diagrams - Computerphile",
+      "url": "https://www.youtube.com/watch?v=PjeE8Bc96HY",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 16,
+      "origin": "added"
+    },
+    "yt-dOfucXtyEsU": {
+      "title": "CppCon 2018: Matt Godbolt “The Bits Between the Bits: How We Get to main()”",
+      "url": "https://www.youtube.com/watch?v=dOfucXtyEsU",
+      "kind": "video",
+      "by": "CppCon",
+      "minutes": 64,
+      "origin": "added"
+    },
+    "yt-26QPDBe-NB8": {
+      "title": "Operating Systems: Crash Course Computer Science #18",
+      "url": "https://www.youtube.com/watch?v=26QPDBe-NB8",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 14,
+      "origin": "added"
+    },
+    "yt-tc4ROCJYbm0": {
+      "title": "AT&T Archives: The UNIX Operating System",
+      "url": "https://www.youtube.com/watch?v=tc4ROCJYbm0",
+      "kind": "video",
+      "by": "AT&T Tech Channel",
+      "minutes": 27,
+      "origin": "added"
+    },
+    "yt-fCDsn7OTNMg": {
+      "title": "When Unix Landed - Computerphile",
+      "url": "https://www.youtube.com/watch?v=fCDsn7OTNMg",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 13,
+      "origin": "added"
+    },
+    "yt-XvDZLjaCJuw": {
+      "title": "UNIX: Making Computers Easier To Use -- AT&T Archives film from 1982, Bell Laboratories",
+      "url": "https://www.youtube.com/watch?v=XvDZLjaCJuw",
+      "kind": "video",
+      "by": "AT&T Tech Channel",
+      "minutes": 24,
+      "origin": "added"
+    },
+    "yt-yV4fGeIv7MI": {
+      "title": "CPU Kernel Mode - Computerphile",
+      "url": "https://www.youtube.com/watch?v=yV4fGeIv7MI",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 13,
+      "origin": "added"
+    },
+    "yt-2AmP7Pse4U0": {
+      "title": "Spying on Running Programs (strace, ltrace, system calls vs function calls)",
+      "url": "https://www.youtube.com/watch?v=2AmP7Pse4U0",
+      "kind": "video",
+      "by": "Jacob Sorber",
+      "minutes": 4,
+      "origin": "added"
+    },
+    "yt-ss1-REMJ9GA": {
+      "title": "Creating new processes with fork()!",
+      "url": "https://www.youtube.com/watch?v=ss1-REMJ9GA",
+      "kind": "video",
+      "by": "Jacob Sorber",
+      "minutes": 6,
+      "origin": "added"
+    },
+    "yt-qlH4-oHnBb8": {
+      "title": "Virtual Memory: 3 What is Virtual Memory?",
+      "url": "https://www.youtube.com/watch?v=qlH4-oHnBb8",
+      "kind": "video",
+      "by": "David Black-Schaffer",
+      "minutes": 9,
+      "origin": "added"
+    },
+    "yt-59rEMnKWoS4": {
+      "title": "Virtual Memory: 4 How Does Virtual Memory Work?",
+      "url": "https://www.youtube.com/watch?v=59rEMnKWoS4",
+      "kind": "video",
+      "by": "David Black-Schaffer",
+      "minutes": 5,
+      "origin": "added"
+    },
+    "yt-uyrSn3qbZ8U": {
+      "title": "Virtual Memory: 10 Making Virtual Memory Fast",
+      "url": "https://www.youtube.com/watch?v=uyrSn3qbZ8U",
+      "kind": "video",
+      "by": "David Black-Schaffer",
+      "minutes": 9,
+      "origin": "added"
+    },
+    "yt-KN8YgJnShPM": {
+      "title": "Files & File Systems: Crash Course Computer Science #20",
+      "url": "https://www.youtube.com/watch?v=KN8YgJnShPM",
+      "kind": "video",
+      "by": "CrashCourse",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-_h30HBYxtws": {
+      "title": "Explaining File Systems: NTFS, exFAT, FAT32, ext4 & More",
+      "url": "https://www.youtube.com/watch?v=_h30HBYxtws",
+      "kind": "video",
+      "by": "ExplainingComputers",
+      "minutes": 11,
+      "origin": "added"
+    },
+    "yt-jAdspOtgciQ": {
+      "title": "The Font Magicians - Computerphile",
+      "url": "https://www.youtube.com/watch?v=jAdspOtgciQ",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 20,
+      "origin": "added"
+    },
+    "yt-XvwNKpDUkiE": {
+      "title": "Typesetters in the '80s - Computerphile",
+      "url": "https://www.youtube.com/watch?v=XvwNKpDUkiE",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-S_NXz7I5dQc": {
+      "title": "Programming in PostScript - Computerphile",
+      "url": "https://www.youtube.com/watch?v=S_NXz7I5dQc",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 15,
+      "origin": "added"
+    },
+    "yt-PG9oKZdFb7w": {
+      "title": "Network Stacks and the Internet - Computerphile",
+      "url": "https://www.youtube.com/watch?v=PG9oKZdFb7w",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 7,
+      "origin": "added"
+    },
+    "yt-Dxcc6ycZ73M": {
+      "title": "What is the Internet?",
+      "url": "https://www.youtube.com/watch?v=Dxcc6ycZ73M",
+      "kind": "video",
+      "by": "CodeAI",
+      "minutes": 4,
+      "origin": "added"
+    },
+    "yt-ZhEf7e4kopM": {
+      "title": "The Internet: Wires, Cables & Wifi",
+      "url": "https://www.youtube.com/watch?v=ZhEf7e4kopM",
+      "kind": "video",
+      "by": "CodeAI",
+      "minutes": 7,
+      "origin": "added"
+    },
+    "yt-vvKbMueRzrI": {
+      "title": "How WiFi Works - Computerphile",
+      "url": "https://www.youtube.com/watch?v=vvKbMueRzrI",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 17,
+      "origin": "added"
+    },
+    "yt-UgQM0rVDIQE": {
+      "title": "WiFi's Hidden ____ Problem - Computerphile",
+      "url": "https://www.youtube.com/watch?v=UgQM0rVDIQE",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 12,
+      "origin": "added"
+    },
+    "yt-AYdF7b3nMto": {
+      "title": "The Internet: Packets, Routing & Reliability",
+      "url": "https://www.youtube.com/watch?v=AYdF7b3nMto",
+      "kind": "video",
+      "by": "CodeAI",
+      "minutes": 6,
+      "origin": "added"
+    },
+    "yt-O6tCoD5c_U0": {
+      "title": "BGP: Border Gateway Protocol - Computerphile",
+      "url": "https://www.youtube.com/watch?v=O6tCoD5c_U0",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 16,
+      "origin": "added"
+    },
+    "yt-AkxqkoxErRk": {
+      "title": "Routers, The Internet & YouTube Offline - Computerphile",
+      "url": "https://www.youtube.com/watch?v=AkxqkoxErRk",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 13,
+      "origin": "added"
+    },
+    "yt-IADOV8UZO34": {
+      "title": "TCP a : Ensuring Your Data Gets There & in the Right Order! - Computerphile",
+      "url": "https://www.youtube.com/watch?v=IADOV8UZO34",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 17,
+      "origin": "added"
+    },
+    "yt-ihvbhwGblQg": {
+      "title": "Network Basics - Transport Layer and User Datagram Protocol Explained - Computerphile",
+      "url": "https://www.youtube.com/watch?v=ihvbhwGblQg",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 15,
+      "origin": "added"
+    },
+    "yt-HCHFX5O1IaQ": {
+      "title": "How TCP Works - The Handshake",
+      "url": "https://www.youtube.com/watch?v=HCHFX5O1IaQ",
+      "kind": "video",
+      "by": "Chris Greer",
+      "minutes": 14,
+      "origin": "added"
+    },
+    "yt-5o8CwafCxnU": {
+      "title": "The Internet: IP Addresses & DNS",
+      "url": "https://www.youtube.com/watch?v=5o8CwafCxnU",
+      "kind": "video",
+      "by": "CodeAI",
+      "minutes": 7,
+      "origin": "added"
+    },
+    "yt-uOfonONtIuk": {
+      "title": "How DNS Works - Computerphile",
+      "url": "https://www.youtube.com/watch?v=uOfonONtIuk",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 8,
+      "origin": "added"
+    },
+    "yt-kBXQZMmiA4s": {
+      "title": "The Internet: HTTP & HTML",
+      "url": "https://www.youtube.com/watch?v=kBXQZMmiA4s",
+      "kind": "video",
+      "by": "CodeAI",
+      "minutes": 7,
+      "origin": "added"
+    },
+    "yt-0TLDTodL7Lc": {
+      "title": "Transport Layer Security (TLS) - Computerphile",
+      "url": "https://www.youtube.com/watch?v=0TLDTodL7Lc",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 16,
+      "origin": "added"
+    },
+    "yt-86cQJ0MMses": {
+      "title": "TLS Handshake Explained - Computerphile",
+      "url": "https://www.youtube.com/watch?v=86cQJ0MMses",
+      "kind": "video",
+      "by": "Computerphile",
+      "minutes": 17,
+      "origin": "added"
+    },
+    "yt-ZkL10eoG1PY": {
+      "title": "TLS Handshake - EVERYTHING that happens when you visit an HTTPS website",
+      "url": "https://www.youtube.com/watch?v=ZkL10eoG1PY",
+      "kind": "video",
+      "by": "Practical Networking",
+      "minutes": 28,
+      "origin": "added"
+    },
+    "yt-PBWhzz_Gn10": {
+      "title": "Warriors of the Net",
+      "url": "https://www.youtube.com/watch?v=PBWhzz_Gn10",
+      "kind": "video",
+      "by": "FrippeMax",
+      "minutes": 13,
+      "origin": "added"
+    },
+    "yt-lLg1AgA2Xoo": {
+      "title": "Introduction to FPGA Part 1 - What is an FPGA? | Digi-Key Electronics",
+      "url": "https://www.youtube.com/watch?v=lLg1AgA2Xoo",
+      "kind": "video",
+      "by": "DigiKey",
+      "minutes": 15,
+      "origin": "added"
+    },
+    "yt-A4VfBoP4Hdk": {
+      "title": "Introduction to FPGA Part 3 - Getting Started with Verilog | Digi-Key Electronics",
+      "url": "https://www.youtube.com/watch?v=A4VfBoP4Hdk",
+      "kind": "video",
+      "by": "DigiKey",
+      "minutes": 21,
+      "origin": "added"
+    },
+    "yt-2IReMT_zjK8": {
+      "title": "The best way to start learning Verilog",
+      "url": "https://www.youtube.com/watch?v=2IReMT_zjK8",
+      "kind": "video",
+      "by": "Visual Electric",
+      "minutes": 15,
+      "origin": "added"
+    },
+    "yt-qVWq_XZko-M": {
+      "title": "Tiny Tapeout - From idea to custom chip without breaking the bank!",
+      "url": "https://www.youtube.com/watch?v=qVWq_XZko-M",
+      "kind": "video",
+      "by": "Zero To ASIC Course",
+      "minutes": 3,
+      "origin": "added"
+    },
+    "yt-ILZ6fDHZ_eo": {
+      "title": "Matt Venn From Zero to ASIC (unedited)",
+      "url": "https://www.youtube.com/watch?v=ILZ6fDHZ_eo",
+      "kind": "video",
+      "by": "HACKADAY",
+      "minutes": 88,
+      "origin": "added"
+    },
+    "yt-5J8LJoUxCHk": {
+      "title": "Crafting open source standard cell libraries with James Stine",
+      "url": "https://www.youtube.com/watch?v=5J8LJoUxCHk",
+      "kind": "video",
+      "by": "Zero To ASIC Course",
+      "minutes": 35,
+      "origin": "added"
+    },
+    "ien-137": {
+      "title": "IEN 137: On Holy Wars and a Plea for Peace",
+      "url": "https://history.rfc-editor.org/ien/ien137.txt",
+      "kind": "paper",
+      "by": "Danny Cohen",
+      "origin": "added"
+    },
+    "kahan-ieee-754": {
+      "title": "Lecture Notes on the Status of IEEE Standard 754",
+      "url": "https://people.eecs.berkeley.edu/~wkahan/ieee754status/IEEE754.PDF",
+      "kind": "paper",
+      "by": "William Kahan",
+      "origin": "added"
+    },
+    "rfc-1951": {
+      "title": "RFC 1951: DEFLATE Compressed Data Format Specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc1951.html",
+      "kind": "spec",
+      "by": "L. Peter Deutsch",
+      "origin": "added"
+    },
+    "png-spec": {
+      "title": "Portable Network Graphics (PNG) Specification",
+      "url": "https://www.w3.org/TR/png-3/",
+      "kind": "spec",
+      "by": "W3C",
+      "origin": "added"
+    },
+    "jpeg-t81": {
+      "title": "ITU-T T.81: the JPEG standard",
+      "url": "https://www.w3.org/Graphics/JPEG/itu-t81.pdf",
+      "kind": "spec",
+      "by": "ITU-T / ISO",
+      "origin": "added"
+    },
+    "sn74hc00-datasheet": {
+      "title": "SN74HC00 quad NAND gate datasheet",
+      "url": "https://www.ti.com/lit/ds/symlink/sn74hc00.pdf",
+      "kind": "spec",
+      "by": "Texas Instruments",
+      "origin": "added"
+    },
+    "sn74ls181-datasheet": {
+      "title": "SN54/74LS181 ALU datasheet",
+      "url": "https://www.ti.com/lit/ds/symlink/sn54ls181.pdf",
+      "kind": "spec",
+      "by": "Texas Instruments",
+      "origin": "added"
+    },
+    "w65c02s-datasheet": {
+      "title": "W65C02S 8-bit microprocessor datasheet",
+      "url": "https://www.westerndesigncenter.com/wdc/documentation/w65c02s.pdf",
+      "kind": "spec",
+      "by": "Western Design Center",
+      "origin": "added"
+    },
+    "riscv-unprivileged": {
+      "title": "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA",
+      "url": "https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html",
+      "kind": "spec",
+      "by": "RISC-V International",
+      "origin": "added"
+    },
+    "riscv-privileged": {
+      "title": "The RISC-V Instruction Set Manual, Volume II: Privileged Architecture",
+      "url": "https://docs.riscv.org/reference/isa/priv/priv-index.html",
+      "kind": "spec",
+      "by": "RISC-V International",
+      "origin": "added"
+    },
+    "intel-sdm": {
+      "title": "Intel 64 and IA-32 Architectures Software Developer's Manuals",
+      "url": "https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html",
+      "kind": "spec",
+      "by": "Intel",
+      "origin": "added"
+    },
+    "riscv-psabi": {
+      "title": "RISC-V ELF psABI specification",
+      "url": "https://github.com/riscv-non-isa/riscv-elf-psabi-doc",
+      "kind": "spec",
+      "by": "RISC-V International",
+      "origin": "added"
+    },
+    "c-standard-n3220": {
+      "title": "C standard working draft N3220",
+      "url": "https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf",
+      "kind": "spec",
+      "by": "ISO WG14",
+      "origin": "added"
+    },
+    "elf-spec": {
+      "title": "Executable and Linkable Format (ELF) specification",
+      "url": "https://refspecs.linuxfoundation.org/elf/elf.pdf",
+      "kind": "spec",
+      "by": "TIS Committee",
+      "origin": "added"
+    },
+    "pe-format": {
+      "title": "PE Format",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/debug/pe-format",
+      "kind": "spec",
+      "by": "Microsoft",
+      "origin": "added"
+    },
+    "intel-8259a": {
+      "title": "8259A Programmable Interrupt Controller datasheet",
+      "url": "https://pdos.csail.mit.edu/6.828/2005/readings/hardware/8259A.pdf",
+      "kind": "spec",
+      "by": "Intel",
+      "origin": "added"
+    },
+    "usb-hid-11": {
+      "title": "USB Device Class Definition for HID 1.11",
+      "url": "https://www.usb.org/document-library/device-class-definition-hid-111",
+      "kind": "spec",
+      "by": "USB-IF",
+      "origin": "added"
+    },
+    "usb-hid-usage": {
+      "title": "USB HID Usage Tables",
+      "url": "https://www.usb.org/document-library/hid-usage-tables-17",
+      "kind": "spec",
+      "by": "USB-IF",
+      "origin": "added"
+    },
+    "css-color-4": {
+      "title": "CSS Color Module Level 4",
+      "url": "https://www.w3.org/TR/css-color-4/",
+      "kind": "spec",
+      "by": "W3C",
+      "origin": "added"
+    },
+    "opentype-spec": {
+      "title": "OpenType specification",
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/",
+      "kind": "spec",
+      "by": "Microsoft",
+      "origin": "added"
+    },
+    "knuth-plass": {
+      "title": "Breaking Paragraphs into Lines",
+      "url": "https://gwern.net/doc/design/typography/tex/1981-knuth.pdf",
+      "kind": "paper",
+      "by": "Donald Knuth and Michael Plass",
+      "origin": "added"
+    },
+    "unicode-uax-14": {
+      "title": "UAX #14: Unicode Line Breaking Algorithm",
+      "url": "https://www.unicode.org/reports/tr14/",
+      "kind": "spec",
+      "by": "Unicode Consortium",
+      "origin": "added"
+    },
+    "av1-spec": {
+      "title": "AV1 Bitstream and Decoding Process Specification",
+      "url": "https://aomediacodec.github.io/av1-spec/",
+      "kind": "spec",
+      "by": "Alliance for Open Media",
+      "origin": "added"
+    },
+    "h264-spec": {
+      "title": "ITU-T H.264: Advanced Video Coding",
+      "url": "https://www.itu.int/rec/T-REC-H.264",
+      "kind": "spec",
+      "by": "ITU-T",
+      "origin": "added"
+    },
+    "vulkan-spec": {
+      "title": "Vulkan Specification",
+      "url": "https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html",
+      "kind": "spec",
+      "by": "Khronos Group",
+      "origin": "added"
+    },
+    "opengl-46-spec": {
+      "title": "OpenGL 4.6 Core Profile Specification",
+      "url": "https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf",
+      "kind": "spec",
+      "by": "Khronos Group",
+      "origin": "added"
+    },
+    "wave-format": {
+      "title": "WAVE PCM soundfile format",
+      "url": "https://mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html",
+      "kind": "reference",
+      "by": "Peter Kabal",
+      "origin": "added"
+    },
+    "rfc-6716": {
+      "title": "RFC 6716: Definition of the Opus Audio Codec",
+      "url": "https://www.rfc-editor.org/rfc/rfc6716.html",
+      "kind": "spec",
+      "by": "Jean-Marc Valin, Koen Vos and Timothy Terriberry",
+      "origin": "added"
+    },
+    "unix-time-sharing": {
+      "title": "The UNIX Time-Sharing System",
+      "url": "https://dsf.berkeley.edu/cs262/unix.pdf",
+      "kind": "paper",
+      "by": "Dennis Ritchie and Ken Thompson",
+      "origin": "added"
+    },
+    "xv6-book": {
+      "title": "xv6: a simple, Unix-like teaching operating system",
+      "url": "https://pdos.csail.mit.edu/6.1810/2024/xv6/book-riscv-rev4.pdf",
+      "kind": "book",
+      "by": "Russ Cox, Frans Kaashoek and Robert Morris",
+      "origin": "added"
+    },
+    "posix-2024": {
+      "title": "POSIX.1-2024 (The Open Group Base Specifications, Issue 8)",
+      "url": "https://pubs.opengroup.org/onlinepubs/9799919799/",
+      "kind": "spec",
+      "by": "The Open Group",
+      "origin": "added"
+    },
+    "linux-syscalls-man": {
+      "title": "syscalls(2) Linux manual page",
+      "url": "https://man7.org/linux/man-pages/man2/syscalls.2.html",
+      "kind": "reference",
+      "by": "Linux man-pages project",
+      "origin": "added"
+    },
+    "linux-eevdf": {
+      "title": "EEVDF Scheduler",
+      "url": "https://docs.kernel.org/scheduler/sched-eevdf.html",
+      "kind": "reference",
+      "by": "Linux kernel documentation",
+      "origin": "added"
+    },
+    "linux-ext4": {
+      "title": "ext4 Data Structures and Algorithms",
+      "url": "https://docs.kernel.org/filesystems/ext4/",
+      "kind": "spec",
+      "by": "Linux kernel documentation",
+      "origin": "added"
+    },
+    "fat-spec": {
+      "title": "Microsoft FAT Specification",
+      "url": "https://academy.cba.mit.edu/classes/networking_communications/SD/FAT.pdf",
+      "kind": "spec",
+      "by": "Microsoft",
+      "origin": "added"
+    },
+    "uefi-spec": {
+      "title": "UEFI Specifications",
+      "url": "https://uefi.org/specifications",
+      "kind": "spec",
+      "by": "UEFI Forum",
+      "origin": "added"
+    },
+    "rfc-1180": {
+      "title": "RFC 1180: A TCP/IP Tutorial",
+      "url": "https://www.rfc-editor.org/rfc/rfc1180.html",
+      "kind": "spec",
+      "by": "Theodore Socolofsky and Claudia Kale",
+      "origin": "added"
+    },
+    "rfc-1122": {
+      "title": "RFC 1122: Requirements for Internet Hosts: Communication Layers",
+      "url": "https://www.rfc-editor.org/rfc/rfc1122.html",
+      "kind": "spec",
+      "by": "Robert Braden",
+      "origin": "added"
+    },
+    "clark-darpa-design": {
+      "title": "The Design Philosophy of the DARPA Internet Protocols",
+      "url": "https://groups.csail.mit.edu/ana/Publications/PubPDFs/The%20design%20philosophy%20of%20the%20DARPA%20internet%20protocols.pdf",
+      "kind": "paper",
+      "by": "David Clark",
+      "origin": "added"
+    },
+    "metcalfe-boggs-ethernet": {
+      "title": "Ethernet: Distributed Packet Switching for Local Computer Networks",
+      "url": "https://dl.acm.org/doi/10.1145/360248.360253",
+      "kind": "paper",
+      "by": "Robert Metcalfe and David Boggs",
+      "origin": "added"
+    },
+    "ieee-802-get": {
+      "title": "IEEE GET Program: 802 standards",
+      "url": "https://ieeexplore.ieee.org/browse/standards/get-program/page/series?id=68",
+      "kind": "spec",
+      "by": "IEEE",
+      "origin": "added"
+    },
+    "rfc-826": {
+      "title": "RFC 826: An Ethernet Address Resolution Protocol",
+      "url": "https://www.rfc-editor.org/rfc/rfc826.html",
+      "kind": "spec",
+      "by": "David Plummer",
+      "origin": "added"
+    },
+    "rfc-791": {
+      "title": "RFC 791: Internet Protocol",
+      "url": "https://www.rfc-editor.org/rfc/rfc791.html",
+      "kind": "spec",
+      "by": "Jon Postel",
+      "origin": "added"
+    },
+    "rfc-8200": {
+      "title": "RFC 8200: Internet Protocol, Version 6 (IPv6) Specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc8200.html",
+      "kind": "spec",
+      "by": "Steve Deering and Bob Hinden",
+      "origin": "added"
+    },
+    "rfc-4271": {
+      "title": "RFC 4271: A Border Gateway Protocol 4 (BGP-4)",
+      "url": "https://www.rfc-editor.org/rfc/rfc4271.html",
+      "kind": "spec",
+      "by": "Yakov Rekhter, Tony Li and Susan Hares",
+      "origin": "added"
+    },
+    "rfc-9293": {
+      "title": "RFC 9293: Transmission Control Protocol (TCP)",
+      "url": "https://www.rfc-editor.org/rfc/rfc9293.html",
+      "kind": "spec",
+      "by": "Wesley Eddy",
+      "origin": "added"
+    },
+    "rfc-768": {
+      "title": "RFC 768: User Datagram Protocol",
+      "url": "https://www.rfc-editor.org/rfc/rfc768.html",
+      "kind": "spec",
+      "by": "Jon Postel",
+      "origin": "added"
+    },
+    "rfc-9000": {
+      "title": "RFC 9000: QUIC: A UDP-Based Multiplexed and Secure Transport",
+      "url": "https://www.rfc-editor.org/rfc/rfc9000.html",
+      "kind": "spec",
+      "by": "Jana Iyengar and Martin Thomson",
+      "origin": "added"
+    },
+    "rfc-1034": {
+      "title": "RFC 1034: Domain Names: Concepts and Facilities",
+      "url": "https://www.rfc-editor.org/rfc/rfc1034.html",
+      "kind": "spec",
+      "by": "Paul Mockapetris",
+      "origin": "added"
+    },
+    "rfc-1035": {
+      "title": "RFC 1035: Domain Names: Implementation and Specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+      "kind": "spec",
+      "by": "Paul Mockapetris",
+      "origin": "added"
+    },
+    "rfc-9110": {
+      "title": "RFC 9110: HTTP Semantics",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.html",
+      "kind": "spec",
+      "by": "Roy Fielding, Mark Nottingham and Julian Reschke",
+      "origin": "added"
+    },
+    "rfc-9112": {
+      "title": "RFC 9112: HTTP/1.1",
+      "url": "https://www.rfc-editor.org/rfc/rfc9112.html",
+      "kind": "spec",
+      "by": "Roy Fielding, Mark Nottingham and Julian Reschke",
+      "origin": "added"
+    },
+    "rfc-8446": {
+      "title": "RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3",
+      "url": "https://www.rfc-editor.org/rfc/rfc8446.html",
+      "kind": "spec",
+      "by": "Eric Rescorla",
+      "origin": "added"
+    },
+    "skywater-pdk": {
+      "title": "SkyWater SKY130 PDK documentation",
+      "url": "https://skywater-pdk.readthedocs.io/",
+      "kind": "reference",
+      "by": "SkyWater and Google",
+      "origin": "added"
+    },
+    "yosys-docs": {
+      "title": "Yosys documentation",
+      "url": "https://yosyshq.readthedocs.io/projects/yosys/",
+      "kind": "reference",
+      "by": "YosysHQ",
+      "origin": "added"
+    },
+    "hdlbits": {
+      "title": "HDLBits",
+      "url": "https://hdlbits.01xz.net/wiki/Main_Page",
+      "kind": "interactive",
+      "by": "Henry Wong",
+      "origin": "added"
+    },
+    "xiph-digital-media-primer": {
+      "title": "A Digital Media Primer for Geeks",
+      "url": "https://xiph.org/video/vid1.shtml",
+      "kind": "video",
+      "by": "Monty Montgomery",
+      "minutes": 30,
+      "origin": "added"
     }
   },
   "chapters": {
@@ -3481,6 +4361,21 @@
         {
           "id": "petzold-code",
           "note": "\"Bit by Bit by Bit\" and \"Bytes and Hexadecimal\"; the book's site has interactive versions of its circuits"
+        },
+        {
+          "id": "yt-NcaiHcBvDR4",
+          "note": "fills the endianness gap"
+        },
+        {
+          "id": "yt-1GSjbWt0c9M"
+        },
+        {
+          "id": "yt-ixJCo0cyAuA",
+          "note": "why 8 bits"
+        },
+        {
+          "id": "ien-137",
+          "note": "the 1980 note that named big and little endian; fills the gap noted for this chapter"
         }
       ],
       "questions": [
@@ -3657,6 +4552,10 @@
         },
         {
           "id": "yt-4qH4unVtJkE"
+        },
+        {
+          "id": "kahan-ieee-754",
+          "note": "from the standard's main designer; the standard itself is sold, not free"
         }
       ],
       "questions": [
@@ -3717,6 +4616,18 @@
         {
           "id": "yt-_ZKNOKHpqE4",
           "note": "lossy audio; reuse in 5.7"
+        },
+        {
+          "id": "rfc-1951",
+          "note": "the format inside gzip and PNG, and short; Huffman plus LZ77 written out to the bit"
+        },
+        {
+          "id": "png-spec",
+          "note": "filters plus DEFLATE"
+        },
+        {
+          "id": "jpeg-t81",
+          "note": "dip in for the DCT and quantization sections; heavy"
         }
       ],
       "questions": [
@@ -3863,6 +4774,13 @@
         {
           "id": "yt-7zffjsXqATg",
           "note": "Karnaugh maps box: the same job done by hand: from a truth table to a circuit"
+        },
+        {
+          "id": "yt-gI-qXk7XojA"
+        },
+        {
+          "id": "sn74hc00-datasheet",
+          "note": "what a real gate promises: truth table, voltages, delay"
         }
       ],
       "questions": [
@@ -3937,6 +4855,9 @@
         {
           "id": "nand2tetris-course",
           "note": "chapter 2"
+        },
+        {
+          "id": "yt-1I5ZMmrOfnA"
         }
       ],
       "questions": [
@@ -4234,6 +5155,10 @@
         {
           "id": "wiki-cordic",
           "note": "Square roots box: roots, sines and logarithms from shifts and adds"
+        },
+        {
+          "id": "sn74ls181-datasheet",
+          "note": "a whole ALU on one chip, 1970s; the function table is the thing to read"
         }
       ],
       "questions": [
@@ -4261,7 +5186,19 @@
           "id": "float-exposed"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-f4ekifyijIg"
+        },
+        {
+          "id": "yt-782QWNOD_Z0",
+          "note": "the addition steps a hardware adder has to do"
+        },
+        {
+          "id": "kahan-ieee-754",
+          "note": "why the rules are what they are"
+        }
+      ],
       "questions": [
         "Adding two floats takes four steps: align, add, normalise, round. What does each need in hardware?",
         "Why was this a separate chip for years?"
@@ -4429,6 +5366,18 @@
         {
           "id": "people-freebsd-org-lstewart-articles-cpumemory",
           "note": "Caches box: section 3 only"
+        },
+        {
+          "id": "yt-6JpLD3PUAZk",
+          "note": "caches box, short version"
+        },
+        {
+          "id": "yt-SAk-6gVkio0",
+          "note": "caches box, Matt Godbolt"
+        },
+        {
+          "id": "w65c02s-datasheet",
+          "note": "the chip on Ben Eater's 6502 breadboard, in its maker's words"
         }
       ],
       "questions": [
@@ -4471,6 +5420,18 @@
         {
           "id": "nand2tetris-book",
           "note": "chapters 4 and 6: machine language and the assembler"
+        },
+        {
+          "id": "w65c02s-datasheet",
+          "note": "the opcode matrix is a whole instruction set on one page"
+        },
+        {
+          "id": "riscv-unprivileged",
+          "note": "the most readable real ISA spec; RV32I chapter first, with its design commentary"
+        },
+        {
+          "id": "intel-sdm",
+          "note": "the real thing for x86; look up, don't read through"
         }
       ],
       "questions": [
@@ -4543,6 +5504,17 @@
         {
           "id": "yt-eP_P4KOjwhs",
           "note": "Crazy compilers box: the other half of portability: the operating system"
+        },
+        {
+          "id": "yt-lJf2i87jgFA"
+        },
+        {
+          "id": "yt-PjeE8Bc96HY",
+          "note": "Prof. Brailsford on bootstrapping"
+        },
+        {
+          "id": "c-standard-n3220",
+          "note": "section 5.1.1.2 lists the translation phases: what a compiler must do, in order"
         }
       ],
       "questions": [
@@ -4613,6 +5585,10 @@
         {
           "id": "petzold-code",
           "note": "\"Loops, Jumps, and Calls\""
+        },
+        {
+          "id": "riscv-psabi",
+          "note": "the calling convention as an actual written contract"
         }
       ],
       "questions": [
@@ -4684,7 +5660,34 @@
           "id": "wiki-instruction-pipelining"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-BVNx3wtJ9vs",
+          "note": "Matt Godbolt; start here"
+        },
+        {
+          "id": "yt-nczJ58WvtYo",
+          "note": "Matt Godbolt"
+        },
+        {
+          "id": "yt-_qvOlL8nhN4"
+        },
+        {
+          "id": "yt-jNC9LPc3BI0",
+          "note": "Matt Godbolt"
+        },
+        {
+          "id": "yt-Me0GF5zMfAk",
+          "note": "Matt Godbolt; register renaming"
+        },
+        {
+          "id": "yt--HNpim5x-IE",
+          "note": "the whole picture in one talk"
+        },
+        {
+          "id": "yt-rtAlC5J1U40"
+        }
+      ],
       "questions": [
         "A pipeline makes no single instruction faster. What does it make faster?",
         "What is a hazard, and what does the pipeline do when it meets one?"
@@ -4822,6 +5825,14 @@
         },
         {
           "id": "yt-mpIFag8zSWo"
+        },
+        {
+          "id": "riscv-privileged",
+          "note": "traps, as the hardware defines them"
+        },
+        {
+          "id": "intel-8259a",
+          "note": "the chip that wired interrupts to the PC"
         }
       ],
       "questions": [
@@ -4859,6 +5870,14 @@
         {
           "id": "wiki-charlieplexing",
           "note": "many LEDs on few pins; a relative of the key matrix that leans on the third state from 2.4"
+        },
+        {
+          "id": "usb-hid-11",
+          "note": "appendix B: the boot keyboard report, 8 bytes"
+        },
+        {
+          "id": "usb-hid-usage",
+          "note": "the keyboard page: which number means which key"
         }
       ],
       "questions": [
@@ -4879,7 +5898,12 @@
           "id": "yt-N0O5Uwc3C0o"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "usb-hid-11",
+          "note": "appendix B: the boot mouse report, 3 bytes"
+        }
+      ],
       "questions": [
         "An optical mouse is a small camera. What does it compare, and how often?",
         "A mouse reports movement, not position. Who keeps the position, and who draws the cursor?",
@@ -4966,6 +5990,10 @@
         },
         {
           "id": "yt-BUTHtNrpwiI"
+        },
+        {
+          "id": "png-spec",
+          "note": "what an image file really stores"
         }
       ],
       "questions": [
@@ -5005,6 +6033,10 @@
         },
         {
           "id": "wiki-palette-computing"
+        },
+        {
+          "id": "css-color-4",
+          "note": "readable account of sRGB, gamma and wide-gamut spaces, with the conversion code"
         }
       ],
       "questions": [
@@ -5035,6 +6067,29 @@
         {
           "id": "wiki-code-page-437",
           "note": "the bitmap-font world before outlines"
+        },
+        {
+          "id": "yt-jAdspOtgciQ",
+          "note": "Prof. Brailsford"
+        },
+        {
+          "id": "yt-XvwNKpDUkiE",
+          "note": "Prof. Brailsford"
+        },
+        {
+          "id": "yt-S_NXz7I5dQc"
+        },
+        {
+          "id": "opentype-spec",
+          "note": "what is in a font file; start at the glyf and cmap tables"
+        },
+        {
+          "id": "knuth-plass",
+          "note": "the line-breaking algorithm in TeX"
+        },
+        {
+          "id": "unicode-uax-14",
+          "note": "where a line may break, in every script"
         }
       ],
       "questions": [
@@ -5066,6 +6121,18 @@
         },
         {
           "id": "wiki-video-coding-format"
+        },
+        {
+          "id": "av1-spec",
+          "note": "a free modern video codec spec; dip in for the block and motion sections"
+        },
+        {
+          "id": "h264-spec",
+          "note": "the codec most video still uses; heavy"
+        },
+        {
+          "id": "xiph-digital-media-primer",
+          "note": "the fundamentals of raw digital video, on Xiph's own page"
         }
       ],
       "questions": [
@@ -5110,6 +6177,10 @@
         {
           "id": "webgpufundamentals-org",
           "note": "for the \"edit a tiny shader\" demo"
+        },
+        {
+          "id": "vulkan-spec",
+          "note": "how software really addresses a GPU; look up, don't read through"
         }
       ],
       "questions": [
@@ -5153,6 +6224,10 @@
         },
         {
           "id": "yt-iOlehM5kNSk"
+        },
+        {
+          "id": "opengl-46-spec",
+          "note": "the rendering pipeline chapter names every stage"
         }
       ],
       "questions": [
@@ -5206,6 +6281,14 @@
         },
         {
           "id": "yt-spUNpyF58BY"
+        },
+        {
+          "id": "wave-format",
+          "note": "sound as a file: short and fully readable"
+        },
+        {
+          "id": "rfc-6716",
+          "note": "modern audio compression; only the overview sections"
         }
       ],
       "questions": [
@@ -5256,6 +6339,17 @@
         },
         {
           "id": "nand2web-os"
+        },
+        {
+          "id": "yt-26QPDBe-NB8"
+        },
+        {
+          "id": "yt-tc4ROCJYbm0",
+          "note": "1982 film with Thompson, Ritchie and Kernighan"
+        },
+        {
+          "id": "unix-time-sharing",
+          "note": "the 1974 paper; short, and most of a modern OS is already in it"
         }
       ],
       "questions": [
@@ -5278,7 +6372,19 @@
           "note": "kernel-level anti-cheat: a concrete case of what kernel access means"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-yV4fGeIv7MI"
+        },
+        {
+          "id": "riscv-privileged",
+          "note": "what privilege levels are at the hardware"
+        },
+        {
+          "id": "xv6-book",
+          "note": "a whole kernel explained in about 100 pages"
+        }
+      ],
       "questions": [
         "What can a normal program not do, and what enforces that? (Hardware, not software.)",
         "The kernel is the code that runs in privileged mode. Is the shell part of it? The window system? A driver?",
@@ -5309,6 +6415,25 @@
         },
         {
           "id": "yt-WtlGB-YVLOg"
+        },
+        {
+          "id": "yt-2AmP7Pse4U0",
+          "note": "watch syscalls happen with strace"
+        },
+        {
+          "id": "yt-ss1-REMJ9GA"
+        },
+        {
+          "id": "xv6-book",
+          "note": "the chapter on traps and system calls"
+        },
+        {
+          "id": "posix-2024",
+          "note": "read the entries for fork, exec and read"
+        },
+        {
+          "id": "linux-syscalls-man",
+          "note": "the full list of Linux system calls"
         }
       ],
       "questions": [
@@ -5371,6 +6496,10 @@
         },
         {
           "id": "nand2web-os"
+        },
+        {
+          "id": "linux-eevdf",
+          "note": "what Linux schedules with today"
         }
       ],
       "questions": [
@@ -5402,6 +6531,21 @@
         },
         {
           "id": "nand2web-os"
+        },
+        {
+          "id": "yt-qlH4-oHnBb8",
+          "note": "part of a full lecture series by the same author; start here"
+        },
+        {
+          "id": "yt-59rEMnKWoS4"
+        },
+        {
+          "id": "yt-uyrSn3qbZ8U",
+          "note": "why TLBs exist"
+        },
+        {
+          "id": "riscv-privileged",
+          "note": "the Sv32 and Sv39 page table sections"
         }
       ],
       "questions": [
@@ -5428,6 +6572,24 @@
         },
         {
           "id": "wiki-disk-storage"
+        },
+        {
+          "id": "yt-KN8YgJnShPM"
+        },
+        {
+          "id": "yt-_h30HBYxtws"
+        },
+        {
+          "id": "unix-time-sharing",
+          "note": "the section on i-nodes"
+        },
+        {
+          "id": "linux-ext4",
+          "note": "a live file system's on-disk layout"
+        },
+        {
+          "id": "fat-spec",
+          "note": "small enough to read whole and write a reader from"
         }
       ],
       "questions": [
@@ -5462,6 +6624,14 @@
         },
         {
           "id": "yt-ioJkA7Mw2-U"
+        },
+        {
+          "id": "yt-dOfucXtyEsU",
+          "note": "everything between the linker and main"
+        },
+        {
+          "id": "elf-spec",
+          "note": "what a program file holds, byte by byte"
         }
       ],
       "questions": [
@@ -5513,6 +6683,10 @@
         },
         {
           "id": "wiki-booting"
+        },
+        {
+          "id": "uefi-spec",
+          "note": "look up the boot manager chapter; huge"
         }
       ],
       "questions": [
@@ -5537,7 +6711,23 @@
           "id": "yt-SwIPOf2YAgI"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-fCDsn7OTNMg"
+        },
+        {
+          "id": "yt-XvDZLjaCJuw",
+          "note": "the 1982 Unix film"
+        },
+        {
+          "id": "pe-format",
+          "note": "Windows' answer to ELF"
+        },
+        {
+          "id": "posix-2024",
+          "note": "what Unix-likes agree on"
+        }
+      ],
       "questions": [
         "Same CPU, different operating system: why does the program not run? Name three reasons.",
         "What is the difference between a kernel and a distribution?",
@@ -5587,6 +6777,25 @@
         {
           "id": "cstack-github-io-db-tutorial",
           "note": "Database box: an SQLite clone from scratch; the early parts and the B-tree introduction"
+        },
+        {
+          "id": "yt-PG9oKZdFb7w"
+        },
+        {
+          "id": "yt-Dxcc6ycZ73M",
+          "note": "Code.org's Internet series, with Vint Cerf; the channel now shows as CodeAI"
+        },
+        {
+          "id": "rfc-1180",
+          "note": "a gentle RFC: the stack walked through with one packet"
+        },
+        {
+          "id": "rfc-1122",
+          "note": "section 1 describes the layers"
+        },
+        {
+          "id": "clark-darpa-design",
+          "note": "why the Internet is shaped this way, in priority order"
         }
       ],
       "questions": [
@@ -5676,6 +6885,10 @@
         {
           "id": "wiki-coding-theory",
           "note": "Error correction box: recently closed tab"
+        },
+        {
+          "id": "ieee-802-get",
+          "note": "802.3 physical layers"
         }
       ],
       "questions": [
@@ -5701,7 +6914,30 @@
           "id": "wiki-wi-fi"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-ZhEf7e4kopM",
+          "note": "Code.org's Internet series"
+        },
+        {
+          "id": "yt-vvKbMueRzrI"
+        },
+        {
+          "id": "yt-UgQM0rVDIQE"
+        },
+        {
+          "id": "metcalfe-boggs-ethernet",
+          "note": "the 1976 paper"
+        },
+        {
+          "id": "ieee-802-get",
+          "note": "802.3 and 802.11 for free, with sign-up; look up the frame formats"
+        },
+        {
+          "id": "rfc-826",
+          "note": "ARP: where Ethernet meets IP, a few pages"
+        }
+      ],
       "questions": [
         "What is a frame, and how does a receiver know where one starts?",
         "What is a hardware (MAC) address for?",
@@ -5747,6 +6983,28 @@
         {
           "id": "wireguard-com",
           "note": "VPN box"
+        },
+        {
+          "id": "yt-AYdF7b3nMto",
+          "note": "Code.org's Internet series"
+        },
+        {
+          "id": "yt-O6tCoD5c_U0"
+        },
+        {
+          "id": "yt-AkxqkoxErRk"
+        },
+        {
+          "id": "rfc-791",
+          "note": "section 3.1 is the header diagram"
+        },
+        {
+          "id": "rfc-8200",
+          "note": "compare the header with RFC 791"
+        },
+        {
+          "id": "rfc-4271",
+          "note": "how networks tell each other about routes"
         }
       ],
       "questions": [
@@ -5781,6 +7039,28 @@
         {
           "id": "hpbn",
           "note": "the TCP and UDP chapters"
+        },
+        {
+          "id": "yt-IADOV8UZO34"
+        },
+        {
+          "id": "yt-ihvbhwGblQg"
+        },
+        {
+          "id": "yt-HCHFX5O1IaQ",
+          "note": "Chris Greer, read off real packet captures"
+        },
+        {
+          "id": "rfc-9293",
+          "note": "the current TCP; section 3.3.2 has the state machine"
+        },
+        {
+          "id": "rfc-768",
+          "note": "all of UDP in three pages"
+        },
+        {
+          "id": "rfc-9000",
+          "note": "what TCP's successor changes, and why it runs over UDP"
         }
       ],
       "questions": [
@@ -5806,6 +7086,21 @@
       "deeper": [
         {
           "id": "implement-dns-wizardzines-com"
+        },
+        {
+          "id": "yt-5o8CwafCxnU",
+          "note": "Code.org's Internet series"
+        },
+        {
+          "id": "yt-uOfonONtIuk"
+        },
+        {
+          "id": "rfc-1034",
+          "note": "the design"
+        },
+        {
+          "id": "rfc-1035",
+          "note": "section 4 is the message format; enough to write a resolver"
         }
       ],
       "questions": [
@@ -5825,7 +7120,34 @@
           "note": "every byte of one handshake"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-kBXQZMmiA4s",
+          "note": "Code.org's Internet series"
+        },
+        {
+          "id": "yt-0TLDTodL7Lc"
+        },
+        {
+          "id": "yt-86cQJ0MMses"
+        },
+        {
+          "id": "yt-ZkL10eoG1PY",
+          "note": "every step of the handshake"
+        },
+        {
+          "id": "rfc-9110",
+          "note": "methods and status codes"
+        },
+        {
+          "id": "rfc-9112",
+          "note": "the bytes on the wire"
+        },
+        {
+          "id": "rfc-8446",
+          "note": "section 2 is the handshake overview"
+        }
+      ],
       "questions": [
         "What is in an HTTP request? Write one by hand.",
         "What three things does TLS add to a connection? (Who the other side is, that nobody reads along, that nobody changes anything.)",
@@ -5843,7 +7165,20 @@
           "id": "explained-from-first-principles-com-internet"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-PBWhzz_Gn10",
+          "note": "the classic 1999 film of one packet's trip"
+        },
+        {
+          "id": "rfc-1122",
+          "note": "what a host must do at every layer"
+        },
+        {
+          "id": "rfc-9112",
+          "note": "the request at the top of the stack"
+        }
+      ],
       "questions": [
         "Tell the journey from your laptop to google.com and back in ten sentences, one per hop or layer."
       ]
@@ -5894,6 +7229,10 @@
         },
         {
           "id": "wiki-network-on-a-chip"
+        },
+        {
+          "id": "skywater-pdk",
+          "note": "an open process's real design rules"
         }
       ],
       "questions": [
@@ -6102,6 +7441,13 @@
         {
           "id": "wiki-bus-computing",
           "note": "the system bus"
+        },
+        {
+          "id": "yt-fpnE6UAfbtU"
+        },
+        {
+          "id": "people-freebsd-org-lstewart-articles-cpumemory",
+          "note": "long; sections 2 and 3 on RAM hardware and caches"
         }
       ],
       "questions": [
@@ -6210,6 +7556,9 @@
         {
           "id": "wiki-multi-core-processor",
           "note": "More than one core box"
+        },
+        {
+          "id": "yt-FZGugFqdr60"
         }
       ],
       "questions": [
@@ -6237,7 +7586,43 @@
           "note": "get your own small design onto a real chip"
         }
       ],
-      "deeper": [],
+      "deeper": [
+        {
+          "id": "yt-lLg1AgA2Xoo",
+          "note": "DigiKey's FPGA series"
+        },
+        {
+          "id": "yt-A4VfBoP4Hdk",
+          "note": "DigiKey's FPGA series"
+        },
+        {
+          "id": "yt-2IReMT_zjK8"
+        },
+        {
+          "id": "yt-qVWq_XZko-M",
+          "note": "a real chip from a small budget"
+        },
+        {
+          "id": "yt-ILZ6fDHZ_eo",
+          "note": "Matt Venn's long talk on going from zero to a chip"
+        },
+        {
+          "id": "yt-5J8LJoUxCHk",
+          "note": "how a cell library is made"
+        },
+        {
+          "id": "skywater-pdk",
+          "note": "real standard cell libraries you can browse"
+        },
+        {
+          "id": "yosys-docs",
+          "note": "an open synthesis tool: Verilog in, gates out"
+        },
+        {
+          "id": "hdlbits",
+          "note": "learn Verilog by writing it in the browser"
+        }
+      ],
       "questions": [
         "What does Verilog describe that a hand-wired circuit diagram does not, and who turns it into gates?",
         "What is a standard cell, and why does a fab want designs built from a fixed set of them?"

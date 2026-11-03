@@ -1,0 +1,196 @@
+/* Shared by the Unicode demos, on the ByteExplorer panel. Rules that change a ByteExplorer
+   class are scoped under .unicode, so they win whichever stylesheet loads last. */
+
+.unicode {
+  /* Which byte a code point bit lands in. */
+  --group-0: #f3c9a8;
+  --group-1: #bcd9f2;
+  --group-2: #e0c6ee;
+  --group-3: #f4e7a1;
+}
+
+.deck { container-type: inline-size; display: grid; gap: 8px; padding-top: 8px; background: linear-gradient(#3c4a3f, #566457); }
+.bay { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
+.empty { margin: 12px 0 0; color: #2a3a2e; font-size: 12px; letter-spacing: .08em; }
+.error { min-height: 16px; margin: 6px 0 0; color: #5e2318; font-size: 12px; font-weight: 500; line-height: 16px; letter-spacing: 0; }
+
+/* Spacing letters apart breaks Arabic joining and some emoji, so text fields set it to zero. */
+.unicode .textInput { overflow: hidden; resize: none; letter-spacing: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.charInput {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding: 8px 10px;
+  border: 4px solid #3c5042;
+  border-radius: 6px;
+  outline: none;
+  background: radial-gradient(ellipse at center, #243c29, #122518);
+  box-shadow: inset 0 4px 10px #0009, 0 2px 0 #dce5d4;
+  color: #c9f2aa;
+  font: 500 20px/1.2 ui-monospace, monospace;
+}
+.charInput:focus { box-shadow: inset 0 4px 10px #0009, 0 0 0 2px #c0e8a8; }
+
+.presetGroup { display: grid; grid-template-columns: 74px minmax(0, 1fr); align-items: start; gap: 8px; margin-top: 10px; font-size: 11px; letter-spacing: .08em; }
+.presetGroup > span { padding-top: 9px; }
+.unicode .choiceRow { gap: 6px; margin-top: 0; }
+.unicode .choiceRow button[aria-pressed="true"] { transform: translateY(2px); background: linear-gradient(#9cb98a, #c6d9aa); box-shadow: inset 0 2px 5px #27452f99; }
+.unicode .choiceRow button:disabled { cursor: not-allowed; opacity: .45; }
+.unicode .choiceRow button { font-size: 12px; }
+.bay > .choiceRow { margin-top: 12px; }
+.choice { min-width: 0; margin: 12px 0 0; padding: 0; border: 0; }
+.bay > .choice:first-child { margin-top: 0; }
+.choice legend { padding: 0 0 5px; font-size: 11px; letter-spacing: .08em; }
+.recipe { margin-top: 2px; }
+.unicode .markButton { min-width: 42px; font-size: 22px; line-height: 1.1; }
+
+.pickers { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 12px; }
+.picker { display: grid; gap: 5px; font-size: 11px; letter-spacing: .08em; }
+.picker select {
+  min-width: 76px;
+  padding: 6px 8px;
+  border: 2px solid #4a594d;
+  border-radius: 4px;
+  background: linear-gradient(#e3e5d4, #b4bfae);
+  color: #243329;
+  font: 600 16px/1.2 ui-monospace, monospace;
+}
+
+.lcd {
+  display: grid;
+  place-items: center;
+  min-height: 62px;
+  padding: 6px 10px;
+  border: 3px solid #415045;
+  border-radius: 6px / 5px;
+  background: repeating-linear-gradient(0deg, #122d140d 0 2px, #0e240e24 2px 3px), radial-gradient(ellipse at center, #b7e3a0, #87bb7a 75%, #5c865a);
+  box-shadow: inset 0 0 8px #17381d80;
+  color: #1d4625;
+  font-size: 34px;
+  line-height: 1.2;
+}
+.lcdLabel { font-size: 16px; letter-spacing: .06em; }
+
+.result {
+  display: block;
+  overflow: hidden;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: 5px solid #415045;
+  border-radius: 10px / 8px;
+  background: repeating-linear-gradient(0deg, #122d140d 0 2px, #0e240e24 2px 3px), radial-gradient(ellipse at center, #b7e3a0, #87bb7a 75%, #5c865a);
+  box-shadow: inset 0 0 14px #17381da8;
+  color: #1d4625;
+  font-size: 54px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.formula { margin: 8px 0 0; font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+
+.counts { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 12px 0 0; }
+.counts dt { font-size: 10px; letter-spacing: .08em; }
+.counts dd { margin: 0; font-size: 20px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+
+.graphemes { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
+.grapheme { display: grid; gap: 5px; min-width: 0; max-width: 100%; padding: 5px; border: 2px solid #55655a; border-radius: 6px; background: #7f8d7e55; }
+.codePoints { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.codePoint { display: grid; align-content: start; justify-items: center; gap: 3px; width: 118px; padding: 5px 4px 6px; border: 1px solid #748273; border-radius: 4px; background: linear-gradient(#879587, #a5b1a1); box-shadow: inset 0 2px 4px #46574880, 0 1px #dce2d5; }
+.pointGlyph { display: grid; place-items: center; min-height: 32px; font-size: 24px; font-weight: 400; line-height: 1.2; }
+.pointLabel { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.pointHex { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pointName { min-height: 2.4em; color: #24332a; font-size: 9px; font-weight: 500; line-height: 1.2; letter-spacing: 0; overflow-wrap: anywhere; text-align: center; }
+.pointBytes { display: grid; gap: 2px; width: 100%; margin: 2px 0 0; padding: 0; list-style: none; }
+.pointBytes li { display: flex; align-items: center; justify-content: space-between; gap: 4px; font-size: 11px; }
+.pointBytes b { font-weight: 700; }
+
+.byteBits { display: inline-flex; font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 1.3; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.marker { padding: 0 1px; border-radius: 2px 0 0 2px; background: #2a3a2e; color: #d7efc0; }
+.data { padding: 0 1px; border-radius: 0 2px 2px 0; background: #e3e7d6; color: #1f2c23; }
+.data[data-group="0"] { background: var(--group-0); }
+.data[data-group="1"] { background: var(--group-1); }
+.data[data-group="2"] { background: var(--group-2); }
+.data[data-group="3"] { background: var(--group-3); }
+
+.byteRun { display: flex; flex-wrap: wrap; gap: 3px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 13px; font-variant-numeric: tabular-nums; }
+.byteRun li { padding: 2px 5px; border-radius: 2px; background: #e3e7d6; }
+.byteRun li[data-odd] { background: #2a3a2e; color: #d7efc0; }
+.runHead { margin-top: 14px; font-size: 11px; letter-spacing: .08em; }
+
+.encoderTop { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; margin: 12px 0; }
+.encoderGlyph { min-height: 110px; font-size: 54px; }
+.encoderGlyph.lcdLabel { font-size: 18px; }
+.encoderFacts { min-width: 0; }
+.encoderFacts strong { display: block; font-size: 22px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.encoderFacts > span { display: block; min-height: 2.5em; font-size: 11px; font-weight: 500; line-height: 1.25; }
+.unicode .encoderFacts label { margin-top: 2px; font-size: 11px; }
+
+.bitGroups { display: flex; flex-wrap: wrap; gap: 10px 12px; margin: 12px 0 0; padding: 0; border: 0; }
+.bitGroup { display: flex; gap: 2px; }
+.flipBits { display: flex; flex-wrap: wrap; gap: 3px; margin: 12px 0; padding: 0; border: 0; }
+.bit {
+  width: 24px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid #435247;
+  border-radius: 3px;
+  background: linear-gradient(#e9ead9, #a8b2a0);
+  box-shadow: inset 0 1px #f7f7eb, 0 2px 0 #405044;
+  color: #243329;
+  font: 700 14px/1 ui-monospace, monospace;
+  cursor: pointer;
+}
+/* Bits with no room in the current form sit dim; their value would need a longer form. */
+.bit:not([data-group]) { opacity: .62; }
+.bit[data-group="0"] { background: var(--group-0); }
+.bit[data-group="1"] { background: var(--group-1); }
+.bit[data-group="2"] { background: var(--group-2); }
+.bit[data-group="3"] { background: var(--group-3); }
+.bit[aria-pressed="true"] { transform: translateY(1px); box-shadow: inset 0 2px 4px #27452f99; font-weight: 800; text-decoration: underline; }
+.bit:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 1px; }
+
+.ranges { display: grid; gap: 3px; margin: 10px 0 0; padding: 0; list-style: none; }
+.range { display: grid; grid-template-columns: 136px minmax(0, 1fr); align-items: center; gap: 8px; padding: 4px 7px; border: 1px solid #748273; border-radius: 3px; color: #3b4c40; font-size: 12px; font-variant-numeric: tabular-nums; }
+.range[data-lit] { border-color: #1e3b25; background: #e3e7d6; box-shadow: 0 0 0 1px #1e3b25; color: #1b2a20; font-weight: 700; }
+.rangeBytes { display: flex; flex-wrap: wrap; gap: 2px 8px; }
+.rangeByte { white-space: nowrap; }
+.rangeByte [data-group="0"] { background: var(--group-0); }
+.rangeByte [data-group="1"] { background: var(--group-1); }
+.rangeByte [data-group="2"] { background: var(--group-2); }
+.rangeByte [data-group="3"] { background: var(--group-3); }
+
+.encodedBytes { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; padding: 0; list-style: none; }
+.encodedByte { display: grid; gap: 5px; padding: 7px 8px; border: 1px solid #748273; border-radius: 4px; background: linear-gradient(#879587, #a5b1a1); box-shadow: inset 0 2px 4px #46574880; }
+.encodedByte .byteBits { font-size: 14px; }
+.encodedByte dl { display: flex; justify-content: space-between; gap: 10px; margin: 0; font-size: 11px; }
+.encodedByte dl div { display: flex; gap: 5px; }
+.encodedByte dd { margin: 0; font-weight: 700; }
+
+.stream { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+.run { display: grid; justify-items: center; gap: 4px; min-width: 0; padding: 4px; border: 2px solid #55655a; border-radius: 6px; background: #7f8d7e55; }
+.run[data-broken] { border-color: #8e3320; background: #d98f7655; }
+.run[data-skipped] { border-style: dashed; opacity: .6; }
+.runGlyph { min-height: 30px; font-size: 22px; font-weight: 400; line-height: 30px; }
+.runLabel { font-size: 12px; font-weight: 700; }
+.runBytes { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; }
+.streamByte { display: grid; justify-items: center; gap: 2px; padding: 4px 5px; border: 1px solid #55655a; border-radius: 3px; background: linear-gradient(#e6e8d7, #abb5a3); box-shadow: 0 2px 0 #46554a; color: #243329; font: inherit; cursor: pointer; }
+.streamByte[data-unread] { opacity: .5; }
+.streamByte[data-current] { outline: 2px solid #1e3b25; outline-offset: 1px; }
+.streamByte[aria-pressed="true"] { transform: translateY(2px); background: linear-gradient(#f3e6a0, #dcc877); box-shadow: inset 0 2px 4px #6b5a1f80; }
+.streamByte:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 1px; }
+.streamHex { font-size: 12px; font-weight: 700; }
+.streamRole { font-size: 9px; font-weight: 500; letter-spacing: .04em; }
+.readerFacts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 14px 0 0; }
+.readerFacts dt { font-size: 10px; letter-spacing: .08em; }
+.readerFacts dd { margin: 0; font-size: 15px; line-height: 1.2; }
+.readerResult { flex: 1 1 220px; }
+.readerResult dd { font-size: 12px; font-weight: 600; }
+
+@container (max-width: 560px) {
+  .bay { padding: 13px 11px 16px; }
+  .presetGroup { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .presetGroup > span { padding-top: 0; }
+  .range { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .codePoint { width: 106px; }
+  .result { font-size: 44px; }
+}

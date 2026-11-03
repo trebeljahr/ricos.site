@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import { ComputerEmbedContext } from "./ComputerEmbedContext";
 import { LazyMount } from "./LazyMount";
 import { loadCircuitDemos } from "./loadCircuitDemos";
+import { loadUnicodeDemos } from "./loadUnicodeDemos";
 
 /** A chapter embed: its code loads when the page is idle, and it mounts as it approaches the viewport. */
 function chapterDemo<Props extends object>(
@@ -66,6 +67,22 @@ export const COMPUTER_MDX_DEMOS = {
   AsciiTyper: chapterDemo(
     () => import("./AsciiTyper").then((module) => module.AsciiTyper),
     "ASCII typer",
+  ),
+  UnicodeInspector: chapterDemo(
+    () => loadUnicodeDemos().then((module) => module.UnicodeInspector),
+    "Text inspector",
+  ),
+  CharacterComposer: chapterDemo(
+    () => loadUnicodeDemos().then((module) => module.CharacterComposer),
+    "Character composer",
+  ),
+  Utf8Encoder: chapterDemo(
+    () => loadUnicodeDemos().then((module) => module.Utf8Encoder),
+    "UTF-8 encoder",
+  ),
+  Utf8Reader: chapterDemo(
+    () => loadUnicodeDemos().then((module) => module.Utf8Reader),
+    "UTF-8 reader",
   ),
   EndianReader: chapterDemo(
     () => import("./EndianReader").then((module) => module.EndianReader),

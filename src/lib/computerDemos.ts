@@ -39,6 +39,23 @@ export const computerDemos = [
     slug: "ascii-typer",
     title: "Type text, see the bits",
   },
+  // Aside 1.1a: Unicode and UTF-8.
+  {
+    slug: "unicode-inspector",
+    title: "Take any text apart",
+  },
+  {
+    slug: "character-composer",
+    title: "Build a character from code points",
+  },
+  {
+    slug: "utf8-encoder",
+    title: "Pack a code point into UTF-8 bytes",
+  },
+  {
+    slug: "utf8-reader",
+    title: "Read a UTF-8 byte stream",
+  },
   {
     slug: "endian-reader",
     title: "Two bytes, four reading orders",

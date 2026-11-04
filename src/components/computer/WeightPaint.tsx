@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { cross, dot, radians, subtract, type Vec3 } from "src/lib/computer/graphics/matrix";
 import { renderModel, toPixels } from "src/lib/computer/graphics/modelRender";
 import { Framebuffer } from "src/lib/computer/graphics/rasterizer";
@@ -45,7 +44,6 @@ const TOOLS: readonly { value: Tool; label: string }[] = [
 
 /** The T. rex, its bones and its weights: paint with a brush and watch the mesh follow. */
 export function WeightPaint() {
-  const sound = usePanelSound();
   const model = useTrex();
   const [bone, setBone] = useState(26);
   const [tool, setTool] = useState<Tool>("orbit");
@@ -143,7 +141,6 @@ export function WeightPaint() {
       best = vertex;
     });
     setProbe(best);
-    sound.playButton();
   };
 
   const startFrom = (name: "artist" | "automatic" | "nearest") => {
@@ -157,7 +154,6 @@ export function WeightPaint() {
       );
     }
     setVersion((v) => v + 1);
-    sound.playButton();
   };
 
   const influences = useMemo(() => {
@@ -194,7 +190,7 @@ export function WeightPaint() {
   const probeAt = probe !== null ? onScreen.current[probe] : null;
 
   return (
-    <GraphicsPanel title="WEIGHT PAINTING" sound={sound}>
+    <GraphicsPanel title="WEIGHT PAINTING">
       <Bay>
         <PixelCanvas
           framebuffer={framebuffer}
@@ -244,7 +240,6 @@ export function WeightPaint() {
           options={TOOLS}
           onChange={(next) => {
             setTool(next);
-            sound.playButton();
           }}
         />
         {tool !== "orbit" && (
@@ -287,7 +282,6 @@ export function WeightPaint() {
               aria-pressed={i === bone}
               onClick={() => {
                 setBone(i);
-                sound.playButton();
               }}
             >
               {name}

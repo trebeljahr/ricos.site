@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { renderModel, toPixels } from "src/lib/computer/graphics/modelRender";
 import { Framebuffer } from "src/lib/computer/graphics/rasterizer";
 import { sceneCamera } from "src/lib/computer/graphics/sceneDrawing";
@@ -34,7 +33,6 @@ const KEEP = [1, 2, 4, 8] as const;
 
 /** A clip of keyframes on the T. rex: keys, the pose between them, the matrices, the mesh. */
 export function SkeletonPlayer() {
-  const sound = usePanelSound();
   const model = useTrex();
   const [clipName, setClipName] = useState("Walk");
   const [time, setTime] = useState(0.3);
@@ -125,7 +123,7 @@ export function SkeletonPlayer() {
   const keyCount = clip ? Math.ceil((clip.frames - 1) / keepEvery) + 1 : 0;
 
   return (
-    <GraphicsPanel title="ANIMATING A SKELETON" sound={sound}>
+    <GraphicsPanel title="ANIMATING A SKELETON">
       <Bay>
         <PixelCanvas
           framebuffer={framebuffer}
@@ -164,7 +162,6 @@ export function SkeletonPlayer() {
             aria-pressed={playing}
             onClick={() => {
               setPlaying(!playing);
-              sound.playButton();
             }}
           >
             {playing ? "PAUSE" : "PLAY"}
@@ -202,7 +199,6 @@ export function SkeletonPlayer() {
           }))}
           onChange={(next) => {
             setClipName(next);
-            sound.playButton();
           }}
         />
         <fieldset className={styles.choice}>
@@ -250,7 +246,6 @@ export function SkeletonPlayer() {
           options={KEEP.map((value) => ({ value, label: `${value}` }))}
           onChange={(next) => {
             setKeepEvery(next);
-            sound.playButton();
           }}
         />
         <Choice
@@ -262,7 +257,6 @@ export function SkeletonPlayer() {
           ]}
           onChange={(next) => {
             setInterpolation(next);
-            sound.playButton();
           }}
         />
       </Bay>

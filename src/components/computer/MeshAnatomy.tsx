@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   add,
   cross,
@@ -83,7 +82,6 @@ type Selection = { kind: "vertex" | "triangle"; index: number } | null;
 
 /** One mesh, its two lists of numbers, and what those numbers cost in memory. */
 export function MeshAnatomy() {
-  const sound = usePanelSound();
   const [shape, setShape] = useState<ShapeName>("cube");
   const [detail, setDetail] = useState(6);
   const [moved, setMoved] = useState<Record<number, Vec3>>({});
@@ -159,7 +157,6 @@ export function MeshAnatomy() {
 
   const choose = (next: Selection) => {
     setSelection(next);
-    sound.playButton();
   };
 
   const draw = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
@@ -337,7 +334,7 @@ export function MeshAnatomy() {
   const triangleRows = mesh.triangles.slice(0, 400);
 
   return (
-    <GraphicsPanel title="INSIDE A MESH" sound={sound}>
+    <GraphicsPanel title="INSIDE A MESH">
       <Bay>
         <div className={styles.screen}>
           <SceneCanvas
@@ -370,7 +367,6 @@ export function MeshAnatomy() {
             setMoved({});
             setFlipped(new Set());
             setSelection({ kind: "vertex", index: 0 });
-            sound.playButton();
           }}
         />
         {hasDetail(shape) && (
@@ -515,7 +511,6 @@ export function MeshAnatomy() {
             onClick={() => {
               setMoved({});
               setFlipped(new Set());
-              sound.playButton();
             }}
           >
             RESET
@@ -530,7 +525,6 @@ export function MeshAnatomy() {
               if (next.has(selection.index)) next.delete(selection.index);
               else next.add(selection.index);
               setFlipped(next);
-              sound.playButton();
             }}
           >
             FLIP WINDING

@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   radians,
   rotateX,
@@ -98,7 +97,6 @@ const FIRST_STEPS = [{ kind: "TURN Y" }, { kind: "MOVE" }];
 
 /** The same steps as the 2D playground with one more row and column: an object and a 4×4 matrix. */
 export function Transform3d() {
-  const sound = usePanelSound();
   const stack = useTransformStack(KINDS, 4, FIRST_STEPS);
   const [yaw, setYaw] = useState(30);
   const [pitch, setPitch] = useState(24);
@@ -184,7 +182,7 @@ export function Transform3d() {
   };
 
   return (
-    <GraphicsPanel title="MATRICES IN 3D" sound={sound}>
+    <GraphicsPanel title="MATRICES IN 3D">
       <Bay>
         <div className={styles.screen}>
           <SceneCanvas
@@ -199,7 +197,7 @@ export function Transform3d() {
         <TransformProgress stack={stack} />
       </Bay>
       <Bay head="STEPS · FIRST TO LAST" aside={`${stack.steps.length} / 6`}>
-        <TransformStackEditor kinds={KINDS} stack={stack} onClick={sound.playButton} />
+        <TransformStackEditor kinds={KINDS} stack={stack} />
         <TransformChain kinds={KINDS} stack={stack} digits={1} />
       </Bay>
       <Bay head="ONE VERTEX × THE MATRIX">

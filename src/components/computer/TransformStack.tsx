@@ -161,11 +161,9 @@ export type TransformStackState = ReturnType<typeof useTransformStack>;
 export function TransformStackEditor({
   kinds,
   stack,
-  onClick,
 }: {
   kinds: readonly TransformKind[];
   stack: TransformStackState;
-  onClick?: () => void;
 }) {
   return (
     <>
@@ -191,7 +189,6 @@ export function TransformStackEditor({
                     disabled={index === 0}
                     onClick={() => {
                       stack.move(step.id, -1);
-                      onClick?.();
                     }}
                   >
                     ↑
@@ -203,7 +200,6 @@ export function TransformStackEditor({
                     disabled={index === stack.steps.length - 1}
                     onClick={() => {
                       stack.move(step.id, 1);
-                      onClick?.();
                     }}
                   >
                     ↓
@@ -214,7 +210,6 @@ export function TransformStackEditor({
                     aria-label={`Remove ${kind.name} ${index + 1}`}
                     onClick={() => {
                       stack.remove(step.id);
-                      onClick?.();
                     }}
                   >
                     ×
@@ -248,7 +243,6 @@ export function TransformStackEditor({
             disabled={stack.full}
             onClick={() => {
               stack.add(kind.name);
-              onClick?.();
             }}
           >
             + {kind.label}

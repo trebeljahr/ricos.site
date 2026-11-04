@@ -1,5 +1,4 @@
 import { type PointerEvent, useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   add,
   cross,
@@ -187,7 +186,6 @@ const rgbList = (v: Vec3) => v.map((value) => Math.round(value)).join(" ");
 
 /** Normals, a light and four textures, shaded per pixel by the code the readout shows. */
 export function LightingLab() {
-  const sound = usePanelSound();
   const [shape, setShape] = useState<ShapeName>("sphere");
   const [detail, setDetail] = useState(10);
   const [materialName, setMaterialName] = useState<MaterialName>("bricks");
@@ -511,7 +509,7 @@ export function LightingLab() {
   const probed = frame.probed;
 
   return (
-    <GraphicsPanel title="LIGHT AND TEXTURE" sound={sound}>
+    <GraphicsPanel title="LIGHT AND TEXTURE">
       <Bay>
         <div className={styles.screen}>
           <canvas
@@ -644,7 +642,6 @@ export function LightingLab() {
                 aria-pressed={channel === value}
                 onClick={() => {
                   setChannel(value);
-                  sound.playButton();
                 }}
               >
                 <canvas
@@ -665,7 +662,6 @@ export function LightingLab() {
           options={CHANNELS}
           onChange={(next) => {
             setChannel(next);
-            sound.playButton();
           }}
         />
         <Choice
@@ -677,7 +673,6 @@ export function LightingLab() {
           }))}
           onChange={(next) => {
             setShape(next);
-            sound.playButton();
           }}
         />
         {SHAPES[shape].detail && (
@@ -711,7 +706,6 @@ export function LightingLab() {
           ]}
           onChange={(next) => {
             setNormals(next);
-            sound.playButton();
           }}
         />
         <div className={styles.choiceRow}>
@@ -785,7 +779,6 @@ export function LightingLab() {
             on={unwrapped}
             onChange={(on) => {
               setUnwrapped(on);
-              sound.playButton();
             }}
           />
         </div>
@@ -795,7 +788,6 @@ export function LightingLab() {
           options={MATERIAL_NAMES.map((value) => ({ value, label: value.toUpperCase() }))}
           onChange={(next) => {
             setMaterialName(next);
-            sound.playButton();
           }}
         />
         <div className={styles.maps}>
@@ -808,7 +800,6 @@ export function LightingLab() {
               disabled={normals === "corner" && name === "normal"}
               onClick={() => {
                 setMaps({ ...maps, [name]: !maps[name] });
-                sound.playButton();
               }}
             >
               <span className={styles.mapView}>

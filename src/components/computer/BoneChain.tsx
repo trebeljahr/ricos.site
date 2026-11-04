@@ -1,5 +1,4 @@
 import { type KeyboardEvent, type PointerEvent, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   type Mat,
   multiply,
@@ -39,7 +38,6 @@ const along = (m: Mat, x: number, y: number) => {
 
 /** Four bones in a chain. Each stores only its own turn; its place in the world is multiplied up. */
 export function BoneChain() {
-  const sound = usePanelSound();
   const [angles, setAngles] = useState(FIRST_ANGLES);
   const [selected, setSelected] = useState(2);
   const [follow, setFollow] = useState(true);
@@ -104,7 +102,7 @@ export function BoneChain() {
     follow ? shown.slice(0, bone + 1).reduce((sum, a) => sum + a, 0) : shown[bone];
 
   return (
-    <GraphicsPanel title="A CHAIN OF BONES" sound={sound}>
+    <GraphicsPanel title="A CHAIN OF BONES">
       <Bay>
         <div className={styles.screen}>
           <svg
@@ -235,7 +233,6 @@ export function BoneChain() {
                   aria-pressed={i === selected}
                   onClick={() => {
                     setSelected(i);
-                    sound.playButton();
                   }}
                 >
                   <span>BONE {i + 1}</span>

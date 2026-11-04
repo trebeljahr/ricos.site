@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   type Mat,
   multiply,
@@ -67,7 +66,6 @@ const firstPicked = (RINGS / 2 + 2) * 3 + 2;
 
 /** A strip of mesh over two bones: each bone carries its own copy, and weights blend the copies. */
 export function SkinningStrip() {
-  const sound = usePanelSound();
   const [angle, setAngle] = useState(70);
   const [blend, setBlend] = useState(1.6);
   const [picked, setPicked] = useState(firstPicked);
@@ -141,7 +139,7 @@ export function SkinningStrip() {
   );
 
   return (
-    <GraphicsPanel title="SKINNING" sound={sound}>
+    <GraphicsPanel title="SKINNING">
       <Bay>
         <div className={styles.screen}>
           <svg

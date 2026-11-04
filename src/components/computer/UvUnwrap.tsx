@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   cross,
   dot,
@@ -119,7 +118,6 @@ const insideTriangle = (x: number, y: number, [p, q, r]: readonly Vec2[]) => {
 
 /** Cut a mesh along seams, flatten it, and paint on either side of the mapping. */
 export function UvUnwrap() {
-  const sound = usePanelSound();
   const [shape, setShape] = useState<ShapeName>("cube");
   const [tool, setTool] = useState<Tool>("pick");
   const [showStretch, setShowStretch] = useState(false);
@@ -356,7 +354,6 @@ export function UvUnwrap() {
     if (next.has(key)) next.delete(key);
     else next.add(key);
     setSeamsByShape({ ...seamsByShape, [shape]: next });
-    sound.playButton();
   };
 
   const cutNearest = (triangle: number, distanceFor: (corner: number, next: number) => number) => {
@@ -379,7 +376,6 @@ export function UvUnwrap() {
     const triangle = framebuffer.owner[y * SIZE + x];
     if (tool === "pick") {
       setPicked(triangle >= 0 ? triangle : null);
-      sound.playButton();
     } else if (tool === "cut" && triangle >= 0) {
       const corners = screen.triangles[triangle].map(onView);
       cutNearest(triangle, (i, j) => distanceToSegment(x + 0.5, y + 0.5, corners[i], corners[j]));
@@ -479,7 +475,6 @@ export function UvUnwrap() {
     setShape(next);
     setPicked(null);
     unfold.seek(0);
-    sound.playButton();
   };
 
   // The worst of most triangles: one sliver should not decide the number.
@@ -492,7 +487,7 @@ export function UvUnwrap() {
   }, [layout]);
 
   return (
-    <GraphicsPanel title="UV UNWRAPPING" sound={sound}>
+    <GraphicsPanel title="UV UNWRAPPING">
       <Bay>
         <div className={styles.views}>
           <PixelCanvas
@@ -578,7 +573,6 @@ export function UvUnwrap() {
           options={TOOLS.filter((option) => option.value !== "cut" || shape !== "character")}
           onChange={(next) => {
             setTool(next);
-            sound.playButton();
           }}
         />
         <Choice
@@ -590,7 +584,6 @@ export function UvUnwrap() {
           ]}
           onChange={(next) => {
             setShowStretch(next === "stretch");
-            sound.playButton();
           }}
         />
         {shape !== "character" && mesh && (
@@ -602,7 +595,6 @@ export function UvUnwrap() {
                 className={styles.button}
                 onClick={() => {
                   setSeamsByShape({ ...seamsByShape, [shape]: presetFor(shape, mesh) });
-                  sound.playButton();
                 }}
               >
                 GOOD CUTS
@@ -612,7 +604,6 @@ export function UvUnwrap() {
                 className={styles.button}
                 onClick={() => {
                   setSeamsByShape({ ...seamsByShape, [shape]: new Set() });
-                  sound.playButton();
                 }}
               >
                 NO CUTS
@@ -622,7 +613,6 @@ export function UvUnwrap() {
                 className={styles.button}
                 onClick={() => {
                   setSeamsByShape({ ...seamsByShape, [shape]: new Set(edges?.keys() ?? []) });
-                  sound.playButton();
                 }}
               >
                 EVERY EDGE

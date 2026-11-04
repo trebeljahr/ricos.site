@@ -18,29 +18,12 @@ export function fixed(value: number, digits = 2) {
   return Number(text) === 0 ? (0).toFixed(digits) : text;
 }
 
-/** The panel, screws and nameplate every 3D demo sits in. */
-export function GraphicsPanel({
-  title,
-  sound,
-  children,
-}: {
-  title: string;
-  sound: { soundEnabled: boolean; toggleSound: () => void };
-  children: ReactNode;
-}) {
+/** The panel and nameplate every 3D demo sits in. */
+export function GraphicsPanel({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className={clsx("not-prose", styles.panel)} aria-label={title}>
       <div className={styles.nameplate}>
         <strong>{title}</strong>
-        <button
-          type="button"
-          className={styles.soundButton}
-          onClick={sound.toggleSound}
-          aria-pressed={sound.soundEnabled}
-          aria-label={`Sound ${sound.soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {sound.soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
       <div className={styles.deck}>{children}</div>
     </section>

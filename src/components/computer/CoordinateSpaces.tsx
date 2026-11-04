@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   lerp,
   lerp3,
@@ -194,7 +193,6 @@ type PixelProbe = {
 
 /** From the numbers in a mesh to one pixel on a screen, one space at a time. */
 export function CoordinateSpaces() {
-  const sound = usePanelSound();
   const [shape, setShape] = useState<ShapeName>("trex");
   const [settings, setSettings] = useState(FIRST_SETTINGS);
   const [stage, setStage] = useState(0);
@@ -676,7 +674,6 @@ export function CoordinateSpaces() {
     const x = Math.floor(((event.clientX - box.left) / box.width) * settings.width);
     const y = Math.floor(((event.clientY - box.top) / box.height) * settings.height);
     setProbe({ x, y });
-    sound.playButton();
   };
 
   const stops: {
@@ -726,7 +723,7 @@ export function CoordinateSpaces() {
   ];
 
   return (
-    <GraphicsPanel title="FROM A MESH TO A PIXEL" sound={sound}>
+    <GraphicsPanel title="FROM A MESH TO A PIXEL">
       <Bay>
         <div className={styles.screen}>
           {onPixels ? (
@@ -831,7 +828,6 @@ export function CoordinateSpaces() {
               setDrawing(false);
               setDrawnFraction(1);
               setTouring(0);
-              sound.playButton();
             }}
           >
             {touring !== null ? "STOP" : "PLAY ALL THE WAY"}
@@ -876,7 +872,6 @@ export function CoordinateSpaces() {
                 onClick={() => {
                   setTouring(null);
                   setStage(index);
-                  sound.playButton();
                 }}
               >
                 <span className={styles.stopName}>{STAGE_NAMES[name]}</span>
@@ -913,7 +908,6 @@ export function CoordinateSpaces() {
               onChange={(next) => {
                 setShape(next);
                 setVertex(0);
-                sound.playButton();
               }}
             />
           </>
@@ -1149,7 +1143,6 @@ export function CoordinateSpaces() {
               ]}
               onChange={(next) => {
                 setBuffer(next);
-                sound.playButton();
               }}
             />
             <div className={styles.choiceRow} style={{ alignItems: "center" }}>

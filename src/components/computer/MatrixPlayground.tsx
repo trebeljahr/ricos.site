@@ -1,5 +1,4 @@
 import { type KeyboardEvent, type PointerEvent, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   determinant2,
   identity,
@@ -200,7 +199,6 @@ const WALK_COLUMNS = [2, 0, 1] as const;
 
 /** A matrix is three arrows, and multiplying is a walk along them. */
 export function MatrixPlayground() {
-  const sound = usePanelSound();
   const [mode, setMode] = useState<"stack" | "drag">("stack");
   const [free, setFree] = useState<Mat>(PRESETS[0].matrix);
   const [tween, setTween] = useState<{ from: Mat; to: Mat; t: number } | null>(null);
@@ -318,7 +316,7 @@ export function MatrixPlayground() {
   const otherOrder = mode === "stack" && showOther ? stack.reversedAt(stack.progress) : null;
 
   return (
-    <GraphicsPanel title="MATRIX PLAYGROUND" sound={sound}>
+    <GraphicsPanel title="MATRIX PLAYGROUND">
       <Bay>
         <div className={styles.screen}>
           <svg
@@ -467,7 +465,6 @@ export function MatrixPlayground() {
               setTween(null);
             }
             setMode(next);
-            sound.playButton();
           }}
         />
         {mode === "stack" && <TransformProgress stack={stack} />}
@@ -487,7 +484,6 @@ export function MatrixPlayground() {
                   className={styles.button}
                   onClick={() => {
                     animateTo(freeShown, preset.matrix);
-                    sound.playButton();
                   }}
                 >
                   {preset.label}
@@ -498,7 +494,6 @@ export function MatrixPlayground() {
                 className={styles.button}
                 onClick={() => {
                   animateTo(identity(3), free);
-                  sound.playButton();
                 }}
               >
                 REPLAY
@@ -547,7 +542,6 @@ export function MatrixPlayground() {
           ]}
           onChange={(next) => {
             setW(next);
-            sound.playButton();
           }}
         />
         <dl className={styles.counts}>
@@ -566,7 +560,7 @@ export function MatrixPlayground() {
 
       {mode === "stack" && (
         <Bay head="STEPS · FIRST TO LAST" aside={`${stack.steps.length} / 6`}>
-          <TransformStackEditor kinds={KINDS} stack={stack} onClick={sound.playButton} />
+          <TransformStackEditor kinds={KINDS} stack={stack} />
           <TransformChain kinds={KINDS} stack={stack} />
         </Bay>
       )}

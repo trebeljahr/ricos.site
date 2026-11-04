@@ -1,5 +1,4 @@
 import { type KeyboardEvent, type PointerEvent, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import type { Vec3 } from "src/lib/computer/graphics/matrix";
 import { type ScanTriangle, scanTriangles } from "src/lib/computer/graphics/rasterizer";
 import styles from "./Graphics.module.css";
@@ -55,7 +54,6 @@ const rgb = (c: Vec3) => `rgb(${c.map(Math.round).join(",")})`;
 
 /** One triangle on a coarse grid of pixels, tested one pixel centre at a time. */
 export function TriangleRaster() {
-  const sound = usePanelSound();
   const [first, setFirst] = useState<Corners>(FIRST_TRIANGLE);
   const [second, setSecond] = useState<Corners>(SECOND_TRIANGLE);
   const [useSecond, setUseSecond] = useState(false);
@@ -203,7 +201,7 @@ export function TriangleRaster() {
   };
 
   return (
-    <GraphicsPanel title="FILLING IN A TRIANGLE" sound={sound}>
+    <GraphicsPanel title="FILLING IN A TRIANGLE">
       <Bay>
         <div className={styles.screen}>
           <SceneCanvas
@@ -270,7 +268,6 @@ export function TriangleRaster() {
               onChange={(on) => {
                 setUseSecond(on);
                 timeline.seek(1);
-                sound.playButton();
               }}
             />
           </div>
@@ -310,7 +307,6 @@ export function TriangleRaster() {
               ]}
               onChange={(next) => {
                 setBuffer(next);
-                sound.playButton();
               }}
             />
           </>

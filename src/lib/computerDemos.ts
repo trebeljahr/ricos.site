@@ -82,14 +82,6 @@ export const computerDemos = [
     title: "Switches controlled by electricity",
   },
   {
-    slug: "addition-table",
-    title: "Addition table",
-  },
-  {
-    slug: "full-adder-table",
-    title: "Full adder table",
-  },
-  {
     slug: "transistor-gates",
     title: "Gates wired from transistors",
   },

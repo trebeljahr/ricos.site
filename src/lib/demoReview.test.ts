@@ -213,6 +213,9 @@ describe("demo files", () => {
       "UniversalGates",
       // The chapter's name for TransistorGates.
       "GateTruthTable",
+      // The chapter's names for HalfAdder and FullAdder.
+      "AdditionTable",
+      "FullAdderTable",
     ];
     expect(mdxNames.filter((name) => !exempt.includes(name) && !uses(pages, name))).toEqual([]);
   });

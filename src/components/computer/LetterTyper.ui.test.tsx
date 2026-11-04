@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { demoStorageKey } from "src/lib/computer/demoStorage";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LetterTyper } from "./LetterTyper";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 beforeEach(() => localStorage.clear());
 
 function setup() {
@@ -20,12 +23,27 @@ function setup() {
 }
 
 describe("LetterTyper", () => {
-  it("contains only the text input and bit output, with no codebook or switches", () => {
+  it("opens on the text input and bit output, with no switches", () => {
     setup();
     expect(screen.getAllByRole("textbox")).toHaveLength(1);
     expect(screen.queryByRole("group")).toBeNull();
+    expect(screen.queryByRole("switch")).toBeNull();
     expect(screen.queryByRole("button", { name: /shuffle|reset/i })).toBeNull();
-    expect(screen.queryByText(/CODEBOOK ·/)).toBeNull();
+  });
+
+  it("swaps the bits for the codebook, lit where the text uses it, and back", () => {
+    setup();
+    fireEvent.click(screen.getByRole("button", { name: "CODEBOOK" }));
+    const book = screen.getByRole("group", { name: /^Codebook/ });
+    expect(within(book).queryByRole("button")).toBeNull();
+    expect(book.children).toHaveLength(32);
+    // HELLO: H and E are typed, the last O is the latest.
+    expect(book.children[8].getAttribute("data-lit")).toBe("typed");
+    expect(book.children[15].getAttribute("data-lit")).toBe("active");
+    expect(book.children[1].getAttribute("data-lit")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "BITS" }));
+    expect(screen.queryByRole("group")).toBeNull();
+    expect(screen.getAllByRole("listitem")).toHaveLength(5);
   });
 
   it("writes each character as five bits and marks the latest typed character", () => {
@@ -43,18 +61,16 @@ describe("LetterTyper", () => {
     fireEvent.change(input, { target: { value: "HEy" } });
     expect(input.value).toBe("HEY");
     expect(tiles()).toEqual(["H 01000", "E 00101", "Y 11001"]);
-    expect(screen.getByRole("status").textContent).toBe(
-      "y is not in this codebook, so it was typed as Y.",
-    );
+    expect(screen.getByRole("status").textContent).toBe("y TYPED AS Y");
+    expect(screen.getByRole("status").dataset.alert).toBeUndefined();
   });
 
   it("refuses unsupported characters without directing the reader to a removed editor", () => {
     const { input } = setup();
     fireEvent.change(input, { target: { value: "A1" } });
     expect(input.value).toBe("A");
-    expect(screen.getByRole("status").textContent).toBe(
-      "1 is not in this codebook. It holds 32 characters: A–Z, space, and . , ? ! '.",
-    );
+    expect(screen.getByRole("status").textContent).toBe("NOT IN CODEBOOK: 1");
+    expect(screen.getByRole("status").dataset.alert).toBe("true");
     fireEvent.change(input, { target: { value: "AB" } });
     expect(screen.getByRole("status").textContent).toBe("");
   });
@@ -81,11 +97,18 @@ describe("LetterTyper", () => {
   });
 
   it("clears and replaces text through the existing preset controls", () => {
+    vi.useFakeTimers();
     const { input } = setup();
     fireEvent.click(screen.getByRole("button", { name: "CLEAR" }));
+    act(() => {
+      vi.runAllTimers();
+    });
     expect(input.value).toBe("");
     expect(screen.getByText("NO CHARACTERS YET")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "SOS" }));
+    act(() => {
+      vi.runAllTimers();
+    });
     expect(input.value).toBe("SOS");
   });
 });

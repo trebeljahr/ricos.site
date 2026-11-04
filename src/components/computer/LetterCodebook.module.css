@@ -40,7 +40,7 @@
   text-align: center;
 }
 button.state { cursor: pointer; }
-button.state .stateField { display: grid; place-items: center; }
+button.state .stateField, div.state .stateField { display: grid; place-items: center; }
 
 /* The space has no ink, so its field says which character it holds. */
 .stateSpace { position: absolute; right: 0; bottom: 4px; left: 0; display: grid; place-items: center; height: 30px; font-size: 12px; opacity: .75; pointer-events: none; }
@@ -48,9 +48,6 @@ button.state .stateField { display: grid; place-items: center; }
 .state[data-lit="active"] { border-color: #2c4031; background: #354d39; box-shadow: inset 0 2px 3px #14281a; color: #d9f2c0; }
 .state[data-lit="active"] .stateBits { color: inherit; text-shadow: 0 0 6px #a9e987; }
 .state[data-lit="active"] .stateField { border-color: #5d7a5f; background: #16281b80; }
-.flash { border-radius: 2px; animation: settle .9s ease-out; }
-.flash b { font-weight: 700; }
-@keyframes settle { from { background: #e2ffc6; } to { background: transparent; } }
 
 /* Highlight the tiles matching the selected codebook state. */
 .shown { border-color: #2c4532; box-shadow: 0 0 0 1px #2c4532, inset 0 2px 4px #46574880; }
@@ -70,7 +67,4 @@ button.state .stateField { display: grid; place-items: center; }
 @container (max-width: 310px) {
   .states { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .stateBits { font-size: 11px; letter-spacing: .04em; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .flash { animation: none; }
 }

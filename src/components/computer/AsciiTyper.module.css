@@ -9,12 +9,16 @@ section.typer { overflow: clip; }
 .bay { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
 
 .typer .textInput { overflow: hidden; resize: none; letter-spacing: .08em; overflow-wrap: anywhere; white-space: pre-wrap; tab-size: 4; }
-.notes { min-height: 16px; margin-top: 6px; color: #2a3a2e; font-size: 12px; font-weight: 500; line-height: 16px; letter-spacing: 0; }
-.notes p { margin: 0; }
-.refusal { color: #5e2318; }
-.refusal span { border-radius: 2px; animation: refuse .9s ease-out; }
-.refusal b { font-weight: 700; }
-@keyframes refuse { from { background: #f1b9a3; } to { background: transparent; } }
+/* The display carries its own status line, so a message changes nothing around it. */
+.display { position: relative; }
+.typer .display textarea, .display textarea { padding-bottom: 32px; }
+.displayStatus { position: absolute; right: 17px; bottom: 10px; left: 17px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #c9f2aa; font-size: 11px; font-weight: 500; line-height: 16px; letter-spacing: .04em; pointer-events: none; }
+.displayStatus p { display: flex; align-items: center; gap: 6px; min-width: 0; margin: 0; overflow: hidden; white-space: nowrap; }
+.displayStatus > span { flex: 0 0 auto; opacity: .75; font-variant-numeric: tabular-nums; }
+/* A warning lamp and amber text, lit and steady for as long as the refusal stands. */
+.displayStatus p[data-alert] { color: #f3c897; text-shadow: 0 0 6px #dd9a66; }
+.displayStatus p[data-alert]::before { content: ''; flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: #f0a65c; box-shadow: 0 0 6px #f0a65c; }
+.typer .firstLabel { margin-top: 0; }
 .typer .presets { margin-top: 14px; }
 .wrappingHead { flex-wrap: wrap; }
 
@@ -97,5 +101,4 @@ section.typer { overflow: clip; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cell { transition: none; }
-  .refusal span { animation: none; }
 }

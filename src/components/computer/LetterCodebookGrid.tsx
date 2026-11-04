@@ -16,12 +16,25 @@ function StateField({
   inText: boolean;
   active: boolean;
   onEdit?: (value: string) => void;
-  onShow: () => void;
+  onShow?: () => void;
 }) {
   // An input method builds a character in several steps; the field shows them, the codebook waits.
   const [draft, setDraft] = useState<string | null>(null);
   const composing = useRef(false);
   const bits = letterPattern(state);
+
+  // With nothing to do on a press, the state is print on a card, not a key.
+  if (!onEdit && !onShow) {
+    return (
+      <div className={styles.state} data-lit={active ? "active" : inText ? "typed" : undefined}>
+        <span className={styles.stateBits}>{bits}</span>
+        <span className={styles.stateField} aria-hidden="true">
+          {char === " " ? "SP" : char}
+        </span>
+        <span className="sr-only">{letterName(char)}</span>
+      </div>
+    );
+  }
 
   if (!onEdit) {
     return (
@@ -58,7 +71,7 @@ function StateField({
         tabIndex={active ? 0 : -1}
         onFocus={(event) => {
           event.target.select();
-          onShow();
+          onShow?.();
         }}
         onChange={(event) => {
           if (composing.current) setDraft(event.target.value);
@@ -101,7 +114,8 @@ export function LetterCodebookGrid({
   active: number;
   inText?: ReadonlySet<number | null>;
   onEdit?: (state: number, value: string) => void;
-  onShow: (state: number) => void;
+  /** Left out, the grid is a printed card to read, with no keys. */
+  onShow?: (state: number) => void;
 }) {
   function moveInBook(event: KeyboardEvent<HTMLFieldSetElement>) {
     const field = (event.target as HTMLElement).closest<HTMLElement>("[data-state]");
@@ -130,7 +144,9 @@ export function LetterCodebookGrid({
   return (
     <fieldset
       className={styles.states}
-      aria-label={`Codebook: one character for each of the ${LETTER_STATES} states. Arrow keys move between them.`}
+      aria-label={`Codebook: one character for each of the ${LETTER_STATES} states.${
+        onShow ? " Arrow keys move between them." : ""
+      }`}
       onKeyDown={moveInBook}
     >
       {codebook.map((char, state) => (
@@ -142,7 +158,7 @@ export function LetterCodebookGrid({
           inText={inText.has(state)}
           active={state === active}
           onEdit={onEdit ? (value) => onEdit(state, value) : undefined}
-          onShow={() => onShow(state)}
+          onShow={onShow && (() => onShow(state))}
         />
       ))}
     </fieldset>

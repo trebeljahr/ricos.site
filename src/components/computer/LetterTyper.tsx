@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
+import { strokeOf, usePanelSound } from "src/hooks/usePanelSound";
+import { useRetype } from "src/hooks/useRetype";
 import {
   filterLetters,
   LETTER_STATES,
@@ -13,16 +15,17 @@ import {
 } from "src/lib/letterCodebook";
 import typer from "./AsciiTyper.module.css";
 import panel from "./ByteExplorer.module.css";
+import codebookParts from "./Codebook.module.css";
 import { DemoMachine } from "./CodebookParts";
+import { DisplayStatus } from "./DisplayStatus";
 import { fitHeight } from "./fitHeight";
+import { LetterCodebookGrid } from "./LetterCodebookGrid";
 
 const presets = ["HELLO", "HOW ARE YOU?", "SOS"];
 const initialText = "HELLO";
 
-type Notice = Pick<LetterFilterResult, "rejected" | "folded" | "overflow"> & {
-  /** Restarts the note's flash when the same character is refused twice. */
-  serial: number;
-};
+type Notice = Pick<LetterFilterResult, "rejected" | "folded" | "overflow">;
+type View = "bits" | "codebook";
 
 /** A character inside a sentence of a note. */
 function inNote(char: string): string {
@@ -39,12 +42,19 @@ export function LetterTyper() {
   const [savedText, setText] = useDemoState("letter-codebook:text", initialText);
   const [latest, setLatest] = useState<number | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
+  const [view, setView] = useState<View>("bits");
   const input = useRef<HTMLTextAreaElement>(null);
   const caret = useRef<number | null>(null);
   const composing = useRef(false);
   const fitted = useRef<string | null>(null);
-  const serial = useRef(0);
   const id = useId();
+  const { soundEnabled, toggleSound, playButton, playSwitch, playType, playRefuse } =
+    usePanelSound();
+  const { retype, cancelRetype } = useRetype((next, struck) => {
+    setText(next);
+    setLatest(next ? next.length - 1 : null);
+    playType(strokeOf(struck));
+  });
 
   // Old drafts may contain characters from a previously edited codebook.
   // Keep composition drafts intact until the input method commits them.
@@ -72,13 +82,8 @@ export function LetterTyper() {
     return () => window.removeEventListener("resize", refit);
   }, []);
 
-  function note({ rejected, folded, overflow }: Omit<Notice, "serial">) {
-    serial.current += 1;
-    setNotice(
-      rejected.length || folded.length || overflow
-        ? { rejected, folded, overflow, serial: serial.current }
-        : null,
-    );
+  function note({ rejected, folded, overflow }: Notice) {
+    setNotice(rejected.length || folded.length || overflow ? { rejected, folded, overflow } : null);
   }
 
   function commit(element: HTMLTextAreaElement) {
@@ -93,6 +98,11 @@ export function LetterTyper() {
     ).text;
     const position = Math.min(before.length, result.text.length);
     if (result.text !== value) caret.current = position;
+    cancelRetype();
+    if (result.rejected.length > 0 || result.overflow > 0) playRefuse();
+    else if (result.text.length !== text.length) {
+      playType(strokeOf(result.text.length > text.length ? result.text[position - 1] : null));
+    }
     setText(result.text);
     setLatest(result.text ? Math.max(0, position - 1) : null);
     note(result);
@@ -100,79 +110,81 @@ export function LetterTyper() {
 
   function replaceText(next: string) {
     const result = filterLetters(next, codebook);
-    setText(result.text);
-    setLatest(result.text ? result.text.length - 1 : null);
     note(result);
+    playButton();
+    retype(text, result.text);
+  }
+
+  function chooseView(next: View) {
+    setView(next);
+    playSwitch();
   }
 
   const rejected = notice?.rejected ?? [];
   const folded = notice?.folded ?? [];
+  const latestIndex = latest ?? readings.length - 1;
+  const typedStates = new Set(readings.map((reading) => reading.state));
 
   return (
-    <DemoMachine title="LETTER TYPER" label="Letter typer" className={typer.typer}>
+    <DemoMachine
+      title="LETTER TYPER"
+      label="Letter typer"
+      soundEnabled={soundEnabled}
+      onToggleSound={toggleSound}
+      className={typer.typer}
+    >
       <div className={typer.deck}>
         <div className={typer.bay}>
-          <div className={panel.sectionHead}>
-            <span>TEXT</span>
-            <span>
-              {readings.length} / {LETTER_TYPER_LIMIT}
-            </span>
-          </div>
-          <label className={panel.inputLabel} htmlFor={`${id}-text`}>
+          <label className={clsx(panel.inputLabel, typer.firstLabel)} htmlFor={`${id}-text`}>
             TYPE HERE
           </label>
-          <textarea
-            ref={input}
-            id={`${id}-text`}
-            className={clsx(panel.bitInput, typer.textInput)}
-            rows={1}
-            value={text}
-            onChange={(event) => {
-              // An input method builds a character in several steps; judge the result, not the steps.
-              if (composing.current) setText(event.target.value);
-              else commit(event.target);
-            }}
-            onCompositionStart={() => {
-              composing.current = true;
-            }}
-            onCompositionEnd={(event) => {
-              composing.current = false;
-              commit(event.currentTarget);
-            }}
-            spellCheck={false}
-            autoComplete="off"
-            autoCapitalize="characters"
-            autoCorrect="off"
-          />
-          <div className={typer.notes}>
-            <p
-              className={clsx((rejected.length > 0 || notice?.overflow) && typer.refusal)}
-              role="status"
-            >
-              {notice && (
-                <span key={notice.serial}>
-                  {rejected.length > 0 ? (
-                    <>
-                      <b>{listed(rejected)}</b> {rejected.length === 1 ? "is" : "are"} not in this
-                      codebook. It holds {LETTER_STATES} characters: A–Z, space, and . , ? ! '.
-                    </>
-                  ) : notice.overflow > 0 ? (
-                    `This typer holds ${LETTER_TYPER_LIMIT} characters. The rest did not fit.`
-                  ) : (
-                    <>
-                      <b>{listed(folded.map(([from]) => from))}</b>{" "}
-                      {folded.length === 1 ? "is" : "are"} not in this codebook, so{" "}
-                      {folded.length === 1 ? "it was" : "they were"} typed as{" "}
-                      <b>{listed(folded.map(([, to]) => to))}</b>.
-                    </>
-                  )}
-                </span>
-              )}
-            </p>
+          <div className={typer.display}>
+            <textarea
+              ref={input}
+              id={`${id}-text`}
+              className={clsx(panel.bitInput, typer.textInput)}
+              rows={1}
+              value={text}
+              onChange={(event) => {
+                // An input method builds a character in several steps; judge the result, not the steps.
+                if (composing.current) setText(event.target.value);
+                else commit(event.target);
+              }}
+              onCompositionStart={() => {
+                composing.current = true;
+              }}
+              onCompositionEnd={(event) => {
+                composing.current = false;
+                commit(event.currentTarget);
+              }}
+              spellCheck={false}
+              autoComplete="off"
+              autoCapitalize="characters"
+              autoCorrect="off"
+            />
+            <DisplayStatus
+              count={readings.length}
+              limit={LETTER_TYPER_LIMIT}
+              alert={rejected.length > 0 || (notice?.overflow ?? 0) > 0}
+              message={
+                rejected.length > 0
+                  ? `NOT IN CODEBOOK: ${listed(rejected)}`
+                  : notice?.overflow
+                    ? "FULL"
+                    : folded.length > 0
+                      ? `${listed(folded.map(([from]) => from))} TYPED AS ${listed(folded.map(([, to]) => to))}`
+                      : null
+              }
+            />
           </div>
           <div className={clsx(panel.presetRow, typer.presets)}>
             {presets.map((preset) => (
-              <button key={preset} type="button" onClick={() => replaceText(preset)}>
+              <button
+                key={preset}
+                type="button"
+                aria-pressed={text === preset}
+                onClick={() => replaceText(preset)}
+              >
                 {preset}
               </button>
             ))}
@@ -184,19 +196,42 @@ export function LetterTyper() {
 
         <div className={typer.bay}>
           <div className={clsx(panel.sectionHead, typer.wrappingHead)}>
-            <span>BITS · {LETTER_SWITCHES} PER CHARACTER</span>
             <span>
-              {encoded} × {LETTER_SWITCHES} = {encoded * LETTER_SWITCHES} BITS
+              {view === "bits"
+                ? `${encoded} × ${LETTER_SWITCHES} = ${encoded * LETTER_SWITCHES} BITS`
+                : `${LETTER_STATES} CHARACTERS`}
             </span>
+            <div className={codebookParts.segmented}>
+              <button
+                type="button"
+                aria-pressed={view === "bits"}
+                onClick={() => chooseView("bits")}
+              >
+                BITS
+              </button>
+              <button
+                type="button"
+                aria-pressed={view === "codebook"}
+                onClick={() => chooseView("codebook")}
+              >
+                CODEBOOK
+              </button>
+            </div>
           </div>
-          {readings.length > 0 ? (
+          {view === "codebook" ? (
+            <LetterCodebookGrid
+              codebook={codebook}
+              active={readings[latestIndex]?.state ?? -1}
+              inText={typedStates}
+            />
+          ) : readings.length > 0 ? (
             <ol className={typer.tape} aria-label="Typed characters, five bits each">
               {readings.map((reading, index) => (
                 <li
                   // biome-ignore lint/suspicious/noArrayIndexKey: a tile is its position in the text
                   key={index}
                   className={typer.tile}
-                  data-latest={index === (latest ?? readings.length - 1) || undefined}
+                  data-latest={index === latestIndex || undefined}
                 >
                   <span
                     className={clsx(

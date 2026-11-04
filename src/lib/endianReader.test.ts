@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatTwoBytes, parseTwoBytes, readBytes, readOrders, readSequence } from "./endianReader";
 
-const [bitByBit, bitByBitReversed, bytesInOrderBitsReversed, bytesReversedBitsInOrder] = readOrders;
+const [bitByBit, bytesReversedBitsInOrder, bitByBitReversed, bytesInOrderBitsReversed] = readOrders;
 
 function values(first: number, second: number) {
   const bytes = new Uint8Array([first, second]);
@@ -33,20 +33,20 @@ describe("readSequence", () => {
 
 describe("readBytes", () => {
   it("reads 12 34 as four different numbers", () => {
-    expect(values(0x12, 0x34)).toEqual([0x1234, 0x2c48, 0x482c, 0x3412]);
+    expect(values(0x12, 0x34)).toEqual([0x1234, 0x3412, 0x2c48, 0x482c]);
   });
 
   it("returns the bits in the order they were read", () => {
     const bytes = new Uint8Array([0x12, 0x34]);
     expect(readOrders.map((order) => readBytes(bytes, order).bits)).toEqual([
       "0001001000110100",
+      "0011010000010010",
       "0010110001001000",
       "0100100000101100",
-      "0011010000010010",
     ]);
   });
 
-  it("matches big endian in the first order and little endian in the last, for every input", () => {
+  it("matches big endian in the first order and little endian in the second, for every input", () => {
     for (let word = 0; word <= 0xffff; word++) {
       const bytes = new Uint8Array([word >> 8, word & 0xff]);
       const view = new DataView(bytes.buffer);

@@ -4,15 +4,14 @@ export type ReadDirection = "ltr" | "rtl";
 export type ReadOrder = { bytes: ReadDirection; bits: ReadDirection };
 
 /**
- * The four orders chapter 1.1 lists, in the chapter's sequence. The first is
- * what "big endian" names and the last what "little endian" names; the two in
- * between also flip the bits inside each byte.
+ * The four orders chapter 1.1 lists. The two in real use come first: "big
+ * endian", then "little endian". The last two also flip the bits inside each byte.
  */
 export const readOrders = [
   { bytes: "ltr", bits: "ltr" },
+  { bytes: "rtl", bits: "ltr" },
   { bytes: "rtl", bits: "rtl" },
   { bytes: "ltr", bits: "rtl" },
-  { bytes: "rtl", bits: "ltr" },
 ] as const satisfies readonly ReadOrder[];
 
 export function parseTwoBytes(input: string): Uint8Array | null {

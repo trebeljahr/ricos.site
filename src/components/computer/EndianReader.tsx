@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useId, useState, useSyncExternalStore } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   formatTwoBytes,
   parseTwoBytes,
@@ -22,13 +23,13 @@ const presets = [
   { label: "TWIN BYTES", hex: "A1 A1" },
 ] as const;
 
-// Same sequence and wording as the list in chapter 1.1. The aliases use the
-// words of FourByteExplorer's byte-order toggle. CSS sets them in capitals.
+// Same order as readOrders, in the wording of the list in chapter 1.1. The aliases use
+// the words of FourByteExplorer's byte-order toggle. CSS sets them in capitals.
 const orderText: readonly { label: string; alias?: string }[] = [
   { label: "Left to right, bit by bit", alias: "Big endian" },
+  { label: "Right to left byte by byte, each byte left to right", alias: "Little endian" },
   { label: "Right to left, bit by bit" },
   { label: "Left to right byte by byte, each byte right to left" },
-  { label: "Right to left byte by byte, each byte left to right", alias: "Little endian" },
 ];
 
 const sequences = readOrders.map((order) => readSequence(order));
@@ -57,10 +58,8 @@ export function EndianReader() {
   const [input, setInput] = useState("00 01");
   const [selected, setSelected] = useState(0);
   const [tick, setTick] = useState(0);
-  // null until the reader uses the switch; until then the system setting decides.
-  const [sweepChoice, setSweepChoice] = useState<boolean | null>(null);
-  const reducedMotion = usePrefersReducedMotion();
-  const sweeping = sweepChoice ?? !reducedMotion;
+  const sweeping = !usePrefersReducedMotion();
+  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
 
   const bytes = parseTwoBytes(input);
   const readings = bytes ? readOrders.map((order) => readBytes(bytes, order)) : null;
@@ -87,13 +86,16 @@ export function EndianReader() {
     const next = new Uint8Array(bytes);
     next[position >> 3] ^= 0x80 >> (position & 7);
     setInput(formatTwoBytes(next));
+    playButton();
   }
 
   function selectOrder(index: number) {
     setSelected(index);
     setTick(0);
+    playSwitch();
   }
 
+  const shownBytes = bytes && formatTwoBytes(bytes);
   const selectedReading = readings?.[selected];
 
   return (
@@ -107,24 +109,18 @@ export function EndianReader() {
         <div>
           <strong>ENDIAN READER</strong>
         </div>
+        <button
+          type="button"
+          className={panel.soundButton}
+          onClick={toggleSound}
+          aria-pressed={soundEnabled}
+          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
+        >
+          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
+        </button>
       </div>
       <div className={styles.body}>
         <div className={styles.side}>
-          <div className={clsx(panel.sectionHead, styles.head)}>
-            <span>INPUT · 2 BYTES</span>
-            <button
-              type="button"
-              className={styles.sweepToggle}
-              aria-pressed={sweeping}
-              aria-label={`Reading sweep ${sweeping ? "on" : "off"}. Toggle the sweep animation.`}
-              onClick={() => {
-                setSweepChoice(!sweeping);
-                setTick(0);
-              }}
-            >
-              SWEEP {sweeping ? "ON" : "OFF"}
-            </button>
-          </div>
           <div className={styles.entry}>
             <div>
               <label className={panel.inputLabel} htmlFor={`${id}-hex`}>
@@ -147,8 +143,10 @@ export function EndianReader() {
                   key={preset.label}
                   type="button"
                   aria-label={`Preset ${preset.hex}`}
+                  aria-pressed={shownBytes === preset.hex}
                   onClick={() => {
                     setInput(preset.hex);
+                    playButton();
                   }}
                 >
                   {preset.label}
@@ -159,7 +157,6 @@ export function EndianReader() {
           <p id={`${id}-help`} className={panel.inputHelp}>
             {bytes ? "" : "ENTER FOUR HEX DIGITS · SPACES OK"}
           </p>
-          <p className={styles.hint}>NUMBER ABOVE A KEY = ITS TURN IN ORDER {selected + 1}</p>
           <div className={styles.bank}>
             {[0, 1].map((byteIndex) => (
               // biome-ignore lint/a11y/useSemanticElements: a fieldset's legend cannot sit in the grid
@@ -169,10 +166,6 @@ export function EndianReader() {
                 className={styles.byte}
                 aria-label={`Byte ${byteIndex + 1} bit buttons`}
               >
-                <div className={styles.byteName}>
-                  BYTE {byteIndex + 1}{" "}
-                  <b>{bytes?.[byteIndex].toString(16).padStart(2, "0").toUpperCase() ?? "--"}</b>
-                </div>
                 <div className={styles.units}>
                   {[7, 6, 5, 4, 3, 2, 1, 0].map((bit, bitIndex) => {
                     const position = byteIndex * 8 + bitIndex;
@@ -211,10 +204,6 @@ export function EndianReader() {
           </div>
         </div>
         <div className={styles.side}>
-          <div className={clsx(panel.sectionHead, styles.head)}>
-            <span>READOUT · 4 ORDERS</span>
-            <span className={styles.headNote}>SELECT ONE</span>
-          </div>
           <div className={styles.rows} role="radiogroup" aria-label="Reading order">
             {readOrders.map((order, index) => {
               const text = orderText[index];
@@ -232,7 +221,6 @@ export function EndianReader() {
                   />
                   <span className={styles.rowHead}>
                     <i className={styles.lamp} aria-hidden="true" />
-                    <b>{index + 1}</b>
                     <span className={styles.rowLabel}>{text.label}</span>
                     {text.alias && <em className={styles.alias}>{text.alias}</em>}
                   </span>

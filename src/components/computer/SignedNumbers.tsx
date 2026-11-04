@@ -1,14 +1,6 @@
 import clsx from "clsx";
-import {
-  type CSSProperties,
-  type PointerEvent,
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 
 import {
   bitMask,
@@ -24,6 +16,7 @@ import {
   signedAdderInputs,
 } from "../../lib/computer/signedNumbers";
 import panel from "./ByteExplorer.module.css";
+import { DemoMachine, Lever } from "./CodebookParts";
 import { type LockedClock, type LockedView, LogicBuilder } from "./LogicBuilder";
 import styles from "./SignedNumbers.module.css";
 
@@ -50,38 +43,16 @@ function WidthControl({
   );
 }
 
-function PlaceLabel({
-  bit,
-  top,
-  encoding,
-}: {
-  bit: number;
-  top: boolean;
-  encoding: IntegerEncoding;
-}) {
-  const power = (
-    <>
-      2<sup>{bit}</sup>
-    </>
-  );
-  if (!top || encoding === "unsigned") return power;
-  if (encoding === "sign-magnitude") return "±";
-  if (encoding === "twos-complement") return <>−{power}</>;
-  return <>−({power}−1)</>;
-}
-
 function BitKeys({
   raw,
   width,
   label,
   onChange,
-  encoding = "twos-complement",
 }: {
   raw: number;
   width: SignedWidth;
   label: string;
   onChange: (raw: number) => void;
-  encoding?: IntegerEncoding;
 }) {
   return (
     <fieldset
@@ -92,17 +63,15 @@ function BitKeys({
       {Array.from({ length: width }, (_, index) => {
         const bit = width - index - 1;
         const on = Boolean(raw & (1 << bit));
-        const sign = index === 0 && encoding !== "unsigned";
-        const weight =
-          encoding === "sign-magnitude" && sign
-            ? "SIGN"
-            : displayInteger(bitWeight(bit, width, encoding));
+        const sign = index === 0;
         return (
           <div className={clsx(styles.bit, sign && styles.sign)} key={bit}>
             <span className={styles.place}>
-              <PlaceLabel bit={bit} top={index === 0} encoding={encoding} />
+              {sign && "−"}2<sup>{bit}</sup>
             </span>
-            <span className={styles.weight}>{weight}</span>
+            <span className={styles.weight}>
+              {displayInteger(bitWeight(bit, width, "twos-complement"))}
+            </span>
             <button
               type="button"
               aria-label={`${label} bit ${bit}, ${on ? 1 : 0}`}
@@ -120,54 +89,128 @@ function BitKeys({
   );
 }
 
-function contribution(raw: number, width: SignedWidth, encoding: IntegerEncoding) {
-  const places = (count: number) => Array.from({ length: count }, (_, index) => count - index - 1);
-  if (encoding === "sign-magnitude") {
-    const terms = places(width - 1).map((bit) => (raw & (1 << bit) ? String(2 ** bit) : "0"));
-    return `${raw & (1 << (width - 1)) ? "−" : "+"}(${terms.join(" + ")})`;
-  }
-  return places(width)
-    .map((bit) => (raw & (1 << bit) ? displayInteger(bitWeight(bit, width, encoding)) : "0"))
-    .join(" + ");
+/** The bit's weight written as a power of two, the way the mode reads it. */
+function Power({
+  bit,
+  width,
+  encoding,
+}: {
+  bit: number;
+  width: SignedWidth;
+  encoding: IntegerEncoding;
+}) {
+  const power = (
+    <>
+      2<sup>{bit}</sup>
+    </>
+  );
+  if (bit !== width - 1 || encoding === "unsigned") return power;
+  if (encoding === "sign-magnitude") return <>±</>;
+  if (encoding === "twos-complement") return <>−{power}</>;
+  return <>−({power}−1)</>;
 }
 
-function EncodingToggle({
-  value,
-  onChange,
+/** Every digit times its power, then what those come to, then the number. */
+function Formula({
+  raw,
+  width,
+  encoding,
 }: {
-  value: IntegerEncoding;
-  onChange: (encoding: IntegerEncoding) => void;
+  raw: number;
+  width: SignedWidth;
+  encoding: IntegerEncoding;
 }) {
-  const name = useId();
-  const count = INTEGER_ENCODINGS.length;
-  const position = INTEGER_ENCODINGS.findIndex((item) => item.id === value);
-  const drag = (event: PointerEvent<HTMLFieldSetElement>) => {
-    if (!(event.buttons & 1)) return;
-    const track = event.currentTarget.getBoundingClientRect();
-    const slot = Math.floor(((event.clientX - track.left) / track.width) * count);
-    const next = INTEGER_ENCODINGS[Math.max(0, Math.min(count - 1, slot))].id;
-    if (next !== value) onChange(next);
-  };
+  const signed = encoding === "sign-magnitude";
+  const count = signed ? width - 1 : width;
+  const bits = Array.from({ length: count }, (_, index) => count - index - 1);
+  const digit = (bit: number) => (raw & (1 << bit) ? 1 : 0);
+  const prefix = signed ? (digit(width - 1) ? "−(" : "+(") : "";
+  const suffix = signed ? ")" : "";
+  return (
+    <code className={styles.formula}>
+      <span>
+        {prefix}
+        {bits.map((bit, index) => {
+          const top = bit === width - 1 && encoding !== "unsigned";
+          return (
+            <span key={bit}>
+              {index > 0 && " + "}
+              <span className={styles.term}>
+                {digit(bit)}×{top && "("}
+                <Power bit={bit} width={width} encoding={encoding} />
+                {top && ")"}
+              </span>
+            </span>
+          );
+        })}
+        {suffix}
+      </span>
+      <span>
+        = {prefix}
+        {bits
+          .map((bit) => (digit(bit) ? displayInteger(bitWeight(bit, width, encoding)) : "0"))
+          .join(" + ")}
+        {suffix}
+      </span>
+      <span>= {displayInteger(decodeInteger(raw, width, encoding))}</span>
+    </code>
+  );
+}
+
+function BitLevers({
+  raw,
+  width,
+  encoding,
+  onFlip,
+}: {
+  raw: number;
+  width: SignedWidth;
+  encoding: IntegerEncoding;
+  onFlip: (bit: number) => void;
+}) {
   return (
     <fieldset
-      className={styles.encodings}
-      style={{ "--position": position, "--count": count } as CSSProperties}
-      aria-label="Interpret the same pattern"
-      onPointerMove={drag}
+      className={styles.levers}
+      style={{ "--bits": width } as CSSProperties}
+      aria-label="Stored pattern"
     >
-      <span className={styles.thumb} aria-hidden="true" />
-      {INTEGER_ENCODINGS.map((item) => (
-        <label key={item.id} data-on={item.id === value}>
-          <input
-            type="radio"
-            name={name}
-            checked={item.id === value}
-            onChange={() => onChange(item.id)}
-          />
-          {item.label}
-        </label>
-      ))}
+      {Array.from({ length: width }, (_, index) => {
+        const bit = width - index - 1;
+        const on = Boolean(raw & (1 << bit));
+        return (
+          <div className={styles.lever} key={bit}>
+            <span className={styles.place}>
+              <Power bit={bit} width={width} encoding={encoding} />
+            </span>
+            <Lever on={on} label={`Bit ${bit}`} onFlip={() => onFlip(bit)} />
+            <b>{on ? 1 : 0}</b>
+          </div>
+        );
+      })}
     </fieldset>
+  );
+}
+
+function PatternList({
+  raw,
+  encoding,
+  onPick,
+}: {
+  raw: number;
+  encoding: IntegerEncoding;
+  onPick: (pattern: number) => void;
+}) {
+  return (
+    <ol className={styles.list} aria-label="All sixteen bit patterns">
+      {Array.from({ length: 16 }, (_, pattern) => (
+        <li key={pattern}>
+          <button type="button" aria-pressed={pattern === raw} onClick={() => onPick(pattern)}>
+            <code>{bitPattern(pattern, 4)}</code>{" "}
+            <span>{displayInteger(decodeInteger(pattern, 4, encoding))}</span>
+          </button>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -175,96 +218,107 @@ export function SignedNumberExplorer() {
   const [width, setWidth] = useState<SignedWidth>(4);
   const [raw, setRaw] = useState(11);
   const [encoding, setEncoding] = useState<IntegerEncoding>("twos-complement");
+  const { soundEnabled, toggleSound, playButton, playSwitch, playToggle } = usePanelSound();
   const value = decodeInteger(raw, width, encoding);
   const mask = bitMask(width);
-  const hasTwoZeros = encoding === "sign-magnitude" || encoding === "ones-complement";
-  const negativeZero = encoding === "sign-magnitude" ? 2 ** (width - 1) : mask;
-  const page = Math.floor(raw / 16) * 16;
-  const changeWidth = (next: SignedWidth) => {
-    setRaw(raw & bitMask(next));
-    setWidth(next);
+  const step = (by: number) => {
+    setRaw((raw + by) & mask);
+    playButton();
   };
 
   return (
-    <section
-      className={clsx("not-prose", panel.machine, styles.machine)}
-      aria-label="Signed number representations"
+    <DemoMachine
+      title="SIGNED NUMBER REPRESENTATIONS"
+      label="Signed number representations"
+      soundEnabled={soundEnabled}
+      onToggleSound={toggleSound}
+      className={styles.explorer}
     >
-      <header className={styles.header}>
-        <strong>WHAT DO THESE BITS MEAN?</strong>
-        <WidthControl width={width} onChange={changeWidth} />
-      </header>
-      <div className={styles.plate}>
-        <EncodingToggle value={encoding} onChange={setEncoding} />
-        <BitKeys
-          raw={raw}
-          width={width}
-          label="Stored pattern"
-          encoding={encoding}
-          onChange={setRaw}
-        />
-        <div className={clsx(panel.screen, styles.reading)} aria-live="polite">
-          <span>{INTEGER_ENCODINGS.find((item) => item.id === encoding)?.label.toUpperCase()}</span>
-          <output aria-label="Interpreted value">{displayInteger(value)}</output>
-          <code>
-            {contribution(raw, width, encoding)} = {displayInteger(value)}
-          </code>
-        </div>
-        <div className={styles.count}>
-          <span>COUNT BIT PATTERNS</span>
-          <div className={styles.controls}>
+      <div className={clsx(styles.plate, styles.explorerPlate)}>
+        <div className={styles.explorerMain}>
+          <div className={styles.selectors}>
+            <fieldset className={styles.selector}>
+              <legend>READ AS</legend>
+              <div className={clsx(panel.presetRow, styles.modes)}>
+                {INTEGER_ENCODINGS.map((item) => (
+                  <button
+                    type="button"
+                    key={item.id}
+                    aria-pressed={item.id === encoding}
+                    onClick={() => {
+                      setEncoding(item.id);
+                      playSwitch();
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset className={styles.selector}>
+              <legend>WIDTH</legend>
+              <div className={clsx(panel.presetRow, styles.modes)}>
+                {([4, 8] as const).map((bits) => (
+                  <button
+                    type="button"
+                    key={bits}
+                    aria-pressed={width === bits}
+                    onClick={() => {
+                      setRaw(raw & bitMask(bits));
+                      setWidth(bits);
+                      playSwitch();
+                    }}
+                  >
+                    {bits} BITS
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+          <div className={styles.bank}>
             <button
               type="button"
+              className={clsx(panel.bitButton, styles.stepKey)}
               aria-label="Previous bit pattern"
-              onClick={() => setRaw((raw - 1) & mask)}
+              onClick={() => step(-1)}
             >
               −1
             </button>
-            <code>{bitPattern(raw, width)}</code>
+            <BitLevers
+              raw={raw}
+              width={width}
+              encoding={encoding}
+              onFlip={(bit) => {
+                setRaw(raw ^ (1 << bit));
+                playToggle(!(raw & (1 << bit)));
+              }}
+            />
             <button
               type="button"
+              className={clsx(panel.bitButton, styles.stepKey)}
               aria-label="Next bit pattern"
-              onClick={() => setRaw((raw + 1) & mask)}
+              onClick={() => step(1)}
             >
               +1
             </button>
           </div>
-          <input
-            type="range"
-            min={0}
-            max={mask}
-            value={raw}
-            aria-label="Stored bit pattern as unsigned number"
-            onChange={(event) => setRaw(Number(event.target.value))}
-          />
-        </div>
-        <fieldset className={styles.patterns} aria-label="Sixteen consecutive bit patterns">
-          {Array.from({ length: 16 }, (_, index) => page + index).map((pattern) => (
-            <button
-              type="button"
-              key={pattern}
-              aria-pressed={pattern === raw}
-              onClick={() => setRaw(pattern)}
-            >
-              <code>{bitPattern(pattern, width)}</code>
-              <span>{displayInteger(decodeInteger(pattern, width, encoding))}</span>
-            </button>
-          ))}
-        </fieldset>
-        <div className={styles.zeros}>
-          <div className={styles.controls}>
-            <button type="button" onClick={() => setRaw(0)}>
-              +0 · {bitPattern(0, width)}
-            </button>
-            {hasTwoZeros && (
-              <button type="button" onClick={() => setRaw(negativeZero)}>
-                −0 · {bitPattern(negativeZero, width)}
-              </button>
-            )}
+          <div className={clsx(panel.screen, styles.reading)} aria-live="polite">
+            <output aria-label="Interpreted value">{displayInteger(value)}</output>
+            <Formula raw={raw} width={width} encoding={encoding} />
           </div>
         </div>
+        {width === 4 && (
+          <PatternList
+            raw={raw}
+            encoding={encoding}
+            onPick={(pattern) => {
+              setRaw(pattern);
+              playButton();
+            }}
+          />
+        )}
       </div>
-    </section>
+    </DemoMachine>
   );
 }
 

@@ -5,10 +5,10 @@
 .header strong { font-size: 15px; letter-spacing: .06em; }
 .plate { padding: 22px; border-top: 6px solid #48594a; background: #a4af9e; }
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.controls button, .patterns button { min-height: 38px; padding: 7px 11px; border: 1px solid #526353; border-radius: 3px; background: #c6cebb; color: #223728; font: inherit; cursor: pointer; transition: background .14s, transform .14s; }
-.controls button:hover, .patterns button:hover { background: #e0e9ce; }
-.controls button:active, .patterns button:active { transform: translateY(1px); }
-.controls button[aria-pressed="true"], .patterns button[aria-pressed="true"] { background: #294831; color: #e4f9cc; }
+.controls button { min-height: 38px; padding: 7px 11px; border: 1px solid #526353; border-radius: 3px; background: #c6cebb; color: #223728; font: inherit; cursor: pointer; transition: background .14s, transform .14s; }
+.controls button:hover { background: #e0e9ce; }
+.controls button:active { transform: translateY(1px); }
+.controls button[aria-pressed="true"] { background: #294831; color: #e4f9cc; }
 .machine button:focus-visible, .machine input:focus-visible { outline: 3px solid #f0ffd6; outline-offset: 3px; }
 .bits { display: grid; grid-template-columns: repeat(var(--bits), minmax(0, 1fr)); gap: 8px; min-width: 0; }
 .bit { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 6px; padding: 9px 0; border-radius: 4px; }
@@ -18,24 +18,33 @@
 .bit button { width: 100%; min-width: 0; height: 48px; font-size: 23px; }
 .bit small { font-size: 9px; white-space: nowrap; }
 .reading { display: grid; gap: 10px; margin: 18px 0 12px; padding: 16px 20px; }
-.reading > span { font-size: 11px; letter-spacing: .08em; }
 .reading output { font-size: clamp(48px, 10cqw, 76px); line-height: 1; font-variant-numeric: tabular-nums; }
-.reading code { font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.formula { display: grid; gap: 2px; font-size: clamp(13px, 2.2cqw, 16px); line-height: 1.6; }
+.formula sup { font-size: .7em; line-height: 0; }
+.term { white-space: nowrap; }
 .hint { margin: 12px 0 16px; font-size: 12px; line-height: 1.65; font-weight: 500; }
-.encodings { position: relative; display: grid; grid-template-columns: repeat(var(--count), minmax(0, 1fr)); margin: 0 0 14px; padding: 3px; border: 1px solid #526353; border-radius: 5px; background: #84947c; box-shadow: inset 0 2px 4px #27452f66; touch-action: pan-y; user-select: none; }
-.thumb { position: absolute; inset-block: 3px; left: 3px; width: calc((100% - 6px) / var(--count)); border-radius: 3px; background: #294831; box-shadow: 0 1px 2px #26342899; transform: translateX(calc(var(--position) * 100%)); transition: transform .18s ease; }
-.encodings label { position: relative; display: grid; place-items: center; min-height: 34px; padding: 4px 6px; border-radius: 3px; color: #223728; font-size: 11px; line-height: 1.25; text-align: center; cursor: pointer; transition: color .18s; }
-.encodings label[data-on="true"] { color: #e4f9cc; }
-.encodings label:has(input:focus-visible) { outline: 3px solid #f0ffd6; outline-offset: 1px; }
-.encodings input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
-.count { display: grid; gap: 12px; margin-top: 24px; }
-.count > span { font-size: 11px; letter-spacing: .06em; }
-.count code { padding: 0 12px; font-size: 21px; }
-.count input { width: 100%; accent-color: #294831; cursor: pointer; }
-.patterns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin: 14px 0 20px; }
-.patterns button { display: flex; justify-content: space-between; gap: 5px; padding: 8px; font-size: 12px; }
-.patterns span { font-weight: 700; }
-.zeros { border-top: 1px solid #738570; padding-top: 18px; }
+.explorer { margin: 20px 0; }
+.explorer :where(fieldset) { min-width: 0; margin: 0; padding: 0; border: 0; }
+.explorerPlate { display: grid; gap: 22px; align-items: start; }
+.explorerMain { display: grid; gap: 18px; min-width: 0; }
+.selectors { display: flex; flex-wrap: wrap; gap: 14px 22px; }
+.selector legend { padding: 0 0 6px; font-size: 11px; letter-spacing: .08em; }
+.modes.modes { margin-top: 0; gap: 6px; }
+.bank { display: flex; justify-content: center; align-items: center; gap: 8px; }
+.stepKey.stepKey { flex: none; width: 42px; font-size: 15px; }
+.levers { flex: 0 1 calc(var(--bits) * 58px); display: grid; grid-template-columns: repeat(var(--bits), minmax(0, 1fr)); gap: 4px; }
+.lever { display: grid; justify-items: center; gap: 2px; min-width: 0; }
+.lever b { font-size: 21px; font-weight: 700; line-height: 1.1; }
+.lever sup { font-size: .75em; line-height: 0; }
+.list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.list button { display: flex; justify-content: space-between; gap: 24px; width: 100%; padding: 2px 10px; border: 1px solid transparent; border-radius: 3px; background: none; color: inherit; font: inherit; font-size: 13px; cursor: pointer; }
+.list button:hover { background: #c6cebb; }
+.list button[aria-pressed="true"] { background: #294831; color: #e4f9cc; }
+.list code { font: inherit; }
+.list span { font-weight: 700; font-variant-numeric: tabular-nums; }
+@container (min-width: 620px) {
+  .explorerPlate:has(.list) { grid-template-columns: minmax(0, 1fr) 170px; }
+}
 .operands { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
 .operand { min-width: 0; }
 .number { display: flex; align-items: center; gap: 12px; font-size: 20px; margin-bottom: 12px; }
@@ -66,8 +75,6 @@
 .circuit { height: clamp(650px, 85svh, 1000px); border-top: 6px solid #48594a; }
 @container (max-width: 650px) {
   .operands { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .encodings label { padding-inline: 2px; font-size: 10px; }
-  .patterns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .plate { padding: 15px 12px; }
   .header { padding: 15px 12px; }
   .bits { gap: 4px; }
@@ -79,5 +86,5 @@
   .answer > output { font-size: 46px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .controls button, .patterns button, .thumb, .encodings label { transition: none; }
+  .controls button { transition: none; }
 }

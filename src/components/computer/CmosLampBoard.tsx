@@ -4,8 +4,17 @@ import type { Circuit, Snapshot } from "src/lib/computer/logic";
 import { isMosfet } from "src/lib/computer/transistorGeometry";
 import { bridgeWirePaths, polylinePath, wireJunctions } from "src/lib/computer/wireGeometry";
 import { wireNetKeys } from "src/lib/computer/wireTopology";
-import { Battery, Cable, type Control, KnifeSwitch, Lamp, Terminal } from "./SwitchBoardParts";
+import {
+  Battery,
+  Cable,
+  type Control,
+  KnifeSwitch,
+  Lamp,
+  Terminal,
+  VoltageWaves,
+} from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
+import type { GateRipple } from "./useGateRipple";
 
 /** Trace the load path through the simulator's conducting devices; gate controls are excluded. */
 export function lampCurrentPath(circuit: Circuit, snapshot: Snapshot) {
@@ -38,32 +47,32 @@ export function lampCurrentPath(circuit: Circuit, snapshot: Snapshot) {
 /** The lamp view draws the shared CMOS circuit, including its input inverters and both rails. */
 export function CmosLampBoard({
   circuit,
-  snapshot,
+  ripple,
   a,
   b,
   onFlip,
   spark,
 }: {
   circuit: Circuit;
-  snapshot: Snapshot;
+  ripple: GateRipple;
   a: boolean;
   b: boolean;
   onFlip: (name: Control) => void;
   spark: { id: number; x: number; y: number; control?: Control } | null;
 }) {
+  const { snapshot, voltages, waves, waveKey } = ripple;
   const layout = useMemo(() => cmosLampLayout(circuit), [circuit]);
   const nets = useMemo(() => wireNetKeys(circuit), [circuit]);
   const current = useMemo(() => lampCurrentPath(circuit, snapshot), [circuit, snapshot]);
   const lit = Boolean(snapshot.values.out);
   const railNet = (id: string) => nets[circuit.wires.find((wire) => wire.from === id)!.id];
-  const colors = new Map<string, string>();
-  colors.set(railNet("vcc"), "#a14e3f");
-  colors.set(railNet("gnd"), "#60645e");
-  for (const [index, id] of ["a", "b", ...layout.stages.map((node) => node.id)].entries()) {
-    const wire = circuit.wires.find((wire) => wire.from === id);
-    if (wire && !colors.has(nets[wire.id]))
-      colors.set(nets[wire.id], ["#57764b", "#407d83", "#8c704c", "#7b6687", "#596d4a"][index % 5]);
-  }
+  const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
+  // A wire's colour is its voltage: tied to battery plus or minus, the same as those rails.
+  const netHigh = new Map<string, boolean>();
+  for (const wire of circuit.wires)
+    if (!isMosfet(byId.get(wire.from)!)) netHigh.set(nets[wire.id], Boolean(voltages[wire.from]));
+  const voltageColor = (net: string, fallback = false) =>
+    (netHigh.get(net) ?? fallback) ? "#a14e3f" : "#60645e";
   const paths = [
     ...layout.wires.map((wire) => ({
       id: wire.id,
@@ -71,7 +80,7 @@ export function CmosLampBoard({
       path: polylinePath(wire.points),
       active: current.wires.has(wire.id),
       signal: isMosfet(circuit.nodes.find((node) => node.id === wire.to)!) && wire.input === 0,
-      high: Boolean(snapshot.values[wire.from]),
+      high: Boolean(voltages[wire.from]),
     })),
     ...layout.inputWires.map((wire) => ({
       ...wire,
@@ -81,7 +90,7 @@ export function CmosLampBoard({
         circuit.wires.some(
           (native) => native.from === wire.currentSource && current.wires.has(native.id),
         ),
-      high: Boolean(snapshot.values[wire.from]),
+      high: Boolean(voltages[wire.from]),
     })),
     { id: "battery-positive", net: railNet("vcc"), path: "M80 228 V48", active: lit },
     {
@@ -91,6 +100,16 @@ export function CmosLampBoard({
       active: lit,
     },
   ];
+  // A net's new voltage leaves its rail through the selector, or its stage's output node.
+  const voltageWaves = layout.wires
+    .filter((wire) => waves.has(wire.from) && isMosfet(byId.get(wire.to)!))
+    .map((wire) => {
+      const high = waves.get(wire.from)!;
+      const rail = layout.inputWires.find(
+        (input) => input.to === wire.from && input.from === (high ? "vcc" : "gnd"),
+      );
+      return { id: wire.id, high, lead: rail?.points, wire: wire.points };
+    });
   const bridged = bridgeWirePaths(paths);
   const junctions = wireJunctions(paths);
   return (
@@ -119,7 +138,7 @@ export function CmosLampBoard({
                 <g key={wire.id} data-wire-id={wire.id}>
                   <Cable
                     d={bridged[wire.id]}
-                    color={colors.get(wire.net) ?? "#7a705d"}
+                    color={voltageColor(wire.net, "high" in wire && wire.high)}
                     active={wire.active}
                     signal={"signal" in wire && wire.signal}
                     high={"high" in wire && wire.high}
@@ -138,7 +157,7 @@ export function CmosLampBoard({
                 cx={point.x}
                 cy={point.y}
                 r="4"
-                fill={colors.get(paths.find((wire) => wire.id === point.wire)!.net) ?? "#7a705d"}
+                fill={voltageColor(paths.find((wire) => wire.id === point.wire)!.net)}
               />
             ))}
             {circuit.nodes.filter(isMosfet).map((node) => {
@@ -146,7 +165,7 @@ export function CmosLampBoard({
               const control = circuit.wires.find(
                 (wire) => wire.to === node.id && wire.input === 0,
               )!.from;
-              const high = Boolean(snapshot.values[control]);
+              const high = Boolean(voltages[control]);
               const closed = node.type === "nmos" ? high : !high;
               const label = layout.labels.get(control) ?? control;
               return (
@@ -190,7 +209,7 @@ export function CmosLampBoard({
             const control = circuit.wires.find(
               (wire) => wire.to === node.id && wire.input === 0,
             )!.from;
-            const high = Boolean(snapshot.values[control]),
+            const high = Boolean(voltages[control]),
               closed = node.type === "nmos" ? high : !high;
             return (
               <span
@@ -201,6 +220,14 @@ export function CmosLampBoard({
               />
             );
           })}
+          {voltageWaves.length > 0 && (
+            <VoltageWaves
+              key={waveKey}
+              waves={voltageWaves}
+              width={layout.width}
+              height={layout.height}
+            />
+          )}
           {spark && (
             <span
               key={spark.id}

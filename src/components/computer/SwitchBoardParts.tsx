@@ -1,4 +1,8 @@
+import type { CSSProperties } from "react";
+import { polylinePath } from "src/lib/computer/wireGeometry";
+import type { Point } from "src/lib/computer/wireRouting";
 import own from "./SwitchLogic.module.css";
+import { WAVE_MS } from "./useGateRipple";
 export type Control = "A" | "B";
 /**
  * One component and geometry for the first lamp demo and every transistor input.
@@ -100,6 +104,77 @@ export function Cable({
         </>
       )}
     </g>
+  );
+}
+export type VoltageWave = {
+  id: string;
+  /** New voltage of the wire. */
+  high: boolean;
+  /** Rail and switch the wave passes first; those already hold this voltage. */
+  lead?: Point[];
+  /** The wire that changes voltage behind the wave, ending at a gate. */
+  wire: Point[];
+};
+
+const lengthOf = (points: Point[]) =>
+  points.reduce(
+    (sum, point, index) =>
+      index ? sum + Math.hypot(point.x - points[index - 1].x, point.y - points[index - 1].y) : 0,
+    0,
+  );
+
+/**
+ * A voltage change moving down a wire at one speed. The wire takes its new colour
+ * behind the head and keeps it after the head has gone: voltage stays, current stops.
+ */
+export function VoltageWaves({
+  waves,
+  width,
+  height,
+}: {
+  waves: VoltageWave[];
+  width: number;
+  height: number;
+}) {
+  const routes = waves.map((wave) => {
+    const route = [...(wave.lead ?? []), ...wave.wire];
+    return { ...wave, route, leadLength: lengthOf(wave.lead ?? []), length: lengthOf(route) };
+  });
+  const msPerUnit = WAVE_MS / Math.max(1, ...routes.map((route) => route.length));
+  return (
+    <svg className={own.gatePulse} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+      {routes.map(({ id, high, route, wire, leadLength, length }) => {
+        const wireLength = length - leadLength;
+        return (
+          <g key={id} data-high={high}>
+            <path
+              className={own.waveFill}
+              d={polylinePath(wire)}
+              pathLength={wireLength}
+              style={
+                {
+                  "--wave-length": wireLength,
+                  animationDelay: `${leadLength * msPerUnit}ms`,
+                  animationDuration: `${wireLength * msPerUnit}ms`,
+                } as CSSProperties
+              }
+            />
+            <path
+              className={own.waveHead}
+              data-gate-pulse
+              d={polylinePath(route)}
+              pathLength={length}
+              style={
+                {
+                  "--wave-length": length,
+                  animationDuration: `${length * msPerUnit}ms`,
+                } as CSSProperties
+              }
+            />
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 export function Terminal({ x, y, junction = false }: { x: number; y: number; junction?: boolean }) {

@@ -6,10 +6,19 @@ import {
   switchLampDemo,
   transistorLampDemo,
 } from "src/lib/computer/demoCircuits";
-import { initialSnapshot, type Snapshot, step } from "src/lib/computer/logic";
+import { initialSnapshot, step } from "src/lib/computer/logic";
 import { CmosLampBoard } from "./CmosLampBoard";
-import { Battery, Cable, type Control, KnifeSwitch, Lamp, Terminal } from "./SwitchBoardParts";
+import {
+  Battery,
+  Cable,
+  type Control,
+  KnifeSwitch,
+  Lamp,
+  Terminal,
+  VoltageWaves,
+} from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
+import { type GateRipple, useGateRipple, WAVE_MS } from "./useGateRipple";
 
 export type SwitchWiring = "series" | "parallel";
 type ContactKind = "nmos" | "pmos";
@@ -112,7 +121,7 @@ function SwitchBoard({
   lit,
   electrical,
   spark,
-  snapshot,
+  ripple,
   onFlip,
 }: {
   kind?: ContactKind;
@@ -122,9 +131,10 @@ function SwitchBoard({
   lit: boolean;
   electrical: boolean;
   spark: Spark | null;
-  snapshot: Snapshot;
+  ripple: GateRipple;
   onFlip: (name: Control) => void;
 }) {
+  const { snapshot, voltages, waves, waveKey } = ripple;
   const contacts = contactsFor(wiring, kind);
   const branched = wiring === "parallel";
   // A real N-channel lamp switch belongs on the return side of the load.
@@ -132,7 +142,6 @@ function SwitchBoard({
   const rows = branched ? [140, 360] : electrical ? [180] : [140];
   const boardHeight = branched ? 480 : electrical ? 400 : 360;
   const returnY = boardHeight - 30;
-  const [gatePulse, setGatePulse] = useState(0);
   const selectorHigh = 280 - SELECTOR_THROW;
   const selectorLow = 280 + SELECTOR_THROW;
   // The native simulator decides which complete branches conduct. These are
@@ -228,7 +237,7 @@ function SwitchBoard({
                   d={lowSide ? `M180 ${selectorLow} H224` : `M224 ${returnY} V${selectorLow}`}
                   returning
                 />
-                <Cable d="M336 280 H500 V240" signal high={a} />
+                <Cable d="M336 280 H500 V240" signal high={Boolean(voltages.a)} />
                 <Terminal x={132} y={lowSide ? 40 : 140} junction />
                 <Terminal x={lowSide ? 180 : 224} y={lowSide ? selectorLow : returnY} junction />
                 <Terminal x={224} y={selectorHigh} />
@@ -260,8 +269,8 @@ function SwitchBoard({
               <TransistorSwitch
                 key={`${contact.name}-${contact.kind}-${contact.y}`}
                 contact={contact}
-                high={contact.name === "A" ? a : b}
-                closed={conducts(contact, a, b)}
+                high={Boolean(voltages.a)}
+                closed={conducts(contact, Boolean(voltages.a), b)}
                 active={activeRows[rows.indexOf(contact.y)]}
                 reversed={lowSide}
                 boardHeight={boardHeight}
@@ -287,28 +296,44 @@ function SwitchBoard({
               closed={a}
               control
               boardHeight={boardHeight}
-              onFlip={() => {
-                setGatePulse((count) => count + 1);
-                onFlip("A");
-              }}
+              onFlip={() => onFlip("A")}
             />
           )}
           {/* The gate wire ends at the insulated plate: charge moves in or out once, then stops. */}
-          {gatePulse > 0 && (
-            <svg className={own.gatePulse} viewBox={`0 0 800 ${boardHeight}`} aria-hidden="true">
-              <path
-                key={gatePulse}
-                data-gate-pulse
-                pathLength={100}
-                d={
-                  a
-                    ? `${lowSide ? "M132 40" : "M132 140"} V${selectorHigh} H224 L336 280 H500 V191`
-                    : `M500 191 V280 H336 L224 ${selectorLow} ${lowSide ? "H180" : `V${returnY}`}`
-                }
-              />
-            </svg>
+          {waves.has("a") && (
+            <VoltageWaves
+              key={waveKey}
+              width={800}
+              height={boardHeight}
+              waves={[
+                {
+                  id: "gate-a",
+                  high: Boolean(waves.get("a")),
+                  lead: waves.get("a")
+                    ? [
+                        { x: 132, y: lowSide ? 40 : 140 },
+                        { x: 132, y: selectorHigh },
+                        { x: 224, y: selectorHigh },
+                      ]
+                    : lowSide
+                      ? [
+                          { x: 180, y: selectorLow },
+                          { x: 224, y: selectorLow },
+                        ]
+                      : [
+                          { x: 224, y: returnY },
+                          { x: 224, y: selectorLow },
+                        ],
+                  wire: [
+                    { x: 336, y: 280 },
+                    { x: 500, y: 280 },
+                    { x: 500, y: 191 },
+                  ],
+                },
+              ]}
+            />
           )}
-          {spark && (
+          {spark && lit && (
             <span
               key={spark.id}
               className={own.sparkBurst}
@@ -382,11 +407,8 @@ export function TransistorComparison() {
 function TransistorComparisonHalf({ kind, onFlip }: { kind: ContactKind; onFlip: () => void }) {
   const [high, setHigh] = useState(false);
   const circuit = useMemo(() => transistorLampDemo("single", kind), [kind]);
-  const snapshot = useMemo(
-    () => step(circuit, initialSnapshot(), false, {}, { a: high }),
-    [circuit, high],
-  );
-  const lit = Boolean(snapshot.values.lamp);
+  const ripple = useGateRipple(circuit, { a: high, b: false }, true);
+  const lit = Boolean(ripple.snapshot.values.lamp);
   return (
     <section className={own.comparisonHalf} aria-label={`${kind.toUpperCase()} lamp circuit`}>
       <h4>{kind.toUpperCase()}</h4>
@@ -398,7 +420,7 @@ function TransistorComparisonHalf({ kind, onFlip }: { kind: ContactKind; onFlip:
         lit={lit}
         electrical
         spark={null}
-        snapshot={snapshot}
+        ripple={ripple}
         onFlip={() => {
           setHigh((value) => !value);
           onFlip();
@@ -433,16 +455,15 @@ function SwitchExperiment({
     [wiring, physicalWiring, electrical],
   );
   const output = electrical && wiring !== "single" ? "out" : "lamp";
-  const snapshot = useMemo(
-    () => step(circuit, initialSnapshot(), false, {}, { a, b }),
-    [circuit, a, b],
-  );
-  const lit = Boolean(snapshot.values[output]);
+  const ripple = useGateRipple(circuit, { a, b }, electrical);
+  const lit = Boolean(ripple.snapshot.values[output]);
+  // One transistor sparks on arrival of the gate's voltage, so its burst starts later.
+  const sparkMs = electrical && wiring === "single" ? 600 + WAVE_MS : 600;
   useEffect(() => {
     if (!spark) return;
-    const timer = window.setTimeout(() => setSpark(null), 600);
+    const timer = window.setTimeout(() => setSpark(null), sparkMs);
     return () => window.clearTimeout(timer);
-  }, [spark]);
+  }, [spark, sparkMs]);
   function flip(name: Control) {
     const nextA = name === "A" ? !a : a;
     const nextB = name === "B" ? !b : b;
@@ -516,14 +537,7 @@ function SwitchExperiment({
       )}
       {fixed && <p className={own.fixedWiring}>{wiringLabel(wiring)}</p>}
       {electrical && wiring !== "single" ? (
-        <CmosLampBoard
-          circuit={circuit}
-          snapshot={snapshot}
-          a={a}
-          b={b}
-          onFlip={flip}
-          spark={spark}
-        />
+        <CmosLampBoard circuit={circuit} ripple={ripple} a={a} b={b} onFlip={flip} spark={spark} />
       ) : (
         <SwitchBoard
           wiring={physicalWiring}
@@ -532,7 +546,7 @@ function SwitchExperiment({
           lit={lit}
           electrical={electrical}
           spark={spark}
-          snapshot={snapshot}
+          ripple={ripple}
           onFlip={flip}
         />
       )}

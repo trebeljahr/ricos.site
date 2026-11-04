@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { transistorLampDemo } from "../../lib/computer/demoCircuits";
 import { SwitchLogic, TransistorComparison, TransistorSwitches } from "./SwitchLogic";
 import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
+import { WAVE_MS } from "./useGateRipple";
 
 afterEach(() => {
   cleanup();
@@ -156,12 +157,11 @@ describe("switch logic", () => {
     expect(pmos.getByRole("img", { name: /PMOS A transistor conducting; gate low/ })).toBeTruthy();
     expect(nmos.getByRole("img", { name: /NMOS A transistor blocking; gate low/ })).toBeTruthy();
     const pmosRegion = screen.getByRole("region", { name: "PMOS lamp circuit" });
-    expect(pmosRegion.querySelector("[data-gate-pulse]")).toBeNull();
     fireEvent.click(pmos.getByRole("button", { name: /^Control A: low/ }));
     expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
     expect(nmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    // Selecting battery plus charges the gate once; no steady current runs in that wire.
-    expect(pmosRegion.querySelector("[data-gate-pulse]")).toBeTruthy();
+    // A gate wire holds its voltage, but no steady current runs in it.
+    expect(pmosRegion.querySelector('[data-signal][data-high="true"]')).toBeTruthy();
     expect(pmosRegion.querySelector("[data-current]")).toBeNull();
     fireEvent.click(nmos.getByRole("button", { name: /^Control A: low/ }));
     expect(pmos.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
@@ -173,6 +173,57 @@ describe("switch logic", () => {
       expect(Boolean(region.querySelector("[data-current]"))).toBe(true);
       expect(region.querySelector("[data-signal][data-current]")).toBeNull();
     }
+  });
+
+  describe("with motion", () => {
+    const allowMotion = () => {
+      vi.useFakeTimers();
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        matches: query.includes("no-preference"),
+      }));
+    };
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("reacts when the gate's voltage arrives, and the wire keeps that voltage", () => {
+      allowMotion();
+      const { container } = render(<TransistorSwitches />);
+      expect(container.querySelector("[data-gate-pulse]")).toBeNull();
+      click(/^Control A: low/);
+      expect(container.querySelector("[data-gate-pulse]")).toBeTruthy();
+      expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+      expect(container.querySelector('[data-signal][data-high="true"]')).toBeNull();
+      act(() => vi.advanceTimersByTime(WAVE_MS));
+      expect(container.querySelector("[data-gate-pulse]")).toBeNull();
+      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+      expect(screen.getByTestId("switch-spark")).toBeTruthy();
+      // Long after the wave, the gate is still high and carries no current.
+      act(() => vi.advanceTimersByTime(5000));
+      expect(container.querySelector('[data-signal][data-high="true"]')).toBeTruthy();
+      expect(container.querySelector("[data-signal][data-current]")).toBeNull();
+    });
+
+    it("sends a second wave from an inner stage's output to the next gates", () => {
+      allowMotion();
+      const { container } = render(<TransistorSwitches wiring="xnor" fixed />);
+      const waveWires = () => container.querySelectorAll("[data-gate-pulse]").length;
+      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+      fireEvent.click(screen.getByRole("button", { name: /^Control A: low/ }));
+      expect(waveWires()).toBeGreaterThan(0);
+      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+      act(() => vi.advanceTimersByTime(WAVE_MS));
+      expect(waveWires()).toBeGreaterThan(0);
+      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+      act(() => vi.advanceTimersByTime(WAVE_MS));
+      expect(waveWires()).toBe(0);
+      expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    });
+
+    it("skips the wait for readers who prefer less motion", () => {
+      vi.stubGlobal("matchMedia", () => ({ matches: false }));
+      render(<TransistorSwitches />);
+      click(/^Control A: low/);
+      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    });
   });
 
   it("uses separate battery selectors to control shared transistor gates", () => {

@@ -34,11 +34,11 @@ boxes use an amber outline and do not appear in the main overview.
 | Branch prediction | Bottom-right BTB logic and its adjacent storage arrays, beneath the instruction cache. |
 | Instruction fetch | IFU logic between the instruction cache and the central core; its instruction buffer is a nested close-up. |
 | Register renaming | Central RAT logic below the execution and scheduling blocks. |
-| Reorder / retirement | Upper part of the ROB/RRF region, left of the microcode ROM. The region is L-shaped, so the box stops at the channel above its lower part; the individual arrays remain candidates. |
+| Reorder / retirement | The L-shaped ROB/RRF region, left of the microcode ROM and above the decoder region; the individual arrays remain candidates. |
 | Memory ordering | MOB logic between the left control blocks and the central register-renaming region. |
 | Address translation | DCU/DTLB area directly left of the L1 data cache, reaching its edge, with its bottom storage array as a nested close-up. |
-| Allocation | ALLOC block above the L1 data cache, between the channel right of the twin tall arrays and BAC. The reference leaves those twin arrays unlabelled, so no box claims them. |
-| Bus interface | Lower part of the BIU/control region along the left side of the core. Its footprint is irregular, so the box covers only the rectangle below memory ordering. |
+| Allocation | ALLOC block above the L1 data cache, between the channel right of the twin tall arrays and BAC. The twin arrays lie in the reference's BIU/control cell, not in ALLOC. |
+| Bus interface | The reference's whole BIU/control cell: the left side of the core, below memory ordering, and across to ALLOC above the DTLB area. The reference labels this cell once, so the role of each part inside it is not established. |
 | Branch addresses | BAC block immediately to the right of allocation. |
 | Page-miss handler | PFU/PMH region beside the integer execution block, below floating-point execution. |
 | FP conversion | MIU portion of the floating-point region, from the FROM candidate strip rightward. |
@@ -46,12 +46,12 @@ boxes use an amber outline and do not appear in the main overview.
 
 ## How the boxes are drawn
 
-Each box edge runs along an empty channel of the photo, the bare orange field
-between circuit blocks, wherever a straight line can. A rectangle cannot follow
-an L-shaped block, so such a box covers only the part it can enclose cleanly,
-and the rest stays unboxed. Two known crossings remain: floating point's bottom
-edge clips the top of the block below it at the far left, because that channel
-steps; and MMX overlaps register renaming by a thin strip for the same reason.
+Each region's edge runs along an empty channel of the photo, the bare orange
+field between circuit blocks. Regions that are not rectangles carry an `outline`
+polygon, traced around the cell in the reference; `rect` is then its bounding box,
+used to fit the view. Only the outline takes clicks. A few edges still pass over
+a row of small blocks where the die has no channel at that point. The score used
+to check this was the share of an edge that runs through bare field.
 
 Candidate close-ups match the reference's proposed FROM strip beside MIU,
 microcode-entry array above the rotated full decoder, nearby decoder-control
@@ -60,8 +60,8 @@ decoupling-capacitor strip left of the reservation station. These are research
 hypotheses, not recovered circuits or confirmed Dixon identifications. The
 unlocated integer constant ROM (CROM) is not given a box.
 
-The overview sorts larger boxes behind smaller ones so overlapping rectangular
-crops do not prevent selecting the smaller region.
+The overview sorts larger regions behind smaller ones so that an overlap does
+not prevent selecting the smaller region.
 
 ## Functional descriptions
 

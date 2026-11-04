@@ -5,6 +5,7 @@ import {
   COINS,
   coinPlacement,
   type DieShot,
+  type DieSpot,
   dieSizeMm,
   fitView,
   formatLength,
@@ -13,6 +14,7 @@ import {
   PENTIUM_II_DIXON,
   type Rect,
   scaleBar,
+  spotContains,
   type View,
   visibleTiles,
   worldBounds,
@@ -281,8 +283,7 @@ export function DieZoom({
     if (!current || !size || !selected) return;
     const worldX = current.x + (point.x - size.width / 2) / current.scale;
     const worldY = current.y + (point.y - size.height / 2) / current.scale;
-    const { x, y, width, height } = selected.rect;
-    if (worldX >= x && worldX <= x + width && worldY >= y && worldY <= y + height) return;
+    if (spotContains(selected, worldX, worldY)) return;
     setSpotId(null);
     playButton();
   }
@@ -366,18 +367,28 @@ export function DieZoom({
     .sort((a, b) => b.rect.width * b.rect.height - a.rect.width * a.rect.height);
   const spotCorner = spot ? toScreen(spot.rect.x, spot.rect.y) : null;
 
-  function spotLabel(rect: Rect, label: string) {
+  /** The part of a photo rectangle that is on screen, in screen pixels. */
+  function visiblePart(rect: Rect) {
     if (!view || !size) return null;
     const corner = toScreen(rect.x, rect.y);
-    const right = Math.min(size.width, corner.x + rect.width * view.scale);
-    const bottom = Math.min(size.height, corner.y + rect.height * view.scale);
-    const left = Math.max(0, corner.x);
-    const top = Math.max(0, corner.y);
+    return {
+      left: Math.max(0, corner.x),
+      top: Math.max(0, corner.y),
+      right: Math.min(size.width, corner.x + rect.width * view.scale),
+      bottom: Math.min(size.height, corner.y + rect.height * view.scale),
+    };
+  }
+
+  function spotLabel(item: DieSpot, label: string) {
+    const part = visiblePart(item.labelRect ?? item.rect);
+    if (!part) return null;
+    const { left, top, right, bottom } = part;
     if (right - left <= 44 || bottom - top <= 30) return null;
+    const parent = toScreen(item.rect.x, item.rect.y);
     return (
       <span
         className={own.spotLabel}
-        style={{ left: left - corner.x + 3, top: top - corner.y + 3, maxWidth: right - left - 8 }}
+        style={{ left: left - parent.x + 3, top: top - parent.y + 3, maxWidth: right - left - 8 }}
       >
         {label}
       </span>
@@ -388,14 +399,15 @@ export function DieZoom({
    * The selected block always names itself while any of it is on screen: inside
    * its top-left corner when the name fits, otherwise just outside the box.
    */
-  function selectedLabel(rect: Rect, label: string) {
-    if (!view || !size) return null;
-    const corner = toScreen(rect.x, rect.y);
-    const left = Math.max(0, corner.x);
-    const top = Math.max(0, corner.y);
-    const right = Math.min(size.width, corner.x + rect.width * view.scale);
-    const bottom = Math.min(size.height, corner.y + rect.height * view.scale);
-    if (right <= left || bottom <= top) return null;
+  function selectedLabel(item: DieSpot, label: string) {
+    if (!size) return null;
+    const preferred = visiblePart(item.labelRect ?? item.rect);
+    const whole = visiblePart(item.rect);
+    if (!preferred || !whole) return null;
+    if (whole.right <= whole.left || whole.bottom <= whole.top) return null;
+    const part =
+      preferred.right > preferred.left && preferred.bottom > preferred.top ? preferred : whole;
+    const { left, top, right, bottom } = part;
     const width = label.length * LABEL_CHAR_PIXELS + LABEL_PADDING_PIXELS;
     const fitsInside = right - left >= width + 6 && bottom - top >= LABEL_HEIGHT_PIXELS + 6;
     let labelLeft = left + 3;
@@ -407,12 +419,13 @@ export function DieZoom({
       if (above >= 3) labelTop = above;
       else if (below + LABEL_HEIGHT_PIXELS <= size.height - 3) labelTop = below;
     }
+    const parent = toScreen(item.rect.x, item.rect.y);
     return (
       <span
         className={clsx(own.spotLabel, own.selectedLabel)}
         style={{
-          left: labelLeft - corner.x,
-          top: labelTop - corner.y,
+          left: labelLeft - parent.x,
+          top: labelTop - parent.y,
           maxWidth: size.width - 6,
         }}
       >
@@ -421,6 +434,16 @@ export function DieZoom({
     );
   }
 
+  /** An outline's corners in screen pixels, measured from the corner of its bounding box. */
+  function shapeOf(item: DieSpot) {
+    if (!view || !item.outline) return null;
+    const scale = view.scale;
+    return item.outline.map(
+      ([x, y]) => [(x - item.rect.x) * scale, (y - item.rect.y) * scale] as const,
+    );
+  }
+
+  const spotShape = spot ? shapeOf(spot) : null;
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
   const bar = scaleBar(micronsPerScreenPixel);
   // How much closer than the first view, where the whole die and the coin fit.
@@ -527,6 +550,7 @@ export function DieZoom({
                 const corner = toScreen(item.rect.x, item.rect.y);
                 const width = item.rect.width * view.scale;
                 const height = item.rect.height * view.scale;
+                const shape = shapeOf(item);
                 return (
                   // A pointer shortcut: every outlined block also has its own button below the
                   // map, so these stay out of the tab order. Their boxes overlap on purpose.
@@ -534,9 +558,22 @@ export function DieZoom({
                     key={item.id}
                     type="button"
                     tabIndex={-1}
-                    className={clsx(own.spotTarget, item.candidate && own.candidateSpot)}
+                    className={clsx(
+                      own.spotTarget,
+                      shape && own.shapedTarget,
+                      item.candidate && own.candidateSpot,
+                    )}
                     aria-label={`Zoom to ${item.candidate ? "candidate " : ""}${item.label.toLowerCase()}`}
-                    style={{ left: corner.x, top: corner.y, width, height }}
+                    style={{
+                      left: corner.x,
+                      top: corner.y,
+                      width,
+                      height,
+                      // Only the outline takes clicks, so neighbours inside the bounding box still can.
+                      clipPath: shape
+                        ? `polygon(${shape.map(([x, y]) => `${x}px ${y}px`).join(",")})`
+                        : undefined,
+                    }}
                     onPointerDown={(event) => event.stopPropagation()}
                     onDoubleClick={(event) => event.stopPropagation()}
                     onKeyDown={(event) => event.stopPropagation()}
@@ -545,13 +582,22 @@ export function DieZoom({
                       goTo(item.rect, item.id);
                     }}
                   >
-                    {spotLabel(item.rect, item.mapLabel ?? item.label)}
+                    {shape && (
+                      <svg className={own.shape} aria-hidden="true">
+                        <polygon points={shape.map((point) => point.join(",")).join(" ")} />
+                      </svg>
+                    )}
+                    {spotLabel(item, item.mapLabel ?? item.label)}
                   </button>
                 );
               })}
             {spot && spotCorner && view && (
               <div
-                className={clsx(own.spot, spot.candidate && own.candidateSpot)}
+                className={clsx(
+                  own.spot,
+                  spot.outline && own.shapedSpot,
+                  spot.candidate && own.candidateSpot,
+                )}
                 style={{
                   left: spotCorner.x,
                   top: spotCorner.y,
@@ -559,7 +605,17 @@ export function DieZoom({
                   height: spot.rect.height * view.scale,
                 }}
               >
-                {selectedLabel(spot.rect, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`)}
+                {spotShape && (
+                  <svg className={own.shape} aria-hidden="true">
+                    {/* Dims everything outside the outline, as the box shadow does for a box. */}
+                    <path
+                      className={own.dim}
+                      d={`M-99999 -99999H99999V99999H-99999Z M${spotShape.map((point) => point.join(" ")).join("L")}Z`}
+                    />
+                    <polygon points={spotShape.map((point) => point.join(",")).join(" ")} />
+                  </svg>
+                )}
+                {selectedLabel(spot, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`)}
               </div>
             )}
             <div className={own.scaleBar} aria-hidden="true">

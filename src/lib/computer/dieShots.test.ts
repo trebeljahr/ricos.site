@@ -8,6 +8,7 @@ import {
   mmPerPixel,
   PENTIUM_II_DIXON,
   scaleBar,
+  spotContains,
   tileLevelWidths,
   visibleTiles,
   worldBounds,
@@ -34,15 +35,54 @@ describe("die shots", () => {
       if (!spot.parentId || spot.candidate) continue;
       const parent = shot.spots.find((item) => item.id === spot.parentId);
       if (!parent) throw new Error(`${spot.id} has no parent`);
-      expect(spot.rect.x, spot.id).toBeGreaterThanOrEqual(parent.rect.x);
-      expect(spot.rect.y, spot.id).toBeGreaterThanOrEqual(parent.rect.y);
-      expect(spot.rect.x + spot.rect.width, spot.id).toBeLessThanOrEqual(
-        parent.rect.x + parent.rect.width,
-      );
-      expect(spot.rect.y + spot.rect.height, spot.id).toBeLessThanOrEqual(
-        parent.rect.y + parent.rect.height,
-      );
+      const { x, y, width, height } = spot.rect;
+      for (const [cornerX, cornerY] of [
+        // Just inside each corner: a close-up may share its parent's edge.
+        [x + 1, y + 1],
+        [x + width - 1, y + 1],
+        [x + 1, y + height - 1],
+        [x + width - 1, y + height - 1],
+      ]) {
+        expect(spotContains(parent, cornerX, cornerY), spot.id).toBe(true);
+      }
     }
+  });
+
+  it("keeps each outline axis-aligned and its box tight around it", () => {
+    for (const spot of shot.spots) {
+      if (!spot.outline) continue;
+      const xs = spot.outline.map(([x]) => x);
+      const ys = spot.outline.map(([, y]) => y);
+      expect(spot.rect, spot.id).toEqual({
+        x: Math.min(...xs),
+        y: Math.min(...ys),
+        width: Math.max(...xs) - Math.min(...xs),
+        height: Math.max(...ys) - Math.min(...ys),
+      });
+      spot.outline.forEach(([x, y], index) => {
+        const [nextX, nextY] = spot.outline![(index + 1) % spot.outline!.length];
+        expect(x === nextX || y === nextY, spot.id).toBe(true);
+      });
+    }
+  });
+
+  it("tests a point against a region's outline, not its bounding box", () => {
+    const shape = {
+      rect: { x: 0, y: 0, width: 10, height: 10 },
+      outline: [
+        [0, 0],
+        [10, 0],
+        [10, 5],
+        [5, 5],
+        [5, 10],
+        [0, 10],
+      ] as [number, number][],
+    };
+    expect(spotContains(shape, 2, 8)).toBe(true);
+    expect(spotContains(shape, 8, 2)).toBe(true);
+    expect(spotContains(shape, 8, 8)).toBe(false);
+    expect(spotContains({ rect: shape.rect }, 8, 8)).toBe(true);
+    expect(spotContains(shape, 11, 2)).toBe(false);
   });
 
   it("draws each coin to the die's scale, beside it", () => {

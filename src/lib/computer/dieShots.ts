@@ -18,8 +18,12 @@ export type DieSpot = {
   matchedSource?: { label: string; url: string };
   /** The source proposes this identification but has not established it. */
   candidate?: boolean;
-  /** Where it is, in pixels of the full-size photo. */
+  /** Where it is, in pixels of the full-size photo. With an outline, its bounding box. */
   rect: Rect;
+  /** The region's real shape, corner by corner, where a rectangle would cut through circuits. */
+  outline?: [number, number][];
+  /** Where the label goes when the bounding box's top-left corner is outside the outline. */
+  labelRect?: Rect;
 };
 
 export type DieShot = {
@@ -40,6 +44,20 @@ export type DieShot = {
   credit: { author: string; license: string; url: string; source: string };
   spots: DieSpot[];
 };
+
+/** Whether a photo pixel lies inside a spot's outline, or inside its box if it has none. */
+export function spotContains(spot: Pick<DieSpot, "rect" | "outline">, x: number, y: number) {
+  const { rect, outline } = spot;
+  if (x < rect.x || x > rect.x + rect.width || y < rect.y || y > rect.y + rect.height) return false;
+  if (!outline) return true;
+  let inside = false;
+  for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
+    const [xi, yi] = outline[i];
+    const [xj, yj] = outline[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
 
 /** The tile levels makeDieTiles writes: halving down to the first one wider than half a tile. */
 export function tileLevelWidths(width: number, height: number, tileSize: number): number[] {
@@ -116,6 +134,14 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Floating-point arithmetic handles numbers with fractions and a wide range of magnitudes. This region also includes nearby floating-point conversion logic.",
       matchedSource: P6_CORE_MAP,
       rect: { x: 8306, y: 856, width: 4390, height: 1832 },
+      outline: [
+        [8306, 856],
+        [12696, 856],
+        [12696, 2688],
+        [9409, 2688],
+        [9409, 2568],
+        [8306, 2568],
+      ],
     },
     {
       id: "integer",
@@ -152,7 +178,18 @@ export const PENTIUM_II_DIXON: DieShot = {
       label: "X86 DECODERS",
       mapLabel: "DECODERS",
       text: "These circuits turn each x86 instruction into the small steps the core runs. One full decoder sits next to two simple ones.",
-      rect: { x: 18352, y: 3709, width: 2052, height: 1813 },
+      rect: { x: 16547, y: 2468, width: 4803, height: 3734 },
+      outline: [
+        [18922, 2468],
+        [21350, 2468],
+        [21350, 6202],
+        [16547, 6202],
+        [16547, 3916],
+        [17988, 3916],
+        [17988, 3640],
+        [18922, 3640],
+      ],
+      labelRect: { x: 18922, y: 2468, width: 2428, height: 1172 },
     },
     {
       id: "full-decoder",
@@ -181,7 +218,17 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "FETCH",
       text: "The fetch unit brings instruction bytes from the instruction cache toward the decoders. It prepares the byte stream for finding instruction boundaries.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16553, y: 6206, width: 2247, height: 4882 },
+      rect: { x: 16553, y: 6206, width: 2247, height: 6252 },
+      outline: [
+        [16553, 6206],
+        [18800, 6206],
+        [18800, 11142],
+        [17382, 11142],
+        [17382, 12458],
+        [16760, 12458],
+        [16760, 12255],
+        [16553, 12255],
+      ],
     },
     {
       id: "instruction-buffer",
@@ -199,6 +246,14 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "The register alias table maps register names to internal storage. Independent operations can reuse a name without waiting for an unrelated older result.",
       matchedSource: P6_CORE_MAP,
       rect: { x: 12711, y: 4984, width: 3836, height: 2338 },
+      outline: [
+        [12711, 5056],
+        [14819, 5056],
+        [14819, 4984],
+        [16547, 4984],
+        [16547, 7322],
+        [12711, 7322],
+      ],
     },
     {
       id: "retirement",
@@ -206,7 +261,15 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "RETIRE",
       text: "The reorder buffer tracks unfinished operations and speculative results. Retirement commits completed work in program order, so wrong-path results can still be discarded.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16650, y: 836, width: 2270, height: 1756 },
+      rect: { x: 16650, y: 836, width: 2270, height: 3080 },
+      outline: [
+        [16650, 836],
+        [18920, 836],
+        [18920, 3640],
+        [17988, 3640],
+        [17988, 3916],
+        [16650, 3916],
+      ],
     },
     {
       id: "memory-order",
@@ -247,7 +310,21 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "BUS",
       text: "Bus-interface and control circuits coordinate transactions outside the core. They move requests and data between the processor and the external memory system.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8326, y: 7647, width: 2699, height: 4819 },
+      rect: { x: 8326, y: 5528, width: 6113, height: 6938 },
+      outline: [
+        [8326, 5528],
+        [9778, 5528],
+        [9778, 7678],
+        [12704, 7678],
+        [12704, 7322],
+        [14439, 7322],
+        [14439, 9117],
+        [13678, 9117],
+        [13678, 9381],
+        [11175, 9381],
+        [11175, 12466],
+        [8326, 12466],
+      ],
     },
     {
       id: "branch-address",
@@ -263,7 +340,17 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "PMH",
       text: "When an address translation is missing, the page-miss handler walks the page tables to find it. Missing or disallowed mappings can require a page-fault exception.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8314, y: 3072, width: 1113, height: 2456 },
+      rect: { x: 8320, y: 2568, width: 1458, height: 2960 },
+      outline: [
+        [8320, 2568],
+        [9409, 2568],
+        [9409, 2688],
+        [9427, 2688],
+        [9427, 5128],
+        [9778, 5128],
+        [9778, 5528],
+        [8320, 5528],
+      ],
     },
     {
       id: "fp-conversion",

@@ -56,6 +56,17 @@
   box-shadow: 0 0 0 100vmax #00000052;
   pointer-events: none;
 }
+/* A region with a real outline draws it as a polygon instead of a border and shadow. */
+.shapedTarget { border: 0; border-radius: 0; }
+.shapedTarget:hover, .shapedTarget:focus-visible { outline: 0; }
+.shape { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.shape polygon { fill: none; stroke: currentColor; }
+/* The button's clip path hides the outer half of this stroke, leaving 1px. */
+.shapedTarget .shape polygon { stroke-width: 2; stroke-dasharray: 4 3; stroke-opacity: .6; }
+.shapedTarget:hover .shape polygon, .shapedTarget:focus-visible .shape polygon { stroke-opacity: 1; stroke-dasharray: none; }
+.shapedSpot { border: 0; border-radius: 0; box-shadow: none; color: #e1fbcf; }
+.shapedSpot .shape polygon { stroke-width: 2; stroke-dasharray: 6 4; }
+.dim { fill: #00000052; fill-rule: evenodd; }
 .candidateSpot { border-color: #f2d78d; color: #f2d78d; }
 .candidateSpot .spotLabel { color: inherit; }
 

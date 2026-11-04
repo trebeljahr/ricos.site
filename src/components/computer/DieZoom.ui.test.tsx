@@ -142,6 +142,19 @@ describe("die zoom", () => {
     expect(zoomTag(container)).toBe(zoomedOut);
   });
 
+  it("draws irregular regions as polygons that only take clicks inside the outline", () => {
+    const { container } = render(<DieZoom />);
+    const photo = screen.getByRole("application");
+    const decoders = screen.getByRole("button", { name: "Zoom to x86 decoders" });
+    expect(decoders.style.clipPath).toContain("polygon(");
+    expect(decoders.querySelector("polygon")).toBeTruthy();
+    click("X86 DECODERS");
+    expect(photo.querySelector("path")).toBeTruthy();
+    expect(container.textContent).toContain("One full decoder");
+    click("ALIGNMENT MARK");
+    expect(photo.querySelector("path")).toBeNull();
+  });
+
   it("labels selected close-ups and retains candidate uncertainty on the photo", () => {
     render(<DieZoom />);
     const photo = screen.getByRole("application");

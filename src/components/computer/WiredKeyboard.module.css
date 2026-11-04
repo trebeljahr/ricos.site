@@ -1,0 +1,209 @@
+/* The keyboard's own panel. Rules that change a ByteExplorer class are scoped
+   under .wired, so they win whichever stylesheet loads last. */
+
+.wired .nameplate { flex-wrap: wrap; height: auto; padding-bottom: 8px; }
+.wired .nameplate > div { align-items: center; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.control { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; }
+.control select {
+  max-width: 190px;
+  padding: 5px 6px;
+  border: 1px solid #485749;
+  border-radius: 3px;
+  background: linear-gradient(#cbd3bf, #8f9c8d);
+  box-shadow: inset 0 1px #e6eadb;
+  color: #26352a;
+  font: inherit;
+}
+.control select:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
+.lamp { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .04em; }
+.lamp i { width: 9px; height: 9px; border: 1px solid #405e37; border-radius: 50%; background: #677565; box-shadow: inset 0 1px 2px #1e3324; }
+.lamp[data-on] i { background: #a7d46b; box-shadow: 0 0 6px #c5ee8b; }
+
+/* The bare circuit board the keys sit on. */
+.pcb { padding: 10px 12px 0; border-top: 5px solid #3c4a3f; background: radial-gradient(ellipse at 40% 30%, #27483a, #17302a); }
+.drawing {
+  --stretch: 1;
+  container-type: inline-size;
+  position: relative;
+  aspect-ratio: 16.85 / calc(7.47 * var(--stretch));
+  border-radius: 4px;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.drawing:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 4px; }
+.wired .drawing { line-height: 1; }
+
+.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.wires path { fill: none; stroke-linejoin: round; stroke-width: 1.5px; vector-effect: non-scaling-stroke; transition: stroke .22s ease-out, stroke-width .22s ease-out; }
+.rowWire { stroke: #c08d44; }
+.columnWire { stroke: #5fb3a8; }
+.rowWire[data-on] { stroke: #ffc75a; stroke-width: 2.5px; transition: none; filter: drop-shadow(0 0 3px #ffb52d); }
+.columnWire[data-on] { stroke: #7dfbe3; stroke-width: 2.5px; transition: none; filter: drop-shadow(0 0 3px #3ff2d2); }
+
+.driver, .sense {
+  position: absolute;
+  border: 1px solid #0c1512;
+  border-radius: 2px;
+  background: linear-gradient(#2c3231, #181c1c);
+  box-shadow: 0 1px 3px #0009, inset 0 1px #4a5150;
+  color: #b9c4bd;
+  font-size: clamp(5.5px, .95cqw, 11px);
+}
+.chipName { color: #8c9a92; font-size: .85em; letter-spacing: .1em; white-space: nowrap; }
+.driver .chipName { position: absolute; top: 50%; left: 28%; writing-mode: vertical-rl; transform: translate(-50%, -50%) rotate(180deg); }
+.rowPin { position: absolute; right: 6%; transform: translateY(-50%); font-weight: 700; }
+.rowPin[data-on] { color: #ffc75a; text-shadow: 0 0 5px #ffb52d; }
+.sense .chipName { position: absolute; bottom: 7%; left: 50%; transform: translateX(-50%); }
+.columnPin { position: absolute; top: 9%; transform: translateX(-50%); font-weight: 700; }
+.columnPin[data-on] { color: #7dfbe3; text-shadow: 0 0 5px #3ff2d2; }
+
+/* Clear caps, so the wires under them stay in view. */
+.key {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #eef3e6;
+  font: inherit;
+  cursor: pointer;
+  touch-action: none;
+}
+.key:focus { outline: none; }
+.cap {
+  position: absolute;
+  inset: 3%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 5% 7%;
+  border: 1px solid #e8f0e04d;
+  border-bottom-color: #0009;
+  border-radius: min(.45cqw, 5px);
+  background: linear-gradient(#ffffff2e, #ffffff0f);
+  box-shadow: inset 0 1px #ffffff40, 0 .3cqw 0 #06100ca6, 0 .4cqw .5cqw #0007;
+  font-size: clamp(6.5px, 1.2cqw, 14px);
+  font-weight: 700;
+  overflow: hidden;
+  text-transform: none;
+  transition: transform .06s ease-out, background .1s ease-out;
+}
+.functionKey .cap { background: linear-gradient(#0a14104d, #0a141080); color: #d5ded0; }
+.functionKey .legend { font-size: .82em; font-weight: 600; letter-spacing: .01em; }
+.legendTop { margin-bottom: .1em; font-size: .82em; opacity: .8; }
+.legend { white-space: nowrap; }
+.key:hover .cap { background: linear-gradient(#ffffff47, #ffffff24); }
+.functionKey:hover .cap { background: linear-gradient(#ffffff24, #0a14104d); }
+.key[aria-pressed="true"] .cap {
+  background: linear-gradient(#a8f08fa6, #6fd0628c);
+  box-shadow: inset 0 .25cqw .5cqw #1b3d2266, 0 0 .9cqw #a8f08f;
+  color: #06170d;
+  transform: translateY(.3cqw);
+}
+.isoEnter { clip-path: polygon(0 0, 100% 0, 100% 100%, 16.67% 100%, 16.67% 50%, 0 50%); }
+.isoEnter .cap { inset: 1.5%; align-items: flex-end; }
+.capsLight { position: absolute; top: 12%; right: 10%; width: .55cqw; height: .55cqw; min-width: 3px; min-height: 3px; border-radius: 50%; background: #4a5a4c; }
+.capsLight[data-on] { background: #b4ff75; box-shadow: 0 0 .6cqw #c7ff94; }
+
+/* The switch itself, lying where its row and column wires cross. */
+.contact {
+  position: absolute;
+  width: .75cqw;
+  height: .75cqw;
+  min-width: 4px;
+  min-height: 4px;
+  border: 1px solid #0d1712;
+  border-radius: 50%;
+  background: #8a988c;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.contact[data-closed] { background: #fff1b6; box-shadow: 0 0 .5cqw #ffd76a; }
+.contact[data-live] { background: #fff; box-shadow: 0 0 1cqw .2cqw #7dfbe3; }
+
+.deck { display: grid; grid-template-columns: minmax(0, 2fr) 18px minmax(0, 3fr); background: linear-gradient(#3c4a3f, #566457); }
+.bay, .screenBay { min-width: 0; padding: 14px 16px 16px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
+.screenBay { position: relative; grid-column: 1 / -1; margin-top: 8px; }
+.screenBay::before { content: ""; position: absolute; top: -8px; left: 70%; width: 3px; height: 8px; background: #4f8d86; }
+.screenBay button { padding: 2px 8px; }
+
+.bus { position: relative; display: block; background: #2a372e; }
+.bus::after { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 3px; background: #4f8d86; transform: translateY(-50%); }
+.bus[data-flash]::after { animation: busFlash .5s ease-out; }
+@keyframes busFlash { from { background: #d4fff5; box-shadow: 0 0 10px #7dfbe3; } to { background: #4f8d86; box-shadow: none; } }
+
+.readings { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 5px 14px; align-items: baseline; margin: 12px 0 0; font-size: 12px; }
+.readings dt { font-size: 10px; letter-spacing: .08em; }
+.readings dd { margin: 0; font-size: 15px; font-variant-numeric: tabular-nums; }
+.readings .bits { font-size: 12px; letter-spacing: .03em; overflow-wrap: anywhere; }
+
+.memory { display: grid; gap: 3px; margin-top: 12px; }
+.memoryLine { display: grid; grid-template-columns: 46px repeat(8, minmax(0, 1fr)); gap: 3px; align-items: center; }
+.address { font-size: 10px; font-weight: 500; }
+.cell {
+  display: grid;
+  grid-template-rows: 1fr 10px;
+  justify-items: center;
+  min-width: 0;
+  padding: 3px 0 2px;
+  border: 2px solid #415045;
+  border-radius: 3px;
+  background: #1c2f22;
+  color: #bfe8a3;
+  font-size: 12px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.cell small { color: #8fbf7c; font-size: 9px; line-height: 10px; }
+.cell[data-head] { border-color: #ffc75a; }
+.cell[data-latest] { background: #7dcf72; color: #102016; box-shadow: 0 0 8px #bdf59a; }
+.cell[data-latest] small { color: #102016; }
+
+.screen {
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 92px;
+  max-height: 160px;
+  overflow-y: auto;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 5px solid #3c5042;
+  border-radius: 6px;
+  background: radial-gradient(ellipse at center, #243c29, #122518);
+  box-shadow: inset 0 4px 10px #0009;
+  color: #c9f2aa;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 6px #a9e987;
+  white-space: pre-wrap;
+}
+.screen > span { margin-bottom: auto; }
+.cursor { display: inline-block; width: .6em; height: 1.05em; margin-left: 1px; vertical-align: text-bottom; background: #c9f2aa; animation: cursorBlink 1.1s steps(1) infinite; }
+@keyframes cursorBlink { 50% { opacity: 0; } }
+
+@media (max-width: 720px) {
+  .deck { grid-template-columns: minmax(0, 1fr); }
+  .bus { height: 16px; }
+  .bus::after { top: 0; bottom: 0; left: 50%; right: auto; width: 3px; height: auto; transform: translateX(-50%); }
+  .screenBay { grid-column: auto; }
+  .screenBay::before { left: 50%; }
+}
+/* Taller caps keep the keys tappable once they are this narrow. */
+@media (max-width: 640px) {
+  .wired .nameplate { margin: 11px 34px 0; }
+  .pcb { padding: 8px 6px 0; }
+  .drawing { --stretch: 1.55; }
+  .bay, .screenBay { padding: 12px 10px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wires path, .cap { transition: none; }
+  .rowWire[data-on] { filter: none; stroke-width: 1.5px; }
+  .rowPin[data-on] { text-shadow: none; }
+  .cursor, .bus[data-flash]::after { animation: none; }
+}

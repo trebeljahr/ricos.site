@@ -13,6 +13,7 @@ afterEach(() => {
 
 it("runs keys, sampling, Shift mapping and rewind in the actual editable circuit builder", () => {
   render(<KeyboardMatrixDemo />);
+  fireEvent.click(screen.getByText("The scanner as gates"));
   const builder = screen.getByLabelText("Keyboard scanner circuit");
   fireEvent.click(testButton("OFF", within(builder).getByLabelText("A R0 C0 — SWITCH part")));
   fireEvent.click(testButton("OFF", within(builder).getByLabelText("Shift R1 C0 — SWITCH part")));

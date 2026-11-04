@@ -7,7 +7,7 @@ const KeyboardMatrixDemo = dynamic(
 );
 
 const summary =
-  "Scan switches, compare ghosting and diode isolation, and interpret Shift with a controller.";
+  "Type on a keyboard wired up key by key, and watch its scan write your text into memory.";
 
 export default function KeyboardMatrixPage() {
   return (

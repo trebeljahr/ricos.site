@@ -44,6 +44,8 @@
 
 .spotTarget { position: absolute; z-index: 3; min-width: 6px; min-height: 6px; padding: 0; border: 1px dashed #e1fbcf99; border-radius: 2px; background: transparent; color: #e1fbcf; cursor: zoom-in; }
 .spotLabel { position: absolute; padding: 2px 4px; background: #0b140ed9; color: #e1fbcf; font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: left; pointer-events: none; }
+/* Sized by its text, not by the box it names, which may be only a few pixels wide. */
+.selectedLabel { width: max-content; letter-spacing: 0; line-height: 14px; }
 .spotTarget:hover, .spotTarget:focus-visible { border-color: #e1fbcf; outline: 2px solid #e1fbcf; outline-offset: 2px; }
 
 .spot {

@@ -104,6 +104,44 @@ describe("die zoom", () => {
     expect(within(photo).queryByText("L1 DATA CACHE")).toBeNull();
   });
 
+  it("keeps naming the selected area when zooming out makes its box too small", () => {
+    render(<DieZoom />);
+    const photo = screen.getByRole("application");
+    click("ALIGNMENT MARK");
+    expect(within(photo).getByText("ALIGNMENT MARK")).toBeTruthy();
+    for (let i = 0; i < 8; i++) click("Zoom out");
+    expect(within(photo).getByText("ALIGNMENT MARK")).toBeTruthy();
+  });
+
+  it("clears the selection on a tap outside it, keeping the view", () => {
+    const { container } = render(<DieZoom />);
+    const photo = screen.getByRole("application");
+    const tap = (clientX: number, clientY: number) => {
+      fireEvent.pointerDown(photo, { pointerId: 1, clientX, clientY });
+      fireEvent.pointerUp(photo, { pointerId: 1, clientX, clientY });
+    };
+    click("ALIGNMENT MARK");
+    for (let i = 0; i < 2; i++) click("Zoom out");
+    const zoomedOut = zoomTag(container);
+
+    // Inside the selected box, which is centred on the screen.
+    tap(400, 250);
+    expect(within(photo).getByText("ALIGNMENT MARK")).toBeTruthy();
+
+    // A drag that starts outside only moves the photo.
+    fireEvent.pointerDown(photo, { pointerId: 1, clientX: 5, clientY: 5 });
+    fireEvent.pointerMove(photo, { pointerId: 1, clientX: 60, clientY: 40 });
+    fireEvent.pointerUp(photo, { pointerId: 1, clientX: 60, clientY: 40 });
+    expect(within(photo).getByText("ALIGNMENT MARK")).toBeTruthy();
+
+    // The block keeps its plain outline, so check the readout rather than the label.
+    expect(container.textContent).not.toContain("THE WHOLE DIE");
+    tap(5, 5);
+    expect(container.textContent).toContain("THE WHOLE DIE");
+    expect(screen.queryByRole("group", { name: /close-ups/ })).toBeNull();
+    expect(zoomTag(container)).toBe(zoomedOut);
+  });
+
   it("labels selected close-ups and retains candidate uncertainty on the photo", () => {
     render(<DieZoom />);
     const photo = screen.getByRole("application");

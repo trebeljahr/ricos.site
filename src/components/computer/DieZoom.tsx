@@ -26,6 +26,12 @@ import own from "./DieZoom.module.css";
 // Stop where a 50 µm scale bar spans 100 CSS pixels, before detail gets rough.
 const MIN_MICRONS_PER_SCREEN_PIXEL = 0.5;
 const ANIMATION_MS = 750;
+// A press that moves further than this is a drag, not a tap.
+const TAP_SLOP_PIXELS = 5;
+// Width of one character of .spotLabel, plus its side padding.
+const LABEL_CHAR_PIXELS = 6.1;
+const LABEL_PADDING_PIXELS = 8;
+const LABEL_HEIGHT_PIXELS = 18;
 
 type Size = { width: number; height: number };
 
@@ -72,6 +78,8 @@ export function DieZoom({
   const [pixelRatio, setPixelRatio] = useState(1);
   const animation = useRef<number | null>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
+  // Where the current press began, until it turns into a drag or a pinch.
+  const press = useRef<{ x: number; y: number } | null>(null);
   const reducedMotion = useRef(false);
 
   const coin = COINS.find((item) => item.id === coinId) ?? COINS[0];
@@ -221,7 +229,10 @@ export function DieZoom({
     stopAnimation();
     engage();
     event.currentTarget.setPointerCapture?.(event.pointerId);
-    pointers.current.set(event.pointerId, local(event));
+    const point = local(event);
+    // A second finger makes this a pinch, not a tap.
+    press.current = pointers.current.size === 0 ? point : null;
+    pointers.current.set(event.pointerId, point);
   }
 
   function onPointerMove(event: React.PointerEvent<HTMLDivElement>) {
@@ -229,6 +240,12 @@ export function DieZoom({
     const current = viewRef.current;
     if (!previous || !current || !size) return;
     const point = local(event);
+    if (
+      press.current &&
+      Math.hypot(point.x - press.current.x, point.y - press.current.y) > TAP_SLOP_PIXELS
+    ) {
+      press.current = null;
+    }
     if (pointers.current.size === 1) {
       setView({
         ...current,
@@ -248,6 +265,26 @@ export function DieZoom({
 
   function onPointerUp(event: React.PointerEvent<HTMLDivElement>) {
     pointers.current.delete(event.pointerId);
+    if (press.current) deselectOutside(local(event));
+    press.current = null;
+  }
+
+  function onPointerCancel(event: React.PointerEvent<HTMLDivElement>) {
+    pointers.current.delete(event.pointerId);
+    press.current = null;
+  }
+
+  /** A tap outside the selected block clears it and leaves the view where it is. */
+  function deselectOutside(point: { x: number; y: number }) {
+    const current = viewRef.current;
+    const selected = shot.spots.find((item) => item.id === spotId);
+    if (!current || !size || !selected) return;
+    const worldX = current.x + (point.x - size.width / 2) / current.scale;
+    const worldY = current.y + (point.y - size.height / 2) / current.scale;
+    const { x, y, width, height } = selected.rect;
+    if (worldX >= x && worldX <= x + width && worldY >= y && worldY <= y + height) return;
+    setSpotId(null);
+    playButton();
   }
 
   function keyZoom(factor: number) {
@@ -347,6 +384,43 @@ export function DieZoom({
     );
   }
 
+  /**
+   * The selected block always names itself while any of it is on screen: inside
+   * its top-left corner when the name fits, otherwise just outside the box.
+   */
+  function selectedLabel(rect: Rect, label: string) {
+    if (!view || !size) return null;
+    const corner = toScreen(rect.x, rect.y);
+    const left = Math.max(0, corner.x);
+    const top = Math.max(0, corner.y);
+    const right = Math.min(size.width, corner.x + rect.width * view.scale);
+    const bottom = Math.min(size.height, corner.y + rect.height * view.scale);
+    if (right <= left || bottom <= top) return null;
+    const width = label.length * LABEL_CHAR_PIXELS + LABEL_PADDING_PIXELS;
+    const fitsInside = right - left >= width + 6 && bottom - top >= LABEL_HEIGHT_PIXELS + 6;
+    let labelLeft = left + 3;
+    let labelTop = top + 3;
+    if (!fitsInside) {
+      labelLeft = Math.max(3, Math.min(size.width - width - 3, left));
+      const above = top - LABEL_HEIGHT_PIXELS - 3;
+      const below = bottom + 3;
+      if (above >= 3) labelTop = above;
+      else if (below + LABEL_HEIGHT_PIXELS <= size.height - 3) labelTop = below;
+    }
+    return (
+      <span
+        className={clsx(own.spotLabel, own.selectedLabel)}
+        style={{
+          left: labelLeft - corner.x,
+          top: labelTop - corner.y,
+          maxWidth: size.width - 6,
+        }}
+      >
+        {label}
+      </span>
+    );
+  }
+
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
   const bar = scaleBar(micronsPerScreenPixel);
   // How much closer than the first view, where the whole die and the coin fit.
@@ -395,7 +469,7 @@ export function DieZoom({
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
+            onPointerCancel={onPointerCancel}
             onDoubleClick={(event) => {
               const point = local(event);
               zoomAbout(point.x, point.y, 2, true);
@@ -485,7 +559,7 @@ export function DieZoom({
                   height: spot.rect.height * view.scale,
                 }}
               >
-                {spotLabel(spot.rect, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`)}
+                {selectedLabel(spot.rect, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`)}
               </div>
             )}
             <div className={own.scaleBar} aria-hidden="true">

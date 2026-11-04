@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { limitCodePoints, readText } from "src/lib/unicodeText";
 import panel from "./ByteExplorer.module.css";
 import { fitHeight } from "./fitHeight";
@@ -59,7 +58,6 @@ export function UnicodeInspector() {
   const input = useRef<HTMLTextAreaElement>(null);
   const composing = useRef(false);
   const id = useId();
-  const sound = usePanelSound();
 
   const reading = readText(text);
 
@@ -82,7 +80,7 @@ export function UnicodeInspector() {
   }
 
   return (
-    <UnicodePanel title="TEXT INSPECTOR" sound={sound}>
+    <UnicodePanel title="TEXT INSPECTOR">
       <div className={styles.bay}>
         <div className={panel.sectionHead}>
           <span>INPUT · TEXT</span>
@@ -130,7 +128,6 @@ export function UnicodeInspector() {
                   onClick={() => {
                     setText(item.text);
                     setOverflow(0);
-                    sound.playButton();
                   }}
                 >
                   {item.label}

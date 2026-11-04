@@ -50,7 +50,6 @@ describe("the program stepper", () => {
         .getAllByRole("button")
         .map((item) => item.textContent?.trim()),
     ).toEqual([
-      "SOUND ON",
       "COMPILE + RESET",
       "2 + 3",
       "OVERFLOW",

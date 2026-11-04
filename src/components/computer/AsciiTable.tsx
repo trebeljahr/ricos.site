@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { type KeyboardEvent, type SyntheticEvent, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { ASCII_TABLE } from "src/lib/asciiTable";
 import styles from "./AsciiTyper.module.css";
 import panel from "./ByteExplorer.module.css";
@@ -16,7 +15,6 @@ function slotOf(event: SyntheticEvent): number | null {
 export function AsciiTable() {
   const [selected, setSelected] = useState(65);
   const [tabStop, setTabStop] = useState<number | null>(null);
-  const { soundEnabled, toggleSound, playButton } = usePanelSound();
   const shown = ASCII_TABLE[selected];
   function moveInTable(event: KeyboardEvent<HTMLFieldSetElement>) {
     const code = slotOf(event);
@@ -41,13 +39,7 @@ export function AsciiTable() {
   }
 
   return (
-    <DemoMachine
-      title="ASCII TABLE"
-      label="ASCII table explorer"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-      className={styles.typer}
-    >
+    <DemoMachine title="ASCII TABLE" label="ASCII table explorer" className={styles.typer}>
       <div className={styles.deck}>
         <div className={styles.bay}>
           <div className={clsx(panel.sectionHead, styles.wrappingHead)}>
@@ -114,7 +106,6 @@ export function AsciiTable() {
                 onClick={() => {
                   setSelected(entry.code);
                   setTabStop(entry.code);
-                  playButton();
                 }}
               >
                 <span className={styles.cellCode}>{entry.code}</span>

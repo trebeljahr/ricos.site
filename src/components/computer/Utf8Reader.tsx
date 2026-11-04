@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useId, useMemo, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   type ByteRole,
   bitString,
@@ -49,7 +48,6 @@ export function Utf8Reader() {
   const [selected, setSelected] = useState<number | null>(null);
   const composing = useRef(false);
   const id = useId();
-  const sound = usePanelSound();
 
   const runs = useMemo(() => decodeUtf8(bytes, start), [bytes, start]);
   const currentRun = runs.find((run) => cursor - 1 >= run.start && cursor - 1 < run.end);
@@ -77,7 +75,6 @@ export function Utf8Reader() {
 
   function step(to: number) {
     setCursor(Math.max(start, Math.min(bytes.length, to)));
-    sound.playButton();
   }
 
   const selectedByte = selected === null ? undefined : bytes[selected];
@@ -94,7 +91,6 @@ export function Utf8Reader() {
       data-current={index === cursor - 1 || undefined}
       onClick={() => {
         setSelected(selected === index ? null : index);
-        sound.playButton();
       }}
     >
       <ByteBits byte={bytes[index]} />
@@ -104,7 +100,7 @@ export function Utf8Reader() {
   );
 
   return (
-    <UnicodePanel title="UTF-8 READER" sound={sound}>
+    <UnicodePanel title="UTF-8 READER">
       <div className={styles.bay}>
         <div className={panel.sectionHead}>
           <span>INPUT · TEXT</span>
@@ -140,7 +136,6 @@ export function Utf8Reader() {
               type="button"
               onClick={() => {
                 load(preset);
-                sound.playButton();
               }}
             >
               {preset}
@@ -150,7 +145,6 @@ export function Utf8Reader() {
             type="button"
             onClick={() => {
               load(text);
-              sound.playButton();
             }}
           >
             RESET
@@ -253,7 +247,6 @@ export function Utf8Reader() {
                     const next = [...bytes];
                     next[selected] = selectedByte ^ (1 << (7 - position));
                     edit(next, Math.min(start, selected), selected);
-                    sound.playSwitch();
                   }}
                 >
                   {bit}
@@ -265,7 +258,6 @@ export function Utf8Reader() {
                 type="button"
                 onClick={() => {
                   edit(bytes, selected, selected);
-                  sound.playButton();
                 }}
               >
                 READ FROM HERE
@@ -278,7 +270,6 @@ export function Utf8Reader() {
                     Math.min(start, selected),
                     null,
                   );
-                  sound.playButton();
                 }}
               >
                 DELETE BYTE

@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   AND_JZ_PROGRAM,
   AND_OPCODE,
@@ -122,7 +121,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
   const inRam = stack === "ram";
   const table = tables[stack];
   const isa = microcodeIsa(table);
-  const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   useEffect(() => {
     if (microcode) setTables(loadTables());
   }, [microcode]);
@@ -195,7 +193,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
     setLoaded(source);
     setKeys({});
     setStep(0);
-    playSwitch();
   }
 
   function preset({ source: value, stack: model = stack, language: as = "source" }: StepperPreset) {
@@ -205,14 +202,12 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
     setLoaded(value);
     setKeys({});
     setStep(0);
-    playButton();
   }
 
   function chooseStack(model: StackModel) {
     setStack(model);
     setKeys({});
     setStep(0);
-    playSwitch();
   }
 
   function changeTable(next: MicrocodeTable) {
@@ -233,12 +228,10 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
     setLanguage(next);
     setKeys({});
     setStep(0);
-    playSwitch();
   }
 
   function moveStep(next: number) {
     setStep(next);
-    playButton();
   }
 
   /**
@@ -253,7 +246,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
       ...Object.fromEntries(Object.entries(current).filter(([at]) => Number(at) < tick)),
       [tick]: code & 255,
     }));
-    playSwitch();
   }
 
   return (
@@ -268,15 +260,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
           <strong>PROGRAM EXECUTION UNIT</strong>
           <span className={styles.model}>8-BIT · MODEL 01</span>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={toggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
 
       <div className={styles.workbench}>
@@ -619,7 +602,6 @@ export function ProgramStepper({ focus, presets = PLAIN_PRESETS }: Props) {
               aria-expanded={editing}
               onClick={() => {
                 setEditing(!editing);
-                playSwitch();
               }}
               className={editing ? styles.primaryButton : styles.button}
             >

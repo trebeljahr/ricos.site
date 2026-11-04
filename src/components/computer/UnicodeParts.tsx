@@ -5,15 +5,7 @@ import panel from "./ByteExplorer.module.css";
 import styles from "./Unicode.module.css";
 
 /** The panel, screws and nameplate every Unicode demo sits in. */
-export function UnicodePanel({
-  title,
-  sound,
-  children,
-}: {
-  title: string;
-  sound: { soundEnabled: boolean; toggleSound: () => void };
-  children: ReactNode;
-}) {
+export function UnicodePanel({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className={clsx("not-prose", panel.machine, styles.unicode)} aria-label={title}>
       <div className={panel.screw} aria-hidden="true" />
@@ -22,15 +14,6 @@ export function UnicodePanel({
         <div>
           <strong>{title}</strong>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={sound.toggleSound}
-          aria-pressed={sound.soundEnabled}
-          aria-label={`Sound ${sound.soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {sound.soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
       <div className={styles.deck}>{children}</div>
     </section>

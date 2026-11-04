@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   COINS,
   coinPlacement,
@@ -67,7 +66,6 @@ export function DieZoom({
   /** Which coin sits next to the die: "nickel", "euro" or "aud". */
   coin?: string;
 }) {
-  const { soundEnabled, toggleSound, playButton } = usePanelSound();
   const screen = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<Size | null>(null);
   const [view, setViewState] = useState<View | null>(null);
@@ -285,20 +283,17 @@ export function DieZoom({
     const worldY = current.y + (point.y - size.height / 2) / current.scale;
     if (spotContains(selected, worldX, worldY)) return;
     setSpotId(null);
-    playButton();
   }
 
   function keyZoom(factor: number) {
     if (!size) return;
     zoomAbout(size.width / 2, size.height / 2, factor, true);
-    playButton();
   }
 
   function goTo(rect: Rect, id: string | null, margin = 0.12) {
     if (!size) return;
     setSpotId(id);
     animateTo(fitView(rect, size, margin));
-    playButton();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -454,8 +449,6 @@ export function DieZoom({
     <DemoMachine
       title="ZOOM INTO A CHIP"
       label={`A ${shot.chip.toLowerCase()} die next to a coin, zoomable`}
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
       className={own.demo}
     >
       <div className={own.body}>

@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useId, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   ALPHABET,
   FLAG_PRESETS,
@@ -111,11 +110,9 @@ function indexed(values: readonly string[]) {
 /** Build one thing a reader calls a character, piece by piece. Usable in MDX articles. */
 export function CharacterComposer() {
   const [state, setState] = useState(initial);
-  const sound = usePanelSound();
 
   function update(patch: Partial<State>) {
     setState((current) => ({ ...current, ...patch }));
-    sound.playButton();
   }
 
   const text = composedText(state);
@@ -124,7 +121,7 @@ export function CharacterComposer() {
   const hasForms = state.recipe === "marks" || state.recipe === "hangul";
 
   return (
-    <UnicodePanel title="CHARACTER COMPOSER" sound={sound}>
+    <UnicodePanel title="CHARACTER COMPOSER">
       <div className={styles.bay}>
         <Choice
           label="BUILD"

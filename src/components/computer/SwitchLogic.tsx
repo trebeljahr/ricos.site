@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { SELECTOR_THROW } from "src/lib/computer/cmosLampLayout";
 import {
   type SwitchLampWiring,
@@ -374,19 +373,10 @@ export function TransistorSwitches({
 }
 /** Opposite gate responses, using two independent native single-transistor circuits. */
 export function TransistorComparison() {
-  const { soundEnabled, toggleSound, playSwitch } = usePanelSound();
   return (
     <section className={own.experiment} aria-label="Compare PMOS and NMOS">
       <div className={own.header}>
         <h3>PMOS and NMOS</h3>
-        <button
-          type="button"
-          className={own.sound}
-          aria-pressed={soundEnabled}
-          onClick={toggleSound}
-        >
-          SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
       <div
         className={own.comparisonViewport}
@@ -396,15 +386,15 @@ export function TransistorComparison() {
         tabIndex={0}
       >
         <div className={own.comparisonColumns}>
-          <TransistorComparisonHalf kind="pmos" onFlip={playSwitch} />
-          <TransistorComparisonHalf kind="nmos" onFlip={playSwitch} />
+          <TransistorComparisonHalf kind="pmos" />
+          <TransistorComparisonHalf kind="nmos" />
         </div>
       </div>
     </section>
   );
 }
 
-function TransistorComparisonHalf({ kind, onFlip }: { kind: ContactKind; onFlip: () => void }) {
+function TransistorComparisonHalf({ kind }: { kind: ContactKind }) {
   const [high, setHigh] = useState(false);
   const circuit = useMemo(() => transistorLampDemo("single", kind), [kind]);
   const ripple = useGateRipple(circuit, { a: high, b: false }, true);
@@ -423,7 +413,6 @@ function TransistorComparisonHalf({ kind, onFlip }: { kind: ContactKind; onFlip:
         ripple={ripple}
         onFlip={() => {
           setHigh((value) => !value);
-          onFlip();
         }}
       />
       <p className={own.flowStatus} role="status">
@@ -446,7 +435,6 @@ function SwitchExperiment({
   const [inputs, setInputs] = useState<[boolean, boolean]>([false, false]);
   const [spark, setSpark] = useState<Spark | null>(null);
   const sparkId = useRef(0);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const [a, b] = inputs;
   const physicalWiring =
     wiring === "single" ? "single" : wiring === "parallel" ? "parallel" : "series";
@@ -489,14 +477,12 @@ function SwitchExperiment({
         : null,
     );
     setInputs([nextA, nextB]);
-    playSwitch();
   }
   function rewire(next: SwitchLampWiring) {
     if (next === wiring) return;
     setWiring(next);
     setInputs([false, false]);
     setSpark(null);
-    playButton();
   }
   function wiringLabel(name: SwitchLampWiring) {
     return electrical ? WIRINGS[name] : name === "series" ? "IN A ROW" : "SIDE BY SIDE";
@@ -510,14 +496,6 @@ function SwitchExperiment({
         <div>
           <h3>{electrical ? "Switches controlled by electricity" : "Switches and a lamp"}</h3>
         </div>
-        <button
-          type="button"
-          className={own.sound}
-          aria-pressed={soundEnabled}
-          onClick={toggleSound}
-        >
-          SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
       {!fixed && (
         <div className={own.wiring} role="group" aria-label="How the switches are wired">

@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { ASCII_TYPER_LIMIT, asciiReadings, filterAscii } from "src/lib/asciiTable";
 import styles from "./AsciiTyper.module.css";
 import panel from "./ByteExplorer.module.css";
@@ -29,7 +28,6 @@ export function AsciiTyper() {
   const fitted = useRef<string | null>(null);
   const serial = useRef(0);
   const id = useId();
-  const { soundEnabled, toggleSound, playButton } = usePanelSound();
 
   const readings = asciiReadings(text);
 
@@ -76,7 +74,6 @@ export function AsciiTyper() {
     setText(next);
     setLatest(next ? next.length - 1 : null);
     note([], 0);
-    playButton();
   }
 
   const rejected = notice?.rejected ?? [];
@@ -89,15 +86,6 @@ export function AsciiTyper() {
         <div>
           <strong>ASCII TYPER</strong>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={toggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
 
       <div className={styles.deck}>

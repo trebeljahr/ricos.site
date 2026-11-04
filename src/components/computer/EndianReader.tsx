@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { useEffect, useId, useState, useSyncExternalStore } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   formatTwoBytes,
   parseTwoBytes,
@@ -62,7 +61,6 @@ export function EndianReader() {
   const [sweepChoice, setSweepChoice] = useState<boolean | null>(null);
   const reducedMotion = usePrefersReducedMotion();
   const sweeping = sweepChoice ?? !reducedMotion;
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
 
   const bytes = parseTwoBytes(input);
   const readings = bytes ? readOrders.map((order) => readBytes(bytes, order)) : null;
@@ -89,13 +87,11 @@ export function EndianReader() {
     const next = new Uint8Array(bytes);
     next[position >> 3] ^= 0x80 >> (position & 7);
     setInput(formatTwoBytes(next));
-    playButton();
   }
 
   function selectOrder(index: number) {
     setSelected(index);
     setTick(0);
-    playSwitch();
   }
 
   const selectedReading = readings?.[selected];
@@ -111,15 +107,6 @@ export function EndianReader() {
         <div>
           <strong>ENDIAN READER</strong>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={toggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
       <div className={styles.body}>
         <div className={styles.side}>
@@ -133,7 +120,6 @@ export function EndianReader() {
               onClick={() => {
                 setSweepChoice(!sweeping);
                 setTick(0);
-                playSwitch();
               }}
             >
               SWEEP {sweeping ? "ON" : "OFF"}
@@ -163,7 +149,6 @@ export function EndianReader() {
                   aria-label={`Preset ${preset.hex}`}
                   onClick={() => {
                     setInput(preset.hex);
-                    playButton();
                   }}
                 >
                   {preset.label}

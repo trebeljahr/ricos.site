@@ -3,15 +3,6 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { ByteExplorer } from "./ByteExplorer";
 
-vi.mock("src/hooks/usePanelSound", () => ({
-  usePanelSound: () => ({
-    soundEnabled: false,
-    toggleSound: vi.fn(),
-    playSwitch: vi.fn(),
-    playButton: vi.fn(),
-  }),
-}));
-
 afterEach(cleanup);
 
 it("shows both place-value readings and subtracts 128 when the first bit is set", () => {

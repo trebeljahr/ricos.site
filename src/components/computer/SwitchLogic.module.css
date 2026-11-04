@@ -12,8 +12,6 @@
 }
 .header { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
 .header h3 { margin: 5px 0 0; color: #342e22; font-size: clamp(19px, 3vw, 29px); line-height: 1.2; }
-.sound { flex: none; padding: 7px 10px; border: 1px solid #8b7953; border-radius: 4px; background: #e7debf; color: #443a28; font: inherit; font-size: 11px; cursor: pointer; }
-.sound[aria-pressed="true"] { background: #e2e9be; }
 .wiring { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
 .wiring button { padding: 8px 11px; border: 1px solid #aa9b74; border-radius: 4px; background: #eee9d9; color: #4a412f; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
 .wiring button[aria-pressed="true"] { border-color: #526a48; background: #526a48; color: #fffef0; }
@@ -236,7 +234,6 @@
 @media (max-width: 560px) {
   .experiment { margin-block: 20px; }
   .header { align-items: start; }
-  .sound { font-size: 10px; }
   .wiring { gap: 5px; margin-top: 13px; }
   .wiring button { padding: 6px 8px; font-size: 10px; }
 }

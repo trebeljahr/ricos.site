@@ -2,7 +2,6 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   ALTERNATE_CODEBOOK,
   CONVERSATION,
@@ -68,7 +67,6 @@ export function CodebookMismatch() {
   const [bookTwo, setBookTwo] = useDemoState("codebook-mismatch:second", [...ALTERNATE_CODEBOOK]);
   // The demo opens on the mismatch: that is the point it sits in the chapter for.
   const [secondBook, setSecondBook] = useState(true);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
 
   const bookOfB = secondBook ? bookTwo : bookOne;
   const same = sameMeaning(bookOne, bookOfB, pattern);
@@ -83,20 +81,16 @@ export function CodebookMismatch() {
     setStep(wrapped);
     setPattern(CONVERSATION[wrapped].pattern);
     setOnScript(true);
-    playButton();
   }
 
   function chooseBook(second: boolean) {
     setSecondBook(second);
-    playSwitch();
   }
 
   return (
     <DemoMachine
       title="TWO CODEBOOKS"
       label="Two people reading the same switches with their own codebooks"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
     >
       <div className={styles.duo}>
         <Person
@@ -118,7 +112,6 @@ export function CodebookMismatch() {
             onFlip={(position) => {
               setPattern(flipSwitch(pattern, position));
               setOnScript(false);
-              playButton();
             }}
             label="Switches both people look at"
             large

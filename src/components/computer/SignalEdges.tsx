@@ -1,5 +1,4 @@
 import { type CSSProperties, useEffect, useId, useMemo, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   HIGH_MIN,
   LOW_MAX,
@@ -79,7 +78,6 @@ function useSettled<T>(value: T, delay: number) {
 export function SignalEdges() {
   const [kind, setKind] = useState<SignalKind>("wanted");
   const [noise, setNoise] = useState(DEFAULT_NOISE);
-  const { soundEnabled, toggleSound, playSwitch } = usePanelSound();
   const hatch = `signal-hatch-${useId().replace(/:/g, "")}`;
 
   const report = useMemo(() => signalReport(kind, noise / 100), [kind, noise]);
@@ -91,12 +89,7 @@ export function SignalEdges() {
   const bandBottom = toY(LOW_MAX);
 
   return (
-    <DemoMachine
-      title="SIGNAL EDGES"
-      label="A wanted and an unwanted clock signal"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-    >
+    <DemoMachine title="SIGNAL EDGES" label="A wanted and an unwanted clock signal">
       <div className={styles.bench}>
         <div className={shared.plate}>
           <div className={panel.sectionHead}>
@@ -227,7 +220,6 @@ export function SignalEdges() {
                   onClick={() => {
                     if (kind === option.kind) return;
                     setKind(option.kind);
-                    playSwitch();
                   }}
                 >
                   <i className={shared.lamp} data-on={kind === option.kind} aria-hidden="true" />

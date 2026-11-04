@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import type { BigScreenCard } from "src/lib/computer/bigScreenBlocks";
 import { formatBus } from "src/lib/computer/bus";
 import { layoutCircuit } from "src/lib/computer/circuitLayout";
@@ -202,7 +201,6 @@ export function CpuCircuitStepper() {
   /** Key presses, by the clock tick whose rising edge latches them. */
   const [keys, setKeys] = useState<KeySchedule>({});
   const clock = useRef<LockedClock | null>(null);
-  const { soundEnabled, toggleSound, playButton, playSwitch } = usePanelSound();
   const compilation = useMemo(() => compileSource(loaded, stackModel), [loaded, stackModel]);
   const program = compilation.program;
   const isa = isaFor(stackModel);
@@ -313,7 +311,6 @@ export function CpuCircuitStepper() {
     setLoaded(source);
     setKeys({});
     setRunning(false);
-    playSwitch();
   }
 
   function preset({ source: value, stack: model = stackModel }: StepperPreset) {
@@ -322,7 +319,6 @@ export function CpuCircuitStepper() {
     setLoaded(value);
     setKeys({});
     setRunning(false);
-    playButton();
   }
 
   /**
@@ -337,7 +333,6 @@ export function CpuCircuitStepper() {
       [cycle]: code & 255,
     }));
     clock.current?.cycle(keyPressOverrides(code & 255));
-    playSwitch();
   }
 
   return (
@@ -352,15 +347,6 @@ export function CpuCircuitStepper() {
           <strong>CPU CIRCUIT BENCH</strong>
           <span className={stepper.model}>ONE CLOCK · TWO VIEWS</span>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={toggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
 
       <div className={stepper.workbench}>
@@ -374,7 +360,6 @@ export function CpuCircuitStepper() {
           onStackChange={(model) => {
             setStackModel(model);
             setRunning(false);
-            playSwitch();
           }}
           compilation={compilation}
           changed={changed}
@@ -400,7 +385,6 @@ export function CpuCircuitStepper() {
                   disabled={running || cycle <= firstCycle}
                   onClick={() => {
                     seekCycle(cycle - 1);
-                    playButton();
                   }}
                   className={stepper.button}
                 >
@@ -412,7 +396,6 @@ export function CpuCircuitStepper() {
                   onClick={() => {
                     if (cycle < lastCycle) seekCycle(cycle + 1);
                     else clock.current?.cycle();
-                    playButton();
                   }}
                   className={stepper.primaryButton}
                 >
@@ -423,7 +406,6 @@ export function CpuCircuitStepper() {
                   disabled={halted}
                   onClick={() => {
                     setRunning((value) => !value);
-                    playSwitch();
                   }}
                   className={stepper.button}
                   aria-pressed={running}
@@ -436,7 +418,6 @@ export function CpuCircuitStepper() {
                     setRunning(false);
                     setKeys({});
                     clock.current?.reset();
-                    playButton();
                   }}
                   className={stepper.button}
                 >

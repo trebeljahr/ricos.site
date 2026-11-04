@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   type ByteColor,
   type ByteReading,
@@ -134,7 +133,6 @@ function ColorCell({
 export function ByteExplorer() {
   const [input, setInput] = useState("01000001");
   const [editor, setEditor] = useState<ActiveEditor | null>(null);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const value = parseByteBits(input);
   const bits = value === null ? null : byteBits(value);
   const rgb = value === null ? null : rgb332(value);
@@ -152,12 +150,10 @@ export function ByteExplorer() {
     const next = bits.split("");
     next[index] = next[index] === "1" ? "0" : "1";
     setInput(next.join(""));
-    playButton();
   }
 
   function openEditor(next: ActiveEditor) {
     setEditor(next);
-    if (next.type !== "color") playButton();
   }
 
   function applyEditor(text: string): string | null {
@@ -168,7 +164,6 @@ export function ByteExplorer() {
         : encodeByteColor(editor.kind, text);
     if ("error" in result) return result.error;
     setInput(byteBits(result.value));
-    if (editor.type !== "color") playSwitch();
     return null;
   }
 
@@ -205,15 +200,6 @@ export function ByteExplorer() {
         <div>
           <strong>BYTE INTERPRETER</strong>
         </div>
-        <button
-          type="button"
-          className={styles.soundButton}
-          onClick={toggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
 
       <div className={styles.workbench}>
@@ -269,7 +255,6 @@ export function ByteExplorer() {
                 type="button"
                 onClick={() => {
                   setInput(byteBits(preset.value));
-                  playButton();
                 }}
               >
                 {"swatch" in preset && (

@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   filterLetters,
   LETTER_STATES,
@@ -46,7 +45,6 @@ export function LetterTyper() {
   const fitted = useRef<string | null>(null);
   const serial = useRef(0);
   const id = useId();
-  const { soundEnabled, toggleSound, playButton } = usePanelSound();
 
   // Old drafts may contain characters from a previously edited codebook.
   // Keep composition drafts intact until the input method commits them.
@@ -105,20 +103,13 @@ export function LetterTyper() {
     setText(result.text);
     setLatest(result.text ? result.text.length - 1 : null);
     note(result);
-    playButton();
   }
 
   const rejected = notice?.rejected ?? [];
   const folded = notice?.folded ?? [];
 
   return (
-    <DemoMachine
-      title="LETTER TYPER"
-      label="Letter typer"
-      soundEnabled={soundEnabled}
-      onToggleSound={toggleSound}
-      className={typer.typer}
-    >
+    <DemoMachine title="LETTER TYPER" label="Letter typer" className={typer.typer}>
       <div className={typer.deck}>
         <div className={typer.bay}>
           <div className={panel.sectionHead}>

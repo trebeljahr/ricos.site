@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import { encodeFourByteReading, type FourByteReading } from "src/lib/fourByteEditing";
 import { formatFourBytes, fourByteReadings, parseFourBytes } from "src/lib/fourByteInterpretations";
 import panel from "./ByteExplorer.module.css";
@@ -34,7 +33,6 @@ export function FourByteExplorer() {
   const [input, setInput] = useState("F0 9F 98 80");
   const [littleEndian, setLittleEndian] = useState(false);
   const [editor, setEditor] = useState<FourByteReading | null>(null);
-  const { soundEnabled, toggleSound, playSwitch, playButton } = usePanelSound();
   const bytes = parseFourBytes(input);
   const reading = bytes ? fourByteReadings(bytes, littleEndian) : null;
 
@@ -43,7 +41,6 @@ export function FourByteExplorer() {
     const next = new Uint8Array(bytes);
     next[byteIndex] ^= 1 << (7 - bitIndex);
     setInput(formatFourBytes(next));
-    playButton();
   }
 
   const floatText = reading
@@ -68,7 +65,6 @@ export function FourByteExplorer() {
   function openEditor(kind: FourByteReading) {
     if (!reading || !bytes) return;
     setEditor(kind);
-    if (kind !== "color") playButton();
   }
 
   function applyEditor(value: string, alpha: number): string | null {
@@ -76,7 +72,6 @@ export function FourByteExplorer() {
     const result = encodeFourByteReading(editor, value, alpha, littleEndian);
     if ("error" in result) return result.error;
     setInput(formatFourBytes(result.bytes));
-    if (editor !== "color") playSwitch();
     return null;
   }
 
@@ -124,15 +119,6 @@ export function FourByteExplorer() {
         <div>
           <strong>32-BIT INTERPRETER</strong>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={toggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
       </div>
       <div className={styles.body}>
         <div className={styles.inputSide}>
@@ -144,7 +130,6 @@ export function FourByteExplorer() {
                 aria-pressed={!littleEndian}
                 onClick={() => {
                   setLittleEndian(false);
-                  playSwitch();
                 }}
               >
                 BIG ENDIAN
@@ -154,7 +139,6 @@ export function FourByteExplorer() {
                 aria-pressed={littleEndian}
                 onClick={() => {
                   setLittleEndian(true);
-                  playSwitch();
                 }}
               >
                 LITTLE ENDIAN
@@ -216,7 +200,6 @@ export function FourByteExplorer() {
                 type="button"
                 onClick={() => {
                   setInput(preset.hex);
-                  playButton();
                 }}
               >
                 {preset.label}

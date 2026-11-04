@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { useId, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   bitHome,
   bitString,
@@ -71,7 +70,6 @@ export function Utf8Encoder() {
   const [draft, setDraft] = useState<string | null>(null);
   const composing = useRef(false);
   const id = useId();
-  const sound = usePanelSound();
 
   const codePoint = Math.min(Number.parseInt(stored, 16), MAX_SWITCHES);
   const row = utf8Row(codePoint);
@@ -92,7 +90,7 @@ export function Utf8Encoder() {
   const shownChar = row && !face.isLabel && !face.text.startsWith("◌") ? face.text : "";
 
   return (
-    <UnicodePanel title="UTF-8 ENCODER" sound={sound}>
+    <UnicodePanel title="UTF-8 ENCODER">
       <div className={styles.bay}>
         <div className={panel.sectionHead}>
           <span>CODE POINT</span>
@@ -137,7 +135,6 @@ export function Utf8Encoder() {
             disabled={codePoint === 0}
             onClick={() => {
               set(codePoint - 1);
-              sound.playButton();
             }}
           >
             −1
@@ -148,7 +145,6 @@ export function Utf8Encoder() {
             disabled={codePoint === MAX_SWITCHES}
             onClick={() => {
               set(codePoint + 1);
-              sound.playButton();
             }}
           >
             +1
@@ -161,7 +157,6 @@ export function Utf8Encoder() {
               aria-pressed={stop === codePoint}
               onClick={() => {
                 set(stop);
-                sound.playButton();
               }}
             >
               {stopLabel(stop)}
@@ -191,7 +186,6 @@ export function Utf8Encoder() {
                     data-group={bitHome(codePoint, bit) ?? undefined}
                     onClick={() => {
                       set(on ? codePoint - 2 ** bit : codePoint + 2 ** bit);
-                      sound.playSwitch();
                     }}
                   >
                     {on ? 1 : 0}

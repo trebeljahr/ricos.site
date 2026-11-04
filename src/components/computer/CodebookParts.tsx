@@ -17,8 +17,9 @@ export function DemoMachine({
 }: {
   title: string;
   label: string;
-  soundEnabled: boolean;
-  onToggleSound: () => void;
+  /** Only for a demo whose sound is part of what it shows. */
+  soundEnabled?: boolean;
+  onToggleSound?: () => void;
   className?: string;
   children: ReactNode;
 }) {
@@ -33,15 +34,17 @@ export function DemoMachine({
         <div>
           <strong>{title}</strong>
         </div>
-        <button
-          type="button"
-          className={panel.soundButton}
-          onClick={onToggleSound}
-          aria-pressed={soundEnabled}
-          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
-        >
-          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
-        </button>
+        {onToggleSound && (
+          <button
+            type="button"
+            className={panel.soundButton}
+            onClick={onToggleSound}
+            aria-pressed={soundEnabled}
+            aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
+          >
+            <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
+          </button>
+        )}
       </div>
       {children}
     </section>

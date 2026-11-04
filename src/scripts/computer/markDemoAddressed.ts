@@ -9,17 +9,12 @@
  */
 import { execFileSync } from "node:child_process";
 import path from "node:path";
-import { computerDemos } from "src/lib/computerDemos";
 import { markAddressed } from "src/lib/demoReview";
 import { readDemoReviews, writeDemoReviews } from "src/lib/demoReviewStore";
 
 const [slug, summary, commit] = process.argv.slice(2);
 if (!slug || !summary) {
   console.error('Usage: pnpm demo:addressed <slug> "<what changed>" [commit]');
-  process.exit(1);
-}
-if (!computerDemos.some((demo) => demo.slug === slug)) {
-  console.error(`Unknown demo: ${slug}`);
   process.exit(1);
 }
 

@@ -1,12 +1,22 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AsciiTable } from "./AsciiTable";
 import { AsciiTyper } from "./AsciiTyper";
 
 afterEach(cleanup);
+const { playButton } = vi.hoisted(() => ({ playButton: vi.fn() }));
+vi.mock("src/hooks/usePanelSound", async (importOriginal) => {
+  const original = await importOriginal<typeof import("src/hooks/usePanelSound")>();
+  return {
+    ...original,
+    usePanelSound: () => ({ ...original.usePanelSound(), playButton }),
+  };
+});
+
 beforeEach(() => {
   localStorage.clear();
+  playButton.mockClear();
 });
 
 function setup() {
@@ -28,17 +38,20 @@ describe("AsciiTable", () => {
     expect(detail()?.textContent).toBe("Capital letter A");
     fireEvent.focus(slot(10));
     expect(detail()?.textContent).toBe("Capital letter A");
+    expect(playButton).not.toHaveBeenCalled();
     fireEvent.click(slot(27));
     expect(detail()?.textContent).toBe("Escape");
     expect(slot(27).dataset.lit).toBe("latest");
     expect(slot(65).getAttribute("aria-pressed")).toBe("false");
     expect(slot(65).dataset.lit).toBeUndefined();
     expect(group.querySelectorAll('[aria-pressed="true"]')).toHaveLength(1);
+    expect(playButton).toHaveBeenCalledTimes(1);
     fireEvent.mouseOver(slot(66));
     fireEvent.mouseOut(slot(66));
     expect(detail()?.textContent).toBe("Escape");
     fireEvent.click(slot(27));
     expect(slot(27).getAttribute("aria-pressed")).toBe("true");
+    expect(playButton).toHaveBeenCalledTimes(2);
     fireEvent.click(slot(66));
     expect(detail()?.textContent).toBe("Capital letter B");
     expect(slot(27).getAttribute("aria-pressed")).toBe("false");

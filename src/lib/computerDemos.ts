@@ -360,6 +360,15 @@ export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = 
   { slug: "byte-explorer", blurb: "Read the same eight bits in different ways." },
   { slug: "ascii-typer", blurb: "Type text and read each character as seven bits." },
   { slug: "ascii-table", blurb: "Look up all 128 ASCII entries as characters, numbers and bits." },
+  {
+    slug: "unicode-inspector",
+    blurb: "Type any text and read its graphemes, code points and UTF-8 bytes.",
+  },
+  {
+    slug: "switch-logic",
+    blurb: "Wire two switches, a battery and a lamp, then click the switches.",
+  },
+  { slug: "switch-logic-parallel", blurb: "Wire the same two switches in parallel and compare." },
   { slug: "full-adder", blurb: "Add two bits and a carry, and follow the signals through gates." },
   {
     slug: "logic-builder",

@@ -53,6 +53,10 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
       description="How we got sand to think. There's no trick to it, only layer upon layer of clever abstractions, from a single on/off switch up to the internet."
       keywords={[]}
       url="computer"
+      image="/images/computer/og-computer.jpg"
+      imageAlt="How computers work: the title over a Pentium II chip photo, beside panels for a neural net, the internet, an OS, a CPU, 3D graphics, a transistor, logic gates and Unicode"
+      imageWidth={1200}
+      imageHeight={630}
       noindex={chapters.length === 0}
     >
       <PageMain>

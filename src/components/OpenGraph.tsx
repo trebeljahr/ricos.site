@@ -57,13 +57,25 @@ export const OpenGraph: FC<OpenGraphProps> = ({
   const imageUrl = completeUrl(usingDefaultImage ? defaultOgImage : pipelineUrl);
 
   const resolvedImageAlt = usingDefaultImage ? defaultOgImageAlt : imageAlt;
-  const imageType = usingDefaultImage ? "image/png" : "image/webp";
-  const width = usingDefaultImage ? defaultOgImageWidth : ogImageRenderWidth;
+  // A file from public/ skips the image pipeline, so it keeps its own type and size.
+  const servedDirectly = !usingDefaultImage && /^\/(?!assets\/)/.test(pipelineUrl);
+  const imageType = usingDefaultImage
+    ? "image/png"
+    : servedDirectly
+      ? `image/${/\.jpe?g$/i.test(pipelineUrl) ? "jpeg" : (pipelineUrl.split(".").pop() ?? "png")}`
+      : "image/webp";
+  const width = usingDefaultImage
+    ? defaultOgImageWidth
+    : servedDirectly
+      ? imageWidth
+      : ogImageRenderWidth;
   const height = usingDefaultImage
     ? defaultOgImageHeight
-    : imageWidth && imageHeight
-      ? Math.round((ogImageRenderWidth * imageHeight) / imageWidth)
-      : undefined;
+    : servedDirectly
+      ? imageHeight
+      : imageWidth && imageHeight
+        ? Math.round((ogImageRenderWidth * imageHeight) / imageWidth)
+        : undefined;
 
   return (
     <Head>

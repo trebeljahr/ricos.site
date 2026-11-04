@@ -92,10 +92,16 @@ const nextConfig = {
   // reads, under `next dev`. Keep it out of every deployed function bundle,
   // whatever a trace of the server code finds.
   outputFileTracingExcludes: {
-    "*": ["src/content/Notes/texts/**"],
+    // Browsers fetch public/3d-assets directly; no function reads them.
+    "*": ["src/content/Notes/texts/**", "public/3d-assets/**"],
     // Their whole-Notes search only runs under `next dev`.
     "/api/dev/diary/*": ["src/content/Notes/**"],
     "/dev/diary/*": ["src/content/Notes/**"],
+    // Dev-only too. demoWork reads source files by computed paths, so the trace
+    // pulls in the whole project, and public/ alone is near Vercel's 250 MB
+    // limit for one function.
+    "/computer/demos": ["public/**", "src/**"],
+    "/api/dev/demo-review": ["public/**", "src/**"],
   },
   env: {
     NEWSLETTER_OFFERED_LISTS: offeredNewsletterLists(),

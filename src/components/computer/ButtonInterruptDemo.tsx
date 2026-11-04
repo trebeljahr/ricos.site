@@ -2,11 +2,11 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useDemoState } from "../../hooks/useDemoState";
+import { buttonCpuBoard } from "../../lib/computer/buttonCpuBoard";
 import {
   BUTTON_PROGRAM,
   buttonBench,
   buttonCounterDisplay,
-  buttonCpuCircuit,
   checkButtonProgram,
   compileButtonProgram,
 } from "../../lib/computer/buttonInterrupt";
@@ -55,7 +55,7 @@ export function ButtonInterruptDemo() {
   const [loaded, setLoaded] = useDemoState("button-program:loaded", BUTTON_PROGRAM);
   const [error, setError] = useState("");
   const [hint, setHint] = useState(false);
-  const circuit = useMemo(() => buttonCpuCircuit(loaded), [loaded]);
+  const circuit = useMemo(() => buttonCpuBoard(loaded), [loaded]);
   const compiled = useMemo(() => compileButtonProgram(loaded), [loaded]);
   const load = () => {
     try {
@@ -84,7 +84,7 @@ export function ButtonInterruptDemo() {
             initialCircuit={circuit}
             initialFocus={interruptFocus}
             largeBoard
-            storageKey={demoStorageKey("button-cpu-builder", loaded)}
+            storageKey={demoStorageKey("button-cpu-board", loaded)}
           />
         </div>
         <div className={controlsClass}>

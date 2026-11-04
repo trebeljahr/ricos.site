@@ -361,10 +361,10 @@ export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = 
   { slug: "byte-explorer", blurb: "Read the same eight bits in different ways." },
   { slug: "ascii-typer", blurb: "Type text and read each character as seven bits." },
   { slug: "ascii-table", blurb: "Look up all 128 ASCII entries as characters, numbers and bits." },
+  { slug: "full-adder", blurb: "Add two bits and a carry, and follow the signals through gates." },
   {
-    slug: "build-from-nand",
-    blurb:
-      "Wire every part yourself, from transistors up to a CPU. Each level checks your circuit.",
+    slug: "logic-builder",
+    blurb: "Place gates on a board, wire them up and watch signals travel.",
   },
 ];
 

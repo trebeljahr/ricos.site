@@ -102,7 +102,7 @@ describe("inline circuit unfolding", () => {
       [...board.querySelectorAll(":scope > svg path[d]")].map((wire) => wire.getAttribute("d"));
     const foldedWires = wirePaths();
     const stored = localStorage.getItem("ricos-computer-circuits-v1");
-    fireEvent.click(screen.getByLabelText("Unfold SUM in place"));
+    fireEvent.click(screen.getByLabelText("Unfold XOR in place"));
     expect(camera().zoom).toBeLessThan(folded.zoom);
     const expanded = screen.getByLabelText(/XOR.*expanded circuit/).parentElement!;
     const width = parseFloat(
@@ -137,7 +137,7 @@ describe("inline circuit unfolding", () => {
     expect(wirePaths()).toEqual(expandedWires);
     fireEvent.click(screen.getByLabelText("Redo"));
     expectCamera(folded);
-    fireEvent.click(screen.getByLabelText("Unfold SUM in place"));
+    fireEvent.click(screen.getByLabelText("Unfold XOR in place"));
     expectCamera(explored);
     expect(localStorage.getItem("ricos-computer-circuits-v1")).toBe(stored);
   }, 15000);
@@ -149,7 +149,7 @@ describe("inline circuit unfolding", () => {
     const outer = screen.getByLabelText("Half adder expanded circuit");
     viewport.scrollLeft += 75;
     const overview = camera();
-    fireEvent.click(testButton("Unfold SUM in place", outer));
+    fireEvent.click(testButton("Unfold XOR in place", outer));
     viewport.scrollTop += 90;
     fireEvent.click(testButton("Zoom in"));
     const detail = camera();
@@ -157,7 +157,7 @@ describe("inline circuit unfolding", () => {
     fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
     fireEvent.click(testButton("Refold one level", outer));
     expectCamera(overview);
-    fireEvent.click(testButton("Unfold SUM in place", outer));
+    fireEvent.click(testButton("Unfold XOR in place", outer));
     expectCamera(detail);
   });
 
@@ -177,7 +177,7 @@ describe("inline circuit unfolding", () => {
     viewport.scrollLeft += 19800;
     viewport.scrollTop += 14800;
     const before = camera();
-    fireEvent.click(testButton("Unfold SUM in place"));
+    fireEvent.click(testButton("Unfold XOR in place"));
     const expanded = screen.getByLabelText(/XOR.*expanded circuit/).parentElement!;
     const [, , width, height] = board
       .querySelector("svg[viewBox]")!
@@ -218,20 +218,20 @@ describe("inline circuit unfolding", () => {
     ).toBeGreaterThan(0);
     fireEvent.click(within(adder).getAllByRole("button", { name: "Unfold one level deeper" })[0]);
     expect(
-      within(expanded).getAllByRole("button", { name: "Unfold SUM XOR in place" }).length,
+      within(expanded).getAllByRole("button", { name: "Unfold XOR in place" }).length,
     ).toBeGreaterThan(0);
     fireEvent.click(within(adder).getAllByRole("button", { name: "Refold one level" })[0]);
-    expect(
-      within(expanded).queryAllByRole("button", { name: "Unfold SUM XOR in place" }),
-    ).toHaveLength(0);
+    expect(within(expanded).queryAllByRole("button", { name: "Unfold XOR in place" })).toHaveLength(
+      0,
+    );
     fireEvent.click(testButton("Undo"));
     expect(
-      within(expanded).getAllByRole("button", { name: "Unfold SUM XOR in place" }).length,
+      within(expanded).getAllByRole("button", { name: "Unfold XOR in place" }).length,
     ).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Refold one level" })[0]);
-    expect(
-      within(expanded).queryAllByRole("button", { name: "Unfold SUM XOR in place" }),
-    ).toHaveLength(0);
+    expect(within(expanded).queryAllByRole("button", { name: "Unfold XOR in place" })).toHaveLength(
+      0,
+    );
   }, 20000);
 
   it("edits boundary outputs and wires in place with undo and redo", () => {
@@ -282,7 +282,7 @@ describe("inline circuit unfolding", () => {
 
   it("adds, renames, and removes a part inside an expanded gate", () => {
     render(<LogicBuilder />);
-    fireEvent.click(testButton("Unfold SUM in place"));
+    fireEvent.click(testButton("Unfold XOR in place"));
     let expanded = screen.getByLabelText(/XOR.*expanded circuit/);
     fireEvent.click(expanded);
     fireEvent.click(screen.getByTitle("Drag NAND onto canvas or click to add"));
@@ -360,7 +360,7 @@ describe("inline circuit unfolding", () => {
 
   it("previews an inner drag at canvas scale and commits once without renaming the logic", () => {
     render(<LogicBuilder />);
-    fireEvent.click(testButton("Unfold SUM in place"));
+    fireEvent.click(testButton("Unfold XOR in place"));
     const expanded = screen.getByLabelText(/XOR.*expanded circuit/);
     const diagram = expanded.querySelector<HTMLElement>("[data-inline-diagram]")!;
     vi.spyOn(diagram, "getBoundingClientRect").mockReturnValue({
@@ -388,7 +388,7 @@ describe("inline circuit unfolding", () => {
     const saved = validateCircuit(
       JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current,
     )!;
-    const sum = saved.nodes.find((node) => node.label === "SUM")!;
+    const sum = saved.nodes.find((node) => node.id === "xor")!;
     expect(sum.module?.name).not.toMatch(/Modified/);
     expect(sum.module?.nodes.find((node) => node.id === id)).toMatchObject({
       x: x + 100,
@@ -399,7 +399,7 @@ describe("inline circuit unfolding", () => {
     expect(
       validateCircuit(
         JSON.parse(localStorage.getItem("ricos-computer-circuits-v1")!).current,
-      )!.nodes.find((node) => node.label === "SUM")!.type,
+      )!.nodes.find((node) => node.id === "xor")!.type,
     ).toBe("xor");
   });
 

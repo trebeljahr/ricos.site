@@ -110,8 +110,8 @@ export const computerDemos = [
     title: "One gate, five wirings",
   },
   {
-    slug: "half-adder-sum",
-    title: "Half adder, sum only",
+    slug: "add-two-bits",
+    title: "Add two bits, no carry",
   },
   {
     slug: "half-adder",
@@ -120,6 +120,10 @@ export const computerDemos = [
   {
     slug: "full-adder",
     title: "Full adder",
+  },
+  {
+    slug: "four-bit-adder",
+    title: "Four-bit adder",
   },
   {
     slug: "eight-bit-adder",

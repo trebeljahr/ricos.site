@@ -46,6 +46,7 @@ export const MDX_DEMO_COMPONENTS = [
   "HalfAdder",
   "FullAdderTable",
   "FullAdder",
+  "FourBitAdder",
   "EightBitAdder",
   "LazyLogicTutorial",
   "SignalEdges",

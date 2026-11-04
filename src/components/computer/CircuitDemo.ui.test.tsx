@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, expect, it } from "vitest";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
 import type { Circuit } from "../../lib/computer/logic";
-import { EightBitAdder, FullAdder, HalfAdder } from "./Adders";
+import { EightBitAdder, FourBitAdder, FullAdder, HalfAdder } from "./Adders";
 import { DecoderDemo } from "./AddressRouting";
 import { CircuitDemo } from "./CircuitDemo";
 import { MemoryMappedScreenDemo } from "./MemoryMappedScreenDemo";
@@ -16,9 +16,12 @@ afterEach(() => {
 
 it("uses native adder parts and changes the sum and carry from real switches", () => {
   render(<HalfAdder />);
-  fireEvent.click(testButton("OFF", screen.getByLabelText("B — SWITCH part")));
   expect(within(screen.getByLabelText("SUM — LAMP part")).getByLabelText("LED off")).toBeTruthy();
   expect(within(screen.getByLabelText("CARRY — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  fireEvent.click(testButton("ON", screen.getByLabelText("B — SWITCH part")));
+  expect(within(screen.getByLabelText("SUM — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  expect(within(screen.getByLabelText("CARRY — LAMP part")).getByLabelText("LED off")).toBeTruthy();
+  expect(screen.queryByLabelText(/^(SUM|CARRY) — (XOR|AND) part/)).toBeNull();
 });
 
 it("starts the boxed full adder with two unfoldable half adders", () => {
@@ -38,16 +41,24 @@ it("adds two editable bytes and keeps their controls when a bit stage unfolds", 
   fireEvent.change(b, { target: { value: "1" } });
   fireEvent.keyDown(b, { key: "Enter" });
   expect(within(screen.getByLabelText("SUM0 — LAMP part")).getByLabelText("LED off")).toBeTruthy();
-  expect(
-    within(screen.getByLabelText("CARRY OUT — LAMP part")).getByLabelText("LED on"),
-  ).toBeTruthy();
+  expect(within(screen.getByLabelText("CARRY — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  expect(screen.getByLabelText("A + B value").textContent).toBe("256100000000");
+  expect(screen.queryByLabelText("CARRY IN — SWITCH part")).toBeNull();
+  expect(screen.queryByRole("table")).toBeNull();
   fireEvent.click(testButton("Unfold FULL ADDER 0 in place"));
   expect(screen.getByLabelText("1-bit full adder expanded circuit")).toBeTruthy();
   expect(screen.getByLabelText("A decimal input")).toBeTruthy();
   expect(screen.getByLabelText("B decimal input")).toBeTruthy();
-  expect(
-    within(screen.getByLabelText("CARRY OUT — LAMP part")).getByLabelText("LED on"),
-  ).toBeTruthy();
+  expect(within(screen.getByLabelText("CARRY — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+});
+
+it("adds two 4-bit numbers and shows the five-bit total on lamps and a display", () => {
+  render(<FourBitAdder />);
+  expect(screen.getByLabelText("A + B value").textContent).toBe("1401110");
+  fireEvent.click(screen.getByRole("button", { name: "Toggle bit 3 of A" }));
+  expect(screen.getByLabelText("A + B value").textContent).toBe("2210110");
+  expect(within(screen.getByLabelText("SUM2 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  expect(screen.getByLabelText("A + B — 5-BIT DISPLAY part")).toBeTruthy();
 });
 
 it("opens a decoder's modules down to its gates, and stops there", () => {

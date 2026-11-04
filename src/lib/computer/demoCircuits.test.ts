@@ -13,14 +13,7 @@ import {
   transistorDemo,
   transistorLampDemo,
 } from "./demoCircuits";
-import {
-  type Circuit,
-  initialSnapshot,
-  moduleInputs,
-  moduleOutputs,
-  step,
-  validateCircuit,
-} from "./logic";
+import { type Circuit, initialSnapshot, moduleInputs, step, validateCircuit } from "./logic";
 
 import { cmosNandLevel } from "./tutorial/levels/gates";
 
@@ -118,29 +111,44 @@ describe("chapter circuits", () => {
     }
   });
 
-  it("propagates carry through the same eight full-adder modules as the lab", () => {
-    const source = adderDemo("byte");
-    expect(validateCircuit(source)).toBeTruthy();
-    for (const [a, b, cin] of [
-      [13, 29, 0],
-      [255, 1, 0],
-      [100, 200, 0],
-      [255, 255, 1],
-    ]) {
-      const circuit = {
-        ...source,
-        nodes: source.nodes.map((node) =>
-          node.id === "a"
-            ? { ...node, numberValue: a }
-            : node.id === "b"
-              ? { ...node, numberValue: b }
-              : node,
-        ),
-      };
-      const snapshot = read(circuit, { cin: Boolean(cin) });
-      const out = moduleOutputs(circuit).map((node) => snapshot.values[node.id]);
-      expect(toNumber(out.slice(0, 8))).toBe((a + b + cin) & 255);
-      expect(out[8]).toBe(a + b + cin > 255);
+  it("never names a gate after its output", () => {
+    for (const kind of ["sum", "half", "full"] as const)
+      for (const node of adderDemo(kind).nodes)
+        if (node.type !== "switch" && node.type !== "lamp") expect(node.label).toBeUndefined();
+  });
+
+  it("adds through a column of four or eight full adders, with no carry in", () => {
+    for (const [kind, width] of [
+      ["nibble", 4],
+      ["byte", 8],
+    ] as const) {
+      const source = adderDemo(kind);
+      expect(validateCircuit(source)?.reflow).toBe("column");
+      expect(source.nodes.filter((node) => node.type === "module")).toHaveLength(width);
+      expect(source.nodes.some((node) => node.id === "cin")).toBe(false);
+      const top = 2 ** width - 1;
+      for (const [a, b] of [
+        [top, top],
+        [top, 1],
+        [5, 9],
+        [0, 0],
+      ]) {
+        const circuit = {
+          ...source,
+          nodes: source.nodes.map((node) =>
+            node.id === "a"
+              ? { ...node, numberValue: a }
+              : node.id === "b"
+                ? { ...node, numberValue: b }
+                : node,
+          ),
+        };
+        const snapshot = read(circuit, {});
+        const lamps = Array.from({ length: width }, (_, bit) => snapshot.values[`out${bit}`]);
+        expect(toNumber(lamps)).toBe((a + b) & top);
+        expect(snapshot.values.cout).toBe(a + b > top);
+        expect(toNumber(snapshot.outputs.total)).toBe(a + b);
+      }
     }
   });
 

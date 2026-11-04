@@ -218,6 +218,12 @@ export const COMPUTER_MDX_DEMOS = {
     650,
     true,
   ),
+  FourBitAdder: chapterDemo(
+    () => loadCircuitDemos().then((module) => module.FourBitAdder),
+    "Four-bit adder",
+    650,
+    true,
+  ),
   EightBitAdder: chapterDemo(
     () => loadCircuitDemos().then((module) => module.EightBitAdder),
     "Eight-bit adder",

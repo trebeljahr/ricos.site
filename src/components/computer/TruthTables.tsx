@@ -1,17 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
-import { adderDemo } from "src/lib/computer/demoCircuits";
-import {
-  bit,
-  evalGate,
-  fullAdd,
-  GATE_LABELS,
-  halfAdd,
-  inputRows,
-  TRUTH_GATES,
-  type TruthGate,
-} from "src/lib/computer/gateLogic";
+import { bit } from "src/lib/computer/gateLogic";
 import type { Circuit } from "src/lib/computer/logic";
 import panel from "./ByteExplorer.module.css";
 import toolbar from "./CircuitToolbar.module.css";
@@ -19,10 +9,6 @@ import gates from "./GateDemos.module.css";
 import { type LockedClock, LogicBuilder } from "./LogicBuilder";
 import { ToolbarMenu } from "./ToolbarMenu";
 import table from "./TruthTables.module.css";
-import { TruthTable } from "./tutorial/SpecView";
-import tutorial from "./tutorial/Tutorial.module.css";
-
-const TWO_INPUT_GATES = TRUTH_GATES.filter((gate) => gate !== "not");
 
 /** A key for one input, with its name above. */
 export function InputKey({ name, on, onFlip }: { name: string; on: boolean; onFlip: () => void }) {
@@ -54,7 +40,7 @@ export function OutputLamp({ name, on }: { name: string; on: boolean }) {
 }
 
 /** The same menu surface used for the builder's File, View and Clock menus. */
-function CircuitPicker({ label, children }: { label: string; children: ReactNode }) {
+export function CircuitPicker({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className={clsx(toolbar.root, table.picker)}>
       <ToolbarMenu label={label} closeOnSelect>
@@ -112,108 +98,4 @@ export function withInputs(circuit: Circuit, inputs: boolean[]): Circuit {
       node.type === "switch" ? { ...node, value: inputs[index++] ?? false } : node,
     ),
   };
-}
-
-/** Compare gates with the sum and carry of the shared half-adder circuit. */
-export function AdditionTable() {
-  const [circuit] = useState(() => withInputs(adderDemo("half"), [true, true]));
-  const [trial, setTrial] = useState<TruthGate | null>(null);
-  const { render, inputs, pick } = useTableCircuit(
-    circuit,
-    <CircuitPicker label={`Compare: ${trial ? GATE_LABELS[trial] : "None"}`}>
-      {[null, ...TWO_INPUT_GATES].map((name) => (
-        <button
-          key={name ?? "none"}
-          type="button"
-          aria-pressed={trial === name}
-          onClick={() => setTrial(name)}
-        >
-          {name ? GATE_LABELS[name] : "None"}
-        </button>
-      ))}
-    </CircuitPicker>,
-  );
-  const [a, b] = inputs;
-  const { sum, carry } = halfAdd(a, b);
-  const matches = (column: "sum" | "carry") =>
-    trial
-      ? inputRows(2).filter(([x, y]) => evalGate(trial, x, y) === halfAdd(x, y)[column]).length
-      : 0;
-
-  return (
-    <section
-      className={clsx("not-prose", table.demo)}
-      aria-label={"Truth table for adding two one-bit numbers"}
-    >
-      {render(
-        <div className={tutorial.panel}>
-          <h3 className={tutorial.subhead}>Truth table</h3>
-          <TruthTable
-            spec={{
-              kind: "truth",
-              inputs: ["A", "B"].map(port),
-              outputs: ["CARRY", "SUM"].map(port),
-              fn: ([x, y]) => {
-                const result = halfAdd(x, y);
-                return [result.carry, result.sum];
-              },
-            }}
-            current={inputs}
-            onPick={pick}
-            extra={
-              trial
-                ? { name: GATE_LABELS[trial], cell: ([x, y]) => bit(evalGate(trial, x, y)) }
-                : undefined
-            }
-            label="Truth table of one-bit addition"
-          />
-          <p aria-live="polite">
-            {bit(a)} + {bit(b)} = {bit(carry)}
-            {bit(sum)}
-          </p>
-          <p className={tutorial.muted} aria-live="polite">
-            {trial
-              ? `${GATE_LABELS[trial]} matches SUM in ${matches("sum")} of 4 rows and CARRY in ${matches("carry")} of 4.`
-              : "Which gate gives the SUM column? Which one gives CARRY?"}
-          </p>
-        </div>,
-      )}
-    </section>
-  );
-}
-
-/** The shared full-adder circuit and all eight input combinations. */
-export function FullAdderTable() {
-  const [circuit] = useState(() => withInputs(adderDemo("full"), [true, false, true]));
-  const { render, inputs, pick } = useTableCircuit(circuit);
-  const [a, b, carryIn] = inputs;
-  const { sum, carry } = fullAdd(a, b, carryIn);
-
-  return (
-    <section className={clsx("not-prose", table.demo)} aria-label={"Truth table of a full adder"}>
-      {render(
-        <div className={tutorial.panel}>
-          <h3 className={tutorial.subhead}>Truth table</h3>
-          <TruthTable
-            spec={{
-              kind: "truth",
-              inputs: ["A", "B", "CIN"].map(port),
-              outputs: ["COUT", "SUM"].map(port),
-              fn: ([x, y, z]) => {
-                const result = fullAdd(x, y, z);
-                return [result.carry, result.sum];
-              },
-            }}
-            current={inputs}
-            onPick={pick}
-            label="Truth table of a full adder"
-          />
-          <p aria-live="polite">
-            {bit(a)} + {bit(b)} + {bit(carryIn)} = {bit(carry)}
-            {bit(sum)}
-          </p>
-        </div>,
-      )}
-    </section>
-  );
 }

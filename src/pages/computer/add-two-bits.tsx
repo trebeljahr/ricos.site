@@ -1,9 +1,9 @@
 import { HalfAdder } from "@components/computer/Adders";
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 
-export default function HalfAdderSumPage() {
+export default function AddTwoBitsPage() {
   return (
-    <DeviceDemoPage slug="half-adder-sum" description="The sum output of a half adder.">
+    <DeviceDemoPage slug="add-two-bits" description="An XOR gate adds two bits, without a carry.">
       <HalfAdder sumOnly />
     </DeviceDemoPage>
   );

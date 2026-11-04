@@ -1,5 +1,5 @@
+import { AdditionTable } from "@components/computer/Adders";
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
-import { AdditionTable } from "@components/computer/TruthTables";
 
 export default function AdditionTablePage() {
   return (

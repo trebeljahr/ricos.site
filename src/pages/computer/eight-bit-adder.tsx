@@ -5,7 +5,8 @@ export default function EightBitAdderPage() {
   return (
     <DeviceDemoPage
       slug="eight-bit-adder"
-      description="Eight full adders in a row that add two bytes."
+      description="Eight full adders in a column that add two bytes."
+      wide
     >
       <EightBitAdder />
     </DeviceDemoPage>

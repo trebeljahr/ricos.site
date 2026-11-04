@@ -2,9 +2,9 @@
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { transistorLampDemo } from "../../lib/computer/demoCircuits";
+import { AdditionTable, FullAdderTable, HalfAdder } from "./Adders";
 import { SwitchLogic, TransistorComparison, TransistorSwitches } from "./SwitchLogic";
 import { GateTruthTable } from "./TransistorGates";
-import { AdditionTable, FullAdderTable } from "./TruthTables";
 
 afterEach(() => {
   cleanup();
@@ -88,6 +88,19 @@ describe("truth tables", () => {
     expect(container.textContent).toContain("AND matches SUM in 1 of 4 rows and CARRY in 4 of 4.");
   });
 
+  it("adds two bits with one XOR gate, and no carry, beside its table", () => {
+    const { container } = render(<HalfAdder sumOnly />);
+    const rows = within(
+      screen.getByRole("table", { name: "Truth table of the sum of two bits" }),
+    ).getAllByRole("row");
+    expect(rows.map((row) => row.textContent)).toEqual(["ABSUM", "000", "011", "101", "110"]);
+    expect(screen.queryByLabelText(/CARRY — LAMP part/)).toBeNull();
+    expect(screen.queryByLabelText("AND — AND part")).toBeNull();
+    expect(screen.getByLabelText("XOR — XOR part")).toBeTruthy();
+    expect(screen.getByLabelText("SUM — LAMP part")).toBeTruthy();
+    expect(container.textContent).not.toContain("Compare");
+  });
+
   it("counts the inputs that are on in the full adder table", () => {
     const { container } = render(<FullAdderTable />);
     expect(container.textContent).toContain("1 + 0 + 1 = 10");
@@ -96,7 +109,7 @@ describe("truth tables", () => {
     );
     expect(container.textContent).toContain("1 + 1 + 1 = 11");
     expect(currentRow("Truth table of a full adder")?.textContent).toBe("11111");
-    click(/^A 0, B 0, CIN 0 gives COUT 0, SUM 0/);
+    click(/^A 0, B 0, CARRY IN 0 gives CARRY 0, SUM 0/);
     expect(currentRow("Truth table of a full adder")?.textContent).toBe("00000");
   });
 });

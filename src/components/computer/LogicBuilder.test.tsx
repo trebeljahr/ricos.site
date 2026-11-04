@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { rawSegmentDemo } from "../../lib/computer/sevenSegment";
+import { SIGNAL_COLORS } from "../../lib/computer/wireAppearance";
 import { LogicBuilder } from "./LogicBuilder";
 import { ROW_DRAG_TYPE } from "./PaletteRow";
 import { testButton } from "./testButton";
-import { rawSegmentDemo } from "../../lib/computer/sevenSegment";
-import { SIGNAL_COLORS } from "../../lib/computer/wireAppearance";
 
 beforeEach(() => {
   localStorage.clear();
@@ -25,16 +25,25 @@ describe("circuit depth", () => {
     fireEvent.click(testButton("OFF", screen.getByLabelText("A — SWITCH part")));
     expect(container.querySelector('[data-wire-view="signal"]')).toBeTruthy();
     expect(wires().some((wire) => wire.dataset.wireSignal === "high")).toBe(true);
-    expect(container.querySelector('[data-inline-wire]')!.parentElement!.getAttribute("data-wire-signal")).toBe("low");
+    expect(
+      container
+        .querySelector("[data-inline-wire]")!
+        .parentElement!.getAttribute("data-wire-signal"),
+    ).toBe("low");
     for (const wire of wires()) {
-      expect(wire.style.getPropertyValue("--wire-color")).toBe(SIGNAL_COLORS[wire.dataset.wireSignal as keyof typeof SIGNAL_COLORS]);
+      expect(wire.style.getPropertyValue("--wire-color")).toBe(
+        SIGNAL_COLORS[wire.dataset.wireSignal as keyof typeof SIGNAL_COLORS],
+      );
     }
     fireEvent.click(screen.getByRole("switch", { name: "Wire colors" }));
-    expect(wires().map((wire) => wire.style.getPropertyValue("--wire-color"))).toEqual(originalColors);
+    expect(wires().map((wire) => wire.style.getPropertyValue("--wire-color"))).toEqual(
+      originalColors,
+    );
   });
   it("arranges an existing diagram on request and restores its positions with Undo", () => {
     render(<LogicBuilder initialCircuit={rawSegmentDemo()} storageKey={null} />);
-    const positions = () => screen.getAllByRole("group", { name: /part$/ }).map((node) => node.getAttribute("style"));
+    const positions = () =>
+      screen.getAllByRole("group", { name: /part$/ }).map((node) => node.getAttribute("style"));
     const before = positions();
     fireEvent.click(screen.getByText("View", { selector: "summary" }));
     fireEvent.click(testButton("Arrange by signal flow"));
@@ -388,7 +397,7 @@ describe("circuit depth", () => {
   });
   it("edits a part from its context menu and closes on an outside pointer down", () => {
     render(<LogicBuilder />);
-    const part = screen.getByLabelText("SUM — XOR part");
+    const part = screen.getByLabelText("XOR — XOR part");
     fireEvent.contextMenu(part, { clientX: 100, clientY: 100 });
     expect(screen.queryByLabelText("Selection controls")).toBeNull();
     expect(within(screen.getByRole("menu")).getByText("XOR")).toBeTruthy();

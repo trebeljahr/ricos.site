@@ -3,7 +3,10 @@ import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 
 export default function HalfAdderPage() {
   return (
-    <DeviceDemoPage slug="half-adder" description="A half adder built from gates.">
+    <DeviceDemoPage
+      slug="half-adder"
+      description="XOR and AND add two bits and give a sum and a carry."
+    >
       <HalfAdder />
     </DeviceDemoPage>
   );

@@ -1,5 +1,5 @@
+import { FullAdderTable } from "@components/computer/Adders";
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
-import { FullAdderTable } from "@components/computer/TruthTables";
 
 export default function FullAdderTablePage() {
   return (

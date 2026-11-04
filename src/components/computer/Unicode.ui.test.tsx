@@ -141,6 +141,25 @@ describe("CharacterComposer", () => {
 });
 
 describe("Utf8Encoder", () => {
+  it("shows the symbol on a stop key, and the number only where there is no symbol", () => {
+    render(<Utf8Encoder />);
+    const face = (name: string) => screen.getByRole("button", { name }).textContent;
+    expect(face("U+0041")).toBe("A");
+    expect(face("U+07FF")).toBe("\u07ff");
+    expect(face("U+0800")).toBe("\u0800");
+    expect(face("U+10000")).toBe("\u{10000}");
+    expect(face("U+007F")).toBe("DEL");
+    expect(face("U+0080")).toBe("U+0080");
+    expect(face("U+FFFF")).toBe("U+FFFF");
+    expect(face("U+10FFFF")).toBe("U+10FFFF");
+  });
+
+  it("has a sound switch", () => {
+    render(<Utf8Encoder />);
+    press("Sound on. Toggle sound.");
+    expect(screen.getByRole("button", { name: "Sound off. Toggle sound." })).toBeTruthy();
+  });
+
   it("moves up a byte when a step crosses a range boundary", () => {
     render(<Utf8Encoder />);
     press("U+007F");

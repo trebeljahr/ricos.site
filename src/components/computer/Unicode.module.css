@@ -16,6 +16,7 @@
 .deck { container-type: inline-size; display: grid; gap: 8px; padding-top: 8px; background: linear-gradient(#3c4a3f, #566457); }
 .bay { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
 .empty { margin: 12px 0 0; color: #2a3a2e; font-size: 12px; letter-spacing: .08em; }
+.error { margin: 12px 0 0; color: #5e2318; font-size: 12px; font-weight: 600; }
 .unicode .firstLabel { margin-top: 0; }
 
 /* Spacing letters apart breaks Arabic joining and some emoji, so text fields set it to zero. */
@@ -41,6 +42,7 @@
 .unicode .choiceRow button[aria-pressed="true"] { transform: translateY(2px); background: linear-gradient(#9cb98a, #c6d9aa); box-shadow: inset 0 2px 5px #27452f99; }
 .unicode .choiceRow button:disabled { cursor: not-allowed; opacity: .45; }
 .unicode .choiceRow button { font-size: 12px; }
+.unicode .choiceRow .glyphKey { padding-block: 4px; font-family: var(--shaped-text); font-size: 17px; line-height: 1.2; }
 .bay > .choiceRow { margin-top: 12px; }
 .choice { min-width: 0; margin: 12px 0 0; padding: 0; border: 0; }
 .bay > .choice:first-child { margin-top: 0; }

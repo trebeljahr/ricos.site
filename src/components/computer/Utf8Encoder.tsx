@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useId, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   bitHome,
   bitString,
@@ -45,13 +46,6 @@ const BIT_GROUPS = [
   [5, 4, 3, 2, 1, 0],
 ];
 
-/** Stops at a range boundary go by number; the glyphs there say nothing. */
-const CHARACTER_STOPS = new Set([0x41, 0xe9, 0x20ac, 0x5b57, 0x1f600]);
-
-function stopLabel(code: number): string {
-  return CHARACTER_STOPS.has(code) ? String.fromCodePoint(code) : codePointLabel(code);
-}
-
 /** A row's byte patterns, with the code point's own bits written over the x's. */
 function filledTemplate(codePoint: number, template: readonly string[]) {
   const payload = template.join("").replace(/[^x]/g, "").length;
@@ -70,6 +64,7 @@ export function Utf8Encoder() {
   const [draft, setDraft] = useState<string | null>(null);
   const composing = useRef(false);
   const id = useId();
+  const sound = usePanelSound();
 
   const codePoint = Math.min(Number.parseInt(stored, 16), MAX_SWITCHES);
   const row = utf8Row(codePoint);
@@ -83,14 +78,17 @@ export function Utf8Encoder() {
 
   function take(value: string) {
     const last = Array.from(value).at(-1);
-    if (last) set(last.codePointAt(0) ?? 0);
+    if (last) {
+      set(last.codePointAt(0) ?? 0);
+      sound.playType("key");
+    }
     setDraft(null);
   }
 
   const shownChar = row && !face.isLabel && !face.text.startsWith("◌") ? face.text : "";
 
   return (
-    <UnicodePanel title="UTF-8 ENCODER">
+    <UnicodePanel title="UTF-8 ENCODER" sound={sound}>
       <div className={styles.bay}>
         <div className={panel.sectionHead}>
           <span>CODE POINT</span>
@@ -135,6 +133,7 @@ export function Utf8Encoder() {
             disabled={codePoint === 0}
             onClick={() => {
               set(codePoint - 1);
+              sound.playButton();
             }}
           >
             −1
@@ -145,23 +144,29 @@ export function Utf8Encoder() {
             disabled={codePoint === MAX_SWITCHES}
             onClick={() => {
               set(codePoint + 1);
+              sound.playButton();
             }}
           >
             +1
           </button>
-          {STOPS.map((stop) => (
-            <button
-              key={stop}
-              type="button"
-              aria-label={codePointLabel(stop)}
-              aria-pressed={stop === codePoint}
-              onClick={() => {
-                set(stop);
-              }}
-            >
-              {stopLabel(stop)}
-            </button>
-          ))}
+          {STOPS.map((stop) => {
+            const stopFace = codePointFace(stop);
+            return (
+              <button
+                key={stop}
+                type="button"
+                className={clsx(!stopFace.isLabel && styles.glyphKey)}
+                aria-label={codePointLabel(stop)}
+                aria-pressed={stop === codePoint}
+                onClick={() => {
+                  set(stop);
+                  sound.playButton();
+                }}
+              >
+                {stopFace.text}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -186,6 +191,7 @@ export function Utf8Encoder() {
                     data-group={bitHome(codePoint, bit) ?? undefined}
                     onClick={() => {
                       set(on ? codePoint - 2 ** bit : codePoint + 2 ** bit);
+                      sound.playSwitch();
                     }}
                   >
                     {on ? 1 : 0}

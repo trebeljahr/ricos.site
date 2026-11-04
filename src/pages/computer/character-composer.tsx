@@ -20,7 +20,7 @@ export default function CharacterComposerPage() {
           </h1>
         </header>
         {/* The width of a chapter's text column, where the demo is embedded. */}
-        <div className="mx-auto max-w-prose">
+        <div className="mx-auto max-w-5xl">
           <CharacterComposer />
         </div>
         <ComputerDemoNav current="character-composer" bottom />

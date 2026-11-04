@@ -40,11 +40,79 @@ describe("UnicodeInspector", () => {
       target: { value: "x".repeat(60) },
     });
     expect(count("CODE POINTS")).toBe("48");
-    expect(screen.getByRole("status").textContent).toContain("holds 48");
+    expect(screen.getByRole("status").textContent).toBe("FULL");
+    expect(screen.getByText("48 / 48")).toBeTruthy();
+  });
+});
+
+describe("TextLayers in the inspector", () => {
+  it("draws a one-code-point cluster once and a built one with its parts", () => {
+    render(<UnicodeInspector />);
+    press("é U+00E9");
+    const layers = () => within(screen.getByRole("list", { name: "Graphemes" }));
+    expect(layers().getAllByText("é")).toHaveLength(1);
+    press("👍🏽");
+    expect(layers().getByRole("list", { name: "Code points" }).children).toHaveLength(2);
+    expect(layers().getByText("👍🏽")).toBeTruthy();
+    expect(layers().getByText("👍")).toBeTruthy();
+  });
+
+  it("gives every byte in bits as well as hex", () => {
+    render(<UnicodeInspector />);
+    press("é U+00E9");
+    const run = screen.getByRole("list", { name: "All bytes in order" });
+    expect(run.textContent).toBe("11000011C310101001A9");
   });
 });
 
 describe("CharacterComposer", () => {
+  const module = (name: string) => within(screen.getByRole("group", { name }));
+  const verdict = () => screen.getByTestId("composer-verdict").textContent;
+
+  it("keeps every module on the panel whichever one is chosen", () => {
+    render(<CharacterComposer />);
+    const count = () => screen.getAllByRole("button").length;
+    const before = count();
+    for (const name of ["JOINER", "FLAG", "MARKS", "HANGUL", "STYLE", "SKIN TONE"]) {
+      press(name);
+      expect(count()).toBe(before);
+      expect(screen.getByRole("button", { name, pressed: true })).toBeTruthy();
+    }
+  });
+
+  it("names the languages that write a letter, and says when it finds none", () => {
+    render(<CharacterComposer />);
+    press("MARKS");
+    expect(verdict()).toContain("SPANISH");
+    fireEvent.click(screen.getByRole("button", { name: "LATIN U+0301" }));
+    fireEvent.click(screen.getByRole("button", { name: "LATIN U+0327" }));
+    fireEvent.click(screen.getByRole("button", { name: "LATIN U+030A" }));
+    expect(verdict()).toBe("NO LANGUAGE FOUND");
+  });
+
+  it("lifts a rival mark the way interlocked keys do", () => {
+    render(<CharacterComposer />);
+    const key = (name: string) => screen.getByRole("button", { name });
+    fireEvent.click(key("ARABIC base ب"));
+    fireEvent.click(key("ARABIC U+064E"));
+    fireEvent.click(key("ARABIC U+064F"));
+    expect(key("ARABIC U+064E").getAttribute("aria-pressed")).toBe("false");
+    expect(key("ARABIC U+064F").getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(key("ARABIC U+0651"));
+    expect(key("ARABIC U+064F").getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(key("ARABIC U+0652"));
+    expect(key("ARABIC U+064F").getAttribute("aria-pressed")).toBe("false");
+    expect(key("ARABIC U+0651").getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("checks an emoji against the standard list", () => {
+    render(<CharacterComposer />);
+    expect(verdict()).toBe("STANDARD EMOJI");
+    press("FLAG");
+    fireEvent.click(screen.getByRole("button", { name: "Next second letter" }));
+    expect(verdict()).toContain("NOT A STANDARD EMOJI");
+  });
+
   it("falls apart into separate emoji when the joiner is off", () => {
     render(<CharacterComposer />);
     press("JOINER");
@@ -59,15 +127,15 @@ describe("CharacterComposer", () => {
     render(<CharacterComposer />);
     press("MARKS");
     expect(count("CODE POINTS")).toBe("2");
-    press("NFC · COMPOSED");
+    fireEvent.click(module("MARKS").getByRole("button", { name: "NFC · COMPOSED" }));
     expect(count("CODE POINTS")).toBe("1");
-    expect(screen.getByText("NFC 2 B · NFD 3 B")).toBeTruthy();
+    expect(screen.queryByText(/NFC \d+ B/)).toBeNull();
   });
 
   it("computes the Hangul syllable as a live readout", () => {
     render(<CharacterComposer />);
     press("HANGUL");
-    press("NFC · COMPOSED");
+    fireEvent.click(module("HANGUL").getByRole("button", { name: "NFC · COMPOSED" }));
     expect(screen.getAllByText("U+D55C").length).toBeGreaterThan(0);
     expect(screen.getByText("HANGUL SYLLABLE HAN")).toBeTruthy();
   });

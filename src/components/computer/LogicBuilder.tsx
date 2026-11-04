@@ -81,7 +81,7 @@ import { compileProgram, SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { layoutCmosBlueprint } from "../../lib/computer/cmosLayout";
-import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
+import { spaceColumnNodes, spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
 import { laneComb, laneValue, NO_LANES, resolveLanes, trunkRoute, type LaneTap } from "../../lib/computer/wireLanes";
 import { nextViewWindow, pathBox, visibleBox, type Box } from "../../lib/computer/viewWindow";
@@ -406,7 +406,11 @@ const portStyle = (node: DisplayNode, index: number, kind: "input" | "output") =
 const drawsOwnFace = (type: GateType) =>
   (type === "nmos" || type === "pmos") || isNumberInput(type) || type === "sevensegment" || type === "display4" || type === "display8";
 const partName = (node: Node) =>
-  node.type === "module" ? node.module?.name || "Module" : LABELS[node.type];
+  node.type === "module"
+    ? node.module?.name || "Module"
+    : node.bits
+      ? `${node.bits}-BIT DISPLAY`
+      : LABELS[node.type];
 /** Pin names beside a folded part's side ports; top and bottom rows have no room for them. */
 function PortLabel({ node, index, kind, folded }: { node: Node; index: number; kind: "input" | "output"; folded: boolean }) {
   const named = node.type === "module" || (kind === "input" && node.type === "sevensegment");
@@ -463,7 +467,7 @@ function NodeReadout({ node, snapshot, wires, bank, onBank, onUpdate, manual }: 
     return <SevenSegment raw bits={snapshot.outputs[node.id] ?? []} digits={node.digits ?? 1} label={node.label}
       bank={bank} onBank={(next) => onBank(node.id, next)} />;
   if (node.type === "display4" || node.type === "display8") {
-    const width = node.type === "display4" ? 4 : 8;
+    const width = inputCount(node);
     const bits = snapshot.outputs[node.id] ?? [];
     return (
       <div
@@ -1310,7 +1314,7 @@ export type LogicBuilderProps = {
     clockRef: MutableRefObject<LockedClock | null>;
     /** Parts opened in place whenever a circuit loads; readers can still refold them. */
     unfolded?: readonly string[];
-    /** Let readers operate top-level switches without editing the circuit. */
+    /** Let readers operate top-level switches and number inputs without editing the circuit. */
     interactiveInputs?: boolean;
     /** Demo-specific controls shown beside the shared zoom controls. */
     controls?: ReactNode;
@@ -1503,7 +1507,7 @@ const BoardLane = memo(function BoardLane({ lane, taps, showSource, selected, te
       {taps.map((tap) => (
         <g key={tap.tap.id}>
           <circle cx={tap.at.x} cy={tap.at.y} r={9} className={styles.laneMark} />
-          {!lane.spec.names && <text x={tap.at.x - 14} y={tap.at.y - 15} textAnchor="end" className={styles.laneText}>{text}</text>}
+          {!lane.spec.names && !lane.spec.decimal && <text x={tap.at.x - 14} y={tap.at.y - 15} textAnchor="end" className={styles.laneText}>{text}</text>}
         </g>
       ))}
       {showSource && (
@@ -1589,7 +1593,7 @@ const sameBoardProps = <T extends { snapshot: Snapshot }>(previous: T, next: T) 
 const BoardNodeContent = memo(function BoardNodeContent({ node, detail, inline, unfoldedHere, phoneBoard, editable, snapshot, wires,
   segmentBanks, manualEpoch, note, editingValue, pendingOutput, draftInput, draftOutput, actions }: BoardNodeContentProps) {
   const act = actions.current;
-  const partTitle = node.type === "module" ? node.module?.name || "Module" : LABELS[node.type];
+  const partTitle = partName(node);
   return (
     <>
       {visibleInputs(node, segmentBanks).map(input => {
@@ -1773,7 +1777,7 @@ const BoardNode = memo(function BoardNode({ left, top, width, height, junctionCo
     <div
       data-node-id={node.id}
       role="group"
-      aria-label={`${node.splice ? "Wire join" : node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
+      aria-label={`${node.splice ? "Wire join" : node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${partName(node)} part`}
       onKeyDown={(event) => actions.current.nodeKeyDown(event, node)}
       className={clsx(
         styles.node,
@@ -2047,9 +2051,10 @@ function LogicBuilderWorkspace({
       return { ...node, expanded: Boolean(detail), displayWidth: detail?.width, displayHeight: detail?.height,
         portOffsets: detail?.layout.portOffsets };
     });
+    if (expandedDetails.size && circuit.reflow === "column") return spaceColumnNodes(nodes, circuit.nodes);
     return expandedDetails.size ? [...spaceExpandedNodes(nodes.filter((node) => !node.splice),
       circuit.nodes.filter((node) => !node.splice), 36, circuit.wires, portPoint), ...nodes.filter((node) => node.splice)] : nodes;
-  }, [circuit.nodes, circuit.wires, expandedDetails]);
+  }, [circuit.nodes, circuit.wires, circuit.reflow, expandedDetails]);
   const foldBoxes = useMemo(() => {
     const boxes = new Map<string, FoldBox>();
     const add = (node: DisplayNode, path: string, x: number, y: number, child?: InlineLayout) => {
@@ -2181,6 +2186,7 @@ function LogicBuilderWorkspace({
                   endSide: inputSide(to, wire.input),
                   net: netKeys[wire.id],
                   points: wire.points ? pathPoints(explicitWirePath(wire.points, portPoint(from, wire.output ?? 0, "output"), portPoint(to, wire.input, "input")))[0] : undefined,
+                  railBetweenParts: wire.railBetweenParts,
                 },
               ]
             : [];
@@ -4213,6 +4219,16 @@ function LogicBuilderWorkspace({
     updatePart: (node, patch) => {
       if (locked?.interactiveInputs && node.type === "switch") {
         locked.clockRef.current?.input({ [node.id]: !boardSnapshot.values[node.id] });
+        return;
+      }
+      if (locked?.interactiveInputs && isNumberInput(node.type)) {
+        history.update((current) => ({
+          ...current,
+          circuit: {
+            ...current.circuit,
+            nodes: current.circuit.nodes.map((item) => item.id === node.id ? { ...item, ...patch(item) } : item),
+          },
+        }));
         return;
       }
       setCircuit((current) => ({

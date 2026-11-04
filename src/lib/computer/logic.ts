@@ -54,6 +54,8 @@ export type Node = {
   manualMode?: "pulse" | "held";
   /** Optional asynchronous, active-high reset pin 2 on a D flip-flop. */
   resettable?: boolean;
+  /** Number of input pins on a display8 that reads more or fewer than eight bits. */
+  bits?: number;
   /** Probe name on a display4/display8, read by `readProbes` (e.g. ACC, PC). */
   probe?: string;
   module?: Circuit;
@@ -80,6 +82,8 @@ export type Wire = {
   color?: WireColor;
   /** Explicit route created when a wire is split. Endpoints follow their nodes. */
   points?: { x: number; y: number }[];
+  /** Routes back through the gap between a part and the part below it, also when one unfolds. */
+  railBetweenParts?: boolean;
 };
 export type CircuitGroup = {
   id: string;
@@ -105,6 +109,8 @@ export type WireLane = {
   bus?: string;
   /** Names the lines in the readout, for a control lane, instead of a number. */
   names?: string[];
+  /** Reads in decimal, at the source only: for a lane that gives each part one of its wires. */
+  decimal?: boolean;
   /**
    * The x of the vertical trunks that stems join; each stem takes the nearest one left of its part.
    * Without any, the wire router lays out the stems.
@@ -124,6 +130,8 @@ export type Circuit = {
   ports?: CircuitPorts;
   identity?: CircuitIdentity;
   lanes?: WireLane[];
+  /** "column": an unfolded part pushes what is below it down and what is right of it right. */
+  reflow?: "column";
 };
 export type Snapshot = {
   values: Record<string, boolean>;
@@ -264,7 +272,7 @@ export const inputCount = (node: Node) =>
         ? 3
         : node.type === "sevensegment"
           ? 7 * (node.digits ?? 1)
-          : INPUTS[node.type];
+          : (node.bits ?? INPUTS[node.type]);
 export const outputCount = (node: Node) =>
   node.type === "module"
     ? moduleOutputs(node.module!).length
@@ -1954,6 +1962,8 @@ export function validateCircuit(
       (n) =>
         (n.digits === undefined ||
           (n.type === "sevensegment" && [1, 2, 3, 4].includes(n.digits))) &&
+        (n.bits === undefined ||
+          (n.type === "display8" && Number.isInteger(n.bits) && n.bits >= 1 && n.bits <= 14)) &&
         (n.resettable === undefined || (n.type === "dff" && typeof n.resettable === "boolean")) &&
         (n.manualMode === undefined ||
           (n.type === "pulse" && ["pulse", "held"].includes(n.manualMode))) &&
@@ -2048,6 +2058,7 @@ export function validateCircuit(
       ...(n.type === "dff" && n.resettable ? { resettable: true } : {}),
       ...(n.type === "pulse" && n.manualMode ? { manualMode: n.manualMode } : {}),
       ...(n.probe ? { probe: n.probe } : {}),
+      ...(n.bits ? { bits: n.bits } : {}),
       module: validatedModules.get(n.id),
       ...(behaviours.has(n.id) ? { behaviour: behaviours.get(n.id) } : {}),
       ...(n.type === "module" && typeof n.part === "string" && /^[a-z0-9-]{1,40}$/.test(n.part)
@@ -2061,6 +2072,7 @@ export function validateCircuit(
       input: w.input,
       output: w.output,
       ...(w.points ? { points: w.points.map((point) => ({ x: point.x, y: point.y })) } : {}),
+      ...(w.railBetweenParts === true ? { railBetweenParts: true } : {}),
       color:
         typeof w.color === "string" && Object.hasOwn(WIRE_COLORS, w.color)
           ? (w.color as WireColor)
@@ -2075,5 +2087,6 @@ export function validateCircuit(
     ...(Array.isArray(item.lanes)
       ? { lanes: item.lanes.flatMap((lane) => validLane(lane, WIRE_COLORS) ?? []) }
       : {}),
+    ...(item.reflow === "column" ? { reflow: "column" as const } : {}),
   };
 }

@@ -13,6 +13,8 @@ export type RoutingWire = {
   net?: string;
   /** Authored routes take part in obstacle avoidance without being rearranged. */
   points?: Point[];
+  /** See Wire.railBetweenParts. */
+  railBetweenParts?: boolean;
 };
 
 type Segment = { a: Point; b: Point; net?: string };
@@ -225,6 +227,20 @@ export function orientedWirePath(start: Point, end: Point, startSide: PortSide, 
   return roundedPath(
     orientedRoutePoints(start, end, startSide, endSide, [], NOTHING_OCCUPIED, undefined, []),
   );
+}
+
+/** Back from a part's right side to the left side of the part below it, through the gap between them. */
+function railBetweenParts(start: Point, end: Point, terminals: Omit<RoutingObstacle, "id">[]) {
+  const ordered = [...terminals].sort((a, b) => a.y - b.y);
+  const y = (ordered[0].y + ordered[0].height + ordered[1].y) / 2;
+  return cleanPoints([
+    start,
+    { x: start.x + 13, y: start.y },
+    { x: start.x + 13, y },
+    { x: end.x - 13, y },
+    { x: end.x - 13, y: end.y },
+    end,
+  ]);
 }
 
 function roundedPath(raw: Point[]) {
@@ -566,8 +582,9 @@ export function routeCircuitWires(
     const terminals = obstacles.filter((box) => box.id === wire.from || box.id === wire.to);
     const startSide = wire.startSide ?? "right",
       endSide = wire.endSide ?? "left";
-    const points =
-      startSide === "right" && endSide === "left"
+    const points = wire.railBetweenParts
+      ? railBetweenParts(wire.start, wire.end, terminals)
+      : startSide === "right" && endSide === "left"
         ? routePoints(wire.start, wire.end, relevant, occupied, wire.net, terminals)
         : orientedRoutePoints(
             wire.start,

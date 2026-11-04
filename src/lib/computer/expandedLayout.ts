@@ -10,21 +10,32 @@ export function spaceExpandedNodes<T extends DisplayNode>(
   portPoint?: (node: T, index: number, kind: "input" | "output") => { x: number; y: number },
 ): T[] {
   const authored = new Map(originals.map((node) => [node.id, node]));
-  const growing = new Set(nodes.filter((node) => {
-    const original = authored.get(node.id)!;
-    return nodeWidth(node) > nodeWidth(original) || nodeHeight(node) > nodeHeight(original);
-  }).map((node) => node.id));
+  const growing = new Set(
+    nodes
+      .filter((node) => {
+        const original = authored.get(node.id)!;
+        return nodeWidth(node) > nodeWidth(original) || nodeHeight(node) > nodeHeight(original);
+      })
+      .map((node) => node.id),
+  );
   const offsets = new Map<string, { x: number; y: number }>();
   if (portPoint) {
     for (const host of nodes.filter((node) => growing.has(node.id))) {
       const original = authored.get(host.id)!;
       // Inline coordinates include a common origin offset; compare local ports.
-      const folded = { ...host, ...original, x: host.x, y: host.y,
-        displayWidth: original.displayWidth, displayHeight: original.displayHeight, expanded: false } as T;
+      const folded = {
+        ...host,
+        ...original,
+        x: host.x,
+        y: host.y,
+        displayWidth: original.displayWidth,
+        displayHeight: original.displayHeight,
+        expanded: false,
+      } as T;
       for (const wire of wires) {
         const kind = wire.from === host.id ? "output" : wire.to === host.id ? "input" : undefined;
         if (!kind) continue;
-        const index = kind === "output" ? wire.output ?? 0 : wire.input;
+        const index = kind === "output" ? (wire.output ?? 0) : wire.input;
         const before = portPoint(folded, index, kind);
         const after = portPoint(host, index, kind);
         const offset = { x: after.x - before.x, y: after.y - before.y };
@@ -46,8 +57,9 @@ export function spaceExpandedNodes<T extends DisplayNode>(
     return offset ? { ...node, x: node.x + offset.x, y: node.y + offset.y } : node;
   });
   const placed: T[] = [];
-  for (const node of [...shifted].sort((a, b) =>
-    Number(growing.has(b.id)) - Number(growing.has(a.id)) || a.y - b.y || a.x - b.x)) {
+  for (const node of [...shifted].sort(
+    (a, b) => Number(growing.has(b.id)) - Number(growing.has(a.id)) || a.y - b.y || a.x - b.x,
+  )) {
     let { x, y } = node;
     while (true) {
       const collision = placed.find(
@@ -67,4 +79,41 @@ export function spaceExpandedNodes<T extends DisplayNode>(
   }
   const positions = new Map(placed.map((node) => [node.id, node]));
   return nodes.map((node) => positions.get(node.id)!);
+}
+
+/** Keep a column of parts in order: everything below an unfolded part moves down, everything right of it moves right. */
+export function spaceColumnNodes<T extends DisplayNode>(
+  nodes: readonly T[],
+  originals: readonly DisplayNode[],
+): T[] {
+  const authored = new Map(originals.map((node) => [node.id, node]));
+  const hosts = nodes.flatMap((node) => {
+    const original = authored.get(node.id)!;
+    const grownWidth = nodeWidth(node) - nodeWidth(original);
+    const grownHeight = nodeHeight(node) - nodeHeight(original);
+    return grownWidth > 0 || grownHeight > 0
+      ? [
+          {
+            original,
+            grownWidth,
+            grownHeight,
+            right: node.x + nodeWidth(original),
+            bottom: node.y + nodeHeight(original),
+          },
+        ]
+      : [];
+  });
+  return nodes.map((node) => {
+    const pushes = (host: (typeof hosts)[number]) => host.original.id !== node.id;
+    const dx = Math.max(
+      0,
+      ...hosts
+        .filter((host) => pushes(host) && node.x >= host.right)
+        .map((host) => host.grownWidth),
+    );
+    const dy = hosts
+      .filter((host) => pushes(host) && node.x >= host.original.x && node.y >= host.bottom)
+      .reduce((sum, host) => sum + host.grownHeight, 0);
+    return dx || dy ? { ...node, x: node.x + dx, y: node.y + dy } : node;
+  });
 }

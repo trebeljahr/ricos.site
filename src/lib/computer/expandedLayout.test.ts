@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { spaceExpandedNodes } from "./expandedLayout";
+import { spaceColumnNodes, spaceExpandedNodes } from "./expandedLayout";
 import type { Node } from "./logic";
-import { nodeHeight, nodeWidth } from "./nodeGeometry";
+import { type DisplayNode, nodeHeight, nodeWidth } from "./nodeGeometry";
 
 describe("expanded layout", () => {
   it("keeps connected nodes offset from their ports even when a lamp is above the box", () => {
@@ -16,17 +16,25 @@ describe("expanded layout", () => {
       { id: "in", from: "switch", to: "box", input: 0 },
       { id: "chain", from: "lamp", to: "next", input: 0 },
     ];
-    const ports = (node: Node & { displayWidth?: number; displayHeight?: number }, _index: number, kind: "input" | "output") => ({
+    const ports = (
+      node: Node & { displayWidth?: number; displayHeight?: number },
+      _index: number,
+      kind: "input" | "output",
+    ) => ({
       x: node.x + (kind === "output" ? nodeWidth(node) : 0),
       y: node.y + nodeHeight(node) / 2,
     });
-    const expanded = nodes.map((node) => ({ ...node,
+    const expanded = nodes.map((node) => ({
+      ...node,
       displayWidth: node.id === "box" ? 1000 : undefined,
       displayHeight: node.id === "box" ? 600 : undefined,
     }));
     const placed = spaceExpandedNodes(expanded, nodes, 28, wires, ports);
     const box = placed[0];
-    for (const [index, kind] of [[1, "output"], [2, "input"]] as const) {
+    for (const [index, kind] of [
+      [1, "output"],
+      [2, "input"],
+    ] as const) {
       const before = ports(nodes[0], 0, kind);
       const after = ports(box, 0, kind);
       expect(placed[index].x - after.x).toBe(nodes[index].x - before.x);
@@ -62,5 +70,30 @@ describe("expanded layout", () => {
     }
     expect(spaceExpandedNodes(nodes, nodes)).toEqual(original);
     expect(nodes).toEqual(original);
+  });
+});
+
+describe("a column of parts", () => {
+  const part = (id: string, x: number, y: number): DisplayNode => ({ id, type: "and", x, y });
+  const column = [
+    part("input", 0, 500),
+    part("top", 200, 0),
+    part("host", 200, 200),
+    part("next", 200, 400),
+    part("lamp", 500, 200),
+    part("low", 500, 400),
+  ];
+
+  it("pushes what is below down and what is right of it right, and leaves the rest", () => {
+    const grown = column.map((node) =>
+      node.id === "host" ? { ...node, displayWidth: 632, displayHeight: 416 } : node,
+    );
+    const spaced = new Map(spaceColumnNodes(grown, column).map((node) => [node.id, node]));
+    expect(spaced.get("input")).toMatchObject({ x: 0, y: 500 });
+    expect(spaced.get("top")).toMatchObject({ x: 200, y: 0 });
+    expect(spaced.get("host")).toMatchObject({ x: 200, y: 200 });
+    expect(spaced.get("next")).toMatchObject({ x: 200, y: 700 });
+    expect(spaced.get("lamp")).toMatchObject({ x: 1000, y: 200 });
+    expect(spaced.get("low")).toMatchObject({ x: 1000, y: 700 });
   });
 });

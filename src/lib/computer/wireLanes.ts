@@ -58,9 +58,24 @@ const vector = (side: PortSide): Point =>
 /** Joins ports to the bar a stub away from them; `anchor` is the middle of that bar. */
 export function laneComb(ports: readonly Point[], side: PortSide) {
   const step = vector(side);
+  // A straight bar even when an unfolded part has moved one of the ports further out.
+  const reach = (values: number[], direction: number) =>
+    direction > 0 ? Math.max(...values) : Math.min(...values);
+  const barX =
+    reach(
+      ports.map((port) => port.x),
+      step.x,
+    ) +
+    step.x * LANE_STUB;
+  const barY =
+    reach(
+      ports.map((port) => port.y),
+      step.y,
+    ) +
+    step.y * LANE_STUB;
   const ends = ports.map((port) => ({
-    x: port.x + step.x * LANE_STUB,
-    y: port.y + step.y * LANE_STUB,
+    x: step.x ? barX : port.x,
+    y: step.y ? barY : port.y,
   }));
   const xs = ends.map((end) => end.x);
   const ys = ends.map((end) => end.y);
@@ -119,6 +134,7 @@ export function laneValue(
     };
   }
   const value = bits.reduce((sum, bit, i) => sum + (bit ? 2 ** i : 0), 0);
+  if (lane.decimal) return { text: String(value), state };
   return {
     text: `0x${value
       .toString(16)
@@ -151,6 +167,7 @@ export function validLane(value: unknown, colors: object = {}): WireLane | undef
     ...(Array.isArray(item.names) && item.names.every((name) => typeof name === "string")
       ? { names: [...item.names] }
       : {}),
+    ...(item.decimal === true ? { decimal: true } : {}),
     ...(Array.isArray(item.skip) && item.skip.every((id) => typeof id === "string")
       ? { skip: [...item.skip] }
       : {}),

@@ -176,3 +176,29 @@ describe("stored lanes", () => {
     expect(validLane(null)).toBeUndefined();
   });
 });
+
+describe("lanes for a column of parts", () => {
+  it("keeps a straight bar when one port has moved further out", () => {
+    const comb = laneComb(
+      [
+        { x: 100, y: 0 },
+        { x: 400, y: 50 },
+      ],
+      "right",
+    );
+    expect(comb.bar).toBe(`M ${400 + LANE_STUB} 0 L ${400 + LANE_STUB} 50`);
+    expect(comb.stubs).toContain(`M 100 0 L ${400 + LANE_STUB} 0`);
+  });
+
+  it("reads a decimal lane as a plain number", () => {
+    const lane = {
+      id: "a",
+      label: "A",
+      decimal: true,
+      sources: [0, 1, 2, 3].map((output) => ({ node: "a", output })),
+    };
+    const snapshot = { values: {}, outputs: { a: [true, false, true, true] }, buses: {} };
+    expect(laneValue(lane, snapshot).text).toBe("13");
+    expect(validLane(lane)?.decimal).toBe(true);
+  });
+});

@@ -5,7 +5,15 @@ import panel from "./ByteExplorer.module.css";
 import styles from "./Unicode.module.css";
 
 /** The panel, screws and nameplate every Unicode demo sits in. */
-export function UnicodePanel({ title, children }: { title: string; children: ReactNode }) {
+export function UnicodePanel({
+  title,
+  sound,
+  children,
+}: {
+  title: string;
+  sound?: { soundEnabled: boolean; toggleSound: () => void };
+  children: ReactNode;
+}) {
   return (
     <section className={clsx("not-prose", panel.machine, styles.unicode)} aria-label={title}>
       <div className={panel.screw} aria-hidden="true" />
@@ -14,6 +22,17 @@ export function UnicodePanel({ title, children }: { title: string; children: Rea
         <div>
           <strong>{title}</strong>
         </div>
+        {sound && (
+          <button
+            type="button"
+            className={panel.soundButton}
+            onClick={sound.toggleSound}
+            aria-pressed={sound.soundEnabled}
+            aria-label={`Sound ${sound.soundEnabled ? "on" : "off"}. Toggle sound.`}
+          >
+            <i aria-hidden="true" /> SOUND {sound.soundEnabled ? "ON" : "OFF"}
+          </button>
+        )}
       </div>
       <div className={styles.deck}>{children}</div>
     </section>
@@ -26,11 +45,13 @@ export function Choice<Value extends string | number>({
   value,
   options,
   onChange,
+  disabled = false,
 }: {
   label: string;
   value: Value;
   options: readonly { value: Value; label: string }[];
   onChange: (value: Value) => void;
+  disabled?: boolean;
 }) {
   return (
     <fieldset className={styles.choice}>
@@ -41,6 +62,7 @@ export function Choice<Value extends string | number>({
             key={option.value}
             type="button"
             aria-pressed={option.value === value}
+            disabled={disabled}
             onClick={() => onChange(option.value)}
           >
             {option.label}
@@ -85,26 +107,44 @@ export function Counts({ reading }: { reading: TextReading }) {
   );
 }
 
-/** Text as three levels, stacked so each thing sits above the parts it is made of. */
-export function TextLayers({ reading }: { reading: TextReading }) {
+/**
+ * Text as three levels, stacked so each thing sits above the parts it is made of. A cluster
+ * of one code point draws its character once, on the screen. `singleFaceShown` says the
+ * panel already shows a lone cluster elsewhere, so it needs no screen here.
+ */
+export function TextLayers({
+  reading,
+  singleFaceShown = false,
+}: {
+  reading: TextReading;
+  singleFaceShown?: boolean;
+}) {
+  const screens = !(singleFaceShown && reading.graphemes.length === 1);
   return (
     <ol className={styles.graphemes} aria-label="Graphemes">
       {reading.graphemes.map((grapheme, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: a cluster is its position in the text
         <li key={index} className={styles.grapheme}>
-          <div className={clsx(styles.lcd, grapheme.face.isLabel && styles.lcdLabel)}>
-            {grapheme.face.text}
-          </div>
+          {screens && (
+            <div
+              className={clsx(styles.lcd, grapheme.face.isLabel && styles.lcdLabel)}
+              data-bare={grapheme.face.text.startsWith("◌") || undefined}
+            >
+              {grapheme.face.text}
+            </div>
+          )}
           <ol className={styles.codePoints} aria-label="Code points">
             {grapheme.codePoints.map((point, pointIndex) => (
               // biome-ignore lint/suspicious/noArrayIndexKey: a code point is its position in the cluster
               <li key={pointIndex} className={styles.codePoint}>
-                <span
-                  className={clsx(styles.pointGlyph, point.face.isLabel && styles.pointLabel)}
-                  aria-hidden="true"
-                >
-                  {point.face.text}
-                </span>
+                {(!screens || grapheme.codePoints.length > 1) && (
+                  <span
+                    className={clsx(styles.pointGlyph, point.face.isLabel && styles.pointLabel)}
+                    aria-hidden="true"
+                  >
+                    {point.face.text}
+                  </span>
+                )}
                 <span className={styles.pointHex}>{point.hex}</span>
                 <span className={styles.pointName}>{point.name}</span>
                 <ol className={styles.pointBytes} aria-label="UTF-8 bytes">
@@ -125,14 +165,15 @@ export function TextLayers({ reading }: { reading: TextReading }) {
   );
 }
 
-/** The same bytes as they are stored: one flat run, shaded by the cluster they belong to. */
+/** The same bytes as they are stored: one flat run of bits, shaded by the cluster they belong to. */
 export function ByteRun({ reading }: { reading: TextReading }) {
   return (
     <ol className={styles.byteRun} aria-label="All bytes in order">
       {reading.bytes.map((entry, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: a byte is its position in the text
         <li key={index} data-odd={entry.grapheme % 2 === 1 || undefined}>
-          {hexByte(entry.byte)}
+          <ByteBits byte={entry.byte} />
+          <b>{hexByte(entry.byte)}</b>
         </li>
       ))}
     </ol>

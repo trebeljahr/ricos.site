@@ -1,8 +1,11 @@
 import clsx from "clsx";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import { limitCodePoints, readText } from "src/lib/unicodeText";
+import typer from "./AsciiTyper.module.css";
 import panel from "./ByteExplorer.module.css";
+import { DisplayStatus } from "./DisplayStatus";
 import { fitHeight } from "./fitHeight";
 import styles from "./Unicode.module.css";
 import { ByteRun, Counts, TextLayers, UnicodePanel } from "./UnicodeParts";
@@ -58,6 +61,7 @@ export function UnicodeInspector() {
   const input = useRef<HTMLTextAreaElement>(null);
   const composing = useRef(false);
   const id = useId();
+  const sound = usePanelSound();
 
   const reading = readText(text);
 
@@ -75,48 +79,49 @@ export function UnicodeInspector() {
 
   function commit(value: string) {
     const limited = limitCodePoints(value, LIMIT);
+    if (limited.overflow > 0) sound.playRefuse();
+    else if (limited.text.length > text.length) sound.playType("key");
+    else if (limited.text.length < text.length) sound.playType("back");
     setText(limited.text);
     setOverflow(limited.overflow);
   }
 
   return (
-    <UnicodePanel title="TEXT INSPECTOR">
+    <UnicodePanel title="TEXT INSPECTOR" sound={sound}>
       <div className={styles.bay}>
-        <div className={panel.sectionHead}>
-          <span>INPUT · TEXT</span>
-          <span>
-            {reading.codePointCount} / {LIMIT}
-          </span>
-        </div>
-        <label className={panel.inputLabel} htmlFor={`${id}-text`}>
+        <label className={clsx(panel.inputLabel, styles.firstLabel)} htmlFor={`${id}-text`}>
           TYPE OR PASTE ANYTHING
         </label>
-        <textarea
-          ref={input}
-          id={`${id}-text`}
-          className={clsx(panel.bitInput, styles.textInput)}
-          rows={1}
-          value={text}
-          onChange={(event) => {
-            // An input method builds a character in several steps; judge the result, not the steps.
-            if (composing.current) setText(event.target.value);
-            else commit(event.target.value);
-          }}
-          onCompositionStart={() => {
-            composing.current = true;
-          }}
-          onCompositionEnd={(event) => {
-            composing.current = false;
-            commit(event.currentTarget.value);
-          }}
-          spellCheck={false}
-          autoComplete="off"
-          autoCapitalize="off"
-          autoCorrect="off"
-        />
-        <p className={styles.error} role="status">
-          {overflow > 0 && `This inspector holds ${LIMIT} code points. The rest did not fit.`}
-        </p>
+        <div className={typer.display}>
+          <textarea
+            ref={input}
+            id={`${id}-text`}
+            className={clsx(panel.bitInput, styles.textInput)}
+            rows={1}
+            value={text}
+            onChange={(event) => {
+              // An input method builds a character in several steps; judge the result, not the steps.
+              if (composing.current) setText(event.target.value);
+              else commit(event.target.value);
+            }}
+            onCompositionStart={() => {
+              composing.current = true;
+            }}
+            onCompositionEnd={(event) => {
+              composing.current = false;
+              commit(event.currentTarget.value);
+            }}
+            spellCheck={false}
+            autoComplete="off"
+            autoCapitalize="off"
+            autoCorrect="off"
+          />
+          <DisplayStatus
+            count={reading.codePointCount}
+            limit={LIMIT}
+            message={overflow > 0 ? "FULL" : null}
+          />
+        </div>
         {PRESETS.map((preset) => (
           <div key={preset.group} className={styles.presetGroup}>
             <span>{preset.group}</span>
@@ -125,9 +130,11 @@ export function UnicodeInspector() {
                 <button
                   key={item.label}
                   type="button"
+                  aria-pressed={text === item.text}
                   onClick={() => {
                     setText(item.text);
                     setOverflow(0);
+                    sound.playButton();
                   }}
                 >
                   {item.label}
@@ -153,7 +160,7 @@ export function UnicodeInspector() {
       {reading.bytes.length > 0 && (
         <div className={styles.bay}>
           <div className={panel.sectionHead}>
-            <span>BYTES · IN ORDER</span>
+            <span>BITS · IN ORDER</span>
           </div>
           <ByteRun reading={reading} />
         </div>

@@ -260,6 +260,12 @@ const INVISIBLE_LABELS: Record<number, string> = {
   65279: "BOM",
 };
 
+/** Combining marks most fonts cannot draw on a dotted circle, as their own spacing characters. */
+const SPACING_FORMS = new Map([
+  [0x3099, "\u309b"],
+  [0x309a, "\u309c"],
+]);
+
 export interface CodePointFace {
   text: string;
   /** True when the text is a stand-in for a code point with no ink of its own. */
@@ -281,6 +287,8 @@ export function codePointFace(codePoint: number): CodePointFace {
     return { text: `TAG ${String.fromCodePoint(codePoint - 0xe0000)}`, isLabel: true };
   }
   const char = String.fromCodePoint(codePoint);
+  const spacing = SPACING_FORMS.get(codePoint);
+  if (spacing) return { text: spacing, isLabel: false };
   if (/\p{M}/u.test(char)) return { text: `◌${char}`, isLabel: false };
   if (/[\p{Z}\p{C}]/u.test(char)) return { text: codePointLabel(codePoint), isLabel: true };
   return { text: char, isLabel: false };

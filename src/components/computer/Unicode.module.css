@@ -1,7 +1,11 @@
 /* Shared by the Unicode demos, on the ByteExplorer panel. Rules that change a ByteExplorer
    class are scoped under .unicode, so they win whichever stylesheet loads last. */
 
+/* For a letter with its marks on it: a monospace font spaces letters on a fixed grid, and
+   most have no anchors to stack marks on, so they collide. A mark on a dotted circle goes
+   the other way: Chrome on macOS draws it as a striped box in the system font. */
 .unicode {
+  --shaped-text: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
   /* Which byte a code point bit lands in. */
   --group-0: #f3c9a8;
   --group-1: #bcd9f2;
@@ -12,7 +16,7 @@
 .deck { container-type: inline-size; display: grid; gap: 8px; padding-top: 8px; background: linear-gradient(#3c4a3f, #566457); }
 .bay { min-width: 0; padding: 18px 19px 20px; background: linear-gradient(145deg, #aab3a3, #939f91); box-shadow: inset 2px 2px 3px #dce3d3, inset -2px -2px 4px #536255; }
 .empty { margin: 12px 0 0; color: #2a3a2e; font-size: 12px; letter-spacing: .08em; }
-.error { min-height: 16px; margin: 6px 0 0; color: #5e2318; font-size: 12px; font-weight: 500; line-height: 16px; letter-spacing: 0; }
+.unicode .firstLabel { margin-top: 0; }
 
 /* Spacing letters apart breaks Arabic joining and some emoji, so text fields set it to zero. */
 .unicode .textInput { overflow: hidden; resize: none; letter-spacing: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -41,20 +45,39 @@
 .choice { min-width: 0; margin: 12px 0 0; padding: 0; border: 0; }
 .bay > .choice:first-child { margin-top: 0; }
 .choice legend { padding: 0 0 5px; font-size: 11px; letter-spacing: .08em; }
-.recipe { margin-top: 2px; }
-.unicode .markButton { min-width: 42px; font-size: 22px; line-height: 1.1; }
+.unicode .markButton { min-width: 38px; padding-inline: 8px; font-size: 20px; line-height: 1.15; }
 
-.pickers { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 12px; }
-.picker { display: grid; gap: 5px; font-size: 11px; letter-spacing: .08em; }
-.picker select {
-  min-width: 76px;
-  padding: 6px 8px;
-  border: 2px solid #4a594d;
-  border-radius: 4px;
-  background: linear-gradient(#e3e5d4, #b4bfae);
-  color: #243329;
-  font: 600 16px/1.2 ui-monospace, monospace;
-}
+/* Every recipe is a fixed module on the panel; choosing one lights its lamp and moves nothing. */
+section.unicode { overflow: clip; }
+.composer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+/* Stacked, the result comes first and stays pinned under the navbar while the modules scroll past. */
+.side { display: contents; }
+.pinned { position: sticky; z-index: 2; top: 3.5rem; order: -1; }
+.rack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start; }
+.module { min-width: 0; padding: 8px 10px 12px; border: 1px solid #647365; border-radius: 4px; background: #9aa597; box-shadow: inset 0 1px #d6decf, 0 1px #6a7869; }
+.moduleKey { display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 9px; border: 2px solid #4a594d; border-radius: 4px; background: linear-gradient(#e3e5d4, #9ba898); box-shadow: inset 0 1px #f4f4e8, 0 2px 1px #485649; color: #243329; font: inherit; font-size: 12px; letter-spacing: .08em; cursor: pointer; }
+.moduleKey:hover { background: linear-gradient(#f1f3e6, #b7c5ae); }
+.moduleKey i { flex: 0 0 auto; width: 9px; height: 9px; border: 1px solid #405e37; border-radius: 50%; background: #677565; box-shadow: inset 0 1px 2px #1e3324; transition: background .16s ease, box-shadow .16s ease; }
+.moduleKey[aria-pressed="true"] { transform: translateY(2px); background: linear-gradient(#9cb98a, #c6d9aa); box-shadow: inset 0 2px 5px #27452f99; }
+.moduleKey[aria-pressed="true"] i { background: #a7d46b; box-shadow: 0 0 6px #c5ee8b; }
+.moduleKey:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
+
+.markRows { display: grid; gap: 8px; margin-top: 10px; }
+.markRow { display: grid; gap: 4px; min-width: 0; }
+.markRow > span { font-size: 10px; letter-spacing: .08em; }
+.markKeys { display: flex; flex-wrap: wrap; gap: 5px; }
+.markKeys hr { flex: 0 0 auto; align-self: stretch; width: 2px; height: auto; margin: 0 2px; border: 0; background: #647365; }
+.unicode .markKeys button { padding: 5px 0; }
+
+.wheels { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 10px; }
+.wheel { display: grid; justify-items: center; gap: 4px; font-size: 10px; letter-spacing: .08em; }
+.wheelBody { display: flex; align-items: center; gap: 4px; }
+.wheelWindow { display: grid; place-items: center; min-width: 40px; height: 34px; border: 2px solid #415045; border-radius: 3px; background: linear-gradient(#b5bdae, #eef0e4 45%, #eef0e4 55%, #b5bdae); box-shadow: inset 0 2px 3px #3e4c4080; color: #243329; font-family: var(--shaped-text); font-size: 20px; font-weight: 600; line-height: 1; letter-spacing: 0; }
+
+.verdict { display: flex; align-items: center; gap: 8px; min-height: 20px; margin: 10px 0 0; font-size: 11px; font-weight: 600; letter-spacing: .04em; overflow-wrap: anywhere; }
+.verdict i { flex: 0 0 auto; width: 9px; height: 9px; border: 1px solid #405e37; border-radius: 50%; background: #a7d46b; box-shadow: 0 0 6px #c5ee8b; }
+.verdict[data-known="false"] i { border-color: #6d3a2a; background: #f0a65c; box-shadow: 0 0 6px #f0a65c; }
+.verdict[data-known="false"] { color: #5e2318; }
 
 .lcd {
   display: grid;
@@ -66,10 +89,12 @@
   background: repeating-linear-gradient(0deg, #122d140d 0 2px, #0e240e24 2px 3px), radial-gradient(ellipse at center, #b7e3a0, #87bb7a 75%, #5c865a);
   box-shadow: inset 0 0 8px #17381d80;
   color: #1d4625;
+  font-family: var(--shaped-text);
   font-size: 34px;
-  line-height: 1.2;
+  line-height: 1.3;
 }
-.lcdLabel { font-size: 16px; letter-spacing: .06em; }
+.lcdLabel { font-family: inherit; font-size: 16px; letter-spacing: .06em; }
+.lcd[data-bare] { font-family: inherit; }
 
 .result {
   display: block;
@@ -81,8 +106,9 @@
   background: repeating-linear-gradient(0deg, #122d140d 0 2px, #0e240e24 2px 3px), radial-gradient(ellipse at center, #b7e3a0, #87bb7a 75%, #5c865a);
   box-shadow: inset 0 0 14px #17381da8;
   color: #1d4625;
+  font-family: var(--shaped-text);
   font-size: 54px;
-  line-height: 1.35;
+  line-height: 1.5;
   overflow-wrap: anywhere;
   text-align: center;
 }
@@ -112,9 +138,10 @@
 .data[data-group="2"] { background: var(--group-2); }
 .data[data-group="3"] { background: var(--group-3); }
 
-.byteRun { display: flex; flex-wrap: wrap; gap: 3px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 13px; font-variant-numeric: tabular-nums; }
-.byteRun li { padding: 2px 5px; border-radius: 2px; background: #e3e7d6; }
+.byteRun { display: flex; flex-wrap: wrap; gap: 3px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 11px; font-variant-numeric: tabular-nums; }
+.byteRun li { display: grid; justify-items: center; gap: 2px; padding: 3px 4px; border-radius: 2px; background: #e3e7d666; }
 .byteRun li[data-odd] { background: #2a3a2e; color: #d7efc0; }
+.byteRun b { font-weight: 700; }
 .runHead { margin-top: 14px; font-size: 11px; letter-spacing: .08em; }
 
 .encoderTop { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; margin: 12px 0; }
@@ -194,3 +221,14 @@
   .codePoint { width: 106px; }
   .result { font-size: 44px; }
 }
+@container (min-width: 561px) {
+  .rack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wideModule { grid-column: 1 / -1; }
+}
+@container (min-width: 900px) {
+  .composer { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  /* Side by side, the whole result column travels with the modules. */
+  .side { position: sticky; top: 3.5rem; display: grid; gap: 8px; align-self: start; }
+  .pinned { position: static; }
+}
+@media (prefers-reduced-motion: reduce) { .moduleKey i { transition: none; } }

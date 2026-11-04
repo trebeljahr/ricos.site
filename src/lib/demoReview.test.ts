@@ -124,12 +124,48 @@ describe("demo files", () => {
     expect(pages.sort()).toEqual(computerDemos.map((demo) => demo.slug).sort());
   });
 
+  // Each demo gets its own page, so each can be reviewed on its own.
+  const pagesDir = path.join("src", "pages", "computer");
+  const pageText = (slug: string) => fs.readFileSync(path.join(pagesDir, `${slug}.tsx`), "utf8");
+  const mdxNames = [
+    ...fs
+      .readFileSync(path.join("src", "components", "computer", "MdxComputerDemos.tsx"), "utf8")
+      .split("COMPUTER_MDX_DEMOS")[1]
+      .matchAll(/^ {2}([A-Z]\w+):/gm),
+  ].map((match) => match[1]);
+  const uses = (text: string, name: string) =>
+    text.match(new RegExp(`<${name}[\\s/>]`, "g"))?.length ?? 0;
+
+  it("shows one demo per page", () => {
+    // A test page for embedding several builders, not a demo to read.
+    const crowded = computerDemos
+      .filter(({ slug }) => slug !== "builders-on-one-page")
+      .filter(({ slug }) => {
+        const text = pageText(slug);
+        return mdxNames.reduce((count, name) => count + uses(text, name), 0) > 1;
+      });
+    expect(crowded).toEqual([]);
+  });
+
+  it("gives every chapter demo a page", () => {
+    const pages = computerDemos.map(({ slug }) => pageText(slug)).join("\n");
+    // Shelved, and two chapter lessons made of demos that have their own pages.
+    const exempt = ["TruthTableScale", "TransistorGateLessons", "DecoderLesson"];
+    expect(mdxNames.filter((name) => !exempt.includes(name) && !uses(pages, name))).toEqual([]);
+  });
+
   it("counts a demo's own component as its work, and not the shared nav", () => {
     const files = demoFiles();
     expect(files["die-zoom"]).toContain(path.join("src", "pages", "computer", "die-zoom.tsx"));
     expect(files["die-zoom"]).toContain(path.join("src", "components", "computer", "DieZoom.tsx"));
     expect(files["die-zoom"]).not.toContain(
       path.join("src", "components", "computer", "ComputerDemoNav.tsx"),
+    );
+  });
+
+  it("keeps the wrapper shared by demo pages out of a demo's work", () => {
+    expect(demoFiles()["half-adder"]).not.toContain(
+      path.join("src", "components", "computer", "DeviceDemoPage.tsx"),
     );
   });
 
@@ -204,7 +240,7 @@ describe("store and endpoint", () => {
 
   it("refuses a demo that does not exist and a verdict that does not exist", () => {
     expect(call({ slug: "nope", verdict: "accepted" }).status).toBe(400);
-    expect(call({ slug: "clock", verdict: "great" }).status).toBe(400);
+    expect(call({ slug: "clock-scope", verdict: "great" }).status).toBe(400);
     expect(readDemoReviews()).toEqual({});
   });
 
@@ -212,12 +248,12 @@ describe("store and endpoint", () => {
     fs.mkdirSync(path.join(dir, "texts"));
     const file = path.join(dir, "texts", REVIEW_FILE);
     fs.writeFileSync(file, "{ broken");
-    expect(call({ slug: "clock", verdict: "accepted" }).status).toBe(500);
+    expect(call({ slug: "clock-scope", verdict: "accepted" }).status).toBe(500);
     expect(fs.readFileSync(file, "utf8")).toBe("{ broken");
   });
 
   it("answers 404 outside next dev, on Vercel and for another machine", () => {
-    const body = { slug: "clock", verdict: "accepted" };
+    const body = { slug: "clock-scope", verdict: "accepted" };
     expect(call(body, { address: "192.168.1.20" }).status).toBe(404);
     expect(call(undefined, { method: "GET", address: "192.168.1.20" }).status).toBe(404);
     vi.stubEnv("VERCEL", "1");

@@ -18,9 +18,6 @@ export default function UniversalGatesPage() {
           <h1 className="text-3xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
             Build every gate from NAND or NOR
           </h1>
-          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-            <code>{"<UniversalGates />"}</code>
-          </p>
         </header>
         <UniversalGates />
         <ComputerDemoNav current="universal-gates" bottom />

@@ -1,6 +1,6 @@
+import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import { FourByteExplorer } from "@components/computer/FourByteExplorer";
 import Layout from "@components/Layout";
-import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 
 export default function FourByteExplorerPage() {
   return (

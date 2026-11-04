@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { type ComputerDemoSlug, computerDemos } from "src/lib/computerDemos";
 import { ComputerDemoNav } from "./ComputerDemoNav";
 
-/** The page of one hands-on device demo: its title, what to do, then the demo. */
+/** The page of one demo: its title, then the demo. */
 export function DeviceDemoPage({
   slug,
   description,

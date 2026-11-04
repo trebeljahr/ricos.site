@@ -1,39 +1,14 @@
-import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
-import { SwitchLogic, TransistorSwitches } from "@components/computer/SwitchLogic";
-import Layout from "@components/Layout";
+import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
+import { SwitchLogic } from "@components/computer/SwitchLogic";
 
 export default function SwitchLogicPage() {
   return (
-    <Layout
-      title="Two switches, one lamp"
-      description="Wire two switches to a lamp, click the switches, then control the same paths with transistors."
-      keywords={[]}
-      url="computer/switch-logic"
-      noindex
-      fillViewport
+    <DeviceDemoPage
+      slug="switch-logic"
+      description="Wire two switches to a lamp and click the switches."
     >
-      <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
-        <ComputerDemoNav current="switch-logic" />
-        <header className="mb-4 mt-4">
-          <h1 className="m-0 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
-            SWITCHES BECOME LOGIC
-          </h1>
-        </header>
-        <div className="mx-auto max-w-4xl">
-          <h2>
-            <code>{"<SwitchLogic />"}</code>
-          </h2>
-          <SwitchLogic />
-          <h2>
-            <code>{'<SwitchLogic wiring="parallel" fixed />'}</code>
-          </h2>
-          <SwitchLogic wiring="parallel" fixed />
-          <h2>Switches controlled by electricity</h2>
-          <TransistorSwitches />
-        </div>
-        <ComputerDemoNav current="switch-logic" bottom />
-      </main>
-    </Layout>
+      <SwitchLogic />
+    </DeviceDemoPage>
   );
 }
 

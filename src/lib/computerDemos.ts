@@ -20,8 +20,16 @@ export const computerDemos = [
     title: "Four bytes, many meanings",
   },
   {
+    slug: "switch-states",
+    title: "Switch states",
+  },
+  {
     slug: "codebook",
-    title: "Switches, states and codebooks",
+    title: "Codebook",
+  },
+  {
+    slug: "codebook-mismatch",
+    title: "Codebook mismatch",
   },
   {
     slug: "letter-codebook",
@@ -66,12 +74,40 @@ export const computerDemos = [
     title: "Two switches, one lamp",
   },
   {
-    slug: "truth-tables",
-    title: "Truth tables",
+    slug: "switch-logic-parallel",
+    title: "Two switches in parallel",
+  },
+  {
+    slug: "transistor-comparison",
+    title: "Compare PMOS and NMOS",
+  },
+  {
+    slug: "transistor-switches",
+    title: "Switches controlled by electricity",
+  },
+  {
+    slug: "gate-truth-table",
+    title: "Gate truth tables",
+  },
+  {
+    slug: "addition-table",
+    title: "Addition table",
+  },
+  {
+    slug: "full-adder-table",
+    title: "Full adder table",
   },
   {
     slug: "transistor-gates",
     title: "Gates wired from transistors",
+  },
+  {
+    slug: "transistor-gates-nand",
+    title: "A NAND gate from transistors",
+  },
+  {
+    slug: "transistor-gate-builder",
+    title: "Build gates from transistors",
   },
   {
     slug: "semiconductor",
@@ -82,28 +118,72 @@ export const computerDemos = [
     title: "Four transistors in 3D",
   },
   {
-    slug: "adders",
-    title: "Add bits with gates",
+    slug: "gate-wirings",
+    title: "One gate, five wirings",
   },
   {
-    slug: "signed-numbers",
-    title: "Signed numbers and the same adder",
+    slug: "half-adder-sum",
+    title: "Half adder, sum only",
+  },
+  {
+    slug: "half-adder",
+    title: "Half adder",
+  },
+  {
+    slug: "full-adder",
+    title: "Full adder",
+  },
+  {
+    slug: "eight-bit-adder",
+    title: "Eight-bit adder",
+  },
+  {
+    slug: "signed-number-explorer",
+    title: "Signed numbers",
+  },
+  {
+    slug: "signed-arithmetic",
+    title: "Signed arithmetic",
   },
   {
     slug: "universal-gates",
     title: "Build every gate from NAND or NOR",
   },
   {
-    slug: "clock",
-    title: "Watch a clock tick",
+    slug: "signal-edges",
+    title: "Signal edges",
+  },
+  {
+    slug: "clock-scope",
+    title: "Clock scope",
   },
   {
     slug: "logic-builder",
     title: "Build a logic circuit",
   },
   {
-    slug: "decoders-and-multiplexers",
-    title: "Choose signals and address memory",
+    slug: "boolean-circuit",
+    title: "Boolean expression and matching circuit",
+  },
+  {
+    slug: "decoder-builder",
+    title: "Build a decoder",
+  },
+  {
+    slug: "decoder",
+    title: "Decode the address",
+  },
+  {
+    slug: "multiplexer",
+    title: "Choose which signal gets through",
+  },
+  {
+    slug: "memory-address",
+    title: "Read and write one memory cell",
+  },
+  {
+    slug: "alu-architecture",
+    title: "ALU architecture comparison",
   },
   {
     slug: "instruction-encoder",

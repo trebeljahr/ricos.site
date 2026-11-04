@@ -56,14 +56,14 @@
 .channelBridge[data-closed="true"] { opacity: 1; }
 .gatePlate { stroke: #8a8d7c; stroke-width: 3; transition: stroke .18s; }
 .gatePlate[data-high="true"] { stroke: #d9705c; }
-.gatePulse { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.gatePulse path { fill: none; stroke-linecap: round; stroke-linejoin: round; animation-timing-function: linear; animation-fill-mode: both; }
-.waveFill { stroke: #60645e; stroke-width: 3; stroke-dasharray: var(--wave-length) var(--wave-length); animation-name: waveFill; }
-[data-high="true"] > .waveFill { stroke: #a14e3f; }
-.waveHead { stroke: #c9cbbd; stroke-width: 6; stroke-dasharray: 8 calc(var(--wave-length) + 16); animation-name: waveHead; }
-[data-high="true"] > .waveHead { stroke: #e0a92e; }
-@keyframes waveFill { from { stroke-dashoffset: var(--wave-length); } to { stroke-dashoffset: 0; } }
-@keyframes waveHead { from { stroke-dashoffset: 8; opacity: 1; } 99% { opacity: 1; } to { stroke-dashoffset: calc(var(--wave-length) * -1); opacity: 0; } }
+/* A gate is a capacitor: an insulating gap between the gate plate and the channel. */
+.insulator { fill: #1c2620; }
+.charge { fill: none; stroke-width: 2.5; stroke-linecap: round; opacity: 0; transition: opacity .25s ease; transition-delay: calc(var(--charge-index) * 30ms); }
+[data-charged="true"] > .charge { opacity: 1; }
+.chargePlus { stroke: #f4937f; }
+.chargeMinus { stroke: #9fd0f0; }
+.resistor { fill: #d9cca6; stroke: #62583e; stroke-width: 1.5; }
+.resistorBands { fill: none; stroke: #7d6a3f; stroke-width: 2; }
 .gateLabel { fill: #706e5c; font: 10px ui-monospace, monospace; }
 .deviceLead { fill: none; stroke: #738667; stroke-width: 2; }
 .transistorPart .deviceLead, .transistorSwitch .deviceLead { stroke: #8a8d7c; stroke-width: 5; }
@@ -94,9 +94,6 @@
   box-shadow: 0 3px 2px #4f3c28;
 }
 .contactLeft { left: 4%; }
-.contactLeft[data-throw] { height: 24%; }
-.contactLeft[data-throw="high"] { top: 8%; }
-.contactLeft[data-throw="low"] { top: 68%; }
 .contactRight { right: 4%; }
 .contactLeft::after, .contactRight::after {
   content: "";
@@ -132,35 +129,6 @@
   background: linear-gradient(#586458, #28372c 70%, #1c251f);
   box-shadow: inset 0 2px #84917b, 0 2px 2px #392b2455;
 }
-/* Pivots on the right contact; 14deg reaches a battery contact on the left. */
-.selectorBlade {
-  position: absolute;
-  right: 13.5%;
-  top: 41.5%;
-  width: 75%;
-  height: 17%;
-  border: 1px solid #a78c43;
-  border-radius: 2px;
-  background: linear-gradient(#f9e5a5, #bc9346 40%, #e3c674 60%, #9a7434);
-  box-shadow: 0 2px 2px #3e2f2655;
-  transform-origin: 100% 50%;
-  transform: rotate(-14deg);
-  transition: transform .22s ease;
-}
-.selectorBlade[data-closed="true"] { transform: rotate(14deg); }
-.selectorBlade i {
-  position: absolute;
-  left: 8%;
-  top: -50%;
-  width: 34%;
-  height: 210%;
-  border: 1px solid #242c25;
-  border-radius: 4px;
-  background: linear-gradient(#586458, #28372c 70%, #1c251f);
-  box-shadow: inset 0 2px #84917b, 0 2px 2px #392b2455;
-}
-.selectorCurrent { position: absolute; z-index: 2; top: 50%; right: 13.5%; width: 75%; height: 3px; background: repeating-linear-gradient(90deg, #fff5c3 0 3px, transparent 3px 20px); background-size: 20px 3px; transform-origin: 100% 50%; transform: rotate(14deg); animation: contactFlow 1s linear infinite; pointer-events: none; }
-.knifeSwitch:hover .selectorBlade i { background: linear-gradient(#6f7d69, #384e3c); }
 .knifeSwitch:hover .blade i { background: linear-gradient(#6f7d69, #384e3c); }
 .knifeSwitch:active .switchBase { translate: 0 1px; }
 .battery {
@@ -227,9 +195,10 @@
 @keyframes sparkFlash { 0% { opacity: 1; transform: scale(.4); } 35% { opacity: 1; transform: scale(1.35); } 100% { opacity: 0; transform: scale(.1); } }
 @keyframes sparkFly { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.25); } }
 @media (prefers-reduced-motion: reduce) {
-  .blade, .selectorBlade, .signalCable, .stateLight, .channelBridge, .gatePlate, .glass, .lamp::before { transition: none; }
-  .sparkBurst, .gatePulse { display: none; }
-  .currentFlow, .currentContact, .selectorCurrent { animation: none; }
+  .blade, .signalCable, .stateLight, .channelBridge, .gatePlate, .glass, .lamp::before { transition: none; }
+  .sparkBurst { display: none; }
+  .charge { transition: none; }
+  .currentFlow, .currentContact { animation: none; }
 }
 @media (max-width: 560px) {
   .experiment { margin-block: 20px; }
@@ -244,11 +213,7 @@
 
 .netLabel { fill: #615d4d; font: 13px ui-monospace, monospace; }
 
-.comparisonViewport { overflow-x: auto; margin-top: 20px; }
-.comparisonColumns { display: grid; grid-template-columns: 1fr 1fr; min-width: 640px; }
-.comparisonHalf { min-width: 0; padding: 0 12px; }
-.comparisonHalf + .comparisonHalf { border-left: 1px solid #b2b1a3; }
-.comparisonHalf h4 { margin: 0; font-size: 17px; }
+.comparisonStack { display: grid; gap: clamp(16px, 3vw, 28px); }
+.comparisonHalf { min-width: 0; }
 .comparisonHalf .board { min-width: 0; }
-.comparisonHalf .boardViewport { margin-top: 12px; }
-.comparisonHalf .flowStatus { font-size: 11px; }
+.comparisonHalf .boardViewport { margin-top: 0; }

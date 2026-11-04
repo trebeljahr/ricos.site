@@ -3,8 +3,8 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { transistorLampDemo } from "../../lib/computer/demoCircuits";
 import { SwitchLogic, TransistorComparison, TransistorSwitches } from "./SwitchLogic";
-import { AdditionTable, FullAdderTable, GateTruthTable } from "./TruthTables";
-import { WAVE_MS } from "./useGateRipple";
+import { GateTruthTable } from "./TransistorGates";
+import { AdditionTable, FullAdderTable } from "./TruthTables";
 
 afterEach(() => {
   cleanup();
@@ -20,22 +20,17 @@ const currentRow = (name: string) =>
     .find((row) => row.getAttribute("data-current") === "true");
 
 describe("truth tables", () => {
-  it("opens each gate on its transistors, and the reader can refold it", () => {
+  it("opens each gate on its transistors", () => {
     render(<GateTruthTable />);
-    expect(screen.getByLabelText("AND from CMOS transistors expanded circuit")).toBeTruthy();
-    click("Refold box");
-    expect(screen.queryByLabelText("AND from CMOS transistors expanded circuit")).toBeNull();
-    fireEvent.click(screen.getByText("Gate: AND", { selector: "summary" }));
-    click("XOR");
-    expect(screen.getByLabelText("XOR from CMOS transistors expanded circuit")).toBeTruthy();
+    expect(screen.getAllByLabelText(/^(N|P)MOS — (N|P)MOS part$/)).toHaveLength(6);
+    click("Show the XOR gate");
+    expect(screen.getAllByLabelText(/^(N|P)MOS — (N|P)MOS part$/)).toHaveLength(4);
   });
 
   it("marks the row of the current inputs and sets inputs from a row", () => {
     render(<GateTruthTable />);
     expect(currentRow("Truth table of AND")?.textContent).toBe("000");
-    expect(
-      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
-    ).toBeTruthy();
+    expect(within(screen.getByLabelText("OUT — LAMP part")).getByLabelText("LED off")).toBeTruthy();
     fireEvent.click(
       within(screen.getByLabelText("A — SWITCH part")).getByRole("button", { name: "OFF" }),
     );
@@ -43,22 +38,13 @@ describe("truth tables", () => {
       within(screen.getByLabelText("B — SWITCH part")).getByRole("button", { name: "OFF" }),
     );
     expect(currentRow("Truth table of AND")?.textContent).toBe("111");
-    expect(
-      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
-    ).toBeTruthy();
+    expect(within(screen.getByLabelText("OUT — LAMP part")).getByLabelText("LED on")).toBeTruthy();
     expect(screen.queryByRole("button", { name: /^Input A:/ })).toBeNull();
     expect(screen.queryByRole("button", { name: /SOUND/ })).toBeNull();
-    fireEvent.click(screen.getByLabelText("AND — AND part"));
-    expect(
-      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED on"),
-    ).toBeTruthy();
 
-    fireEvent.click(screen.getByText("Gate: AND", { selector: "summary" }));
-    click("XOR");
+    click("Show the XOR gate");
     expect(currentRow("Truth table of XOR")?.textContent).toBe("110");
-    expect(
-      within(screen.getByLabelText("OUTPUT — LAMP part")).getByLabelText("LED off"),
-    ).toBeTruthy();
+    expect(within(screen.getByLabelText("OUT — LAMP part")).getByLabelText("LED off")).toBeTruthy();
     click(/^A 0, B 1 gives OUT 1/);
     expect(
       within(screen.getByLabelText("A — SWITCH part")).getByRole("button", { name: "OFF" }),
@@ -78,10 +64,7 @@ describe("truth tables", () => {
     expect(screen.queryByRole("group", { name: "Table layout" })).toBeNull();
     expect(screen.queryByRole("button", { name: /^(Table|Grid)$/ })).toBeNull();
     expect(screen.queryByRole("combobox")).toBeNull();
-    fireEvent.click(screen.getByText("Gate: NAND", { selector: "summary" }));
-    const menu = screen.getByText("Gate: NAND").closest("details")!;
-    click("NOT");
-    expect(menu.open).toBe(false);
+    click("Show the NOT gate");
     expect(
       within(screen.getByRole("table", { name: "Truth table of NOT" })).getAllByRole("row"),
     ).toHaveLength(3);
@@ -175,58 +158,36 @@ describe("switch logic", () => {
     }
   });
 
-  describe("with motion", () => {
-    const allowMotion = () => {
-      vi.useFakeTimers();
-      vi.stubGlobal("matchMedia", (query: string) => ({
-        matches: query.includes("no-preference"),
-      }));
-    };
-    afterEach(() => vi.unstubAllGlobals());
-
-    it("reacts when the gate's voltage arrives, and the wire keeps that voltage", () => {
-      allowMotion();
-      const { container } = render(<TransistorSwitches />);
-      expect(container.querySelector("[data-gate-pulse]")).toBeNull();
-      click(/^Control A: low/);
-      expect(container.querySelector("[data-gate-pulse]")).toBeTruthy();
-      expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-      expect(container.querySelector('[data-signal][data-high="true"]')).toBeNull();
-      act(() => vi.advanceTimersByTime(WAVE_MS));
-      expect(container.querySelector("[data-gate-pulse]")).toBeNull();
-      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-      expect(screen.getByTestId("switch-spark")).toBeTruthy();
-      // Long after the wave, the gate is still high and carries no current.
-      act(() => vi.advanceTimersByTime(5000));
-      expect(container.querySelector('[data-signal][data-high="true"]')).toBeTruthy();
-      expect(container.querySelector("[data-signal][data-current]")).toBeNull();
-    });
-
-    it("sends a second wave from an inner stage's output to the next gates", () => {
-      allowMotion();
-      const { container } = render(<TransistorSwitches wiring="xnor" fixed />);
-      const waveWires = () => container.querySelectorAll("[data-gate-pulse]").length;
-      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-      fireEvent.click(screen.getByRole("button", { name: /^Control A: low/ }));
-      expect(waveWires()).toBeGreaterThan(0);
-      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-      act(() => vi.advanceTimersByTime(WAVE_MS));
-      expect(waveWires()).toBeGreaterThan(0);
-      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-      act(() => vi.advanceTimersByTime(WAVE_MS));
-      expect(waveWires()).toBe(0);
-      expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
-    });
-
-    it("skips the wait for readers who prefer less motion", () => {
-      vi.stubGlobal("matchMedia", () => ({ matches: false }));
-      render(<TransistorSwitches />);
-      click(/^Control A: low/);
-      expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
-    });
+  it("lights the lamp in the same frame as the switch, and shows the gate charged", () => {
+    const { container } = render(<TransistorSwitches />);
+    const charge = () =>
+      [...container.querySelectorAll("[data-gate-charge]")].map((group) =>
+        group.getAttribute("data-charged"),
+      );
+    expect(charge()).toEqual(["false", "false"]);
+    expect(screen.getByRole("status").textContent).toContain("gate empty");
+    click(/^Control A: low/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    expect(charge()).toEqual(["true", "true"]);
+    expect(screen.getByRole("status").textContent).toContain("gate charged");
+    expect(screen.getByTestId("switch-spark")).toBeTruthy();
+    // The gate wire holds its voltage and carries no steady current.
+    expect(container.querySelector('[data-signal][data-high="true"]')).toBeTruthy();
+    expect(container.querySelector("[data-signal][data-current]")).toBeNull();
+    click(/^Control A: high/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(charge()).toEqual(["false", "false"]);
   });
 
-  it("uses separate battery selectors to control shared transistor gates", () => {
+  it("settles a two-stage gate at once, with a pull-down on every input", () => {
+    const { container } = render(<TransistorSwitches wiring="xnor" fixed />);
+    expect(screen.getByRole("img", { name: "Output LAMP: 1" })).toBeTruthy();
+    click(/^Control A: low/);
+    expect(screen.getByRole("img", { name: "Output LAMP: 0" })).toBeTruthy();
+    expect(container.querySelectorAll("[data-resistor]")).toHaveLength(2);
+  });
+
+  it("uses separate switches to control shared transistor gates", () => {
     const { container } = render(<TransistorSwitches />);
     expect(container.textContent).not.toContain("CASES TRIED");
     expect(screen.queryByRole("button", { name: /^Control B:/ })).toBeNull();
@@ -285,9 +246,7 @@ describe("switch logic", () => {
       expect(container.querySelector("[data-signal][data-current]")).toBeNull();
       expect(screen.getByRole("status").textContent).toBe(
         wiring === "single"
-          ? lit
-            ? "Complete path · lamp on"
-            : "Broken path · lamp off"
+          ? `A = ${Number(a)} · gate ${lit ? "charged" : "empty"} · lamp ${lit ? "on" : "off"}`
           : `OUT · ${lit ? 1 : 0} · lamp ${lit ? "on" : "off"}`,
       );
     }

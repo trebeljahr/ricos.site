@@ -1,23 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SELECTOR_THROW } from "src/lib/computer/cmosLampLayout";
 import {
   type SwitchLampWiring,
   switchLampDemo,
   transistorLampDemo,
 } from "src/lib/computer/demoCircuits";
-import { initialSnapshot, step } from "src/lib/computer/logic";
+import { type Circuit, initialSnapshot, type Snapshot, step } from "src/lib/computer/logic";
 import { CmosLampBoard } from "./CmosLampBoard";
 import {
   Battery,
   Cable,
   type Control,
+  GateCharges,
   KnifeSwitch,
   Lamp,
+  Resistor,
   Terminal,
-  VoltageWaves,
 } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
-import { type GateRipple, useGateRipple, WAVE_MS } from "./useGateRipple";
 
 export type SwitchWiring = "series" | "parallel";
 type ContactKind = "nmos" | "pmos";
@@ -62,10 +61,17 @@ function conducts(contact: Contact, a: boolean, b: boolean) {
   const high = contact.name === "A" ? a : b;
   return contact.kind === "nmos" ? high : !high;
 }
+/** What the lamp circuit settles to for these inputs. Current follows the switch at once. */
+const settle = (circuit: Circuit, a: boolean, b: boolean) =>
+  step(circuit, initialSnapshot(), false, {}, { a, b });
+
+const CHARGE_X = [-30, -15, 0, 15, 30];
+const CHANNEL_CHARGES = CHARGE_X.map((x) => [x, 12] as const);
+const PLATE_CHARGES = CHARGE_X.map((x) => [x, 26] as const);
 
 /**
  * The package shows why the gate wire is not a loop: the gate plate never touches
- * the channel, so its voltage opens or closes the channel without current crossing.
+ * the channel. It is a capacitor, and the charge it holds opens the channel.
  */
 function TransistorSwitch({
   contact,
@@ -87,24 +93,35 @@ function TransistorSwitch({
       className={own.transistorSwitch}
       style={{ left: `${contact.x / 8}%`, top: `${(contact.y / boardHeight) * 100}%` }}
       role="img"
-      aria-label={`${contact.kind.toUpperCase()} ${contact.name} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}`}
+      aria-label={`${contact.kind.toUpperCase()} ${contact.name} transistor ${closed ? "conducting" : "blocking"}; gate ${high ? "high" : "low"}; gate capacitor ${closed ? "charged" : "empty"}`}
     >
       <svg viewBox="-60 -60 120 120" aria-hidden="true">
-        <path className={own.deviceLead} d="M-56 0 H-32 M32 0 H56" />
-        <rect className={own.chip} x="-36" y="-34" width="72" height="62" rx="9" />
-        <text className={own.chipKind} x="0" y="-14">
+        <path className={own.deviceLead} d="M-56 0 H-50 M50 0 H56" />
+        <rect className={own.chip} x="-50" y="-44" width="100" height="88" rx="9" />
+        <text className={own.chipKind} x="0" y="-18">
           {`${contact.kind.toUpperCase()} ${contact.name}`}
         </text>
-        <path className={own.channel} d="M-32 0 H-12 M12 0 H32" />
-        <path className={own.channelBridge} data-closed={closed} d="M-12 0 H12" />
+        <rect className={own.insulator} x="-38" y="3" width="76" height="31" />
+        <GateCharges
+          sign={contact.kind === "nmos" ? "minus" : "plus"}
+          charged={closed}
+          at={CHANNEL_CHARGES}
+        />
+        <GateCharges
+          sign={contact.kind === "nmos" ? "plus" : "minus"}
+          charged={closed}
+          at={PLATE_CHARGES}
+        />
+        <path className={own.channel} d="M-50 0 H-38 M38 0 H50" />
+        <path className={own.channelBridge} data-closed={closed} d="M-38 0 H38" />
         {active && (
           <>
             <path className={own.currentCable} d={reversed ? "M56 0 H-56" : "M-56 0 H56"} />
             <path className={own.currentFlow} d={reversed ? "M56 0 H-56" : "M-56 0 H56"} />
           </>
         )}
-        <path className={own.gatePlate} data-high={high} d="M-22 11 H22 M0 11 V60" />
-        <text className={own.gateLabel} x="10" y="55">
+        <path className={own.gatePlate} data-high={high} d="M-38 36 H38 M0 36 V60" />
+        <text className={own.gateLabel} x="8" y="56">
           G
         </text>
       </svg>
@@ -120,7 +137,7 @@ function SwitchBoard({
   lit,
   electrical,
   spark,
-  ripple,
+  snapshot,
   onFlip,
 }: {
   kind?: ContactKind;
@@ -130,10 +147,10 @@ function SwitchBoard({
   lit: boolean;
   electrical: boolean;
   spark: Spark | null;
-  ripple: GateRipple;
+  snapshot: Snapshot;
   onFlip: (name: Control) => void;
 }) {
-  const { snapshot, voltages, waves, waveKey } = ripple;
+  const gateHigh = Boolean(snapshot.values.a);
   const contacts = contactsFor(wiring, kind);
   const branched = wiring === "parallel";
   // A real N-channel lamp switch belongs on the return side of the load.
@@ -141,8 +158,7 @@ function SwitchBoard({
   const rows = branched ? [140, 360] : electrical ? [180] : [140];
   const boardHeight = branched ? 480 : electrical ? 400 : 360;
   const returnY = boardHeight - 30;
-  const selectorHigh = 280 - SELECTOR_THROW;
-  const selectorLow = 280 + SELECTOR_THROW;
+  const pullDownY = lowSide ? 360 : returnY;
   // The native simulator decides which complete branches conduct. These are
   // presentation paths, not a second circuit or current simulation.
   const activeRows = rows.map((y, branch) => {
@@ -226,21 +242,18 @@ function SwitchBoard({
             {electrical && (
               <>
                 <Cable
-                  d={
-                    lowSide
-                      ? `M132 40 V${selectorHigh} H174 Q180 ${selectorHigh - 6} 186 ${selectorHigh} H224`
-                      : `M132 140 V${selectorHigh} H224`
-                  }
+                  d={lowSide ? "M132 40 V280 H174 Q180 274 186 280 H224" : "M132 140 V280 H224"}
                 />
-                <Cable
-                  d={lowSide ? `M180 ${selectorLow} H224` : `M224 ${returnY} V${selectorLow}`}
-                  returning
-                />
-                <Cable d="M336 280 H500 V240" signal high={Boolean(voltages.a)} />
+                <Cable d="M336 280 H500 V240" signal high={gateHigh} />
+                {/* The pull-down: it empties the gate once the switch opens. */}
+                <Cable d="M420 280 V300" signal high={gateHigh} />
+                <Cable d={`M420 340 V${pullDownY}`} returning />
+                {lowSide && <Cable d="M180 360 H420" returning />}
+                <Resistor x={420} y={320} />
                 <Terminal x={132} y={lowSide ? 40 : 140} junction />
-                <Terminal x={lowSide ? 180 : 224} y={lowSide ? selectorLow : returnY} junction />
-                <Terminal x={224} y={selectorHigh} />
-                <Terminal x={224} y={selectorLow} />
+                <Terminal x={420} y={280} junction />
+                <Terminal x={420} y={pullDownY} junction />
+                <Terminal x={224} y={280} />
                 <Terminal x={336} y={280} />
                 <Terminal x={500} y={240} />
               </>
@@ -268,8 +281,8 @@ function SwitchBoard({
               <TransistorSwitch
                 key={`${contact.name}-${contact.kind}-${contact.y}`}
                 contact={contact}
-                high={Boolean(voltages.a)}
-                closed={conducts(contact, Boolean(voltages.a), b)}
+                high={gateHigh}
+                closed={conducts(contact, gateHigh, b)}
                 active={activeRows[rows.indexOf(contact.y)]}
                 reversed={lowSide}
                 boardHeight={boardHeight}
@@ -296,40 +309,6 @@ function SwitchBoard({
               control
               boardHeight={boardHeight}
               onFlip={() => onFlip("A")}
-            />
-          )}
-          {/* The gate wire ends at the insulated plate: charge moves in or out once, then stops. */}
-          {waves.has("a") && (
-            <VoltageWaves
-              key={waveKey}
-              width={800}
-              height={boardHeight}
-              waves={[
-                {
-                  id: "gate-a",
-                  high: Boolean(waves.get("a")),
-                  lead: waves.get("a")
-                    ? [
-                        { x: 132, y: lowSide ? 40 : 140 },
-                        { x: 132, y: selectorHigh },
-                        { x: 224, y: selectorHigh },
-                      ]
-                    : lowSide
-                      ? [
-                          { x: 180, y: selectorLow },
-                          { x: 224, y: selectorLow },
-                        ]
-                      : [
-                          { x: 224, y: returnY },
-                          { x: 224, y: selectorLow },
-                        ],
-                  wire: [
-                    { x: 336, y: 280 },
-                    { x: 500, y: 280 },
-                    { x: 500, y: 191 },
-                  ],
-                },
-              ]}
             />
           )}
           {spark && lit && (
@@ -375,20 +354,9 @@ export function TransistorSwitches({
 export function TransistorComparison() {
   return (
     <section className={own.experiment} aria-label="Compare PMOS and NMOS">
-      <div className={own.header}>
-        <h3>PMOS and NMOS</h3>
-      </div>
-      <div
-        className={own.comparisonViewport}
-        role="group"
-        aria-label="PMOS and NMOS circuits, scroll sideways on small screens"
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: Side-by-side circuits support keyboard scrolling.
-        tabIndex={0}
-      >
-        <div className={own.comparisonColumns}>
-          <TransistorComparisonHalf kind="pmos" />
-          <TransistorComparisonHalf kind="nmos" />
-        </div>
+      <div className={own.comparisonStack}>
+        <TransistorComparisonHalf kind="pmos" />
+        <TransistorComparisonHalf kind="nmos" />
       </div>
     </section>
   );
@@ -397,11 +365,10 @@ export function TransistorComparison() {
 function TransistorComparisonHalf({ kind }: { kind: ContactKind }) {
   const [high, setHigh] = useState(false);
   const circuit = useMemo(() => transistorLampDemo("single", kind), [kind]);
-  const ripple = useGateRipple(circuit, { a: high, b: false }, true);
-  const lit = Boolean(ripple.snapshot.values.lamp);
+  const snapshot = settle(circuit, high, false);
+  const lit = Boolean(snapshot.values.lamp);
   return (
     <section className={own.comparisonHalf} aria-label={`${kind.toUpperCase()} lamp circuit`}>
-      <h4>{kind.toUpperCase()}</h4>
       <SwitchBoard
         kind={kind}
         wiring="single"
@@ -410,13 +377,13 @@ function TransistorComparisonHalf({ kind }: { kind: ContactKind }) {
         lit={lit}
         electrical
         spark={null}
-        ripple={ripple}
+        snapshot={snapshot}
         onFlip={() => {
           setHigh((value) => !value);
         }}
       />
       <p className={own.flowStatus} role="status">
-        {`Input ${Number(high)} · ${lit ? "conducting · lamp on" : "blocking · lamp off"}`}
+        {`A = ${Number(high)} · gate ${lit ? "charged" : "empty"} · lamp ${lit ? "on" : "off"}`}
       </p>
     </section>
   );
@@ -443,21 +410,17 @@ function SwitchExperiment({
     [wiring, physicalWiring, electrical],
   );
   const output = electrical && wiring !== "single" ? "out" : "lamp";
-  const ripple = useGateRipple(circuit, { a, b }, electrical);
-  const lit = Boolean(ripple.snapshot.values[output]);
-  // One transistor sparks on arrival of the gate's voltage, so its burst starts later.
-  const sparkMs = electrical && wiring === "single" ? 600 + WAVE_MS : 600;
+  const snapshot = settle(circuit, a, b);
+  const lit = Boolean(snapshot.values[output]);
   useEffect(() => {
     if (!spark) return;
-    const timer = window.setTimeout(() => setSpark(null), sparkMs);
+    const timer = window.setTimeout(() => setSpark(null), 600);
     return () => window.clearTimeout(timer);
-  }, [spark, sparkMs]);
+  }, [spark]);
   function flip(name: Control) {
     const nextA = name === "A" ? !a : a;
     const nextB = name === "B" ? !b : b;
-    const nextLit = step(circuit, initialSnapshot(), false, {}, { a: nextA, b: nextB }).values[
-      output
-    ];
+    const nextLit = settle(circuit, nextA, nextB).values[output];
     const closing = contactsFor(physicalWiring).find(
       (contact) =>
         contact.name === name && !conducts(contact, a, b) && conducts(contact, nextA, nextB),
@@ -492,11 +455,13 @@ function SwitchExperiment({
       className={own.experiment}
       aria-label={electrical ? "Transistors and a lamp" : "Switches and a lamp"}
     >
-      <div className={own.header}>
-        <div>
-          <h3>{electrical ? "Switches controlled by electricity" : "Switches and a lamp"}</h3>
+      {!electrical && (
+        <div className={own.header}>
+          <div>
+            <h3>Switches and a lamp</h3>
+          </div>
         </div>
-      </div>
+      )}
       {!fixed && (
         <div className={own.wiring} role="group" aria-label="How the switches are wired">
           {(electrical ? ELECTRICAL_WIRINGS : (["series", "parallel"] as SwitchLampWiring[])).map(
@@ -515,7 +480,14 @@ function SwitchExperiment({
       )}
       {fixed && <p className={own.fixedWiring}>{wiringLabel(wiring)}</p>}
       {electrical && wiring !== "single" ? (
-        <CmosLampBoard circuit={circuit} ripple={ripple} a={a} b={b} onFlip={flip} spark={spark} />
+        <CmosLampBoard
+          circuit={circuit}
+          snapshot={snapshot}
+          a={a}
+          b={b}
+          onFlip={flip}
+          spark={spark}
+        />
       ) : (
         <SwitchBoard
           wiring={physicalWiring}
@@ -524,13 +496,15 @@ function SwitchExperiment({
           lit={lit}
           electrical={electrical}
           spark={spark}
-          ripple={ripple}
+          snapshot={snapshot}
           onFlip={flip}
         />
       )}
       <p className={own.flowStatus} role="status">
-        {electrical && wiring !== "single"
-          ? `OUT · ${lit ? 1 : 0} · lamp ${lit ? "on" : "off"}`
+        {electrical
+          ? wiring === "single"
+            ? `A = ${Number(a)} · gate ${lit ? "charged" : "empty"} · lamp ${lit ? "on" : "off"}`
+            : `OUT · ${lit ? 1 : 0} · lamp ${lit ? "on" : "off"}`
           : lit
             ? "Complete path · lamp on"
             : "Broken path · lamp off"}

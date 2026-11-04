@@ -1,13 +1,10 @@
 import type { CSSProperties } from "react";
-import { polylinePath } from "src/lib/computer/wireGeometry";
-import type { Point } from "src/lib/computer/wireRouting";
 import own from "./SwitchLogic.module.css";
-import { WAVE_MS } from "./useGateRipple";
 export type Control = "A" | "B";
 /**
  * One component and geometry for the first lamp demo and every transistor input.
- * A control is a two-way selector: its common contact on the right joins either
- * battery contact on the left, so a gate is always driven and never left floating.
+ * A control closes the path from battery plus to a gate; a pull-down resistor
+ * empties the gate again when it opens, so a gate is never left floating.
  */
 export function KnifeSwitch({
   name,
@@ -43,25 +40,18 @@ export function KnifeSwitch({
       aria-pressed={closed}
       aria-label={
         control
-          ? `Control ${name}: ${closed ? "high" : "low"}; selector on battery ${closed ? "plus" : "minus"}. Click to select battery ${closed ? "minus" : "plus"}.`
+          ? `Control ${name}: ${closed ? "high" : "low"}. Click to ${closed ? "open" : "close"}.`
           : `Switch ${name}: ${closed ? "closed" : "open"}. Click to ${closed ? "open" : "close"}.`
       }
       onClick={onFlip}
     >
       <span className={own.switchBase} aria-hidden="true">
-        {control ? (
-          <>
-            <i className={own.contactLeft} data-throw="high" />
-            <i className={own.contactLeft} data-throw="low" />
-          </>
-        ) : (
-          <i className={own.contactLeft} />
-        )}
+        <i className={own.contactLeft} />
         <i className={own.contactRight} />
-        <span className={control ? own.selectorBlade : own.blade} data-closed={closed}>
+        <span className={own.blade} data-closed={closed}>
           <i />
         </span>
-        {active && <span className={control ? own.selectorCurrent : own.currentContact} />}
+        {active && <span className={own.currentContact} />}
       </span>
       <span className={own.contactName}>
         {name}
@@ -106,77 +96,46 @@ export function Cable({
     </g>
   );
 }
-export type VoltageWave = {
-  id: string;
-  /** New voltage of the wire. */
-  high: boolean;
-  /** Rail and switch the wave passes first; those already hold this voltage. */
-  lead?: Point[];
-  /** The wire that changes voltage behind the wave, ending at a gate. */
-  wire: Point[];
-};
-
-const lengthOf = (points: Point[]) =>
-  points.reduce(
-    (sum, point, index) =>
-      index ? sum + Math.hypot(point.x - points[index - 1].x, point.y - points[index - 1].y) : 0,
-    0,
-  );
-
-/**
- * A voltage change moving down a wire at one speed. The wire takes its new colour
- * behind the head and keeps it after the head has gone: voltage stays, current stops.
- */
-export function VoltageWaves({
-  waves,
-  width,
-  height,
-}: {
-  waves: VoltageWave[];
-  width: number;
-  height: number;
-}) {
-  const routes = waves.map((wave) => {
-    const route = [...(wave.lead ?? []), ...wave.wire];
-    return { ...wave, route, leadLength: lengthOf(wave.lead ?? []), length: lengthOf(route) };
-  });
-  const msPerUnit = WAVE_MS / Math.max(1, ...routes.map((route) => route.length));
+/** A vertical resistor drawn over a wire. */
+export function Resistor({ x, y }: { x: number; y: number }) {
   return (
-    <svg className={own.gatePulse} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
-      {routes.map(({ id, high, route, wire, leadLength, length }) => {
-        const wireLength = length - leadLength;
-        return (
-          <g key={id} data-high={high}>
-            <path
-              className={own.waveFill}
-              d={polylinePath(wire)}
-              pathLength={wireLength}
-              style={
-                {
-                  "--wave-length": wireLength,
-                  animationDelay: `${leadLength * msPerUnit}ms`,
-                  animationDuration: `${wireLength * msPerUnit}ms`,
-                } as CSSProperties
-              }
-            />
-            <path
-              className={own.waveHead}
-              data-gate-pulse
-              d={polylinePath(route)}
-              pathLength={length}
-              style={
-                {
-                  "--wave-length": length,
-                  animationDuration: `${length * msPerUnit}ms`,
-                } as CSSProperties
-              }
-            />
-          </g>
-        );
-      })}
-    </svg>
+    <g data-resistor="">
+      <rect className={own.resistor} x={x - 8} y={y - 20} width="16" height="40" rx="3" />
+      <path
+        className={own.resistorBands}
+        d={`M${x - 8} ${y - 10} h16 M${x - 8} ${y} h16 M${x - 8} ${y + 10} h16`}
+      />
+    </g>
   );
 }
+
+/**
+ * The charge a gate capacitor holds. The marks fade in as it fills and out as it
+ * empties. Nothing else waits for them: the lamp follows the switch at once.
+ */
+export function GateCharges({
+  sign,
+  charged,
+  at,
+}: {
+  sign: "plus" | "minus";
+  charged: boolean;
+  at: readonly (readonly [number, number])[];
+}) {
+  return (
+    <g data-gate-charge={sign} data-charged={charged}>
+      {at.map(([x, y], index) => (
+        <path
+          key={`${x}-${y}`}
+          className={`${own.charge} ${sign === "plus" ? own.chargePlus : own.chargeMinus}`}
+          style={{ "--charge-index": index } as CSSProperties}
+          d={sign === "plus" ? `M${x - 4} ${y} h8 M${x} ${y - 4} v8` : `M${x - 4} ${y} h8`}
+        />
+      ))}
+    </g>
+  );
+}
+
 export function Terminal({ x, y, junction = false }: { x: number; y: number; junction?: boolean }) {
   return (
     <circle className={junction ? own.junction : own.terminal} cx={x} cy={y} r={junction ? 4 : 5} />

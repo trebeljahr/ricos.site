@@ -4,9 +4,6 @@ import { isMosfet } from "./transistorGeometry";
 import type { Point } from "./wireRouting";
 import { wireNetKeys } from "./wireTopology";
 
-/** How far a selector's battery contacts sit above and below its centre line. */
-export const SELECTOR_THROW = 28;
-
 /** Presentation coordinates for the actual CMOS graph. No gates or wires are synthesized here. */
 export function cmosLampLayout(circuit: Circuit) {
   const byId = new Map(circuit.nodes.map((node) => [node.id, node]));
@@ -102,14 +99,16 @@ export function cmosLampLayout(circuit: Circuit) {
       const x = 220;
       const y = index === 0 ? 180 : 470;
       const lane = index === 0 ? 380 : 340;
+      // Side by side, so the pull-downs never share a run to the ground rail.
+      const pullDownX = index === 0 ? 310 : 324;
       return {
         id: node.id,
         x,
         y,
         lane,
-        high: { x: x - 56, y: y - SELECTOR_THROW },
-        low: { x: x - 56, y: y + SELECTOR_THROW },
+        contact: { x: x - 56, y },
         output: { x: x + 56, y },
+        pullDown: { x: pullDownX, y: y + 42 },
       };
     });
   for (const input of inputSwitches) positions.set(input.id, input.output);
@@ -158,16 +157,30 @@ export function cmosLampLayout(circuit: Circuit) {
       net: nets[circuit.wires.find((wire) => wire.from === "vcc")!.id],
       currentSource: input.id,
       signal: false,
-      points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.high.y }, input.high],
+      points: [{ x: 80, y: 48 }, { x: 132, y: 48 }, { x: 132, y: input.y }, input.contact],
     },
-    // The low contact ties the gate to the ground rail, so no input is left floating.
+    // The pull-down empties the gate when the switch opens, so no input is left floating.
+    {
+      id: `${input.id}-pull-down`,
+      from: input.id,
+      to: input.id,
+      net: nets[circuit.wires.find((wire) => wire.from === input.id)!.id],
+      signal: false,
+      points: [
+        { x: input.pullDown.x, y: input.y },
+        { x: input.pullDown.x, y: input.pullDown.y - 20 },
+      ],
+    },
     {
       id: `${input.id}-ground`,
       from: "gnd",
       to: input.id,
       net: nets[circuit.wires.find((wire) => wire.from === "gnd")!.id],
       signal: false,
-      points: [{ x: 118, y: groundY }, { x: 118, y: input.low.y }, input.low],
+      points: [
+        { x: input.pullDown.x, y: input.pullDown.y + 20 },
+        { x: input.pullDown.x, y: groundY },
+      ],
     },
   ]);
   const devices = circuit.nodes.filter(isMosfet);

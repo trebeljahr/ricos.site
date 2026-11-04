@@ -8,13 +8,19 @@ import {
   Battery,
   Cable,
   type Control,
+  GateCharges,
   KnifeSwitch,
   Lamp,
+  Resistor,
   Terminal,
-  VoltageWaves,
 } from "./SwitchBoardParts";
 import own from "./SwitchLogic.module.css";
-import type { GateRipple } from "./useGateRipple";
+
+const GATE_CHARGE_MARKS = [
+  [-26, -12],
+  [-26, 0],
+  [-26, 12],
+] as const;
 
 /** Trace the load path through the simulator's conducting devices; gate controls are excluded. */
 export function lampCurrentPath(circuit: Circuit, snapshot: Snapshot) {
@@ -47,20 +53,20 @@ export function lampCurrentPath(circuit: Circuit, snapshot: Snapshot) {
 /** The lamp view draws the shared CMOS circuit, including its input inverters and both rails. */
 export function CmosLampBoard({
   circuit,
-  ripple,
+  snapshot,
   a,
   b,
   onFlip,
   spark,
 }: {
   circuit: Circuit;
-  ripple: GateRipple;
+  snapshot: Snapshot;
   a: boolean;
   b: boolean;
   onFlip: (name: Control) => void;
   spark: { id: number; x: number; y: number; control?: Control } | null;
 }) {
-  const { snapshot, voltages, waves, waveKey } = ripple;
+  const voltages = snapshot.values;
   const layout = useMemo(() => cmosLampLayout(circuit), [circuit]);
   const nets = useMemo(() => wireNetKeys(circuit), [circuit]);
   const current = useMemo(() => lampCurrentPath(circuit, snapshot), [circuit, snapshot]);
@@ -100,16 +106,6 @@ export function CmosLampBoard({
       active: lit,
     },
   ];
-  // A net's new voltage leaves its rail through the selector, or its stage's output node.
-  const voltageWaves = layout.wires
-    .filter((wire) => waves.has(wire.from) && isMosfet(byId.get(wire.to)!))
-    .map((wire) => {
-      const high = waves.get(wire.from)!;
-      const rail = layout.inputWires.find(
-        (input) => input.to === wire.from && input.from === (high ? "vcc" : "gnd"),
-      );
-      return { id: wire.id, high, lead: rail?.points, wire: wire.points };
-    });
   const bridged = bridgeWirePaths(paths);
   const junctions = wireJunctions(paths);
   return (
@@ -183,6 +179,11 @@ export function CmosLampBoard({
                     {label}
                   </text>
                   <circle className={own.stateLight} data-on={closed} cx="25" cy="-17" r="3" />
+                  <GateCharges
+                    sign={node.type === "nmos" ? "plus" : "minus"}
+                    charged={closed}
+                    at={GATE_CHARGE_MARKS}
+                  />
                   <text className={own.gateLabel} x="-48" y="-7">
                     G
                   </text>
@@ -191,9 +192,9 @@ export function CmosLampBoard({
             })}
             {layout.inputSwitches.map((input) => (
               <g key={input.id}>
-                <Terminal x={input.high.x} y={input.high.y} />
-                <Terminal x={input.low.x} y={input.low.y} />
+                <Terminal x={input.contact.x} y={input.contact.y} />
                 <Terminal x={input.output.x} y={input.output.y} />
+                <Resistor x={input.pullDown.x} y={input.pullDown.y} />
               </g>
             ))}
             {layout.stages.map((node) => {
@@ -220,14 +221,6 @@ export function CmosLampBoard({
               />
             );
           })}
-          {voltageWaves.length > 0 && (
-            <VoltageWaves
-              key={waveKey}
-              waves={voltageWaves}
-              width={layout.width}
-              height={layout.height}
-            />
-          )}
           {spark && (
             <span
               key={spark.id}

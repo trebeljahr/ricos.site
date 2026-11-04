@@ -5,8 +5,8 @@ The runtime photograph is Martijn Boer's 22,036 × 13,288 Dixon die image.
 give the L2 cache, individual decoder and alignment-mark boxes directly.
 
 The additional core regions are **visual matches**, not annotations supplied
-with that Dixon photograph. Their outlines are approximate and the viewer says
-so whenever one is selected.
+with that Dixon photograph. Their outlines are approximate and the credits
+fold-out says so whenever one is selected.
 
 ## Matched core layout
 
@@ -16,11 +16,10 @@ compare with Dixon's core, to the right of the added L2 cache. Match each block
 individually: a single affine transform does not fit the entire revised core.
 
 Main regions follow the labelled functional blocks. Smaller functional targets
-appear under CLOSER. The reference's tentative yellow ROM/PLA, register-array and
-capacitor identifications appear separately under CANDIDATES · UNCONFIRMED.
-Their captions use conditional language, the LCD labels them CANDIDATE, and the
-source note states that their function and location are unconfirmed. Candidate
-boxes use an amber outline and do not appear in the main overview.
+appear on the map once their parent is selected. So do the reference's tentative
+yellow ROM/PLA, register-array and capacitor identifications: the selected label
+says CANDIDATE, their names end in a question mark, they use an amber outline, and
+the source note states that their function and location are unconfirmed.
 
 | Viewer region | Visual match on Dixon |
 | --- | --- |
@@ -47,11 +46,14 @@ boxes use an amber outline and do not appear in the main overview.
 ## How the boxes are drawn
 
 Each region's edge runs along an empty channel of the photo, the bare orange
-field between circuit blocks. Regions that are not rectangles carry an `outline`
-polygon, traced around the cell in the reference; `rect` is then its bounding box,
-used to fit the view. Only the outline takes clicks. A few edges still pass over
-a row of small blocks where the die has no channel at that point. The score used
-to check this was the share of an edge that runs through bare field.
+field between circuit blocks, and steps around a block rather than through it.
+The edges were placed by hand on the full-size photo, checked against a mask of
+the bare field. Regions that are not rectangles carry a clockwise `outline`
+polygon; `rect` is then its bounding box, used to fit the view. Only the outline
+takes clicks. Neighbouring regions never share an edge: each sits on its own side
+of the channel, and the viewer draws each outline 1.5 screen pixels further in, so
+two lines stay apart at every zoom even where the channel is only a few photo
+pixels wide.
 
 Candidate close-ups match the reference's proposed FROM strip beside MIU,
 microcode-entry array above the rotated full decoder, nearby decoder-control
@@ -60,8 +62,8 @@ decoupling-capacitor strip left of the reservation station. These are research
 hypotheses, not recovered circuits or confirmed Dixon identifications. The
 unlocated integer constant ROM (CROM) is not given a box.
 
-The overview sorts larger regions behind smaller ones so that an overlap does
-not prevent selecting the smaller region.
+The map sorts larger regions behind smaller ones so that a close-up inside its
+parent stays clickable.
 
 ## Functional descriptions
 

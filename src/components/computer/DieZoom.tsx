@@ -8,8 +8,13 @@ import {
   dieSizeMm,
   fitView,
   formatLength,
+  insetOutline,
+  LABEL_HEIGHT_PIXELS,
+  labelFitScale,
+  labelWidth,
   levelFor,
   mmPerPixel,
+  openingView,
   PENTIUM_II_DIXON,
   type Rect,
   scaleBar,
@@ -21,7 +26,7 @@ import {
 import { nextImageUrl } from "src/lib/mapToImageProps";
 import panel from "./ByteExplorer.module.css";
 import styles from "./Codebook.module.css";
-import { DemoMachine, MiniButton } from "./CodebookParts";
+import { DemoMachine } from "./CodebookParts";
 import own from "./DieZoom.module.css";
 
 // Stop where a 50 µm scale bar spans 100 CSS pixels, before detail gets rough.
@@ -29,10 +34,8 @@ const MIN_MICRONS_PER_SCREEN_PIXEL = 0.5;
 const ANIMATION_MS = 750;
 // A press that moves further than this is a drag, not a tap.
 const TAP_SLOP_PIXELS = 5;
-// Width of one character of .spotLabel, plus its side padding.
-const LABEL_CHAR_PIXELS = 6.1;
-const LABEL_PADDING_PIXELS = 8;
-const LABEL_HEIGHT_PIXELS = 18;
+// Each outline is drawn this far inside its region, so neighbours never stack.
+const OUTLINE_INSET_PIXELS = 1.5;
 
 type Size = { width: number; height: number };
 
@@ -88,8 +91,8 @@ export function DieZoom({
   const die = dieSizeMm(shot);
   const maxScale = (perPixel * 1000) / MIN_MICRONS_PER_SCREEN_PIXEL;
 
-  const fitScale = size ? fitView(bounds, size).scale : 0;
-  const minScale = fitScale * 0.6;
+  const opening = useMemo(() => (size ? openingView(shot, size) : null), [shot, size]);
+  const minScale = size ? fitView(bounds, size).scale * 0.6 : 0;
 
   const clamp = useCallback(
     (next: View): View => {
@@ -175,8 +178,8 @@ export function DieZoom({
   }, []);
 
   useEffect(() => {
-    if (size && !viewRef.current) setView(fitView(bounds, size));
-  }, [bounds, setView, size]);
+    if (opening && !viewRef.current) setView(opening);
+  }, [opening, setView]);
 
   useEffect(() => stopAnimation, [stopAnimation]);
 
@@ -350,15 +353,11 @@ export function DieZoom({
   const coinCorner = toScreen(placed.x, placed.y);
   const coinSize = view ? placed.diameter * view.scale : 0;
   const spot = shot.spots.find((item) => item.id === spotId) ?? null;
-  const detailSpots = spot
-    ? shot.spots.filter((item) => item.parentId === (spot.parentId ?? spot.id))
-    : [];
-  const detailGroup = shot.spots.find((item) => item.id === (spot?.parentId ?? spot?.id));
-  const closeUps = detailSpots.filter((item) => !item.candidate);
-  const candidates = detailSpots.filter((item) => item.candidate);
+  // Every region stays on the map; the selected one's close-ups join them.
+  const openParent = spot?.parentId ?? spot?.id;
   const outlinedSpots = shot.spots
-    .filter((item) => (spot ? detailSpots.includes(item) && item.id !== spot.id : !item.parentId))
-    // Smaller regions stay clickable where approximate block boxes overlap.
+    .filter((item) => item.id !== spot?.id && (!item.parentId || item.parentId === openParent))
+    // Smaller regions stay clickable inside larger ones.
     .sort((a, b) => b.rect.width * b.rect.height - a.rect.width * a.rect.height);
   const spotCorner = spot ? toScreen(spot.rect.x, spot.rect.y) : null;
 
@@ -374,76 +373,68 @@ export function DieZoom({
     };
   }
 
-  function spotLabel(item: DieSpot, label: string) {
-    const part = visiblePart(item.labelRect ?? item.rect);
-    if (!part) return null;
-    const { left, top, right, bottom } = part;
-    if (right - left <= 44 || bottom - top <= 30) return null;
-    const parent = toScreen(item.rect.x, item.rect.y);
-    return (
-      <span
-        className={own.spotLabel}
-        style={{ left: left - parent.x + 3, top: top - parent.y + 3, maxWidth: right - left - 8 }}
-      >
-        {label}
-      </span>
-    );
-  }
-
   /**
-   * The selected block always names itself while any of it is on screen: inside
-   * its top-left corner when the name fits, otherwise just outside the box.
+   * A name goes inside the top-left of the part of its box on screen, or just
+   * outside when it does not fit. Only a top-level region's map label gives way,
+   * once zoomed out past the point where its whole box can hold it.
    */
-  function selectedLabel(item: DieSpot, label: string) {
-    if (!size) return null;
+  function spotLabel(item: DieSpot, label: string, always: boolean) {
+    if (!size || !view) return null;
     const preferred = visiblePart(item.labelRect ?? item.rect);
     const whole = visiblePart(item.rect);
     if (!preferred || !whole) return null;
     if (whole.right <= whole.left || whole.bottom <= whole.top) return null;
+    if (!always && opening && view.scale < Math.min(labelFitScale(item), opening.scale * 0.999)) {
+      return null;
+    }
     const part =
       preferred.right > preferred.left && preferred.bottom > preferred.top ? preferred : whole;
     const { left, top, right, bottom } = part;
-    const width = label.length * LABEL_CHAR_PIXELS + LABEL_PADDING_PIXELS;
+    const width = labelWidth(label);
     const fitsInside = right - left >= width + 6 && bottom - top >= LABEL_HEIGHT_PIXELS + 6;
     let labelLeft = left + 3;
     let labelTop = top + 3;
-    if (!fitsInside) {
+    if (!fitsInside && always) {
       labelLeft = Math.max(3, Math.min(size.width - width - 3, left));
       const above = top - LABEL_HEIGHT_PIXELS - 3;
       const below = bottom + 3;
       if (above >= 3) labelTop = above;
       else if (below + LABEL_HEIGHT_PIXELS <= size.height - 3) labelTop = below;
     }
-    const parent = toScreen(item.rect.x, item.rect.y);
     return (
       <span
-        className={clsx(own.spotLabel, own.selectedLabel)}
-        style={{
-          left: labelLeft - parent.x,
-          top: labelTop - parent.y,
-          maxWidth: size.width - 6,
-        }}
+        key={`label-${item.id}`}
+        className={clsx(own.spotLabel, item.candidate && own.candidateLabel)}
+        style={{ left: labelLeft, top: labelTop, maxWidth: size.width - 6 }}
       >
         {label}
       </span>
     );
   }
 
-  /** An outline's corners in screen pixels, measured from the corner of its bounding box. */
+  /** A region's drawn outline in screen pixels, measured from the corner of its bounding box. */
   function shapeOf(item: DieSpot) {
-    if (!view || !item.outline) return null;
-    const scale = view.scale;
-    return item.outline.map(
-      ([x, y]) => [(x - item.rect.x) * scale, (y - item.rect.y) * scale] as const,
+    if (!view) return [];
+    const { x, y, width, height } = item.rect;
+    const corners: readonly (readonly [number, number])[] = item.outline ?? [
+      [x, y],
+      [x + width, y],
+      [x + width, y + height],
+      [x, y + height],
+    ];
+    return insetOutline(
+      corners.map(
+        ([cornerX, cornerY]) => [(cornerX - x) * view.scale, (cornerY - y) * view.scale] as const,
+      ),
+      OUTLINE_INSET_PIXELS,
     );
   }
 
   const spotShape = spot ? shapeOf(spot) : null;
   const micronsPerScreenPixel = view ? (perPixel * 1000) / view.scale : 1;
   const bar = scaleBar(micronsPerScreenPixel);
-  // How much closer than the first view, where the whole die and the coin fit.
-  const magnification = view && fitScale ? view.scale / fitScale : 1;
-  const screenWidthMm = view && size ? (size.width / view.scale) * perPixel : 0;
+  // How much closer than the first view.
+  const magnification = view && opening ? view.scale / opening.scale : 1;
 
   return (
     <DemoMachine
@@ -545,17 +536,10 @@ export function DieZoom({
                 const height = item.rect.height * view.scale;
                 const shape = shapeOf(item);
                 return (
-                  // A pointer shortcut: every outlined block also has its own button below the
-                  // map, so these stay out of the tab order. Their boxes overlap on purpose.
                   <button
                     key={item.id}
                     type="button"
-                    tabIndex={-1}
-                    className={clsx(
-                      own.spotTarget,
-                      shape && own.shapedTarget,
-                      item.candidate && own.candidateSpot,
-                    )}
+                    className={clsx(own.spotTarget, item.candidate && own.candidateSpot)}
                     aria-label={`Zoom to ${item.candidate ? "candidate " : ""}${item.label.toLowerCase()}`}
                     style={{
                       left: corner.x,
@@ -563,9 +547,7 @@ export function DieZoom({
                       width,
                       height,
                       // Only the outline takes clicks, so neighbours inside the bounding box still can.
-                      clipPath: shape
-                        ? `polygon(${shape.map(([x, y]) => `${x}px ${y}px`).join(",")})`
-                        : undefined,
+                      clipPath: `polygon(${shape.map(([x, y]) => `${x}px ${y}px`).join(",")})`,
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
                     onDoubleClick={(event) => event.stopPropagation()}
@@ -575,22 +557,15 @@ export function DieZoom({
                       goTo(item.rect, item.id);
                     }}
                   >
-                    {shape && (
-                      <svg className={own.shape} aria-hidden="true">
-                        <polygon points={shape.map((point) => point.join(",")).join(" ")} />
-                      </svg>
-                    )}
-                    {spotLabel(item, item.mapLabel ?? item.label)}
+                    <svg className={own.shape} aria-hidden="true">
+                      <polygon points={shape.map((point) => point.join(",")).join(" ")} />
+                    </svg>
                   </button>
                 );
               })}
             {spot && spotCorner && view && (
               <div
-                className={clsx(
-                  own.spot,
-                  spot.outline && own.shapedSpot,
-                  spot.candidate && own.candidateSpot,
-                )}
+                className={clsx(own.spot, spot.candidate && own.candidateSpot)}
                 style={{
                   left: spotCorner.x,
                   top: spotCorner.y,
@@ -608,9 +583,18 @@ export function DieZoom({
                     <polygon points={spotShape.map((point) => point.join(",")).join(" ")} />
                   </svg>
                 )}
-                {selectedLabel(spot, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`)}
               </div>
             )}
+            {/* Their own layer: inside a target, its clip path would cut them off. */}
+            {view &&
+              outlinedSpots.map((item) =>
+                spotLabel(
+                  item,
+                  item.mapLabel ?? item.label,
+                  !!item.parentId || !!item.labelOutside,
+                ),
+              )}
+            {spot && spotLabel(spot, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`, true)}
             <div className={own.scaleBar} aria-hidden="true">
               <i style={{ width: bar.pixels }} />
               <span>{bar.label}</span>
@@ -622,108 +606,39 @@ export function DieZoom({
                 : magnification.toFixed(1)}
             </div>
             {hint && <div className={own.hint}>{hint}</div>}
+            <details
+              className={own.credits}
+              onPointerDown={(event) => event.stopPropagation()}
+              onDoubleClick={(event) => event.stopPropagation()}
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              <summary>CREDITS</summary>
+              <div className={own.creditsPanel}>
+                <p>
+                  Photo:{" "}
+                  <a href={shot.credit.url} target="_blank" rel="noreferrer">
+                    {shot.credit.author}, {shot.credit.license.toLowerCase()}, via{" "}
+                    {shot.credit.source}
+                  </a>
+                  .
+                </p>
+                {spot?.matchedSource && (
+                  <p>
+                    Region matched to the{" "}
+                    <a href={spot.matchedSource.url} target="_blank" rel="noreferrer">
+                      {spot.matchedSource.label}
+                    </a>
+                    {spot.candidate
+                      ? ". Candidate identification; function and location unconfirmed."
+                      : ". Outline approximate."}
+                  </p>
+                )}
+              </div>
+            </details>
           </div>
-          <div className={own.keys}>
-            <MiniButton label="Zoom out" onClick={() => keyZoom(0.5)}>
-              −
-            </MiniButton>
-            <MiniButton
-              label="Zoom in"
-              onClick={() => keyZoom(2)}
-              disabled={!!view && view.scale >= maxScale}
-            >
-              +
-            </MiniButton>
-            <MiniButton onClick={() => goTo(bounds, null, 0.08)}>ALL</MiniButton>
-            <MiniButton
-              onClick={() =>
-                goTo({ x: 0, y: 0, width: shot.width, height: shot.height }, null, 0.04)
-              }
-            >
-              DIE
-            </MiniButton>
-            <span className={own.keyGap} aria-hidden="true" />
-            {shot.spots
-              .filter((item) => !item.parentId)
-              .map((item) => (
-                <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
-                  {item.label}
-                </MiniButton>
-              ))}
-            <MiniButton
-              onClick={() =>
-                goTo(
-                  { x: placed.x, y: placed.y, width: placed.diameter, height: placed.diameter },
-                  null,
-                )
-              }
-            >
-              COIN
-            </MiniButton>
-          </div>
-          {closeUps.length > 0 && (
-            <div
-              className={own.detailKeys}
-              role="group"
-              aria-label={
-                detailGroup?.id === "decoders"
-                  ? "Decoder close-ups"
-                  : `${detailGroup?.label.toLowerCase()} close-ups`
-              }
-            >
-              <span>CLOSER:</span>
-              {closeUps.map((item) => (
-                <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
-                  {item.label}
-                </MiniButton>
-              ))}
-            </div>
-          )}
-          {candidates.length > 0 && (
-            <div className={own.detailKeys} role="group" aria-label="Unconfirmed candidates">
-              <span>CANDIDATES · UNCONFIRMED:</span>
-              {candidates.map((item) => (
-                <MiniButton key={item.id} onClick={() => goTo(item.rect, item.id)}>
-                  {item.label}
-                </MiniButton>
-              ))}
-            </div>
-          )}
-          <div className={clsx(panel.screen, styles.lcd, own.lcd)} aria-live="polite">
-            <div className={panel.screenTop}>
-              <span>
-                {spot ? `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}` : "THE WHOLE DIE"}
-              </span>
-              <span>SCREEN WIDTH {formatLength(screenWidthMm)}</span>
-            </div>
-            <p className={own.lcdText}>
-              {spot
-                ? spot.text
-                : `The die is about ${formatLength(die.width)} × ${formatLength(die.height)}. The ${coin.name} beside it is shown at the same scale: ${coin.diameterMm} mm across.`}
-            </p>
-            <div className={own.lcdFacts}>
-              <span>1 SCREEN PIXEL ≈ {formatLength(micronsPerScreenPixel / 1000)}</span>
-              <span>1 PHOTO PIXEL ≈ {formatLength(perPixel)}</span>
-            </div>
-          </div>
-          {spot?.matchedSource && (
-            <p className={own.credit}>
-              Region matched to the{" "}
-              <a href={spot.matchedSource.url} target="_blank" rel="noreferrer">
-                {spot.matchedSource.label}
-              </a>
-              {spot.candidate
-                ? ". Candidate identification; function and location unconfirmed."
-                : ". Outline approximate."}
-            </p>
-          )}
-          <p className={own.credit}>
-            Photo:{" "}
-            <a href={shot.credit.url} target="_blank" rel="noreferrer">
-              {shot.credit.author}, {shot.credit.license.toLowerCase()}, via {shot.credit.source}
-            </a>
-            .
-          </p>
+          <span className="sr-only" aria-live="polite">
+            {spot ? `${spot.candidate ? "Candidate: " : ""}${spot.label}` : ""}
+          </span>
         </div>
       </div>
     </DemoMachine>

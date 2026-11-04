@@ -1,6 +1,6 @@
 /* DieZoom: a tiled chip photo that pans and zooms, with a coin to scale. The
-   frame comes from DemoMachine; plates, LCD and keys from ByteExplorer and
-   Codebook styles. Layout follows the demo's own width. */
+   frame comes from DemoMachine; the plate from ByteExplorer and Codebook
+   styles. Layout follows the demo's own width. */
 .demo { container-type: inline-size; }
 .body { display: grid; padding: 8px 0 0; background: linear-gradient(#3c4a3f, #566457); }
 .demo .head { flex-wrap: wrap; row-gap: 6px; }
@@ -8,7 +8,8 @@
 
 .screen {
   position: relative;
-  overflow: hidden;
+  /* Clip, not hidden: tabbing to a region off screen must not scroll the photo. */
+  overflow: clip;
   width: 100%;
   aspect-ratio: 16 / 10;
   min-height: 240px;
@@ -42,33 +43,21 @@
 .coin { position: absolute; z-index: 3; filter: drop-shadow(0 4px 8px #000b); pointer-events: none; }
 .coin img { display: block; width: 100%; height: 100%; max-width: none; }
 
-.spotTarget { position: absolute; z-index: 3; min-width: 6px; min-height: 6px; padding: 0; border: 1px dashed #e1fbcf99; border-radius: 2px; background: transparent; color: #e1fbcf; cursor: zoom-in; }
-.spotLabel { position: absolute; padding: 2px 4px; background: #0b140ed9; color: #e1fbcf; font: 10px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: left; pointer-events: none; }
+.spotTarget { position: absolute; z-index: 3; padding: 0; border: 0; background: transparent; color: #e1fbcf; cursor: zoom-in; }
 /* Sized by its text, not by the box it names, which may be only a few pixels wide. */
-.selectedLabel { width: max-content; letter-spacing: 0; line-height: 14px; }
-.spotTarget:hover, .spotTarget:focus-visible { border-color: #e1fbcf; outline: 2px solid #e1fbcf; outline-offset: 2px; }
+.spotLabel { position: absolute; z-index: 4; width: max-content; padding: 2px 4px; background: #0b140ed9; color: #e1fbcf; font: 10px/14px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: left; pointer-events: none; }
 
-.spot {
-  position: absolute;
-  z-index: 3;
-  border: 2px dashed #e1fbcf;
-  border-radius: 3px;
-  box-shadow: 0 0 0 100vmax #00000052;
-  pointer-events: none;
-}
-/* A region with a real outline draws it as a polygon instead of a border and shadow. */
-.shapedTarget { border: 0; border-radius: 0; }
-.shapedTarget:hover, .shapedTarget:focus-visible { outline: 0; }
+.spot { position: absolute; z-index: 3; color: #e1fbcf; pointer-events: none; }
 .shape { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .shape polygon { fill: none; stroke: currentColor; }
 /* The button's clip path hides the outer half of this stroke, leaving 1px. */
-.shapedTarget .shape polygon { stroke-width: 2; stroke-dasharray: 4 3; stroke-opacity: .6; }
-.shapedTarget:hover .shape polygon, .shapedTarget:focus-visible .shape polygon { stroke-opacity: 1; stroke-dasharray: none; }
-.shapedSpot { border: 0; border-radius: 0; box-shadow: none; color: #e1fbcf; }
-.shapedSpot .shape polygon { stroke-width: 2; stroke-dasharray: 6 4; }
+.spotTarget .shape polygon { stroke-width: 2; stroke-dasharray: 4 3; stroke-opacity: .6; }
+.spotTarget:hover .shape polygon, .spotTarget:focus-visible .shape polygon { stroke-opacity: 1; stroke-dasharray: none; }
+.spotTarget:focus-visible { outline: 0; }
+.spot .shape polygon { stroke-width: 2; stroke-dasharray: 6 4; }
 .dim { fill: #00000052; fill-rule: evenodd; }
-.candidateSpot { border-color: #f2d78d; color: #f2d78d; }
-.candidateSpot .spotLabel { color: inherit; }
+.candidateSpot { color: #f2d78d; }
+.candidateLabel { color: #f2d78d; }
 
 .scaleBar, .zoomTag, .hint {
   position: absolute;
@@ -82,20 +71,19 @@
 .scaleBar { left: 12px; bottom: 10px; display: grid; justify-items: start; gap: 4px; }
 .scaleBar i { display: block; height: 5px; border: 2px solid #e1fbcf; border-top: 0; box-shadow: 0 1px 2px #000; }
 .zoomTag { top: 9px; right: 10px; padding: 2px 7px; border-radius: 3px; background: #000a; }
-.hint { right: 10px; bottom: 9px; max-width: 60%; padding: 3px 7px; border-radius: 3px; background: #000b; font-size: 10px; text-align: right; }
+.hint { right: 84px; bottom: 9px; max-width: 55%; padding: 3px 7px; border-radius: 3px; background: #000b; font-size: 10px; text-align: right; }
 
-.keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
-.keyGap { flex: 0 0 4px; }
-.detailKeys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
-.detailKeys > span { font-size: 10px; letter-spacing: .06em; }
-.demo .lcd { margin-top: 12px; }
-.lcdText { min-height: 2.7em; margin: 5px 0 0; font-size: 13px; line-height: 1.35; letter-spacing: .01em; }
-.lcdFacts { display: flex; flex-wrap: wrap; gap: 2px 16px; margin-top: 6px; font-size: 11px; }
-.credit { margin: 6px 0 0; font-size: 10px; letter-spacing: .02em; opacity: .85; }
-.credit a { color: inherit; text-decoration: underline; }
+.credits { position: absolute; z-index: 5; right: 10px; bottom: 9px; margin: 0; color: #e1fbcf; font-size: 10px; letter-spacing: .06em; }
+.credits summary { padding: 3px 7px; border-radius: 3px; background: #000b; cursor: pointer; list-style: none; }
+.credits summary::-webkit-details-marker { display: none; }
+.credits summary:hover, .credits summary:focus-visible { background: #000; outline: 1px solid #e1fbcf; }
+.creditsPanel { position: absolute; right: 0; bottom: calc(100% + 6px); width: min(300px, 70cqw); padding: 6px 9px; border-radius: 3px; background: #000d; letter-spacing: .02em; line-height: 1.4; }
+.creditsPanel p { margin: 0; }
+.creditsPanel p + p { margin-top: 5px; }
+.creditsPanel a { color: inherit; text-decoration: underline; }
 
 @container (max-width: 520px) {
   .screen { aspect-ratio: 4 / 3; }
-  .hint { max-width: 70%; }
+  .hint { max-width: 60%; }
 }
 @media (prefers-reduced-motion: reduce) { .tile { transition: none; } }

@@ -4,8 +4,11 @@ import {
   coinPlacement,
   dieSizeMm,
   fitView,
+  insetOutline,
+  labelFitScale,
   levelFor,
   mmPerPixel,
+  openingView,
   PENTIUM_II_DIXON,
   scaleBar,
   spotContains,
@@ -64,6 +67,64 @@ describe("die shots", () => {
         expect(x === nextX || y === nextY, spot.id).toBe(true);
       });
     }
+  });
+
+  it("winds every outline clockwise", () => {
+    for (const spot of shot.spots) {
+      if (!spot.outline) continue;
+      const area = spot.outline.reduce((sum, [x, y], index) => {
+        const [nextX, nextY] = spot.outline![(index + 1) % spot.outline!.length];
+        return sum + (nextX - x) * (nextY + y);
+      }, 0);
+      expect(area, spot.id).toBeLessThan(0);
+    }
+  });
+
+  it("keeps the top-level regions from overlapping", () => {
+    const regions = shot.spots.filter((spot) => !spot.parentId);
+    for (let x = 0; x < shot.width; x += 24) {
+      for (let y = 0; y < shot.height; y += 24) {
+        const inside = regions.filter((spot) => spotContains(spot, x, y)).map((spot) => spot.id);
+        expect(inside.length, `${x},${y}: ${inside}`).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it("insets a clockwise outline toward its inside", () => {
+    expect(
+      insetOutline(
+        [
+          [0, 0],
+          [10, 0],
+          [10, 5],
+          [5, 5],
+          [5, 10],
+          [0, 10],
+        ],
+        1,
+      ),
+    ).toEqual([
+      [1, 1],
+      [9, 1],
+      [9, 4],
+      [4, 4],
+      [4, 9],
+      [1, 9],
+    ]);
+  });
+
+  it("opens on the whole die when the labels fit, else on the core", () => {
+    const tops = shot.spots.filter((spot) => !spot.parentId && !spot.labelOutside);
+    const wide = { width: 1400, height: 875 };
+    const view = openingView(shot, wide);
+    const needed = Math.max(...tops.map(labelFitScale));
+    expect(view.scale).toBeGreaterThanOrEqual(
+      Math.min(needed, fitView(shot.core, wide, 0.02).scale),
+    );
+    const phone = { width: 360, height: 270 };
+    const close = openingView(shot, phone);
+    expect(close.x).toBeCloseTo(shot.core.x + shot.core.width / 2);
+    expect(close.scale).toBeCloseTo(fitView(shot.core, phone, 0.02).scale);
   });
 
   it("tests a point against a region's outline, not its bounding box", () => {

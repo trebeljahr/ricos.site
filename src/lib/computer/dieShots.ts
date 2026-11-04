@@ -12,15 +12,15 @@ export type DieSpot = {
   label: string;
   /** Short label that fits the outline in the whole-chip view. */
   mapLabel?: string;
-  /** One or two plain sentences for the LCD. */
-  text: string;
   /** A matched core layout identifies the region, with an approximate outline. */
   matchedSource?: { label: string; url: string };
   /** The source proposes this identification but has not established it. */
   candidate?: boolean;
+  /** Too small to hold its name at any useful zoom: the name sits just outside it. */
+  labelOutside?: boolean;
   /** Where it is, in pixels of the full-size photo. With an outline, its bounding box. */
   rect: Rect;
-  /** The region's real shape, corner by corner, where a rectangle would cut through circuits. */
+  /** The region's real shape, clockwise, where a rectangle would cut through circuits. */
   outline?: [number, number][];
   /** Where the label goes when the bounding box's top-left corner is outside the outline. */
   labelRect?: Rect;
@@ -41,6 +41,8 @@ export type DieShot = {
   folder: string;
   /** Die size, from the published area and the photo's proportions. */
   areaMm2: number;
+  /** The circuitry without the added L2 cache: all the small regions lie in here. */
+  core: Rect;
   credit: { author: string; license: string; url: string; source: string };
   spots: DieSpot[];
 };
@@ -89,145 +91,169 @@ export const PENTIUM_II_DIXON: DieShot = {
   // Microprocessor Report, 25 January 1999: "Dixon measures 180 mm2 in
   // Intel's 0.25-micron process". The photo is cropped at the die's edge.
   areaMm2: 180,
+  core: { x: 8309, y: 846, width: 13043, height: 11609 },
   credit: {
     author: "Martijn Boer",
     license: "Public domain",
     url: "https://commons.wikimedia.org/wiki/File:Intel-pentium-ii-dixon-die-shot-high-resolution-stitched.jpg",
     source: "Wikimedia Commons",
   },
-  // L2 cache, decoder and alignment boxes follow the Commons image notes.
-  // Other regions match the rotated Deschutes core layout; boundaries are
-  // approximate. See dieShots.sources.md for the visual matches and sources.
+  // L2 cache, decoder and alignment boxes follow the Commons image notes. Other
+  // regions match the rotated Deschutes core layout. Every edge runs along a
+  // channel of the photo; dieShots.sources.md says how they were traced.
   spots: [
     {
       id: "cache",
       label: "L2 CACHE",
-      text: "256 KB of cache memory fills about a third of the die. The grid is the same memory cell, repeated about two million times.",
       rect: { x: 55, y: 634, width: 7575, height: 12130 },
     },
     {
       id: "l1-data",
       label: "L1 DATA CACHE",
-      text: "16 KB holds recently used data close to the execution units. The regular memory arrays contrast with the surrounding logic.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 13678, y: 9117, width: 2873, height: 3333 },
+      rect: { x: 13682, y: 9073, width: 2858, height: 3377 },
+      outline: [
+        [13703, 9086],
+        [14428, 9086],
+        [14428, 9073],
+        [16540, 9073],
+        [16540, 12450],
+        [13682, 12450],
+        [13682, 9600],
+        [13703, 9600],
+      ],
+      labelRect: { x: 13703, y: 9086, width: 2837, height: 3364 },
     },
     {
       id: "l1-instructions",
       label: "L1 INSTRUCTION CACHE",
       mapLabel: "L1 CODE",
-      text: "A separate 16 KB cache holds instruction bytes. Keeping instructions and data in separate caches lets the core access both at once.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 18810, y: 6976, width: 2540, height: 4166 },
+      rect: { x: 18814, y: 6960, width: 2531, height: 4178 },
     },
     {
       id: "microcode",
       label: "MICROCODE ROM",
       mapLabel: "MICROCODE",
-      text: "This read-only memory stores sequences of micro-operations for complex instructions. Simple instructions take the decoder path instead.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 18922, y: 840, width: 2428, height: 1626 },
+      rect: { x: 18929, y: 846, width: 2416, height: 1614 },
     },
     {
       id: "floating-point",
       label: "FLOATING POINT",
-      text: "Floating-point arithmetic handles numbers with fractions and a wide range of magnitudes. This region also includes nearby floating-point conversion logic.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8306, y: 856, width: 4390, height: 1832 },
+      rect: { x: 8309, y: 858, width: 4377, height: 1806 },
       outline: [
-        [8306, 856],
-        [12696, 856],
-        [12696, 2688],
-        [9409, 2688],
-        [9409, 2568],
-        [8306, 2568],
+        [8309, 858],
+        [12686, 858],
+        [12686, 2664],
+        [11540, 2664],
+        [11540, 2646],
+        [11282, 2646],
+        [11282, 2664],
+        [9409, 2664],
+        [9409, 2552],
+        [8309, 2552],
       ],
     },
     {
       id: "integer",
       label: "INTEGER ARITHMETIC",
       mapLabel: "INTEGER",
-      text: "Integer execution circuits add, subtract, shift and compare whole numbers. Their repeated structures sit beside the floating-point region.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 9427, y: 2690, width: 3277, height: 2438 },
+      rect: { x: 9430, y: 2650, width: 3268, height: 2485 },
+      outline: [
+        [9430, 2668],
+        [11278, 2668],
+        [11278, 2650],
+        [11544, 2650],
+        [11544, 2668],
+        [12698, 2668],
+        [12698, 5010],
+        [11130, 5010],
+        [11130, 5135],
+        [9430, 5135],
+      ],
     },
     {
       id: "mmx",
       label: "MMX",
-      text: "MMX applies one operation to several packed integers at once. These circuits helped process audio, images and other multimedia data.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 12724, y: 828, width: 1446, height: 4220 },
+      rect: { x: 12722, y: 846, width: 1406, height: 4202 },
+      outline: [
+        [12722, 846],
+        [14128, 846],
+        [14128, 4820],
+        [14108, 4820],
+        [14108, 5048],
+        [12722, 5048],
+      ],
     },
     {
       id: "scheduler",
       label: "SCHEDULER",
       mapLabel: "SCHED.",
-      text: "The reservation station holds micro-operations until their inputs and execution units are ready. Ready work can run before older work that must wait.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 14795, y: 840, width: 1799, height: 4144 },
+      rect: { x: 14800, y: 846, width: 1810, height: 4122 },
     },
     {
       id: "branch-predictor",
       label: "BRANCH PREDICTION",
-      text: "The branch target buffer helps predict where execution will go next. This lets the instruction fetch unit keep working before a branch finishes.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 17382, y: 11142, width: 4052, height: 1316 },
+      rect: { x: 17382, y: 11146, width: 3970, height: 1304 },
     },
     {
       id: "decoders",
       label: "X86 DECODERS",
       mapLabel: "DECODERS",
-      text: "These circuits turn each x86 instruction into the small steps the core runs. One full decoder sits next to two simple ones.",
-      rect: { x: 16547, y: 2468, width: 4803, height: 3734 },
+      rect: { x: 16552, y: 2472, width: 4793, height: 3726 },
       outline: [
-        [18922, 2468],
-        [21350, 2468],
-        [21350, 6202],
-        [16547, 6202],
-        [16547, 3916],
-        [17988, 3916],
-        [17988, 3640],
-        [18922, 3640],
+        [18929, 2472],
+        [21345, 2472],
+        [21345, 6198],
+        [16552, 6198],
+        [16552, 4985],
+        [16640, 4985],
+        [16640, 3895],
+        [17490, 3895],
+        [17490, 3670],
+        [18929, 3670],
       ],
-      labelRect: { x: 18922, y: 2468, width: 2428, height: 1172 },
+      labelRect: { x: 18929, y: 2472, width: 2416, height: 1198 },
     },
     {
       id: "full-decoder",
       parentId: "decoders",
       label: "FULL DECODER",
-      text: "Four translation arrays turn an x86 instruction into up to four micro-operations. Compare their size with either simple decoder beside them.",
       rect: { x: 19517, y: 3721, width: 801, height: 1665 },
     },
     {
       id: "simple-decoder-1",
       parentId: "decoders",
       label: "SIMPLE DECODER 1",
-      text: "This smaller translation array handles instructions that need just one micro-operation. A second simple decoder does the same job below it.",
       rect: { x: 18428, y: 3860, width: 441, height: 441 },
     },
     {
       id: "simple-decoder-2",
       parentId: "decoders",
       label: "SIMPLE DECODER 2",
-      text: "The second simple decoder also produces one micro-operation per instruction. These two small decoders sit beside the larger full decoder.",
       rect: { x: 18428, y: 5017, width: 441, height: 441 },
     },
     {
       id: "fetch",
       label: "INSTRUCTION FETCH",
       mapLabel: "FETCH",
-      text: "The fetch unit brings instruction bytes from the instruction cache toward the decoders. It prepares the byte stream for finding instruction boundaries.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16553, y: 6206, width: 2247, height: 6252 },
+      rect: { x: 16552, y: 6208, width: 2252, height: 6242 },
       outline: [
-        [16553, 6206],
-        [18800, 6206],
-        [18800, 11142],
-        [17382, 11142],
-        [17382, 12458],
-        [16760, 12458],
-        [16760, 12255],
-        [16553, 12255],
+        [16552, 6208],
+        [18804, 6208],
+        [18804, 11138],
+        [17372, 11138],
+        [17372, 12450],
+        [16694, 12450],
+        [16694, 12262],
+        [16552, 12262],
       ],
     },
     {
@@ -235,7 +261,6 @@ export const PENTIUM_II_DIXON: DieShot = {
       parentId: "fetch",
       label: "INSTRUCTION BUFFER",
       mapLabel: "BUFFER",
-      text: "Fetched instruction bytes wait here before decoding. The buffer helps keep the decoders supplied while instruction fetching continues.",
       matchedSource: P6_CORE_MAP,
       rect: { x: 16872, y: 6379, width: 1758, height: 1952 },
     },
@@ -243,148 +268,150 @@ export const PENTIUM_II_DIXON: DieShot = {
       id: "rename",
       label: "REGISTER RENAMING",
       mapLabel: "RENAME",
-      text: "The register alias table maps register names to internal storage. Independent operations can reuse a name without waiting for an unrelated older result.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 12711, y: 4984, width: 3836, height: 2338 },
+      rect: { x: 12636, y: 4980, width: 3904, height: 2340 },
       outline: [
-        [12711, 5056],
-        [14819, 5056],
-        [14819, 4984],
-        [16547, 4984],
-        [16547, 7322],
-        [12711, 7322],
+        [12636, 5060],
+        [14118, 5060],
+        [14118, 4980],
+        [16540, 4980],
+        [16540, 7295],
+        [14425, 7295],
+        [14425, 7320],
+        [12712, 7320],
+        [12712, 5285],
+        [12636, 5285],
       ],
     },
     {
       id: "retirement",
       label: "REORDER / RETIREMENT",
       mapLabel: "RETIRE",
-      text: "The reorder buffer tracks unfinished operations and speculative results. Retirement commits completed work in program order, so wrong-path results can still be discarded.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16650, y: 836, width: 2270, height: 3080 },
+      rect: { x: 16646, y: 846, width: 2275, height: 3029 },
       outline: [
-        [16650, 836],
-        [18920, 836],
-        [18920, 3640],
-        [17988, 3640],
-        [17988, 3916],
-        [16650, 3916],
+        [16646, 846],
+        [18921, 846],
+        [18921, 3650],
+        [17470, 3650],
+        [17470, 3875],
+        [16646, 3875],
       ],
     },
     {
       id: "memory-order",
       label: "MEMORY ORDERING",
       mapLabel: "MOB",
-      text: "The memory order buffer tracks loads and stores. It lets memory operations overlap while preserving the ordering and dependencies that the program requires.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 9778, y: 5128, width: 2926, height: 2550 },
+      rect: { x: 9786, y: 5050, width: 2916, height: 2622 },
+      outline: [
+        [9786, 5165],
+        [11145, 5165],
+        [11145, 5050],
+        [12628, 5050],
+        [12628, 5300],
+        [12702, 5300],
+        [12702, 7672],
+        [9786, 7672],
+      ],
+      labelRect: { x: 9786, y: 5165, width: 2842, height: 2507 },
     },
     {
       id: "dtlb",
       label: "ADDRESS TRANSLATION",
       mapLabel: "DTLB",
-      text: "The data translation lookaside buffer caches virtual-to-physical address mappings and permissions. A cache hit avoids another walk through the page tables.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 11175, y: 9381, width: 2502, height: 3093 },
+      rect: { x: 11180, y: 9605, width: 2494, height: 2850 },
     },
     {
       id: "dtlb-storage",
       parentId: "dtlb",
       label: "TRANSLATION STORAGE",
       mapLabel: "DTLB STORAGE",
-      text: "This regular storage area holds cached address-translation information. Nearby comparison and control circuits decide whether a requested address has a matching entry.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 12713, y: 11360, width: 963, height: 1098 },
+      rect: { x: 12713, y: 11360, width: 957, height: 1085 },
     },
     {
       id: "allocate",
       label: "ALLOCATION",
       mapLabel: "ALLOC",
-      text: "Allocation reserves tracking and scheduler entries for new micro-operations. If those resources are full, new work must wait for older operations to make room.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 14439, y: 7300, width: 834, height: 1768 },
+      rect: { x: 14438, y: 7299, width: 830, height: 1767 },
     },
     {
       id: "bus-interface",
       label: "BUS INTERFACE",
       mapLabel: "BUS",
-      text: "Bus-interface and control circuits coordinate transactions outside the core. They move requests and data between the processor and the external memory system.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8326, y: 5528, width: 6113, height: 6938 },
+      rect: { x: 8328, y: 5530, width: 6090, height: 6925 },
       outline: [
-        [8326, 5528],
-        [9778, 5528],
-        [9778, 7678],
-        [12704, 7678],
-        [12704, 7322],
-        [14439, 7322],
-        [14439, 9117],
-        [13678, 9117],
-        [13678, 9381],
-        [11175, 9381],
-        [11175, 12466],
-        [8326, 12466],
+        [8328, 5530],
+        [9772, 5530],
+        [9772, 7678],
+        [12712, 7678],
+        [12712, 7328],
+        [14418, 7328],
+        [14418, 9080],
+        [13695, 9080],
+        [13695, 9585],
+        [11162, 9585],
+        [11162, 12455],
+        [8328, 12455],
       ],
     },
     {
       id: "branch-address",
       label: "BRANCH ADDRESSES",
       mapLabel: "BAC",
-      text: "The branch address calculator works out branch destinations in the front end. Those addresses help steer instruction fetching toward the next instruction stream.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 15274, y: 7300, width: 1293, height: 1764 },
+      rect: { x: 15280, y: 7299, width: 1260, height: 1767 },
     },
     {
       id: "page-miss",
       label: "PAGE-MISS HANDLER",
       mapLabel: "PMH",
-      text: "When an address translation is missing, the page-miss handler walks the page tables to find it. Missing or disallowed mappings can require a page-fault exception.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8320, y: 2568, width: 1458, height: 2960 },
+      rect: { x: 8318, y: 2565, width: 1454, height: 2909 },
       outline: [
-        [8320, 2568],
-        [9409, 2568],
-        [9409, 2688],
-        [9427, 2688],
-        [9427, 5128],
-        [9778, 5128],
-        [9778, 5528],
-        [8320, 5528],
+        [8318, 2565],
+        [9402, 2565],
+        [9402, 2700],
+        [9418, 2700],
+        [9418, 5147],
+        [9772, 5147],
+        [9772, 5474],
+        [8318, 5474],
       ],
     },
     {
       id: "fp-conversion",
       parentId: "floating-point",
       label: "FP CONVERSION",
-      text: "The floating-point memory interface converts between memory formats and the floating-point unit's internal format. It sits beside the floating-point execution circuits.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 11395, y: 856, width: 1301, height: 1832 },
+      rect: { x: 11395, y: 864, width: 1285, height: 1776 },
     },
     {
       id: "branch-storage",
       parentId: "branch-predictor",
       label: "BRANCH-TARGET STORAGE",
       mapLabel: "BTB STORAGE",
-      text: "The branch target buffer stores information about previously encountered branches. Fetch logic uses that information to choose likely destinations before those branches execute.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 19096, y: 11467, width: 2337, height: 991 },
+      rect: { x: 19096, y: 11467, width: 2249, height: 970 },
     },
     {
       id: "fp-constants-candidate",
       parentId: "floating-point",
       label: "FP CONSTANT ROM?",
       mapLabel: "FROM?",
-      text: "Candidate only: this narrow strip may be the floating-point constant ROM. Such a ROM supplies fixed values for floating-point operations; this identification is unconfirmed.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 11395, y: 856, width: 147, height: 1832 },
+      rect: { x: 11395, y: 864, width: 147, height: 1776 },
     },
     {
       id: "entry-pla-candidate",
       parentId: "decoders",
       label: "MICROCODE ENTRY PLA?",
       mapLabel: "ENTRY PLA?",
-      text: "Candidate only: this array may select the starting address of a microcode sequence. The reference proposes this role from its position beside the decoder arrays.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
       rect: { x: 19566, y: 3452, width: 729, height: 270 },
@@ -394,7 +421,6 @@ export const PENTIUM_II_DIXON: DieShot = {
       parentId: "decoders",
       label: "DECODER ALIAS CONTROL?",
       mapLabel: "ALIAS?",
-      text: "Candidate only: these arrays may hold decoder alias or control information. Decoder aliasing fills instruction-specific fields into micro-operation templates; it differs from register renaming.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
       rect: { x: 20404, y: 3457, width: 935, height: 865 },
@@ -404,7 +430,6 @@ export const PENTIUM_II_DIXON: DieShot = {
       parentId: "retirement",
       label: "RETIREMENT REGISTERS?",
       mapLabel: "RRF?",
-      text: "Candidate only: this small array may hold committed register values. The wider retirement region is mapped, but this particular register-array identification remains unconfirmed.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
       rect: { x: 16711, y: 3227, width: 674, height: 639 },
@@ -414,17 +439,15 @@ export const PENTIUM_II_DIXON: DieShot = {
       parentId: "retirement",
       label: "REORDER BUFFER ARRAYS?",
       mapLabel: "ROB ARRAYS?",
-      text: "Candidate only: these arrays may store reorder-buffer entries. Tracking speculative results is the region's role, but the individual storage arrays are not established here.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16649, y: 841, width: 1268, height: 1687 },
+      rect: { x: 16649, y: 850, width: 1268, height: 1678 },
     },
     {
       id: "capacitor-candidate",
       parentId: "scheduler",
       label: "DECOUPLING CAPACITOR?",
       mapLabel: "CAPACITOR?",
-      text: "Candidate only: this repeated structure may be a decoupling capacitor bank. If so, it stores charge locally to help steady the power supply as circuits switch.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
       rect: { x: 14182, y: 860, width: 608, height: 3962 },
@@ -432,8 +455,8 @@ export const PENTIUM_II_DIXON: DieShot = {
     {
       id: "alignment",
       label: "ALIGNMENT MARK",
-      text: "Four arrows that lined up the masks while the chip was made, layer on layer. The whole mark is about 0.17 mm wide.",
-      rect: { x: 16527, y: 12268, width: 220, height: 221 },
+      labelOutside: true,
+      rect: { x: 16546, y: 12285, width: 140, height: 155 },
     },
   ],
 };
@@ -504,6 +527,56 @@ export function fitView(
   const scale =
     Math.min(viewport.width / rect.width, viewport.height / rect.height) * (1 - 2 * margin);
   return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2, scale };
+}
+
+/** Width of one character of a map label, its padding, and its height, in CSS pixels. */
+export const LABEL_CHAR_PIXELS = 6.1;
+export const LABEL_PADDING_PIXELS = 8;
+export const LABEL_HEIGHT_PIXELS = 18;
+
+export const labelWidth = (label: string) =>
+  label.length * LABEL_CHAR_PIXELS + LABEL_PADDING_PIXELS;
+
+/** The zoom at which a spot's map label fits inside its box. */
+export function labelFitScale(spot: DieSpot) {
+  const box = spot.labelRect ?? spot.rect;
+  return Math.max(
+    (labelWidth(spot.mapLabel ?? spot.label) + 6) / box.width,
+    (LABEL_HEIGHT_PIXELS + 6) / box.height,
+  );
+}
+
+/**
+ * The first view: the whole die when every region's label fits there. A narrower
+ * screen moves in on the core, where the small regions are, until they fit or
+ * the core fills the screen.
+ */
+export function openingView(shot: DieShot, viewport: { width: number; height: number }): View {
+  const die = fitView({ x: 0, y: 0, width: shot.width, height: shot.height }, viewport, 0.02);
+  const needed = Math.max(
+    ...shot.spots.filter((spot) => !spot.parentId && !spot.labelOutside).map(labelFitScale),
+  );
+  if (needed <= die.scale) return die;
+  const core = fitView(shot.core, viewport, 0.02);
+  return { ...core, scale: Math.max(die.scale, Math.min(needed, core.scale)) };
+}
+
+/**
+ * A clockwise axis-aligned outline moved inward by `distance`. Neighbouring
+ * regions share narrow channels, so this keeps their lines apart at every zoom.
+ */
+export function insetOutline(points: readonly (readonly [number, number])[], distance: number) {
+  return points.map(([x, y], index) => {
+    const [fromX, fromY] = points[(index + points.length - 1) % points.length];
+    const [toX, toY] = points[(index + 1) % points.length];
+    const inward = (ax: number, ay: number, bx: number, by: number) => ({
+      x: -Math.sign(by - ay),
+      y: Math.sign(bx - ax),
+    });
+    const before = inward(fromX, fromY, x, y);
+    const after = inward(x, y, toX, toY);
+    return [x + (before.x + after.x) * distance, y + (before.y + after.y) * distance] as const;
+  });
 }
 
 /** The finest level a view needs, so each tile pixel covers at most one device pixel. */

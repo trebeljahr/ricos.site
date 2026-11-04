@@ -1,7 +1,8 @@
 import { type BusValue, bitsFromBus, busFromBits, resolveBus } from "./bus";
+import { layoutCmosBlueprint } from "./cmosLayout";
 import { MEMORY_PRESETS } from "./memoryCircuits";
 import { PLACES, SEGMENTS } from "./segmentNames";
-import { layoutCmosBlueprint } from "./cmosLayout";
+import { validLane } from "./wireLanes";
 
 export type GateType =
   | "switch"
@@ -94,8 +95,36 @@ export type CircuitIdentity = {
   fingerprint: string;
   ownership: "builtin" | "user";
 };
-export type Circuit = { name: string; nodes: Node[]; wires: Wire[]; groups?: CircuitGroup[];
-  ports?: CircuitPorts; identity?: CircuitIdentity };
+/** Draws the wires from `sources` as one band. See wireLanes.ts; it has no effect on simulation. */
+export type WireLane = {
+  id: string;
+  label: string;
+  /** Bit 0 first. */
+  sources: { node: string; output?: number }[];
+  /** A bus node the lane's value reads from, so the lane shows when the bus floats. */
+  bus?: string;
+  /** Names the lines in the readout, for a control lane, instead of a number. */
+  names?: string[];
+  /**
+   * The x of the vertical trunks that stems join; each stem takes the nearest one left of its part.
+   * Without any, the wire router lays out the stems.
+   */
+  trunkX?: number[];
+  /** Points on the way from the source to the trunk. */
+  via?: { x: number; y: number }[];
+  /** Parts whose wires from this lane's sources stay plain wires, for a part far from the trunk. */
+  skip?: string[];
+  color?: WireColor;
+};
+export type Circuit = {
+  name: string;
+  nodes: Node[];
+  wires: Wire[];
+  groups?: CircuitGroup[];
+  ports?: CircuitPorts;
+  identity?: CircuitIdentity;
+  lanes?: WireLane[];
+};
 export type Snapshot = {
   values: Record<string, boolean>;
   memory: Record<string, boolean>;
@@ -115,7 +144,8 @@ export const NUMBER_INPUT_BITS = { input4: 4, input8: 8, input14: 14 } as const;
 export type NumberInputType = keyof typeof NUMBER_INPUT_BITS;
 export type NumberInputWidth = (typeof NUMBER_INPUT_BITS)[NumberInputType];
 export const NUMBER_INPUT_TYPES = Object.keys(NUMBER_INPUT_BITS) as NumberInputType[];
-export const isNumberInput = (type: string): type is NumberInputType => Object.hasOwn(NUMBER_INPUT_BITS, type);
+export const isNumberInput = (type: string): type is NumberInputType =>
+  Object.hasOwn(NUMBER_INPUT_BITS, type);
 export const INPUTS: Record<GateType, number> = {
   switch: 0,
   clock: 0,
@@ -197,11 +227,13 @@ const validProbe = (n: Partial<Node>) =>
     isProbeDisplay(n.type as GateType) &&
     (n.probe === "" || normalizeProbeName(n.probe) === n.probe));
 export const moduleInputs = (circuit: Circuit) =>
-  circuit.ports ? circuit.ports.inputs.flatMap((id) => circuit.nodes.find((node) => node.id === id) ?? []) :
-  circuit.nodes.filter((node) => ["switch", "clock", "pulse"].includes(node.type));
+  circuit.ports
+    ? circuit.ports.inputs.flatMap((id) => circuit.nodes.find((node) => node.id === id) ?? [])
+    : circuit.nodes.filter((node) => ["switch", "clock", "pulse"].includes(node.type));
 export const moduleOutputs = (circuit: Circuit) =>
-  circuit.ports ? circuit.ports.outputs.flatMap((id) => circuit.nodes.find((node) => node.id === id) ?? []) :
-  circuit.nodes.filter((node) => node.type === "lamp");
+  circuit.ports
+    ? circuit.ports.outputs.flatMap((id) => circuit.nodes.find((node) => node.id === id) ?? [])
+    : circuit.nodes.filter((node) => node.type === "lamp");
 /** Keep explicit interfaces valid after deleting terminals, including inside boxes. */
 export function pruneCircuitPorts(circuit: Circuit): Circuit {
   const nodes = circuit.nodes.map((node) => {
@@ -209,19 +241,37 @@ export function pruneCircuitPorts(circuit: Circuit): Circuit {
     return module === node.module ? node : { ...node, module };
   });
   const ports = circuit.ports && {
-    inputs: circuit.ports.inputs.filter((id) => nodes.some((n) => n.id === id && ["switch", "clock", "pulse"].includes(n.type))),
-    outputs: circuit.ports.outputs.filter((id) => nodes.some((n) => n.id === id && n.type === "lamp")),
+    inputs: circuit.ports.inputs.filter((id) =>
+      nodes.some((n) => n.id === id && ["switch", "clock", "pulse"].includes(n.type)),
+    ),
+    outputs: circuit.ports.outputs.filter((id) =>
+      nodes.some((n) => n.id === id && n.type === "lamp"),
+    ),
   };
-  return nodes.every((node, i) => node === circuit.nodes[i]) && (!ports ||
-    ports.inputs.length === circuit.ports!.inputs.length && ports.outputs.length === circuit.ports!.outputs.length)
-    ? circuit : { ...circuit, nodes, ports };
+  return nodes.every((node, i) => node === circuit.nodes[i]) &&
+    (!ports ||
+      (ports.inputs.length === circuit.ports!.inputs.length &&
+        ports.outputs.length === circuit.ports!.outputs.length))
+    ? circuit
+    : { ...circuit, nodes, ports };
 }
 export const inputCount = (node: Node) =>
-  node.splice && node.type === "junction" ? 1 : node.type === "module" ? moduleInputs(node.module!).length : node.type === "dff" && node.resettable ? 3 : node.type === "sevensegment" ? 7 * (node.digits ?? 1) : INPUTS[node.type];
+  node.splice && node.type === "junction"
+    ? 1
+    : node.type === "module"
+      ? moduleInputs(node.module!).length
+      : node.type === "dff" && node.resettable
+        ? 3
+        : node.type === "sevensegment"
+          ? 7 * (node.digits ?? 1)
+          : INPUTS[node.type];
 export const outputCount = (node: Node) =>
   node.type === "module"
     ? moduleOutputs(node.module!).length
-    : node.type === "sevensegment" || node.type === "lamp" || node.type === "display4" || node.type === "display8"
+    : node.type === "sevensegment" ||
+        node.type === "lamp" ||
+        node.type === "display4" ||
+        node.type === "display8"
       ? 0
       : isNumberInput(node.type)
         ? NUMBER_INPUT_BITS[node.type]
@@ -240,30 +290,37 @@ export const outputWidth = (node: Node, _index = 0): 1 | 8 =>
 export const wireFits = (from: Node, output: number, to: Node, input: number) =>
   outputWidth(from, output) === inputWidth(to, input);
 export const inputLabel = (node: Node, index: number) =>
-  node.type === "nmos" || node.type === "pmos" ? ["Gate (G)", "Source (S)"][index] :
-  node.type === "dff" ? ["D", "CLK", "RESET"][index] :
-  node.type === "module"
-    ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
-    : node.type === "sevensegment" ? (node.digits ?? 1) === 1 ? SEGMENTS[index] : `${PLACES[Math.floor(index / 7)]} ${SEGMENTS[index % 7]}` : node.type === "display4" || node.type === "display8" || node.type === "merger"
-      ? `Bit ${index}`
-      : node.type === "splitter"
-        ? "Bus"
-        : node.type === "busdriver"
-          ? index === 0
-            ? "Data bus"
-            : "Enable"
-          : node.type === "bus"
-            ? `Driver ${index + 1}`
-            : `Input ${index + 1}`;
+  node.type === "nmos" || node.type === "pmos"
+    ? ["Gate (G)", "Source (S)"][index]
+    : node.type === "dff"
+      ? ["D", "CLK", "RESET"][index]
+      : node.type === "module"
+        ? moduleInputs(node.module!)[index]?.label || `Input ${index + 1}`
+        : node.type === "sevensegment"
+          ? (node.digits ?? 1) === 1
+            ? SEGMENTS[index]
+            : `${PLACES[Math.floor(index / 7)]} ${SEGMENTS[index % 7]}`
+          : node.type === "display4" || node.type === "display8" || node.type === "merger"
+            ? `Bit ${index}`
+            : node.type === "splitter"
+              ? "Bus"
+              : node.type === "busdriver"
+                ? index === 0
+                  ? "Data bus"
+                  : "Enable"
+                : node.type === "bus"
+                  ? `Driver ${index + 1}`
+                  : `Input ${index + 1}`;
 export const outputLabel = (node: Node, index: number) =>
-  node.type === "nmos" || node.type === "pmos" ? "Drain (D)" :
-  node.type === "module"
-    ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-    : isNumberInput(node.type) || node.type === "splitter"
-      ? `Bit ${index}`
-      : outputWidth(node, index) === 8
-        ? "Bus"
-        : "Output";
+  node.type === "nmos" || node.type === "pmos"
+    ? "Drain (D)"
+    : node.type === "module"
+      ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
+      : isNumberInput(node.type) || node.type === "splitter"
+        ? `Bit ${index}`
+        : outputWidth(node, index) === 8
+          ? "Bus"
+          : "Output";
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
@@ -331,7 +388,13 @@ const SETTLED_TYPES = new Set<GateType>([
   "nand",
   "nor",
 ]);
-const ZERO_DELAY_TYPES = new Set<GateType>(["lamp", "display4", "display8", "sevensegment", "junction"]);
+const ZERO_DELAY_TYPES = new Set<GateType>([
+  "lamp",
+  "display4",
+  "display8",
+  "sevensegment",
+  "junction",
+]);
 
 /**
  * Everything step() needs that depends only on the circuit's structure: who
@@ -1804,8 +1867,8 @@ export const MAX_TOTAL_NODES = 10000;
 /** Nodes parsed in total, including the gate forms behind behavioural blocks. */
 export const MAX_PARSED_NODES = 4 * MAX_TOTAL_NODES;
 export const MAX_DEPTH = 5;
-/** Inputs or outputs on one module; the control unit's control word plus GCLK needs 27. */
-export const MAX_MODULE_PORTS = 32;
+/** Inputs or outputs on one module; the button CPU board's memory map needs the most. */
+export const MAX_MODULE_PORTS = 64;
 
 export function validateCircuit(
   value: unknown,
@@ -1869,23 +1932,35 @@ export function validateCircuit(
   )
     return null;
   if (item.ports !== undefined) {
-    const validPorts = (value: unknown, types: string[]) => Array.isArray(value) &&
-      value.length <= MAX_MODULE_PORTS && new Set(value).size === value.length &&
-      value.every((id) => typeof id === "string" && item.nodes!.some((node) => node.id === id && types.includes(node.type)));
-    if (!item.ports || !validPorts(item.ports.inputs, ["switch", "clock", "pulse"]) ||
-      !validPorts(item.ports.outputs, ["lamp"])) return null;
+    const validPorts = (value: unknown, types: string[]) =>
+      Array.isArray(value) &&
+      value.length <= MAX_MODULE_PORTS &&
+      new Set(value).size === value.length &&
+      value.every(
+        (id) =>
+          typeof id === "string" &&
+          item.nodes!.some((node) => node.id === id && types.includes(node.type)),
+      );
+    if (
+      !item.ports ||
+      !validPorts(item.ports.inputs, ["switch", "clock", "pulse"]) ||
+      !validPorts(item.ports.outputs, ["lamp"])
+    )
+      return null;
   }
   const validatedModules = new Map<string, Circuit>();
   if (
     !item.nodes.every(
       (n) =>
-        (n.digits === undefined || (n.type === "sevensegment" && [1, 2, 3, 4].includes(n.digits))) &&
+        (n.digits === undefined ||
+          (n.type === "sevensegment" && [1, 2, 3, 4].includes(n.digits))) &&
         (n.resettable === undefined || (n.type === "dff" && typeof n.resettable === "boolean")) &&
-        (n.manualMode === undefined || (n.type === "pulse" && ["pulse", "held"].includes(n.manualMode))) &&
+        (n.manualMode === undefined ||
+          (n.type === "pulse" && ["pulse", "held"].includes(n.manualMode))) &&
         (n.numberValue === undefined ||
-        (Number.isInteger(n.numberValue) &&
-          n.numberValue >= 0 &&
-          n.numberValue < (isNumberInput(n.type) ? 2 ** NUMBER_INPUT_BITS[n.type] : 1))),
+          (Number.isInteger(n.numberValue) &&
+            n.numberValue >= 0 &&
+            n.numberValue < (isNumberInput(n.type) ? 2 ** NUMBER_INPUT_BITS[n.type] : 1))),
     )
   )
     return null;
@@ -1897,7 +1972,8 @@ export function validateCircuit(
     if (
       !inner ||
       moduleInputs(inner).length > MAX_MODULE_PORTS ||
-      (moduleOutputs(inner).length < 1 && !inner.nodes.some(node => node.type === "sevensegment")) ||
+      (moduleOutputs(inner).length < 1 &&
+        !inner.nodes.some((node) => node.type === "sevensegment")) ||
       moduleOutputs(inner).length > MAX_MODULE_PORTS
     )
       return null;
@@ -1941,10 +2017,23 @@ export function validateCircuit(
     return null;
   return {
     name: item.name.slice(0, 80),
-    ...(item.ports ? { ports: { inputs: [...item.ports.inputs], outputs: [...item.ports.outputs] } } : {}),
-    ...(item.identity && typeof item.identity.componentId === "string" && item.identity.componentId.length <= 80 &&
-      typeof item.identity.fingerprint === "string" && item.identity.fingerprint.length <= 80 &&
-      ["builtin", "user"].includes(item.identity.ownership) ? { identity: { componentId: item.identity.componentId, fingerprint: item.identity.fingerprint, ownership: item.identity.ownership } } : {}),
+    ...(item.ports
+      ? { ports: { inputs: [...item.ports.inputs], outputs: [...item.ports.outputs] } }
+      : {}),
+    ...(item.identity &&
+    typeof item.identity.componentId === "string" &&
+    item.identity.componentId.length <= 80 &&
+    typeof item.identity.fingerprint === "string" &&
+    item.identity.fingerprint.length <= 80 &&
+    ["builtin", "user"].includes(item.identity.ownership)
+      ? {
+          identity: {
+            componentId: item.identity.componentId,
+            fingerprint: item.identity.fingerprint,
+            ownership: item.identity.ownership,
+          },
+        }
+      : {}),
     nodes: item.nodes.map((n) => ({
       id: n.id,
       type: n.type,
@@ -1983,5 +2072,8 @@ export function validateCircuit(
       nodeIds: [...group.nodeIds],
       ...(group.activeWhen === undefined ? {} : { activeWhen: group.activeWhen }),
     })),
+    ...(Array.isArray(item.lanes)
+      ? { lanes: item.lanes.flatMap((lane) => validLane(lane, WIRE_COLORS) ?? []) }
+      : {}),
   };
 }

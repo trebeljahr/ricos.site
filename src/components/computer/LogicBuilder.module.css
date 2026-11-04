@@ -400,4 +400,23 @@
 @media(min-width:641px) and (max-width:650px){.embedded .layout>.sidebar{flex:0 0 340px}}
 /* A large board's wires and parts: no blur to paint, no transition to promote to a layer. */
 .largeBoard .wire,.largeBoard .wire.live,.largeBoard .wire.busLanes.live,.largeBoard .wire.wireSelected,.largeBoard .busWire.live{filter:none;transition:none}
-.largeBoard .node,.largeBoard .node:hover{box-shadow:none;transition:none}
+.largeBoard .node:not(.lampLit),.largeBoard .node:not(.lampLit):hover{box-shadow:none;transition:none}
+/* A lane: a hollow band for many wires, with a comb where it meets a part's ports. */
+.laneHit{fill:none;stroke:transparent;stroke-width:22;pointer-events:stroke;cursor:pointer}
+.laneHit:focus{outline:none}
+.laneRail{fill:none;stroke:var(--wire-color);stroke-width:14;stroke-linejoin:round;pointer-events:none}
+.laneCore{fill:none;stroke:#111b2e;stroke-width:9;stroke-linejoin:round;pointer-events:none}
+.laneCoreLive,[data-lane-state="high"] .laneCore{stroke:color-mix(in srgb,var(--wire-color) 45%,#111b2e)}
+[data-lane-state="floating"] .laneRail{stroke:#7d8a92}
+[data-lane-state="floating"] .laneCore{stroke-dasharray:14 10}
+[data-lane-state="conflict"] .laneRail{stroke:#ff5a52}
+.laneStubs{fill:none;stroke:var(--wire-color);stroke-width:2.5;pointer-events:none}
+.laneBars{fill:none;stroke:var(--wire-color);stroke-width:7;stroke-linecap:round;pointer-events:none}
+.laneMark{fill:#111b2e;stroke:var(--wire-color);stroke-width:3.5;pointer-events:none}
+.laneSlash{fill:none;stroke:#e7edf3;stroke-width:3;pointer-events:none}
+.laneSelected{fill:none;stroke:#e2b971;stroke-width:4;stroke-dasharray:12 8;pointer-events:none}
+.laneName,.laneText{font:700 15px ui-monospace,SFMono-Regular,monospace;fill:var(--wire-color);paint-order:stroke;stroke:#111b2e;stroke-width:5px;pointer-events:none}
+.laneName{fill:#e7edf3}
+.laneBoard .wire.busLanes{stroke-width:14;opacity:1}
+.laneBoard .wire.busLanes+.laneCore{stroke-width:9}
+.laneBoard .busWire{stroke-width:3}

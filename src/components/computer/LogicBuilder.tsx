@@ -65,6 +65,7 @@ import {
   WIRE_COLORS,
   type WireColor,
   wireFits,
+  type WireLane,
 } from "../../lib/computer/logic";
 import { type BusValue, formatBus } from "../../lib/computer/bus";
 import { collectUnfoldableIds, storageNodeCircuit } from "../../lib/computer/circuitHierarchy";
@@ -82,6 +83,7 @@ import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { layoutCmosBlueprint } from "../../lib/computer/cmosLayout";
 import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
+import { laneComb, laneValue, NO_LANES, resolveLanes, trunkRoute, type LaneTap } from "../../lib/computer/wireLanes";
 import { nextViewWindow, pathBox, visibleBox, type Box } from "../../lib/computer/viewWindow";
 import { isMosfet, transistorPortPoint, transistorPortSide, nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
@@ -1336,6 +1338,7 @@ const LearningTutorial = lazy(
 /** Keep the bench mounted so its edits, undo history, and timeline survive lessons. */
 type WireFacts = { isBus: boolean; labelX: number; labelY: number; labelAnchor: "start" | "end"; name: string };
 type BoardActions = {
+  selectLaneWires: (wires: Wire[], name: string) => void;
   wirePointerDown: (event: React.PointerEvent<SVGPathElement>, wire: Wire) => void;
   wireKeyDown: (event: React.KeyboardEvent<SVGPathElement>, wire: Wire) => void;
   wireContextMenu: (event: React.MouseEvent<SVGPathElement>, wire: Wire) => void;
@@ -1389,7 +1392,7 @@ function reuseElement<P extends object>(previous: ElementCache<P>, next: Element
 const NO_JUNCTIONS: { x: number; y: number }[] = [];
 
 /** One wire on the board. A tick redraws only the wires whose signal changed. */
-const BoardWire = memo(function BoardWire({ wire, d, info, signal, color, busValue, live, selected, glow, junctions, actions }: {
+const BoardWire = memo(function BoardWire({ wire, d, info, signal, color, busValue, live, selected, glow, junctions, hollow, actions }: {
   wire: Wire;
   d: string | undefined;
   info: WireFacts;
@@ -1400,6 +1403,8 @@ const BoardWire = memo(function BoardWire({ wire, d, info, signal, color, busVal
   selected: boolean;
   glow: boolean;
   junctions: readonly { x: number; y: number }[];
+  /** A board with lanes draws its 8-lane wires in the lane's look. */
+  hollow: boolean;
   actions: ActionsRef;
 }) {
   return (
@@ -1433,6 +1438,7 @@ const BoardWire = memo(function BoardWire({ wire, d, info, signal, color, busVal
           glow && styles.glow,
         )}
       />
+      {hollow && info.isBus && <path d={d} className={clsx(styles.laneCore, typeof busValue === "number" && busValue > 0 && styles.laneCoreLive)} />}
       {junctions.map((point) =>
         <circle key={`${point.x}:${point.y}`} cx={point.x} cy={point.y} r={4} className={styles.wireJunction} />)}
       {info.isBus && (
@@ -1448,6 +1454,61 @@ const BoardWire = memo(function BoardWire({ wire, d, info, signal, color, busVal
         >
           {formatBus(busValue)}
         </text>
+      )}
+    </g>
+  );
+});
+
+type DrawnLaneTap = { tap: LaneTap; d: string | undefined; stubs: string; bar: string; at: { x: number; y: number } };
+type DrawnLane = {
+  spec: WireLane;
+  id: string;
+  label: string;
+  width: number;
+  color: string;
+  source: { stubs: string; bar: string; at: { x: number; y: number } };
+  taps: DrawnLaneTap[];
+};
+/** One lane: every stem in one path, so the rails of a branch never cut across the core of its trunk. */
+const BoardLane = memo(function BoardLane({ lane, taps, showSource, selected, text, state, color, actions }: {
+  lane: DrawnLane;
+  /** The taps near the view. */
+  taps: DrawnLaneTap[];
+  showSource: boolean;
+  selected: string;
+  text: string;
+  state: string;
+  color: string;
+  actions: ActionsRef;
+}) {
+  const stems = taps.map((tap) => tap.d ?? "").join(" ");
+  const { source } = lane;
+  return (
+    <g data-lane={lane.id} data-lane-state={state} style={{ "--wire-color": color } as React.CSSProperties}>
+      <path d={stems} className={styles.laneHit} data-lane-hit={lane.id} role="button" tabIndex={0}
+        aria-label={`${lane.label} lane, ${lane.width} wires, carrying ${text}`}
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          actions.current.selectLaneWires(lane.taps.flatMap((tap) => tap.tap.wires), lane.label);
+        }} />
+      <path d={`${showSource ? source.stubs : ""} ${taps.map((tap) => tap.stubs).join(" ")}`} className={styles.laneStubs} />
+      <path d={`${showSource ? source.bar : ""} ${taps.map((tap) => tap.bar).join(" ")}`} className={styles.laneBars} />
+      <path d={stems} className={styles.laneRail} />
+      <path d={stems} className={styles.laneCore} />
+      {selected && <path d={selected} className={styles.laneSelected} />}
+      {taps.map((tap) => (
+        <g key={tap.tap.id}>
+          <circle cx={tap.at.x} cy={tap.at.y} r={9} className={styles.laneMark} />
+          {!lane.spec.names && <text x={tap.at.x - 14} y={tap.at.y - 15} textAnchor="end" className={styles.laneText}>{text}</text>}
+        </g>
+      ))}
+      {showSource && (
+        <>
+          <path d={`M ${source.at.x + 22} ${source.at.y + 14} L ${source.at.x + 38} ${source.at.y - 14}`} className={styles.laneSlash} />
+          <text x={source.at.x + 44} y={source.at.y - 15} className={styles.laneName}>{lane.width} · {lane.label}</text>
+          <text x={source.at.x + 44} y={source.at.y + 28} className={styles.laneText}>{text}</text>
+        </>
       )}
     </g>
   );
@@ -2067,13 +2128,44 @@ function LogicBuilderWorkspace({
   if (!dragging) settledNodeList.current = displayNodes;
   const settledNodes = settledNodeList.current;
   const settledById = useMemo(() => new Map(settledNodes.map((node) => [node.id, node])), [settledNodes]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: moving a part changes no lane, and everything routed depends on this holding still.
+  const lanes = useMemo(() => circuit.lanes?.length ? resolveLanes(circuit) : NO_LANES, [circuit.lanes, circuit.wires]);
+  /** Where each lane starts and each of its taps ends, with these node positions. */
+  const laneShapes = (nodes: ReadonlyMap<string, DisplayNode>) => lanes.lanes.flatMap(({ lane, taps }) => {
+    const first = lane.sources.map((source) => nodes.get(source.node)).find(Boolean);
+    if (!first) return [];
+    const startSide = outputSide(first);
+    const source = laneComb(lane.sources.flatMap(({ node, output = 0 }) => {
+      const part = nodes.get(node);
+      return part ? [portPoint(part, output, "output")] : [];
+    }), startSide);
+    return [{ lane, first, startSide, source, taps: taps.flatMap((tap) => {
+      const to = nodes.get(tap.to);
+      const pins = to ? tap.wires.filter((wire) => segmentPinVisible(to, wire.input, segmentBanks)) : [];
+      if (!to || !pins.length) return [];
+      const endSide = inputSide(to, pins[0].input);
+      return [{ tap, to, endSide, comb: laneComb(pins.map((wire) => portPoint(to, wire.input, "input")), endSide) }];
+    }) }];
+  });
   const routes = useMemo(
     () =>
       routeCircuitWires(
-        circuit.wires.flatMap((wire) => {
+        [...laneShapes(settledById).flatMap(({ lane, first, startSide, source, taps }) => taps.map(({ tap, endSide, comb }, index) => ({
+          id: tap.id,
+          from: first.id,
+          to: tap.to,
+          // Its own output number keeps the router from merging stems into a fan-out of its own.
+          output: 1000 + index,
+          start: source.anchor,
+          end: comb.anchor,
+          startSide,
+          endSide,
+          net: `lane:${lane.id}`,
+          points: trunkRoute(lane, source.anchor, comb.anchor),
+        }))), ...circuit.wires.flatMap((wire) => {
           const from = settledById.get(wire.from);
           const to = settledById.get(wire.to);
-          return from && to && segmentPinVisible(to, wire.input, segmentBanks)
+          return from && to && !lanes.tapOf.has(wire.id) && segmentPinVisible(to, wire.input, segmentBanks)
             ? [
                 {
                   id: wire.id,
@@ -2089,7 +2181,7 @@ function LogicBuilderWorkspace({
                 },
               ]
             : [];
-        }),
+        })],
         settledNodes.map((node) => ({
           id: node.id,
           x: node.x,
@@ -2099,7 +2191,7 @@ function LogicBuilderWorkspace({
         })),
         busWiring,
       ),
-    [settledNodes, settledById, circuit.wires, busWiring, segmentBanks, netKeys],
+    [settledNodes, settledById, circuit.wires, busWiring, segmentBanks, netKeys, lanes],
   );
   const board = useRef<HTMLDivElement>(null);
   const boardViewport = useRef<HTMLDivElement>(null);
@@ -3425,7 +3517,8 @@ function LogicBuilderWorkspace({
       }
       return;
     }
-    const emptyCanvas = !(event.target as Element).closest(
+    // A lane covers much of a big board, so a drag that starts on one pans. A click still selects it.
+    const emptyCanvas = (event.target as Element).hasAttribute("data-lane-hit") || !(event.target as Element).closest(
       `.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`,
     );
     if (emptyCanvas && (event.button === 1 || (event.button === 0 &&
@@ -3780,7 +3873,7 @@ function LogicBuilderWorkspace({
   };
   const settledPaths = useMemo(() => {
     const paths = circuit.wires.flatMap((wire) => {
-      const ends = wireEnds(wire, settledById);
+      const ends = lanes.tapOf.has(wire.id) ? null : wireEnds(wire, settledById);
       if (!ends) return [];
       const { from, to } = ends;
       const start = portPoint(from, wire.output ?? 0, "output"), end = portPoint(to, wire.input, "input");
@@ -3790,7 +3883,7 @@ function LogicBuilderWorkspace({
       return path ? [{ id: wire.id, path, net: netKeys[wire.id] }] : [];
     });
     return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path, net: netKeys[bus.taps[0].wireId] }))]);
-  }, [circuit.wires, settledById, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks, netKeys]);
+  }, [circuit.wires, settledById, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks, netKeys, lanes]);
   const settledJunctions = useMemo(() => wireJunctions(circuit.wires.map((wire) => ({ id: wire.id, path: settledPaths[wire.id] ?? "", net: netKeys[wire.id] }))), [circuit.wires, settledPaths, netKeys]);
   // Mid-drag, only the wires on a part that moved change: a plain route until the drop.
   const { wirePaths, junctions } = useMemo(() => {
@@ -3802,7 +3895,7 @@ function LogicBuilderWorkspace({
       return before?.x === node.x && before.y === node.y;
     };
     for (const wire of circuit.wires) {
-      const ends = wireEnds(wire, nodesById);
+      const ends = lanes.tapOf.has(wire.id) ? null : wireEnds(wire, nodesById);
       if (!ends || stayed(ends.from) && stayed(ends.to)) continue;
       moved.add(wire.id);
       const start = portPoint(ends.from, wire.output ?? 0, "output"), end = portPoint(ends.to, wire.input, "input");
@@ -3812,7 +3905,27 @@ function LogicBuilderWorkspace({
         : tidyWiring || busWiring || end.x <= start.x ? wirePath(start, end) : simpleWirePath(start, end);
     }
     return { wirePaths: paths, junctions: settledJunctions.filter((point) => !moved.has(point.wire)) };
-  }, [circuit.wires, displayNodes, settledNodes, nodesById, settledById, settledPaths, settledJunctions, tidyWiring, busWiring, showVdd, showGround, segmentBanks]);
+  }, [circuit.wires, displayNodes, settledNodes, nodesById, settledById, settledPaths, settledJunctions, tidyWiring, busWiring, showVdd, showGround, segmentBanks, lanes]);
+  // Lanes draw from the parts as they stand. Mid-drag, a stem on a moved part takes a plain route until the drop.
+  const drawnLanes = useMemo<DrawnLane[]>(() => laneShapes(nodesById).map(({ lane, source, startSide, first, taps }) => {
+    const settledFirst = settledById.get(first.id);
+    return {
+      spec: lane,
+      id: lane.id,
+      label: lane.label,
+      width: lane.sources.length,
+      color: WIRE_COLORS[lane.color ?? "cyan"],
+      source: { stubs: source.stubs, bar: source.bar, at: source.anchor },
+      taps: taps.map(({ tap, to, endSide, comb }) => {
+        const settledTo = settledById.get(to.id);
+        const held = settledFirst?.x === first.x && settledFirst.y === first.y && settledTo?.x === to.x && settledTo.y === to.y;
+        const route = trunkRoute(lane, source.anchor, comb.anchor);
+        return { tap, stubs: comb.stubs, bar: comb.bar, at: comb.anchor,
+          d: held ? routes.paths[tap.id] : route ? polylinePath(route) : startSide === "right" && endSide === "left"
+            ? wirePath(source.anchor, comb.anchor) : orientedWirePath(source.anchor, comb.anchor, startSide, endSide) };
+      }),
+    };
+  }), [lanes, nodesById, settledById, routes, segmentBanks]);
   const anchorPath = (wire: Wire) => {
     const bus = routes.buses.find((bus) => bus.taps.some((tap) => tap.wireId === wire.id));
     if (!bus || wire.points) return wirePaths[wire.id];
@@ -3872,7 +3985,7 @@ function LogicBuilderWorkspace({
     const facts = new Map<string, WireFacts>();
     for (const wire of circuit.wires) {
       const from = nodesById.get(wire.from), to = nodesById.get(wire.to);
-      if (!from || !to || !segmentPinVisible(to, wire.input, segmentBanks) ||
+      if (!from || !to || lanes.tapOf.has(wire.id) || !segmentPinVisible(to, wire.input, segmentBanks) ||
         hasTransistors && (!powerVisible(from) || !powerVisible(to))) continue;
       const start = portPoint(from, wire.output ?? 0, "output");
       facts.set(wire.id, {
@@ -3884,7 +3997,7 @@ function LogicBuilderWorkspace({
       });
     }
     return facts;
-  }, [circuit.wires, nodesById, segmentBanks, hasTransistors, showVdd, showGround]);
+  }, [circuit.wires, nodesById, segmentBanks, hasTransistors, showVdd, showGround, lanes]);
   const junctionsByWire = useMemo(() => {
     const byWire = new Map<string, typeof junctions>();
     for (const point of junctions) {
@@ -3930,11 +4043,21 @@ function LogicBuilderWorkspace({
     if (!viewWindow) return false;
     return visibleBox({ left: node.x, top: node.y, right: node.x + nodeWidth(node), bottom: node.y + nodeHeight(node) }, viewWindow);
   };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `wireInView` reads only these.
+  const lanesInView = useMemo(() => drawnLanes.flatMap((lane) => {
+    const taps = lane.taps.filter((tap) => wireInView(tap.tap.id, tap.d));
+    return taps.length || wireInView("", `M ${lane.source.at.x} ${lane.source.at.y}`) ? [{ lane, taps }] : [];
+  }), [drawnLanes, viewWindow, largeBoard]);
   const previousWires = wireElements.current, nextWires: typeof previousWires = new Map();
   wireElements.current = nextWires;
   const previousNodes = nodeElements.current, nextNodes: typeof previousNodes = new Map();
   nodeElements.current = nextNodes;
   boardActions.current = {
+    selectLaneWires: (wires, name) => {
+      setSelected([]);
+      setSelectedWires(wires.map((wire) => wire.id));
+      setMessage(`${name}: ${wires.length} ${wires.length === 1 ? "wire" : "wires"} selected.`);
+    },
     wirePointerDown: (event, wire) => startWireBranch(event, wire),
     wireKeyDown: (event, wire) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -4120,7 +4243,7 @@ function LogicBuilderWorkspace({
   return (
     <div
       ref={shellRef}
-      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, locked?.interactiveInputs && styles.interactiveInputs, signalView && styles.signalView, largeBoard && styles.largeBoard)}
+      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, locked?.interactiveInputs && styles.interactiveInputs, signalView && styles.signalView, largeBoard && styles.largeBoard, drawnLanes.length > 0 && styles.laneBoard)}
       data-embedded={embedded || undefined}
       data-logic-builder=""
       data-wire-view={signalView ? "signal" : "identity"}
@@ -4615,11 +4738,25 @@ function LogicBuilderWorkspace({
               press.opened = true;
             }}
             onClick={(event) => {
-              if ((event.target as Element).closest(`.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`)) return;
+              if (!(event.target as Element).hasAttribute("data-lane-hit") &&
+                (event.target as Element).closest(`.${styles.node}, .${styles.wireHit}, .${styles.busHit}, button, input, [role="button"]`)) return;
               if (portWiring.consumeClick()) return;
               portWiring.clear();
               if (suppressBoardClick.current) {
                 suppressBoardClick.current = false;
+                return;
+              }
+              // A press on a lane can start a pan, and the pan's pointer capture sends the click to the viewport.
+              const laneId = document.elementFromPoint?.(event.clientX, event.clientY)?.getAttribute("data-lane-hit");
+              const lane = laneId ? drawnLanes.find((item) => item.id === laneId) : undefined;
+              if (lane) {
+                const point = boardPoint(event.clientX, event.clientY);
+                // Stems share the trunk: a click on it takes them all, a click on one branch only that branch.
+                const reach = lane.taps.map((tap) => closestPathPoint(tap.d ?? "", point).distance);
+                const closest = Math.min(...reach);
+                const hit = lane.taps.filter((_, index) => reach[index] <= closest + 3);
+                boardActions.current.selectLaneWires(hit.flatMap((tap) => tap.tap.wires),
+                  hit.length > 1 ? lane.label : `${lane.label} to ${nodesById.get(hit[0].tap.to)?.label ?? hit[0].tap.to}`);
                 return;
               }
               setSelected([]);
@@ -4778,6 +4915,13 @@ function LogicBuilderWorkspace({
                         </g>
                       );
                     })}
+                  {lanesInView.map(({ lane, taps }) => {
+                    const { text, state } = laneValue(lane.spec, boardSnapshot);
+                    return <BoardLane key={lane.id} lane={lane} taps={taps} text={text} state={state}
+                      showSource={wireInView("", `M ${lane.source.at.x} ${lane.source.at.y}`)}
+                      selected={lane.taps.filter((tap) => tap.tap.wires.some((wire) => selectedWires.includes(wire.id))).map((tap) => tap.d ?? "").join(" ")}
+                      color={signalView ? SIGNAL_COLORS[state] : lane.color} actions={boardActions} />;
+                  })}
                   {circuit.wires.map((wire) => {
                     const info = wireFacts.get(wire.id);
                     if (!info || !wireInView(wire.id, wirePaths[wire.id])) return null;
@@ -4794,6 +4938,7 @@ function LogicBuilderWorkspace({
                       selected: selectedWires.includes(wire.id),
                       glow: Boolean(locked?.glowWire?.(wire, boardSnapshot)),
                       junctions: junctionsByWire.get(wire.id) ?? NO_JUNCTIONS,
+                      hollow: drawnLanes.length > 0,
                       actions: boardActions,
                     }, (props) => <BoardWire key={wire.id} {...props} />);
                   })}

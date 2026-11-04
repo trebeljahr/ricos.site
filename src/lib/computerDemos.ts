@@ -98,10 +98,6 @@ export const computerDemos = [
     title: "Gates wired from transistors",
   },
   {
-    slug: "transistor-gates-nand",
-    title: "A NAND gate from transistors",
-  },
-  {
     slug: "transistor-gate-builder",
     title: "Build gates from transistors",
   },

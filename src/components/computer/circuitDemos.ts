@@ -5,6 +5,7 @@ export { EightBitAdder, FullAdder, HalfAdder } from "./Adders";
 export { DecoderDemo, MemoryAddressDemo, MultiplexerDemo } from "./AddressRouting";
 export { AluArchitectureComparison } from "./AluArchitectureComparison";
 export { BooleanCircuitDemo } from "./BooleanCircuitDemo";
+export { ButtonInterruptDemo } from "./ButtonInterruptDemo";
 export { DecoderLesson, TransistorGateLessons } from "./ChapterCircuitLessons";
 export { LogicBuilder } from "./LogicBuilder";
 export { SignedArithmetic, SignedNumberExplorer } from "./SignedNumbers";

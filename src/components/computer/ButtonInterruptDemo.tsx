@@ -12,6 +12,7 @@ import {
 } from "../../lib/computer/buttonInterrupt";
 import { CPU_PARTS } from "../../lib/computer/cpuPreset";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
+import type { Circuit } from "../../lib/computer/logic";
 import { type CompiledProgram, hex } from "../../lib/computerStepper";
 import { CircuitDemo } from "./CircuitDemo";
 import {
@@ -21,6 +22,7 @@ import {
   controlsClass,
   summaryClass,
 } from "./DeviceDemoParts";
+import { LazyMount } from "./LazyMount";
 import { LogicBuilder } from "./LogicBuilder";
 import { LazyLogicTutorial } from "./tutorial/LazyLogicTutorial";
 
@@ -35,6 +37,19 @@ const interruptFocus = [
   CPU_PARTS.int,
   "irq-probe",
 ];
+/** A builder below the CPU's: it costs nothing until the reader comes near it. */
+function LazyCircuitDemo({ makeCircuit, label }: { makeCircuit: () => Circuit; label: string }) {
+  return (
+    <LazyMount
+      height="auto"
+      margin="50% 0px"
+      label={label}
+      placeholder={<div className="my-6 h-[80svh] min-h-[1000px] sm:min-h-[650px]" />}
+    >
+      <CircuitDemo makeCircuit={makeCircuit} label={label} />
+    </LazyMount>
+  );
+}
 export function ButtonInterruptDemo() {
   const [source, setSource] = useDemoState("button-program:source", BUTTON_PROGRAM);
   const [loaded, setLoaded] = useDemoState("button-program:loaded", BUTTON_PROGRAM);
@@ -129,9 +144,9 @@ export function ButtonInterruptDemo() {
       </section>
       <section className="flow-para">
         <h2>Count presses through the shared circuit parts</h2>
-        <CircuitDemo makeCircuit={buttonCounterDisplay} label="Button counter circuit" />
+        <LazyCircuitDemo makeCircuit={buttonCounterDisplay} label="Button counter circuit" />
         <h2>Catch a press while the CPU is busy</h2>
-        <CircuitDemo makeCircuit={buttonBench} label="Button capture circuit" />
+        <LazyCircuitDemo makeCircuit={buttonBench} label="Button capture circuit" />
         <p>
           <Link href="/computer/build-from-nand?level=button-capture">
             Construct the input latch and interface →

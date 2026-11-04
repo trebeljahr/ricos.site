@@ -195,6 +195,15 @@ const frameBounds = (left: number, top: number, zoom: number, width: number, hei
   right: left + (3 * width) / zoom,
   bottom: top + (3 * height) / zoom,
 });
+/** Whether a canvas framed for another zoom still has room around this view, at about the right size. */
+const canvasStillFits = (canvas: { left: number; top: number; right: number; bottom: number },
+  left: number, top: number, zoom: number, width: number, height: number) => {
+  const viewWidth = width / zoom, viewHeight = height / zoom;
+  const scale = (canvas.right - canvas.left) / (5 * viewWidth);
+  return scale > 0.5 && scale < 2 &&
+    left - canvas.left >= viewWidth && canvas.right - (left + viewWidth) >= viewWidth &&
+    top - canvas.top >= viewHeight && canvas.bottom - (top + viewHeight) >= viewHeight;
+};
 const wireColorNames = Object.keys(WIRE_COLORS) as WireColor[];
 const partColors: Record<GateType, string> = {
   switch: "#ffc76a",
@@ -1319,7 +1328,416 @@ const LearningTutorial = lazy(
 );
 
 /** Keep the bench mounted so its edits, undo history, and timeline survive lessons. */
-export function LogicBuilder(props: BuilderProps = {}) {
+type WireFacts = { isBus: boolean; labelX: number; labelY: number; labelAnchor: "start" | "end"; name: string };
+type BoardActions = {
+  wirePointerDown: (event: React.PointerEvent<SVGPathElement>, wire: Wire) => void;
+  wireKeyDown: (event: React.KeyboardEvent<SVGPathElement>, wire: Wire) => void;
+  wireContextMenu: (event: React.MouseEvent<SVGPathElement>, wire: Wire) => void;
+  wireDoubleClick: (event: React.MouseEvent<SVGPathElement>, wire: Wire) => void;
+  wireClick: (event: React.MouseEvent<SVGPathElement>, wire: Wire) => void;
+  nodeKeyDown: (event: React.KeyboardEvent<HTMLDivElement>, node: DisplayNode) => void;
+  nodePointerDown: (event: React.PointerEvent<HTMLDivElement>, node: DisplayNode) => void;
+  nodeContextMenu: (event: React.MouseEvent<HTMLDivElement>, node: DisplayNode) => void;
+  nodeClick: (event: React.MouseEvent<HTMLDivElement>, node: DisplayNode) => void;
+  nodeDoubleClick: (event: React.MouseEvent<HTMLDivElement>, node: DisplayNode) => void;
+  inputPointerDown: (event: React.PointerEvent<HTMLButtonElement>, node: DisplayNode, input: number) => void;
+  inputClick: (event: React.MouseEvent<HTMLButtonElement>, node: DisplayNode, input: number) => void;
+  outputPointerDown: (event: React.PointerEvent<HTMLButtonElement>, node: DisplayNode, output: number) => void;
+  outputClick: (event: React.MouseEvent<HTMLButtonElement>, node: DisplayNode, output: number) => void;
+  editLabel: (id: string, value: string) => void;
+  cancelLabel: () => void;
+  commitLabel: (node: DisplayNode) => void;
+  updatePart: (node: Node, patch: (node: Node) => Partial<Node>) => void;
+  showBank: (id: string, bank: number) => void;
+  pulse: (id: string) => void;
+  hold: (id: string, high: boolean) => void;
+  toggleUnfolded: (id: string) => void;
+  enterModule: (node: DisplayNode) => void;
+  isPortSelected: (port: PortRef) => boolean;
+  isPortTarget: (port: PortRef) => boolean;
+  portInvalid: boolean;
+  paste: (clip: CircuitClip, position: { x: number; y: number }, inlinePath?: string | null) => string[] | null;
+  placeRow: (placement: Placement) => void;
+  load: (next: Circuit) => void;
+  deleteSaved: (label: string) => void;
+};
+type ActionsRef = MutableRefObject<BoardActions>;
+/** Last render's board elements by id. An unchanged part reuses its element, so React skips it outright. */
+type ElementCache<P> = Map<string, { props: P; element: React.ReactElement }>;
+function reuseElement<P extends object>(previous: ElementCache<P>, next: ElementCache<P>, id: string, props: P,
+  make: (props: P) => React.ReactElement) {
+  const hit = previous.get(id);
+  let same = Boolean(hit);
+  if (hit) {
+    for (const key of Object.keys(props) as (keyof P)[]) {
+      if (key !== ("snapshot" as keyof P) && hit.props[key] !== props[key]) {
+        same = false;
+        break;
+      }
+    }
+  }
+  const entry = same && hit ? hit : { props, element: make(props) };
+  next.set(id, entry);
+  return entry.element;
+}
+const NO_JUNCTIONS: { x: number; y: number }[] = [];
+
+/** One wire on the board. A tick redraws only the wires whose signal changed. */
+const BoardWire = memo(function BoardWire({ wire, d, info, signal, color, busValue, live, selected, glow, junctions, actions }: {
+  wire: Wire;
+  d: string | undefined;
+  info: WireFacts;
+  signal: string;
+  color: string;
+  busValue: BusValue | undefined;
+  live: boolean;
+  selected: boolean;
+  glow: boolean;
+  junctions: readonly { x: number; y: number }[];
+  actions: ActionsRef;
+}) {
+  return (
+    <g data-wire-signal={signal} style={{ "--wire-color": color } as React.CSSProperties}>
+      <path
+        d={d}
+        className={styles.wireHit}
+        onPointerDown={(event) => actions.current.wirePointerDown(event, wire)}
+        role="button"
+        tabIndex={0}
+        aria-pressed={selected}
+        aria-label={info.name}
+        onKeyDown={(event) => actions.current.wireKeyDown(event, wire)}
+        onContextMenu={(event) => actions.current.wireContextMenu(event, wire)}
+        onDoubleClick={(event) => actions.current.wireDoubleClick(event, wire)}
+        onClick={(event) => actions.current.wireClick(event, wire)}
+      />
+      <path
+        d={d}
+        className={clsx(
+          styles.wire,
+          info.isBus
+            ? [
+                styles.busLanes,
+                busValue === "Z" && styles.busFloating,
+                busValue === "X" && styles.busConflict,
+                typeof busValue === "number" && busValue > 0 && styles.live,
+              ]
+            : live && styles.live,
+          selected && styles.wireSelected,
+          glow && styles.glow,
+        )}
+      />
+      {junctions.map((point) =>
+        <circle key={`${point.x}:${point.y}`} cx={point.x} cy={point.y} r={4} className={styles.wireJunction} />)}
+      {info.isBus && (
+        <text
+          x={info.labelX}
+          y={info.labelY}
+          textAnchor={info.labelAnchor}
+          className={clsx(
+            styles.busValue,
+            busValue === "Z" && styles.busValueFloating,
+            busValue === "X" && styles.busValueConflict,
+          )}
+        >
+          {formatBus(busValue)}
+        </text>
+      )}
+    </g>
+  );
+});
+
+const bcdModules = new WeakMap<Circuit, boolean>();
+const isBcdModule = (node: Node) => {
+  if (node.type !== "module" || !node.module) return false;
+  let known = bcdModules.get(node.module);
+  if (known === undefined) {
+    known = isBcdDisplayPackage(verifiedCircuitIdentity(node.module)?.component.id);
+    bcdModules.set(node.module, known);
+  }
+  return known;
+};
+/** Everything NodeReadout shows for this part, so two ticks that read the same draw the same. */
+const partSignal = (node: Node, snapshot: Snapshot, wires: Wire[]) => {
+  const level = snapshot.values[node.id] ? "1" : "0";
+  if (node.type === "sevensegment" || node.type === "display4" || node.type === "display8")
+    return (snapshot.outputs[node.id] ?? []).map((bit) => (bit ? "1" : "0")).join("");
+  if (isBcdModule(node)) {
+    const outputs = snapshot.modules[node.id]?.outputs;
+    return outputs ? JSON.stringify(outputs) : "";
+  }
+  if (node.type === "splitter")
+    return String(snapshot.buses?.[wires.find((wire) => wire.to === node.id)?.from ?? ""] ?? "Z");
+  if (BUS_TYPES.has(node.type)) return String(snapshot.buses?.[node.id] ?? "Z");
+  return level;
+};
+/** Which of this part's ports the port-wiring gesture marks. Empty on nearly every render. */
+const portMarks = (node: DisplayNode, wiring: ReturnType<typeof usePortWiring>, banks: Record<string, number>) => {
+  if (!wiring.selected.length) return "";
+  let marks = "";
+  const mark = (kind: "input" | "output", index: number) => {
+    const port = { nodeId: node.id, kind, index };
+    if (wiring.isSelected(port)) marks += `s${kind}${index} `;
+    if (wiring.isTarget(port)) marks += `t${kind}${index}${wiring.invalid ? "!" : ""} `;
+  };
+  for (const input of visibleInputs(node, banks)) mark("input", input);
+  for (let output = 0; output < outputCount(node); output++) mark("output", output);
+  return marks;
+};
+
+type ExpandedDetail = { inner: Circuit; layout: InlineLayout; width: number; height: number };
+type BoardNodeContentProps = {
+  node: DisplayNode;
+  detail: ExpandedDetail | undefined;
+  /** Fresh on each render of an unfolded part, whose inner circuit decides for itself. */
+  inline: Omit<React.ComponentProps<typeof InlineCircuit>, "host" | "circuit" | "layout"> | undefined;
+  unfoldedHere: boolean;
+  phoneBoard: boolean;
+  editable: boolean;
+  /** Read only when `signal` or `volatile` changed. */
+  snapshot: Snapshot;
+  signal: string;
+  volatile: unknown;
+  wires: Wire[];
+  segmentBanks: Record<string, number>;
+  manualEpoch: number;
+  note: string | null | undefined;
+  editingValue: string | null;
+  pendingOutput: number | null;
+  draftInput: number | null;
+  draftOutput: number | null;
+  portMarks: string;
+  actions: ActionsRef;
+};
+/** Same props, ignoring the snapshot: `signal` and `volatile` stand in for the part of it this part reads. */
+const sameBoardProps = <T extends { snapshot: Snapshot }>(previous: T, next: T) => {
+  for (const key of Object.keys(next) as (keyof T)[]) {
+    if (key !== "snapshot" && previous[key] !== next[key]) return false;
+  }
+  return true;
+};
+const BoardNodeContent = memo(function BoardNodeContent({ node, detail, inline, unfoldedHere, phoneBoard, editable, snapshot, wires,
+  segmentBanks, manualEpoch, note, editingValue, pendingOutput, draftInput, draftOutput, actions }: BoardNodeContentProps) {
+  const act = actions.current;
+  const partTitle = node.type === "module" ? node.module?.name || "Module" : LABELS[node.type];
+  return (
+    <>
+      {visibleInputs(node, segmentBanks).map(input => {
+        const port = { nodeId: node.id, kind: "input", index: input } as const;
+        return (
+          <div
+            key={`${node.id}-input-${input}`}
+            className={clsx(styles.portRow, inputSide(node) === "right" && styles.portOnRight)}
+            style={{
+              ...portStyle(node, input, "input"),
+            }}
+          >
+            <button
+              type="button"
+              className={styles.input}
+              data-node-id={node.id}
+              data-input={input}
+              aria-pressed={act.isPortSelected(port)}
+              data-port-selected={act.isPortSelected(port)}
+              data-port-invalid={act.portInvalid && act.isPortTarget(port)}
+              style={{ top: 0 }}
+              onPointerDown={(event) => actions.current.inputPointerDown(event, node, input)}
+              onClick={(event) => actions.current.inputClick(event, node, input)}
+              data-wire-target={act.isPortTarget(port) || draftInput === input}
+              aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
+              title={
+                node.type === "module"
+                  ? inputLabel(node, input)
+                  : node.type === "dff"
+                    ? input === 0
+                      ? "D: data"
+                      : input === 1 ? "CLK: rising edge" : "RESET: asynchronous active-high reset"
+                    : node.type === "nmos" || node.type === "pmos"
+                      ? input === 0
+                        ? "Gate (G): controls the source–drain path"
+                        : "Source (S): supply-side terminal in this directed switch model"
+                      : inputLabel(node, input)
+              }
+            />
+            <PortLabel node={node} index={input} kind="input" folded={!node.expanded} />
+          </div>
+        );
+      })}
+      <div
+        className={clsx(
+          styles.nodeBody,
+          isMosfet(node) && styles.transistorBody,
+          node.type === "module" && styles.moduleBody,
+          isScreenBlock(node.behaviour) && styles.screenBody,
+        )}
+        style={detail ? { display: "none" } : undefined}
+      >
+        {isMosfet(node) && <TransistorSymbol node={node} snapshot={snapshot} wires={wires} />}
+        <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
+          {editingValue !== null ? (
+            <input
+              // biome-ignore lint/a11y/noAutofocus: the field opens on the reader's own rename action
+              autoFocus
+              className={styles.nodeNameInput}
+              aria-label="Part label"
+              maxLength={30}
+              value={editingValue}
+              onChange={(event) => actions.current.editLabel(node.id, event.target.value)}
+              onBlur={() => actions.current.commitLabel(node)}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Enter") event.currentTarget.blur();
+                if (event.key === "Escape") actions.current.cancelLabel();
+              }}
+            />
+          ) : (
+            <>
+              {node.label && node.label !== partTitle && (
+                <span
+                  className={styles.nodeLabel}
+                  title="Double-click to edit label"
+                  onDoubleClick={(event) => {
+                    event.stopPropagation();
+                    actions.current.editLabel(node.id, node.label || "");
+                  }}
+                >{node.label}</span>
+              )}
+              <button
+                type="button"
+                className={styles.editName}
+                aria-label={`Edit ${node.label || LABELS[node.type]} label`}
+                title="Edit label"
+                onClick={() => actions.current.editLabel(node.id, node.label === partTitle ? "" : node.label || "")}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 11.5V5a2 2 0 0 1 2-2h6.5a2 2 0 0 1 1.4.6l8.1 8.1a2 2 0 0 1 0 2.8l-6.5 6.5a2 2 0 0 1-2.8 0l-8.1-8.1a2 2 0 0 1-.6-1.4Z" />
+                  <circle cx="7.5" cy="7.5" r="1" />
+                </svg>
+              </button>
+            </>
+          )}
+        </div>
+        {isScreenBlock(node.behaviour) ? (
+          // A folded screen draws its pixels; unfolded, its register rows show instead.
+          <BlockScreen
+            behaviour={node.behaviour}
+            state={snapshot.blocks?.[node.id]}
+            label={node.label}
+          />
+        ) : !drawsOwnFace(node.type) && (
+          <span className={styles.nodeSymbol}>
+            <GateSymbol type={node.type} circuit={node.module} />
+          </span>
+        )}
+        <strong className={styles.nodePartName}>{partName(node)}</strong>
+        <NodeReadout node={node} snapshot={snapshot} wires={wires}
+          bank={segmentBank(node, segmentBanks)} onBank={(id, bank) => actions.current.showBank(id, bank)}
+          onUpdate={(patch) => actions.current.updatePart(node, patch)}
+          manual={{ epoch: manualEpoch, onPulse: () => actions.current.pulse(node.id), onHeld: (high) => actions.current.hold(node.id, high) }} />
+      </div>
+      <NodeNote text={note} />
+      {!detail && isUnfoldable(node) && (
+        <div className={styles.nodeActions}>
+          {!(phoneBoard && editable && node.type === "module" && node.module && !unfoldedHere) && (
+            <button type="button" title={`${unfoldedHere ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
+              aria-label={`${unfoldedHere ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
+              onClick={(event) => { event.stopPropagation(); actions.current.toggleUnfolded(node.id); }}><ActionIcon name={unfoldedHere ? "fold" : "unfold"} /></button>
+          )}
+          {editable && node.type === "module" && node.module && (
+            <button type="button" title={`Enter ${node.label || node.module.name}`}
+              aria-label={`Enter ${node.label || node.module.name}`}
+              onClick={(event) => { event.stopPropagation(); actions.current.enterModule(node); }}>
+              {phoneBoard && !unfoldedHere ? <ActionIcon name="unfold" /> : "↗"}
+            </button>
+          )}
+        </div>
+      )}
+      {detail && inline && <InlineCircuit host={node} circuit={detail.inner} layout={detail.layout} {...inline} />}
+      {Array.from({ length: outputCount(node) }, (_, output) => {
+        const port = { nodeId: node.id, kind: "output", index: output } as const;
+        return (
+          <div
+            key={`${node.id}-output-${output}`}
+            className={clsx(styles.portRow, outputSide(node) === "left" && styles.portOnLeft)}
+            style={{
+              ...portStyle(node, output, "output"),
+            }}
+          >
+            <PortLabel node={node} index={output} kind="output" folded={!node.expanded} />
+            <button
+              type="button"
+              className={clsx(styles.output, pendingOutput === output && styles.pending)}
+              style={{ top: 0 }}
+              data-node-id={node.id}
+              data-output={output}
+              aria-pressed={act.isPortSelected(port)}
+              data-port-selected={act.isPortSelected(port)}
+              data-port-invalid={act.portInvalid && act.isPortTarget(port)}
+              onPointerDown={(event) => actions.current.outputPointerDown(event, node, output)}
+              onClick={(event) => actions.current.outputClick(event, node, output)}
+              data-wire-target={act.isPortTarget(port) || draftOutput === output}
+              aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
+              title={outputLabel(node, output)}
+            />
+          </div>
+        );
+      })}
+    </>
+  );
+}, sameBoardProps);
+
+/** One part on the board: its frame follows the camera, its content only its own state. */
+const BoardNode = memo(function BoardNode({ left, top, width, height, junctionColor, selected, highlighted, conflict, active, ...content }: BoardNodeContentProps & {
+  left: string;
+  top: string;
+  width: string;
+  height: string;
+  junctionColor: string | undefined;
+  selected: boolean;
+  highlighted: boolean;
+  conflict: boolean;
+  active: boolean;
+}) {
+  const { node, detail, actions } = content;
+  return (
+    <div
+      data-node-id={node.id}
+      role="group"
+      aria-label={`${node.splice ? "Wire join" : node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
+      onKeyDown={(event) => actions.current.nodeKeyDown(event, node)}
+      className={clsx(
+        styles.node,
+        isMosfet(node) && styles.transistorNode,
+        (node.splice || node.type === "junction") && styles.wireJoin,
+        conflict && styles.joinConflict,
+        detail && styles.expandedNode,
+        selected && styles.selected,
+        highlighted && styles.challengeHighlight,
+        active && styles.active,
+        node.type === "lamp" && active && styles.lampLit,
+        (inputSide(node) === "top" || outputSide(node) === "top") && styles.topPorts,
+      )}
+      style={
+        {
+          "--part-accent": partColors[node.type],
+          "--junction-color": junctionColor,
+          left,
+          top,
+          width,
+          height,
+        } as React.CSSProperties
+      }
+      onPointerDown={(event) => actions.current.nodePointerDown(event, node)}
+      onContextMenu={(event) => actions.current.nodeContextMenu(event, node)}
+      onClick={(event) => actions.current.nodeClick(event, node)}
+      onDoubleClick={(event) => actions.current.nodeDoubleClick(event, node)}
+    >
+      <BoardNodeContent {...content} />
+    </div>
+  );
+}, sameBoardProps);
+
+export const LogicBuilder = memo(function LogicBuilder(props: BuilderProps) {
   const [lesson, setLesson] = useState<string | null>(null);
   const chapterEmbed = useContext(ComputerEmbedContext);
   const embedded = props.embedded ?? chapterEmbed;
@@ -1343,7 +1761,7 @@ export function LogicBuilder(props: BuilderProps = {}) {
       </div>}
     </>
   );
-}
+});
 
 function LogicBuilderWorkspace({
   challenge,
@@ -1607,7 +2025,15 @@ function LogicBuilderWorkspace({
       });
   }, [displayNodes]);
 
-  const netKeys = useMemo(() => wireNetKeys(circuit), [circuit.nodes, circuit.wires]);
+  // Moving a part changes no net, and everything routed depends on this staying the same object.
+  const lastNetKeys = useRef<ReturnType<typeof wireNetKeys>>({});
+  const netKeys = useMemo(() => {
+    const next = wireNetKeys(circuit), last = lastNetKeys.current;
+    const ids = Object.keys(next);
+    if (ids.length === Object.keys(last).length && ids.every((id) => next[id] === last[id])) return last;
+    lastNetKeys.current = next;
+    return next;
+  }, [circuit.nodes, circuit.wires]);
   const netColors = useMemo(() => wireNetColors(circuit, netKeys,
     (from) => defaultWireColor(from, circuit.nodes)), [circuit, netKeys]);
   const sourceWireColor = (from: string, output = 0): WireColor => {
@@ -1615,12 +2041,31 @@ function LogicBuilderWorkspace({
       (circuit.nodes.some((node) => node.id === from && (node.type === "junction" || node.splice)) ? circuit.wires.find((wire) => wire.to === from) : undefined);
     return existing ? netColors[existing.id] : defaultWireColor(from, circuit.nodes);
   };
+  const nodesById = useMemo(() => new Map(displayNodes.map((node) => [node.id, node])), [displayNodes]);
+  const boardActions = useRef(null as unknown as BoardActions);
+  const wireElements = useRef<ElementCache<React.ComponentProps<typeof BoardWire>>>(new Map());
+  const nodeElements = useRef<ElementCache<React.ComponentProps<typeof BoardNode>>>(new Map());
+  const inlineOwnsClipboard = useCallback((target: EventTarget | null) =>
+    ownsKeyEvent(instanceId, shellRef.current, target), [instanceId]);
+  const inlinePaste = useCallback<BoardActions["paste"]>((...args) => boardActions.current.paste(...args), []);
+  const [drag, setDrag] = useState<{
+    x: number;
+    y: number;
+    starts: Record<string, { x: number; y: number }>;
+  } | null>(null);
+  const dragging = drag !== null;
+  // Routing every wire around every part is too slow for each pointer move. While a part
+  // is dragged the board keeps the routes it had; dropping it routes the board again.
+  const settledNodeList = useRef(displayNodes);
+  if (!dragging) settledNodeList.current = displayNodes;
+  const settledNodes = settledNodeList.current;
+  const settledById = useMemo(() => new Map(settledNodes.map((node) => [node.id, node])), [settledNodes]);
   const routes = useMemo(
     () =>
       routeCircuitWires(
         circuit.wires.flatMap((wire) => {
-          const from = displayNodes.find((node) => node.id === wire.from);
-          const to = displayNodes.find((node) => node.id === wire.to);
+          const from = settledById.get(wire.from);
+          const to = settledById.get(wire.to);
           return from && to && segmentPinVisible(to, wire.input, segmentBanks)
             ? [
                 {
@@ -1638,7 +2083,7 @@ function LogicBuilderWorkspace({
               ]
             : [];
         }),
-        displayNodes.map((node) => ({
+        settledNodes.map((node) => ({
           id: node.id,
           x: node.x,
           y: node.y,
@@ -1647,13 +2092,8 @@ function LogicBuilderWorkspace({
         })),
         busWiring,
       ),
-    [displayNodes, circuit.wires, busWiring, segmentBanks, netKeys],
+    [settledNodes, settledById, circuit.wires, busWiring, segmentBanks, netKeys],
   );
-  const [drag, setDrag] = useState<{
-    x: number;
-    y: number;
-    starts: Record<string, { x: number; y: number }>;
-  } | null>(null);
   const board = useRef<HTMLDivElement>(null);
   const boardViewport = useRef<HTMLDivElement>(null);
   const workspace = useRef<HTMLDivElement>(null);
@@ -1689,10 +2129,11 @@ function LogicBuilderWorkspace({
       // Apply the camera only after React has rendered its new bounds and scale.
       // An animation frame can run before that commit and compensate twice.
       if (queuedScroll.current) {
-        viewport.scrollLeft = queuedScroll.current.left +
-          (queuedScroll.current.bounds.left - bounds.left) * zoomRef.current;
-        viewport.scrollTop = queuedScroll.current.top +
-          (queuedScroll.current.bounds.top - bounds.top) * zoomRef.current;
+        const left = queuedScroll.current.left + (queuedScroll.current.bounds.left - bounds.left) * zoomRef.current;
+        const top = queuedScroll.current.top + (queuedScroll.current.bounds.top - bounds.top) * zoomRef.current;
+        viewport.scrollLeft = left;
+        viewport.scrollTop = top;
+        exactScroll.current = { left, top, shownLeft: viewport.scrollLeft, shownTop: viewport.scrollTop };
         queuedScroll.current = null;
       } else if (previous !== bounds) {
         viewport.scrollLeft += (previous.left - bounds.left) * zoomRef.current;
@@ -1752,6 +2193,7 @@ function LogicBuilderWorkspace({
     });
   };
   const queuedScroll = useRef<{ left: number; top: number; bounds: { left: number; top: number } } | null>(null);
+  const exactScroll = useRef<{ left: number; top: number; shownLeft: number; shownTop: number } | null>(null);
   const spaceHeld = useRef(false);
   const activePan = useRef<{ id: number; x: number; y: number } | null>(null);
   const touchPointers = useRef(new Map<number, { x: number; y: number }>());
@@ -1797,16 +2239,24 @@ function LogicBuilderWorkspace({
       const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, requested));
       const old = zoomRef.current;
       const rect = viewport.getBoundingClientRect();
-      const left = queuedScroll.current?.left ?? viewport.scrollLeft;
-      const top = queuedScroll.current?.top ?? viewport.scrollTop;
+      // The browser rounds scroll offsets. Zooming from the exact one keeps that from adding up,
+      // so the point under the cursor stays there; scrolling by hand starts from what is shown.
+      const exact = exactScroll.current;
+      const unmoved = exact?.shownLeft === viewport.scrollLeft && exact.shownTop === viewport.scrollTop &&
+        Math.abs(exact.left - exact.shownLeft) <= 1 && Math.abs(exact.top - exact.shownTop) <= 1;
+      const left = queuedScroll.current?.left ?? (unmoved ? exact.left : viewport.scrollLeft);
+      const top = queuedScroll.current?.top ?? (unmoved ? exact.top : viewport.scrollTop);
       const origin = queuedScroll.current?.bounds ?? boundsRef.current;
       const pointX = origin.left + (anchorX - rect.left + left) / old;
       const pointY = origin.top + (anchorY - rect.top + top) / old;
       const visibleLeft = pointX - (destinationX - rect.left) / next;
       const visibleTop = pointY - (destinationY - rect.top) / next;
-      const framed = frameBounds(visibleLeft, visibleTop, next,
-        viewport.clientWidth || rect.width || 900,
-        viewport.clientHeight || rect.height || 520);
+      const width = viewport.clientWidth || rect.width || 900;
+      const height = viewport.clientHeight || rect.height || 520;
+      // Moving the canvas lays out every part again, and a transform does not. Keep it while it still fits.
+      const canvas = boundsRef.current;
+      const framed = canvasStillFits(canvas, visibleLeft, visibleTop, next, width, height)
+        ? canvas : frameBounds(visibleLeft, visibleTop, next, width, height);
       const target = {
         left: (visibleLeft - framed.left) * next,
         top: (visibleTop - framed.top) * next,
@@ -2027,7 +2477,8 @@ function LogicBuilderWorkspace({
     setReady(true);
   }, []);
   useEffect(() => {
-    if (!ready || challenge || lockedRef.current || !persist.current || !storageKey) return;
+    // A drag saves once, when it ends.
+    if (!ready || dragging || challenge || lockedRef.current || !persist.current || !storageKey) return;
     try {
       const root = viewPath.reduceRight(
         (inner, level) =>
@@ -2038,7 +2489,7 @@ function LogicBuilderWorkspace({
     } catch {
       setMessage("Browser storage is full. Export this circuit to keep it.");
     }
-  }, [circuit, saved, ready, viewPath, storageKey]);
+  }, [circuit, saved, ready, dragging, viewPath, storageKey]);
   useEffect(() => {
     if (dialog) dialogRef.current?.querySelector<HTMLElement>("input, button")?.focus();
   }, [dialog]);
@@ -3279,25 +3730,26 @@ function LogicBuilderWorkspace({
   const rowActions = (row: PaletteRow) => {
     const open = opens.get(row.key);
     return <>
-      {open && <button type="button" className={styles.savedOpen} onClick={() => load(open.circuit())}
+      {open && <button type="button" className={styles.savedOpen} onClick={() => boardActions.current.load(open.circuit())}
         aria-label={open.label(row.label)} title={open.title}>↗</button>}
       {row.key.startsWith("saved:") && <button
         type="button"
         className={styles.savedDelete}
         aria-label={`Delete ${row.label}`}
         title="Delete saved circuit"
-        onClick={() => setSaved((current) => {
-          const next = { ...current };
-          delete next[row.label];
-          return next;
-        })}
+        onClick={() => boardActions.current.deleteSaved(row.label)}
       >×</button>}
     </>;
   };
-  const wirePaths = useMemo(() => {
+  const wireEnds = (wire: Wire, nodes: Map<string, DisplayNode>) => {
+    const from = nodes.get(wire.from), to = nodes.get(wire.to);
+    return !from || !to || !segmentPinVisible(to, wire.input, segmentBanks) || hasTransistors && (!powerVisible(from) || !powerVisible(to)) ? null : { from, to };
+  };
+  const settledPaths = useMemo(() => {
     const paths = circuit.wires.flatMap((wire) => {
-      const from = displayNodes.find((node) => node.id === wire.from), to = displayNodes.find((node) => node.id === wire.to);
-      if (!from || !to || !segmentPinVisible(to, wire.input, segmentBanks) || hasTransistors && (!powerVisible(from) || !powerVisible(to))) return [];
+      const ends = wireEnds(wire, settledById);
+      if (!ends) return [];
+      const { from, to } = ends;
       const start = portPoint(from, wire.output ?? 0, "output"), end = portPoint(to, wire.input, "input");
       const standard = outputSide(from) === "right" && inputSide(to, wire.input) === "left";
       const path = wire.points ? explicitWirePath(wire.points, start, end) :
@@ -3305,8 +3757,29 @@ function LogicBuilderWorkspace({
       return path ? [{ id: wire.id, path, net: netKeys[wire.id] }] : [];
     });
     return bridgeWirePaths([...paths, ...routes.buses.map((bus) => ({ id: `bus:${bus.key}`, path: bus.path, net: netKeys[bus.taps[0].wireId] }))]);
-  }, [circuit.wires, displayNodes, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks, netKeys]);
-  const junctions = useMemo(() => wireJunctions(circuit.wires.map((wire) => ({ id: wire.id, path: wirePaths[wire.id] ?? "", net: netKeys[wire.id] }))), [circuit.wires, wirePaths, netKeys]);
+  }, [circuit.wires, settledById, tidyWiring, busWiring, routes, showVdd, showGround, segmentBanks, netKeys]);
+  const settledJunctions = useMemo(() => wireJunctions(circuit.wires.map((wire) => ({ id: wire.id, path: settledPaths[wire.id] ?? "", net: netKeys[wire.id] }))), [circuit.wires, settledPaths, netKeys]);
+  // Mid-drag, only the wires on a part that moved change: a plain route until the drop.
+  const { wirePaths, junctions } = useMemo(() => {
+    if (nodesById === settledById || displayNodes === settledNodes) return { wirePaths: settledPaths, junctions: settledJunctions };
+    const paths = { ...settledPaths };
+    const moved = new Set<string>();
+    const stayed = (node: DisplayNode) => {
+      const before = settledById.get(node.id);
+      return before?.x === node.x && before.y === node.y;
+    };
+    for (const wire of circuit.wires) {
+      const ends = wireEnds(wire, nodesById);
+      if (!ends || stayed(ends.from) && stayed(ends.to)) continue;
+      moved.add(wire.id);
+      const start = portPoint(ends.from, wire.output ?? 0, "output"), end = portPoint(ends.to, wire.input, "input");
+      const startSide = outputSide(ends.from), endSide = inputSide(ends.to, wire.input);
+      paths[wire.id] = wire.points ? explicitWirePath(wire.points, start, end)
+        : startSide !== "right" || endSide !== "left" ? orientedWirePath(start, end, startSide, endSide)
+        : tidyWiring || busWiring || end.x <= start.x ? wirePath(start, end) : simpleWirePath(start, end);
+    }
+    return { wirePaths: paths, junctions: settledJunctions.filter((point) => !moved.has(point.wire)) };
+  }, [circuit.wires, displayNodes, settledNodes, nodesById, settledById, settledPaths, settledJunctions, tidyWiring, busWiring, showVdd, showGround, segmentBanks]);
   const anchorPath = (wire: Wire) => {
     const bus = routes.buses.find((bus) => bus.taps.some((tap) => tap.wireId === wire.id));
     if (!bus || wire.points) return wirePaths[wire.id];
@@ -3361,6 +3834,237 @@ function LogicBuilderWorkspace({
       ? portPoint(targetNode, draftTarget.input, "input")
       : draftWireTarget?.point ?? (wireDraft ? { x: wireDraft.x, y: wireDraft.y } : null);
   const sidePanel = challenge?.panel ?? locked?.panel;
+  // Facts about a wire that only an edit can change, so a clock tick does not work them out again.
+  const wireFacts = useMemo(() => {
+    const facts = new Map<string, WireFacts>();
+    for (const wire of circuit.wires) {
+      const from = nodesById.get(wire.from), to = nodesById.get(wire.to);
+      if (!from || !to || !segmentPinVisible(to, wire.input, segmentBanks) ||
+        hasTransistors && (!powerVisible(from) || !powerVisible(to))) continue;
+      const start = portPoint(from, wire.output ?? 0, "output");
+      facts.set(wire.id, {
+        isBus: outputWidth(from, wire.output ?? 0) === 8,
+        labelX: start.x + (outputSide(from) === "left" ? -10 : 10),
+        labelY: start.y - 9,
+        labelAnchor: outputSide(from) === "left" ? "end" : "start",
+        name: `Select wire from ${from.label || LABELS[from.type]} ${outputLabel(from, wire.output ?? 0)} to ${to.label || LABELS[to.type]} ${inputLabel(to, wire.input)}`,
+      });
+    }
+    return facts;
+  }, [circuit.wires, nodesById, segmentBanks, hasTransistors, showVdd, showGround]);
+  const junctionsByWire = useMemo(() => {
+    const byWire = new Map<string, typeof junctions>();
+    for (const point of junctions) {
+      const list = byWire.get(point.wire);
+      if (list) list.push(point);
+      else byWire.set(point.wire, [point]);
+    }
+    return byWire;
+  }, [junctions]);
+  const groupBoxes = useMemo(() => (circuit.groups ?? []).flatMap((group) => {
+    const parts = circuit.nodes.filter((item) => group.nodeIds.includes(item.id));
+    if (!parts.length) return [];
+    const members = new Set(group.nodeIds);
+    // Internal rails can extend past the parts; leave room around their drawn routes too.
+    const points = circuit.wires.filter((wire) => wirePaths[wire.id] && members.has(wire.from) && members.has(wire.to))
+      .flatMap((wire) => pathPoints(anchorPath(wire) ?? "").flat());
+    return [{
+      group,
+      left: Math.min(...parts.map((item) => item.x), ...points.map((point) => point.x)) - 20,
+      top: Math.min(...parts.map((item) => item.y), ...points.map((point) => point.y)) - 28,
+      right: Math.max(...parts.map((item) => item.x + nodeWidth(item)), ...points.map((point) => point.x)) + 20,
+      bottom: Math.max(...parts.map((item) => item.y + nodeHeight(item)), ...points.map((point) => point.y)) + 18,
+    }];
+  }), [circuit.groups, circuit.nodes, circuit.wires, wirePaths, routes]);
+  // Parts and wires only redraw when their own props change, so what they do when
+  // pressed comes from here: always this render's state, never the render they drew in.
+  const previousWires = wireElements.current, nextWires: typeof previousWires = new Map();
+  wireElements.current = nextWires;
+  const previousNodes = nodeElements.current, nextNodes: typeof previousNodes = new Map();
+  nodeElements.current = nextNodes;
+  boardActions.current = {
+    wirePointerDown: (event, wire) => startWireBranch(event, wire),
+    wireKeyDown: (event, wire) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        setActiveInlinePath(null);
+        setSelected([]);
+        setSelectedWires((current) =>
+          event.shiftKey || event.metaKey || event.ctrlKey
+            ? current.includes(wire.id)
+              ? current.filter((id) => id !== wire.id)
+              : [...current, wire.id]
+            : [wire.id],
+        );
+      }
+    },
+    wireContextMenu: (event, wire) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setSelectedWires((current) => current.includes(wire.id) ? current : [wire.id]);
+      setMenu({
+        x: event.clientX,
+        y: event.clientY,
+        kind: "wire",
+        id: wire.id,
+      });
+    },
+    wireDoubleClick: (event, wire) => {
+      event.stopPropagation();
+      setCircuit((current) => ({
+        ...current,
+        wires: current.wires.filter((item) => item.id !== wire.id),
+      }));
+      setMessage("Wire removed.");
+      setSelectedWires((current) => current.filter((id) => id !== wire.id));
+    },
+    wireClick: (event, wire) => {
+      event.stopPropagation();
+      event.currentTarget.focus({ preventScroll: true });
+      setActiveInlinePath(null);
+      setSelectedWires((current) =>
+        event.shiftKey || event.metaKey || event.ctrlKey
+          ? current.includes(wire.id)
+            ? current.filter((id) => id !== wire.id)
+            : [...current, wire.id]
+          : [wire.id],
+      );
+      setSelected([]);
+      setMenu(null);
+    },
+    nodeKeyDown: (event, node) => {
+      if (event.key === "Enter" && event.target === event.currentTarget) {
+        event.stopPropagation();
+        setActiveInlinePath(null);
+        setSelected([node.id]);
+      }
+    },
+    nodePointerDown: (event, node) => {
+      if (
+        locked ||
+        event.button !== 0 ||
+        (event.target as HTMLElement).closest("button, input, select, label")
+      )
+        return;
+      portWiring.clear();
+      event.currentTarget.setPointerCapture(event.pointerId);
+      const ids = selected.includes(node.id) ? selected : [node.id];
+      const collecting = selectMode && event.pointerType === "touch";
+      beginTransaction();
+      setDrag({
+        x: event.clientX,
+        y: event.clientY,
+        starts: Object.fromEntries(
+          circuit.nodes
+            .filter((item) => ids.includes(item.id))
+            .map((item) => [item.id, { x: item.x, y: item.y }]),
+        ),
+      });
+      // A finger collecting parts keeps what it has; its tap decides, on the click.
+      if (!collecting) setSelected(ids);
+      setSelectedWires([]);
+      setMenu(null);
+    },
+    nodeContextMenu: (event, node) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (locked) return;
+      if (!selected.includes(node.id)) setSelected([node.id]);
+      setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
+    },
+    nodeClick: (event, node) => {
+      event.stopPropagation();
+      if (locked) {
+        if (!expandedDetails.has(node.id) && isUnfoldable(node)) toggleUnfolded(node.id);
+        return;
+      }
+      if (selectMode && pressedByTouch.current) {
+        const next = selected.includes(node.id)
+          ? selected.filter((id) => id !== node.id) : [...selected, node.id];
+        setSelected(next);
+        reportParts(next.length);
+      } else if ((event.nativeEvent as PointerEvent).pointerType === "touch")
+        setSelected([node.id]);
+    },
+    nodeDoubleClick: (event, node) => {
+      event.stopPropagation();
+      if (node.type === "module" && node.module)
+        enterCircuit(node.module, node.label || node.module.name, node.id);
+    },
+    inputPointerDown: (event, node, input) =>
+      startWire(event, {
+        to: node.id,
+        input,
+        ...portPoint(node, input, "input"),
+        originX: portPoint(node, input, "input").x,
+        originY: portPoint(node, input, "input").y,
+      }),
+    inputClick: (event, node, input) => {
+      if (portWiring.click(event, { nodeId: node.id, kind: "input", index: input })) return;
+      if (event.detail === 0)
+        connect(pending?.from ?? null, node.id, input, pending?.output);
+    },
+    outputPointerDown: (event, node, output) =>
+      startWire(event, {
+        from: node.id,
+        output,
+        ...portPoint(node, output, "output"),
+        originX: portPoint(node, output, "output").x,
+        originY: portPoint(node, output, "output").y,
+      }),
+    outputClick: (event, node, output) => {
+      if (portWiring.click(event, { nodeId: node.id, kind: "output", index: output })) return;
+      if (event.detail !== 0) return;
+      setPending({ from: node.id, output });
+      setMessage(`Choose an input for ${outputLabel(node, output)}.`);
+    },
+    editLabel: (id, value) => setEditingLabel({ id, value }),
+    cancelLabel: () => setEditingLabel(null),
+    commitLabel: (node) => {
+      const value = editingLabel?.value ?? "";
+      setCircuit((current) => ({
+        ...current,
+        nodes: current.nodes.map((item) =>
+          item.id === node.id ? { ...item, label: value.trim() } : item,
+        ),
+      }));
+      setEditingLabel(null);
+    },
+    updatePart: (node, patch) => {
+      if (locked?.interactiveInputs && node.type === "switch") {
+        locked.clockRef.current?.input({ [node.id]: !boardSnapshot.values[node.id] });
+        return;
+      }
+      setCircuit((current) => ({
+        ...current,
+        nodes: current.nodes.map((item) => item.id === node.id ? { ...item, ...patch(item) } : item),
+      }));
+    },
+    showBank: showSegmentBank,
+    pulse: (id) => pulseOnce(id),
+    hold: (id, high) => holdManual(id, high),
+    toggleUnfolded: (id) => toggleUnfolded(id),
+    enterModule: (node) => enterCircuit(node.module!, node.label || node.module!.name, node.id),
+    isPortSelected: portWiring.isSelected,
+    isPortTarget: portWiring.isTarget,
+    portInvalid: portWiring.invalid,
+    paste: pasteCircuit,
+    placeRow: (placement) => placeRow(placement),
+    load: (next) => load(next),
+    deleteSaved: (label) => setSaved((current) => {
+      const next = { ...current };
+      delete next[label];
+      return next;
+    }),
+  };
+  const paletteList = useMemo(() => visibleSections.map((section) => [
+    <h3 key={`section:${section.title}`} className={styles.partsSection}>{section.title}</h3>,
+    ...section.rows.map((row) => (
+      <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => boardActions.current.placeRow(placement)}>
+        {rowActions(row)}
+      </PaletteRowView>
+    )),
+  ]), [visibleSections, opens]);
   return (
     <div
       ref={shellRef}
@@ -3749,14 +4453,7 @@ function LogicBuilderWorkspace({
             </p>
           )}
           <div className={styles.parts}>
-            {visibleSections.map((section) => [
-              <h3 key={`section:${section.title}`} className={styles.partsSection}>{section.title}</h3>,
-              ...section.rows.map((row) => (
-                <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => placeRow(placement)}>
-                  {rowActions(row)}
-                </PaletteRowView>
-              )),
-            ])}
+            {paletteList}
             {visibleSections.length === 0 && <p>No matching parts</p>}
           </div>
         </aside>}
@@ -3957,32 +4654,20 @@ function LogicBuilderWorkspace({
                   setMenu({ x: event.clientX, y: event.clientY, kind: "board" });
                 }}
               >
-                {circuit.groups?.map((group) => {
-                  const parts = circuit.nodes.filter((item) => group.nodeIds.includes(item.id));
-                  if (!parts.length) return null;
-                  const members = new Set(group.nodeIds);
-                  // Internal rails can extend past the parts; leave room around their drawn routes too.
-                  const points = circuit.wires.filter((wire) => wirePaths[wire.id] && members.has(wire.from) && members.has(wire.to))
-                    .flatMap((wire) => pathPoints(anchorPath(wire) ?? "").flat());
-                  const left = Math.min(...parts.map((item) => item.x), ...points.map((point) => point.x)) - 20;
-                  const top = Math.min(...parts.map((item) => item.y), ...points.map((point) => point.y)) - 28;
-                  const right = Math.max(...parts.map((item) => item.x + nodeWidth(item)), ...points.map((point) => point.x)) + 20;
-                  const bottom = Math.max(...parts.map((item) => item.y + nodeHeight(item)), ...points.map((point) => point.y)) + 18;
-                  return (
-                    <div
-                      key={group.id}
-                      className={clsx(styles.circuitGroup,
-                        group.activeWhen && boardSnapshot.values[group.activeWhen] && styles.activeGroup)}
-                      style={{ left: (left - bounds.left) * boardRatio,
-                        top: (top - bounds.top) * boardRatio,
-                        width: (right - left) * boardRatio,
-                        height: (bottom - top) * boardRatio }}
-                      aria-label={`${group.label} circuit boundary`}
-                    >
-                      <span>{group.label}</span>
-                    </div>
-                  );
-                })}
+                {groupBoxes.map(({ group, left, top, right, bottom }) => (
+                  <div
+                    key={group.id}
+                    className={clsx(styles.circuitGroup,
+                      group.activeWhen && boardSnapshot.values[group.activeWhen] && styles.activeGroup)}
+                    style={{ left: (left - bounds.left) * boardRatio,
+                      top: (top - bounds.top) * boardRatio,
+                      width: (right - left) * boardRatio,
+                      height: (bottom - top) * boardRatio }}
+                    aria-label={`${group.label} circuit boundary`}
+                  >
+                    <span>{group.label}</span>
+                  </div>
+                ))}
                 <svg
                   className={styles.wires}
                   viewBox={`${bounds.left} ${bounds.top} ${canvasWidth} ${canvasHeight}`}
@@ -4042,113 +4727,23 @@ function LogicBuilderWorkspace({
                       );
                     })}
                   {circuit.wires.map((wire) => {
-                    const from = displayNodes.find((node) => node.id === wire.from);
-                    const to = displayNodes.find((node) => node.id === wire.to);
-                    if (!from || !to) return null;
-                    if (!segmentPinVisible(to, wire.input, segmentBanks)) return null;
-                    if (hasTransistors && (!powerVisible(from) || !powerVisible(to))) return null;
-                    const { x: x1, y: y1 } = portPoint(from, wire.output ?? 0, "output");
-                    const { x: x2, y: y2 } = portPoint(to, wire.input, "input");
-                    const d = wirePaths[wire.id];
-                    const isBus = outputWidth(from, wire.output ?? 0) === 8;
-                    const color = WIRE_COLORS[netColors[wire.id]];
-                    const busValue = isBus ? boardSnapshot.buses?.[wire.from] ?? "Z" : undefined;
-                    const signal = wireSignal(boardSnapshot, wire.from, wire.output, isBus ? 8 : 1);
-                    return (
-                      <g key={wire.id} data-wire-signal={signal} style={{ "--wire-color": signalView ? SIGNAL_COLORS[signal] : color } as React.CSSProperties}>
-                        <path
-                          d={d}
-                          className={styles.wireHit}
-                          onPointerDown={(event) => startWireBranch(event, wire)}
-                          role="button"
-                          tabIndex={0}
-                          aria-pressed={selectedWires.includes(wire.id)}
-                          aria-label={`Select wire from ${from.label || LABELS[from.type]} ${outputLabel(from, wire.output ?? 0)} to ${to.label || LABELS[to.type]} ${inputLabel(to, wire.input)}`}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              setActiveInlinePath(null);
-                              setSelected([]);
-                              setSelectedWires((current) =>
-                                event.shiftKey || event.metaKey || event.ctrlKey
-                                  ? current.includes(wire.id)
-                                    ? current.filter((id) => id !== wire.id)
-                                    : [...current, wire.id]
-                                  : [wire.id],
-                              );
-                            }
-                          }}
-                          onContextMenu={(event) => {
-                            event.preventDefault();
-                            event.stopPropagation();
-                            setSelectedWires((current) => current.includes(wire.id) ? current : [wire.id]);
-                            setMenu({
-                              x: event.clientX,
-                              y: event.clientY,
-                              kind: "wire",
-                              id: wire.id,
-                            });
-                          }}
-                          onDoubleClick={(event) => {
-                            event.stopPropagation();
-                            setCircuit((current) => ({
-                              ...current,
-                              wires: current.wires.filter((item) => item.id !== wire.id),
-                            }));
-                            setMessage("Wire removed.");
-                            setSelectedWires((current) => current.filter((id) => id !== wire.id));
-                          }}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            event.currentTarget.focus({ preventScroll: true });
-                            setActiveInlinePath(null);
-                            setSelectedWires((current) =>
-                              event.shiftKey || event.metaKey || event.ctrlKey
-                                ? current.includes(wire.id)
-                                  ? current.filter((id) => id !== wire.id)
-                                  : [...current, wire.id]
-                                : [wire.id],
-                            );
-                            setSelected([]);
-                            setMenu(null);
-                          }}
-                        />
-                        <path
-                          d={d}
-                          className={clsx(
-                            styles.wire,
-                            isBus
-                              ? [
-                                  styles.busLanes,
-                                  busValue === "Z" && styles.busFloating,
-                                  busValue === "X" && styles.busConflict,
-                                  typeof busValue === "number" && busValue > 0 && styles.live,
-                                ]
-                              : (boardSnapshot.outputs[wire.from]?.[wire.output ?? 0] ??
-                                  boardSnapshot.values[wire.from]) &&
-                                  styles.live,
-                            selectedWires.includes(wire.id) && styles.wireSelected,
-                            locked?.glowWire?.(wire, boardSnapshot) && styles.glow,
-                          )}
-                        />
-                        {junctions.filter((point) => point.wire === wire.id).map((point) =>
-                          <circle key={`${point.x}:${point.y}`} cx={point.x} cy={point.y} r={4} className={styles.wireJunction} />)}
-                        {isBus && (
-                          <text
-                            x={x1 + (outputSide(from) === "left" ? -10 : 10)}
-                            y={y1 - 9}
-                            textAnchor={outputSide(from) === "left" ? "end" : "start"}
-                            className={clsx(
-                              styles.busValue,
-                              busValue === "Z" && styles.busValueFloating,
-                              busValue === "X" && styles.busValueConflict,
-                            )}
-                          >
-                            {formatBus(busValue)}
-                          </text>
-                        )}
-                      </g>
-                    );
+                    const info = wireFacts.get(wire.id);
+                    if (!info) return null;
+                    const busValue = info.isBus ? boardSnapshot.buses?.[wire.from] ?? "Z" : undefined;
+                    const signal = wireSignal(boardSnapshot, wire.from, wire.output, info.isBus ? 8 : 1);
+                    return reuseElement(previousWires, nextWires, wire.id, {
+                      wire,
+                      d: wirePaths[wire.id],
+                      info,
+                      signal,
+                      color: signalView ? SIGNAL_COLORS[signal] : WIRE_COLORS[netColors[wire.id]],
+                      busValue,
+                      live: Boolean(boardSnapshot.outputs[wire.from]?.[wire.output ?? 0] ?? boardSnapshot.values[wire.from]),
+                      selected: selectedWires.includes(wire.id),
+                      glow: Boolean(locked?.glowWire?.(wire, boardSnapshot)),
+                      junctions: junctionsByWire.get(wire.id) ?? NO_JUNCTIONS,
+                      actions: boardActions,
+                    }, (props) => <BoardWire key={wire.id} {...props} />);
                   })}
                   <PortWirePreview wiring={portWiring} />
                   {previewStart && previewEnd && wireDraft && (
@@ -4183,314 +4778,52 @@ function LogicBuilderWorkspace({
                 </svg>
                 {displayNodes
                   .filter((node) => !hasTransistors || powerVisible(node))
-                  .map((node) => (
-                    <div
-                      key={node.id}
-                      data-node-id={node.id}
-                      role="group"
-                      aria-label={`${node.splice ? "Wire join" : node.label || (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])} — ${node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]} part`}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" && event.target === event.currentTarget) {
-                          event.stopPropagation();
-                          setActiveInlinePath(null);
-                          setSelected([node.id]);
-                        }
-                      }}
-                      className={clsx(
-                        styles.node,
-                        isMosfet(node) && styles.transistorNode,
-                        (node.splice || node.type === "junction") && styles.wireJoin,
-                        node.splice && boardSnapshot.buses?.[node.id] === "X" && styles.joinConflict,
-                        expandedDetails.has(node.id) && styles.expandedNode,
-                        selected.includes(node.id) && styles.selected,
-                        challenge?.highlight === node.id && styles.challengeHighlight,
-                        boardSnapshot.values[node.id] && styles.active,
-                        node.type === "lamp" && boardSnapshot.values[node.id] && styles.lampLit,
-                        (inputSide(node) === "top" || outputSide(node) === "top") && styles.topPorts,
-                      )}
-                      style={
-                        {
-                          "--part-accent": partColors[node.type],
-                          "--junction-color": node.splice || node.type === "junction" ? signalView
-                            ? SIGNAL_COLORS[wireSignal(boardSnapshot, node.id, 0, outputWidth(node))] : WIRE_COLORS[sourceWireColor(node.id)] : undefined,
-                          left: `${((node.x - bounds.left) / canvasWidth) * 100}%`,
-                          top: `${((node.y - bounds.top) / canvasHeight) * 100}%`,
-                          width: `${(nodeWidth(node) / canvasWidth) * 100}%`,
-                          height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
-                        } as React.CSSProperties
-                      }
-                      onPointerDown={(event) => {
-                        if (
-                          locked ||
-                          event.button !== 0 ||
-                          (event.target as HTMLElement).closest("button, input, select, label")
-                        )
-                          return;
-                        portWiring.clear();
-                        event.currentTarget.setPointerCapture(event.pointerId);
-                        const ids = selected.includes(node.id) ? selected : [node.id];
-                        const collecting = selectMode && event.pointerType === "touch";
-                        beginTransaction();
-                        setDrag({
-                          x: event.clientX,
-                          y: event.clientY,
-                          starts: Object.fromEntries(
-                            circuit.nodes
-                              .filter((item) => ids.includes(item.id))
-                              .map((item) => [item.id, { x: item.x, y: item.y }]),
-                          ),
-                        });
-                        // A finger collecting parts keeps what it has; its tap decides, on the click.
-                        if (!collecting) setSelected(ids);
-                        setSelectedWires([]);
-                        setMenu(null);
-                      }}
-                      onContextMenu={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        if (locked) return;
-                        if (!selected.includes(node.id)) setSelected([node.id]);
-                        setMenu({ x: event.clientX, y: event.clientY, kind: "node", id: node.id });
-                      }}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        if (locked) {
-                          if (!expandedDetails.has(node.id) && isUnfoldable(node)) toggleUnfolded(node.id);
-                          return;
-                        }
-                        if (selectMode && pressedByTouch.current) {
-                          const next = selected.includes(node.id)
-                            ? selected.filter((id) => id !== node.id) : [...selected, node.id];
-                          setSelected(next);
-                          reportParts(next.length);
-                        } else if ((event.nativeEvent as PointerEvent).pointerType === "touch")
-                          setSelected([node.id]);
-                      }}
-                      onDoubleClick={(event) => {
-                        event.stopPropagation();
-                        if (node.type === "module" && node.module)
-                          enterCircuit(node.module, node.label || node.module.name, node.id);
-                      }}
-                    >
-                      {visibleInputs(node, segmentBanks).map(input => (
-                        <div
-                          key={`${node.id}-input-${input}`}
-                          className={clsx(styles.portRow, inputSide(node) === "right" && styles.portOnRight)}
-                          style={{
-                            ...portStyle(node, input, "input"),
-                          }}
-                        >
-                          <button
-                            type="button"
-                            className={styles.input}
-                            data-node-id={node.id}
-                            data-input={input}
-                            aria-pressed={portWiring.isSelected({ nodeId: node.id, kind: "input", index: input })}
-                            data-port-selected={portWiring.isSelected({ nodeId: node.id, kind: "input", index: input })}
-                            data-port-invalid={portWiring.invalid && portWiring.isTarget({ nodeId: node.id, kind: "input", index: input })}
-                            style={{ top: 0 }}
-                            onPointerDown={(event) =>
-                              startWire(event, {
-                                to: node.id,
-                                input,
-                                ...portPoint(node, input, "input"),
-                                originX: portPoint(node, input, "input").x,
-                                originY: portPoint(node, input, "input").y,
-                              })
-                            }
-                            onClick={(event) => {
-                              if (portWiring.click(event, { nodeId: node.id, kind: "input", index: input })) return;
-                              if (event.detail === 0)
-                                connect(pending?.from ?? null, node.id, input, pending?.output);
-                            }}
-                            data-wire-target={Boolean(
-                              portWiring.isTarget({ nodeId: node.id, kind: "input", index: input }) || wireDraft?.from &&
-                                draftTarget?.id === node.id &&
-                                draftTarget.input === input,
-                            )}
-                            aria-label={`Connect to ${node.label || LABELS[node.type]} ${inputLabel(node, input)}`}
-                            title={
-                              node.type === "module"
-                                ? inputLabel(node, input)
-                                : node.type === "dff"
-                                  ? input === 0
-                                    ? "D: data"
-                                    : input === 1 ? "CLK: rising edge" : "RESET: asynchronous active-high reset"
-                                  : node.type === "nmos" || node.type === "pmos"
-                                    ? input === 0
-                                      ? "Gate (G): controls the source–drain path"
-                                      : "Source (S): supply-side terminal in this directed switch model"
-                                    : inputLabel(node, input)
-                            }
-                          />
-                          <PortLabel node={node} index={input} kind="input" folded={!node.expanded} />
-                        </div>
-                      ))}
-                      <div
-                        className={clsx(
-                          styles.nodeBody,
-                          isMosfet(node) && styles.transistorBody,
-                          node.type === "module" && styles.moduleBody,
-                          isScreenBlock(node.behaviour) && styles.screenBody,
-                        )}
-                        style={expandedDetails.has(node.id) ? { display: "none" } : undefined}
-                      >
-                        {isMosfet(node) && <TransistorSymbol node={node} snapshot={boardSnapshot} wires={circuit.wires} />}
-                        <div className={styles.nodeNameRow} onPointerDown={(event) => event.stopPropagation()}>
-                          {editingLabel?.id === node.id ? (
-                            <input
-                              // biome-ignore lint/a11y/noAutofocus: the field opens on the reader's own rename action
-                              autoFocus
-                              className={styles.nodeNameInput}
-                              aria-label="Part label"
-                              maxLength={30}
-                              value={editingLabel.value}
-                              onChange={(event) => setEditingLabel({ id: node.id, value: event.target.value })}
-                              onBlur={() => {
-                                setCircuit((current) => ({
-                                  ...current,
-                                  nodes: current.nodes.map((item) =>
-                                    item.id === node.id ? { ...item, label: editingLabel.value.trim() } : item,
-                                  ),
-                                }));
-                                setEditingLabel(null);
-                              }}
-                              onKeyDown={(event) => {
-                                event.stopPropagation();
-                                if (event.key === "Enter") event.currentTarget.blur();
-                                if (event.key === "Escape") setEditingLabel(null);
-                              }}
-                            />
-                          ) : (
-                            <>
-                              {node.label && node.label !== (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type]) && (
-                                <span
-                                  className={styles.nodeLabel}
-                                  title="Double-click to edit label"
-                                  onDoubleClick={(event) => {
-                                    event.stopPropagation();
-                                    setEditingLabel({ id: node.id, value: node.label || "" });
-                                  }}
-                                >{node.label}</span>
-                              )}
-                              <button
-                                type="button"
-                                className={styles.editName}
-                                aria-label={`Edit ${node.label || LABELS[node.type]} label`}
-                                title="Edit label"
-                                onClick={() => setEditingLabel({
-                                  id: node.id,
-                                  value: node.label === (node.type === "module" ? node.module?.name || "Module" : LABELS[node.type])
-                                    ? ""
-                                    : node.label || "",
-                                })}
-                              >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                  <path d="M3 11.5V5a2 2 0 0 1 2-2h6.5a2 2 0 0 1 1.4.6l8.1 8.1a2 2 0 0 1 0 2.8l-6.5 6.5a2 2 0 0 1-2.8 0l-8.1-8.1a2 2 0 0 1-.6-1.4Z" />
-                                  <circle cx="7.5" cy="7.5" r="1" />
-                                </svg>
-                              </button>
-                            </>
-                          )}
-                        </div>
-                        {isScreenBlock(node.behaviour) ? (
-                          // A folded screen draws its pixels; unfolded, its register rows show instead.
-                          <BlockScreen
-                            behaviour={node.behaviour}
-                            state={boardSnapshot.blocks?.[node.id]}
-                            label={node.label}
-                          />
-                        ) : !drawsOwnFace(node.type) && (
-                          <span className={styles.nodeSymbol}>
-                            <GateSymbol type={node.type} circuit={node.module} />
-                          </span>
-                        )}
-                        <strong className={styles.nodePartName}>{partName(node)}</strong>
-                        <NodeReadout node={node} snapshot={boardSnapshot} wires={circuit.wires}
-                          bank={segmentBank(node, segmentBanks)} onBank={showSegmentBank}
-                          onUpdate={locked?.interactiveInputs && node.type === "switch"
-                            ? () => locked.clockRef.current?.input({ [node.id]: !boardSnapshot.values[node.id] })
-                            : (patch) => setCircuit((current) => ({
-                            ...current,
-                            nodes: current.nodes.map((item) => item.id === node.id ? { ...item, ...patch(item) } : item),
-                          }))}
-                          manual={{ epoch: manualEpoch, onPulse: () => pulseOnce(node.id), onHeld: (high) => holdManual(node.id, high) }} />
-                      </div>
-                      <NodeNote text={locked?.note?.(node, boardSnapshot)} />
-                      {!expandedDetails.has(node.id) && isUnfoldable(node) && (
-                        <div className={styles.nodeActions}>
-                          {!(phoneBoard && !locked && node.type === "module" && node.module && !unfolded.has(node.id)) && (
-                            <button type="button" title={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
-                              aria-label={`${unfolded.has(node.id) ? "Fold" : "Unfold"} ${node.label || LABELS[node.type]} in place`}
-                              onClick={(event) => { event.stopPropagation(); toggleUnfolded(node.id); }}><ActionIcon name={unfolded.has(node.id) ? "fold" : "unfold"} /></button>
-                          )}
-                          {!locked && node.type === "module" && node.module && (
-                            <button type="button" title={`Enter ${node.label || node.module.name}`}
-                              aria-label={`Enter ${node.label || node.module.name}`}
-                              onClick={(event) => { event.stopPropagation(); enterCircuit(node.module!, node.label || node.module!.name, node.id); }}>
-                              {phoneBoard && !unfolded.has(node.id) ? <ActionIcon name="unfold" /> : "↗"}
-                            </button>
-                          )}
-                        </div>
-                      )}
-                      {expandedDetails.get(node.id) && (
-                        <InlineCircuit host={node} circuit={expandedDetails.get(node.id)!.inner}
-                          layout={expandedDetails.get(node.id)!.layout} unfolded={unfolded}
-                          snapshot={boardSnapshot.modules[node.id] ?? EMPTY_SNAPSHOT}
-                          {...inlineActions} onActivate={setActiveInlinePath}
-                          activePath={activeInlinePath} zoom={zoom} path={node.id}
-                          editable={!locked} ownsClipboard={(target) => ownsKeyEvent(instanceId, shellRef.current, target)} onPaste={pasteCircuit} signalView={signalView} />
-                      )}
-                      {Array.from({ length: outputCount(node) }, (_, output) => (
-                        <div
-                          key={`${node.id}-output-${output}`}
-                          className={clsx(styles.portRow, outputSide(node) === "left" && styles.portOnLeft)}
-                          style={{
-                            ...portStyle(node, output, "output"),
-                          }}
-                        >
-                          <PortLabel node={node} index={output} kind="output" folded={!node.expanded} />
-                          <button
-                            type="button"
-                            className={clsx(
-                              styles.output,
-                              pending?.from === node.id &&
-                                pending.output === output &&
-                                styles.pending,
-                            )}
-                            style={{ top: 0 }}
-                            data-node-id={node.id}
-                            data-output={output}
-                            aria-pressed={portWiring.isSelected({ nodeId: node.id, kind: "output", index: output })}
-                            data-port-selected={portWiring.isSelected({ nodeId: node.id, kind: "output", index: output })}
-                            data-port-invalid={portWiring.invalid && portWiring.isTarget({ nodeId: node.id, kind: "output", index: output })}
-                            onPointerDown={(event) =>
-                              startWire(event, {
-                                from: node.id,
-                                output,
-                                ...portPoint(node, output, "output"),
-                                originX: portPoint(node, output, "output").x,
-                                originY: portPoint(node, output, "output").y,
-                              })
-                            }
-                            onClick={(event) => {
-                              if (portWiring.click(event, { nodeId: node.id, kind: "output", index: output })) return;
-                              if (event.detail !== 0) return;
-                              setPending({ from: node.id, output });
-                              setMessage(`Choose an input for ${outputLabel(node, output)}.`);
-                            }}
-                            data-wire-target={Boolean(
-                              portWiring.isTarget({ nodeId: node.id, kind: "output", index: output }) || wireDraft?.to &&
-                                draftTarget?.id === node.id &&
-                                draftTarget.output === output,
-                            )}
-                            aria-label={`Wire from ${node.label || LABELS[node.type]} ${outputLabel(node, output)}`}
-                            title={outputLabel(node, output)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                  .map((node) => {
+                    const detail = expandedDetails.get(node.id);
+                    return reuseElement(previousNodes, nextNodes, node.id, {
+                      node,
+                      left: `${((node.x - bounds.left) / canvasWidth) * 100}%`,
+                      top: `${((node.y - bounds.top) / canvasHeight) * 100}%`,
+                      width: `${(nodeWidth(node) / canvasWidth) * 100}%`,
+                      height: `${(nodeHeight(node) / canvasHeight) * 100}%`,
+                      junctionColor: node.splice || node.type === "junction" ? signalView
+                        ? SIGNAL_COLORS[wireSignal(boardSnapshot, node.id, 0, outputWidth(node))] : WIRE_COLORS[sourceWireColor(node.id)] : undefined,
+                      selected: selected.includes(node.id),
+                      highlighted: challenge?.highlight === node.id,
+                      conflict: Boolean(node.splice) && boardSnapshot.buses?.[node.id] === "X",
+                      active: Boolean(boardSnapshot.values[node.id]),
+                      detail,
+                      inline: detail && {
+                        unfolded,
+                        snapshot: boardSnapshot.modules[node.id] ?? EMPTY_SNAPSHOT,
+                        ...inlineActions,
+                        onActivate: setActiveInlinePath,
+                        activePath: activeInlinePath,
+                        zoom,
+                        path: node.id,
+                        editable: !locked,
+                        ownsClipboard: inlineOwnsClipboard,
+                        onPaste: inlinePaste,
+                        signalView,
+                      },
+                      unfoldedHere: unfolded.has(node.id),
+                      phoneBoard,
+                      editable: !locked,
+                      snapshot: boardSnapshot,
+                      signal: partSignal(node, boardSnapshot, circuit.wires),
+                      volatile: isMosfet(node) ? boardSnapshot : isScreenBlock(node.behaviour) ? boardSnapshot.blocks?.[node.id] : undefined,
+                      wires: circuit.wires,
+                      segmentBanks,
+                      manualEpoch,
+                      note: locked?.note?.(node, boardSnapshot),
+                      editingValue: editingLabel?.id === node.id ? editingLabel.value : null,
+                      pendingOutput: pending?.from === node.id ? pending.output : null,
+                      draftInput: wireDraft?.from && draftTarget?.id === node.id ? draftTarget.input ?? null : null,
+                      draftOutput: wireDraft?.to && draftTarget?.id === node.id ? draftTarget.output ?? null : null,
+                      portMarks: portMarks(node, portWiring, segmentBanks),
+                      actions: boardActions,
+                    }, (props) => <BoardNode key={node.id} {...props} />);
+                  })}
                 {marquee && (
                   <div
                     className={styles.marquee}

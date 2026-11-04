@@ -1,10 +1,10 @@
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
+import { loadCircuitDemos } from "@components/computer/loadCircuitDemos";
 import dynamic from "next/dynamic";
 
-const ButtonInterruptDemo = dynamic(
-  () => import("@components/computer/ButtonInterruptDemo").then((m) => m.ButtonInterruptDemo),
-  { ssr: false },
-);
+const ButtonInterruptDemo = dynamic(() => loadCircuitDemos().then((m) => m.ButtonInterruptDemo), {
+  ssr: false,
+});
 
 const summary = "Capture a button press, service it on the CPU, acknowledge it and return.";
 

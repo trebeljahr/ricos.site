@@ -17,6 +17,84 @@ export type RoutingWire = {
 
 type Segment = { a: Point; b: Point; net?: string };
 
+/** Past this gap two segments cost nothing, so a search never looks further. */
+const CONFLICT_RANGE = 12;
+const CELL_SIZE = 128;
+
+const MAX_CELLS = 4096;
+
+const cellKey = (column: number, row: number) => column * 0x200000 + row;
+
+function cellArea({ a, b }: Segment, margin: number) {
+  const left = Math.floor((Math.min(a.x, b.x) - margin) / CELL_SIZE);
+  const right = Math.floor((Math.max(a.x, b.x) + margin) / CELL_SIZE);
+  const top = Math.floor((Math.min(a.y, b.y) - margin) / CELL_SIZE);
+  const bottom = Math.floor((Math.max(a.y, b.y) + margin) / CELL_SIZE);
+  return { left, right, top, bottom, cells: (right - left + 1) * (bottom - top + 1) };
+}
+
+/**
+ * The wires routed so far, in a coarse grid. A big board has thousands of
+ * segments, and each candidate route only ever comes near a few of them.
+ */
+class Occupancy {
+  readonly segments: Segment[] = [];
+  private readonly cells = new Map<number, number[]>();
+  /** Segments too long for cells, so a part dropped far away costs no memory. */
+  private readonly wide: number[] = [];
+  private readonly seen: number[] = [];
+  private query = 0;
+
+  add(segment: Segment) {
+    const index = this.segments.length;
+    this.segments.push(segment);
+    this.seen.push(0);
+    const area = cellArea(segment, CONFLICT_RANGE);
+    if (area.cells > MAX_CELLS) {
+      this.wide.push(index);
+      return;
+    }
+    for (let column = area.left; column <= area.right; column++) {
+      for (let row = area.top; row <= area.bottom; row++) {
+        const key = cellKey(column, row);
+        const cell = this.cells.get(key);
+        if (cell) cell.push(index);
+        else this.cells.set(key, [index]);
+      }
+    }
+  }
+
+  /** Segments that may lie within range of this one, oldest first, so a sum adds up the same. */
+  near(segment: Segment, found: number[]) {
+    found.length = 0;
+    const area = cellArea(segment, 0);
+    if (area.cells > MAX_CELLS) {
+      for (let index = 0; index < this.segments.length; index++) found.push(index);
+      return found;
+    }
+    const query = ++this.query;
+    for (const index of this.wide) {
+      this.seen[index] = query;
+      found.push(index);
+    }
+    for (let column = area.left; column <= area.right; column++) {
+      for (let row = area.top; row <= area.bottom; row++) {
+        const cell = this.cells.get(cellKey(column, row));
+        if (!cell) continue;
+        for (const index of cell) {
+          if (this.seen[index] === query) continue;
+          this.seen[index] = query;
+          found.push(index);
+        }
+      }
+    }
+    return found.sort((left, right) => left - right);
+  }
+}
+
+const NOTHING_OCCUPIED = new Occupancy();
+const nearby: number[] = [];
+
 export function simpleWirePath(start: Point, end: Point) {
   if (end.x <= start.x) return wirePath(start, end);
   const bend = Math.min(120, (end.x - start.x) / 2);
@@ -59,7 +137,8 @@ function orientedRoutePoints(
   startSide: PortSide,
   endSide: PortSide,
   obstacles: Omit<RoutingObstacle, "id">[],
-  occupied: Segment[],
+  occupied: Occupancy,
+  ownNet: string | undefined,
   terminals: Omit<RoutingObstacle, "id">[],
 ) {
   const from = sideVector(startSide),
@@ -90,7 +169,8 @@ function orientedRoutePoints(
     ys.add(box.y - 24);
     ys.add(box.y + box.height + 24);
   }
-  for (const { a, b } of occupied) {
+  for (const { a, b, net } of occupied.segments) {
+    if (ownNet && net === ownNet) continue;
     if (a.x === b.x) {
       xs.add(a.x - 16);
       xs.add(a.x + 16);
@@ -128,7 +208,10 @@ function orientedRoutePoints(
     );
     const hits = obstacleHits(points, obstacles) + obstacleHits(candidate.slice(1, -1), terminals);
     const score =
-      hits * 100000 + wireConflictCost(points, occupied) * 12 + length + (points.length - 2) * 16;
+      hits * 100000 +
+      wireConflictCost(points, occupied, ownNet) * 12 +
+      length +
+      (points.length - 2) * 16;
     if (score < bestScore) {
       best = points;
       bestScore = score;
@@ -139,7 +222,9 @@ function orientedRoutePoints(
 
 /** Port-aware preview, also used while dragging an individual endpoint. */
 export function orientedWirePath(start: Point, end: Point, startSide: PortSide, endSide: PortSide) {
-  return roundedPath(orientedRoutePoints(start, end, startSide, endSide, [], [], []));
+  return roundedPath(
+    orientedRoutePoints(start, end, startSide, endSide, [], NOTHING_OCCUPIED, undefined, []),
+  );
 }
 
 function roundedPath(raw: Point[]) {
@@ -195,47 +280,49 @@ function obstacleHits(points: Point[], obstacles: Omit<RoutingObstacle, "id">[])
   return hits;
 }
 
-function wireConflictCost(points: Point[], occupied: Segment[]) {
+/** Parallel overlap, crossings and near misses against wires on other nets than `ownNet`. */
+function wireConflictCost(points: Point[], occupied: Occupancy, ownNet?: string) {
   let cost = 0;
+  const first = points[0],
+    last = points[points.length - 1];
+  const touches = (point: Point, { a, b }: Segment) =>
+    (a.x === point.x && a.y === point.y) || (b.x === point.x && b.y === point.y);
   for (const segment of segments(points)) {
-    for (const other of occupied) {
+    const segmentLeft = Math.min(segment.a.x, segment.b.x),
+      segmentRight = Math.max(segment.a.x, segment.b.x),
+      segmentTop = Math.min(segment.a.y, segment.b.y),
+      segmentBottom = Math.max(segment.a.y, segment.b.y);
+    for (const index of occupied.near(segment, nearby)) {
+      const other = occupied.segments[index];
+      if (ownNet && other.net === ownNet) continue;
+      const otherLeft = Math.min(other.a.x, other.b.x),
+        otherRight = Math.max(other.a.x, other.b.x),
+        otherTop = Math.min(other.a.y, other.b.y),
+        otherBottom = Math.max(other.a.y, other.b.y);
+      const gapX = Math.max(0, segmentLeft - otherRight, otherLeft - segmentRight);
+      const gapY = Math.max(0, segmentTop - otherBottom, otherTop - segmentBottom);
+      if (gapX >= CONFLICT_RANGE || gapY >= CONFLICT_RANGE) continue;
       if (segment.a.y === segment.b.y && other.a.y === other.b.y) {
         const distance = Math.abs(segment.a.y - other.a.y);
         if (distance < 12) {
-          const shared =
-            Math.min(Math.max(segment.a.x, segment.b.x), Math.max(other.a.x, other.b.x)) -
-            Math.max(Math.min(segment.a.x, segment.b.x), Math.min(other.a.x, other.b.x));
+          const shared = Math.min(segmentRight, otherRight) - Math.max(segmentLeft, otherLeft);
           if (shared > 0) cost += shared * (12 - distance);
         }
       } else if (segment.a.x === segment.b.x && other.a.x === other.b.x) {
         const distance = Math.abs(segment.a.x - other.a.x);
         if (distance < 12) {
-          const shared =
-            Math.min(Math.max(segment.a.y, segment.b.y), Math.max(other.a.y, other.b.y)) -
-            Math.max(Math.min(segment.a.y, segment.b.y), Math.min(other.a.y, other.b.y));
+          const shared = Math.min(segmentBottom, otherBottom) - Math.max(segmentTop, otherTop);
           if (shared > 0) cost += shared * (12 - distance);
         }
       }
       // Fan-out wires may share a terminal. Charge for the shared run above,
       // but do not count that unavoidable junction as a crossing at each bend.
-      const sharedTerminal = [points[0], points[points.length - 1]].some(
-        (point) =>
-          [segment.a, segment.b].some((end) => end.x === point.x && end.y === point.y) &&
-          [other.a, other.b].some((end) => end.x === point.x && end.y === point.y),
-      );
+      const sharedTerminal =
+        (touches(first, segment) && touches(first, other)) ||
+        (touches(last, segment) && touches(last, other));
       if (sharedTerminal) continue;
       // Perpendicular crossings and near misses matter too, including touches
       // at bends. Parallel overlap alone allows a lane to cut through a stack.
-      const gapX = Math.max(
-        0,
-        Math.min(segment.a.x, segment.b.x) - Math.max(other.a.x, other.b.x),
-        Math.min(other.a.x, other.b.x) - Math.max(segment.a.x, segment.b.x),
-      );
-      const gapY = Math.max(
-        0,
-        Math.min(segment.a.y, segment.b.y) - Math.max(other.a.y, other.b.y),
-        Math.min(other.a.y, other.b.y) - Math.max(segment.a.y, segment.b.y),
-      );
       const distance = Math.hypot(gapX, gapY);
       if (distance < 12) cost += (12 - distance) * 12;
       if (distance === 0) cost += 200;
@@ -248,7 +335,8 @@ function routePoints(
   start: Point,
   end: Point,
   obstacles: Omit<RoutingObstacle, "id">[],
-  occupied: Segment[],
+  occupied: Occupancy,
+  ownNet?: string,
   terminals: Omit<RoutingObstacle, "id">[] = [],
 ) {
   const gap = end.x - start.x;
@@ -262,8 +350,8 @@ function routePoints(
       lanes.add(x);
     }
     // Include exact clearance lanes; a coarse grid can miss available space.
-    for (const { a, b } of occupied) {
-      if (a.x !== b.x) continue;
+    for (const { a, b, net } of occupied.segments) {
+      if (a.x !== b.x || (ownNet && net === ownNet)) continue;
       for (const x of [a.x - 12, a.x + 12]) {
         if (left <= x && x <= right) lanes.add(x);
       }
@@ -320,7 +408,7 @@ function routePoints(
     );
     const score =
       (obstacleHits(points, obstacles) + obstacleHits(points.slice(1, -1), terminals)) * 100000 +
-      wireConflictCost(points, occupied) * 12 +
+      wireConflictCost(points, occupied, ownNet) * 12 +
       length +
       (points.length - 2) * 8;
     if (score < bestScore - 1e-7) {
@@ -332,7 +420,7 @@ function routePoints(
 }
 
 export function wirePath(start: Point, end: Point, obstacles: Omit<RoutingObstacle, "id">[] = []) {
-  return roundedPath(routePoints(start, end, obstacles, []));
+  return roundedPath(routePoints(start, end, obstacles, NOTHING_OCCUPIED));
 }
 
 export type RoutedBus = {
@@ -355,14 +443,17 @@ export function routeCircuitWires(
 ) {
   const paths: Record<string, string> = {};
   const buses: RoutedBus[] = [];
-  const occupied: Segment[] = [];
+  const occupied = new Occupancy();
+  const occupy = (points: Point[], net?: string) => {
+    for (const segment of segments(points)) occupied.add({ ...segment, net });
+  };
   const routedPoints: Point[] = [];
   const bundled = new Set<string>();
   for (const wire of wires) {
     if (!wire.points) continue;
     paths[wire.id] = wire.points.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
     routedPoints.push(...wire.points);
-    occupied.push(...segments(wire.points).map((segment) => ({ ...segment, net: wire.net })));
+    occupy(wire.points, wire.net);
     bundled.add(wire.id);
   }
   // Route the outside of each fan first: top to bottom for upward wires,
@@ -457,15 +548,12 @@ export function routeCircuitWires(
         crossings: [],
         taps: group.map((wire) => ({ x: bestX!, y: wire.end.y, wireId: wire.id })),
       });
-      occupied.push(...segments(trunk).map((segment) => ({ ...segment, net: group[0].net })), {
-        a: { x: bestX, y: top },
-        b: { x: bestX, y: bottom },
-        net: group[0].net,
-      });
+      occupy(trunk, group[0].net);
+      occupied.add({ a: { x: bestX, y: top }, b: { x: bestX, y: bottom }, net: group[0].net });
       for (const wire of group) {
         const branch = [{ x: bestX, y: wire.end.y }, wire.end];
         paths[wire.id] = `M ${bestX} ${wire.end.y} L ${wire.end.x} ${wire.end.y}`;
-        occupied.push(...segments(branch).map((segment) => ({ ...segment, net: wire.net })));
+        occupy(branch, wire.net);
         bundled.add(wire.id);
       }
     }
@@ -476,19 +564,19 @@ export function routeCircuitWires(
     // Only the connector stubs may touch their own components. Feedback must
     // travel outside both bodies, even when the endpoints sit at similar heights.
     const terminals = obstacles.filter((box) => box.id === wire.from || box.id === wire.to);
-    const otherNets = occupied.filter((segment) => !wire.net || segment.net !== wire.net);
     const startSide = wire.startSide ?? "right",
       endSide = wire.endSide ?? "left";
     const points =
       startSide === "right" && endSide === "left"
-        ? routePoints(wire.start, wire.end, relevant, otherNets, terminals)
+        ? routePoints(wire.start, wire.end, relevant, occupied, wire.net, terminals)
         : orientedRoutePoints(
             wire.start,
             wire.end,
             startSide,
             endSide,
             relevant,
-            otherNets,
+            occupied,
+            wire.net,
             terminals,
           );
     routedPoints.push(...points);
@@ -514,7 +602,7 @@ export function routeCircuitWires(
       }
     }
     paths[wire.id] = roundedPath(points);
-    occupied.push(...segments(points).map((segment) => ({ ...segment, net: wire.net })));
+    occupy(points, wire.net);
   }
   const bounds = routedPoints.length
     ? {

@@ -278,3 +278,22 @@ describe("wire routing", () => {
     expect(Object.keys(routes.paths)).toHaveLength(circuit.wires.length);
   });
 });
+
+it("routes parts that sit very far apart without building a huge grid", () => {
+  const wire = (id: string, start: number, end: number, y: number) => ({
+    id,
+    from: `${id}-from`,
+    to: `${id}-to`,
+    output: 0,
+    start: { x: start, y },
+    end: { x: end, y: y + 40 },
+    net: id,
+  });
+  const started = performance.now();
+  const { paths } = routeCircuitWires(
+    [wire("far", 0, 1e12, 0), wire("near", 10, 400, 10), wire("back", 1e12, -1e12, 30)],
+    [],
+  );
+  expect(Object.keys(paths).sort()).toEqual(["back", "far", "near"]);
+  expect(performance.now() - started).toBeLessThan(2000);
+});

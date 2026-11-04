@@ -5,7 +5,7 @@ export default function TransistorShapesPage() {
   return (
     <DeviceDemoPage
       slug="transistor-shapes"
-      description="Turn and slice a BJT, a planar MOSFET, a FinFET and a gate-all-around transistor."
+      description="Turn a BJT, a planar MOSFET, a FinFET and a gate-all-around transistor."
     >
       <div className="mx-auto max-w-3xl">
         <TransistorAnatomy />

@@ -12,13 +12,36 @@ const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("butto
 describe("transistor anatomy", () => {
   it("shows steady control current on the BJT and none on a gate", () => {
     render(<TransistorAnatomy />);
-    fireEvent.change(screen.getByRole("slider", { name: "VGS" }), { target: { value: "1" } });
+    fireEvent.change(screen.getByRole("slider", { name: "GATE VOLTAGE" }), {
+      target: { value: "1" },
+    });
     expect(screen.getByTestId("control-current").textContent).toBe("0");
     expect(screen.getByText("GATE WIRE")).toBeTruthy();
     click("BJT");
     expect(screen.getByText("BASE WIRE")).toBeTruthy();
     expect(screen.getByTestId("control-current").textContent).not.toBe("0");
     expect(screen.getByText("ON")).toBeTruthy();
+  });
+});
+
+describe("transistor anatomy controls", () => {
+  it("has no slice control, no legend and no acronyms", () => {
+    const { container } = render(<TransistorAnatomy />);
+    expect(screen.queryByText("SLICE")).toBeNull();
+    expect(container.querySelector("ul")).toBeNull();
+    expect(container.querySelector("svg")).toBeNull();
+    expect(container.textContent).not.toMatch(/V[GB][SE]/);
+    click("BJT");
+    expect(screen.getByRole("slider", { name: "BASE VOLTAGE" })).toBeTruthy();
+  });
+
+  it("calls the current at zero gate voltage a leak", () => {
+    render(<TransistorAnatomy />);
+    expect(screen.getByTestId("main-current").textContent).toContain("LEAK");
+    fireEvent.change(screen.getByRole("slider", { name: "GATE VOLTAGE" }), {
+      target: { value: "1" },
+    });
+    expect(screen.getByTestId("main-current").textContent).not.toContain("LEAK");
   });
 });
 

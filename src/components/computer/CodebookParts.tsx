@@ -51,19 +51,49 @@ export function DemoMachine({
   );
 }
 
-/** One control per switch, left to right, with a lamp above and its state below. */
+/** A toggle lever on a threaded mount. It swings over on a spring rather than jumping. */
+export function Lever({
+  on,
+  label,
+  disabled = false,
+  onFlip,
+}: {
+  on: boolean;
+  label: string;
+  disabled?: boolean;
+  onFlip: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      disabled={disabled}
+      onClick={onFlip}
+      className={styles.toggle}
+    >
+      <span className={styles.toggleHardware} aria-hidden="true">
+        <span className={styles.toggleWasher} />
+        <span className={styles.toggleNut} />
+        <span className={styles.toggleSocket} />
+        <span className={styles.toggleLever} />
+      </span>
+    </button>
+  );
+}
+
+/** One lever per switch, left to right, with a lamp above and its state below. */
 export function SwitchRow({
   pattern,
   onFlip,
   label,
   large = false,
-  lever = false,
 }: {
   pattern: string;
   onFlip: (position: number) => void;
   label: string;
   large?: boolean;
-  lever?: boolean;
 }) {
   return (
     <fieldset
@@ -77,33 +107,11 @@ export function SwitchRow({
         return (
           <div className={styles.switchUnit} key={number}>
             <i className={styles.lamp} data-on={on} aria-hidden="true" />
-            {lever ? (
-              <button
-                type="button"
-                role="switch"
-                aria-checked={on}
-                aria-label={`Switch ${number} of ${pattern.length}`}
-                onClick={() => onFlip(position)}
-                className={styles.toggle}
-              >
-                <span className={styles.toggleHardware} aria-hidden="true">
-                  <span className={styles.toggleWasher} />
-                  <span className={styles.toggleNut} />
-                  <span className={styles.toggleSocket} />
-                  <span className={styles.toggleLever} />
-                </span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => onFlip(position)}
-                aria-pressed={on}
-                aria-label={`Switch ${number} of ${pattern.length}: ${on ? "on" : "off"}. Flip switch.`}
-                className={clsx(panel.bitButton, large && styles.keyLarge)}
-              >
-                {bit}
-              </button>
-            )}
+            <Lever
+              on={on}
+              label={`Switch ${number} of ${pattern.length}`}
+              onFlip={() => onFlip(position)}
+            />
             <span className={styles.switchState} aria-hidden="true">
               {on ? "ON" : "OFF"}
             </span>

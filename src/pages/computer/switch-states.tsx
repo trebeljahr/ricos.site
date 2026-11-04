@@ -7,7 +7,7 @@ export default function SwitchStatesPage() {
       slug="switch-states"
       description="Flip switches and see how many states they can hold."
     >
-      <div className="mx-auto max-w-prose">
+      <div className="mx-auto max-w-4xl">
         <SwitchStates />
       </div>
     </DeviceDemoPage>

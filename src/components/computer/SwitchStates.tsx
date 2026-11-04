@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { CSSProperties } from "react";
 import { useState } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   addSwitch,
   allPatterns,
@@ -22,6 +23,7 @@ const LIST_UP_TO = 4;
 /** One to eight switches and every state they can be in. Usable in MDX articles. */
 export function SwitchStates() {
   const [pattern, setPattern] = useState("0");
+  const { soundEnabled, toggleSound, playSwitch, playToggle } = usePanelSound();
   const switches = pattern.length;
   const count = stateCount(switches);
   const value = patternIndex(pattern);
@@ -29,6 +31,7 @@ export function SwitchStates() {
 
   function resize(next: string) {
     setPattern(next);
+    playSwitch();
   }
 
   function step(direction: -1 | 1) {
@@ -39,10 +42,16 @@ export function SwitchStates() {
       );
       return formatPattern(next, current.length);
     });
+    playToggle(direction === 1);
   }
 
   return (
-    <DemoMachine title="SWITCH STATES" label="Switches and their states">
+    <DemoMachine
+      title="SWITCH STATES"
+      label="Switches and their states"
+      soundEnabled={soundEnabled}
+      onToggleSound={toggleSound}
+    >
       <div className={styles.body}>
         <div className={styles.plate}>
           <div className={panel.sectionHead}>
@@ -68,10 +77,10 @@ export function SwitchStates() {
           <SwitchRow
             pattern={pattern}
             onFlip={(position) => {
+              playToggle(pattern[position] === "0");
               setPattern((current) => flipSwitch(current, position));
             }}
             label="Switches"
-            lever
           />
           <div className={clsx(panel.screen, styles.lcd)}>
             <div className={panel.screenTop}>

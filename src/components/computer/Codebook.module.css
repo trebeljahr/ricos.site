@@ -58,9 +58,10 @@
 .switchRowLarge { --key: 54px; gap: 8px; }
 .switchUnit { display: grid; justify-items: center; gap: 6px; min-width: 0; }
 .lamp { width: 9px; height: 9px; border: 1px solid #405e37; border-radius: 50%; background: #677565; box-shadow: inset 0 1px 2px #1e3324; }
+/* A filament warms up as the lever lands, it does not blink on. */
+.lamp { transition: background .16s ease .09s, box-shadow .16s ease .09s; }
 .lamp[data-on="true"] { background: #a7d46b; box-shadow: 0 0 6px #c5ee8b; }
 .switchState { font-size: 10px; letter-spacing: .04em; }
-.demo .keyLarge { width: 100%; height: 48px; font-size: 22px; }
 
 .toggle {
   position: relative;
@@ -114,7 +115,11 @@
   box-shadow: 2px 2px 3px #14231b80, inset 0 2px 1px #fffef2;
   transform-origin: 50% 100%;
   transform: rotateX(-150deg);
-  transition: transform .2s ease;
+  /* Over-centre action: the spring holds the lever back, then it snaps past and settles. */
+  transition: transform .22s cubic-bezier(.5, -.1, .4, 1.5);
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  .toggleLever { transition-timing-function: linear(0, .02 18%, .12 34%, .96 43%, 1.08 50%, .97 66%, 1.015 82%, 1); }
 }
 .toggleLever::after {
   content: '';
@@ -127,6 +132,9 @@
 .toggle[aria-checked="true"] .toggleLever { transform: rotateX(-25deg); }
 .toggle:hover .toggleHardware { filter: brightness(1.08); }
 .toggle:active .toggleHardware { filter: brightness(.97); }
+.toggle:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 2px; }
+.toggle:disabled { cursor: not-allowed; opacity: .45; }
+.toggle:disabled .toggleHardware { filter: none; }
 
 .demo .lcd { margin-top: 12px; padding: 9px 14px 10px; border-width: 6px; cursor: default; }
 .demo .lcdAlert {
@@ -171,7 +179,7 @@
   background: #2f4034;
   box-shadow: inset 0 2px 4px #14281a, 0 1px #dce2d5;
 }
-.stateGrid i { height: 9px; border-radius: 1px; background: #506353; }
+.stateGrid i { height: 12px; border-radius: 1px; background: #506353; }
 .stateGrid i[data-current="true"] { background: #c9f2aa; box-shadow: 0 0 6px #a9e987; }
 
 .book { display: grid; gap: 4px; margin: 12px 0 0; padding: 0; list-style: none; }
@@ -223,4 +231,4 @@
 }
 /* iOS zooms the page into any focused field set smaller than 16px. */
 @media (pointer: coarse) { .bookInput { font-size: 16px; } }
-@media (prefers-reduced-motion: reduce) { .miniButton, .toggleLever { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .miniButton, .toggleLever, .lamp { transition: none; } }

@@ -1,12 +1,23 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Codebook } from "./Codebook";
 import { CodebookMismatch } from "./CodebookMismatch";
 import { SwitchStates } from "./SwitchStates";
 
+const { playToggle } = vi.hoisted(() => ({ playToggle: vi.fn() }));
+vi.mock("src/hooks/usePanelSound", async (importOriginal) => {
+  const original = await importOriginal<typeof import("src/hooks/usePanelSound")>();
+  return {
+    usePanelSound: () => ({ ...original.usePanelSound(), playToggle }),
+  };
+});
+
 afterEach(cleanup);
-beforeEach(() => localStorage.clear());
+beforeEach(() => {
+  localStorage.clear();
+  playToggle.mockClear();
+});
 
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
 const current = (list: HTMLElement) => list.querySelector('[aria-current="true"]');
@@ -29,6 +40,10 @@ describe("switch states demo", () => {
     fireEvent.click(screen.getByRole("switch", { name: "Switch 1 of 3" }));
     fireEvent.click(screen.getByRole("switch", { name: "Switch 3 of 3" }));
     expect(current(list)?.textContent).toBe("101");
+    expect(playToggle.mock.calls).toEqual([[true], [true]]);
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 3 of 3" }));
+    expect(playToggle).toHaveBeenLastCalledWith(false);
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 3 of 3" }));
     expect(screen.getByRole("switch", { name: "Switch 1 of 3", checked: true })).toBeTruthy();
 
     click("Remove a switch");
@@ -85,6 +100,15 @@ describe("switch states demo", () => {
   });
 });
 
+describe("sound", () => {
+  it("has a switch for it on the panel, on at first", () => {
+    render(<SwitchStates />);
+    const toggle = screen.getByRole("button", { name: /^Sound on/ });
+    fireEvent.click(toggle);
+    expect(screen.getByRole("button", { name: /^Sound off/ }).textContent).toContain("SOUND OFF");
+  });
+});
+
 describe("codebook demo", () => {
   it("reads the phrase of the current state and takes a new one", () => {
     const { container } = render(<Codebook />);
@@ -92,7 +116,7 @@ describe("codebook demo", () => {
     expect(current(book)?.textContent).toBe("00");
     expect(container.textContent).toContain("“Hello”");
 
-    click(/^Switch 2 of 2: off/);
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 2 of 2" }));
     expect(current(book)?.textContent).toBe("01");
     expect(container.textContent).toContain("“How are you?”");
 
@@ -132,7 +156,7 @@ describe("two codebooks demo", () => {
       "Switches 01. Person A reads “How are you?”. Person B sends “I am hungry”. Different message.",
     );
 
-    click(/^Switch 1 of 2: off/);
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 1 of 2" }));
     expect(container.textContent).toContain("BY HAND");
     expect(summary()).toContain("Switches 11.");
 

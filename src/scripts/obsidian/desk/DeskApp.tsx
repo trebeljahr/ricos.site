@@ -1,13 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  type CalendarDay,
-  DAILY_GOAL,
-  NEXT_DEADLINE,
-  progressColor,
-  STEPS,
-  type Step,
-  stepDone,
-} from "src/lib/computerSeries";
+import { dayKey } from "src/lib/computerSeries";
 import { addEvent, type DiaryEntry, type DiaryLog, KIND_LABEL, undoToday } from "src/lib/diary";
 import {
   addMark,
@@ -21,22 +13,22 @@ import {
 } from "src/lib/diaryMarks";
 import { type NotesIndex, type Passage, related, search, termPattern } from "src/lib/notesSearch";
 import { DeskMarkable } from "./DeskMarkable";
+import { DayGrid, dayCount, fmt, longDate, Problem, percent, Stat, Warning } from "./DeskParts";
+import { WritingTab } from "./DeskWriting";
 import {
   buildNotesIndex,
   type DeskIO,
   type DiaryData,
   LOG_REL,
   loadDiary,
-  loadWriting,
   MARKS_REL,
   readBook,
   readWholeText,
-  type StreakWarning,
   updateJson,
   type WholeText,
-  type WritingData,
   writeDraft,
 } from "./deskStore";
+import { useLoaded } from "./useLoaded";
 
 type Tab = "writing" | "diary" | "desk";
 type Reading = { rel: string; jump?: string };
@@ -44,21 +36,10 @@ const TAB_KEY = "desk-tab";
 const TABS: { id: Tab; label: string }[] = [
   { id: "writing", label: "Writing" },
   { id: "diary", label: "Diary" },
-  { id: "desk", label: "Search and piles" },
+  { id: "desk", label: "Search" },
 ];
 
-const fmt = (n: number) => n.toLocaleString("en-US");
-const dayCount = (n: number) => `${fmt(n)} ${n === 1 ? "day" : "days"}`;
-const percent = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0);
 const minutes = (words: number) => Math.max(1, Math.round(words / 230));
-const longDate = (day: string) =>
-  new Date(`${day}T12:00:00Z`).toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
 
 function readTab(): Tab {
   try {
@@ -67,252 +48,6 @@ function readTab(): Tab {
   } catch {
     return "writing";
   }
-}
-
-/** Loads with `load`, again whenever `version` changes; keeps old data on screen meanwhile. */
-function useLoaded<T>(load: () => Promise<T>, version: number) {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: version is the reload signal
-  useEffect(() => {
-    let stale = false;
-    load()
-      .then((value) => {
-        if (stale) return;
-        setData(value);
-        setError(null);
-      })
-      .catch((failure) => {
-        console.error("Desk could not load:", failure);
-        if (!stale) setError(String(failure));
-      });
-    return () => {
-      stale = true;
-    };
-  }, [load, version]);
-  return { data, error };
-}
-
-function Problem({ text }: { text: string }) {
-  return <p className="desk-warning is-urgent">Could not load or save: {text}</p>;
-}
-
-function Warning({ warning }: { warning: StreakWarning | null }) {
-  if (!warning) return null;
-  return <p className={`desk-warning${warning.urgent ? " is-urgent" : ""}`}>{warning.text}</p>;
-}
-
-function Bar({ value, max }: { value: number; max: number }) {
-  const fraction = max > 0 ? Math.min(value / max, 1) : 0;
-  return (
-    <div className="desk-bar">
-      <div style={{ width: `${fraction * 100}%`, backgroundColor: progressColor(fraction) }} />
-    </div>
-  );
-}
-
-function Stat({ label, value, note }: { label: string; value: string; note: string }) {
-  return (
-    <div className="desk-card">
-      <p className="desk-label">{label}</p>
-      <p className="desk-big">{value}</p>
-      <p className="desk-muted">{note}</p>
-    </div>
-  );
-}
-
-function DayGrid({
-  label,
-  days,
-  todayKey,
-  deadline,
-}: {
-  label: string;
-  days: CalendarDay[];
-  todayKey: string;
-  deadline?: string;
-}) {
-  const weeks: CalendarDay[][] = [];
-  for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
-  const color = (d: CalendarDay) =>
-    d.words && d.words > 0
-      ? progressColor(Math.min(d.words / DAILY_GOAL, 1) * 0.75 + 0.25)
-      : undefined;
-  return (
-    <div className="desk-grid-block">
-      <p className="desk-label">{label}</p>
-      <div className="desk-grid-scroll">
-        <div className="desk-grid">
-          {weeks.map((week) => (
-            <div key={week[0].day} className="desk-week">
-              {week.map((d) => (
-                <div
-                  key={d.day}
-                  title={
-                    d.inRange
-                      ? `${d.day}: ${d.words === null ? "to come" : `${fmt(d.words)} words`}`
-                      : d.day
-                  }
-                  className={[
-                    "desk-day",
-                    !d.inRange && "is-outside",
-                    d.future && "is-future",
-                    d.day === todayKey && "is-today",
-                    d.day === deadline && "is-deadline",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  style={{ backgroundColor: color(d) }}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const NEXT_LABEL: Record<Step, string> = {
-  drafted: "Write next",
-  polished: "Polish next",
-  live: "Put live next",
-};
-const STEP_HINT: Record<Step, string> = {
-  drafted:
-    "Every section has reached its target. Set status: draft-done when it reads as finished.",
-  polished: "A polish pass, its demos on a phone, test readers. Then set status: done.",
-  live: "Set published: true and deploy.",
-};
-
-function WritingTab({
-  io,
-  version,
-  openNote,
-}: {
-  io: DeskIO;
-  version: number;
-  openNote: (rel: string) => void;
-}) {
-  const load = useCallback(() => loadWriting(io), [io]);
-  const { data, error } = useLoaded<WritingData>(load, version);
-  if (error && !data) return <Problem text={error} />;
-  if (!data) return <p className="desk-muted">Counting words…</p>;
-  const { next, pace, partName } = data;
-  const lead = Math.trunc(pace.lead);
-  const parts = [...new Set(data.chapters.map((c) => c.part))];
-  return (
-    <>
-      <Warning warning={data.warning} />
-      <section className="desk-columns">
-        {next ? (
-          <div className="desk-card is-primary">
-            <p className="desk-label">{NEXT_LABEL[next.step]}</p>
-            <p className="desk-muted">
-              {next.chapter.number} · {next.chapter.title}
-            </p>
-            {next.section ? (
-              <>
-                <p className="desk-title">{next.section.heading}</p>
-                <p className="desk-muted">
-                  {fmt(next.section.words)} of {fmt(next.section.target)} words in this section
-                </p>
-                <Bar value={next.section.words} max={next.section.target} />
-              </>
-            ) : (
-              <p className="desk-hint">{STEP_HINT[next.step]}</p>
-            )}
-            <div className="desk-actions">
-              <button
-                type="button"
-                className="mod-cta"
-                onClick={() =>
-                  openNote(
-                    next.section && next.section.depth > 1
-                      ? `${next.chapter.path}#${next.section.heading}`
-                      : next.chapter.path,
-                  )
-                }
-              >
-                Open
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="desk-card is-primary">
-            <p className="desk-title">{partName} is live.</p>
-            <p className="desk-muted">Set the next deadline in src/lib/computerSeries.ts.</p>
-          </div>
-        )}
-        <div className="desk-card">
-          <p className="desk-label">
-            {partName} by {longDate(NEXT_DEADLINE.date)}
-          </p>
-          <p className="desk-big">
-            {pace.stepsDone} / {pace.stepsTotal}
-          </p>
-          <p className="desk-muted">
-            steps done ·{" "}
-            {lead === 0 ? "on the line" : lead > 0 ? `${lead} ahead` : `${-lead} behind`}
-          </p>
-          <Bar value={pace.stepsDone} max={pace.stepsTotal} />
-          <p className="desk-muted desk-gap">
-            {pace.daysLeft} days left · {pace.neededPerWeek} steps a week · {fmt(pace.wordsLeft)}{" "}
-            words short
-          </p>
-        </div>
-      </section>
-      <section className="desk-stats">
-        <Stat label="Today" value={fmt(data.today)} note={`goal ${fmt(DAILY_GOAL)}`} />
-        <Stat label="Streak" value={dayCount(data.streak)} note={`best ${data.best}`} />
-      </section>
-      <section className="desk-card">
-        <DayGrid
-          label="Words per day"
-          days={data.days}
-          todayKey={data.todayKey}
-          deadline={NEXT_DEADLINE.date}
-        />
-      </section>
-      {parts.map((part) => {
-        const inPart = data.chapters.filter((c) => c.part === part);
-        return (
-          <section key={part}>
-            <h2 className="desk-heading">
-              Part {part}: {inPart[0].partTitle}
-            </h2>
-            <ul className="desk-rows">
-              {inPart.map((chapter) => (
-                <li key={chapter.path}>
-                  <button
-                    type="button"
-                    className="desk-row clickable-icon"
-                    onClick={() => openNote(chapter.path)}
-                  >
-                    <span className="desk-row-title">
-                      {chapter.number} {chapter.title}
-                    </span>
-                    <span className="desk-steps">
-                      {STEPS.map((step) => (
-                        <span
-                          key={step}
-                          title={step}
-                          className={`desk-step${stepDone(chapter, step) ? " is-done" : ""}`}
-                        />
-                      ))}
-                    </span>
-                    <span className="desk-muted desk-row-words">
-                      {fmt(chapter.credited)} / {fmt(chapter.target)}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-    </>
-  );
 }
 
 function MarksHere({ marks, onRemove }: { marks: Mark[]; onRemove: (id: string) => void }) {
@@ -360,11 +95,7 @@ function useBook(io: DeskIO, version: number) {
   return { book, change, problem: failure ?? error };
 }
 
-const today = () => {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-};
+const today = () => dayKey(new Date());
 
 function Reader({
   data,
@@ -498,6 +229,10 @@ function DiaryTab({
   const shownProblem = failure ?? problem;
   return (
     <>
+      <header className="desk-page-head">
+        <h1>Diary</h1>
+        <p className="desk-muted">Write today's page, then read one from the past.</p>
+      </header>
       <Warning warning={data.warning} />
       {shownProblem && <Problem text={shownProblem} />}
       <section className="desk-columns is-even">
@@ -816,6 +551,12 @@ function DeskTab({
 
   return (
     <>
+      <header className="desk-page-head">
+        <h1>Search and piles</h1>
+        <p className="desk-muted">
+          Cut across everything you wrote, and pile up what belongs together.
+        </p>
+      </header>
       {shownProblem && <Problem text={shownProblem} />}
       <datalist id="desk-piles">
         {book.piles.map((p) => (
@@ -895,20 +636,22 @@ function DeskTab({
           </ul>
         </section>
       ))}
-      <section>
-        <h2 className="desk-heading">Not in a pile yet ({loose.length})</h2>
-        {book.marks.length === 0 ? (
-          <p className="desk-muted">
-            Select text in today's reading, or in a search result, and press Mark.
-          </p>
-        ) : (
-          <ul className="desk-passages">
-            {loose.map((mark) => (
-              <MarkRow key={mark.id} mark={mark} {...rowProps} />
-            ))}
-          </ul>
-        )}
-      </section>
+      {(loose.length > 0 || book.marks.length === 0) && (
+        <section>
+          <h2 className="desk-heading">Not in a pile yet ({loose.length})</h2>
+          {book.marks.length === 0 ? (
+            <p className="desk-muted">
+              Select text in today's reading, or in a search result, and press Mark.
+            </p>
+          ) : (
+            <ul className="desk-passages">
+              {loose.map((mark) => (
+                <MarkRow key={mark.id} mark={mark} {...rowProps} />
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
     </>
   );
 }

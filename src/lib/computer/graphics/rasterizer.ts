@@ -256,3 +256,91 @@ export function rasterize(
   }
   return stats;
 }
+
+export type ScanTriangle = {
+  /** In pixels, with the row counting down. */
+  corners: readonly (readonly [number, number])[];
+  /** 0 at the near plane, 1 at the far one. */
+  depth: number;
+};
+
+export type ScanStep = {
+  triangle: number;
+  x: number;
+  y: number;
+  /** One per edge. All three at or above zero means the pixel's centre is inside. */
+  edges: readonly [number, number, number];
+  inside: boolean;
+  /** How much of each corner this pixel takes, in the corners' own order. */
+  weights: Vec3;
+  outcome: "outside" | "written" | "behind";
+  /** What the depth buffer held when this pixel was tested. */
+  depthBefore: number;
+};
+
+/** Everything rasterize() decides for flat triangles, kept as a list of steps to watch one by one. */
+export function scanTriangles(
+  triangles: readonly ScanTriangle[],
+  width: number,
+  height: number,
+): ScanStep[] {
+  const steps: ScanStep[] = [];
+  const buffer = new Float32Array(width * height).fill(1);
+  triangles.forEach(({ corners, depth }, triangle) => {
+    const area =
+      (corners[1][0] - corners[0][0]) * (corners[2][1] - corners[0][1]) -
+      (corners[1][1] - corners[0][1]) * (corners[2][0] - corners[0][0]);
+    if (Math.abs(area) < EPSILON) return;
+    // The same winding for every triangle, while weights stay in the corners' own order.
+    const order = area < 0 ? [0, 2, 1] : [0, 1, 2];
+    const [a, b, c] = order.map((i) => corners[i]);
+    const size = Math.abs(area);
+    const bias = (from: readonly number[], to: readonly number[]) => {
+      const dx = to[0] - from[0];
+      const dy = to[1] - from[1];
+      return (dy === 0 && dx > 0) || dy < 0 ? EPSILON : 0;
+    };
+    const biases = [bias(b, c), bias(c, a), bias(a, b)];
+    const minX = Math.max(0, Math.floor(Math.min(a[0], b[0], c[0])));
+    const maxX = Math.min(width - 1, Math.ceil(Math.max(a[0], b[0], c[0])));
+    const minY = Math.max(0, Math.floor(Math.min(a[1], b[1], c[1])));
+    const maxY = Math.min(height - 1, Math.ceil(Math.max(a[1], b[1], c[1])));
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        const px = x + 0.5;
+        const py = y + 0.5;
+        const ea = (c[0] - b[0]) * (py - b[1]) - (c[1] - b[1]) * (px - b[0]);
+        const eb = (a[0] - c[0]) * (py - c[1]) - (a[1] - c[1]) * (px - c[0]);
+        const ec = (b[0] - a[0]) * (py - a[1]) - (b[1] - a[1]) * (px - a[0]);
+        const inside = ea + biases[0] > 0 && eb + biases[1] > 0 && ec + biases[2] > 0;
+        const byPosition = [ea / size, eb / size, ec / size];
+        const weights: [number, number, number] = [0, 0, 0];
+        order.forEach((corner, i) => {
+          weights[corner] = byPosition[i];
+        });
+        const i = y * width + x;
+        const depthBefore = buffer[i];
+        let outcome: ScanStep["outcome"] = "outside";
+        if (inside) {
+          if (depth < depthBefore) {
+            outcome = "written";
+            buffer[i] = depth;
+          } else {
+            outcome = "behind";
+          }
+        }
+        steps.push({
+          triangle,
+          x,
+          y,
+          edges: [ea, eb, ec],
+          inside,
+          weights,
+          outcome,
+          depthBefore,
+        });
+      }
+    }
+  });
+  return steps;
+}

@@ -13,8 +13,11 @@ import {
 } from "src/lib/computer/graphics/matrix";
 import { house } from "src/lib/computer/graphics/meshes";
 import {
+  AXIS_COLORS,
   clearScene,
+  drawArrow,
   drawAxes,
+  drawDot,
   drawGrid,
   drawLine,
   drawPolygons,
@@ -22,7 +25,15 @@ import {
   shadeFace,
 } from "src/lib/computer/graphics/sceneDrawing";
 import styles from "./Graphics.module.css";
-import { Bay, fixed, GraphicsPanel, MatrixGrid, SceneCanvas, VectorColumn } from "./GraphicsParts";
+import {
+  Bay,
+  ColumnSum,
+  fixed,
+  GraphicsPanel,
+  PlayBar,
+  SceneCanvas,
+  useTimeline,
+} from "./GraphicsParts";
 import {
   TransformChain,
   type TransformKind,
@@ -80,6 +91,9 @@ const KINDS: readonly TransformKind[] = [
   },
 ];
 
+// First to where the origin went, then along each axis.
+const WALK_COLUMNS = [3, 0, 1, 2] as const;
+
 const FIRST_STEPS = [{ kind: "TURN Y" }, { kind: "MOVE" }];
 
 /** The same steps as the 2D playground with one more row and column: an object and a 4×4 matrix. */
@@ -93,7 +107,24 @@ export function Transform3d() {
   const matrix = stack.current;
 
   const point = mesh.positions[picked];
-  const landed = transform(matrix, [point[0], point[1], point[2], 1]);
+  const vector = [point[0], point[1], point[2], 1];
+  const landed = transform(matrix, vector);
+  const walk = useTimeline(6);
+  const walkAt = walk.t * 4;
+  const walking = walk.t < 1;
+  const activeColumn = walking ? WALK_COLUMNS[Math.min(3, Math.floor(walkAt))] : null;
+  const legs: { column: number; from: Vec3; to: Vec3 }[] = [];
+  let running: Vec3 = [0, 0, 0];
+  WALK_COLUMNS.forEach((column, order) => {
+    const amount = Math.max(0, Math.min(1, walkAt - order)) * vector[column];
+    const from = running;
+    running = [
+      running[0] + matrix[column] * amount,
+      running[1] + matrix[4 + column] * amount,
+      running[2] + matrix[8 + column] * amount,
+    ];
+    legs.push({ column, from, to: running });
+  });
 
   const draw = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     clearScene(ctx, width, height);
@@ -129,8 +160,19 @@ export function Transform3d() {
       transformPoint(matrix, [1.5, 0, 0]),
       transformPoint(matrix, [0, 1.5, 0]),
       transformPoint(matrix, [0, 0, 1.5]),
-      3,
+      1.5,
     );
+    legs.forEach(({ column, from, to }) => {
+      drawArrow(
+        ctx,
+        camera,
+        from,
+        to,
+        [AXIS_COLORS.x, AXIS_COLORS.y, AXIS_COLORS.z, "#c9a6ff"][column],
+        activeColumn === column ? 5 : 3.5,
+      );
+    });
+    drawDot(ctx, camera, running, 6, "#fff", "#0a0c12");
   };
 
   return (
@@ -153,13 +195,19 @@ export function Transform3d() {
         <TransformChain kinds={KINDS} stack={stack} digits={1} />
       </Bay>
       <Bay head="ONE VERTEX × THE MATRIX">
-        <div className={styles.equation}>
-          <MatrixGrid matrix={matrix} axes label="M" />
-          <span>×</span>
-          <VectorColumn values={[point[0], point[1], point[2], 1]} label="VERTEX" />
-          <span>=</span>
-          <VectorColumn values={landed} label="LANDS AT" />
-        </div>
+        <PlayBar
+          button="WALK"
+          label="WALKED"
+          timeline={walk}
+          format={(t) => `${fixed(t * 4, 1)}/4`}
+        />
+        <ColumnSum
+          matrix={matrix}
+          vector={vector}
+          active={activeColumn}
+          digits={1}
+          result={walking ? [running[0], running[1], running[2], 1] : landed}
+        />
         <div className={styles.stopPick}>
           <button
             type="button"

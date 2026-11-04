@@ -3,6 +3,8 @@ import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   lerp,
   lerp3,
+  normalize,
+  orbitEye,
   transform,
   transformPoint,
   type Vec3,
@@ -39,9 +41,11 @@ import {
   drawPolygons,
   drawText,
   project,
+  type SceneCamera,
   sceneCamera,
   shadeFace,
 } from "src/lib/computer/graphics/sceneDrawing";
+import { DivideDiagram } from "./DivideDiagram";
 import styles from "./Graphics.module.css";
 import {
   Bay,
@@ -49,11 +53,13 @@ import {
   fixed,
   GraphicsPanel,
   MatrixGrid,
+  PlayBar,
   paintFramebuffer,
   SceneCanvas,
   Slider,
   useAnimation,
   useEased,
+  useTimeline,
   VectorColumn,
 } from "./GraphicsParts";
 
@@ -103,6 +109,23 @@ const FIRST_SETTINGS: PipelineSettings = {
   width: 64,
   height: 48,
 };
+
+// Far enough to see the divide work, not so far that the far plane cuts the object away.
+const PUSH_DISTANCE = 3.5;
+const HOLD = 1;
+const MOVE = 1.7;
+const TOUR_SECONDS = 5 * (HOLD + MOVE) + HOLD;
+
+/** Where the tour is after some seconds: a pause at each stop, an eased move between them. */
+function tourStage(seconds: number) {
+  const span = HOLD + MOVE;
+  const stop = Math.min(5, Math.floor(seconds / span));
+  if (stop === 5) return 5;
+  const into = seconds - stop * span - HOLD;
+  if (into <= 0) return stop;
+  const t = into / MOVE;
+  return stop + t * t * (3 - 2 * t);
+}
 
 /** A point and where it is at every stop, as far as it has a place there. */
 type Tracked = { local: Vec3; world: Vec3; view: Vec3; clip: Vec4 };
@@ -179,7 +202,7 @@ export function CoordinateSpaces() {
   const sound = usePanelSound();
   const [shape, setShape] = useState<ShapeName>("house");
   const [settings, setSettings] = useState(FIRST_SETTINGS);
-  const [stage, setStage] = useState(1);
+  const [stage, setStage] = useState(0);
   const [vertex, setVertex] = useState(9);
   const [yaw, setYaw] = useState(28);
   const [pitch, setPitch] = useState(20);
@@ -189,10 +212,29 @@ export function CoordinateSpaces() {
   const [drawnFraction, setDrawnFraction] = useState(1);
   const [drawing, setDrawing] = useState(false);
 
-  const eased = useEased(stage);
+  const [touring, setTouring] = useState<number | null>(null);
+  const push = useTimeline(5);
+
+  const easedStage = useEased(stage);
+  const eased = touring === null ? easedStage : tourStage(touring);
   const mesh: Mesh = useMemo(() => SHAPES[shape].build(), [shape]);
   const position = mesh.positions[Math.min(vertex, mesh.positions.length - 1)];
-  const matrices = useMemo(() => pipelineMatrices(settings), [settings]);
+  // Pushing the object straight away from the camera and back.
+  const pushedBy = push.t < 1 ? Math.sin(push.t * Math.PI) * PUSH_DISTANCE : 0;
+  const matrices = useMemo(() => {
+    if (pushedBy === 0) return pipelineMatrices(settings);
+    const away = normalize(
+      orbitEye(settings.cameraYaw, settings.cameraPitch, -settings.cameraDistance),
+    );
+    return pipelineMatrices({
+      ...settings,
+      position: [
+        settings.position[0] + away[0] * pushedBy,
+        settings.position[1] + away[1] * pushedBy,
+        settings.position[2] + away[2] * pushedBy,
+      ],
+    });
+  }, [settings, pushedBy]);
   const journey = useMemo(
     () => vertexJourney(position, matrices, settings.width, settings.height),
     [position, matrices, settings.width, settings.height],
@@ -348,6 +390,21 @@ export function CoordinateSpaces() {
     }
   });
 
+  useAnimation(touring !== null, (seconds) => {
+    if (touring === null) return;
+    const next = touring + seconds;
+    if (next >= TOUR_SECONDS) {
+      setTouring(null);
+      setStage(6);
+      setDrawnFraction(0);
+      setDrawing(true);
+      return;
+    }
+    setTouring(next);
+    const rounded = Math.round(tourStage(next));
+    if (rounded !== stage) setStage(rounded);
+  });
+
   const insetCanvas = useRef<HTMLCanvasElement>(null);
   const pixelCanvas = useRef<HTMLCanvasElement>(null);
   const onPixels = stage === 6;
@@ -401,33 +458,30 @@ export function CoordinateSpaces() {
         );
       }
       const origin = at(trackPoint.fromWorld([0, 0, 0]));
-      const size = shown < 1 ? 0.8 : 2;
+      const size = 1.2;
       drawArrow(
         ctx,
         camera,
         origin,
         at(trackPoint.fromWorld([size, 0, 0])),
-        AXIS_COLORS.x,
+        `${AXIS_COLORS.x}99`,
         1.5,
-        "x",
       );
       drawArrow(
         ctx,
         camera,
         origin,
         at(trackPoint.fromWorld([0, size, 0])),
-        AXIS_COLORS.y,
+        `${AXIS_COLORS.y}99`,
         1.5,
-        "y",
       );
       drawArrow(
         ctx,
         camera,
         origin,
         at(trackPoint.fromWorld([0, 0, size])),
-        AXIS_COLORS.z,
+        `${AXIS_COLORS.z}99`,
         1.5,
-        "z",
       );
     }
 
@@ -449,13 +503,22 @@ export function CoordinateSpaces() {
         });
     drawPolygons(ctx, camera, polygons, { cull });
 
-    // The object's own axes, only while it is the object's own space that matters.
-    if (shown < 1.5) {
+    // The object's own axes, carried along while it is placed in the world.
+    if (shown < 2.5) {
       const local = (x: number, y: number, z: number) => at(trackPoint.fromLocal([x, y, z]));
       const origin = local(0, 0, 0);
-      drawArrow(ctx, camera, origin, local(1.5, 0, 0), AXIS_COLORS.x, 3, "x");
-      drawArrow(ctx, camera, origin, local(0, 1.5, 0), AXIS_COLORS.y, 3, "y");
-      drawArrow(ctx, camera, origin, local(0, 0, 1.5), AXIS_COLORS.z, 3, "z");
+      drawArrow(ctx, camera, origin, local(1.2, 0, 0), `${AXIS_COLORS.x}99`, 1.5);
+      drawArrow(ctx, camera, origin, local(0, 1.2, 0), `${AXIS_COLORS.y}99`, 1.5);
+      drawArrow(ctx, camera, origin, local(0, 0, 1.2), `${AXIS_COLORS.z}99`, 1.5);
+    }
+
+    // The camera's axes. At the camera stop they become the axes everything is measured with.
+    if (shown > 0.5 && shown < 2.5) {
+      const view = (x: number, y: number, z: number) => at(trackPoint.fromView([x, y, z]));
+      const origin = view(0, 0, 0);
+      drawArrow(ctx, camera, origin, view(1.2, 0, 0), `${AXIS_COLORS.x}99`, 1.5);
+      drawArrow(ctx, camera, origin, view(0, 1.2, 0), `${AXIS_COLORS.y}99`, 1.5);
+      drawArrow(ctx, camera, origin, view(0, 0, 1.2), `${AXIS_COLORS.z}99`, 1.5);
     }
 
     // The volume the camera sees, which ends up as a cube, then as the screen.
@@ -493,10 +556,104 @@ export function CoordinateSpaces() {
       );
     }
 
+    // A line from each vertex towards the camera. They meet at the eye, until the
+    // divide by w turns them parallel: that is all perspective is.
+    if (shown >= 1 && shown < 5 && tracked.length <= 30) {
+      const rayStrength = Math.min(1, Math.min(shown - 1, 5 - shown) * 2);
+      ctx.globalAlpha = rayStrength;
+      tracked.forEach((point, i) => {
+        const depth = -point.view[2];
+        if (depth <= settings.near) return;
+        const k = settings.near / depth;
+        const onNear = trackPoint.fromView([point.view[0] * k, point.view[1] * k, -settings.near]);
+        const isPicked = i === Math.min(vertex, tracked.length - 1);
+        drawLine(
+          ctx,
+          camera,
+          at(point),
+          at(onNear),
+          isPicked ? "#ffffff" : "#ffffff33",
+          isPicked ? 1.6 : 0.8,
+          isPicked ? [5, 4] : undefined,
+        );
+        if (isPicked) drawDot(ctx, camera, at(onNear), 3.5, "#ffd166");
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    drawRuler(ctx, camera, Math.round(shown), Math.abs(shown - Math.round(shown)));
+
     if (journey.clip[3] > 0 || shown < 3) {
       const here = at(tracked[Math.min(vertex, tracked.length - 1)]);
       drawDot(ctx, camera, here, 6, journey.inside ? "#fff" : "#ff6b7a", "#0a0c12");
     }
+  };
+
+  /**
+   * The ruler of the space on show, and the one vertex measured against it: its
+   * three numbers from the table, walked out along that space's three axes.
+   */
+  const drawRuler = (
+    ctx: CanvasRenderingContext2D,
+    camera: SceneCamera,
+    index: number,
+    offStop: number,
+  ) => {
+    const strength = Math.max(0, 1 - offStop * 4);
+    if (strength <= 0.01) return;
+    const coordinates: readonly number[] | null = [
+      journey.local,
+      journey.world,
+      journey.view,
+      journey.clip,
+      journey.ndc,
+      journey.screen,
+    ][index];
+    // Depth is drawn negated from clip space on, so that near stays nearest.
+    const place = (x: number, y: number, z: number): Vec3 => {
+      if (index >= 5) {
+        return [(x / settings.width) * 2 * aspect - aspect, 1 - (y / settings.height) * 2, 0];
+      }
+      return index >= 3 ? [x, y, -z] : [x, y, z];
+    };
+    ctx.globalAlpha = strength;
+    const start = index >= 5 ? place(0, 0, 0) : place(0, 0, 0);
+    const reach = (value: number) =>
+      Math.max(index === 4 ? 1 : 2, Math.ceil(Math.abs(value)) + 0.5);
+    const ranges = coordinates ? coordinates.slice(0, 3).map(reach) : [2, 2, 2];
+    const tick = index === 5 ? settings.width / 8 : 1;
+    const ends: Vec3[] =
+      index >= 5
+        ? [place(settings.width, 0, 0), place(0, settings.height, 0), start]
+        : [place(ranges[0], 0, 0), place(0, ranges[1], 0), place(0, 0, ranges[2])];
+    const colors = [AXIS_COLORS.x, AXIS_COLORS.y, AXIS_COLORS.z];
+    ["x", "y", "z"].forEach((name, axis) => {
+      if (index >= 5 && axis === 2) return;
+      drawArrow(ctx, camera, start, ends[axis], colors[axis], 2.5, name);
+      const total = index >= 5 ? (axis === 0 ? settings.width : settings.height) : ranges[axis];
+      for (let unit = tick; unit < total; unit += tick) {
+        const at3 = [0, 0, 0];
+        at3[axis] = unit;
+        drawDot(ctx, camera, place(at3[0], at3[1], at3[2]), 2, colors[axis]);
+      }
+    });
+    if (coordinates) {
+      const [x, y, z] = coordinates;
+      const legs: [Vec3, Vec3, number, string][] = [
+        [place(0, 0, 0), place(x, 0, 0), 0, fixed(x, index >= 5 ? 1 : 2)],
+        [place(x, 0, 0), place(x, y, 0), 1, fixed(y, index >= 5 ? 1 : 2)],
+      ];
+      if (index < 5) legs.push([place(x, y, 0), place(x, y, z), 2, fixed(z)]);
+      for (const [from, to, axis, label] of legs) {
+        drawLine(ctx, camera, from, to, colors[axis], 2.5);
+        const [ax, ay, aw] = project(camera, from);
+        const [bx, by, bw] = project(camera, to);
+        if (aw > 0 && bw > 0) {
+          drawText(ctx, (ax + bx) / 2 + 5, (ay + by) / 2 - 4, label, colors[axis], 12);
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
   };
 
   const update = (change: Partial<PipelineSettings>) => {
@@ -519,12 +676,19 @@ export function CoordinateSpaces() {
     sound.playButton();
   };
 
-  const stops: { stage: Stage; values: readonly (string | null)[]; out?: readonly boolean[] }[] = [
+  const stops: {
+    stage: Stage;
+    values: readonly (string | null)[];
+    out?: readonly boolean[];
+    link?: number;
+  }[] = [
     { stage: "local", values: journey.local.map((v) => fixed(v)) },
     { stage: "world", values: journey.world.map((v) => fixed(v)) },
-    { stage: "view", values: journey.view.map((v) => fixed(v)) },
+    // Camera depth and clip w are the same distance, seen from two sides of the same matrix.
+    { stage: "view", values: journey.view.map((v) => fixed(v)), link: 2 },
     {
       stage: "clip",
+      link: 3,
       values: journey.clip.map((v) => fixed(v)),
       out: [
         Math.abs(journey.clip[0]) > journey.clip[3],
@@ -649,6 +813,29 @@ export function CoordinateSpaces() {
         </div>
       </Bay>
 
+      <Bay>
+        <div className={styles.choiceRow}>
+          <button
+            type="button"
+            className={styles.button}
+            aria-pressed={touring !== null}
+            onClick={() => {
+              if (touring !== null) {
+                setTouring(null);
+                return;
+              }
+              setStage(0);
+              setDrawing(false);
+              setDrawnFraction(1);
+              setTouring(0);
+              sound.playButton();
+            }}
+          >
+            {touring !== null ? "STOP" : "PLAY ALL THE WAY"}
+          </button>
+        </div>
+      </Bay>
+
       <Bay head="ONE VERTEX · EVERY STOP">
         <div className={styles.stopPick}>
           <button
@@ -677,13 +864,14 @@ export function CoordinateSpaces() {
           </button>
         </div>
         <ol className={styles.journey}>
-          {stops.map(({ stage: name, values, out }, index) => (
+          {stops.map(({ stage: name, values, out, link }, index) => (
             <li key={name}>
               <button
                 type="button"
                 className={styles.stop}
                 aria-pressed={index === stage}
                 onClick={() => {
+                  setTouring(null);
                   setStage(index);
                   sound.playButton();
                 }}
@@ -691,7 +879,11 @@ export function CoordinateSpaces() {
                 <span className={styles.stopName}>{STAGE_NAMES[name]}</span>
                 <span className={styles.stopNumbers}>
                   {values.map((value, i) => (
-                    <span key={i} data-out={out?.[i] ? "" : undefined}>
+                    <span
+                      key={i}
+                      data-out={out?.[i] ? "" : undefined}
+                      data-link={link === i ? "" : undefined}
+                    >
                       {value}
                     </span>
                   ))}
@@ -814,6 +1006,19 @@ export function CoordinateSpaces() {
         )}
         {stageName === "clip" && (
           <>
+            <DivideDiagram
+              points={tracked.map((point) => point.view)}
+              picked={Math.min(vertex, tracked.length - 1)}
+              fov={settings.fov}
+              near={settings.near}
+              far={settings.far}
+            />
+            <PlayBar
+              button="PUSH AWAY"
+              label="PUSHED"
+              timeline={push}
+              format={(t) => fixed(t < 1 ? Math.sin(t * Math.PI) * PUSH_DISTANCE : 0, 1)}
+            />
             <div className={styles.equation}>
               <MatrixGrid matrix={matrices.projection} label="PROJECTION" />
               <span>×</span>
@@ -872,6 +1077,19 @@ export function CoordinateSpaces() {
         )}
         {stageName === "ndc" && (
           <>
+            <DivideDiagram
+              points={tracked.map((point) => point.view)}
+              picked={Math.min(vertex, tracked.length - 1)}
+              fov={settings.fov}
+              near={settings.near}
+              far={settings.far}
+            />
+            <PlayBar
+              button="PUSH AWAY"
+              label="PUSHED"
+              timeline={push}
+              format={(t) => fixed(t < 1 ? Math.sin(t * Math.PI) * PUSH_DISTANCE : 0, 1)}
+            />
             {journey.ndc ? (
               <ol className={styles.work}>
                 <li>

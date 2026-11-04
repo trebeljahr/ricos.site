@@ -4,6 +4,7 @@ import {
   add,
   cross,
   dot,
+  lerp3,
   lookAt,
   type Mat,
   multiply,
@@ -21,7 +22,12 @@ import {
   type Vec3,
 } from "src/lib/computer/graphics/matrix";
 import { type Mesh, sphere, splitCube, torus, wall } from "src/lib/computer/graphics/meshes";
-import { Framebuffer, type PipelineVertex, rasterize } from "src/lib/computer/graphics/rasterizer";
+import {
+  type FragmentInput,
+  Framebuffer,
+  type PipelineVertex,
+  rasterize,
+} from "src/lib/computer/graphics/rasterizer";
 import {
   type LightingResult,
   type LightingSettings,
@@ -42,7 +48,9 @@ import {
   Slider,
   Toggle,
   useAnimation,
+  useEased,
 } from "./GraphicsParts";
+import { LightBeam, NormalProfile } from "./LightDiagrams";
 
 const WIDTH = 320;
 const HEIGHT = 240;
@@ -71,11 +79,16 @@ function buildShape(shape: ShapeName, detail: number): Mesh {
 type Normals = "face" | "corner" | "pixel";
 type Channel = "final" | "ambient" | "diffuse" | "specular" | "albedo" | "normal" | "uv";
 
-const CHANNELS: readonly { value: Channel; label: string }[] = [
-  { value: "final", label: "ALL" },
+const SUM: readonly { value: Channel; label: string }[] = [
   { value: "ambient", label: "AMBIENT" },
   { value: "diffuse", label: "DIFFUSE" },
   { value: "specular", label: "SPECULAR" },
+  { value: "final", label: "ALL" },
+];
+const SMALL_WIDTH = 80;
+const SMALL_HEIGHT = 60;
+
+const CHANNELS: readonly { value: Channel; label: string }[] = [
   { value: "albedo", label: "COLOR" },
   { value: "normal", label: "NORMALS" },
   { value: "uv", label: "UV" },
@@ -196,6 +209,9 @@ export function LightingLab() {
   const [objectYaw, setObjectYaw] = useState(25);
   const [objectPitch, setObjectPitch] = useState(10);
   const [showNormals, setShowNormals] = useState(false);
+  const [unwrapped, setUnwrapped] = useState(false);
+  const unwrap = useEased(unwrapped ? 1 : 0, 2.2);
+  const smallCanvases = useRef<Partial<Record<Channel, HTMLCanvasElement | null>>>({});
   const [orbiting, setOrbiting] = useState(false);
   const [probe, setProbe] = useState<{ x: number; y: number }>({ x: 150, y: 100 });
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -231,6 +247,14 @@ export function LightingLab() {
 
   const scene = useMemo(() => {
     const positions = mesh.positions.map((p) => transformPoint(rotation, p));
+    // Unwrapped: every vertex goes to where its UV says it sits on the flat texture.
+    const uMax = Math.max(1, ...mesh.uvs.map(([u]) => u));
+    const vMax = Math.max(1, ...mesh.uvs.map(([, v]) => v));
+    const flatten = (i: number): Vec3 => [
+      (mesh.uvs[i][0] / uMax - 0.5) * 3.6,
+      (0.5 - mesh.uvs[i][1] / vMax) * 2.7,
+      0,
+    ];
     const vertexNormals = mesh.normals.map((n) => transformDirection(rotation, n));
     const tangents = mesh.tangents.map((t) => transformDirection(rotation, t));
     const faceNormals = mesh.triangles.map(([a, b, c]) =>
@@ -259,7 +283,8 @@ export function LightingLab() {
         mat,
         noMaps,
       );
-      const clip = transform(VIEW_PROJECTION, [position[0], position[1], position[2], 1]);
+      const shown = unwrap > 0 ? lerp3(position, flatten(i), unwrap) : position;
+      const clip = transform(VIEW_PROJECTION, [shown[0], shown[1], shown[2], 1]);
       return {
         clip: [clip[0], clip[1], clip[2], clip[3]],
         attributes: [
@@ -284,12 +309,10 @@ export function LightingLab() {
         [vertices[a], vertices[b], vertices[c]] as [PipelineVertex, PipelineVertex, PipelineVertex],
     );
     return { positions, vertexNormals, faceNormals, triangles };
-  }, [mesh, rotation, lighting, light, mat, ambient, diffuse, specular]);
+  }, [mesh, rotation, lighting, light, mat, ambient, diffuse, specular, unwrap]);
 
   const frame = useMemo(() => {
-    const framebuffer = new Framebuffer(WIDTH, HEIGHT);
-    let probed: { result: LightingResult; position: Vec3; triangle: number } | null = null;
-    rasterize(framebuffer, scene.triangles, (input, out) => {
+    const lightFragment = (input: FragmentInput) => {
       const a = input.attributes;
       const position: Vec3 = [a[P], a[P + 1], a[P + 2]];
       const u = a[UV];
@@ -338,48 +361,104 @@ export function LightingLab() {
           ],
         };
       }
-      if (input.x === probe.x && input.y === probe.y) {
-        probed = { result, position, triangle: input.triangle };
-      }
-      let color: Vec3;
-      switch (channel) {
-        case "ambient":
-          color = result.ambient;
-          break;
-        case "diffuse":
-          color = result.diffuse;
-          break;
-        case "specular":
-          color = result.specular;
-          break;
-        case "albedo":
-          color = result.albedo;
-          break;
-        case "normal":
-          color = [
-            (result.normal[0] + 1) * 127.5,
-            (result.normal[1] + 1) * 127.5,
-            (result.normal[2] + 1) * 127.5,
-          ];
-          break;
-        case "uv":
-          color = [(u - Math.floor(u)) * 255, (v - Math.floor(v)) * 255, 60];
-          break;
-        default:
-          color = result.final;
-      }
-      out[0] = color[0];
-      out[1] = color[1];
-      out[2] = color[2];
-    });
+      return { result, position, u, v };
+    };
+    const framebuffer = new Framebuffer(WIDTH, HEIGHT);
+    let probed: {
+      result: LightingResult;
+      position: Vec3;
+      triangle: number;
+      u: number;
+      v: number;
+    } | null = null;
+    const cull = unwrap === 0;
+    rasterize(
+      framebuffer,
+      scene.triangles,
+      (input, out) => {
+        const { result, position, u, v } = lightFragment(input);
+        if (input.x === probe.x && input.y === probe.y) {
+          probed = { result, position, triangle: input.triangle, u, v };
+        }
+        let color: Vec3;
+        switch (channel) {
+          case "ambient":
+            color = result.ambient;
+            break;
+          case "diffuse":
+            color = result.diffuse;
+            break;
+          case "specular":
+            color = result.specular;
+            break;
+          case "albedo":
+            color = result.albedo;
+            break;
+          case "normal":
+            color = [
+              (result.normal[0] + 1) * 127.5,
+              (result.normal[1] + 1) * 127.5,
+              (result.normal[2] + 1) * 127.5,
+            ];
+            break;
+          case "uv":
+            color = [(u - Math.floor(u)) * 255, (v - Math.floor(v)) * 255, 60];
+            break;
+          default:
+            color = result.final;
+        }
+        // Lit by its old position while flat would only confuse: it fades to the bare texture.
+        out[0] = color[0] + (result.albedo[0] - color[0]) * unwrap;
+        out[1] = color[1] + (result.albedo[1] - color[1]) * unwrap;
+        out[2] = color[2] + (result.albedo[2] - color[2]) * unwrap;
+      },
+      { cull },
+    );
+
+    // The same surface, once per term, small: the three really do add up to the fourth.
+    const small = {
+      ambient: new Framebuffer(SMALL_WIDTH, SMALL_HEIGHT),
+      diffuse: new Framebuffer(SMALL_WIDTH, SMALL_HEIGHT),
+      specular: new Framebuffer(SMALL_WIDTH, SMALL_HEIGHT),
+      final: new Framebuffer(SMALL_WIDTH, SMALL_HEIGHT),
+    };
+    rasterize(
+      small.final,
+      scene.triangles,
+      (input, out) => {
+        const { result } = lightFragment(input);
+        const i = (input.y * SMALL_WIDTH + input.x) * 4;
+        for (const term of ["ambient", "diffuse", "specular"] as const) {
+          const target = small[term].color;
+          target[i] = result[term][0];
+          target[i + 1] = result[term][1];
+          target[i + 2] = result[term][2];
+        }
+        out[0] = result.final[0];
+        out[1] = result.final[1];
+        out[2] = result.final[2];
+      },
+      { cull },
+    );
     return {
       framebuffer,
-      probed: probed as { result: LightingResult; position: Vec3; triangle: number } | null,
+      small,
+      probed: probed as {
+        result: LightingResult;
+        position: Vec3;
+        triangle: number;
+        u: number;
+        v: number;
+      } | null,
     };
-  }, [scene, normals, light, mat, lighting, channel, probe, ambient, specular]);
+  }, [scene, normals, light, mat, lighting, channel, probe, ambient, specular, diffuse, unwrap]);
 
   useEffect(() => {
     paintFramebuffer(canvas.current, frame.framebuffer);
+    for (const { value } of SUM) {
+      const term = value as keyof typeof frame.small;
+      paintFramebuffer(smallCanvases.current[term] ?? null, frame.small[term]);
+    }
   });
 
   const lightOnScreen = projectToScreen(light);
@@ -484,7 +563,7 @@ export function LightingLab() {
                 />
               );
             })}
-            {probed && (
+            {probed && unwrap === 0 && (
               <>
                 <VectorArrow
                   from={probed.position}
@@ -521,7 +600,7 @@ export function LightingLab() {
               stroke="#fff"
               strokeWidth={0.8}
             />
-            {!hitsObject && (
+            {!hitsObject && unwrap === 0 && (
               <g
                 className={styles.handle}
                 onPointerDown={(event) => {
@@ -555,8 +634,33 @@ export function LightingLab() {
             )}
           </svg>
         </div>
+        <div className={styles.termRow}>
+          {SUM.map(({ value, label }, i) => (
+            <span key={value} style={{ display: "contents" }}>
+              {i > 0 && <span>{i === 3 ? "=" : "+"}</span>}
+              <button
+                type="button"
+                className={styles.termButton}
+                aria-pressed={channel === value}
+                onClick={() => {
+                  setChannel(value);
+                  sound.playButton();
+                }}
+              >
+                <canvas
+                  ref={(element) => {
+                    smallCanvases.current[value] = element;
+                  }}
+                  width={SMALL_WIDTH}
+                  height={SMALL_HEIGHT}
+                />
+                {label}
+              </button>
+            </span>
+          ))}
+        </div>
         <Choice
-          label="SHOW"
+          label="DATA"
           value={channel}
           options={CHANNELS}
           onChange={(next) => {
@@ -590,6 +694,13 @@ export function LightingLab() {
       </Bay>
 
       <Bay head="NORMALS">
+        <NormalProfile
+          segments={shape === "wall" ? 0 : Math.max(2, detail)}
+          mode={normals}
+          light={light}
+          mat={mat}
+          useMap={maps.normal && normals !== "corner"}
+        />
         <Choice
           label="ONE PER"
           value={normals}
@@ -668,6 +779,16 @@ export function LightingLab() {
       </Bay>
 
       <Bay head="TEXTURES">
+        <div className={styles.choiceRow}>
+          <Toggle
+            label="UNWRAP TO UV"
+            on={unwrapped}
+            onChange={(on) => {
+              setUnwrapped(on);
+              sound.playButton();
+            }}
+          />
+        </div>
         <Choice
           label="SURFACE"
           value={materialName}
@@ -690,7 +811,21 @@ export function LightingLab() {
                 sound.playButton();
               }}
             >
-              <MapThumbnail map={mat[name]} normal={name === "normal"} />
+              <span className={styles.mapView}>
+                <MapThumbnail map={mat[name]} normal={name === "normal"} />
+                {probed && (
+                  <svg className={styles.mapMark} viewBox="0 0 1 1" aria-hidden="true">
+                    <circle
+                      cx={probed.u - Math.floor(probed.u)}
+                      cy={probed.v - Math.floor(probed.v)}
+                      r={0.05}
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth={0.02}
+                    />
+                  </svg>
+                )}
+              </span>
               {MAP_LABELS[name]}
             </button>
           ))}
@@ -707,8 +842,21 @@ export function LightingLab() {
       </Bay>
 
       <Bay head="ONE PIXEL" aside={`${probe.x}, ${probe.y}`}>
+        {probed && (
+          <LightBeam
+            normal={probed.result.normal}
+            toLight={probed.result.toLight}
+            toEye={probed.result.toEye}
+            halfway={probed.result.halfway}
+            nDotL={probed.result.nDotL}
+            shininess={shininess}
+          />
+        )}
         {probed ? (
           <ol className={styles.work}>
+            <li>
+              UV {fixed(probed.u)} {fixed(probed.v)}
+            </li>
             <li>N {vector(probed.result.normal)}</li>
             <li>L {vector(probed.result.toLight)}</li>
             <li>V {vector(probed.result.toEye)}</li>

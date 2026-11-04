@@ -101,6 +101,10 @@ export const COMPUTER_MDX_DEMOS = {
     () => loadGraphicsDemos().then((module) => module.CoordinateSpaces),
     "From a mesh to a pixel",
   ),
+  TriangleRaster: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.TriangleRaster),
+    "Filling in a triangle",
+  ),
   LightingLab: chapterDemo(
     () => loadGraphicsDemos().then((module) => module.LightingLab),
     "Light and texture",

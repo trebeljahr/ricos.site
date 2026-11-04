@@ -1,7 +1,14 @@
 import clsx from "clsx";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePanelSound } from "src/hooks/usePanelSound";
-import { add, scaled, type Vec3 } from "src/lib/computer/graphics/matrix";
+import {
+  add,
+  cross,
+  normalize,
+  scaled,
+  subtract,
+  type Vec3,
+} from "src/lib/computer/graphics/matrix";
 import {
   completeMesh,
   floatBytes,
@@ -18,6 +25,7 @@ import {
   triangleMesh,
 } from "src/lib/computer/graphics/meshes";
 import {
+  AXIS_COLORS,
   clearScene,
   type DrawnPolygon,
   drawArrow,
@@ -32,7 +40,17 @@ import {
   shadeFace,
 } from "src/lib/computer/graphics/sceneDrawing";
 import styles from "./Graphics.module.css";
-import { Bay, Choice, fixed, GraphicsPanel, SceneCanvas, Slider, Toggle } from "./GraphicsParts";
+import {
+  Bay,
+  Choice,
+  fixed,
+  GraphicsPanel,
+  PlayBar,
+  SceneCanvas,
+  Slider,
+  Toggle,
+  useTimeline,
+} from "./GraphicsParts";
 
 const SHAPES = {
   triangle: { label: "TRIANGLE", build: () => triangleMesh() },
@@ -48,6 +66,11 @@ type ShapeName = keyof typeof SHAPES;
 const SHAPE_NAMES = Object.keys(SHAPES) as ShapeName[];
 const hasDetail = (shape: ShapeName) => shape === "sphere" || shape === "torus";
 
+const mixed = (a: Vec3, b: Vec3, t: number): Vec3 => [
+  a[0] + (b[0] - a[0]) * t,
+  a[1] + (b[1] - a[1]) * t,
+  a[2] + (b[2] - a[2]) * t,
+];
 const hex = (byte: number) => byte.toString(16).toUpperCase().padStart(2, "0");
 const COORDINATE_NAMES = ["X", "Y", "Z"] as const;
 
@@ -76,17 +99,22 @@ export function MeshAnatomy() {
   const positionsOnScreen = useRef<[number, number, number][]>([]);
   const [drawnCount, setDrawnCount] = useState(0);
 
+  const [flipped, setFlipped] = useState<ReadonlySet<number>>(new Set());
+  const build = useTimeline(12);
+  const vertexList = useRef<HTMLOListElement>(null);
+  const triangleList = useRef<HTMLOListElement>(null);
+
   const base = useMemo(() => SHAPES[shape].build(detail), [shape, detail]);
   const mesh: Mesh = useMemo(() => {
     const edits = Object.keys(moved);
-    if (edits.length === 0) return base;
+    if (edits.length === 0 && flipped.size === 0) return base;
     return completeMesh({
       positions: base.positions.map((position, i) => moved[i] ?? position),
       uvs: base.uvs,
-      triangles: base.triangles,
+      triangles: base.triangles.map(([a, b, c], i) => (flipped.has(i) ? [a, c, b] : [a, b, c])),
       faceColors: base.faceColors,
     });
-  }, [base, moved]);
+  }, [base, moved, flipped]);
   const edges = useMemo(() => meshEdges(mesh), [mesh]);
   const bytes = meshBytes(mesh);
 
@@ -99,6 +127,32 @@ export function MeshAnatomy() {
     );
   }, [mesh, selectedVertex]);
 
+  // Building up: first each vertex in list order, then each triangle in list order.
+  const vertexCount = mesh.positions.length;
+  const triangleCount = mesh.triangles.length;
+  const building = build.t < 1;
+  const buildAt = build.t * (vertexCount + triangleCount);
+  const verticesBuilt = building ? Math.min(vertexCount, Math.floor(buildAt)) : vertexCount;
+  const trianglesBuilt = building
+    ? Math.max(0, Math.min(triangleCount, Math.floor(buildAt - vertexCount)))
+    : triangleCount;
+  const vertexBeingRead = building && buildAt < vertexCount ? Math.floor(buildAt) : null;
+  const triangleBeingRead =
+    building && buildAt >= vertexCount && trianglesBuilt < triangleCount ? trianglesBuilt : null;
+  const legsOf = building && vertexBeingRead !== null ? vertexBeingRead : selectedVertex;
+  const beingReadCorners = triangleBeingRead !== null ? mesh.triangles[triangleBeingRead] : null;
+
+  // Keep the row being read in sight, without moving the page.
+  useEffect(() => {
+    const scrollTo = (list: HTMLOListElement | null, index: number | null) => {
+      if (!list || index === null) return;
+      const row = list.children[index + 1] as HTMLElement | undefined;
+      if (row) list.scrollTop = row.offsetTop - list.offsetTop - list.clientHeight / 2;
+    };
+    scrollTo(vertexList.current, vertexBeingRead);
+    scrollTo(triangleList.current, triangleBeingRead);
+  }, [vertexBeingRead, triangleBeingRead]);
+
   const choose = (next: Selection) => {
     setSelection(next);
     sound.playButton();
@@ -109,14 +163,21 @@ export function MeshAnatomy() {
     const camera = sceneCamera(yaw, pitch, 8, [0, 0, 0], width, height);
     const onScreen = mesh.positions.map((p) => project(camera, p));
     positionsOnScreen.current = onScreen;
-    const polygons = mesh.triangles.map(([a, b, c], id) => {
+    drawArrow(ctx, camera, [0, 0, 0], [2.2, 0, 0], `${AXIS_COLORS.x}88`, 1, "x");
+    drawArrow(ctx, camera, [0, 0, 0], [0, 2.2, 0], `${AXIS_COLORS.y}88`, 1, "y");
+    drawArrow(ctx, camera, [0, 0, 0], [0, 0, 2.2], `${AXIS_COLORS.z}88`, 1, "z");
+    const polygons = mesh.triangles.slice(0, trianglesBuilt).map(([a, b, c], id) => {
       const points = [mesh.positions[a], mesh.positions[b], mesh.positions[c]];
       const color: Vec3 = mesh.faceColors?.[id] ?? FALLBACK_COLORS[id % 2];
       const selected = selection?.kind === "triangle" && selection.index === id;
       return {
         id,
         points,
-        color: selected ? ([56, 225, 255] as Vec3) : shadeFace(color, points, camera.eye),
+        color: selected
+          ? ([56, 225, 255] as Vec3)
+          : !building && usedBySelected.has(id)
+            ? mixed(shadeFace(color, points, camera.eye), [56, 225, 255], 0.35)
+            : shadeFace(color, points, camera.eye),
         // Without culling you can see the backs through the fronts.
         alpha: showFaces ? (cull ? 1 : 0.72) : 0,
       };
@@ -142,17 +203,48 @@ export function MeshAnatomy() {
           }
         }
       }
+      const built = new Set<number>();
+      for (const [a, b, c] of mesh.triangles.slice(0, trianglesBuilt)) {
+        for (const [p, q] of [
+          [a, b],
+          [b, c],
+          [c, a],
+        ]) {
+          built.add(Math.min(p, q) * count + Math.max(p, q));
+        }
+      }
       for (const [p, q] of edges) {
-        if (hideBack && !frontEdges.has(Math.min(p, q) * count + Math.max(p, q))) continue;
+        const edge = Math.min(p, q) * count + Math.max(p, q);
+        if (!built.has(edge)) continue;
+        if (hideBack && !frontEdges.has(edge)) continue;
         drawLine(ctx, camera, mesh.positions[p], mesh.positions[q], "#dfe7ff", 1);
       }
     }
 
-    if (selectedTriangle) {
-      const [a, b, c] = selectedTriangle.map((i) => mesh.positions[i]);
-      drawArrow(ctx, camera, a, b, "#fff", 2);
-      drawArrow(ctx, camera, b, c, "#fff", 2);
-      drawArrow(ctx, camera, c, a, "#fff", 2);
+    // A triangle being read: A to B to C, in the list's order.
+    const windingOf = beingReadCorners ?? selectedTriangle;
+    if (windingOf) {
+      const [a, b, c] = windingOf.map((i) => mesh.positions[i]);
+      const along = beingReadCorners ? (buildAt - vertexCount - trianglesBuilt) * 3 : 3;
+      const partial = (from: Vec3, to: Vec3, amount: number) =>
+        add(from, scaled(subtract(to, from), Math.max(0, Math.min(1, amount))));
+      drawArrow(ctx, camera, a, partial(a, b, along), "#fff", 2);
+      if (along > 1) drawArrow(ctx, camera, b, partial(b, c, along - 1), "#fff", 2);
+      if (along > 2) drawArrow(ctx, camera, c, partial(c, a, along - 2), "#fff", 2);
+      if (!beingReadCorners) {
+        // The two edges' cross product is the way this triangle faces.
+        const normal = normalize(cross(subtract(b, a), subtract(c, a)));
+        const middle = scaled(add(add(a, b), c), 1 / 3);
+        drawArrow(ctx, camera, middle, add(middle, scaled(normal, 0.9)), "#ffd166", 2.5);
+      }
+    }
+
+    // A vertex is three numbers: this far along x, this far along y, this far along z.
+    if (legsOf !== null && mesh.positions[legsOf] && vertexCount <= 60) {
+      const [x, y, z] = mesh.positions[legsOf];
+      drawArrow(ctx, camera, [0, 0, 0], [x, 0, 0], AXIS_COLORS.x, 2.5);
+      drawArrow(ctx, camera, [x, 0, 0], [x, y, 0], AXIS_COLORS.y, 2.5);
+      drawArrow(ctx, camera, [x, y, 0], [x, y, z], AXIS_COLORS.z, 2.5);
     }
 
     const visibleVertex = new Set<number>();
@@ -178,8 +270,14 @@ export function MeshAnatomy() {
     if (showPoints) {
       const few = mesh.positions.length <= 30;
       mesh.positions.forEach((position, i) => {
-        if (!seesAll && !visibleVertex.has(i)) return;
-        const isSelected = selectedVertex === i || selectedTriangle?.includes(i);
+        if (i >= verticesBuilt && i !== vertexBeingRead) return;
+        // While only some triangles exist, there are no faces yet to hide a vertex behind.
+        if (!building && !seesAll && !visibleVertex.has(i)) return;
+        const isSelected =
+          (building
+            ? vertexBeingRead === i || beingReadCorners?.includes(i)
+            : selectedVertex === i) ||
+          (!building && selectedTriangle?.includes(i));
         drawDot(
           ctx,
           camera,
@@ -248,6 +346,15 @@ export function MeshAnatomy() {
             onTap={tap}
           />
         </div>
+        <PlayBar
+          button="BUILD FROM LISTS"
+          label="READ"
+          timeline={build}
+          format={(t) => {
+            const read = Math.round(t * (vertexCount + triangleCount));
+            return `${read}/${vertexCount + triangleCount}`;
+          }}
+        />
         <Choice
           label="SHAPE"
           value={shape}
@@ -255,6 +362,7 @@ export function MeshAnatomy() {
           onChange={(next) => {
             setShape(next);
             setMoved({});
+            setFlipped(new Set());
             setSelection({ kind: "vertex", index: 0 });
             sound.playButton();
           }}
@@ -270,6 +378,7 @@ export function MeshAnatomy() {
             onChange={(value) => {
               setDetail(value);
               setMoved({});
+              setFlipped(new Set());
               setSelection(null);
             }}
           />
@@ -290,7 +399,7 @@ export function MeshAnatomy() {
         <div className={styles.tables}>
           <div>
             <span className={styles.tableHead}>VERTICES · {mesh.positions.length}</span>
-            <ol className={styles.table} aria-label="Vertex list">
+            <ol ref={vertexList} className={styles.table} aria-label="Vertex list">
               <li>
                 <div
                   className={clsx(styles.row, styles.rowVertex)}
@@ -308,8 +417,11 @@ export function MeshAnatomy() {
                   <button
                     type="button"
                     className={clsx(styles.row, styles.rowVertex)}
-                    aria-pressed={selectedVertex === i}
-                    data-related={selectedTriangle?.includes(i) ? "" : undefined}
+                    aria-pressed={!building && selectedVertex === i}
+                    data-current={vertexBeingRead === i ? "" : undefined}
+                    data-related={
+                      (beingReadCorners ?? selectedTriangle)?.includes(i) ? "" : undefined
+                    }
                     onClick={() => choose({ kind: "vertex", index: i })}
                   >
                     <span>{i}</span>
@@ -323,7 +435,7 @@ export function MeshAnatomy() {
           </div>
           <div>
             <span className={styles.tableHead}>TRIANGLES · {mesh.triangles.length}</span>
-            <ol className={styles.table} aria-label="Triangle list">
+            <ol ref={triangleList} className={styles.table} aria-label="Triangle list">
               <li>
                 <div
                   className={clsx(styles.row, styles.rowTriangle)}
@@ -341,8 +453,11 @@ export function MeshAnatomy() {
                   <button
                     type="button"
                     className={clsx(styles.row, styles.rowTriangle)}
-                    aria-pressed={selection?.kind === "triangle" && selection.index === i}
-                    data-related={usedBySelected.has(i) ? "" : undefined}
+                    aria-pressed={
+                      !building && selection?.kind === "triangle" && selection.index === i
+                    }
+                    data-current={triangleBeingRead === i ? "" : undefined}
+                    data-related={!building && usedBySelected.has(i) ? "" : undefined}
                     onClick={() => choose({ kind: "triangle", index: i })}
                   >
                     <span>{i}</span>
@@ -390,13 +505,29 @@ export function MeshAnatomy() {
           <button
             type="button"
             className={styles.button}
-            disabled={Object.keys(moved).length === 0}
+            disabled={Object.keys(moved).length === 0 && flipped.size === 0}
             onClick={() => {
               setMoved({});
+              setFlipped(new Set());
               sound.playButton();
             }}
           >
-            RESET VERTICES
+            RESET
+          </button>
+          <button
+            type="button"
+            className={styles.button}
+            disabled={selection?.kind !== "triangle"}
+            onClick={() => {
+              if (selection?.kind !== "triangle") return;
+              const next = new Set(flipped);
+              if (next.has(selection.index)) next.delete(selection.index);
+              else next.add(selection.index);
+              setFlipped(next);
+              sound.playButton();
+            }}
+          >
+            FLIP WINDING
           </button>
         </div>
       </Bay>

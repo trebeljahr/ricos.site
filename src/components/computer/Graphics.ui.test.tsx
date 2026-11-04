@@ -6,6 +6,7 @@ import { LightingLab } from "./LightingLab";
 import { MatrixPlayground } from "./MatrixPlayground";
 import { MeshAnatomy } from "./MeshAnatomy";
 import { Transform3d } from "./Transform3d";
+import { TriangleRaster } from "./TriangleRaster";
 
 // jsdom has no canvas. This one takes every call, so the demos' drawing code still runs.
 function fakeContext() {
@@ -30,6 +31,7 @@ beforeEach(() => {
   HTMLCanvasElement.prototype.getContext = (() =>
     fakeContext()) as unknown as HTMLCanvasElement["getContext"];
   Element.prototype.setPointerCapture = () => {};
+  window.matchMedia = (() => ({ matches: true })) as unknown as typeof window.matchMedia;
 });
 afterEach(cleanup);
 
@@ -50,11 +52,28 @@ describe("MatrixPlayground", () => {
 
   it("changes the answer when two steps swap", () => {
     render(<MatrixPlayground />);
-    const worked = () => screen.getByText(/^x′/).textContent;
+    const worked = () => screen.getByText("AREA ×").closest("section")?.textContent;
     const before = worked();
     press("Do MOVE 3 earlier");
     expect(worked()).not.toBe(before);
     step("2 MOVE");
+  });
+
+  it("adds up a point's walk along the matrix's columns", () => {
+    render(<MatrixPlayground />);
+    fireEvent.click(screen.getByRole("button", { name: "Point 0.00, 2.50" }));
+    slide("WALKED", 1);
+    expect(screen.getByRole("button", { name: "0 · DIRECTION" })).toBeTruthy();
+    expect(count("AREA ×")).toBe("2.25");
+  });
+
+  it("ignores the move for a direction", () => {
+    render(<MatrixPlayground />);
+    const sum = () => screen.getByText("AREA ×").closest("section")?.textContent ?? "";
+    press("1 · POINT");
+    const asPoint = sum();
+    press("0 · DIRECTION");
+    expect(sum()).not.toBe(asPoint);
   });
 
   it("reports a flip, and a flat matrix", () => {
@@ -137,7 +156,7 @@ describe("MeshAnatomy", () => {
     expect(count("IN TRIANGLES")).not.toBe("0");
     slide("X", 0.5);
     expect(screen.getByText("X = 0.50 = 00 00 00 3F")).toBeTruthy();
-    press("RESET VERTICES");
+    press("RESET");
     expect(screen.getByText("X = -1.00 = 00 00 80 BF")).toBeTruthy();
   });
 
@@ -161,6 +180,8 @@ describe("CoordinateSpaces", () => {
 
   it("shows each stop's matrix", () => {
     render(<CoordinateSpaces />);
+    expect(screen.getByText("AS STORED IN THE MESH")).toBeTruthy();
+    press(/^WORLD/);
     expect(screen.getByText("MODEL")).toBeTruthy();
     press(/^CAMERA/);
     expect(screen.getByText("VIEW")).toBeTruthy();
@@ -176,6 +197,7 @@ describe("CoordinateSpaces", () => {
     render(<CoordinateSpaces />);
     const pixelRow = () => screen.getByRole("button", { name: /^PIXEL/ }).textContent;
     const before = pixelRow();
+    press(/^WORLD/);
     slide("MOVE X", 3);
     expect(pixelRow()).not.toBe(before);
   });
@@ -208,6 +230,62 @@ describe("CoordinateSpaces", () => {
     slide("MOVE X", 4);
     press(/^CLIP/);
     expect(count(/^INSIDE/)).toBe("NO");
+  });
+});
+
+describe("MeshAnatomy building", () => {
+  it("reads the vertex list before the triangle list", () => {
+    render(<MeshAnatomy />);
+    slide("READ", 0.1);
+    const vertices = within(screen.getByRole("list", { name: "Vertex list" }));
+    expect(vertices.getAllByRole("button").some((row) => row.hasAttribute("data-current"))).toBe(
+      true,
+    );
+    slide("READ", 0.8);
+    const triangles = within(screen.getByRole("list", { name: "Triangle list" }));
+    expect(triangles.getAllByRole("button").some((row) => row.hasAttribute("data-current"))).toBe(
+      true,
+    );
+  });
+
+  it("flips a triangle's winding and resets it", () => {
+    render(<MeshAnatomy />);
+    const triangles = within(screen.getByRole("list", { name: "Triangle list" }));
+    const row = () => triangles.getByRole("button", { name: /^0\s*0\s*/ });
+    fireEvent.click(row());
+    const before = row().textContent;
+    press("FLIP WINDING");
+    expect(row().textContent).not.toBe(before);
+    press("RESET");
+    expect(row().textContent).toBe(before);
+  });
+});
+
+describe("TriangleRaster", () => {
+  it("opens finished, and scrubbing shows one pixel's test", () => {
+    render(<TriangleRaster />);
+    const written = Number(count("WRITTEN"));
+    expect(written).toBeGreaterThan(20);
+    slide("SCANNED", 0.5);
+    expect(screen.getByText(/→ (OUTSIDE|WRITTEN)/)).toBeTruthy();
+    expect(Number(count("WRITTEN"))).toBeLessThan(written);
+  });
+
+  it("loses pixels to a nearer triangle, and gets them back when it moves behind", () => {
+    render(<TriangleRaster />);
+    press("SECOND TRIANGLE");
+    expect(Number(count("BEHIND"))).toBeGreaterThan(0);
+    slide("DEPTH 2", 0.05);
+    expect(Number(count("BEHIND"))).toBe(0);
+  });
+
+  it("moves a corner from the keyboard", () => {
+    render(<TriangleRaster />);
+    const before = count("TESTED");
+    fireEvent.keyDown(screen.getByRole("slider", { name: "Corner B of triangle 1" }), {
+      key: "ArrowRight",
+    });
+    expect(count("TESTED")).not.toBe(before);
   });
 });
 
@@ -248,6 +326,7 @@ describe("LightingLab", () => {
   it("switches shapes and views without losing its readout", () => {
     render(<LightingLab />);
     for (const name of ["TORUS", "WALL", "CUBE", "SPHERE"]) press(name);
+    press("UNWRAP TO UV");
     for (const name of ["AMBIENT", "DIFFUSE", "NORMALS", "UV", "ALL"]) {
       fireEvent.click(screen.getAllByRole("button", { name })[0]);
     }

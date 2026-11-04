@@ -182,6 +182,10 @@ export const computerDemos = [
     title: "Follow a corner from mesh to pixel",
   },
   {
+    slug: "triangle-raster",
+    title: "Fill in a triangle, pixel by pixel",
+  },
+  {
     slug: "lighting-lab",
     title: "Light a surface, pixel by pixel",
   },

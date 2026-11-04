@@ -230,6 +230,32 @@
 .panel details summary { color: var(--muted); cursor: pointer; font-size: 11px; font-weight: 600; letter-spacing: .08em; }
 .panel details > * + * { margin-top: 8px; }
 
+.term { display: inline-flex; align-items: center; gap: 4px; padding: 2px 5px; border: 1px solid transparent; border-radius: 8px; transition: border-color .15s, background .15s, box-shadow .15s; }
+.term b { font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.term [data-axis="x"], .term b[data-axis="x"] { color: #ff7a85; }
+.term b[data-axis="y"] { color: #5ef0a0; }
+.term b[data-axis="z"] { color: #62bcff; }
+.term b[data-axis="t"] { color: #c9a6ff; }
+.term[data-active] { border-color: #38e1ffb0; background: #38e1ff1a; box-shadow: 0 0 14px #38e1ff40; }
+.op[data-active] { border-color: #38e1ffb0; box-shadow: 0 0 14px #38e1ff40; }
+.row[data-current] { background: var(--accent); color: #070910; font-weight: 700; }
+.stopNumbers [data-link] { color: #ffd166; font-weight: 700; }
+.stop[aria-pressed="true"] .stopNumbers [data-link] { color: #5a3a00; }
+
+.diagram { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #0a0c12; font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.termRow { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; color: var(--muted); font-size: 16px; }
+.termButton { display: grid; flex: 1 1 60px; gap: 3px; min-width: 56px; padding: 3px; border: 1px solid var(--line); border-radius: 8px; background: #171b25; color: var(--muted); font: inherit; font-size: 9px; font-weight: 600; letter-spacing: .04em; line-height: 1.2; cursor: pointer; }
+.termButton canvas { display: block; width: 100%; height: auto; border-radius: 5px; image-rendering: pixelated; }
+.termButton[aria-pressed="true"] { border-color: #38e1ffb0; box-shadow: 0 0 12px #38e1ff40; color: var(--text); }
+.termButton:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.mapView { position: relative; display: block; line-height: 0; }
+.mapMark { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.bars { display: grid; gap: 4px; }
+.bar { display: grid; grid-template-columns: 70px minmax(0, 1fr) 44px; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; }
+.bar i { display: block; height: 8px; border-radius: 999px; background: #2a3040; overflow: hidden; }
+.bar i b { display: block; height: 100%; border-radius: 999px; }
+.bar span:last-child { color: var(--text); font: 500 12px ui-monospace, monospace; text-align: right; }
+
 @container (max-width: 480px) {
   .choice { grid-template-columns: minmax(0, 1fr); gap: 3px; }
   .choice > legend, .choice > span { padding-top: 0; }

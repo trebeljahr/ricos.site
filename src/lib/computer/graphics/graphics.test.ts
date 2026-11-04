@@ -35,7 +35,14 @@ import {
   wall,
 } from "./meshes";
 import { type PipelineSettings, pipelineMatrices, vertexJourney } from "./pipeline";
-import { clipPolygon, Framebuffer, insideClip, type PipelineVertex, rasterize } from "./rasterizer";
+import {
+  clipPolygon,
+  Framebuffer,
+  insideClip,
+  type PipelineVertex,
+  rasterize,
+  scanTriangles,
+} from "./rasterizer";
 import { material, shade } from "./shading";
 
 const near = (actual: readonly number[], expected: readonly number[], digits = 5) => {
@@ -514,5 +521,71 @@ describe("lighting", () => {
       transformPoint(multiplyAll(translate3(1, 0, 0), rotateY(Math.PI / 2)), [0, 0, 1]),
       [2, 0, 0],
     );
+  });
+});
+
+describe("the scan", () => {
+  const corners: [number, number][] = [
+    [1.5, 10.5],
+    [13.5, 8.5],
+    [5.5, 1.5],
+  ];
+
+  it("fills exactly the pixels the real rasterizer fills", () => {
+    const steps = scanTriangles([{ corners, depth: 0.5 }], 16, 12);
+    const toClip = ([x, y]: [number, number]): PipelineVertex => ({
+      clip: [(x / 16) * 2 - 1, 1 - (y / 12) * 2, 0, 1],
+      attributes: [],
+    });
+    const fb = new Framebuffer(16, 12);
+    rasterize(
+      fb,
+      [[toClip(corners[0]), toClip(corners[1]), toClip(corners[2])]],
+      (_, out) => {
+        out[0] = 1;
+      },
+      { cull: false },
+    );
+    const fromScan = steps.filter((s) => s.outcome === "written").map((s) => s.y * 16 + s.x);
+    const fromRaster: number[] = [];
+    fb.owner.forEach((owner, i) => {
+      if (owner >= 0) fromRaster.push(i);
+    });
+    expect(fromScan).toEqual(fromRaster);
+  });
+
+  it("gives weights that add up to one, and all positive inside", () => {
+    for (const step of scanTriangles([{ corners, depth: 0.5 }], 16, 12)) {
+      expect(step.weights[0] + step.weights[1] + step.weights[2]).toBeCloseTo(1);
+      if (step.inside) expect(Math.min(...step.weights)).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("puts all of a corner's weight at that corner", () => {
+    const steps = scanTriangles(
+      [
+        {
+          corners: [
+            [0.5, 0.5],
+            [8.5, 0.5],
+            [0.5, 8.5],
+          ],
+          depth: 0.5,
+        },
+      ],
+      10,
+      10,
+    );
+    const first = steps.find((s) => s.x === 0 && s.y === 0);
+    expect(first?.weights[0]).toBeCloseTo(1);
+  });
+
+  it("settles overlaps by depth, in either order", () => {
+    const near = { corners, depth: 0.2 };
+    const far = { corners, depth: 0.8 };
+    const nearFirst = scanTriangles([near, far], 16, 12);
+    expect(nearFirst.filter((s) => s.triangle === 1 && s.outcome === "written").length).toBe(0);
+    const farFirst = scanTriangles([far, near], 16, 12);
+    expect(farFirst.filter((s) => s.triangle === 1 && s.outcome === "behind").length).toBe(0);
   });
 });

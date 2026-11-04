@@ -3,3 +3,4 @@ export { LightingLab } from "./LightingLab";
 export { MatrixPlayground } from "./MatrixPlayground";
 export { MeshAnatomy } from "./MeshAnatomy";
 export { Transform3d } from "./Transform3d";
+export { TriangleRaster } from "./TriangleRaster";

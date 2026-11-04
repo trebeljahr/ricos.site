@@ -21,6 +21,7 @@ export const MDX_DEMO_COMPONENTS = [
   "Transform3d",
   "MeshAnatomy",
   "CoordinateSpaces",
+  "TriangleRaster",
   "LightingLab",
   "EndianReader",
   "AbstractionLayers",

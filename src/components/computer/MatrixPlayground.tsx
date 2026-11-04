@@ -2,6 +2,7 @@ import { type KeyboardEvent, type PointerEvent, useMemo, useRef, useState } from
 import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   determinant2,
+  identity,
   type Mat,
   radians,
   rotate2,
@@ -11,7 +12,18 @@ import {
   translate2,
 } from "src/lib/computer/graphics/matrix";
 import styles from "./Graphics.module.css";
-import { Bay, Choice, fixed, GraphicsPanel, MatrixGrid, VectorColumn } from "./GraphicsParts";
+import {
+  Bay,
+  Choice,
+  ColumnSum,
+  fixed,
+  GraphicsPanel,
+  PlayBar,
+  prefersStillness,
+  Toggle,
+  useAnimation,
+  useTimeline,
+} from "./GraphicsParts";
 import {
   TransformChain,
   type TransformKind,
@@ -99,6 +111,7 @@ const COLORS = {
   y: "#5ef0a0",
   t: "#c9a6ff",
   shape: "#7c8cff",
+  other: "#ff5cc8",
   grid: "#2c3652",
   warp: "#3f5fb0",
 };
@@ -116,11 +129,15 @@ function Arrow({
   to,
   color,
   label,
+  width = 3,
+  opacity = 1,
 }: {
   from: readonly [number, number];
   to: readonly [number, number];
   color: string;
-  label: string;
+  label?: string;
+  width?: number;
+  opacity?: number;
 }) {
   const x0 = toX(from[0]);
   const y0 = toY(from[1]);
@@ -128,20 +145,30 @@ function Arrow({
   const y1 = toY(to[1]);
   const angle = Math.atan2(y1 - y0, x1 - x0);
   const near = Math.hypot(x1 - x0, y1 - y0) < 3;
+  const size = 7 + width * 1.4;
   const head = (spread: number) =>
-    `${(x1 - 11 * Math.cos(angle + spread)).toFixed(1)} ${(y1 - 11 * Math.sin(angle + spread)).toFixed(1)}`;
+    `${(x1 - size * Math.cos(angle + spread)).toFixed(1)} ${(y1 - size * Math.sin(angle + spread)).toFixed(1)}`;
   return (
-    <g>
-      <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={color} strokeWidth={3} />
+    <g opacity={opacity}>
+      <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={color} strokeWidth={width} />
       {!near && (
         <path
           d={`M${x1.toFixed(1)} ${y1.toFixed(1)} L${head(0.45)} L${head(-0.45)} Z`}
           fill={color}
         />
       )}
-      <text x={x1 + 8} y={y1 - 7} fill={color} fontSize={14} fontWeight={700}>
-        {label}
-      </text>
+      {label && !near && (
+        <text
+          x={(x0 + x1) / 2 + 7}
+          y={(y0 + y1) / 2 - 6}
+          fill={color}
+          fontSize={13}
+          fontWeight={700}
+          fontFamily="ui-monospace, monospace"
+        >
+          {label}
+        </text>
+      )}
     </g>
   );
 }
@@ -158,16 +185,54 @@ const PRESETS: readonly { label: string; matrix: Mat }[] = [
 type Handle = "x" | "y" | "t";
 
 const snap = (value: number) => Math.round(value * 20) / 20;
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+const smooth = (t: number) => t * t * (3 - 2 * t);
 
-/** A shape, a grid and a 3×3 matrix: drag where the axes land, or stack up transforms. */
+// A point the walk can go to: every corner of the shape, and the tips of the two axes.
+const POINTS: readonly { at: readonly [number, number]; label: string }[] = [
+  ...SHAPE.map((at, i) => ({ at, label: String(i) })),
+  { at: [1, 0], label: "x" },
+  { at: [0, 1], label: "y" },
+];
+
+// The order of the walk: first to where the origin went, then along each axis.
+const WALK_COLUMNS = [2, 0, 1] as const;
+
+/** A matrix is three arrows, and multiplying is a walk along them. */
 export function MatrixPlayground() {
   const sound = usePanelSound();
   const [mode, setMode] = useState<"stack" | "drag">("stack");
   const [free, setFree] = useState<Mat>(PRESETS[0].matrix);
+  const [tween, setTween] = useState<{ from: Mat; to: Mat; t: number } | null>(null);
   const [picked, setPicked] = useState(8);
+  const [w, setW] = useState<0 | 1>(1);
+  const [showOther, setShowOther] = useState(false);
   const held = useRef<Handle | null>(null);
   const stack = useTransformStack(KINDS, 3, FIRST_STEPS);
-  const matrix = mode === "drag" ? free : stack.current;
+  const walk = useTimeline(5);
+
+  useAnimation(tween !== null, (seconds) => {
+    if (!tween) return;
+    const t = tween.t + seconds / 1.1;
+    if (t >= 1) {
+      setFree(tween.to);
+      setTween(null);
+    } else {
+      setTween({ ...tween, t });
+    }
+  });
+
+  const animateTo = (from: Mat, to: Mat) => {
+    setFree(to);
+    setTween(prefersStillness() ? null : { from, to, t: 0 });
+  };
+
+  const freeShown = useMemo(() => {
+    if (!tween) return free;
+    const t = smooth(tween.t);
+    return tween.from.map((value, i) => value + (tween.to[i] - value) * t);
+  }, [free, tween]);
+  const matrix = mode === "drag" ? freeShown : stack.current;
 
   const lattice = useMemo(() => {
     const lines: string[] = [];
@@ -188,10 +253,29 @@ export function MatrixPlayground() {
   const tipX = place(matrix, [1, 0]);
   const tipY = place(matrix, [0, 1]);
   const determinant = determinant2(matrix);
-  const point = SHAPE[picked];
-  const landed = transform(matrix, [point[0], point[1], 1]);
+  const point = POINTS[picked].at;
+  const vector = [point[0], point[1], w];
+  const landed = transform(matrix, vector);
+
+  const columns = [0, 1, 2].map((c) => [matrix[c], matrix[3 + c]] as const);
+  // Each leg of the walk: which column, how many of it, how far along it has got.
+  const walkAt = walk.t * 3;
+  const legs: { column: number; from: [number, number]; to: [number, number] }[] = [];
+  const running: [number, number] = [0, 0];
+  WALK_COLUMNS.forEach((column, order) => {
+    const amount = smooth(clamp01(walkAt - order));
+    const from: [number, number] = [running[0], running[1]];
+    running[0] += columns[column][0] * vector[column] * amount;
+    running[1] += columns[column][1] * vector[column] * amount;
+    legs.push({ column, from, to: [running[0], running[1]] });
+  });
+  const walking = walk.t < 1;
+  const activeColumn = walking ? WALK_COLUMNS[Math.min(2, Math.floor(walkAt))] : null;
+  const legColor = (column: number) => [COLORS.x, COLORS.y, COLORS.t][column];
+  const before: [number, number] = [point[0], point[1]];
 
   const moveHandle = (handle: Handle, x: number, y: number) => {
+    setTween(null);
     setFree((m) => {
       if (handle === "t") return [m[0], m[1], x, m[3], m[4], y, 0, 0, 1];
       if (handle === "x") return [x - m[2], m[1], m[2], y - m[5], m[4], m[5], 0, 0, 1];
@@ -231,12 +315,7 @@ export function MatrixPlayground() {
     },
   });
 
-  const ghostProgress = useMemo(
-    () => (mode === "stack" ? stack.steps.map((_, i) => stack.matrixAt(i + 1)).slice(0, -1) : []),
-    [mode, stack.steps, stack.matrixAt],
-  );
-
-  const [m00, m01, m02, m10, m11, m12] = matrix;
+  const otherOrder = mode === "stack" && showOther ? stack.reversedAt(stack.progress) : null;
 
   return (
     <GraphicsPanel title="MATRIX PLAYGROUND" sound={sound}>
@@ -269,28 +348,54 @@ export function MatrixPlayground() {
               stroke="#8fa3ff"
               strokeWidth={1}
               strokeDasharray="4 3"
-              opacity={0.7}
+              opacity={0.55}
             />
-            {ghostProgress.map((ghost, i) => (
+            {otherOrder && (
               <path
-                key={i}
-                d={path(SHAPE.map((p) => place(ghost, p)))}
-                fill="none"
-                stroke={COLORS.shape}
-                strokeWidth={1}
-                strokeDasharray="2 3"
-                opacity={0.65}
+                d={path(SHAPE.map((p) => place(otherOrder, p)))}
+                fill={COLORS.other}
+                fillOpacity={0.3}
+                stroke={COLORS.other}
+                strokeWidth={1.5}
               />
-            ))}
+            )}
             <path
               d={path(SHAPE.map((p) => place(matrix, p)))}
               fill={COLORS.shape}
-              fillOpacity={0.82}
-              stroke={COLORS.shape}
+              fillOpacity={0.45}
+              stroke="#a7b1ff"
               strokeWidth={1.5}
             />
-            <Arrow from={origin} to={tipX} color={COLORS.x} label="x" />
-            <Arrow from={origin} to={tipY} color={COLORS.y} label="y" />
+
+            {/* The same recipe on the untouched grid: so many of x, so many of y. */}
+            <Arrow from={[0, 0]} to={[before[0], 0]} color={COLORS.x} width={1.5} opacity={0.4} />
+            <Arrow from={[before[0], 0]} to={before} color={COLORS.y} width={1.5} opacity={0.4} />
+
+            {/* The three arrows the matrix is made of. */}
+            <Arrow from={origin} to={tipX} color={COLORS.x} width={1.5} opacity={0.75} />
+            <Arrow from={origin} to={tipY} color={COLORS.y} width={1.5} opacity={0.75} />
+            <Arrow from={[0, 0]} to={origin} color={COLORS.t} width={1.5} opacity={0.75} />
+
+            {/* And the walk along them, one column at a time. */}
+            {legs.map(({ column, from, to }) => (
+              <Arrow
+                key={column}
+                from={from}
+                to={to}
+                color={legColor(column)}
+                width={activeColumn === column ? 5 : 3.5}
+                label={`${fixed(vector[column])}×`}
+              />
+            ))}
+            <circle
+              cx={toX(running[0])}
+              cy={toY(running[1])}
+              r={6}
+              fill="#fff"
+              stroke="#0a0c12"
+              strokeWidth={1.5}
+            />
+
             {SHAPE.map((p, i) => {
               const [x, y] = place(matrix, p);
               return (
@@ -298,12 +403,15 @@ export function MatrixPlayground() {
                   key={i}
                   cx={toX(x)}
                   cy={toY(y)}
-                  r={i === picked ? 6 : 3.5}
+                  r={3.5}
                   fill={i === picked ? "#fff" : "#0a0c12"}
-                  stroke={i === picked ? "#0a0c12" : "#fff"}
-                  strokeWidth={1.5}
+                  stroke="#fff"
+                  strokeWidth={1.2}
                   style={{ cursor: "pointer" }}
-                  onPointerDown={() => setPicked(i)}
+                  onPointerDown={() => {
+                    setPicked(i);
+                    walk.play();
+                  }}
                 />
               );
             })}
@@ -354,12 +462,20 @@ export function MatrixPlayground() {
             { value: "drag", label: "DRAG AXES" },
           ]}
           onChange={(next) => {
-            if (next === "drag") setFree(stack.current);
+            if (next === "drag") {
+              setFree(stack.current);
+              setTween(null);
+            }
             setMode(next);
             sound.playButton();
           }}
         />
         {mode === "stack" && <TransformProgress stack={stack} />}
+        {mode === "stack" && (
+          <div className={styles.choiceRow}>
+            <Toggle label="OTHER ORDER" on={showOther} onChange={setShowOther} />
+          </div>
+        )}
         {mode === "drag" && (
           <fieldset className={styles.choice}>
             <legend>SET TO</legend>
@@ -370,57 +486,70 @@ export function MatrixPlayground() {
                   type="button"
                   className={styles.button}
                   onClick={() => {
-                    setFree(preset.matrix);
+                    animateTo(freeShown, preset.matrix);
                     sound.playButton();
                   }}
                 >
                   {preset.label}
                 </button>
               ))}
+              <button
+                type="button"
+                className={styles.button}
+                onClick={() => {
+                  animateTo(identity(3), free);
+                  sound.playButton();
+                }}
+              >
+                REPLAY
+              </button>
             </div>
           </fieldset>
         )}
       </Bay>
 
-      {mode === "stack" && (
-        <Bay head="STEPS · FIRST TO LAST" aside={`${stack.steps.length} / 6`}>
-          <TransformStackEditor kinds={KINDS} stack={stack} onClick={sound.playButton} />
-          <TransformChain kinds={KINDS} stack={stack} />
-        </Bay>
-      )}
-
       <Bay head="ONE POINT × THE MATRIX">
-        <div className={styles.equation}>
-          <MatrixGrid matrix={matrix} axes label="M" />
-          <span>×</span>
-          <VectorColumn values={[point[0], point[1], 1]} label="POINT" />
-          <span>=</span>
-          <VectorColumn values={landed} label="LANDS AT" />
-        </div>
-        <ol className={styles.work}>
-          <li>
-            x′ = {fixed(m00)}×{fixed(point[0])} + {fixed(m01)}×{fixed(point[1])} + {fixed(m02)}×1 ={" "}
-            {fixed(landed[0])}
-          </li>
-          <li>
-            y′ = {fixed(m10)}×{fixed(point[0])} + {fixed(m11)}×{fixed(point[1])} + {fixed(m12)}×1 ={" "}
-            {fixed(landed[1])}
-          </li>
-        </ol>
+        <PlayBar
+          button="WALK"
+          label="WALKED"
+          timeline={walk}
+          format={(t) => `${fixed(t * 3, 1)}/3`}
+        />
+        <ColumnSum
+          matrix={matrix}
+          vector={vector}
+          active={activeColumn}
+          result={walking ? [running[0], running[1], landed[2]] : landed}
+        />
         <div className={styles.choiceRow}>
-          {SHAPE.map((corner, i) => (
+          {POINTS.map((candidate, i) => (
             <button
-              key={i}
+              key={candidate.label}
               type="button"
               className={`${styles.button} ${styles.iconButton}`}
               aria-pressed={i === picked}
-              aria-label={`Point ${fixed(corner[0])}, ${fixed(corner[1])}`}
-              onClick={() => setPicked(i)}
+              aria-label={`Point ${fixed(candidate.at[0])}, ${fixed(candidate.at[1])}`}
+              onClick={() => {
+                setPicked(i);
+                walk.play();
+              }}
             >
-              {i}
+              {candidate.label}
             </button>
           ))}
         </div>
+        <Choice
+          label="THIRD NUMBER"
+          value={w}
+          options={[
+            { value: 1, label: "1 · POINT" },
+            { value: 0, label: "0 · DIRECTION" },
+          ]}
+          onChange={(next) => {
+            setW(next);
+            sound.playButton();
+          }}
+        />
         <dl className={styles.counts}>
           <div>
             <dt>AREA ×</dt>
@@ -434,6 +563,13 @@ export function MatrixPlayground() {
           </div>
         </dl>
       </Bay>
+
+      {mode === "stack" && (
+        <Bay head="STEPS · FIRST TO LAST" aside={`${stack.steps.length} / 6`}>
+          <TransformStackEditor kinds={KINDS} stack={stack} onClick={sound.playButton} />
+          <TransformChain kinds={KINDS} stack={stack} />
+        </Bay>
+      )}
     </GraphicsPanel>
   );
 }

@@ -380,7 +380,7 @@ export function useAnimation(running: boolean, step: (seconds: number) => void) 
   }, [running]);
 }
 
-const prefersStillness = () =>
+export const prefersStillness = () =>
   typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /** Eases a number towards a target. Without animation frames, or for readers who ask for less motion, it jumps. */
@@ -407,4 +407,131 @@ export function useEased(target: number, secondsPerUnit = 0.9) {
     return () => cancelAnimationFrame(id);
   }, [target, secondsPerUnit]);
   return value;
+}
+
+/** A position from 0 to 1 that a button plays over some seconds and a slider can scrub. Opens finished. */
+export function useTimeline(seconds: number) {
+  const [t, setT] = useState(1);
+  const [playing, setPlaying] = useState(false);
+  useAnimation(playing, (elapsed) => {
+    const next = t + elapsed / seconds;
+    if (next >= 1) {
+      setT(1);
+      setPlaying(false);
+    } else {
+      setT(next);
+    }
+  });
+  return {
+    t,
+    playing,
+    play: () => {
+      if (playing) {
+        setPlaying(false);
+        return;
+      }
+      if (t >= 1) setT(0);
+      setPlaying(true);
+    },
+    seek: (value: number) => {
+      setT(value);
+      setPlaying(false);
+    },
+  };
+}
+
+export type Timeline = ReturnType<typeof useTimeline>;
+
+/** A play button and the slider that scrubs the same animation. */
+export function PlayBar({
+  button,
+  label,
+  timeline,
+  format,
+}: {
+  button: string;
+  label: string;
+  timeline: Timeline;
+  format?: (t: number) => string;
+}) {
+  return (
+    <div className={styles.choiceRow} style={{ alignItems: "center" }}>
+      <button
+        type="button"
+        className={styles.button}
+        aria-pressed={timeline.playing}
+        onClick={timeline.play}
+      >
+        {timeline.playing ? "PAUSE" : button}
+      </button>
+      <div style={{ flex: "1 1 180px", minWidth: 0 }}>
+        <Slider
+          label={label}
+          value={timeline.t}
+          min={0}
+          max={1}
+          step={0.001}
+          format={format ?? ((t) => `${Math.round(t * 100)}%`)}
+          onChange={timeline.seek}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A matrix times a vector, written as what it does: each number of the vector
+ * scales one column of the matrix, and the scaled columns add up.
+ */
+export function ColumnSum({
+  matrix,
+  vector,
+  result,
+  active,
+  digits = 2,
+}: {
+  matrix: Mat;
+  vector: readonly number[];
+  result: readonly number[];
+  /** Which column the animation is adding right now. */
+  active?: number | null;
+  digits?: number;
+}) {
+  const rows = rowsOf(matrix);
+  const n = rows.length;
+  return (
+    <div className={styles.equation}>
+      {rows[0].map((_, column) => {
+        const axis = column === n - 1 ? "t" : AXIS_BY_COLUMN[column];
+        return (
+          <span key={axis} className={styles.equation}>
+            {column > 0 && <span>+</span>}
+            <span className={styles.term} data-active={active === column ? "" : undefined}>
+              <b data-axis={axis}>{fixed(vector[column], digits)}</b>
+              <span>×</span>
+              <span className={styles.matrix} style={{ gridTemplateColumns: "auto" }}>
+                {rows.map((row, r) => (
+                  <span
+                    key={r}
+                    data-axis={r === n - 1 ? undefined : axis}
+                    data-faint={r === n - 1 ? "" : undefined}
+                  >
+                    {fixed(row[column], digits)}
+                  </span>
+                ))}
+              </span>
+            </span>
+          </span>
+        );
+      })}
+      <span>=</span>
+      <span className={styles.matrix} style={{ gridTemplateColumns: "auto" }}>
+        {result.map((value, r) => (
+          <span key={r} data-faint={r === n - 1 ? "" : undefined}>
+            {fixed(value, digits)}
+          </span>
+        ))}
+      </span>
+    </div>
+  );
 }

@@ -78,6 +78,19 @@ export function useTransformStack(
     [partial, size, steps],
   );
 
+  /** The same steps in the opposite order, at the same progress. */
+  const reversedAt = useCallback(
+    (at: number) => {
+      let result = identity(size);
+      [...steps].reverse().forEach((step, index) => {
+        const amount = Math.max(0, Math.min(1, at - index));
+        if (amount > 0) result = multiply(partial(step, amount), result);
+      });
+      return result;
+    },
+    [partial, size, steps],
+  );
+
   const stepMatrices = useMemo(() => steps.map((step) => partial(step, 1)), [partial, steps]);
   const current = useMemo(() => matrixAt(progress), [matrixAt, progress]);
   const whole = useMemo(() => matrixAt(steps.length), [matrixAt, steps.length]);
@@ -106,6 +119,7 @@ export function useTransformStack(
     whole,
     stepMatrices,
     matrixAt,
+    reversedAt,
     setProgress: (value: number) => {
       setProgress(value);
       setPlaying(false);
@@ -160,7 +174,11 @@ export function TransformStackEditor({
           const kind = kinds.find((candidate) => candidate.name === step.kind);
           if (!kind) return null;
           return (
-            <li key={step.id} className={styles.op}>
+            <li
+              key={step.id}
+              className={styles.op}
+              data-active={stack.playing && Math.floor(stack.progress) === index ? "" : undefined}
+            >
               <div className={styles.opHead}>
                 <strong>
                   {index + 1} {kind.name}

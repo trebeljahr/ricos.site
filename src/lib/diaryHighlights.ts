@@ -1,6 +1,6 @@
 // Lights up saved marks and search terms in rendered diary text through the CSS
 // Custom Highlight API, which leaves the DOM alone, so a React re-render cannot
-// lose or duplicate them. Shared by the /dev/diary pages and the Desk plugin.
+// lose or duplicate them.
 
 export const MARK_NAME = "diary-mark";
 export const TERM_NAME = "diary-term";

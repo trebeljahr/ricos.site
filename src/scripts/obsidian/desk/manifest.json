@@ -1,9 +1,0 @@
-{
-  "id": "desk",
-  "name": "Desk",
-  "version": "0.1.0",
-  "minAppVersion": "1.5.0",
-  "description": "Rico's writing progress, diary reading loop, search and piles, inside the vault.",
-  "author": "Rico Trebeljahr",
-  "isDesktopOnly": false
-}

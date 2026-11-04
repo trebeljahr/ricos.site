@@ -40,9 +40,7 @@ describe("kindOf", () => {
   it("takes diaries, morning pages, retros, dreams, essays and tiny thoughts", () => {
     expect(kindOf("diary-entries/2019-12-15-example.md")).toBe("diary");
     expect(kindOf("morning-pages/2026-11-November/2026-11-01.md")).toBe("morning-pages");
-    expect(kindOf("notion/Workspace/Weekly Retros/2025 - Example/2025 - CW 47.md")).toBe(
-      "retro",
-    );
+    expect(kindOf("notion/Workspace/Weekly Retros/2025 - Example/2025 - CW 47.md")).toBe("retro");
     expect(kindOf("dreams/example-dream.md")).toBe("dream");
     expect(kindOf("essays/Curiosity.md")).toBe("essay");
     expect(kindOf("misc/tiny-thoughts.md")).toBe("thoughts");
@@ -60,9 +58,7 @@ describe("kindOf", () => {
 describe("entryDate", () => {
   it("reads the date from the file name", () => {
     expect(entryDate("diary-entries/2019-12-15-example.md")).toBe("2019-12-15");
-    expect(entryDate("morning-pages/2026-10-October/2026-10-28-example.md")).toBe(
-      "2026-10-28",
-    );
+    expect(entryDate("morning-pages/2026-10-October/2026-10-28-example.md")).toBe("2026-10-28");
   });
 
   it("dates a weekly retro by the Monday of its ISO week", () => {

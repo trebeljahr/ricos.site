@@ -40,11 +40,10 @@
 - A needle is only public once it is `status: "reviewed"` with `rating >= 1`. No script may set that; only the triage UI does, one link at a time.
 
 ## Desk (Obsidian plugin)
-- `src/scripts/obsidian/desk/` is the `/dev/writing` and `/dev/diary` surface as an Obsidian plugin, so it works on a phone with no server. `pnpm obsidian:install [vault]` builds and copies it into the vault, then run "Reload app without saving" in Obsidian. Obsidian Sync carries it to other devices.
-- It imports the same pure modules as the dev pages (`src/lib/computerSeries.ts`, `diary.ts`, `diaryMarks.ts`, `notesSearch.ts`), so change logic there. Obsidian's API stays behind `DeskIO` in `deskStore.ts`.
-- It makes no network calls, on purpose: its data is private notes. Meaning search and the study lists are not ported.
-- State lives in `Notes/texts/`: the shared `diary-progress.json` and `diary-marks.json`, plus one `desk-words-<device>.json` per device so Sync never has two versions of one file. `/dev/writing` still keeps its own `.writing-progress.json`.
-- Never test it against real notes with screenshots. Use a fixture vault, in a separate Obsidian instance started with `--user-data-dir`.
+- Desk lives in its own private repo, `~/projects/obsidian-desk-plugin`, with its own `CLAUDE.md`. Work on it there, not here.
+- It started from copies of `src/lib/computerSeries.ts`, `diary.ts`, `diaryMarks.ts`, `diaryHighlights.ts` and `notesSearch.ts`. Those copies no longer follow this repo: a change here does not reach Desk.
+- `/dev/diary` and Desk share `Notes/texts/diary-progress.json` and `diary-marks.json`. Keep their formats compatible.
+- This repo is public. Test data uses invented names; never a real note's title or file name.
 
 ## AI writing destination (2026-09-30)
 

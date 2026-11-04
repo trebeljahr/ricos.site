@@ -11,7 +11,7 @@ import {
   translate3,
   type Vec3,
 } from "src/lib/computer/graphics/matrix";
-import { house } from "src/lib/computer/graphics/meshes";
+import { sharedCube } from "src/lib/computer/graphics/meshes";
 import {
   AXIS_COLORS,
   clearScene,
@@ -19,7 +19,6 @@ import {
   drawAxes,
   drawDot,
   drawGrid,
-  drawLine,
   drawPolygons,
   sceneCamera,
   shadeFace,
@@ -41,6 +40,7 @@ import {
   TransformStackEditor,
   useTransformStack,
 } from "./TransformStack";
+import { useTrex } from "./useModels";
 
 const degrees = (value: number) => `${Math.round(value)}°`;
 const angle = (start: number) =>
@@ -102,8 +102,11 @@ export function Transform3d() {
   const stack = useTransformStack(KINDS, 4, FIRST_STEPS);
   const [yaw, setYaw] = useState(30);
   const [pitch, setPitch] = useState(24);
-  const [picked, setPicked] = useState(9);
-  const mesh = useMemo(() => house(), []);
+  const trex = useTrex();
+  const [choice, setChoice] = useState<number | null>(null);
+  const mesh = useMemo(() => trex?.mesh ?? sharedCube(), [trex]);
+  const picked = Math.min(choice ?? trex?.nose ?? 0, mesh.positions.length - 1);
+  const setPicked = (change: (value: number) => number) => setChoice(change(picked));
   const matrix = stack.current;
 
   const point = mesh.positions[picked];
@@ -128,15 +131,20 @@ export function Transform3d() {
 
   const draw = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     clearScene(ctx, width, height);
-    const camera = sceneCamera(yaw, pitch, 15, [0, 0, 0], width, height);
+    const camera = sceneCamera(yaw, pitch, 12, [0, 0, 0], width, height);
     drawGrid(ctx, camera, 5, -1.5);
     drawAxes(ctx, camera, [0, 0, 0], [5, 0, 0], [0, 4, 0], [0, 0, 5], 1);
     // Where it started, as an outline.
-    for (const [a, b, c] of mesh.triangles) {
-      drawLine(ctx, camera, mesh.positions[a], mesh.positions[b], "#8fa3ff44");
-      drawLine(ctx, camera, mesh.positions[b], mesh.positions[c], "#8fa3ff44");
-      drawLine(ctx, camera, mesh.positions[c], mesh.positions[a], "#8fa3ff44");
-    }
+    drawPolygons(
+      ctx,
+      camera,
+      mesh.triangles.map(([a, b, c], id) => ({
+        id,
+        points: [mesh.positions[a], mesh.positions[b], mesh.positions[c]],
+        color: [143, 163, 255] as Vec3,
+        alpha: 0.07,
+      })),
+    );
     const placed = mesh.positions.map((p) => transformPoint(matrix, p));
     // A mirrored object winds the other way, so it cannot rely on winding to hide its back.
     drawPolygons(
@@ -180,7 +188,7 @@ export function Transform3d() {
       <Bay>
         <div className={styles.screen}>
           <SceneCanvas
-            label={`A house after the matrix, at ${fixed(landed[0])}, ${fixed(landed[1])}, ${fixed(landed[2])} for the picked vertex.`}
+            label={`A T. rex after the matrix, at ${fixed(landed[0])}, ${fixed(landed[1])}, ${fixed(landed[2])} for the picked vertex.`}
             draw={draw}
             onDrag={(dx, dy) => {
               setYaw((value) => value - dx * 0.5);

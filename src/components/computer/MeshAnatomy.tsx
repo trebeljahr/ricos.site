@@ -12,7 +12,6 @@ import {
 import {
   completeMesh,
   floatBytes,
-  house,
   type Mesh,
   meshBytes,
   meshEdges,
@@ -51,6 +50,7 @@ import {
   Toggle,
   useTimeline,
 } from "./GraphicsParts";
+import { useTrex } from "./useModels";
 
 const SHAPES = {
   triangle: { label: "TRIANGLE", build: () => triangleMesh() },
@@ -58,7 +58,7 @@ const SHAPES = {
   pyramid: { label: "PYRAMID", build: () => pyramid() },
   cube: { label: "CUBE · 8V", build: () => sharedCube() },
   splitCube: { label: "CUBE · 24V", build: () => splitCube() },
-  house: { label: "HOUSE", build: () => house() },
+  trex: { label: "T. REX", build: () => sharedCube() },
   sphere: { label: "SPHERE", build: (detail: number) => sphere(detail * 2, detail) },
   torus: { label: "TORUS", build: (detail: number) => torus(detail * 2, detail) },
 } as const;
@@ -93,7 +93,7 @@ export function MeshAnatomy() {
   const [showFaces, setShowFaces] = useState(true);
   const [showNormals, setShowNormals] = useState(false);
   const [cull, setCull] = useState(true);
-  const [yaw, setYaw] = useState(32);
+  const [yaw, setYaw] = useState(40);
   const [pitch, setPitch] = useState(24);
   const lastDraw = useRef<{ camera: SceneCamera; polygons: DrawnPolygon[] } | null>(null);
   const positionsOnScreen = useRef<[number, number, number][]>([]);
@@ -104,7 +104,11 @@ export function MeshAnatomy() {
   const vertexList = useRef<HTMLOListElement>(null);
   const triangleList = useRef<HTMLOListElement>(null);
 
-  const base = useMemo(() => SHAPES[shape].build(detail), [shape, detail]);
+  const trex = useTrex();
+  const base = useMemo(
+    () => (shape === "trex" && trex ? trex.mesh : SHAPES[shape].build(detail)),
+    [shape, detail, trex],
+  );
   const mesh: Mesh = useMemo(() => {
     const edits = Object.keys(moved);
     if (edits.length === 0 && flipped.size === 0) return base;
@@ -240,7 +244,7 @@ export function MeshAnatomy() {
     }
 
     // A vertex is three numbers: this far along x, this far along y, this far along z.
-    if (legsOf !== null && mesh.positions[legsOf] && vertexCount <= 60) {
+    if (legsOf !== null && mesh.positions[legsOf]) {
       const [x, y, z] = mesh.positions[legsOf];
       drawArrow(ctx, camera, [0, 0, 0], [x, 0, 0], AXIS_COLORS.x, 2.5);
       drawArrow(ctx, camera, [x, 0, 0], [x, y, 0], AXIS_COLORS.y, 2.5);
@@ -361,6 +365,8 @@ export function MeshAnatomy() {
           options={SHAPE_NAMES.map((value) => ({ value, label: SHAPES[value].label }))}
           onChange={(next) => {
             setShape(next);
+            // Twelve hundred dots would hide the very thing they mark.
+            setShowPoints(next !== "trex");
             setMoved({});
             setFlipped(new Set());
             setSelection({ kind: "vertex", index: 0 });

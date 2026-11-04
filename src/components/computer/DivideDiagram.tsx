@@ -26,6 +26,8 @@ export function DivideDiagram({
   near: number;
   far: number;
 }) {
+  // Hundreds of dots say no more than dozens, and cost a lot more every frame.
+  const stride = Math.ceil(points.length / 70);
   const tan = Math.tan((fov * Math.PI) / 360);
   const span = WIDTH - LEFT - RIGHT;
   const scale = Math.min(span / far, (HEIGHT / 2 - 10) / (far * tan));
@@ -70,7 +72,7 @@ export function DivideDiagram({
       />
       {points.map((point, i) => {
         const depth = -point[2];
-        if (depth <= 0 || i === picked) return null;
+        if (depth <= 0 || i === picked || i % stride !== 0) return null;
         return (
           <circle key={i} cx={toX(depth)} cy={toY(point[1])} r={2.2} fill="#8fa3ff" opacity={0.7} />
         );
@@ -138,7 +140,7 @@ export function DivideDiagram({
       ))}
       {points.map((point, i) => {
         const depth = -point[2];
-        if (depth <= 0 || i === picked) return null;
+        if (depth <= 0 || i === picked || i % stride !== 0) return null;
         const at = point[1] / depth / tan;
         if (Math.abs(at) > 1) return null;
         return <circle key={i} cx={rulerX} cy={onRuler(at)} r={2} fill="#8fa3ff" opacity={0.8} />;

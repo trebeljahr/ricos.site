@@ -105,6 +105,26 @@ export const COMPUTER_MDX_DEMOS = {
     () => loadGraphicsDemos().then((module) => module.TriangleRaster),
     "Filling in a triangle",
   ),
+  UvUnwrap: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.UvUnwrap),
+    "UV unwrapping",
+  ),
+  BoneChain: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.BoneChain),
+    "A chain of bones",
+  ),
+  SkinningStrip: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.SkinningStrip),
+    "Skinning",
+  ),
+  WeightPaint: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.WeightPaint),
+    "Weight painting",
+  ),
+  SkeletonPlayer: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.SkeletonPlayer),
+    "Animating a skeleton",
+  ),
   LightingLab: chapterDemo(
     () => loadGraphicsDemos().then((module) => module.LightingLab),
     "Light and texture",

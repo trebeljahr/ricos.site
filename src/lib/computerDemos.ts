@@ -190,6 +190,26 @@ export const computerDemos = [
     title: "Light a surface, pixel by pixel",
   },
   {
+    slug: "uv-unwrap",
+    title: "Cut a mesh along seams and flatten it",
+  },
+  {
+    slug: "bone-chain",
+    title: "Turn a chain of bones",
+  },
+  {
+    slug: "skinning",
+    title: "Bend a mesh with two bones",
+  },
+  {
+    slug: "weight-paint",
+    title: "Paint vertex weights on a T. rex",
+  },
+  {
+    slug: "skeleton-player",
+    title: "Play keyframes through a skeleton",
+  },
+  {
     slug: "build-a-cpu",
     title: "Build your own CPU",
   },

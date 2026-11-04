@@ -10,14 +10,7 @@ import {
   type Vec3,
   type Vec4,
 } from "src/lib/computer/graphics/matrix";
-import {
-  house,
-  type Mesh,
-  pyramid,
-  sharedCube,
-  sphere,
-  torus,
-} from "src/lib/computer/graphics/meshes";
+import { type Mesh, pyramid, sharedCube, sphere, torus } from "src/lib/computer/graphics/meshes";
 import {
   modelViewProjection,
   type PipelineSettings,
@@ -62,9 +55,10 @@ import {
   useTimeline,
   VectorColumn,
 } from "./GraphicsParts";
+import { useTrex } from "./useModels";
 
 const SHAPES = {
-  house: { label: "HOUSE", build: () => house() },
+  trex: { label: "T. REX", build: () => sharedCube() },
   cube: { label: "CUBE", build: () => sharedCube() },
   pyramid: { label: "PYRAMID", build: () => pyramid() },
   sphere: { label: "SPHERE", build: () => sphere(16, 10) },
@@ -112,6 +106,7 @@ const FIRST_SETTINGS: PipelineSettings = {
 
 // Far enough to see the divide work, not so far that the far plane cuts the object away.
 const PUSH_DISTANCE = 3.5;
+const RAY_COUNT = 28;
 const HOLD = 1;
 const MOVE = 1.7;
 const TOUR_SECONDS = 5 * (HOLD + MOVE) + HOLD;
@@ -200,10 +195,11 @@ type PixelProbe = {
 /** From the numbers in a mesh to one pixel on a screen, one space at a time. */
 export function CoordinateSpaces() {
   const sound = usePanelSound();
-  const [shape, setShape] = useState<ShapeName>("house");
+  const [shape, setShape] = useState<ShapeName>("trex");
   const [settings, setSettings] = useState(FIRST_SETTINGS);
   const [stage, setStage] = useState(0);
-  const [vertex, setVertex] = useState(9);
+  const trex = useTrex();
+  const [vertexChoice, setVertex] = useState<number | null>(null);
   const [yaw, setYaw] = useState(28);
   const [pitch, setPitch] = useState(20);
   const [buffer, setBuffer] = useState<"color" | "depth">("color");
@@ -217,7 +213,12 @@ export function CoordinateSpaces() {
 
   const easedStage = useEased(stage);
   const eased = touring === null ? easedStage : tourStage(touring);
-  const mesh: Mesh = useMemo(() => SHAPES[shape].build(), [shape]);
+  const mesh: Mesh = useMemo(
+    () => (shape === "trex" && trex ? trex.mesh : SHAPES[shape].build()),
+    [shape, trex],
+  );
+  // The tip of the nose, to start with: the easiest point on the model to keep an eye on.
+  const vertex = vertexChoice ?? (shape === "trex" && trex ? trex.nose : 0);
   const position = mesh.positions[Math.min(vertex, mesh.positions.length - 1)];
   // Pushing the object straight away from the camera and back.
   const pushedBy = push.t < 1 ? Math.sin(push.t * Math.PI) * PUSH_DISTANCE : 0;
@@ -558,12 +559,14 @@ export function CoordinateSpaces() {
 
     // A line from each vertex towards the camera. They meet at the eye, until the
     // divide by w turns them parallel: that is all perspective is.
-    if (shown >= 1 && shown < 5 && tracked.length <= 30) {
+    if (shown >= 1 && shown < 5) {
+      const stride = Math.ceil(tracked.length / RAY_COUNT);
       const rayStrength = Math.min(1, Math.min(shown - 1, 5 - shown) * 2);
       ctx.globalAlpha = rayStrength;
       tracked.forEach((point, i) => {
         const depth = -point.view[2];
-        if (depth <= settings.near) return;
+        const isPickedOne = i === Math.min(vertex, tracked.length - 1);
+        if (depth <= settings.near || (i % stride !== 0 && !isPickedOne)) return;
         const k = settings.near / depth;
         const onNear = trackPoint.fromView([point.view[0] * k, point.view[1] * k, -settings.near]);
         const isPicked = i === Math.min(vertex, tracked.length - 1);

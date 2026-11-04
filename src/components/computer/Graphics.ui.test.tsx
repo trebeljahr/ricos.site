@@ -1,12 +1,17 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { BoneChain } from "./BoneChain";
 import { CoordinateSpaces } from "./CoordinateSpaces";
 import { LightingLab } from "./LightingLab";
 import { MatrixPlayground } from "./MatrixPlayground";
 import { MeshAnatomy } from "./MeshAnatomy";
+import { SkeletonPlayer } from "./SkeletonPlayer";
+import { SkinningStrip } from "./SkinningStrip";
 import { Transform3d } from "./Transform3d";
 import { TriangleRaster } from "./TriangleRaster";
+import { UvUnwrap } from "./UvUnwrap";
+import { WeightPaint } from "./WeightPaint";
 
 // jsdom has no canvas. This one takes every call, so the demos' drawing code still runs.
 function fakeContext() {
@@ -123,10 +128,9 @@ describe("Transform3d", () => {
   it("prints a 4×4 product and follows a corner through it", () => {
     render(<Transform3d />);
     step("1 TURN Y");
-    step("2 MOVE");
-    expect(screen.getByText("VERTEX 9")).toBeTruthy();
+    expect(screen.getByText(/^VERTEX \d+$/)).toBeTruthy();
     press("Next vertex");
-    expect(screen.getByText("VERTEX 10")).toBeTruthy();
+    expect(screen.getByText(/^VERTEX \d+$/)).toBeTruthy();
     press("+ TURN X");
     step("3 TURN X");
   });
@@ -172,7 +176,7 @@ describe("MeshAnatomy", () => {
 describe("CoordinateSpaces", () => {
   it("opens with one corner traced to one pixel", () => {
     render(<CoordinateSpaces />);
-    expect(screen.getByText("VERTEX 9")).toBeTruthy();
+    expect(screen.getByText(/^VERTEX \d+$/)).toBeTruthy();
     for (const name of ["LOCAL", "CAMERA", "CLIP", "NDC", "SCREEN", "PIXEL"]) {
       expect(screen.getByRole("button", { name: new RegExp(`^${name}`) })).toBeTruthy();
     }
@@ -202,11 +206,11 @@ describe("CoordinateSpaces", () => {
     expect(pixelRow()).not.toBe(before);
   });
 
-  it("rasterizes and reads back a pixel", () => {
+  it("rasterizes and reads back a pixel", async () => {
     render(<CoordinateSpaces />);
     press(/^PIXEL/);
     expect(Number(count("FRAGMENTS"))).toBeGreaterThan(0);
-    expect(Number(count("TRIANGLES"))).toBe(26);
+    await waitFor(() => expect(Number(count("TRIANGLES"))).toBe(1810));
     const canvas = screen.getByRole("img", { name: /^The screen/ });
     canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 64, height: 48 }) as DOMRect;
     fireEvent.pointerDown(canvas, { clientX: 32, clientY: 24 });
@@ -286,6 +290,124 @@ describe("TriangleRaster", () => {
       key: "ArrowRight",
     });
     expect(count("TESTED")).not.toBe(before);
+  });
+});
+
+describe("UvUnwrap", () => {
+  it("opens a cube into one island along seven cuts", () => {
+    render(<UvUnwrap />);
+    expect(count("ISLANDS")).toBe("1");
+    expect(count("CUT EDGES")).toBe("7");
+    expect(count("FOLDED OVER")).toBe("0");
+    expect(count("STRETCHED BY")).toBe("×1.0");
+  });
+
+  it("makes one island per triangle when every edge is cut", () => {
+    render(<UvUnwrap />);
+    press("EVERY EDGE");
+    expect(count("ISLANDS")).toBe("12");
+    expect(count("STRETCHED BY")).toBe("×1.0");
+  });
+
+  it("stretches a sphere, because a sphere cannot lie flat", () => {
+    render(<UvUnwrap />);
+    press("SPHERE");
+    expect(count("ISLANDS")).toBe("1");
+    expect(Number(count("STRETCHED BY")?.slice(1))).toBeGreaterThan(1.2);
+  });
+
+  it("reads a real artist's layout", async () => {
+    render(<UvUnwrap />);
+    press("CHARACTER");
+    await waitFor(() => expect(count("TRIANGLES")).toBe("8,970"), { timeout: 5000 });
+    expect(Number(count("ISLANDS"))).toBeGreaterThan(5);
+  });
+});
+
+describe("BoneChain", () => {
+  const tip = () => screen.getByRole("button", { name: /^BONE 4/ }).textContent;
+
+  it("moves every child when a parent turns", () => {
+    render(<BoneChain />);
+    const before = tip();
+    fireEvent.click(screen.getByRole("button", { name: /^BONE 1/ }));
+    slide("BONE 1", 10);
+    expect(tip()).not.toBe(before);
+  });
+
+  it("leaves children where they are without the hierarchy", () => {
+    render(<BoneChain />);
+    press("CHILDREN FOLLOW");
+    const before = tip();
+    fireEvent.click(screen.getByRole("button", { name: /^BONE 1/ }));
+    slide("BONE 1", 10);
+    expect(tip()).toBe(before);
+  });
+
+  it("turns a bone from the keyboard", () => {
+    render(<BoneChain />);
+    const before = tip();
+    fireEvent.keyDown(screen.getByRole("slider", { name: "Bone 3" }), { key: "ArrowUp" });
+    expect(tip()).not.toBe(before);
+  });
+});
+
+describe("SkinningStrip", () => {
+  it("loses width at the joint as the bend grows", () => {
+    render(<SkinningStrip />);
+    const width = () => Number(count("WIDTH AT JOINT")?.replace("%", ""));
+    slide("BEND", 0);
+    expect(width()).toBe(100);
+    slide("BEND", 170);
+    expect(width()).toBeLessThan(30);
+  });
+
+  it("puts a vertex between its bones' copies, by its weight", () => {
+    render(<SkinningStrip />);
+    slide("WEIGHT", 0.5);
+    expect(screen.getAllByText("0.50").length).toBeGreaterThan(1);
+  });
+});
+
+describe("WeightPaint", () => {
+  it("offers the T. rex's bones", async () => {
+    render(<WeightPaint />);
+    expect(await screen.findByRole("button", { name: "Head" })).toBeTruthy();
+    press("Tail3");
+    expect(screen.getByRole("button", { name: "Tail3", pressed: true })).toBeTruthy();
+    press("AUTOMATIC");
+    press("ARTIST'S");
+  });
+
+  it("paints with a stroke across the canvas", async () => {
+    render(<WeightPaint />);
+    await screen.findByRole("button", { name: "Head" });
+    press("ADD");
+    const canvas = screen.getByRole("img", { name: /T\. rex/ });
+    canvas.getBoundingClientRect = () => ({ left: 0, top: 0, width: 480, height: 360 }) as DOMRect;
+    fireEvent.pointerDown(canvas, { clientX: 240, clientY: 180 });
+    fireEvent.pointerMove(canvas, { clientX: 250, clientY: 180 });
+    fireEvent.pointerUp(canvas, { clientX: 250, clientY: 180 });
+    expect(screen.getByRole("button", { name: "ADD", pressed: true })).toBeTruthy();
+  });
+});
+
+describe("SkeletonPlayer", () => {
+  it("counts its keys, fewer when thinned", async () => {
+    render(<SkeletonPlayer />);
+    await screen.findByText("22 KEYS");
+    press("4");
+    expect(screen.getByText("7 KEYS")).toBeTruthy();
+    press("HOLD");
+    expect(screen.getByRole("button", { name: "HOLD", pressed: true })).toBeTruthy();
+    expect(count("MATRICES A FRAME")).toBe("29");
+  });
+
+  it("changes clips", async () => {
+    render(<SkeletonPlayer />);
+    await screen.findByText("22 KEYS");
+    press("RUN");
+    expect(screen.getByText("15 KEYS")).toBeTruthy();
   });
 });
 

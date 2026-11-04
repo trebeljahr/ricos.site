@@ -410,8 +410,8 @@ export function useEased(target: number, secondsPerUnit = 0.9) {
 }
 
 /** A position from 0 to 1 that a button plays over some seconds and a slider can scrub. Opens finished. */
-export function useTimeline(seconds: number) {
-  const [t, setT] = useState(1);
+export function useTimeline(seconds: number, start = 1) {
+  const [t, setT] = useState(start);
   const [playing, setPlaying] = useState(false);
   useAnimation(playing, (elapsed) => {
     const next = t + elapsed / seconds;
@@ -532,6 +532,95 @@ export function ColumnSum({
           </span>
         ))}
       </span>
+    </div>
+  );
+}
+
+/**
+ * A framebuffer on screen, with whatever is drawn over it. Dragging turns the
+ * view unless `stroke` is set, which hands over pointer positions in pixels of
+ * the framebuffer instead. A press that barely moves is a tap.
+ */
+export function PixelCanvas({
+  framebuffer,
+  label,
+  blocky = true,
+  stroke,
+  onDrag,
+  onTap,
+  children,
+}: {
+  framebuffer: Framebuffer;
+  label: string;
+  blocky?: boolean;
+  stroke?: (x: number, y: number, first: boolean) => void;
+  onDrag?: (dx: number, dy: number) => void;
+  onTap?: (x: number, y: number) => void;
+  children?: ReactNode;
+}) {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const press = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  useEffect(() => {
+    paintFramebuffer(canvas.current, framebuffer);
+  });
+  const toPixels = (event: PointerEvent<HTMLCanvasElement>) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    return [
+      Math.floor(((event.clientX - box.left) / box.width) * framebuffer.width),
+      Math.floor(((event.clientY - box.top) / box.height) * framebuffer.height),
+    ] as const;
+  };
+  return (
+    <div className={styles.screen}>
+      <canvas
+        ref={canvas}
+        width={framebuffer.width}
+        height={framebuffer.height}
+        className={clsx(styles.canvas, blocky && styles.pixels)}
+        style={{
+          aspectRatio: `${framebuffer.width} / ${framebuffer.height}`,
+          touchAction: stroke ? "none" : undefined,
+          cursor: stroke ? "crosshair" : undefined,
+        }}
+        role="img"
+        aria-label={label}
+        onPointerDown={(event) => {
+          press.current = { x: event.clientX, y: event.clientY, moved: false };
+          event.currentTarget.setPointerCapture?.(event.pointerId);
+          if (stroke) {
+            const [x, y] = toPixels(event);
+            stroke(x, y, true);
+          }
+        }}
+        onPointerMove={(event) => {
+          const held = press.current;
+          if (!held) return;
+          if (stroke) {
+            const [x, y] = toPixels(event);
+            stroke(x, y, false);
+            return;
+          }
+          const dx = event.clientX - held.x;
+          const dy = event.clientY - held.y;
+          if (!held.moved && Math.hypot(dx, dy) < 4) return;
+          held.moved = true;
+          held.x = event.clientX;
+          held.y = event.clientY;
+          onDrag?.(dx, dy);
+        }}
+        onPointerUp={(event) => {
+          const held = press.current;
+          press.current = null;
+          if (held && !held.moved && !stroke) {
+            const [x, y] = toPixels(event);
+            onTap?.(x, y);
+          }
+        }}
+        onPointerCancel={() => {
+          press.current = null;
+        }}
+      />
+      {children}
     </div>
   );
 }

@@ -23,7 +23,6 @@ import {
 } from "./matrix";
 import {
   floatBytes,
-  house,
   meshBytes,
   meshEdges,
   pyramid,
@@ -44,6 +43,23 @@ import {
   scanTriangles,
 } from "./rasterizer";
 import { material, shade } from "./shading";
+import {
+  automaticWeights,
+  axisAngle,
+  composeTransform,
+  invert,
+  keyAngle,
+  loadArissa,
+  loadTrex,
+  paintWeight,
+  restPose,
+  samplePose,
+  skinMatrices,
+  skinPositions,
+  smoothWeights,
+  worldMatrices,
+} from "./skeleton";
+import { cylinderMesh, edgeKey, seamPresets, unwrap, weld } from "./unwrap";
 
 const near = (actual: readonly number[], expected: readonly number[], digits = 5) => {
   expect(actual.length).toBe(expected.length);
@@ -115,7 +131,7 @@ describe("meshes", () => {
     pyramid: pyramid(),
     sharedCube: sharedCube(),
     splitCube: splitCube(),
-    house: house(),
+
     sphere: sphere(),
     torus: torus(),
     wall: wall(4),
@@ -172,25 +188,6 @@ describe("meshes", () => {
         );
         expect(dot(face, mesh.normals[a])).toBeGreaterThan(0);
       }
-    }
-  });
-
-  it("closes the house: every edge belongs to exactly two triangles, except where the chimney meets the roof", () => {
-    const mesh = meshes.house;
-    const uses = new Map<string, number>();
-    for (const [a, b, c] of mesh.triangles) {
-      for (const [p, q] of [
-        [a, b],
-        [b, c],
-        [c, a],
-      ]) {
-        const key = `${Math.min(p, q)}-${Math.max(p, q)}`;
-        uses.set(key, (uses.get(key) ?? 0) + 1);
-      }
-    }
-    for (const [key, count] of uses) {
-      const [p] = key.split("-").map(Number);
-      if (p < 10) expect(count, key).toBe(2);
     }
   });
 
@@ -587,5 +584,146 @@ describe("the scan", () => {
     expect(nearFirst.filter((s) => s.triangle === 1 && s.outcome === "written").length).toBe(0);
     const farFirst = scanTriangles([far, near], 16, 12);
     expect(farFirst.filter((s) => s.triangle === 1 && s.outcome === "behind").length).toBe(0);
+  });
+});
+
+describe("matrix inverse", () => {
+  it("undoes a transform", () => {
+    const m = composeTransform([1, 2, 3], axisAngle([0, 1, 0], 0.7), [2, 2, 2]);
+    near(multiply(m, invert(m)), identity(4));
+  });
+  it("refuses a flat matrix", () => {
+    expect(() => invert([1, 1, 0, 0, 0, 0, 0, 0, 1])).toThrow();
+  });
+});
+
+describe("the T. rex rig", () => {
+  it("has parents before children", async () => {
+    const { skeleton } = await loadTrex();
+    skeleton.parents.forEach((parent, i) => {
+      expect(parent).toBeLessThan(i);
+    });
+  });
+
+  it("stays exactly at rest in the rest pose", async () => {
+    const { skeleton, mesh, weights } = await loadTrex();
+    const count = skeleton.names.length;
+    const skin = skinMatrices(skeleton, worldMatrices(skeleton, restPose(skeleton)));
+    const moved = skinPositions(mesh.positions, weights, count, skin);
+    moved.forEach((p, i) => {
+      near(p, mesh.positions[i], 2);
+    });
+  });
+
+  it("has weights that sum to one", async () => {
+    const { skeleton, mesh, weights } = await loadTrex();
+    const count = skeleton.names.length;
+    for (let v = 0; v < mesh.positions.length; v++) {
+      let total = 0;
+      for (let b = 0; b < count; b++) total += weights[v * count + b];
+      expect(total).toBeCloseTo(1, 2);
+    }
+  });
+
+  it("moves when a clip plays, and the nose is on the head", async () => {
+    const { skeleton, mesh, weights, clips, nose } = await loadTrex();
+    const count = skeleton.names.length;
+    expect(weights[nose * count + skeleton.names.indexOf("Head")]).toBeGreaterThan(0.9);
+    const pose = samplePose(clips.Walk, count, 0.4);
+    const skin = skinMatrices(skeleton, worldMatrices(skeleton, pose));
+    const moved = skinPositions(mesh.positions, weights, count, skin);
+    let furthest = 0;
+    moved.forEach((p, i) => {
+      furthest = Math.max(furthest, length(subtract(p, mesh.positions[i])));
+    });
+    expect(furthest).toBeGreaterThan(0.05);
+    expect(furthest).toBeLessThan(3);
+  });
+
+  it("holds the last key when stepping", async () => {
+    const { skeleton, clips } = await loadTrex();
+    const count = skeleton.names.length;
+    const clip = clips.Walk;
+    const key = clip.duration / (clip.frames - 1);
+    const held = samplePose(clip, count, key * 2.5, 1, "step");
+    const atKey = samplePose(clip, count, key * 2, 1, "linear");
+    near(held.rotations[16], atKey.rotations[16]);
+    expect(keyAngle(clip, skeleton, 0, 16)).toBeGreaterThanOrEqual(0);
+  });
+
+  it("paints a weight up, keeps the row summing to one, and smooths it back", async () => {
+    const { skeleton, mesh, weights } = await loadTrex();
+    const count = skeleton.names.length;
+    const table = weights.slice();
+    paintWeight(table, count, 0, 3, 0.5);
+    let total = 0;
+    for (let b = 0; b < count; b++) total += table[b];
+    expect(total).toBeCloseTo(1, 4);
+    paintWeight(table, count, 0, 3, -1);
+    expect(table[3]).toBe(0);
+    smoothWeights(table, count, 0, [1, 2], 1);
+    total = 0;
+    for (let b = 0; b < count; b++) total += table[b];
+    expect(total).toBeCloseTo(1, 4);
+    const auto = automaticWeights(mesh.positions.slice(0, 5), skeleton);
+    total = 0;
+    for (let b = 0; b < count; b++) total += auto[b];
+    expect(total).toBeCloseTo(1, 4);
+  });
+});
+
+describe("unwrapping", () => {
+  const cube = weld(sharedCube());
+  it("welds a cube to eight corners, and a split cube too", () => {
+    expect(cube.positions.length).toBe(8);
+    expect(weld(splitCube()).positions.length).toBe(8);
+  });
+
+  it("opens a cube with no stretch or folds", () => {
+    const layout = unwrap(cube, seamPresets.cube(cube));
+    expect(layout.islands).toBe(1);
+    expect(layout.folded).toBe(0);
+    expect(Math.max(...layout.stretch)).toBeCloseTo(1, 1);
+    expect(Math.min(...layout.stretch)).toBeCloseTo(1, 1);
+  });
+
+  it("keeps everything inside the square", () => {
+    for (const seams of [seamPresets.cube(cube), new Set<number>()]) {
+      for (const triangle of unwrap(cube, seams).corners) {
+        for (const [u, v] of triangle) {
+          expect(u).toBeGreaterThanOrEqual(0);
+          expect(u).toBeLessThanOrEqual(1);
+          expect(v).toBeGreaterThanOrEqual(0);
+          expect(v).toBeLessThanOrEqual(1);
+        }
+      }
+    }
+  });
+
+  it("gives a cylinder three islands: two caps and the side", () => {
+    const mesh = cylinderMesh();
+    const layout = unwrap(mesh, seamPresets.cylinder(mesh));
+    expect(layout.islands).toBe(3);
+    expect(layout.folded).toBe(0);
+    expect(Math.max(...layout.stretch)).toBeLessThan(1.2);
+  });
+
+  it("flattens a sphere cut once from pole to pole with no folds", () => {
+    const mesh = weld(sphere(12, 8, 1.3));
+    const layout = unwrap(mesh, seamPresets.sphere(mesh));
+    expect(layout.islands).toBe(1);
+    expect(layout.folded).toBe(0);
+    expect(Math.max(...layout.stretch)).toBeGreaterThan(1.2);
+  });
+
+  it("does not split a closed mesh with a single cut edge", () => {
+    expect(unwrap(cube, new Set()).islands).toBe(1);
+    expect(unwrap(cube, new Set([edgeKey(0, 1, 8)])).islands).toBe(1);
+  });
+
+  it("loads a real layout", async () => {
+    const arissa = await loadArissa();
+    expect(arissa.texture.startsWith("data:image/jpeg")).toBe(true);
+    expect(arissa.uvs.length / 2).toBe(arissa.positions.length / 3);
   });
 });

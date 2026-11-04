@@ -256,7 +256,17 @@
 .bar i b { display: block; height: 100%; border-radius: 999px; }
 .bar span:last-child { color: var(--text); font: 500 12px ui-monospace, monospace; text-align: right; }
 
+.views { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 3px; max-height: 118px; overflow: auto; scrollbar-color: #39415a transparent; scrollbar-width: thin; }
+.chips .button { min-height: 24px; padding: 2px 7px; font-size: 11px; font-weight: 500; }
+.boneRows { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
+.boneRow { display: grid; grid-template-columns: 58px repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; padding: 4px 9px; border: 1px solid var(--line); border-radius: 7px; background: #171b25; color: inherit; font: 500 12px ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; text-align: right; cursor: pointer; }
+.boneRow > :first-child { font: 700 11px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: .08em; text-align: left; }
+.boneRow[aria-pressed="true"] { border-color: transparent; background: var(--accent); color: #070910; }
+.boneRow:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
 @container (max-width: 480px) {
+  .views { grid-template-columns: minmax(0, 1fr); }
   .choice { grid-template-columns: minmax(0, 1fr); gap: 3px; }
   .choice > legend, .choice > span { padding-top: 0; }
   .slider { grid-template-columns: 70px minmax(0, 1fr) 50px; gap: 6px; }

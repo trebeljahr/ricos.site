@@ -21,6 +21,7 @@
       "!**/*.min.js",
       "!**/*.min.css",
       "!**/.obsidian",
+      "!src/lib/computer/graphics/baked",
       "!**/src/content/Notes/.obsidian",
       "!**/*.css"
     ]

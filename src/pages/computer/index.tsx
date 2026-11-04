@@ -3,7 +3,12 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
 import type { ComputerChapter } from "@velite";
 import Link from "next/link";
-import { computerDemos, publicComputerDemos } from "../../lib/computerDemos";
+import {
+  type ComputerDemoSlug,
+  computerDemos,
+  publicComputerDemos,
+  sneakPeekComputerDemos,
+} from "../../lib/computerDemos";
 
 const PARTS = [
   { part: 1, title: "The Basics", question: "How can on and off calculate?" },
@@ -16,7 +21,35 @@ const PARTS = [
   { part: 8, title: "Manufacturing", question: "How does all of this get built?" },
 ];
 
-type PublishedChapter = Pick<ComputerChapter, "number" | "title" | "link" | "part">;
+type PublishedChapter = Pick<ComputerChapter, "number" | "title" | "link" | "part"> & {
+  summary: string | null;
+};
+
+const demoTitle = (slug: ComputerDemoSlug) =>
+  computerDemos.find((demo) => demo.slug === slug)?.title ?? slug;
+
+function ListRow({ href, title, blurb }: { href: string; title: string; blurb: string | null }) {
+  return (
+    <Link
+      href={href}
+      className="group grid gap-tight border-b border-gray-300 py-para transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[1fr_auto] sm:items-center"
+    >
+      <span>
+        <strong className="block text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
+          {title}
+        </strong>
+        {blurb && (
+          <span className="mt-hair block text-gray-600 group-hover:text-inherit dark:text-gray-400">
+            {blurb}
+          </span>
+        )}
+      </span>
+      <span className="hidden text-2xl sm:block" aria-hidden="true">
+        ↗
+      </span>
+    </Link>
+  );
+}
 
 export default function ComputerSeriesHome({ chapters }: { chapters: PublishedChapter[] }) {
   return (
@@ -33,34 +66,47 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
           subtitle="You use a computer all day, but what happens between a key press and a pixel stays hidden. In this series you build that path yourself, one layer at a time."
         />
 
+        {chapters.length > 0 && (
+          <>
+            <h2>Read the first chapter</h2>
+            <p>This is an early version, and I am still revising it.</p>
+            <div className="not-prose border-t border-gray-300 dark:border-gray-700">
+              {chapters.map(({ link, number, title, summary }) => (
+                <ListRow key={link} href={link} title={`${number} ${title}`} blurb={summary} />
+              ))}
+            </div>
+          </>
+        )}
+
         <h2>Try it now</h2>
-        <p>
-          I am still writing the chapters{chapters.length === 0 && ", and none is out yet"}. These
-          demos already work.
-        </p>
+        <p>These demos are ready to use.</p>
         <div className="not-prose border-t border-gray-300 dark:border-gray-700">
           {publicComputerDemos.map(({ slug, blurb }) => (
-            <Link
-              key={slug}
-              href={`/computer/${slug}`}
-              className="group grid gap-tight border-b border-gray-300 py-para transition-colors hover:text-cyan-600 dark:border-gray-700 dark:hover:text-cyan-300 sm:grid-cols-[1fr_auto] sm:items-center"
-            >
-              <span>
-                <strong className="block text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                  {computerDemos.find((demo) => demo.slug === slug)?.title}
-                </strong>
-                <span className="mt-hair block text-gray-600 group-hover:text-inherit dark:text-gray-400">
-                  {blurb}
-                </span>
-              </span>
-              <span className="hidden text-2xl sm:block" aria-hidden="true">
-                ↗
-              </span>
-            </Link>
+            <ListRow key={slug} href={`/computer/${slug}`} title={demoTitle(slug)} blurb={blurb} />
           ))}
         </div>
 
-        <h2>What the series will cover</h2>
+        <h2>Coming later: a sneak peek</h2>
+        <p>
+          These demos belong to chapters I have not written yet. They work, but they are still
+          rough.
+        </p>
+        <div className="not-prose border-t border-gray-300 dark:border-gray-700">
+          {sneakPeekComputerDemos.map(({ slug, part, blurb }) => (
+            <ListRow
+              key={slug}
+              href={`/computer/${slug}`}
+              title={demoTitle(slug)}
+              blurb={`Part ${part}. ${blurb}`}
+            />
+          ))}
+        </div>
+
+        <h2>The plan</h2>
+        <p>
+          The series has eight parts. It starts at a single on/off switch and ends at the internet.
+          I publish one part at a time, and I am writing Part 1 now.
+        </p>
         <ol className="not-prose list-none p-0">
           {PARTS.map(({ part, title, question }) => (
             <li key={part} className="mb-stack">
@@ -101,6 +147,12 @@ export async function getStaticProps() {
   const chapters: PublishedChapter[] = loadVeliteData<ComputerChapter[]>("computerChapters.json")
     .filter((chapter) => chapter.published)
     .sort((a, b) => a.order - b.order)
-    .map(({ number, title, link, part }) => ({ number, title, link, part }));
+    .map(({ number, title, link, part, summary }) => ({
+      number,
+      title,
+      link,
+      part,
+      summary: summary ?? null,
+    }));
   return { props: { chapters } };
 }

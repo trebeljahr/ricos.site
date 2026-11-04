@@ -356,7 +356,6 @@ export type ComputerDemoSlug = (typeof computerDemos)[number]["slug"];
 // The demos that answer in production, gentlest first. Every other demo page
 // stays development-only until the chapter it belongs to is out.
 export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = [
-  { slug: "abstraction-layers", blurb: "Open each layer of a computer to find the next one." },
   { slug: "die-zoom", blurb: "Zoom into a real Pentium II die, with a coin to scale." },
   { slug: "byte-explorer", blurb: "Read the same eight bits in different ways." },
   { slug: "ascii-typer", blurb: "Type text and read each character as seven bits." },
@@ -368,11 +367,29 @@ export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = 
   },
 ];
 
+// Demos for chapters that are not written yet, shown on /computer as a preview.
+export const sneakPeekComputerDemos: { slug: ComputerDemoSlug; part: number; blurb: string }[] = [
+  { slug: "clock-scope", part: 2, blurb: "Watch a clock signal on a scope." },
+  {
+    slug: "cpu-circuit",
+    part: 3,
+    blurb: "Compile a tiny program and clock it through the toy CPU's circuit.",
+  },
+  { slug: "big-screens", part: 5, blurb: "Run the same fill on 8×8, 32×32 and 512×512 screens." },
+  {
+    slug: "lighting-lab",
+    part: 5,
+    blurb: "Change normals, lights and textures, and read one pixel's numbers.",
+  },
+];
+
 const isProduction = process.env.NODE_ENV === "production";
 
 /** The demos a reader can reach from another demo on this build. */
 export const reachableComputerDemos = isProduction
-  ? computerDemos.filter((demo) => publicComputerDemos.some(({ slug }) => slug === demo.slug))
+  ? computerDemos.filter((demo) =>
+      [...publicComputerDemos, ...sneakPeekComputerDemos].some(({ slug }) => slug === demo.slug),
+    )
   : computerDemos;
 
 /** Where a demo page links back to on this build. */

@@ -1,16 +1,15 @@
 import { AbstractionLayers } from "@components/computer/AbstractionLayers";
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import Layout from "@components/Layout";
-import { getSeriesStatusProps } from "src/lib/computerSeriesStatus";
 
-export default function AbstractionLayersDemoPage({ seriesIsOut }: { seriesIsOut: boolean }) {
+export default function AbstractionLayersDemoPage() {
   return (
     <Layout
       title="Layers of abstraction"
       description="Open a computer like a nesting doll, from the app you are using down to voltages on wires."
       keywords={[]}
       url="computer/abstraction-layers"
-      noindex={!seriesIsOut}
+      noindex
       fillViewport
     >
       <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
@@ -28,5 +27,3 @@ export default function AbstractionLayersDemoPage({ seriesIsOut }: { seriesIsOut
     </Layout>
   );
 }
-
-export const getStaticProps = getSeriesStatusProps;

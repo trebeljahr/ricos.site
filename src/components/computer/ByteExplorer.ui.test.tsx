@@ -3,13 +3,23 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { ByteExplorer } from "./ByteExplorer";
 
+vi.mock("src/hooks/usePanelSound", () => ({
+  usePanelSound: () => ({
+    soundEnabled: false,
+    toggleSound: vi.fn(),
+    playSwitch: vi.fn(),
+    playButton: vi.fn(),
+    playToggle: vi.fn(),
+  }),
+}));
+
 afterEach(cleanup);
 
 it("shows both place-value readings and subtracts 128 when the first bit is set", () => {
   render(<ByteExplorer />);
   expect(screen.getByTitle("Two’s complement bit 7 weight: -128").textContent).toBe("−128");
   expect(screen.queryByText(/FIXED/)).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Bit 7: 0. Toggle bit." }));
+  fireEvent.click(screen.getByRole("switch", { name: "Bit 7", checked: false }));
   expect(
     screen.getByRole("button", { name: "Set TWO’S COMPLEMENT. Current value -63" }),
   ).toBeTruthy();
@@ -48,6 +58,22 @@ it("edits two’s complement values and rejects numbers outside its range", () =
   fireEvent.change(input, { target: { value: "-128" } });
   fireEvent.submit(input.closest("form")!);
   expect((screen.getByLabelText("BINARY") as HTMLInputElement).value).toBe("10000000");
+});
+
+it("keeps a preset key down until the byte moves off its value", () => {
+  render(<ByteExplorer />);
+  const letterA = screen.getByRole("button", { name: "LETTER A" });
+  const amp = screen.getByRole("button", { name: "CHARACTER &" });
+  expect(letterA.getAttribute("aria-pressed")).toBe("true");
+  fireEvent.click(amp);
+  expect(amp.getAttribute("aria-pressed")).toBe("true");
+  expect(letterA.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(screen.getByRole("switch", { name: "Bit 0" }));
+  expect(amp.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(screen.getByRole("switch", { name: "Bit 0" }));
+  expect(amp.getAttribute("aria-pressed")).toBe("true");
+  fireEvent.change(screen.getByLabelText("BINARY"), { target: { value: "01000001" } });
+  expect(letterA.getAttribute("aria-pressed")).toBe("true");
 });
 
 it("loads text, integer, and float examples into the same byte", () => {

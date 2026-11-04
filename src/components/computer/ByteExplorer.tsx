@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   type ByteColor,
   type ByteReading,
@@ -17,6 +18,7 @@ import {
   xtermColor,
 } from "src/lib/byteInterpretations";
 import styles from "./ByteExplorer.module.css";
+import { Lever } from "./CodebookParts";
 import { PanelEditor } from "./PanelEditor";
 
 const weights = [128, 64, 32, 16, 8, 4, 2, 1];
@@ -133,6 +135,7 @@ function ColorCell({
 export function ByteExplorer() {
   const [input, setInput] = useState("01000001");
   const [editor, setEditor] = useState<ActiveEditor | null>(null);
+  const { soundEnabled, toggleSound, playSwitch, playButton, playToggle } = usePanelSound();
   const value = parseByteBits(input);
   const bits = value === null ? null : byteBits(value);
   const rgb = value === null ? null : rgb332(value);
@@ -150,10 +153,12 @@ export function ByteExplorer() {
     const next = bits.split("");
     next[index] = next[index] === "1" ? "0" : "1";
     setInput(next.join(""));
+    playToggle(next[index] === "1");
   }
 
   function openEditor(next: ActiveEditor) {
     setEditor(next);
+    if (next.type !== "color") playButton();
   }
 
   function applyEditor(text: string): string | null {
@@ -164,6 +169,7 @@ export function ByteExplorer() {
         : encodeByteColor(editor.kind, text);
     if ("error" in result) return result.error;
     setInput(byteBits(result.value));
+    if (editor.type !== "color") playSwitch();
     return null;
   }
 
@@ -200,6 +206,15 @@ export function ByteExplorer() {
         <div>
           <strong>BYTE INTERPRETER</strong>
         </div>
+        <button
+          type="button"
+          className={styles.soundButton}
+          onClick={toggleSound}
+          aria-pressed={soundEnabled}
+          aria-label={`Sound ${soundEnabled ? "on" : "off"}. Toggle sound.`}
+        >
+          <i aria-hidden="true" /> SOUND {soundEnabled ? "ON" : "OFF"}
+        </button>
       </div>
 
       <div className={styles.workbench}>
@@ -224,21 +239,20 @@ export function ByteExplorer() {
           <p id="byte-help" className={styles.inputHelp}>
             {value === null ? "ENTER EIGHT 0s OR 1s · SPACES OK" : ""}
           </p>
-          <fieldset className={styles.bitBank} aria-label="Bit buttons">
+          <fieldset className={styles.bitBank} aria-label="Bit switches">
             <legend className={styles.weightLegend}>UNSIGNED PLACE VALUES</legend>
             {weights.map((weight, index) => (
               <div className={styles.bitUnit} key={weight}>
                 <span className={styles.weight}>{weight}</span>
-                <button
-                  type="button"
+                <Lever
+                  on={bits?.[index] === "1"}
                   disabled={!bits}
-                  onClick={() => toggleBit(index)}
-                  aria-label={`Bit ${7 - index}: ${bits?.[index] ?? "unknown"}. Toggle bit.`}
-                  aria-pressed={bits?.[index] === "1"}
-                  className={styles.bitButton}
-                >
+                  label={`Bit ${7 - index}`}
+                  onFlip={() => toggleBit(index)}
+                />
+                <span className={styles.bitDigit} aria-hidden="true">
                   {bits?.[index] ?? "·"}
-                </button>
+                </span>
                 <span
                   className={styles.weight}
                   title={`Two’s complement bit ${7 - index} weight: ${index === 0 ? -weight : weight}`}
@@ -253,8 +267,10 @@ export function ByteExplorer() {
               <button
                 key={preset.label}
                 type="button"
+                aria-pressed={value === preset.value}
                 onClick={() => {
                   setInput(byteBits(preset.value));
+                  playButton();
                 }}
               >
                 {"swatch" in preset && (

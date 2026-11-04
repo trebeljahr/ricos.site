@@ -119,7 +119,8 @@
 .bitInput:focus { border-color: #314638; box-shadow: inset 0 4px 10px #0009, 0 0 0 2px #c0e8a8; }
 .inputHelp { min-height: 17px; margin: 5px 0 0; color: #6b392e; font-size: 11px; }
 .bitBank { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; min-width: 0; margin: 16px 0 0; padding: 0; border: 0; }
-.bitUnit { display: grid; justify-items: center; gap: 7px; min-width: 0; }
+.bitUnit { display: grid; justify-items: center; gap: 4px; min-width: 0; }
+.bitDigit { font-size: 15px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
 .weight { font-size: 12px; }
 .weightLegend { margin: 0; padding: 0 0 7px; font-size: 10px; }
 .bitButton {
@@ -161,6 +162,8 @@
 }
 .presetRow button:hover { background: linear-gradient(#f1f3e6, #b7c5ae); }
 .presetRow button:active { transform: translateY(3px); box-shadow: inset 0 2px 4px #566352; }
+/* A latching key: it stays down for as long as the machine holds what it stands for. */
+.presetRow button[aria-pressed="true"] { transform: translateY(3px); background: linear-gradient(#9cb98a, #c6d9aa); box-shadow: inset 0 3px 6px #27452f99, inset 0 1px #dcecc9; color: #1e3b25; }
 .presetSwatch { display: inline-block; width: 11px; height: 11px; margin-right: 5px; border: 1px solid #5b443f; vertical-align: -1px; }
 .screen {
   display: block;

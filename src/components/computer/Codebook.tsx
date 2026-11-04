@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useState } from "react";
 import { useDemoState } from "src/hooks/useDemoState";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import { flipSwitch, lookup, SEED_CODEBOOK, withMeaning } from "src/lib/codebook";
 import panel from "./ByteExplorer.module.css";
 import styles from "./Codebook.module.css";
@@ -10,9 +11,15 @@ import { CodebookTable, DemoMachine, MiniButton, PhraseScreen, SwitchRow } from 
 export function Codebook() {
   const [pattern, setPattern] = useState("00");
   const [codebook, setCodebook] = useDemoState("codebook:phrases", [...SEED_CODEBOOK]);
+  const { soundEnabled, toggleSound, playSwitch, playToggle } = usePanelSound();
 
   return (
-    <DemoMachine title="CODEBOOK" label="Two switches and a codebook">
+    <DemoMachine
+      title="CODEBOOK"
+      label="Two switches and a codebook"
+      soundEnabled={soundEnabled}
+      onToggleSound={toggleSound}
+    >
       <div className={styles.body}>
         <div className={styles.plate}>
           <div className={panel.sectionHead}>
@@ -22,6 +29,7 @@ export function Codebook() {
             pattern={pattern}
             onFlip={(position) => {
               setPattern(flipSwitch(pattern, position));
+              playToggle(pattern[position] === "0");
             }}
             label="Switches"
             large
@@ -36,6 +44,7 @@ export function Codebook() {
             <MiniButton
               onClick={() => {
                 setCodebook([...SEED_CODEBOOK]);
+                playSwitch();
               }}
               label="Reset the codebook to its four starting phrases"
             >

@@ -16,6 +16,12 @@ export default function ComputerDemosIndex() {
         <h1 className="max-w-2xl text-5xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-7xl">
           Computer demos
         </h1>
+        <Link
+          href="/dev/demo-review"
+          className="mt-para inline-block text-sm text-gray-500 hover:text-cyan-600 dark:hover:text-cyan-300"
+        >
+          Review status
+        </Link>
         <div className="mt-16 border-t border-gray-300 dark:border-gray-700">
           {computerDemos.map((demo, index) => (
             <Link

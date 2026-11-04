@@ -76,6 +76,12 @@ export default function ComputerChapterPage({ chapter, prev, next }: Props) {
               Draft ({chapter.status}). Only visible under <code>npm run dev</code>.
             </p>
           )}
+          {chapter.published && chapter.status !== "done" && (
+            <p className="not-prose mb-para rounded-md border border-dashed border-gray-400 px-4 py-2 text-sm text-gray-600 dark:text-gray-300">
+              Early version. Tell me where you got stuck:{" "}
+              <a href="mailto:hi@ricos.site">hi@ricos.site</a>
+            </p>
+          )}
           <Content source={chapter.content} />
           <nav className="not-prose mt-section grid grid-cols-2 gap-para border-t border-gray-200 pt-para dark:border-gray-800">
             <NeighbourLink neighbour={prev} label="Previous" />

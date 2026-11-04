@@ -13,12 +13,14 @@ import {
   type DemoReviews,
   groupByStage,
   isReworked,
+  markAddressed,
   nextInQueue,
   parseReviewUpdate,
+  queueInOrder,
+  roundOf,
   stageOf,
 } from "./demoReview";
 import { REVIEW_FILE, readDemoReviews, writeDemoReviews } from "./demoReviewStore";
-import { demoFiles, readDemoWork } from "./demoWork";
 
 const NOW = new Date(2026, 10, 4, 12);
 const LATER = new Date(2026, 10, 5, 12);
@@ -26,32 +28,57 @@ const rejected = (slug = "clock", at = NOW) => applyReview({}, slug, { verdict: 
 
 describe("stages", () => {
   it("starts every demo in the queue", () => {
-    expect(stageOf({ reviews: {}, work: {} }, "clock")).toBe("queue");
+    expect(stageOf({ reviews: {} }, "clock")).toBe("queue");
   });
 
   it("moves a demo to accepted and to rejected", () => {
     const reviews = applyReview({}, "a", { verdict: "accepted" }, NOW);
-    expect(stageOf({ reviews, work: {} }, "a")).toBe("accepted");
-    expect(stageOf({ reviews: rejected(), work: {} }, "clock")).toBe("rejected");
+    expect(stageOf({ reviews }, "a")).toBe("accepted");
+    expect(stageOf({ reviews: rejected() }, "clock")).toBe("rejected");
   });
 
-  it("sends a rejected demo back to the queue after a later commit, note kept", () => {
-    const reviews = applyReview(rejected(), "clock", { note: "wobbly" }, NOW);
-    const state = { reviews, work: { clock: LATER.getTime() } };
+  it("keeps a rejected demo rejected until its feedback is addressed", () => {
+    expect(stageOf({ reviews: rejected() }, "clock")).toBe("rejected");
+  });
+
+  it("closes the round when feedback is addressed, and sends the demo to the queue", () => {
+    const noted = applyReview(rejected(), "clock", { note: "wobbly" }, NOW);
+    const reviews = markAddressed(noted, "clock", { summary: "steadied", commit: "abc" }, LATER);
+    const state = { reviews };
     expect(stageOf(state, "clock")).toBe("queue");
     expect(isReworked(state, "clock")).toBe(true);
-    expect(reviews.clock.note).toBe("wobbly");
+    expect(reviews.clock.note).toBe("");
+    expect(reviews.clock.rounds).toEqual([
+      {
+        note: "wobbly",
+        rejectedAt: NOW.getTime(),
+        addressedAt: LATER.getTime(),
+        summary: "steadied",
+        commit: "abc",
+      },
+    ]);
+    expect(roundOf(reviews.clock)).toBe(2);
   });
 
-  it("keeps a rejected demo rejected when its last commit is older", () => {
-    const state = { reviews: rejected("clock", LATER), work: { clock: NOW.getTime() } };
-    expect(stageOf(state, "clock")).toBe("rejected");
+  it("only addresses rejected demos, and only with a summary", () => {
+    expect(() => markAddressed({}, "clock", { summary: "x" }, NOW)).toThrow("not rejected");
+    const accepted = applyReview({}, "clock", { verdict: "accepted" }, NOW);
+    expect(() => markAddressed(accepted, "clock", { summary: "x" }, NOW)).toThrow("not rejected");
+    expect(() => markAddressed(rejected(), "clock", { summary: " " }, NOW)).toThrow();
   });
 
-  it("restarts the rejection when a reworked demo is rejected again", () => {
-    const again = applyReview(rejected(), "clock", { verdict: "rejected" }, LATER);
-    const state = { reviews: again, work: { clock: LATER.getTime() - 1000 } };
-    expect(stageOf(state, "clock")).toBe("rejected");
+  it("keeps every round through new verdicts and notes", () => {
+    const first = markAddressed(rejected(), "clock", { summary: "one" }, NOW);
+    const again = applyReview(first, "clock", { verdict: "rejected" }, LATER);
+    const noted = applyReview(again, "clock", { note: "still off" }, LATER);
+    expect(stageOf({ reviews: noted }, "clock")).toBe("rejected");
+    const second = markAddressed(noted, "clock", { summary: "two" }, LATER);
+    expect(second.clock.rounds?.map(({ summary }) => summary)).toEqual(["one", "two"]);
+    const accepted = applyReview(second, "clock", { verdict: "accepted" }, LATER);
+    expect(accepted.clock.rounds).toHaveLength(2);
+    expect(isReworked({ reviews: accepted }, "clock")).toBe(false);
+    const back = applyReview(accepted, "clock", { verdict: null }, LATER);
+    expect(back.clock.rounds).toHaveLength(2);
   });
 
   it("does not restart the rejection when only the note changes", () => {
@@ -59,15 +86,10 @@ describe("stages", () => {
     expect(reviews.clock.rejectedAt).toBe(NOW.getTime());
   });
 
-  it("leaves accepted demos accepted whatever gets committed", () => {
-    const reviews = applyReview({}, "a", { verdict: "accepted" }, NOW);
-    expect(stageOf({ reviews, work: { a: LATER.getTime() } }, "a")).toBe("accepted");
-  });
-
   it("puts a demo back in the queue by hand, keeping a note", () => {
     const noted = applyReview(rejected(), "clock", { note: "wobbly" }, NOW);
     const back = applyReview(noted, "clock", { verdict: null }, LATER);
-    expect(stageOf({ reviews: back, work: {} }, "clock")).toBe("queue");
+    expect(stageOf({ reviews: back }, "clock")).toBe("queue");
     expect(back.clock.note).toBe("wobbly");
     expect(back.clock.rejectedAt).toBeUndefined();
   });
@@ -96,7 +118,7 @@ describe("order", () => {
   it("groups by stage, keeping the order within each", () => {
     let reviews: DemoReviews = applyReview({}, "a", { verdict: "accepted" }, NOW);
     reviews = applyReview(reviews, "c", { verdict: "rejected" }, NOW);
-    const groups = groupByStage(demos, (slug) => stageOf({ reviews, work: {} }, slug));
+    const groups = groupByStage(demos, (slug) => stageOf({ reviews }, slug));
     expect(groups.queue.map((d) => d.slug)).toEqual(["b", "d"]);
     expect(groups.rejected.map((d) => d.slug)).toEqual(["c"]);
     expect(groups.accepted.map((d) => d.slug)).toEqual(["a"]);
@@ -104,13 +126,40 @@ describe("order", () => {
 
   it("finds the next demo in the queue, wrapping round and never itself", () => {
     const reviews = applyReview({}, "c", { verdict: "accepted" }, NOW);
-    const state = { reviews, work: {} };
+    const state = { reviews };
     expect(nextInQueue(demos, state, "b")?.slug).toBe("d");
     expect(nextInQueue(demos, state, "d")?.slug).toBe("a");
-    const only = { reviews: { ...rejected("a"), ...rejected("b"), ...rejected("d") }, work: {} };
+    const only = { reviews: { ...rejected("a"), ...rejected("b"), ...rejected("d") } };
     expect(nextInQueue(demos, { ...only, reviews: { ...only.reviews, ...reviews } }, "a")).toBe(
       undefined,
     );
+  });
+});
+
+describe("reworked demos", () => {
+  const demos = ["a", "b", "c", "d"].map((slug) => ({ slug }));
+  const addressed = (reviews: DemoReviews, slug: string, at: Date) =>
+    markAddressed({ ...reviews, ...rejected(slug) }, slug, { summary: "done" }, at);
+  const reviews = addressed(addressed({}, "c", LATER), "a", NOW);
+  const state = { reviews };
+
+  it("waits behind new demos, longest waiting first", () => {
+    expect(queueInOrder(demos, state).map((d) => d.slug)).toEqual(["b", "d", "a", "c"]);
+  });
+
+  it("comes up next only when no new demo is left", () => {
+    expect(nextInQueue(demos, state, "b")?.slug).toBe("d");
+    expect(nextInQueue(demos, state, "a")?.slug).toBe("b");
+    const noneNew = {
+      reviews: {
+        ...reviews,
+        ...applyReview({}, "b", { verdict: "accepted" }, NOW),
+        ...applyReview({}, "d", { verdict: "accepted" }, NOW),
+      },
+    };
+    expect(nextInQueue(demos, noneNew, "b")?.slug).toBe("a");
+    expect(nextInQueue(demos, noneNew, "a")?.slug).toBe("c");
+    expect(nextInQueue(demos, noneNew, "c")?.slug).toBe("a");
   });
 });
 
@@ -159,31 +208,6 @@ describe("demo files", () => {
     // Shelved, and chapter lessons made of demos that have their own pages.
     const exempt = ["TruthTableScale", "TransistorGateLessons", "DecoderLesson", "UniversalGates"];
     expect(mdxNames.filter((name) => !exempt.includes(name) && !uses(pages, name))).toEqual([]);
-  });
-
-  it("counts a demo's own component as its work, and not the shared nav", () => {
-    const files = demoFiles();
-    expect(files["die-zoom"]).toContain(path.join("src", "pages", "computer", "die-zoom.tsx"));
-    expect(files["die-zoom"]).toContain(path.join("src", "components", "computer", "DieZoom.tsx"));
-    expect(files["die-zoom"]).not.toContain(
-      path.join("src", "components", "computer", "ComputerDemoNav.tsx"),
-    );
-  });
-
-  it("keeps the wrapper shared by demo pages out of a demo's work", () => {
-    expect(demoFiles()["half-adder"]).not.toContain(
-      path.join("src", "components", "computer", "DeviceDemoPage.tsx"),
-    );
-  });
-
-  it("reads a last commit for rejected demos only", () => {
-    const reviews = {
-      ...rejected("die-zoom"),
-      ...applyReview({}, "clock", { verdict: "accepted" }, NOW),
-    };
-    const work = readDemoWork(reviews);
-    expect(Object.keys(work)).toEqual(["die-zoom"]);
-    expect(work["die-zoom"]).toBeGreaterThan(0);
   });
 });
 
@@ -277,7 +301,7 @@ describe("store and endpoint", () => {
         req: { headers: {}, socket: { remoteAddress: address } },
       } as unknown as GetServerSidePropsContext);
 
-    expect(await page()).toEqual({ props: { review: { reviews: {}, work: {} } } });
+    expect(await page()).toEqual({ props: { review: { reviews: {} } } });
     expect(await page("192.168.1.20")).toEqual({ props: { review: null } });
     vi.stubEnv("NODE_ENV", "production");
     expect(await page()).toEqual({ notFound: true });

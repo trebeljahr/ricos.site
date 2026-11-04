@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { computerDemos } from "src/lib/computerDemos";
-import { isReworked, nextInQueue, type ReviewState, stageOf } from "src/lib/demoReview";
+import {
+  type DemoReview as DemoReviewRecord,
+  nextInQueue,
+  type ReviewRound,
+  type ReviewState,
+  roundOf,
+  stageOf,
+} from "src/lib/demoReview";
 import {
   type DemoReviewApi,
   fetchDemoReview,
@@ -47,9 +54,6 @@ function Controls({
           onSave={saveNote}
           title={title}
         />
-        {isReworked(state, current) && (
-          <span className="text-sm text-gray-500 dark:text-gray-400">Reworked</span>
-        )}
         <span className="font-mono text-xs text-gray-500 dark:text-gray-400">
           {waiting} to look at
         </span>
@@ -63,7 +67,44 @@ function Controls({
         )}
       </div>
       <SaveError message={review.saveError} />
+      <FinishedRounds review={saved} />
     </div>
+  );
+}
+
+function Round({ round, number }: { round: ReviewRound; number: number }) {
+  return (
+    <div className="mt-label text-sm text-gray-600 dark:text-gray-400">
+      <p className="m-0 font-medium text-gray-800 dark:text-gray-200">Round {number}</p>
+      <p className="m-0 mt-hair whitespace-pre-wrap line-through">{round.note}</p>
+      <p className="m-0 mt-hair whitespace-pre-wrap">
+        Addressed: {round.summary}
+        {round.commit && <span className="ml-tight font-mono text-xs">{round.commit}</span>}
+      </p>
+    </div>
+  );
+}
+
+/** What this demo went through: the last round in full, earlier ones folded away. */
+function FinishedRounds({ review }: { review: DemoReviewRecord | undefined }) {
+  const rounds = review?.rounds ?? [];
+  if (rounds.length === 0) return null;
+  const earlier = rounds.slice(0, -1);
+  return (
+    <>
+      <p className="m-0 mt-label font-mono text-xs text-gray-500 dark:text-gray-400">
+        Now on round {roundOf(review)}
+      </p>
+      <Round number={rounds.length} round={rounds[rounds.length - 1]} />
+      {earlier.length > 0 && (
+        <details className="mt-label text-sm text-gray-600 dark:text-gray-400">
+          <summary className="cursor-pointer">Earlier rounds</summary>
+          {earlier.map((round, index) => (
+            <Round key={round.addressedAt} number={index + 1} round={round} />
+          ))}
+        </details>
+      )}
+    </>
   );
 }
 

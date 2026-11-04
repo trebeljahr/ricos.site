@@ -8,7 +8,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { computerDemos } from "src/lib/computerDemos";
 import { applyReview, parseReviewUpdate } from "src/lib/demoReview";
 import { readDemoReviews, writeDemoReviews } from "src/lib/demoReviewStore";
-import { readDemoWork } from "src/lib/demoWork";
 import { clientAddresses, servesPrivateNotes } from "src/lib/diaryStore";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -23,8 +22,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   if (req.method === "GET") {
     try {
-      const reviews = readDemoReviews();
-      res.status(200).json({ reviews, work: readDemoWork(reviews) });
+      res.status(200).json({ reviews: readDemoReviews() });
     } catch (error) {
       res.status(500).json({ error: `Could not read: ${String(error)}` });
     }

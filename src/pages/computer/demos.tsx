@@ -5,21 +5,22 @@ import {
   type DemoReview,
   groupByStage,
   isReworked,
+  queueInOrder,
   REVIEW_STAGES,
   type ReviewStage,
   type ReviewState,
+  roundOf,
   stageOf,
 } from "src/lib/demoReview";
 import { readDemoReviews } from "src/lib/demoReviewStore";
-import { readDemoWork } from "src/lib/demoWork";
 import { clientAddresses, servesPrivateNotes } from "src/lib/diaryStore";
 import { computerDemos } from "../../lib/computerDemos";
 
-// All demos, for looking through them: what still needs a look on top, then what
-// was rejected and not worked on since, then what is accepted. Verdicts are set
-// on the demo pages (DemoReviewBar). The order only shows on this machine (see
-// demoReviewStore.ts); from another device, say a phone on the same Wi-Fi, this
-// is the plain list.
+// All demos, for looking through them: what still needs a look on top, with
+// reworked demos last, then what was rejected and not addressed yet, then what is
+// accepted. Verdicts are set on the demo pages (DemoReviewBar). The order only
+// shows on this machine (see demoReviewStore.ts); from another device, say a phone
+// on the same Wi-Fi, this is the plain list.
 
 const STAGE_TITLES: Record<ReviewStage, string> = {
   queue: "To look at",
@@ -52,15 +53,20 @@ function DemoRow({
           <strong className="min-w-0 text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
             {demo.title}
           </strong>
-          {reworked && (
+          {(review?.rounds?.length ?? 0) > 0 && (
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Reworked since rejection
+              Round {roundOf(review)}
             </span>
           )}
         </span>
         {review?.note && (
           <span className="mt-hair block text-sm text-gray-600 dark:text-gray-400">
             {review.note}
+          </span>
+        )}
+        {reworked && (
+          <span className="mt-hair block text-sm text-gray-600 dark:text-gray-400">
+            Addressed: {review?.rounds?.at(-1)?.summary}
           </span>
         )}
       </Link>
@@ -70,6 +76,7 @@ function DemoRow({
 
 function ReviewedList({ state }: { state: ReviewState }) {
   const groups = groupByStage(computerDemos, (slug) => stageOf(state, slug));
+  groups.queue = queueInOrder(computerDemos, state);
   return (
     <>
       {REVIEW_STAGES.map((stage) => (
@@ -131,6 +138,5 @@ export const getServerSideProps: GetServerSideProps<{
   // below is dead code there and the deployed route is a plain 404.
   if (process.env.NODE_ENV !== "development") return { notFound: true };
   if (!servesPrivateNotes(process.env, clientAddresses(req))) return { props: { review: null } };
-  const reviews = readDemoReviews();
-  return { props: { review: { reviews, work: readDemoWork(reviews) } } };
+  return { props: { review: { reviews: readDemoReviews() } } };
 };

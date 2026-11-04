@@ -1,12 +1,14 @@
 // Rico's review of the computer-series demos. Pure logic, shared by
-// /computer/demos, the bar on each demo page and the endpoint; the file itself
-// is handled in demoReviewStore.ts.
+// /computer/demos, the bar on each demo page, the endpoint and
+// `pnpm demo:addressed`; the file itself is handled in demoReviewStore.ts.
 //
 // A demo has one of three stages, and the demo list is sorted by them:
-//   queue     never looked at, or changed since its last rejection
-//   rejected  rejected, and no work done since
+//   queue     never looked at, or its feedback was addressed
+//   rejected  rejected, and the feedback not addressed yet
 //   accepted
-// Only Rico sets a verdict. Work done is read from git (see demoWork.ts).
+// Only Rico sets a verdict. Marking feedback addressed closes the round: the note
+// moves to `rounds` with what was done about it, and the demo waits at the end of
+// the queue for a fresh verdict.
 
 export const REVIEW_VERDICTS = ["accepted", "rejected"] as const;
 export type ReviewVerdict = (typeof REVIEW_VERDICTS)[number];
@@ -14,24 +16,32 @@ export type ReviewVerdict = (typeof REVIEW_VERDICTS)[number];
 export const REVIEW_STAGES = ["queue", "rejected", "accepted"] as const;
 export type ReviewStage = (typeof REVIEW_STAGES)[number];
 
+/** One finished iteration: Rico's feedback and the answer to it. */
+export type ReviewRound = {
+  note: string;
+  rejectedAt?: number;
+  addressedAt: number;
+  summary: string;
+  commit?: string;
+};
+
 export type DemoReview = {
   verdict?: ReviewVerdict;
   note: string;
   /** Local calendar day of the last change. */
   updated: string;
-  /** Milliseconds; set on each rejection and compared with the last commit. */
+  /** Milliseconds; set on each rejection. */
   rejectedAt?: number;
+  /** Finished iterations, oldest first. */
+  rounds?: ReviewRound[];
 };
 
 export type DemoReviews = Record<string, DemoReview>;
 
-/** Last commit touching each demo, in milliseconds. Only rejected demos need one. */
-export type DemoWork = Record<string, number>;
-
 /** `verdict: null` puts a demo back in the queue by hand. */
 export type ReviewUpdate = { verdict?: ReviewVerdict | null; note?: string };
 
-export type ReviewState = { reviews: DemoReviews; work: DemoWork };
+export type ReviewState = { reviews: DemoReviews };
 
 export const NOTE_LIMIT = 1000;
 
@@ -44,22 +54,25 @@ const localDay = (now: Date) => {
   return `${now.getFullYear()}-${month}-${day}`;
 };
 
-/** A rejected demo with commits after its rejection is back in the queue. */
-export const isReworked = ({ reviews, work }: ReviewState, slug: string): boolean => {
-  const review = reviews[slug];
-  return review?.verdict === "rejected" && (work[slug] ?? 0) > (review.rejectedAt ?? 0);
-};
-
-export function stageOf(state: ReviewState, slug: string): ReviewStage {
-  const verdict = state.reviews[slug]?.verdict;
-  if (!verdict || isReworked(state, slug)) return "queue";
-  return verdict;
+export function stageOf({ reviews }: ReviewState, slug: string): ReviewStage {
+  return reviews[slug]?.verdict ?? "queue";
 }
 
+/** A demo waiting for a new look after its feedback was addressed. */
+export const isReworked = (state: ReviewState, slug: string): boolean =>
+  stageOf(state, slug) === "queue" && (state.reviews[slug]?.rounds?.length ?? 0) > 0;
+
 /**
- * Setting a verdict always counts, even the same one again: rejecting a reworked
- * demo has to restart its rejection. A demo left with no verdict and no note has
- * no record at all.
+ * The iteration a demo is on, from 1. A closed round counts until a new verdict
+ * opens the next one, so an addressed demo already reads as its next round.
+ */
+export const roundOf = (review: DemoReview | undefined): number =>
+  (review?.rounds?.length ?? 0) + 1;
+
+/**
+ * Setting a verdict always counts, even the same one again. Finished rounds stay
+ * whatever happens. A demo left with no verdict, no note and no rounds has no
+ * record at all.
  */
 export function applyReview(
   reviews: DemoReviews,
@@ -73,14 +86,41 @@ export function applyReview(
   if (update.verdict === undefined && previous?.note === note) return reviews;
 
   const { [slug]: _replaced, ...rest } = reviews;
-  if (!verdict && !note) return rest;
+  const rounds = previous?.rounds;
+  if (!verdict && !note && !rounds?.length) return rest;
 
   const review: DemoReview = { note, updated: localDay(now) };
   if (verdict) review.verdict = verdict;
   if (verdict === "rejected") {
     review.rejectedAt = update.verdict === "rejected" ? now.getTime() : previous?.rejectedAt;
   }
+  if (rounds?.length) review.rounds = rounds;
   return { ...rest, [slug]: review };
+}
+
+/**
+ * Closes a rejected demo's round, which puts it at the end of the queue. Throws for
+ * any other demo: only feedback Rico rejected with can be addressed, and a mistyped
+ * slug must not write anything.
+ */
+export function markAddressed(
+  reviews: DemoReviews,
+  slug: string,
+  { summary, commit }: { summary: string; commit?: string },
+  now: Date,
+): DemoReviews {
+  const previous = reviews[slug];
+  if (previous?.verdict !== "rejected") throw new Error(`${slug} is not rejected`);
+  const text = summary.trim();
+  if (!text) throw new Error("Say what was done");
+
+  const round: ReviewRound = { note: previous.note, addressedAt: now.getTime(), summary: text };
+  if (previous.rejectedAt !== undefined) round.rejectedAt = previous.rejectedAt;
+  if (commit) round.commit = commit;
+  return {
+    ...reviews,
+    [slug]: { note: "", updated: localDay(now), rounds: [...(previous.rounds ?? []), round] },
+  };
 }
 
 /** Reads a request body. Null when it changes nothing or holds something unknown. */
@@ -110,13 +150,46 @@ export function groupByStage<Demo extends { slug: string }>(
   return groups;
 }
 
-/** The next demo waiting for a look after this one, wrapping round. Never itself. */
+const addressedAt = (state: ReviewState, slug: string) =>
+  state.reviews[slug]?.rounds?.at(-1)?.addressedAt ?? 0;
+
+/** Reworked demos waiting for a look, the longest waiting first. */
+function reworkedInOrder<Demo extends { slug: string }>(
+  demos: readonly Demo[],
+  state: ReviewState,
+): Demo[] {
+  return demos
+    .filter((demo) => isReworked(state, demo.slug))
+    .sort((a, b) => addressedAt(state, a.slug) - addressedAt(state, b.slug));
+}
+
+/** The queue as it gets worked through: new demos first, reworked ones at the end. */
+export function queueInOrder<Demo extends { slug: string }>(
+  demos: readonly Demo[],
+  state: ReviewState,
+): Demo[] {
+  const fresh = demos.filter(
+    (demo) => stageOf(state, demo.slug) === "queue" && !isReworked(state, demo.slug),
+  );
+  return [...fresh, ...reworkedInOrder(demos, state)];
+}
+
+const after = <Demo extends { slug: string }>(demos: readonly Demo[], current: string): Demo[] => {
+  const start = demos.findIndex((demo) => demo.slug === current);
+  return [...demos.slice(start + 1), ...demos.slice(0, Math.max(start, 0))];
+};
+
+/**
+ * The next demo waiting for a look after this one, wrapping round. Never itself.
+ * Reworked demos only come up once no new demo is left.
+ */
 export function nextInQueue<Demo extends { slug: string }>(
   demos: readonly Demo[],
   state: ReviewState,
   current: string,
 ): Demo | undefined {
-  const start = demos.findIndex((demo) => demo.slug === current);
-  const ordered = [...demos.slice(start + 1), ...demos.slice(0, Math.max(start, 0))];
-  return ordered.find((demo) => demo.slug !== current && stageOf(state, demo.slug) === "queue");
+  const fresh = after(demos, current).find(
+    (demo) => stageOf(state, demo.slug) === "queue" && !isReworked(state, demo.slug),
+  );
+  return fresh ?? after(reworkedInOrder(demos, state), current)[0];
 }

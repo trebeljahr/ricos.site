@@ -1,0 +1,64 @@
+// @vitest-environment jsdom
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { GateWirings } from "./GateWirings";
+import { TransistorAnatomy } from "./TransistorAnatomy";
+
+vi.mock("./TransistorAnatomyScene", () => ({ default: () => null }));
+
+afterEach(cleanup);
+const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
+
+describe("transistor anatomy", () => {
+  it("shows steady control current on the BJT and none on a gate", () => {
+    render(<TransistorAnatomy />);
+    fireEvent.change(screen.getByRole("slider", { name: "VGS" }), { target: { value: "1" } });
+    expect(screen.getByTestId("control-current").textContent).toBe("0");
+    expect(screen.getByText("GATE WIRE")).toBeTruthy();
+    click("BJT");
+    expect(screen.getByText("BASE WIRE")).toBeTruthy();
+    expect(screen.getByTestId("control-current").textContent).not.toBe("0");
+    expect(screen.getByText("ON")).toBeTruthy();
+  });
+});
+
+describe("gate wirings", () => {
+  it("draws the same circuit whichever MOS shape is chosen", () => {
+    const { container } = render(<GateWirings />);
+    click("CMOS");
+    const board = () => container.querySelector('[role="img"] svg')!.innerHTML;
+    const planar = board();
+    const planarLeak = screen.getByTestId("leak-current").textContent;
+    click("GATE-ALL-AROUND");
+    expect(board()).toBe(planar);
+    expect(screen.getByTestId("leak-current").textContent).not.toBe(planarLeak);
+  });
+
+  it("keeps steady base current on while a BJT input is high", () => {
+    const { container } = render(<GateWirings />);
+    expect(container.querySelector("[data-base-current]")).toBeNull();
+    click("A = 0");
+    expect(container.querySelector("[data-base-current]")).toBeTruthy();
+    click("CMOS");
+    expect(container.querySelector("[data-base-current]")).toBeNull();
+  });
+
+  it("disables wirings a gate does not have", () => {
+    render(<GateWirings />);
+    click("XOR");
+    expect(screen.getByRole("button", { name: "XOR" }).hasAttribute("disabled")).toBe(true);
+  });
+
+  it("offers XOR once a wiring has it, and shows fewer transistors for a pass gate", () => {
+    render(<GateWirings />);
+    click("CMOS");
+    click("XOR");
+    expect(screen.getByTestId("transistor-count").textContent).toBe("12");
+    click("TRANSMISSION GATE");
+    expect(screen.getByTestId("transistor-count").textContent).toBe("8");
+    click("PASS TRANSISTOR");
+    expect(screen.getByTestId("transistor-count").textContent).toBe("6");
+    click("B = 0");
+    expect(screen.getByTestId("output-level").textContent).toContain("0.70 V");
+  });
+});

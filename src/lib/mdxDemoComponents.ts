@@ -31,6 +31,8 @@ export const MDX_DEMO_COMPONENTS = [
   "EndianReader",
   "AbstractionLayers",
   "DieZoom",
+  "TransistorAnatomy",
+  "GateWirings",
   "SwitchLogic",
   "TransistorSwitches",
   "TransistorComparison",

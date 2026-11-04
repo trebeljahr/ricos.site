@@ -255,3 +255,21 @@
   .twoColumns { grid-template-columns: minmax(0, 1fr); }
   .stop { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
+
+/* Transistor models and gate wirings. */
+.modelStage { position: relative; height: clamp(300px, 56cqi, 460px); overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: #10131b; cursor: grab; }
+.modelStage:active { cursor: grabbing; }
+.partTag { position: absolute; top: 0; left: 0; padding: 2px 6px; border-radius: 4px; background: #0b0d13d9; color: var(--text); font: 700 10px/1.3 ui-monospace, monospace; letter-spacing: .06em; white-space: nowrap; pointer-events: none; }
+.modelLegend { display: flex; flex-wrap: wrap; gap: 5px 12px; margin: 0; padding: 0; color: var(--muted); font-size: 10px; letter-spacing: .06em; list-style: none; }
+.modelLegend li { display: inline-flex; align-items: center; gap: 5px; }
+.modelLegend i { width: 9px; height: 9px; border-radius: 2px; }
+.hill { display: block; width: 100%; max-width: 420px; }
+.hill text { fill: var(--muted); font: 700 9px ui-monospace, monospace; letter-spacing: .06em; }
+.modelReadout { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-block: 0; }
+.modelReadout > div { min-width: 0; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--raised); }
+.modelReadout dt { color: var(--muted); font-size: 10px; letter-spacing: .06em; }
+.modelReadout dd { margin: 2px 0 0; font: 600 13px/1.3 ui-monospace, monospace; }
+.wiringBoard { display: block; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #10131b; }
+.wiringTag { font: 700 13px ui-monospace, monospace; }
+.wiringPin { fill: var(--muted); font: 9px ui-monospace, monospace; }
+.partTag[data-hidden="true"] { visibility: hidden; }

@@ -78,6 +78,10 @@ export const computerDemos = [
     title: "From silicon to a transistor",
   },
   {
+    slug: "transistor-shapes",
+    title: "Four transistors in 3D",
+  },
+  {
     slug: "adders",
     title: "Add bits with gates",
   },

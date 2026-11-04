@@ -4,6 +4,7 @@ import { ComputerEmbedContext } from "./ComputerEmbedContext";
 import { LazyMount } from "./LazyMount";
 import { loadCircuitDemos } from "./loadCircuitDemos";
 import { loadGraphicsDemos } from "./loadGraphicsDemos";
+import { loadTransistorDemos } from "./loadTransistorDemos";
 import { loadUnicodeDemos } from "./loadUnicodeDemos";
 
 /** A chapter embed: its code loads when the page is idle, and it mounts as it approaches the viewport. */
@@ -92,6 +93,14 @@ export const COMPUTER_MDX_DEMOS = {
   Transform3d: chapterDemo(
     () => loadGraphicsDemos().then((module) => module.Transform3d),
     "Matrices in 3D",
+  ),
+  TransistorAnatomy: chapterDemo(
+    () => loadTransistorDemos().then((module) => module.TransistorAnatomy),
+    "Four transistors",
+  ),
+  GateWirings: chapterDemo(
+    () => loadTransistorDemos().then((module) => module.GateWirings),
+    "One gate, five wirings",
   ),
   MeshAnatomy: chapterDemo(
     () => loadGraphicsDemos().then((module) => module.MeshAnatomy),

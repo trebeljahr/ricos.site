@@ -28,6 +28,7 @@ export const MDX_DEMO_COMPONENTS = [
   "WeightPaint",
   "SkeletonPlayer",
   "EndianReader",
+  "SevenSegmentDecoder",
   "AbstractionLayers",
   "DieZoom",
   "TransistorAnatomy",

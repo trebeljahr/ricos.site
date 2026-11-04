@@ -138,6 +138,10 @@ export const COMPUTER_MDX_DEMOS = {
     () => import("./EndianReader").then((module) => module.EndianReader),
     "Byte order explorer",
   ),
+  SevenSegmentDecoder: chapterDemo(
+    () => import("./SevenSegmentDecoder").then((module) => module.SevenSegmentDecoder),
+    "Binary to seven-segment decoder",
+  ),
   AbstractionLayers: chapterDemo(
     () => import("./AbstractionLayers").then((module) => module.AbstractionLayers),
     "Layers of abstraction",

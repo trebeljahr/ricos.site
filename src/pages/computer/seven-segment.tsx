@@ -1,30 +1,19 @@
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
-import dynamic from "next/dynamic";
+import { SevenSegmentDecoder } from "@components/computer/SevenSegmentDecoder";
 import Link from "next/link";
-import { layoutCircuit } from "src/lib/computer/circuitLayout";
-import { demoStorageKey } from "src/lib/computer/demoStorage";
-import { rawSegmentDemo } from "src/lib/computer/sevenSegment";
-
-const LogicBuilder = dynamic(
-  () => import("@components/computer/LogicBuilder").then((m) => m.LogicBuilder),
-  { ssr: false },
-);
-const initial = layoutCircuit(rawSegmentDemo());
 
 export default function SevenSegmentPage() {
   return (
     <DeviceDemoPage
       slug="seven-segment"
-      description="Wire each bar, decode BCD, then build decimal displays with one to four digits."
+      description="Set four bits and follow them through the gates to the bars of a digit."
     >
       <p>
-        <Link href="/computer/build-from-nand?level=raw-seven-segment">
-          Build and check these circuits yourself →
+        <Link href="/computer/build-from-nand?level=bcd-seven-segment">
+          Build and check this circuit yourself →
         </Link>
       </p>
-      <div className="not-prose h-[85svh] min-h-[650px]">
-        <LogicBuilder storageKey={demoStorageKey("seven-segment")} initialCircuit={initial} />
-      </div>
+      <SevenSegmentDecoder />
     </DeviceDemoPage>
   );
 }

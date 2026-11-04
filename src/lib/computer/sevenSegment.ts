@@ -1,22 +1,8 @@
 import { type Circuit, inputCount, type Node, type Wire, moduleInputs, moduleOutputs } from "./logic";
 import { builtinCircuit, registerRecognitionComponent } from "./recognition";
-import { type DigitCount, PLACES, SEGMENTS } from "./segmentNames";
+import { type DigitCount, PLACES, SEGMENTS, segmentBits } from "./segmentNames";
 
-export { DIGIT_COUNTS, type DigitCount, PLACES, SEGMENTS } from "./segmentNames";
-const GLYPHS = [
-  "abcdef",
-  "bc",
-  "abdeg",
-  "abcdg",
-  "bcfg",
-  "acdfg",
-  "acdefg",
-  "abc",
-  "abcdefg",
-  "abcdfg",
-];
-export const segmentBits = (digit: number): boolean[] =>
-  SEGMENTS.map((s) => (GLYPHS[digit] ?? "").includes(s));
+export { DIGIT_COUNTS, type DigitCount, PLACES, SEGMENTS, segmentBits } from "./segmentNames";
 export const unsigned = (bits: readonly boolean[]): number =>
   bits.reduce((n, bit, i) => n + (bit ? 2 ** i : 0), 0);
 export const binaryBits = (n: number, width: number): boolean[] =>

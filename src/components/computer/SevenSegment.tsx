@@ -1,14 +1,5 @@
-import { PLACES, SEGMENTS } from "../../lib/computer/sevenSegment";
+import { PLACES, SEGMENT_BARS, SEGMENTS } from "../../lib/computer/segmentNames";
 import styles from "./LogicBuilder.module.css";
-const BARS = [
-  [18, 5, 48, 9],
-  [67, 17, 9, 48],
-  [67, 76, 9, 48],
-  [18, 127, 48, 9],
-  [7, 76, 9, 48],
-  [7, 17, 9, 48],
-  [18, 66, 48, 9],
-];
 /** Each SVG bar reads exactly one input. There is no numeric decoding here. */
 export function SevenSegment({
   bits,
@@ -49,7 +40,7 @@ export function SevenSegment({
               role="img"
               aria-label={`${raw && digits === 1 ? "Raw" : PLACES[digit]} segment map`}
             >
-              {BARS.map(([x, y, width, height], i) => (
+              {SEGMENT_BARS.map(([x, y, width, height], i) => (
                 <g
                   key={SEGMENTS[i]}
                   data-segment={`${digit}:${SEGMENTS[i]}`}

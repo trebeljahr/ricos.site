@@ -1,0 +1,39 @@
+/* The builder's dark canvas and its wire colours, in both site themes. */
+.demo {
+  --off: #3b4a66;
+  --on: #f5b84a;
+  --label: #c5d5f0;
+  max-width: 560px;
+  margin-inline: auto;
+  padding: 10px;
+  border-radius: 8px;
+  background: #141c30;
+}
+.demo svg { display: block; width: 100%; height: auto; }
+
+.wire { fill: none; stroke: var(--off); stroke-width: 1.1; stroke-linejoin: round; transition: stroke 120ms; }
+.wire[data-on="true"] { stroke: var(--on); stroke-width: 1.5; }
+.tap { fill: var(--off); transition: fill 120ms; }
+.tap[data-on="true"] { fill: var(--on); }
+.gate { fill: #1f2b47; stroke: #64789b; stroke-width: 1; transition: fill 120ms, stroke 120ms; }
+.gate[data-on="true"] { fill: #5c4518; stroke: var(--on); }
+.bar { fill: #2a3148; transition: fill 120ms; }
+.bar[data-on="true"] { fill: #ff746b; }
+
+.demo text { fill: var(--label); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; }
+.demo .reading { font-size: 15px; font-weight: 700; }
+.demo .reading tspan { fill: var(--on); }
+.demo .pin { font-size: 7px; font-weight: 700; }
+.demo .weight { font-size: 8px; }
+
+.control { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
+.control rect { fill: #1f2b47; stroke: #64789b; stroke-width: 1; transition: fill 120ms, stroke 120ms; }
+.control:hover rect { stroke: var(--label); }
+.control:focus-visible rect { stroke: #fff; stroke-width: 1.6; }
+.control[aria-pressed="true"] rect { fill: #5c4518; stroke: var(--on); }
+.demo .control text { font-size: 11px; font-weight: 700; pointer-events: none; }
+.demo .control[aria-pressed="true"] text { fill: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wire, .tap, .gate, .bar, .control rect { transition: none; }
+}

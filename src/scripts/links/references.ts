@@ -128,7 +128,12 @@ const STYLESHEET_GLOBS = ["src/styles/**/*.css", "public/**/*.css"];
 
 export async function collectReferences(): Promise<References> {
   const markdown = await glob(MARKDOWN_GLOBS, { cwd: CONTENT_DIR, absolute: true });
-  const source = await glob(SOURCE_GLOBS, { cwd: ROOT, absolute: true });
+  // Test fixtures use made-up paths that no reader ever requests.
+  const source = await glob(SOURCE_GLOBS, {
+    cwd: ROOT,
+    absolute: true,
+    ignore: ["**/*.test.tsx"],
+  });
   const stylesheets = await glob(STYLESHEET_GLOBS, { cwd: ROOT, absolute: true });
 
   const result: References = { routes: [], relative: [], assets: [], external: [] };

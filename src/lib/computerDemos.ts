@@ -164,6 +164,27 @@ export const computerDemos = [
     slug: "big-screens",
     title: "Why bigger screens need a GPU",
   },
+  // Aside 5.6a: the 3D pipeline.
+  {
+    slug: "matrix-playground",
+    title: "Multiply matrices, move a shape",
+  },
+  {
+    slug: "matrices-in-3d",
+    title: "Turn, scale and move in 3D",
+  },
+  {
+    slug: "mesh-anatomy",
+    title: "Take a 3D mesh apart",
+  },
+  {
+    slug: "coordinate-spaces",
+    title: "Follow a corner from mesh to pixel",
+  },
+  {
+    slug: "lighting-lab",
+    title: "Light a surface, pixel by pixel",
+  },
   {
     slug: "build-a-cpu",
     title: "Build your own CPU",

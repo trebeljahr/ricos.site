@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import { ComputerEmbedContext } from "./ComputerEmbedContext";
 import { LazyMount } from "./LazyMount";
 import { loadCircuitDemos } from "./loadCircuitDemos";
+import { loadGraphicsDemos } from "./loadGraphicsDemos";
 import { loadUnicodeDemos } from "./loadUnicodeDemos";
 
 /** A chapter embed: its code loads when the page is idle, and it mounts as it approaches the viewport. */
@@ -83,6 +84,26 @@ export const COMPUTER_MDX_DEMOS = {
   Utf8Reader: chapterDemo(
     () => loadUnicodeDemos().then((module) => module.Utf8Reader),
     "UTF-8 reader",
+  ),
+  MatrixPlayground: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.MatrixPlayground),
+    "Matrix playground",
+  ),
+  Transform3d: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.Transform3d),
+    "Matrices in 3D",
+  ),
+  MeshAnatomy: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.MeshAnatomy),
+    "Inside a mesh",
+  ),
+  CoordinateSpaces: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.CoordinateSpaces),
+    "From a mesh to a pixel",
+  ),
+  LightingLab: chapterDemo(
+    () => loadGraphicsDemos().then((module) => module.LightingLab),
+    "Light and texture",
   ),
   EndianReader: chapterDemo(
     () => import("./EndianReader").then((module) => module.EndianReader),

@@ -359,6 +359,8 @@ export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = 
   { slug: "abstraction-layers", blurb: "Open each layer of a computer to find the next one." },
   { slug: "die-zoom", blurb: "Zoom into a real Pentium II die, with a coin to scale." },
   { slug: "byte-explorer", blurb: "Read the same eight bits in different ways." },
+  { slug: "ascii-typer", blurb: "Type text and read each character as seven bits." },
+  { slug: "ascii-table", blurb: "Look up all 128 ASCII entries as characters, numbers and bits." },
   {
     slug: "build-from-nand",
     blurb:

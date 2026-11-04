@@ -1,15 +1,16 @@
 import { AsciiTable } from "@components/computer/AsciiTable";
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import Layout from "@components/Layout";
+import { getSeriesStatusProps } from "src/lib/computerSeriesStatus";
 
-export default function AsciiTablePage() {
+export default function AsciiTablePage({ seriesIsOut }: { seriesIsOut: boolean }) {
   return (
     <Layout
       title="Explore the ASCII table"
       description="Look up all 128 ASCII entries as characters, decimal numbers, hex, and seven bits."
       keywords={[]}
       url="computer/ascii-table"
-      noindex
+      noindex={!seriesIsOut}
       fillViewport
     >
       <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
@@ -29,7 +30,4 @@ export default function AsciiTablePage() {
   );
 }
 
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === "production") return { notFound: true } as const;
-  return { props: {} };
-}
+export const getStaticProps = getSeriesStatusProps;

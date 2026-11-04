@@ -1,15 +1,16 @@
 import { AsciiTyper } from "@components/computer/AsciiTyper";
 import { ComputerDemoNav } from "@components/computer/ComputerDemoNav";
 import Layout from "@components/Layout";
+import { getSeriesStatusProps } from "src/lib/computerSeriesStatus";
 
-export default function AsciiTyperPage() {
+export default function AsciiTyperPage({ seriesIsOut }: { seriesIsOut: boolean }) {
   return (
     <Layout
       title="Type text, see the bits"
       description="Type text and read each character as seven ASCII bits."
       keywords={[]}
       url="computer/ascii-typer"
-      noindex
+      noindex={!seriesIsOut}
       fillViewport
     >
       <main className="mx-auto w-full max-w-6xl px-3 pb-16 pt-5 sm:px-6 sm:pt-8">
@@ -29,7 +30,4 @@ export default function AsciiTyperPage() {
   );
 }
 
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === "production") return { notFound: true } as const;
-  return { props: {} };
-}
+export const getStaticProps = getSeriesStatusProps;

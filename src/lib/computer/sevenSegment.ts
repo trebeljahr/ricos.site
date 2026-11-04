@@ -1,4 +1,11 @@
-import { type Circuit, inputCount, type Node, type Wire, moduleInputs, moduleOutputs } from "./logic";
+import {
+  type Circuit,
+  inputCount,
+  moduleInputs,
+  moduleOutputs,
+  type Node,
+  type Wire,
+} from "./logic";
 import { builtinCircuit, registerRecognitionComponent } from "./recognition";
 import { type DigitCount, PLACES, SEGMENTS, segmentBits } from "./segmentNames";
 
@@ -21,8 +28,11 @@ export const isBcdDisplayPackage = (componentId?: string) =>
 export const segmentBank = (node: Node, banks: Record<string, number>) =>
   (banks[node.id] ?? 0) % (node.digits ?? 1);
 /** A raw display shows one seven-pin bank at a time; every other part shows all its inputs. */
-export const segmentPinVisible = (node: Node | undefined, index: number, banks: Record<string, number>) =>
-  !node || node.type !== "sevensegment" || Math.floor(index / 7) === segmentBank(node, banks);
+export const segmentPinVisible = (
+  node: Node | undefined,
+  index: number,
+  banks: Record<string, number>,
+) => !node || node.type !== "sevensegment" || Math.floor(index / 7) === segmentBank(node, banks);
 /** Indices of the input ports drawn for a part. */
 export const visibleInputs = (node: Node, banks: Record<string, number>) =>
   Array.from({ length: inputCount(node) }, (_, index) => index).filter((index) =>

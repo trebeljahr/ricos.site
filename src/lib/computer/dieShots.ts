@@ -92,7 +92,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       label: "L1 DATA CACHE",
       text: "16 KB holds recently used data close to the execution units. The regular memory arrays contrast with the surrounding logic.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 13560, y: 9190, width: 3000, height: 3330 },
+      rect: { x: 13678, y: 9117, width: 2873, height: 3333 },
     },
     {
       id: "l1-instructions",
@@ -100,7 +100,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "L1 CODE",
       text: "A separate 16 KB cache holds instruction bytes. Keeping instructions and data in separate caches lets the core access both at once.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 18870, y: 7030, width: 2610, height: 4110 },
+      rect: { x: 18810, y: 6976, width: 2540, height: 4166 },
     },
     {
       id: "microcode",
@@ -108,14 +108,14 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "MICROCODE",
       text: "This read-only memory stores sequences of micro-operations for complex instructions. Simple instructions take the decoder path instead.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 18930, y: 830, width: 2500, height: 2210 },
+      rect: { x: 18922, y: 840, width: 2428, height: 1626 },
     },
     {
       id: "floating-point",
       label: "FLOATING POINT",
       text: "Floating-point arithmetic handles numbers with fractions and a wide range of magnitudes. This region also includes nearby floating-point conversion logic.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8320, y: 800, width: 4520, height: 2140 },
+      rect: { x: 8306, y: 856, width: 4390, height: 1832 },
     },
     {
       id: "integer",
@@ -123,14 +123,14 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "INTEGER",
       text: "Integer execution circuits add, subtract, shift and compare whole numbers. Their repeated structures sit beside the floating-point region.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 9530, y: 3000, width: 3300, height: 1990 },
+      rect: { x: 9427, y: 2690, width: 3277, height: 2438 },
     },
     {
       id: "mmx",
       label: "MMX",
       text: "MMX applies one operation to several packed integers at once. These circuits helped process audio, images and other multimedia data.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 12930, y: 830, width: 1740, height: 4080 },
+      rect: { x: 12724, y: 828, width: 1446, height: 4220 },
     },
     {
       id: "scheduler",
@@ -138,28 +138,28 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "SCHED.",
       text: "The reservation station holds micro-operations until their inputs and execution units are ready. Ready work can run before older work that must wait.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 14760, y: 830, width: 1700, height: 4130 },
+      rect: { x: 14795, y: 840, width: 1799, height: 4144 },
     },
     {
       id: "branch-predictor",
       label: "BRANCH PREDICTION",
       text: "The branch target buffer helps predict where execution will go next. This lets the instruction fetch unit keep working before a branch finishes.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16440, y: 11200, width: 5020, height: 1360 },
+      rect: { x: 17382, y: 11142, width: 4052, height: 1316 },
     },
     {
       id: "decoders",
       label: "X86 DECODERS",
       mapLabel: "DECODERS",
       text: "These circuits turn each x86 instruction into the small steps the core runs. One full decoder sits next to two simple ones.",
-      rect: { x: 18300, y: 3650, width: 2200, height: 1900 },
+      rect: { x: 18352, y: 3709, width: 2052, height: 1813 },
     },
     {
       id: "full-decoder",
       parentId: "decoders",
       label: "FULL DECODER",
       text: "Four translation arrays turn an x86 instruction into up to four micro-operations. Compare their size with either simple decoder beside them.",
-      rect: { x: 19529, y: 3722, width: 854, height: 1709 },
+      rect: { x: 19517, y: 3721, width: 801, height: 1665 },
     },
     {
       id: "simple-decoder-1",
@@ -181,7 +181,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "FETCH",
       text: "The fetch unit brings instruction bytes from the instruction cache toward the decoders. It prepares the byte stream for finding instruction boundaries.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16600, y: 6400, width: 2250, height: 4760 },
+      rect: { x: 16553, y: 6206, width: 2247, height: 4882 },
     },
     {
       id: "instruction-buffer",
@@ -190,7 +190,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "BUFFER",
       text: "Fetched instruction bytes wait here before decoding. The buffer helps keep the decoders supplied while instruction fetching continues.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16680, y: 6440, width: 2030, height: 1880 },
+      rect: { x: 16872, y: 6379, width: 1758, height: 1952 },
     },
     {
       id: "rename",
@@ -198,7 +198,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "RENAME",
       text: "The register alias table maps register names to internal storage. Independent operations can reuse a name without waiting for an unrelated older result.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 12850, y: 5010, width: 3700, height: 2220 },
+      rect: { x: 12711, y: 4984, width: 3836, height: 2338 },
     },
     {
       id: "retirement",
@@ -206,7 +206,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "RETIRE",
       text: "The reorder buffer tracks unfinished operations and speculative results. Retirement commits completed work in program order, so wrong-path results can still be discarded.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16600, y: 800, width: 2300, height: 5410 },
+      rect: { x: 16650, y: 836, width: 2270, height: 1756 },
     },
     {
       id: "memory-order",
@@ -214,7 +214,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "MOB",
       text: "The memory order buffer tracks loads and stores. It lets memory operations overlap while preserving the ordering and dependencies that the program requires.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 9530, y: 5010, width: 3300, height: 2340 },
+      rect: { x: 9778, y: 5128, width: 2926, height: 2550 },
     },
     {
       id: "dtlb",
@@ -222,7 +222,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "DTLB",
       text: "The data translation lookaside buffer caches virtual-to-physical address mappings and permissions. A cache hit avoids another walk through the page tables.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 10960, y: 9250, width: 2570, height: 3310 },
+      rect: { x: 11175, y: 9381, width: 2502, height: 3093 },
     },
     {
       id: "dtlb-storage",
@@ -231,7 +231,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "DTLB STORAGE",
       text: "This regular storage area holds cached address-translation information. Nearby comparison and control circuits decide whether a requested address has a matching entry.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 12680, y: 11380, width: 820, height: 1100 },
+      rect: { x: 12713, y: 11360, width: 963, height: 1098 },
     },
     {
       id: "allocate",
@@ -239,7 +239,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "ALLOC",
       text: "Allocation reserves tracking and scheduler entries for new micro-operations. If those resources are full, new work must wait for older operations to make room.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 13500, y: 7330, width: 1300, height: 1810 },
+      rect: { x: 14439, y: 7300, width: 834, height: 1768 },
     },
     {
       id: "bus-interface",
@@ -247,7 +247,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "BUS",
       text: "Bus-interface and control circuits coordinate transactions outside the core. They move requests and data between the processor and the external memory system.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8230, y: 5010, width: 2680, height: 7550 },
+      rect: { x: 8326, y: 7647, width: 2699, height: 4819 },
     },
     {
       id: "branch-address",
@@ -255,7 +255,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "BAC",
       text: "The branch address calculator works out branch destinations in the front end. Those addresses help steer instruction fetching toward the next instruction stream.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 14820, y: 7330, width: 1730, height: 1810 },
+      rect: { x: 15274, y: 7300, width: 1293, height: 1764 },
     },
     {
       id: "page-miss",
@@ -263,7 +263,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "PMH",
       text: "When an address translation is missing, the page-miss handler walks the page tables to find it. Missing or disallowed mappings can require a page-fault exception.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 8320, y: 3000, width: 1190, height: 1990 },
+      rect: { x: 8314, y: 3072, width: 1113, height: 2456 },
     },
     {
       id: "fp-conversion",
@@ -271,7 +271,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       label: "FP CONVERSION",
       text: "The floating-point memory interface converts between memory formats and the floating-point unit's internal format. It sits beside the floating-point execution circuits.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 11420, y: 830, width: 1420, height: 2090 },
+      rect: { x: 11395, y: 856, width: 1301, height: 1832 },
     },
     {
       id: "branch-storage",
@@ -280,7 +280,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       mapLabel: "BTB STORAGE",
       text: "The branch target buffer stores information about previously encountered branches. Fetch logic uses that information to choose likely destinations before those branches execute.",
       matchedSource: P6_CORE_MAP,
-      rect: { x: 19300, y: 11420, width: 2130, height: 1060 },
+      rect: { x: 19096, y: 11467, width: 2337, height: 991 },
     },
     {
       id: "fp-constants-candidate",
@@ -290,7 +290,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Candidate only: this narrow strip may be the floating-point constant ROM. Such a ROM supplies fixed values for floating-point operations; this identification is unconfirmed.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 11400, y: 830, width: 120, height: 2010 },
+      rect: { x: 11395, y: 856, width: 147, height: 1832 },
     },
     {
       id: "entry-pla-candidate",
@@ -300,7 +300,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Candidate only: this array may select the starting address of a microcode sequence. The reference proposes this role from its position beside the decoder arrays.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 19530, y: 3470, width: 854, height: 180 },
+      rect: { x: 19566, y: 3452, width: 729, height: 270 },
     },
     {
       id: "decoder-control-candidate",
@@ -310,7 +310,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Candidate only: these arrays may hold decoder alias or control information. Decoder aliasing fills instruction-specific fields into micro-operation templates; it differs from register renaming.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 20600, y: 3430, width: 710, height: 1260 },
+      rect: { x: 20404, y: 3457, width: 935, height: 865 },
     },
     {
       id: "retirement-registers-candidate",
@@ -320,7 +320,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Candidate only: this small array may hold committed register values. The wider retirement region is mapped, but this particular register-array identification remains unconfirmed.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 17540, y: 3680, width: 590, height: 690 },
+      rect: { x: 16711, y: 3227, width: 674, height: 639 },
     },
     {
       id: "reorder-storage-candidate",
@@ -330,7 +330,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Candidate only: these arrays may store reorder-buffer entries. Tracking speculative results is the region's role, but the individual storage arrays are not established here.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 16750, y: 900, width: 1820, height: 2500 },
+      rect: { x: 16649, y: 841, width: 1268, height: 1687 },
     },
     {
       id: "capacitor-candidate",
@@ -340,7 +340,7 @@ export const PENTIUM_II_DIXON: DieShot = {
       text: "Candidate only: this repeated structure may be a decoupling capacitor bank. If so, it stores charge locally to help steady the power supply as circuits switch.",
       candidate: true,
       matchedSource: P6_CORE_MAP,
-      rect: { x: 14760, y: 960, width: 380, height: 3890 },
+      rect: { x: 14182, y: 860, width: 608, height: 3962 },
     },
     {
       id: "alignment",

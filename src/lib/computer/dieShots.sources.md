@@ -24,30 +24,39 @@ boxes use an amber outline and do not appear in the main overview.
 
 | Viewer region | Visual match on Dixon |
 | --- | --- |
-| L1 data cache | Four purple memory-array groups in a square near the bottom centre of the core, with central access circuitry. |
+| L1 data cache | Four purple memory-array groups in a square near the bottom centre of the core, with central access circuitry. The DTLB storage array sits directly left of it, outside this box. |
 | L1 instruction cache | Four purple memory-array groups on the right, arranged around a larger central logic region. |
 | Microcode ROM | Dark segmented ROM arrays at the upper right, above the full decoder. |
-| Floating point | Upper-left arithmetic blocks of the core; the box includes both FEU and adjacent MIU conversion logic. |
+| Floating point | Upper-left arithmetic blocks of the core; the box includes both FEU and adjacent MIU conversion logic, and ends where the FROM candidate strip ends. |
 | Integer arithmetic | Repeated execution structures immediately below the floating-point region. |
-| MMX | Tall execution structures immediately to the right of the floating-point and integer regions. |
-| Scheduler | The two main reservation-station array groups immediately to the right of MMX. |
+| MMX | Tall execution structures immediately to the right of the floating-point and integer regions, including the two striped columns on its left edge. |
+| Scheduler | The two main reservation-station array groups to the right of MMX and of the striped capacitor candidate. |
 | Branch prediction | Bottom-right BTB logic and its adjacent storage arrays, beneath the instruction cache. |
 | Instruction fetch | IFU logic between the instruction cache and the central core; its instruction buffer is a nested close-up. |
 | Register renaming | Central RAT logic below the execution and scheduling blocks. |
-| Reorder / retirement | ROB/RRF region to the left of the microcode ROM and above the decoder region; the individual arrays remain candidates. |
+| Reorder / retirement | Upper part of the ROB/RRF region, left of the microcode ROM. The region is L-shaped, so the box stops at the channel above its lower part; the individual arrays remain candidates. |
 | Memory ordering | MOB logic between the left control blocks and the central register-renaming region. |
-| Address translation | DTLB/control area immediately left of the L1 data cache, with its bottom storage array as a nested close-up. |
-| Allocation | ALLOC block above the L1 data cache and below the register-alias logic. |
-| Bus interface | BIU/control region along the left side of the core. Its irregular footprint is represented by an approximate rectangular crop. |
+| Address translation | DCU/DTLB area directly left of the L1 data cache, reaching its edge, with its bottom storage array as a nested close-up. |
+| Allocation | ALLOC block above the L1 data cache, between the channel right of the twin tall arrays and BAC. The reference leaves those twin arrays unlabelled, so no box claims them. |
+| Bus interface | Lower part of the BIU/control region along the left side of the core. Its footprint is irregular, so the box covers only the rectangle below memory ordering. |
 | Branch addresses | BAC block immediately to the right of allocation. |
 | Page-miss handler | PFU/PMH region beside the integer execution block, below floating-point execution. |
-| FP conversion | MIU portion of the existing floating-point region. |
-| Branch-target storage | BTB memory arrays along the bottom right, nested under branch prediction. |
+| FP conversion | MIU portion of the floating-point region, from the FROM candidate strip rightward. |
+| Branch-target storage | BTB memory arrays along the bottom right, without the logic row above them, nested under branch prediction. |
+
+## How the boxes are drawn
+
+Each box edge runs along an empty channel of the photo, the bare orange field
+between circuit blocks, wherever a straight line can. A rectangle cannot follow
+an L-shaped block, so such a box covers only the part it can enclose cleanly,
+and the rest stays unboxed. Two known crossings remain: floating point's bottom
+edge clips the top of the block below it at the far left, because that channel
+steps; and MMX overlaps register renaming by a thin strip for the same reason.
 
 Candidate close-ups match the reference's proposed FROM strip beside MIU,
 microcode-entry array above the rotated full decoder, nearby decoder-control
 arrays, possible RRF/ROB arrays in the retirement region, and one possible
-decoupling-capacitor strip beside the reservation station. These are research
+decoupling-capacitor strip left of the reservation station. These are research
 hypotheses, not recovered circuits or confirmed Dixon identifications. The
 unlocated integer constant ROM (CROM) is not given a box.
 

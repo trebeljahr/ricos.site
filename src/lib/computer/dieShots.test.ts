@@ -28,6 +28,23 @@ describe("die shots", () => {
     expect(mmPerPixel(shot) * 1000).toBeCloseTo(0.784, 3);
   });
 
+  it("keeps confirmed close-ups inside their parent region", () => {
+    for (const spot of shot.spots) {
+      // A candidate is a hypothesis about something nearby, so it may sit beside its parent.
+      if (!spot.parentId || spot.candidate) continue;
+      const parent = shot.spots.find((item) => item.id === spot.parentId);
+      if (!parent) throw new Error(`${spot.id} has no parent`);
+      expect(spot.rect.x, spot.id).toBeGreaterThanOrEqual(parent.rect.x);
+      expect(spot.rect.y, spot.id).toBeGreaterThanOrEqual(parent.rect.y);
+      expect(spot.rect.x + spot.rect.width, spot.id).toBeLessThanOrEqual(
+        parent.rect.x + parent.rect.width,
+      );
+      expect(spot.rect.y + spot.rect.height, spot.id).toBeLessThanOrEqual(
+        parent.rect.y + parent.rect.height,
+      );
+    }
+  });
+
   it("draws each coin to the die's scale, beside it", () => {
     for (const coin of COINS) {
       const placed = coinPlacement(shot, coin);

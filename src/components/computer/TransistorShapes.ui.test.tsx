@@ -23,15 +23,15 @@ describe("transistor anatomy", () => {
 });
 
 describe("gate wirings", () => {
-  it("draws the same circuit whichever MOS shape is chosen", () => {
+  it("wires A and B to the gates that read them, with no shape to choose", () => {
     const { container } = render(<GateWirings />);
+    expect(screen.queryByText("SHAPE")).toBeNull();
     click("CMOS");
-    const board = () => container.querySelector('[role="img"] svg')!.innerHTML;
-    const planar = board();
-    const planarLeak = screen.getByTestId("leak-current").textContent;
-    click("GATE-ALL-AROUND");
-    expect(board()).toBe(planar);
-    expect(screen.getByTestId("leak-current").textContent).not.toBe(planarLeak);
+    expect(container.querySelector('[data-bus="a"]')).toBeTruthy();
+    expect(container.querySelector('[data-bus="b"]')).toBeTruthy();
+    expect(container.querySelectorAll('[data-input-run="a"]').length).toBe(2);
+    click("TRANSMISSION GATE");
+    expect(container.querySelector('[data-bus="nb"]')).toBeTruthy();
   });
 
   it("keeps steady base current on while a BJT input is high", () => {

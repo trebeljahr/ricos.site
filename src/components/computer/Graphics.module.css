@@ -30,6 +30,13 @@
   box-shadow: 0 0 14px #6d7cffb0;
 }
 
+.plain { box-shadow: 0 24px 60px #0007; }
+.plain::before { display: none; }
+.plain .button[aria-pressed="true"] { border-color: transparent; background: #dde4f0; box-shadow: none; color: #0b0d13; }
+.plain .slider input { background: linear-gradient(#dde4f0, #dde4f0) 0 / var(--fill, 0%) 100% no-repeat, #2a3040; }
+.plain .slider input::-webkit-slider-thumb { box-shadow: none; }
+.plain .slider input::-moz-range-thumb { box-shadow: none; }
+
 .nameplate { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px 6px; }
 .nameplate strong { font-size: 15px; font-weight: 700; letter-spacing: .1em; }
 
@@ -271,5 +278,6 @@
 .modelReadout dd { margin: 2px 0 0; font: 600 13px/1.3 ui-monospace, monospace; }
 .wiringBoard { display: block; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: #10131b; }
 .wiringTag { font: 700 13px ui-monospace, monospace; }
+.wiringGateTag { font: 700 11px ui-monospace, monospace; text-anchor: middle; }
 .wiringPin { fill: var(--muted); font: 9px ui-monospace, monospace; }
 .partTag[data-hidden="true"] { visibility: hidden; }

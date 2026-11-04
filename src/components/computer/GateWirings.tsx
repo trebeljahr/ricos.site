@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import {
   type Element,
+  type InputWiring,
+  inputWiring,
   partCounts,
   type Schematic,
   STYLE_LABELS,
@@ -12,23 +14,22 @@ import {
   type WiringResult,
   type WiringStyle,
 } from "src/lib/computer/gateFamilies";
-import { DEVICE_INFO, deviceState, formatAmps } from "src/lib/computer/transistorModels";
+import { deviceState, formatAmps } from "src/lib/computer/transistorModels";
 import styles from "./Graphics.module.css";
 import { Bay, Choice, fixed, GraphicsPanel, Toggle } from "./GraphicsParts";
 
 const HIGH = "#ff7a5c";
 const LOW = "#6d7488";
 const CURRENT = "#ffd54a";
-const NET_NAMES: Record<string, string> = { a: "A", b: "B", na: "Ā", nb: "B̄", x: "X" };
-const netName = (net: string) => NET_NAMES[net] ?? net;
-const SHAPES = ["planar", "finfet", "gaa"] as const;
-type Shape = (typeof SHAPES)[number];
+const NET_NAMES: Record<string, string> = { a: "A", b: "B", na: "Ā", nb: "B̄" };
 
 function Device({
   element,
+  stubX,
   result,
 }: {
   element: Extract<Element, { gate: string }>;
+  stubX: number;
   result: WiringResult;
 }) {
   const { x, y, kind, gate } = element;
@@ -36,15 +37,17 @@ function Device({
   const gateColor = result.values[gate] ? HIGH : LOW;
   const body = closed ? CURRENT : "#aeb6c6";
   const npn = kind === "npn";
-  const labels = npn ? ["C", "B", "E"] : kind === "pmos" ? ["S", "G", "D"] : ["D", "G", "S"];
+  const labels = npn ? ["C", "E"] : kind === "pmos" ? ["S", "D"] : ["D", "S"];
   const baseCurrent = result.baseCurrent.has(element.id);
   return (
     <g data-device={element.id} data-kind={kind} data-closed={closed}>
-      <text className={styles.wiringTag} x={x - 44} y={y + 4} textAnchor="end" fill={gateColor}>
-        {netName(gate)}
-      </text>
+      {NET_NAMES[gate] && (
+        <text className={styles.wiringGateTag} x={x - 24} y={y - 7} fill={gateColor}>
+          {NET_NAMES[gate]}
+        </text>
+      )}
       <path
-        d={`M${x - 40} ${y} H${npn ? x - 8 : kind === "pmos" ? x - 18 : x - 12}`}
+        d={`M${stubX} ${y} H${npn ? x - 8 : kind === "pmos" ? x - 18 : x - 12}`}
         stroke={baseCurrent ? CURRENT : gateColor}
         strokeWidth="3"
         fill="none"
@@ -74,11 +77,8 @@ function Device({
       <text className={styles.wiringPin} x={x + 7} y={y - 16}>
         {labels[0]}
       </text>
-      <text className={styles.wiringPin} x={x - 30} y={y - 6}>
-        {labels[1]}
-      </text>
       <text className={styles.wiringPin} x={x + 7} y={y + 22}>
-        {labels[2]}
+        {labels[1]}
       </text>
     </g>
   );
@@ -109,18 +109,69 @@ function Resistor({
   );
 }
 
+/** The inputs: A and B on their lines, Ā and B̄ each out of an inverter. */
+function InputBuses({
+  wiring,
+  result,
+  level,
+}: {
+  wiring: InputWiring;
+  result: WiringResult;
+  level: (net: string) => string;
+}) {
+  return (
+    <>
+      {wiring.buses.map(({ net, y, fromX, toX, inverterFrom }) => (
+        <g key={net} data-bus={net}>
+          <text className={styles.wiringTag} x="10" y={y + 4} textAnchor="middle" fill={level(net)}>
+            {NET_NAMES[net]}
+          </text>
+          {inverterFrom !== undefined && (
+            <>
+              <path
+                d={`M24 ${inverterFrom} V${y} H26`}
+                stroke={result.values[net.slice(1)] ? HIGH : LOW}
+                strokeWidth="2"
+                fill="none"
+              />
+              <path d={`M26 ${y - 5} V${y + 5} L35 ${y} Z`} fill="none" stroke="#aeb6c6" />
+              <circle cx="37.5" cy={y} r="2.5" fill="none" stroke="#aeb6c6" />
+            </>
+          )}
+          <path d={`M${fromX} ${y} H${toX}`} stroke={level(net)} strokeWidth="3" fill="none" />
+        </g>
+      ))}
+      {wiring.runs.map((run) => (
+        <polyline
+          key={`${run.net}-${run.points.join(" ")}`}
+          points={run.points.map((point) => point.join(",")).join(" ")}
+          stroke={level(run.net)}
+          strokeWidth="2"
+          fill="none"
+          data-input-run={run.net}
+        />
+      ))}
+      {wiring.dots.map(({ net, at }) => (
+        <circle key={`${net}-${at.join()}`} cx={at[0]} cy={at[1]} r="3.5" fill={level(net)} />
+      ))}
+    </>
+  );
+}
+
 function SchematicView({ schematic, result }: { schematic: Schematic; result: WiringResult }) {
+  const wiring = inputWiring(schematic);
+  const level = (net: string) => (result.values[net] ? HIGH : LOW);
   const color = (net: string) =>
     result.currentNets.has(net) ? CURRENT : result.values[net] ? HIGH : LOW;
   const [outX, outY] = schematic.outputAt;
   return (
-    <svg className={styles.wiringBoard} viewBox="0 0 520 330" aria-hidden="true">
+    <svg className={styles.wiringBoard} viewBox={`0 0 520 ${wiring.height}`} aria-hidden="true">
       <path d="M40 40 H500" stroke={HIGH} strokeWidth="4" />
       <path d="M40 310 H500" stroke={LOW} strokeWidth="4" />
       <text className={styles.wiringTag} x="44" y="30" fill={HIGH}>
         + {fixed(result.railVolts, 0)} V
       </text>
-      <text className={styles.wiringTag} x="44" y="326" fill={LOW}>
+      <text className={styles.wiringTag} x="500" y="303" textAnchor="end" fill={LOW}>
         0 V
       </text>
       {schematic.wires.map((wire) => (
@@ -133,23 +184,20 @@ function SchematicView({ schematic, result }: { schematic: Schematic; result: Wi
           data-net={wire.net}
         />
       ))}
-      {schematic.tags?.map((tag) => (
-        <text
-          key={`${tag.net}-${tag.x}`}
-          className={styles.wiringTag}
-          x={tag.x}
-          y={tag.y}
-          textAnchor="middle"
-          fill={result.values[tag.net] ? HIGH : LOW}
-        >
-          {netName(tag.net)}
-        </text>
+      {schematic.joints?.map(([x, y]) => (
+        <circle key={`${x}-${y}`} cx={x} cy={y} r="3.5" fill={level("x")} />
       ))}
+      <InputBuses wiring={wiring} result={result} level={level} />
       {schematic.elements.map((element) =>
         element.kind === "res" ? (
           <Resistor key={element.id} element={element} result={result} />
         ) : (
-          <Device key={element.id} element={element} result={result} />
+          <Device
+            key={element.id}
+            element={element}
+            stubX={wiring.stubX[element.id]}
+            result={result}
+          />
         ),
       )}
       <circle
@@ -171,16 +219,15 @@ function SchematicView({ schematic, result }: { schematic: Schematic; result: Wi
 export function GateWirings() {
   const [gate, setGate] = useState<WiringGate>("nand");
   const [style, setStyle] = useState<WiringStyle>("bjt");
-  const [shape, setShape] = useState<Shape>("planar");
   const [a, setA] = useState(false);
   const [b, setB] = useState(false);
   const schematic = schematicFor(style, gate);
   const result = useMemo(() => solveWiring(schematic, style, a, b), [schematic, style, a, b]);
   const counts = partCounts(style, gate);
   const usesMos = style !== "bjt";
-  const leak = deviceState(shape, 0).mainAmps * result.offDevices;
+  const leak = deviceState("planar", 0).mainAmps * result.offDevices;
   return (
-    <GraphicsPanel title="ONE GATE, FIVE WIRINGS">
+    <GraphicsPanel title="ONE GATE, FIVE WIRINGS" plain>
       <Bay>
         <Choice
           label="GATE"
@@ -193,16 +240,6 @@ export function GateWirings() {
           value={style}
           options={WIRING_STYLES.map((value) => ({ value, label: STYLE_LABELS[value] }))}
           onChange={setStyle}
-        />
-        <Choice
-          label="SHAPE"
-          value={shape}
-          options={SHAPES.map((value) => ({
-            value,
-            label: DEVICE_INFO[value].label,
-            disabled: !usesMos,
-          }))}
-          onChange={setShape}
         />
       </Bay>
       <Bay>

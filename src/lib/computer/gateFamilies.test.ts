@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  inputWiring,
   partCounts,
   schematicFor,
   solveWiring,
@@ -32,6 +33,45 @@ describe("gate wirings", () => {
           );
       });
     }
+
+  for (const style of WIRING_STYLES)
+    for (const gate of WIRING_GATES)
+      it(`${style} ${gate} draws a wire to everything that reads an input`, () => {
+        const schematic = schematicFor(style, gate);
+        const { buses, runs, stubX } = inputWiring(schematic);
+        const isInput = (net: string) => ["a", "na", "b", "nb"].includes(net);
+        const passesThrough = (net: string, x: number, y: number) =>
+          runs.some(
+            (run) =>
+              run.net === net &&
+              run.points.some(
+                ([x0, y0], index) =>
+                  index > 0 &&
+                  x0 === x &&
+                  run.points[index - 1][0] === x &&
+                  Math.min(y0, run.points[index - 1][1]) <= y &&
+                  Math.max(y0, run.points[index - 1][1]) >= y,
+              ),
+          );
+        for (const element of schematic.elements) {
+          if (element.kind === "res" || !isInput(element.gate)) continue;
+          expect(passesThrough(element.gate, stubX[element.id], element.y), element.id).toBe(true);
+        }
+        for (const run of runs) {
+          const bus = buses.find((candidate) => candidate.net === run.net);
+          const end = run.points[run.points.length - 1];
+          expect(end[1]).toBe(bus?.y);
+          expect(end[0]).toBeLessThanOrEqual(bus?.toX ?? 0);
+          expect(end[0]).toBeGreaterThanOrEqual(bus?.fromX ?? 0);
+        }
+        // A stub never lands on another input's wire.
+        for (const element of schematic.elements) {
+          if (element.kind === "res") continue;
+          for (const run of runs)
+            if (run.net !== element.gate && run.points[0][0] === stubX[element.id])
+              expect(passesThrough(run.net, stubX[element.id], element.y)).toBe(false);
+        }
+      });
 
   it.each([
     ["bjt", "not", 1, 2],

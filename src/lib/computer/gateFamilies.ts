@@ -32,8 +32,10 @@ export type Pt = readonly [number, number];
 export type Schematic = {
   elements: Element[];
   wires: { net: string; points: Pt[] }[];
-  /** Where a net that is an input enters the drawing, away from the left-hand gate tags. */
-  tags?: { net: string; x: number; y: number }[];
+  /** An input net feeding a channel rather than a gate: where it joins, and the column its wire runs down. */
+  taps?: { net: string; at: Pt; dropX: number }[];
+  /** Where a wire branches off another of its own net. */
+  joints?: Pt[];
   output: string;
   outputAt: Pt;
 };
@@ -201,7 +203,9 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [360, 110], [360, 156]),
         wire("out", [360, 133], [RIGHT, 133]),
         wire("gnd", [360, 204], [360, 310]),
+        wire("x", [170, 108], [320, 108], [320, 180]),
       ],
+      joints: [[170, 108]],
       output: "out",
       outputAt: [RIGHT, 133],
     },
@@ -226,7 +230,10 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [370, 114], [370, 206]),
         wire("out", [370, 160], [RIGHT, 160]),
         wire("gnd", [370, 254], [370, 310]),
+        wire("x", [210, 140], [330, 140]),
+        wire("x", [330, 90], [330, 230]),
       ],
+      joints: [[330, 140]],
       output: "out",
       outputAt: [RIGHT, 160],
     },
@@ -286,7 +293,7 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [170, 144], [170, 190], [340, 190], [340, 144]),
         wire("out", [255, 190], [RIGHT, 190]),
       ],
-      tags: [{ net: "nb", x: 170, y: 60 }],
+      taps: [{ net: "nb", at: [170, 66], dropX: 118 }],
       output: "out",
       outputAt: [RIGHT, 190],
     },
@@ -301,7 +308,7 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [240, 170], [RIGHT, 170]),
         wire("gnd", [240, 254], [240, 310]),
       ],
-      tags: [{ net: "b", x: 240, y: 50 }],
+      taps: [{ net: "b", at: [240, 56], dropX: 170 }],
       output: "out",
       outputAt: [RIGHT, 170],
     },
@@ -316,9 +323,9 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [170, 144], [170, 190], [340, 190], [340, 144]),
         wire("out", [255, 190], [RIGHT, 190]),
       ],
-      tags: [
-        { net: "nb", x: 170, y: 60 },
-        { net: "b", x: 340, y: 60 },
+      taps: [
+        { net: "nb", at: [170, 66], dropX: 118 },
+        { net: "b", at: [340, 66], dropX: 286 },
       ],
       output: "out",
       outputAt: [RIGHT, 190],
@@ -360,7 +367,7 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [310, 144], [310, 200]),
         wire("out", [400, 200], [RIGHT, 200]),
       ],
-      tags: [{ net: "nb", x: 155, y: 62 }],
+      taps: [{ net: "nb", at: [110, 70], dropX: 58 }],
       output: "out",
       outputAt: [RIGHT, 200],
     },
@@ -377,7 +384,7 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [300, 170], [RIGHT, 170]),
         wire("gnd", [245, 254], [245, 310]),
       ],
-      tags: [{ net: "b", x: 245, y: 58 }],
+      taps: [{ net: "b", at: [190, 66], dropX: 130 }],
       output: "out",
       outputAt: [RIGHT, 170],
     },
@@ -396,9 +403,9 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
         wire("out", [310, 144], [310, 200]),
         wire("out", [400, 200], [RIGHT, 200]),
       ],
-      tags: [
-        { net: "nb", x: 155, y: 62 },
-        { net: "b", x: 355, y: 62 },
+      taps: [
+        { net: "nb", at: [110, 70], dropX: 58 },
+        { net: "b", at: [310, 70], dropX: 250 },
       ],
       output: "out",
       outputAt: [RIGHT, 200],
@@ -407,6 +414,111 @@ const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
 };
 
 export const schematicFor = (style: WiringStyle, gate: WiringGate) => SCHEMATICS[style][gate];
+
+const INPUT_NETS = ["a", "na", "b", "nb"] as const;
+const FIRST_BUS_Y = 330;
+const BUS_STEP = 15;
+const STUB = 40;
+const STUB_STEP = 12;
+
+export type InputWiring = {
+  /** One horizontal line per input under the ground rail; an inverted one starts at its inverter. */
+  buses: { net: string; y: number; fromX: number; toX: number; inverterFrom?: number }[];
+  /** The wires from a bus up to the parts that read it. */
+  runs: { net: string; points: Pt[] }[];
+  dots: { net: string; at: Pt }[];
+  /** The x where each device's gate stub starts. */
+  stubX: Record<string, number>;
+  height: number;
+};
+
+/**
+ * Runs every input from a bus below the circuit up to the gates and channels that read it.
+ * In a stack, the lowest device keeps the shortest stub and each new input above it runs
+ * further left, so no wire lands on a stub it does not feed. Wires that cross without a dot
+ * do not connect.
+ */
+export function inputWiring(schematic: Schematic): InputWiring {
+  const isInput = (net: string) => (INPUT_NETS as readonly string[]).includes(net);
+  const switches = schematic.elements.filter(isSwitch);
+  const stubX: Record<string, number> = {};
+  const columns: { net: string; x: number; ys: number[] }[] = [];
+  for (const column of new Set(switches.map((element) => element.x))) {
+    let next = column - STUB;
+    const seen = new Map<string, { net: string; x: number; ys: number[] }>();
+    const stack = switches
+      .filter((element) => element.x === column)
+      .sort((above, below) => below.y - above.y);
+    for (const element of stack) {
+      if (!isInput(element.gate)) {
+        stubX[element.id] = column - STUB;
+        continue;
+      }
+      let run = seen.get(element.gate);
+      if (!run) {
+        run = { net: element.gate, x: next, ys: [] };
+        seen.set(element.gate, run);
+        columns.push(run);
+        next -= STUB_STEP;
+      }
+      run.ys.push(element.y);
+      stubX[element.id] = run.x;
+    }
+  }
+  const taps = schematic.taps ?? [];
+  const reads = (net: string) =>
+    columns.some((run) => run.net === net) || taps.some((tap) => tap.net === net);
+  const rows = INPUT_NETS.filter(
+    (net) => reads(net) || (!net.startsWith("n") && reads(`n${net}`)),
+  ).map((net, index) => ({ net, y: FIRST_BUS_Y + index * BUS_STEP }));
+  const busY = (net: string) => rows.find((row) => row.net === net)?.y ?? FIRST_BUS_Y;
+
+  const runs: InputWiring["runs"] = [];
+  const dots: InputWiring["dots"] = [];
+  const reach = new Map<string, number>();
+  const land = (net: string, x: number) => {
+    reach.set(net, Math.max(reach.get(net) ?? 0, x));
+    dots.push({ net, at: [x, busY(net)] });
+  };
+  for (const { net, x, ys } of columns) {
+    runs.push({
+      net,
+      points: [
+        [x, Math.min(...ys)],
+        [x, busY(net)],
+      ],
+    });
+    for (const y of ys) if (y !== Math.min(...ys)) dots.push({ net, at: [x, y] });
+    land(net, x);
+  }
+  for (const { net, at, dropX } of taps) {
+    runs.push({
+      net,
+      points: [at, [dropX, at[1]], [dropX, busY(net)]],
+    });
+    land(net, dropX);
+  }
+  const INVERTER_X = 24;
+  const buses = rows.map(({ net, y }) => {
+    const inverted = net.startsWith("n");
+    const feeds = !inverted && reads(`n${net}`);
+    if (feeds) dots.push({ net, at: [INVERTER_X, y] });
+    return {
+      net,
+      y,
+      fromX: inverted ? 41 : 18,
+      toX: Math.max(reach.get(net) ?? 0, feeds ? INVERTER_X : 0),
+      inverterFrom: inverted ? busY(net.slice(1)) : undefined,
+    };
+  });
+  return {
+    buses,
+    runs,
+    dots,
+    stubX,
+    height: FIRST_BUS_Y + (rows.length - 1) * BUS_STEP + 12,
+  };
+}
 
 const isSwitch = (element: Element): element is Extract<Element, { gate: string }> =>
   element.kind !== "res";

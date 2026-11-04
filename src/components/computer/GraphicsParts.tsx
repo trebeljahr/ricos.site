@@ -19,9 +19,18 @@ export function fixed(value: number, digits = 2) {
 }
 
 /** The panel and nameplate every 3D demo sits in. */
-export function GraphicsPanel({ title, children }: { title: string; children: ReactNode }) {
+export function GraphicsPanel({
+  title,
+  plain = false,
+  children,
+}: {
+  title: string;
+  /** Flat colours, no glow: for a model where colour already carries the meaning. */
+  plain?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <section className={clsx("not-prose", styles.panel)} aria-label={title}>
+    <section className={clsx("not-prose", styles.panel, plain && styles.plain)} aria-label={title}>
       <div className={styles.nameplate}>
         <strong>{title}</strong>
       </div>

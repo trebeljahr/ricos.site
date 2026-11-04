@@ -1,15 +1,8 @@
-import {
-  type DemoReviewApi,
-  NoteField,
-  SaveError,
-  useDemoReview,
-  VerdictButtons,
-} from "@components/computer/DemoReview";
 import Layout from "@components/Layout";
 import type { GetServerSideProps } from "next";
 import Link from "next/link";
-import { useCallback, useState } from "react";
 import {
+  type DemoReview,
   groupByStage,
   isReworked,
   REVIEW_STAGES,
@@ -23,9 +16,10 @@ import { clientAddresses, servesPrivateNotes } from "src/lib/diaryStore";
 import { computerDemos } from "../../lib/computerDemos";
 
 // All demos, for looking through them: what still needs a look on top, then what
-// was rejected and not worked on since, then what is accepted. The review only
-// shows on this machine (see demoReviewStore.ts); from another device, say a
-// phone on the same Wi-Fi, this is the plain list.
+// was rejected and not worked on since, then what is accepted. Verdicts are set
+// on the demo pages (DemoReviewBar). The order only shows on this machine (see
+// demoReviewStore.ts); from another device, say a phone on the same Wi-Fi, this
+// is the plain list.
 
 const STAGE_TITLES: Record<ReviewStage, string> = {
   queue: "To look at",
@@ -38,89 +32,46 @@ type Demo = (typeof computerDemos)[number];
 const numberOf = (slug: string) =>
   String(computerDemos.findIndex((demo) => demo.slug === slug) + 1).padStart(2, "0");
 
-function DemoTitle({ demo }: { demo: Demo }) {
-  return (
-    <Link
-      className="group flex min-w-0 items-baseline gap-stack transition-colors hover:text-cyan-600 dark:hover:text-cyan-300"
-      href={`/computer/${demo.slug}`}
-    >
-      <span className="font-mono text-sm text-gray-500">{numberOf(demo.slug)}</span>
-      <strong className="min-w-0 text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-        {demo.title}
-      </strong>
-    </Link>
-  );
-}
-
-function ReviewRow({
+function DemoRow({
   demo,
   review,
-  focusNote,
-  onReject,
-  onNoteDone,
+  reworked = false,
 }: {
   demo: Demo;
-  review: DemoReviewApi;
-  focusNote: boolean;
-  onReject: () => void;
-  onNoteDone: () => void;
+  review?: DemoReview;
+  reworked?: boolean;
 }) {
-  const { state, change } = review;
-  const saved = state.reviews[demo.slug];
-  const [opened, setOpened] = useState(false);
-  const showNote = opened || focusNote || Boolean(saved?.note) || saved?.verdict === "rejected";
-  const saveNote = useCallback((note: string) => change(demo.slug, { note }), [change, demo.slug]);
-
   return (
-    <li className="border-b border-gray-300 py-stack dark:border-gray-700">
-      <div className="flex flex-wrap items-center justify-between gap-label">
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-stack gap-y-hair">
-          <DemoTitle demo={demo} />
-          {isReworked(state, demo.slug) && (
+    <li className="border-b border-gray-300 dark:border-gray-700">
+      <Link
+        className="group block py-stack transition-colors hover:text-cyan-600 dark:hover:text-cyan-300"
+        href={`/computer/${demo.slug}`}
+      >
+        <span className="flex min-w-0 flex-wrap items-baseline gap-x-stack gap-y-hair">
+          <span className="font-mono text-sm text-gray-500">{numberOf(demo.slug)}</span>
+          <strong className="min-w-0 text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
+            {demo.title}
+          </strong>
+          {reworked && (
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Reworked since rejection
             </span>
           )}
-        </div>
-        <div className="flex items-center gap-tight">
-          {!showNote && (
-            <button
-              className="min-h-10 px-2 text-sm text-gray-500 hover:text-cyan-700 dark:text-gray-400 dark:hover:text-cyan-300"
-              onClick={() => setOpened(true)}
-              type="button"
-            >
-              Add note
-            </button>
-          )}
-          <VerdictButtons onReject={onReject} review={review} slug={demo.slug} title={demo.title} />
-        </div>
-      </div>
-      {showNote && (
-        <NoteField
-          className="mt-label"
-          focus={focusNote || opened}
-          initial={saved?.note ?? ""}
-          onDone={onNoteDone}
-          onSave={saveNote}
-          title={demo.title}
-        />
-      )}
+        </span>
+        {review?.note && (
+          <span className="mt-hair block text-sm text-gray-600 dark:text-gray-400">
+            {review.note}
+          </span>
+        )}
+      </Link>
     </li>
   );
 }
 
-function ReviewedList({ initial }: { initial: ReviewState }) {
-  const review = useDemoReview(initial);
-  // A demo just rejected stays where it is while its note is written, and moves
-  // when the note is done.
-  const [held, setHeld] = useState<{ slug: string; stage: ReviewStage } | null>(null);
-  const groups = groupByStage(computerDemos, (slug) =>
-    held?.slug === slug ? held.stage : stageOf(review.state, slug),
-  );
-
+function ReviewedList({ state }: { state: ReviewState }) {
+  const groups = groupByStage(computerDemos, (slug) => stageOf(state, slug));
   return (
     <>
-      <SaveError message={review.saveError} />
       {REVIEW_STAGES.map((stage) => (
         <section className="mt-section" key={stage}>
           <h2 className="m-0 flex items-baseline gap-label text-lg font-semibold text-gray-950 dark:text-white">
@@ -131,15 +82,11 @@ function ReviewedList({ initial }: { initial: ReviewState }) {
           </h2>
           <ol className="mt-label list-none border-t border-gray-300 p-0 dark:border-gray-700">
             {groups[stage].map((demo) => (
-              <ReviewRow
+              <DemoRow
                 demo={demo}
-                focusNote={held?.slug === demo.slug}
                 key={demo.slug}
-                onNoteDone={() => setHeld(null)}
-                onReject={() =>
-                  setHeld({ slug: demo.slug, stage: stageOf(review.state, demo.slug) })
-                }
-                review={review}
+                review={state.reviews[demo.slug]}
+                reworked={isReworked(state, demo.slug)}
               />
             ))}
           </ol>
@@ -164,16 +111,11 @@ export default function ComputerDemosIndex({ review }: { review: ReviewState | n
           Computer demos
         </h1>
         {review ? (
-          <ReviewedList initial={review} />
+          <ReviewedList state={review} />
         ) : (
           <ol className="mt-16 list-none border-t border-gray-300 p-0 dark:border-gray-700">
             {computerDemos.map((demo) => (
-              <li
-                className="border-b border-gray-300 py-stack dark:border-gray-700"
-                key={demo.slug}
-              >
-                <DemoTitle demo={demo} />
-              </li>
+              <DemoRow demo={demo} key={demo.slug} />
             ))}
           </ol>
         )}

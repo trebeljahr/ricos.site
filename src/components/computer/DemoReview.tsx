@@ -8,7 +8,7 @@ import {
   stageOf,
 } from "src/lib/demoReview";
 
-// The controls of the demo review, used by /computer/demos and by the bar on each
+// The controls of the demo review, used by the bar on each
 // demo page. Development only: nothing here reaches a production page.
 
 const API = "/api/dev/demo-review";

@@ -154,7 +154,6 @@ section.unicode { overflow: clip; }
 
 .bitGroups { display: flex; flex-wrap: wrap; gap: 10px 12px; margin: 12px 0 0; padding: 0; border: 0; }
 .bitGroup { display: flex; gap: 2px; }
-.flipBits { display: flex; flex-wrap: wrap; gap: 3px; margin: 12px 0; padding: 0; border: 0; }
 .bit {
   width: 24px;
   height: 34px;
@@ -192,26 +191,6 @@ section.unicode { overflow: clip; }
 .encodedByte dl { display: flex; justify-content: space-between; gap: 10px; margin: 0; font-size: 11px; }
 .encodedByte dl div { display: flex; gap: 5px; }
 .encodedByte dd { margin: 0; font-weight: 700; }
-
-.stream { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
-.run { display: grid; justify-items: center; gap: 4px; min-width: 0; padding: 4px; border: 2px solid #55655a; border-radius: 6px; background: #7f8d7e55; }
-.run[data-broken] { border-color: #8e3320; background: #d98f7655; }
-.run[data-skipped] { border-style: dashed; opacity: .6; }
-.runGlyph { min-height: 30px; font-size: 22px; font-weight: 400; line-height: 30px; }
-.runLabel { font-size: 12px; font-weight: 700; }
-.runBytes { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; }
-.streamByte { display: grid; justify-items: center; gap: 2px; padding: 4px 5px; border: 1px solid #55655a; border-radius: 3px; background: linear-gradient(#e6e8d7, #abb5a3); box-shadow: 0 2px 0 #46554a; color: #243329; font: inherit; cursor: pointer; }
-.streamByte[data-unread] { opacity: .5; }
-.streamByte[data-current] { outline: 2px solid #1e3b25; outline-offset: 1px; }
-.streamByte[aria-pressed="true"] { transform: translateY(2px); background: linear-gradient(#f3e6a0, #dcc877); box-shadow: inset 0 2px 4px #6b5a1f80; }
-.streamByte:focus-visible { outline: 2px solid #e1f9ba; outline-offset: 1px; }
-.streamHex { font-size: 12px; font-weight: 700; }
-.streamRole { font-size: 9px; font-weight: 500; letter-spacing: .04em; }
-.readerFacts { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 14px 0 0; }
-.readerFacts dt { font-size: 10px; letter-spacing: .08em; }
-.readerFacts dd { margin: 0; font-size: 15px; line-height: 1.2; }
-.readerResult { flex: 1 1 220px; }
-.readerResult dd { font-size: 12px; font-weight: 600; }
 
 @container (max-width: 560px) {
   .bay { padding: 13px 11px 16px; }

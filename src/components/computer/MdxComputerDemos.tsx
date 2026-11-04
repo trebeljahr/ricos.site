@@ -82,10 +82,6 @@ export const COMPUTER_MDX_DEMOS = {
     () => loadUnicodeDemos().then((module) => module.Utf8Encoder),
     "UTF-8 encoder",
   ),
-  Utf8Reader: chapterDemo(
-    () => loadUnicodeDemos().then((module) => module.Utf8Reader),
-    "UTF-8 reader",
-  ),
   MatrixPlayground: chapterDemo(
     () => loadGraphicsDemos().then((module) => module.MatrixPlayground),
     "Matrix playground",

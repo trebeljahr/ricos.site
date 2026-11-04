@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CharacterComposer } from "./CharacterComposer";
 import { UnicodeInspector } from "./UnicodeInspector";
 import { Utf8Encoder } from "./Utf8Encoder";
-import { Utf8Reader } from "./Utf8Reader";
 
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
@@ -181,48 +180,5 @@ describe("Utf8Encoder", () => {
     fireEvent.change(screen.getByLabelText("TYPE A CHARACTER"), { target: { value: "€" } });
     expect(screen.getByText("U+20AC")).toBeTruthy();
     expect(screen.getByText("EURO SIGN")).toBeTruthy();
-  });
-});
-
-describe("Utf8Reader", () => {
-  const decoded = () =>
-    within(screen.getByText("DECODED").closest("div")?.parentElement as HTMLElement).getByRole(
-      "status",
-    ).textContent;
-
-  it("decodes the whole stream at first and steps back byte by byte", () => {
-    render(<Utf8Reader />);
-    expect(decoded()).toBe("Aé€😀");
-    press("⏮ START");
-    expect(decoded()).toBe(" ");
-    press("NEXT BYTE ▶");
-    expect(decoded()).toBe("A");
-    press("NEXT BYTE ▶");
-    expect(decoded()).toBe("A");
-    expect(screen.getByText("1 OF 2")).toBeTruthy();
-    press("NEXT BYTE ▶");
-    expect(decoded()).toBe("Aé");
-  });
-
-  it("recovers when reading starts inside a character", () => {
-    render(<Utf8Reader />);
-    // Byte 2 is the continuation byte of é.
-    press("Byte 2, A9");
-    press("READ FROM HERE");
-    expect(decoded()).toBe("�€😀");
-  });
-
-  it("breaks one character, and only one, when a byte is deleted", () => {
-    render(<Utf8Reader />);
-    press("Byte 1, C3");
-    press("DELETE BYTE");
-    expect(decoded()).toBe("A�€😀");
-  });
-
-  it("flips a bit of the selected byte", () => {
-    render(<Utf8Reader />);
-    press("Byte 0, 41");
-    press("Bit 5");
-    expect(decoded()).toBe("aé€😀");
   });
 });

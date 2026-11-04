@@ -16,7 +16,6 @@ export const MDX_DEMO_COMPONENTS = [
   "UnicodeInspector",
   "CharacterComposer",
   "Utf8Encoder",
-  "Utf8Reader",
   "MatrixPlayground",
   "Transform3d",
   "MeshAnatomy",

@@ -61,10 +61,6 @@ export const computerDemos = [
     title: "Pack a code point into UTF-8 bytes",
   },
   {
-    slug: "utf8-reader",
-    title: "Read a UTF-8 byte stream",
-  },
-  {
     slug: "endian-reader",
     title: "Two bytes, four reading orders",
   },

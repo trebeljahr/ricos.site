@@ -15,10 +15,8 @@ import {
 import {
   bitHome,
   byteParts,
-  byteRole,
   codePointFace,
   codePointName,
-  decodeUtf8,
   encodeUtf8,
   isEncodable,
   limitCodePoints,
@@ -65,61 +63,11 @@ describe("bitHome", () => {
 });
 
 describe("byte classes", () => {
-  it("names each byte by its top bits", () => {
-    expect(byteRole(0x41)).toBe("ascii");
-    expect(byteRole(0xa9)).toBe("continuation");
-    expect(byteRole(0xc3)).toBe("lead2");
-    expect(byteRole(0xe2)).toBe("lead3");
-    expect(byteRole(0xf0)).toBe("lead4");
-    expect(byteRole(0xc0)).toBe("invalid");
-    expect(byteRole(0xff)).toBe("invalid");
-  });
-
   it("splits marker bits from data bits", () => {
     expect(byteParts(0x41)).toEqual({ marker: "0", data: "1000001" });
     expect(byteParts(0xa9)).toEqual({ marker: "10", data: "101001" });
     expect(byteParts(0xf0)).toEqual({ marker: "11110", data: "000" });
     expect(byteParts(0xff)).toEqual({ marker: "11111111", data: "" });
-  });
-});
-
-describe("decodeUtf8", () => {
-  const spell = (bytes: number[], from = 0) =>
-    decodeUtf8(bytes, from)
-      .map((run) => String.fromCodePoint(run.codePoint ?? 0xfffd))
-      .join("");
-
-  it("matches the platform decoder on valid and on broken bytes", () => {
-    const decoder = new TextDecoder("utf-8", { ignoreBOM: true });
-    let seed = 7;
-    const next = () => {
-      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-      return seed;
-    };
-    for (let round = 0; round < 2000; round++) {
-      // Lean on bytes near the lead and continuation ranges, where the edge cases are.
-      const bytes = Array.from({ length: next() % 12 }, () =>
-        next() % 2 ? 0x80 + (next() % 0x80) : next() % 256,
-      );
-      expect(spell(bytes)).toBe(decoder.decode(new Uint8Array(bytes)));
-    }
-  });
-
-  it("covers every byte exactly once, in order", () => {
-    const runs = decodeUtf8([0x41, 0xe2, 0x82, 0xf0, 0x9f, 0x98, 0x80, 0xa9]);
-    expect(runs.map((run) => [run.start, run.end])).toEqual([
-      [0, 1],
-      [1, 3],
-      [3, 7],
-      [7, 8],
-    ]);
-    expect(runs.map((run) => run.codePoint)).toEqual([0x41, null, 0x1f600, null]);
-  });
-
-  it("finds its footing when it starts in the middle of a character", () => {
-    const bytes = [...new TextEncoder().encode("€A")];
-    expect(spell(bytes, 1)).toBe("��A");
-    expect(spell(bytes, 3)).toBe("A");
   });
 });
 

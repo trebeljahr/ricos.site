@@ -85,19 +85,6 @@ export function bitHome(codePoint: number, bit: number): number | null {
   return Math.max(0, row.length - 1 - Math.floor(bit / 6));
 }
 
-export type ByteRole = "ascii" | "lead2" | "lead3" | "lead4" | "continuation" | "invalid";
-
-/** What a byte announces by its top bits alone. C0, C1 and F5 up can never appear in valid text. */
-export function byteRole(byte: number): ByteRole {
-  if (byte < 0x80) return "ascii";
-  if (byte < 0xc0) return "continuation";
-  if (byte < 0xc2) return "invalid";
-  if (byte < 0xe0) return "lead2";
-  if (byte < 0xf0) return "lead3";
-  if (byte < 0xf5) return "lead4";
-  return "invalid";
-}
-
 /** Splits a byte into the marker bits at its top and the data bits below them. */
 export function byteParts(byte: number): { marker: string; data: string } {
   const bits = bitString(byte, 8);
@@ -105,70 +92,6 @@ export function byteParts(byte: number): { marker: string; data: string } {
   // Five ones or more is no pattern at all, so the whole byte is marker.
   const length = zero === -1 || zero > 4 ? 8 : zero + 1;
   return { marker: bits.slice(0, length), data: bits.slice(length) };
-}
-
-export interface DecodedRun {
-  /** Offset of the first byte. */
-  start: number;
-  /** Offset after the last byte. */
-  end: number;
-  /** The character these bytes spell, or null for bytes a decoder must replace with U+FFFD. */
-  codePoint: number | null;
-}
-
-/** The decoder in the WHATWG Encoding standard, keeping which bytes made which character. */
-export function decodeUtf8(bytes: readonly number[], from = 0): DecodedRun[] {
-  const runs: DecodedRun[] = [];
-  let needed = 0;
-  let seen = 0;
-  let value = 0;
-  let lower = 0x80;
-  let upper = 0xbf;
-  let start = from;
-  for (let index = from; index < bytes.length; index++) {
-    const byte = bytes[index];
-    if (needed === 0) {
-      start = index;
-      if (byte < 0x80) {
-        runs.push({ start, end: index + 1, codePoint: byte });
-      } else if (byte >= 0xc2 && byte <= 0xdf) {
-        needed = 1;
-        value = byte & 0x1f;
-      } else if (byte >= 0xe0 && byte <= 0xef) {
-        if (byte === 0xe0) lower = 0xa0;
-        if (byte === 0xed) upper = 0x9f;
-        needed = 2;
-        value = byte & 0xf;
-      } else if (byte >= 0xf0 && byte <= 0xf4) {
-        if (byte === 0xf0) lower = 0x90;
-        if (byte === 0xf4) upper = 0x8f;
-        needed = 3;
-        value = byte & 0x7;
-      } else {
-        runs.push({ start, end: index + 1, codePoint: null });
-      }
-      continue;
-    }
-    if (byte < lower || byte > upper) {
-      runs.push({ start, end: index, codePoint: null });
-      needed = seen = 0;
-      lower = 0x80;
-      upper = 0xbf;
-      // This byte broke the character, and it may still start the next one.
-      index--;
-      continue;
-    }
-    lower = 0x80;
-    upper = 0xbf;
-    value = (value << 6) | (byte & 0x3f);
-    seen++;
-    if (seen === needed) {
-      runs.push({ start, end: index + 1, codePoint: value });
-      needed = seen = 0;
-    }
-  }
-  if (needed > 0) runs.push({ start, end: bytes.length, codePoint: null });
-  return runs;
 }
 
 const CONTROL_ALIASES: Record<number, string> = {

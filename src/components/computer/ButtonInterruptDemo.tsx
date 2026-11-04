@@ -78,7 +78,8 @@ export function ButtonInterruptDemo() {
     <div className="flex flex-col gap-section">
       <section className="flow-para" aria-label="Button interrupt CPU">
         <h2>Let a real CPU service the request</h2>
-        <div className={builderClass}>
+        {/* A phone stacks the palette above the board, so this big board needs the extra height. */}
+        <div className={clsx(builderClass, "max-sm:h-[1150px]")}>
           <LogicBuilder
             key={loaded}
             initialCircuit={circuit}

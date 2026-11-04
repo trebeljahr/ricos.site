@@ -12,7 +12,10 @@ export const EVERYTHING: Box = {
 };
 
 export const visibleBox = (box: Box, view: Box) =>
-  box.left <= view.right && box.right >= view.left && box.top <= view.bottom && box.bottom >= view.top;
+  box.left <= view.right &&
+  box.right >= view.left &&
+  box.top <= view.bottom &&
+  box.bottom >= view.top;
 
 /** The window to draw for what is seen now; `current` itself if that one still serves. */
 export function nextViewWindow(current: Box | null, seen: Box | null): Box {
@@ -26,7 +29,8 @@ export function nextViewWindow(current: Box | null, seen: Box | null): Box {
       seen.top - current.top >= height / 3 &&
       current.right - seen.right >= width / 3 &&
       current.bottom - seen.bottom >= height / 3;
-    const fits = current.right - current.left <= width * 4 && current.bottom - current.top <= height * 4;
+    const fits =
+      current.right - current.left <= width * 4 && current.bottom - current.top <= height * 4;
     if (inside && fits) return current;
   }
   return {

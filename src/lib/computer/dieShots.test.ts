@@ -39,14 +39,23 @@ describe("die shots", () => {
       const parent = shot.spots.find((item) => item.id === spot.parentId);
       if (!parent) throw new Error(`${spot.id} has no parent`);
       const { x, y, width, height } = spot.rect;
-      for (const [cornerX, cornerY] of [
+      const corners = spot.outline ?? [
+        [x, y],
+        [x + width, y],
+        [x, y + height],
+        [x + width, y + height],
+      ];
+      for (const [cornerX, cornerY] of corners) {
         // Just inside each corner: a close-up may share its parent's edge.
-        [x + 1, y + 1],
-        [x + width - 1, y + 1],
-        [x + 1, y + height - 1],
-        [x + width - 1, y + height - 1],
-      ]) {
-        expect(spotContains(parent, cornerX, cornerY), spot.id).toBe(true);
+        for (const [dx, dy] of [
+          [1, 1],
+          [-1, 1],
+          [1, -1],
+          [-1, -1],
+        ]) {
+          if (!spotContains(spot, cornerX + dx, cornerY + dy)) continue;
+          expect(spotContains(parent, cornerX + dx, cornerY + dy), spot.id).toBe(true);
+        }
       }
     }
   });

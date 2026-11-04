@@ -45,11 +45,10 @@ describe("die zoom", () => {
     for (const name of [
       "L2 CACHE",
       "L1 DATA CACHE",
-      "L1 CODE",
-      "ALLOC",
-      "BAC",
-      "MOB",
-      "PMH",
+      "L1 INSTRUCTION CACHE",
+      "INSTRUCTION FETCH",
+      "MEMORY ORDERING",
+      "PAGE-MISS HANDLER",
       "ALIGNMENT MARK",
     ]) {
       expect(within(photo).getByText(name)).toBeTruthy();
@@ -125,7 +124,21 @@ describe("die zoom", () => {
     for (let i = 0; i < 6; i++) key(photo, "-");
     expect(within(photo).getByText("X86 DECODERS")).toBeTruthy();
     expect(within(photo).getByText("SIMPLE DECODER 1")).toBeTruthy();
-    expect(within(photo).getByText("ENTRY PLA?")).toBeTruthy();
+    expect(within(photo).getByText("MICROCODE ENTRY PLA?")).toBeTruthy();
+  });
+
+  it("calls a block the same at every zoom and when it is selected", () => {
+    render(<DieZoom />);
+    const photo = screen.getByRole("application");
+    const name = () => within(photo).getByText("INSTRUCTION FETCH");
+    expect(name()).toBeTruthy();
+    click("Zoom to instruction fetch");
+    expect(name()).toBeTruthy();
+    expect(within(photo).getByText("INSTRUCTION BUFFER")).toBeTruthy();
+    for (let i = 0; i < 4; i++) key(photo, "+");
+    expect(name()).toBeTruthy();
+    for (let i = 0; i < 8; i++) key(photo, "-");
+    expect(name()).toBeTruthy();
   });
 
   it("keeps the other regions and the parent on the map while one is selected", () => {
@@ -195,7 +208,7 @@ describe("die zoom", () => {
     click("Zoom to floating point");
     click("Zoom to candidate fp constant rom?");
     expect(details.textContent).toContain("function and location unconfirmed");
-    expect(within(photo).getByText("CANDIDATE · FP CONSTANT ROM?")).toBeTruthy();
+    expect(within(photo).getByText("FP CONSTANT ROM?")).toBeTruthy();
   });
 
   it("stops all zoom inputs at the 50 µm view and allows zooming back out", () => {

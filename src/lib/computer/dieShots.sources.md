@@ -17,9 +17,10 @@ individually: a single affine transform does not fit the entire revised core.
 
 Main regions follow the labelled functional blocks. Smaller functional targets
 appear on the map once their parent is selected. So do the reference's tentative
-yellow ROM/PLA, register-array and capacitor identifications: the selected label
-says CANDIDATE, their names end in a question mark, they use an amber outline, and
-the source note states that their function and location are unconfirmed.
+yellow ROM/PLA, register-array and capacitor identifications: their names end in a
+question mark, they use an amber outline, and the source note states that their
+function and location are unconfirmed. A region has one name at every zoom and
+whether selected or not; a long name breaks into lines rather than changing.
 
 | Viewer region | Visual match on Dixon |
 | --- | --- |
@@ -40,15 +41,17 @@ the source note states that their function and location are unconfirmed.
 | Bus interface | The reference's whole BIU/control cell: the left side of the core, below memory ordering, and across to ALLOC above the DTLB area. The reference labels this cell once, so the role of each part inside it is not established. |
 | Branch addresses | BAC block immediately to the right of allocation. |
 | Page-miss handler | PFU/PMH region beside the integer execution block, below floating-point execution. |
-| FP conversion | MIU portion of the floating-point region, from the FROM candidate strip rightward. |
+| FP conversion | MIU portion of the floating-point region, right of the channel beside the FROM candidate strip. |
 | Branch-target storage | BTB memory arrays along the bottom right, without the logic row above them, nested under branch prediction. |
 
 ## How the boxes are drawn
 
 Each region's edge runs along an empty channel of the photo, the bare orange
 field between circuit blocks, and steps around a block rather than through it.
-The edges were placed by hand on the full-size photo, checked against a mask of
-the bare field. Regions that are not rectangles carry a clockwise `outline`
+The edges were routed over a mask of the bare field, from waypoints set by hand on
+the full-size photo, then checked by eye at high zoom. One edge has no channel to
+follow: the bottom of the FROM candidate, where the strip runs straight into the
+row of cells below it. Regions that are not rectangles carry a clockwise `outline`
 polygon; `rect` is then its bounding box, used to fit the view. Only the outline
 takes clicks. Neighbouring regions never share an edge: each sits on its own side
 of the channel, and the viewer draws each outline 1.5 screen pixels further in, so

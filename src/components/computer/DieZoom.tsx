@@ -9,12 +9,12 @@ import {
   fitView,
   formatLength,
   insetOutline,
-  LABEL_HEIGHT_PIXELS,
-  labelWidth,
+  labelLayout,
   levelFor,
   mmPerPixel,
   openingView,
   PENTIUM_II_DIXON,
+  plainLabel,
   type Rect,
   scaleBar,
   spotContains,
@@ -33,6 +33,8 @@ const MIN_MICRONS_PER_SCREEN_PIXEL = 0.5;
 const ANIMATION_MS = 750;
 // A press that moves further than this is a drag, not a tap.
 const TAP_SLOP_PIXELS = 5;
+// A map label may spill this far past its box. Beyond that it waits until zooming in makes room.
+const LABEL_SPILL = 1.5;
 // Each outline is drawn this far inside its region, so neighbours never stack.
 const OUTLINE_INSET_PIXELS = 1.5;
 
@@ -373,10 +375,11 @@ export function DieZoom({
   }
 
   /**
-   * A name goes inside the top-left of the part of its box on screen, or just
-   * outside when it does not fit.
+   * A name goes inside the top-left of the part of its box on screen, broken
+   * into lines if that makes it fit. If it still cannot, a close-up's name goes
+   * just outside its box, and a map label waits until zooming in makes room.
    */
-  function spotLabel(item: DieSpot, label: string, always: boolean) {
+  function spotLabel(item: DieSpot, always: boolean) {
     if (!size || !view) return null;
     const preferred = visiblePart(item.labelRect ?? item.rect);
     const whole = visiblePart(item.rect);
@@ -385,16 +388,19 @@ export function DieZoom({
     const part =
       preferred.right > preferred.left && preferred.bottom > preferred.top ? preferred : whole;
     const { left, top, right, bottom } = part;
-    const width = labelWidth(label);
-    const fitsInside = right - left >= width + 6 && bottom - top >= LABEL_HEIGHT_PIXELS + 6;
+    const lines = labelLayout(item.label, right - left - 6);
+    const fitsInside = lines.width + 6 <= right - left && lines.height + 6 <= bottom - top;
+    if (!always && lines.width > (right - left) * LABEL_SPILL) return null;
+    // Outside its box there is room for the name on one line.
+    const placed = !fitsInside && always ? labelLayout(item.label, size.width) : lines;
     let labelLeft = left + 3;
     let labelTop = top + 3;
     if (!fitsInside && always) {
-      labelLeft = Math.max(3, Math.min(size.width - width - 3, left));
-      const above = top - LABEL_HEIGHT_PIXELS - 3;
+      labelLeft = Math.max(3, Math.min(size.width - placed.width - 3, left));
+      const above = top - placed.height - 3;
       const below = bottom + 3;
       if (above >= 3) labelTop = above;
-      else if (below + LABEL_HEIGHT_PIXELS <= size.height - 3) labelTop = below;
+      else if (below + placed.height <= size.height - 3) labelTop = below;
     }
     return (
       <span
@@ -402,7 +408,7 @@ export function DieZoom({
         className={clsx(own.spotLabel, item.candidate && own.candidateLabel)}
         style={{ left: labelLeft, top: labelTop, maxWidth: size.width - 6 }}
       >
-        {label}
+        {placed.text}
       </span>
     );
   }
@@ -535,7 +541,7 @@ export function DieZoom({
                     key={item.id}
                     type="button"
                     className={clsx(own.spotTarget, item.candidate && own.candidateSpot)}
-                    aria-label={`Zoom to ${item.candidate ? "candidate " : ""}${item.label.toLowerCase()}`}
+                    aria-label={`Zoom to ${item.candidate ? "candidate " : ""}${plainLabel(item.label).toLowerCase()}`}
                     style={{
                       left: corner.x,
                       top: corner.y,
@@ -585,14 +591,8 @@ export function DieZoom({
             {view &&
               outlinedSpots
                 .filter((item) => item.parentId || !(opening && view.scale < opening.scale * 0.999))
-                .map((item) =>
-                  spotLabel(
-                    item,
-                    item.mapLabel ?? item.label,
-                    !!item.parentId || !!item.labelOutside,
-                  ),
-                )}
-            {spot && spotLabel(spot, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`, true)}
+                .map((item) => spotLabel(item, !!item.parentId || !!item.labelOutside))}
+            {spot && spotLabel(spot, true)}
             <div className={own.scaleBar} aria-hidden="true">
               <i style={{ width: bar.pixels }} />
               <span>{bar.label}</span>
@@ -635,7 +635,7 @@ export function DieZoom({
             </details>
           </div>
           <span className="sr-only" aria-live="polite">
-            {spot ? `${spot.candidate ? "Candidate: " : ""}${spot.label}` : ""}
+            {spot ? `${spot.candidate ? "Candidate: " : ""}${plainLabel(spot.label)}` : ""}
           </span>
         </div>
       </div>

@@ -43,13 +43,24 @@ describe("gate wirings", () => {
     expect(container.querySelector("[data-base-current]")).toBeNull();
   });
 
-  it("disables wirings a gate does not have", () => {
-    render(<GateWirings />);
-    click("XOR");
-    expect(screen.getByRole("button", { name: "XOR" }).hasAttribute("disabled")).toBe(true);
+  it("builds every gate in every wiring", () => {
+    const { container } = render(<GateWirings />);
+    for (const style of [
+      "BJT + RESISTORS",
+      "NMOS + RESISTOR",
+      "CMOS",
+      "PASS TRANSISTOR",
+      "TRANSMISSION GATE",
+    ])
+      for (const gate of ["NOT", "NAND", "AND", "XOR"]) {
+        click(style);
+        click(gate);
+        expect(container.querySelector("[data-device]"), `${style} ${gate}`).toBeTruthy();
+        expect(screen.getByTestId("transistor-count").textContent).not.toBe("0");
+      }
   });
 
-  it("offers XOR once a wiring has it, and shows fewer transistors for a pass gate", () => {
+  it("shows fewer transistors for a pass gate", () => {
     render(<GateWirings />);
     click("CMOS");
     click("XOR");

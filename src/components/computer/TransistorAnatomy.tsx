@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   DEVICE_INFO,
   DEVICES,
@@ -64,7 +63,6 @@ function Hill({ device, flow }: { device: Device; flow: number }) {
 
 /** Four transistor builds as solid models, with their barrier and currents live. */
 export function TransistorAnatomy() {
-  const sound = usePanelSound();
   const [device, setDevice] = useState<Device>("planar");
   const [volts, setVolts] = useState(0);
   const [slice, setSlice] = useState<Slice>("none");
@@ -82,16 +80,13 @@ export function TransistorAnatomy() {
   const info = DEVICE_INFO[device];
   const live = deviceState(device, volts);
   return (
-    <GraphicsPanel title="FOUR TRANSISTORS" sound={sound}>
+    <GraphicsPanel title="FOUR TRANSISTORS">
       <Bay>
         <Choice
           label="BUILD"
           value={device}
           options={DEVICES.map((value) => ({ value, label: DEVICE_INFO[value].label }))}
-          onChange={(value) => {
-            sound.playButton();
-            setDevice(value);
-          }}
+          onChange={setDevice}
         />
         <div
           ref={stage}
@@ -144,10 +139,7 @@ export function TransistorAnatomy() {
             { value: "along", label: "ALONG" },
             { value: "across", label: "ACROSS" },
           ]}
-          onChange={(value) => {
-            sound.playButton();
-            setSlice(value);
-          }}
+          onChange={setSlice}
         />
         <Choice
           label="GATE"
@@ -157,10 +149,7 @@ export function TransistorAnatomy() {
             label: value.toUpperCase(),
             disabled: device === "bjt",
           }))}
-          onChange={(value) => {
-            sound.playButton();
-            setGateView(value);
-          }}
+          onChange={setGateView}
         />
         <Hill device={device} flow={live.flow} />
         <dl className={styles.modelReadout}>

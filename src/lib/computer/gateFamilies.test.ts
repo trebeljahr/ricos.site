@@ -25,7 +25,6 @@ describe("gate wirings", () => {
   for (const style of WIRING_STYLES)
     for (const gate of WIRING_GATES) {
       const schematic = schematicFor(style, gate);
-      if (!schematic) continue;
       it(`${style} ${gate} matches its truth table`, () => {
         for (const [a, b] of PAIRS)
           expect(solveWiring(schematic, style, a, b).output, `A=${a} B=${b}`).toBe(
@@ -40,6 +39,13 @@ describe("gate wirings", () => {
     ["bjt", "and", 2, 3],
     ["nmos", "not", 1, 1],
     ["nmos", "and", 3, 2],
+    ["bjt", "xor", 6, 9],
+    ["nmos", "nand", 2, 1],
+    ["nmos", "xor", 6, 3],
+    ["pass", "not", 4, 0],
+    ["pass", "nand", 6, 0],
+    ["tgate", "not", 6, 0],
+    ["tgate", "nand", 8, 0],
     ["cmos", "not", 2, 0],
     ["cmos", "nand", 4, 0],
     ["cmos", "and", 6, 0],
@@ -62,6 +68,27 @@ describe("gate wirings", () => {
     expect(low("nmos").idleAmps).toBeCloseTo(1e-4);
     expect(low("cmos").idleAmps).toBe(0);
     expect(low("cmos").outputVolts).toBe(0);
+  });
+
+  it("counts the current of the inverters a loaded XOR needs", () => {
+    const idle = (a: boolean, b: boolean) =>
+      solveWiring(schematicFor("nmos", "xor"), "nmos", a, b).idleAmps;
+    // Neither inverter draws current, and the Ā·B̄ pair pulls the output low through the load.
+    expect(idle(false, false)).toBeCloseTo(1e-4);
+    // A's inverter conducts, and the output is high with no path through the load.
+    expect(idle(true, false)).toBeCloseTo(1e-4);
+    // Both inverters conduct, and the A·B pair pulls the output low through the load.
+    expect(idle(true, true)).toBeCloseTo(3e-4);
+  });
+
+  it("drives a NOT from rails when it is wired as pass transistors, with the same weak high", () => {
+    expect(solveWiring(schematicFor("pass", "not"), "pass", false, false).outputVolts).toBeCloseTo(
+      0.7,
+    );
+    expect(
+      solveWiring(schematicFor("tgate", "not"), "tgate", false, false).outputVolts,
+    ).toBeCloseTo(1);
+    expect(solveWiring(schematicFor("tgate", "not"), "tgate", true, false).outputVolts).toBe(0);
   });
 
   it("loses a threshold through a lone NMOS and keeps the full level through a transmission gate", () => {

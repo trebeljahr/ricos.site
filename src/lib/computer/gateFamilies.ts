@@ -100,6 +100,31 @@ function loadedNand(kind: "npn" | "nmos"): Schematic {
   };
 }
 
+/** Low when the inputs match: two series pairs under one load. Ā and B̄ come from inverters. */
+function loadedXor(kind: "npn" | "nmos"): Schematic {
+  return {
+    elements: [
+      res("r", 240, 40, 80, "vcc", "out"),
+      device("q1", kind, 150, 160, "a", "out", "m1"),
+      device("q2", kind, 150, 250, "b", "m1", "gnd"),
+      device("q3", kind, 330, 160, "na", "out", "m2"),
+      device("q4", kind, 330, 250, "nb", "m2", "gnd"),
+    ],
+    wires: [
+      wire("out", [240, 80], [240, 100]),
+      wire("out", [150, 100], [RIGHT, 100]),
+      wire("out", [150, 100], [150, 136]),
+      wire("out", [330, 100], [330, 136]),
+      wire("m1", [150, 184], [150, 226]),
+      wire("m2", [330, 184], [330, 226]),
+      wire("gnd", [150, 274], [150, 310]),
+      wire("gnd", [330, 274], [330, 310]),
+    ],
+    output: "out",
+    outputAt: [RIGHT, 100],
+  };
+}
+
 const cmosNot: Schematic = {
   elements: [
     device("p", "pmos", 240, 90, "a", "vcc", "out"),
@@ -136,8 +161,9 @@ const cmosNand = (
   ],
 });
 
-const SCHEMATICS: Partial<Record<WiringStyle, Partial<Record<WiringGate, Schematic>>>> = {
+const SCHEMATICS: Record<WiringStyle, Record<WiringGate, Schematic>> = {
   bjt: {
+    xor: loadedXor("npn"),
     not: loadedNot("npn"),
     nand: loadedNand("npn"),
     and: {
@@ -157,6 +183,7 @@ const SCHEMATICS: Partial<Record<WiringStyle, Partial<Record<WiringGate, Schemat
     },
   },
   nmos: {
+    xor: loadedXor("nmos"),
     not: loadedNot("nmos"),
     nand: loadedNand("nmos"),
     and: {
@@ -233,6 +260,36 @@ const SCHEMATICS: Partial<Record<WiringStyle, Partial<Record<WiringGate, Schemat
     },
   },
   pass: {
+    // A pass transistor cannot invert: it only chooses a rail, and choosing needs Ā.
+    not: {
+      elements: [
+        device("hi", "nmos", 240, 90, "na", "vcc", "out"),
+        device("lo", "nmos", 240, 230, "a", "out", "gnd"),
+      ],
+      wires: [
+        wire("vcc", [240, 40], [240, 66]),
+        wire("out", [240, 114], [240, 206]),
+        wire("out", [240, 160], [RIGHT, 160]),
+        wire("gnd", [240, 254], [240, 310]),
+      ],
+      output: "out",
+      outputAt: [RIGHT, 160],
+    },
+    nand: {
+      elements: [
+        device("pa", "nmos", 170, 120, "a", "nb", "out"),
+        device("pb", "nmos", 340, 120, "na", "vcc", "out"),
+      ],
+      wires: [
+        wire("nb", [170, 66], [170, 96]),
+        wire("vcc", [340, 40], [340, 96]),
+        wire("out", [170, 144], [170, 190], [340, 190], [340, 144]),
+        wire("out", [255, 190], [RIGHT, 190]),
+      ],
+      tags: [{ net: "nb", x: 170, y: 60 }],
+      output: "out",
+      outputAt: [RIGHT, 190],
+    },
     and: {
       elements: [
         device("pass", "nmos", 240, 110, "a", "b", "out"),
@@ -268,6 +325,45 @@ const SCHEMATICS: Partial<Record<WiringStyle, Partial<Record<WiringGate, Schemat
     },
   },
   tgate: {
+    not: {
+      elements: [
+        device("hin", "nmos", 190, 90, "na", "vcc", "out"),
+        device("hip", "pmos", 300, 90, "a", "vcc", "out"),
+        device("lon", "nmos", 190, 230, "a", "out", "gnd"),
+        device("lop", "pmos", 300, 230, "na", "out", "gnd"),
+      ],
+      wires: [
+        wire("vcc", [190, 40], [190, 66]),
+        wire("vcc", [300, 40], [300, 66]),
+        wire("out", [190, 114], [190, 206]),
+        wire("out", [300, 114], [300, 206]),
+        wire("out", [190, 160], [RIGHT, 160]),
+        wire("gnd", [190, 254], [190, 310]),
+        wire("gnd", [300, 254], [300, 310]),
+      ],
+      output: "out",
+      outputAt: [RIGHT, 160],
+    },
+    nand: {
+      elements: [
+        device("t1n", "nmos", 110, 120, "a", "nb", "out"),
+        device("t1p", "pmos", 200, 120, "na", "nb", "out"),
+        device("t2n", "nmos", 310, 120, "na", "vcc", "out"),
+        device("t2p", "pmos", 400, 120, "a", "vcc", "out"),
+      ],
+      wires: [
+        wire("nb", [110, 96], [110, 70], [200, 70], [200, 96]),
+        wire("vcc", [310, 96], [310, 70], [400, 70], [400, 96]),
+        wire("vcc", [355, 40], [355, 70]),
+        wire("out", [110, 144], [110, 200], [400, 200], [400, 144]),
+        wire("out", [200, 144], [200, 200]),
+        wire("out", [310, 144], [310, 200]),
+        wire("out", [400, 200], [RIGHT, 200]),
+      ],
+      tags: [{ net: "nb", x: 155, y: 62 }],
+      output: "out",
+      outputAt: [RIGHT, 200],
+    },
     and: {
       elements: [
         device("tn", "nmos", 190, 110, "a", "b", "out"),
@@ -310,7 +406,7 @@ const SCHEMATICS: Partial<Record<WiringStyle, Partial<Record<WiringGate, Schemat
   },
 };
 
-export const schematicFor = (style: WiringStyle, gate: WiringGate) => SCHEMATICS[style]?.[gate];
+export const schematicFor = (style: WiringStyle, gate: WiringGate) => SCHEMATICS[style][gate];
 
 const isSwitch = (element: Element): element is Extract<Element, { gate: string }> =>
   element.kind !== "res";
@@ -319,19 +415,27 @@ const RAIL_VOLTS = (style: WiringStyle) => (style === "bjt" ? 5 : 1);
 const LOAD_OHMS = (style: WiringStyle) => (style === "bjt" ? 1000 : 10000);
 const BASE_AMPS = 430e-6;
 
+/** Which inverted inputs a circuit reads, each made by an inverter of its own style. */
+function invertersIn(schematic: Schematic) {
+  const nets = new Set(
+    schematic.elements.filter(isSwitch).flatMap((element) => [element.gate, element.top]),
+  );
+  return (["a", "b"] as const).filter((input) => nets.has(`n${input}`));
+}
+
 /** Transistors and resistors, including the inverters that make the inverted inputs. */
 export function partCounts(style: WiringStyle, gate: WiringGate) {
   const schematic = schematicFor(style, gate);
-  if (!schematic) return { transistors: 0, resistors: 0 };
   const switches = schematic.elements.filter(isSwitch);
-  const nets = new Set(switches.flatMap((element) => [element.gate, element.top]));
-  const inverters = ["na", "nb"].filter((net) => nets.has(net)).length;
+  const inverters = invertersIn(schematic).length;
+  const loaded = style === "bjt" || style === "nmos";
   return {
-    transistors: switches.length + inverters * 2,
+    transistors: switches.length + inverters * (loaded ? 1 : 2),
     resistors:
       schematic.elements.length -
       switches.length +
-      switches.filter((element) => element.kind === "npn").length,
+      switches.filter((element) => element.kind === "npn").length +
+      (style === "bjt" ? 2 : style === "nmos" ? 1 : 0) * inverters,
   };
 }
 
@@ -440,6 +544,10 @@ export function solveWiring(
     closed.filter((element) => element.kind === "npn").map((element) => element.id),
   );
   idleAmps += baseCurrent.size * BASE_AMPS;
+  // An inverter built with a load draws current while its input is high.
+  if (style === "bjt" || style === "nmos")
+    for (const input of invertersIn(schematic))
+      if (inputs[input]) idleAmps += rail / LOAD_OHMS(style) + (style === "bjt" ? BASE_AMPS : 0);
   return {
     values,
     closed: new Set(closed.map((element) => element.id)),

@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import {
   type Element,
   partCounts,
@@ -170,49 +169,30 @@ function SchematicView({ schematic, result }: { schematic: Schematic; result: Wi
 
 /** One gate wired in each style, with its parts and idle current live. */
 export function GateWirings() {
-  const sound = usePanelSound();
   const [gate, setGate] = useState<WiringGate>("nand");
   const [style, setStyle] = useState<WiringStyle>("bjt");
   const [shape, setShape] = useState<Shape>("planar");
   const [a, setA] = useState(false);
   const [b, setB] = useState(false);
   const schematic = schematicFor(style, gate);
-  const result = useMemo(
-    () => (schematic ? solveWiring(schematic, style, a, b) : null),
-    [schematic, style, a, b],
-  );
-  if (!schematic || !result) return null;
+  const result = useMemo(() => solveWiring(schematic, style, a, b), [schematic, style, a, b]);
   const counts = partCounts(style, gate);
   const usesMos = style !== "bjt";
   const leak = deviceState(shape, 0).mainAmps * result.offDevices;
   return (
-    <GraphicsPanel title="ONE GATE, FIVE WIRINGS" sound={sound}>
+    <GraphicsPanel title="ONE GATE, FIVE WIRINGS">
       <Bay>
         <Choice
           label="GATE"
           value={gate}
-          options={WIRING_GATES.map((value) => ({
-            value,
-            label: value.toUpperCase(),
-            disabled: !schematicFor(style, value),
-          }))}
-          onChange={(value) => {
-            sound.playButton();
-            setGate(value);
-          }}
+          options={WIRING_GATES.map((value) => ({ value, label: value.toUpperCase() }))}
+          onChange={setGate}
         />
         <Choice
           label="WIRING"
           value={style}
-          options={WIRING_STYLES.map((value) => ({
-            value,
-            label: STYLE_LABELS[value],
-            disabled: !schematicFor(value, gate),
-          }))}
-          onChange={(value) => {
-            sound.playButton();
-            setStyle(value);
-          }}
+          options={WIRING_STYLES.map((value) => ({ value, label: STYLE_LABELS[value] }))}
+          onChange={setStyle}
         />
         <Choice
           label="SHAPE"
@@ -222,32 +202,13 @@ export function GateWirings() {
             label: DEVICE_INFO[value].label,
             disabled: !usesMos,
           }))}
-          onChange={(value) => {
-            sound.playButton();
-            setShape(value);
-          }}
+          onChange={setShape}
         />
       </Bay>
       <Bay>
         <div className={styles.choiceRow}>
-          <Toggle
-            label={`A = ${Number(a)}`}
-            on={a}
-            onChange={(on) => {
-              sound.playSwitch();
-              setA(on);
-            }}
-          />
-          {gate !== "not" && (
-            <Toggle
-              label={`B = ${Number(b)}`}
-              on={b}
-              onChange={(on) => {
-                sound.playSwitch();
-                setB(on);
-              }}
-            />
-          )}
+          <Toggle label={`A = ${Number(a)}`} on={a} onChange={setA} />
+          {gate !== "not" && <Toggle label={`B = ${Number(b)}`} on={b} onChange={setB} />}
         </div>
         <div
           role="img"

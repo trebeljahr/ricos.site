@@ -23,6 +23,11 @@ const editingText = (target: EventTarget | null) =>
   target instanceof Element &&
   Boolean(target.closest("input,textarea,select,[contenteditable]:not([contenteditable=false])"));
 
+const selectingText = () => {
+  const selection = window.getSelection();
+  return Boolean(selection && !selection.isCollapsed && selection.toString());
+};
+
 /** Native copy/paste events keep keyboard clipboard access within the browser gesture. */
 export function useCircuitClipboard(options: Options) {
   const live = useRef(options);
@@ -56,7 +61,8 @@ export function useCircuitClipboard(options: Options) {
       live.current.ownsEvent(event.target) &&
       !editingText(event.target);
     const copy = (event: ClipboardEvent) => {
-      if (!allowed(event)) return;
+      // Selected text wins: the reader is copying words, not parts.
+      if (!allowed(event) || selectingText()) return;
       event.preventDefault();
       try {
         if (!event.clipboardData) throw new Error();
@@ -103,7 +109,8 @@ export function useCircuitClipboard(options: Options) {
       if (!live.current.enabled) return;
       try {
         const text = await navigator.clipboard.readText();
-        if (live.current.enabled && live.current.scope === scope && live.current.ownsEvent(null)) insert(text);
+        if (live.current.enabled && live.current.scope === scope && live.current.ownsEvent(null))
+          insert(text);
       } catch {
         live.current.message(
           "Could not read the clipboard. Use Cmd/Ctrl+V on the canvas, or check clipboard permissions.",

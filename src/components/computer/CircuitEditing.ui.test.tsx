@@ -1,5 +1,13 @@
 // @vitest-environment jsdom
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type Circuit, initialSnapshot, step, WIRE_COLORS } from "../../lib/computer/logic";
 import { enforceStart } from "../../lib/computer/tutorial/kit";
@@ -49,6 +57,22 @@ afterEach(() => {
 });
 
 describe("circuit clipboard and pointer editing", () => {
+  it("leaves selected text to the browser's own copy", () => {
+    render(<LogicBuilder />);
+    const data = transfer();
+    const text = screen.getAllByText(/./)[0];
+    const selection = window.getSelection()!;
+    selection.selectAllChildren(text);
+    expect(selection.toString()).not.toBe("");
+    const event = createEvent.copy(board(), { clipboardData: data });
+    fireEvent(board(), event);
+    expect(event.defaultPrevented).toBe(false);
+    selection.removeAllRanges();
+    const circuitCopy = createEvent.copy(board(), { clipboardData: data });
+    fireEvent(board(), circuitCopy);
+    expect(circuitCopy.defaultPrevented).toBe(true);
+  });
+
   it("pastes independent copies with offsets and atomic undo/redo, preserving text editing", () => {
     render(<LogicBuilder />);
     const data = transfer();
@@ -179,49 +203,49 @@ describe("circuit clipboard and pointer editing", () => {
     fireEvent.keyDown(canvas, { key: "z", ctrlKey: true });
     expect(current().wires).toHaveLength(3);
   });
-  it.each([
-    "source",
-    "vertical",
-  ])("branches from generated fan-out %s sections at the actual pointer", (section) => {
-    const fan: Circuit = {
-      ...base,
-      nodes: [...base.nodes, { id: "other", type: "lamp", x: 400, y: 400 }],
-      wires: [...base.wires, { id: "fan", from: "source", to: "other", input: 0 }],
-    };
-    localStorage.setItem(key, JSON.stringify({ current: fan, saved: {} }));
-    render(<LogicBuilder />);
-    const canvas = board();
-    vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
-      left: 0,
-      top: 0,
-      width: 5000,
-      height: 4500,
-    } as DOMRect);
-    const trunk = within(canvas).getByRole("button", { name: /^Add branch from/ });
-    expect(trunk.getAttribute("d")).toBe(trunk.nextElementSibling?.getAttribute("d"));
-    const points = pathPoints(trunk.getAttribute("d")!).flat();
-    const [a, b] = section === "source" ? points.slice(0, 2) : points.slice(-2);
-    fireEvent.pointerDown(trunk, {
-      pointerId: 1,
-      button: 0,
-      clientX: 2000 + (a.x + b.x) / 2,
-      clientY: 2000 + (a.y + b.y) / 2,
-    });
-    fireEvent.pointerMove(canvas, { pointerId: 1, button: 0, clientX: 2400, clientY: 2263 });
-    fireEvent.pointerUp(canvas, { pointerId: 1, button: 0, clientX: 2400, clientY: 2263 });
-    const next = current();
-    expect(next.nodes.filter((node) => node.splice)).toHaveLength(1);
-    expect(next.nodes.find((node) => node.splice)).toMatchObject({
-      x: (a.x + b.x) / 2 - 5,
-      y: (a.y + b.y) / 2 - 5,
-    });
-    const state = step(next, initialSnapshot(), false);
-    expect([state.values.lamp, state.values.other, state.values.branch]).toEqual([
-      true,
-      true,
-      true,
-    ]);
-  });
+  it.each(["source", "vertical"])(
+    "branches from generated fan-out %s sections at the actual pointer",
+    (section) => {
+      const fan: Circuit = {
+        ...base,
+        nodes: [...base.nodes, { id: "other", type: "lamp", x: 400, y: 400 }],
+        wires: [...base.wires, { id: "fan", from: "source", to: "other", input: 0 }],
+      };
+      localStorage.setItem(key, JSON.stringify({ current: fan, saved: {} }));
+      render(<LogicBuilder />);
+      const canvas = board();
+      vi.spyOn(canvas, "getBoundingClientRect").mockReturnValue({
+        left: 0,
+        top: 0,
+        width: 5000,
+        height: 4500,
+      } as DOMRect);
+      const trunk = within(canvas).getByRole("button", { name: /^Add branch from/ });
+      expect(trunk.getAttribute("d")).toBe(trunk.nextElementSibling?.getAttribute("d"));
+      const points = pathPoints(trunk.getAttribute("d")!).flat();
+      const [a, b] = section === "source" ? points.slice(0, 2) : points.slice(-2);
+      fireEvent.pointerDown(trunk, {
+        pointerId: 1,
+        button: 0,
+        clientX: 2000 + (a.x + b.x) / 2,
+        clientY: 2000 + (a.y + b.y) / 2,
+      });
+      fireEvent.pointerMove(canvas, { pointerId: 1, button: 0, clientX: 2400, clientY: 2263 });
+      fireEvent.pointerUp(canvas, { pointerId: 1, button: 0, clientX: 2400, clientY: 2263 });
+      const next = current();
+      expect(next.nodes.filter((node) => node.splice)).toHaveLength(1);
+      expect(next.nodes.find((node) => node.splice)).toMatchObject({
+        x: (a.x + b.x) / 2 - 5,
+        y: (a.y + b.y) / 2 - 5,
+      });
+      const state = step(next, initialSnapshot(), false);
+      expect([state.values.lamp, state.values.other, state.values.branch]).toEqual([
+        true,
+        true,
+        true,
+      ]);
+    },
+  );
   it("keeps canceled wire gestures out of undo history", () => {
     render(<LogicBuilder />);
     const canvas = board();
@@ -318,21 +342,32 @@ describe("circuit clipboard and pointer editing", () => {
 
 it("recolors all wires through junctions together and restores them with Undo", () => {
   const circuit: Circuit = {
-    name: "Joined colors", nodes: [
+    name: "Joined colors",
+    nodes: [
       { id: "s", label: "SOURCE", type: "switch", x: 0, y: 0 },
       { id: "j", label: "JOIN", type: "junction", x: 220, y: 58 },
       { id: "k", label: "NEXT", type: "junction", x: 320, y: 58 },
       { id: "l", label: "LIGHT", type: "lamp", x: 440, y: 0 },
-    ], wires: [
+    ],
+    wires: [
       { id: "a", from: "s", to: "j", input: 0, color: "violet" },
       { id: "b", from: "j", to: "k", input: 0 },
       { id: "c", from: "k", to: "l", input: 0 },
     ],
   };
   const { container } = render(<LogicBuilder initialCircuit={circuit} storageKey={null} />);
-  const colors = () => new Set([...container.querySelectorAll<SVGGElement>('svg[aria-label="Circuit wires"] g[data-wire-signal]')]
-    .map((wire) => wire.style.getPropertyValue("--wire-color")));
-  const joinColor = () => screen.getByRole("group", { name: "JOIN — JUNCTION part" }).style.getPropertyValue("--junction-color");
+  const colors = () =>
+    new Set(
+      [
+        ...container.querySelectorAll<SVGGElement>(
+          'svg[aria-label="Circuit wires"] g[data-wire-signal]',
+        ),
+      ].map((wire) => wire.style.getPropertyValue("--wire-color")),
+    );
+  const joinColor = () =>
+    screen
+      .getByRole("group", { name: "JOIN — JUNCTION part" })
+      .style.getPropertyValue("--junction-color");
   expect(colors()).toEqual(new Set([WIRE_COLORS.violet]));
   expect(joinColor()).toBe(WIRE_COLORS.violet);
   fireEvent.contextMenu(screen.getByRole("button", { name: /Select wire from NEXT / }));

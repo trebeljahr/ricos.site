@@ -581,16 +581,17 @@ export function DieZoom({
               </div>
             )}
             {/* Their own layer: inside a target, its clip path would cut them off. */}
-            {/* Zoomed out past the first view they go together, so no odd few remain. */}
+            {/* Zoomed out past the first view the map labels go together, so no odd few remain. */}
             {view &&
-              !(opening && view.scale < opening.scale * 0.999) &&
-              outlinedSpots.map((item) =>
-                spotLabel(
-                  item,
-                  item.mapLabel ?? item.label,
-                  !!item.parentId || !!item.labelOutside,
-                ),
-              )}
+              outlinedSpots
+                .filter((item) => item.parentId || !(opening && view.scale < opening.scale * 0.999))
+                .map((item) =>
+                  spotLabel(
+                    item,
+                    item.mapLabel ?? item.label,
+                    !!item.parentId || !!item.labelOutside,
+                  ),
+                )}
             {spot && spotLabel(spot, `${spot.candidate ? "CANDIDATE · " : ""}${spot.label}`, true)}
             <div className={own.scaleBar} aria-hidden="true">
               <i style={{ width: bar.pixels }} />

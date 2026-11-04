@@ -10,7 +10,6 @@ import {
   formatLength,
   insetOutline,
   LABEL_HEIGHT_PIXELS,
-  labelFitScale,
   labelWidth,
   levelFor,
   mmPerPixel,
@@ -375,8 +374,7 @@ export function DieZoom({
 
   /**
    * A name goes inside the top-left of the part of its box on screen, or just
-   * outside when it does not fit. Only a top-level region's map label gives way,
-   * once zoomed out past the point where its whole box can hold it.
+   * outside when it does not fit.
    */
   function spotLabel(item: DieSpot, label: string, always: boolean) {
     if (!size || !view) return null;
@@ -384,9 +382,6 @@ export function DieZoom({
     const whole = visiblePart(item.rect);
     if (!preferred || !whole) return null;
     if (whole.right <= whole.left || whole.bottom <= whole.top) return null;
-    if (!always && opening && view.scale < Math.min(labelFitScale(item), opening.scale * 0.999)) {
-      return null;
-    }
     const part =
       preferred.right > preferred.left && preferred.bottom > preferred.top ? preferred : whole;
     const { left, top, right, bottom } = part;
@@ -586,7 +581,9 @@ export function DieZoom({
               </div>
             )}
             {/* Their own layer: inside a target, its clip path would cut them off. */}
+            {/* Zoomed out past the first view they go together, so no odd few remain. */}
             {view &&
+              !(opening && view.scale < opening.scale * 0.999) &&
               outlinedSpots.map((item) =>
                 spotLabel(
                   item,

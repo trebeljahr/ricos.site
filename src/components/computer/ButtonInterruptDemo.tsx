@@ -83,6 +83,7 @@ export function ButtonInterruptDemo() {
             key={loaded}
             initialCircuit={circuit}
             initialFocus={interruptFocus}
+            largeBoard
             storageKey={demoStorageKey("button-cpu-builder", loaded)}
           />
         </div>

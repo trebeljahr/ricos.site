@@ -2,7 +2,7 @@
 // biome-ignore-all assist/source/organizeImports: same reason
 import Link from "next/link";
 import clsx from "clsx";
-import { type MutableRefObject, type ReactNode, lazy, Suspense, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type MutableRefObject, type ReactNode, lazy, startTransition, Suspense, memo, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ViewportContextMenu } from "./ViewportContextMenu";
 import { CircuitToolbar } from "./CircuitToolbar";
 import { ComputerEmbedContext } from "./ComputerEmbedContext";
@@ -82,6 +82,7 @@ import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { layoutCmosBlueprint } from "../../lib/computer/cmosLayout";
 import { spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
+import { nextViewWindow, pathBox, visibleBox, type Box } from "../../lib/computer/viewWindow";
 import { isMosfet, transistorPortPoint, transistorPortSide, nodeWidth, nodeHeight, type DisplayNode as GeometryNode } from "../../lib/computer/nodeGeometry";
 import { MEMORY_HINTS } from "../../lib/computer/memoryCircuits";
 import { BUTTON_HINTS, BUTTON_PRESETS } from "../../lib/computer/buttonInterrupt";
@@ -1289,6 +1290,11 @@ export type LogicBuilderProps = {
   /** Parts to frame on mount, e.g. a device and its manual bus controls. */
   initialFocus?: readonly string[];
   /**
+   * A circuit too big to draw whole: only what is near the view is in the DOM, and wires
+   * and parts drop their glow and shadows. Off by default, so other boards draw as before.
+   */
+  largeBoard?: boolean;
+  /**
    * Constrained mode for a demo page: shows `circuit` with no toolbar, palette,
    * storage or editing. The page drives the clock through `clockRef`. Clicking a
    * block unfolds it to gates in place, carrying its state. A new `circuit`
@@ -1768,6 +1774,7 @@ function LogicBuilderWorkspace({
   initialCircuit,
   initialUnfolded,
   initialFocus,
+  largeBoard = false,
   autoFit = false,
   embedded: requestedEmbedded,
   locked,
@@ -2176,22 +2183,48 @@ function LogicBuilderWorkspace({
     const viewport = boardViewport.current;
     if (!viewport || queuedScroll.current) return;
     syncGrid(viewport, zoomRef.current, bounds);
+    updateViewWindow();
     const margin = Math.min(500, viewport.clientWidth / 2, viewport.clientHeight / 2);
     const stepX = (2 * viewport.clientWidth) / zoomRef.current;
     const stepY = (2 * viewport.clientHeight) / zoomRef.current;
-    setBounds((current) => {
-      const shiftX = viewport.scrollLeft < margin ? -stepX :
-        viewport.scrollWidth - viewport.clientWidth - viewport.scrollLeft < margin ? stepX : 0;
-      const shiftY = viewport.scrollTop < margin ? -stepY :
-        viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < margin ? stepY : 0;
-      return shiftX || shiftY ? {
-        left: current.left + shiftX,
-        top: current.top + shiftY,
-        right: current.right + shiftX,
-        bottom: current.bottom + shiftY,
-      } : current;
-    });
+    const shiftX = viewport.scrollLeft < margin ? -stepX :
+      viewport.scrollWidth - viewport.clientWidth - viewport.scrollLeft < margin ? stepX : 0;
+    const shiftY = viewport.scrollTop < margin ? -stepY :
+      viewport.scrollHeight - viewport.clientHeight - viewport.scrollTop < margin ? stepY : 0;
+    // Most scroll events shift nothing. Asking React anyway costs a render while a transition is pending.
+    if (!shiftX && !shiftY) return;
+    setBounds((current) => ({
+      left: current.left + shiftX,
+      top: current.top + shiftY,
+      right: current.right + shiftX,
+      bottom: current.bottom + shiftY,
+    }));
   };
+  // A large board draws this box of board coordinates. `null` until the viewport has a size.
+  const [viewWindow, setViewWindow] = useState<Box | null>(null);
+  const viewWindowRef = useRef<Box | null>(null);
+  const updateViewWindow = useCallback(() => {
+    const viewport = boardViewport.current;
+    if (!largeBoard || !viewport || queuedScroll.current) return;
+    const scale = zoomRef.current, origin = boundsRef.current;
+    const left = origin.left + viewport.scrollLeft / scale, top = origin.top + viewport.scrollTop / scale;
+    const seen = viewport.clientWidth && viewport.clientHeight ? {
+      left, top, right: left + viewport.clientWidth / scale, bottom: top + viewport.clientHeight / scale,
+    } : null;
+    const next = nextViewWindow(viewWindowRef.current, seen);
+    if (next === viewWindowRef.current) return;
+    viewWindowRef.current = next;
+    // While the view pans, a board that is late to redraw beats a pan that stutters: the window's margin hides the delay.
+    startTransition(() => setViewWindow(next));
+  }, [largeBoard]);
+  useLayoutEffect(updateViewWindow, [updateViewWindow, bounds, zoom]);
+  useEffect(() => {
+    const viewport = boardViewport.current;
+    if (!largeBoard || !viewport || typeof ResizeObserver === "undefined") return;
+    const watcher = new ResizeObserver(updateViewWindow);
+    watcher.observe(viewport);
+    return () => watcher.disconnect();
+  }, [largeBoard, updateViewWindow]);
   const queuedScroll = useRef<{ left: number; top: number; bounds: { left: number; top: number } } | null>(null);
   const exactScroll = useRef<{ left: number; top: number; shownLeft: number; shownTop: number } | null>(null);
   const spaceHeld = useRef(false);
@@ -3878,6 +3911,25 @@ function LogicBuilderWorkspace({
   }), [circuit.groups, circuit.nodes, circuit.wires, wirePaths, routes]);
   // Parts and wires only redraw when their own props change, so what they do when
   // pressed comes from here: always this render's state, never the render they drew in.
+  // Off a large board's view window only the things the reader is holding stay drawn.
+  const wireBoxes = useRef(new Map<string, Box>());
+  const wireInView = (id: string, d: string | undefined) => {
+    if (!largeBoard || selectedWires.includes(id)) return true;
+    if (!d || !viewWindow) return false;
+    let box = wireBoxes.current.get(d);
+    if (!box) {
+      if (wireBoxes.current.size > 8000) wireBoxes.current.clear();
+      box = pathBox(pathPoints(d));
+      wireBoxes.current.set(d, box);
+    }
+    return visibleBox(box, viewWindow);
+  };
+  const nodeInView = (node: DisplayNode) => {
+    if (!largeBoard || selected.includes(node.id) || challenge?.highlight === node.id ||
+      editingLabel?.id === node.id || pending?.from === node.id || (drag && node.id in drag.starts)) return true;
+    if (!viewWindow) return false;
+    return visibleBox({ left: node.x, top: node.y, right: node.x + nodeWidth(node), bottom: node.y + nodeHeight(node) }, viewWindow);
+  };
   const previousWires = wireElements.current, nextWires: typeof previousWires = new Map();
   wireElements.current = nextWires;
   const previousNodes = nodeElements.current, nextNodes: typeof previousNodes = new Map();
@@ -4068,7 +4120,7 @@ function LogicBuilderWorkspace({
   return (
     <div
       ref={shellRef}
-      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, locked?.interactiveInputs && styles.interactiveInputs, signalView && styles.signalView)}
+      className={clsx(styles.shell, embedded && styles.embedded, locked && styles.locked, locked?.interactiveInputs && styles.interactiveInputs, signalView && styles.signalView, largeBoard && styles.largeBoard)}
       data-embedded={embedded || undefined}
       data-logic-builder=""
       data-wire-view={signalView ? "signal" : "identity"}
@@ -4675,7 +4727,7 @@ function LogicBuilderWorkspace({
                   aria-label="Circuit wires"
                 >
                   {busWiring &&
-                    routes.buses.map((bus) => {
+                    routes.buses.filter((bus) => wireInView(`bus:${bus.key}`, wirePaths[`bus:${bus.key}`])).map((bus) => {
                       const from = circuit.nodes.find((node) => node.id === bus.from);
                       const color = WIRE_COLORS[netColors[bus.taps[0].wireId]];
                       const live =
@@ -4728,7 +4780,7 @@ function LogicBuilderWorkspace({
                     })}
                   {circuit.wires.map((wire) => {
                     const info = wireFacts.get(wire.id);
-                    if (!info) return null;
+                    if (!info || !wireInView(wire.id, wirePaths[wire.id])) return null;
                     const busValue = info.isBus ? boardSnapshot.buses?.[wire.from] ?? "Z" : undefined;
                     const signal = wireSignal(boardSnapshot, wire.from, wire.output, info.isBus ? 8 : 1);
                     return reuseElement(previousWires, nextWires, wire.id, {
@@ -4777,7 +4829,7 @@ function LogicBuilderWorkspace({
                   {draftWireTarget && <WireJoinPreview anchor={draftWireTarget} error={draftJoinError} />}
                 </svg>
                 {displayNodes
-                  .filter((node) => !hasTransistors || powerVisible(node))
+                  .filter((node) => (!hasTransistors || powerVisible(node)) && nodeInView(node))
                   .map((node) => {
                     const detail = expandedDetails.get(node.id);
                     return reuseElement(previousNodes, nextNodes, node.id, {

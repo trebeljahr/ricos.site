@@ -398,3 +398,6 @@
 }
 /* Just above phone width a chapter keeps the column list, and 170px would leave its rows no room below the heading and search. */
 @media(min-width:641px) and (max-width:650px){.embedded .layout>.sidebar{flex:0 0 340px}}
+/* A large board's wires and parts: no blur to paint, no transition to promote to a layer. */
+.largeBoard .wire,.largeBoard .wire.live,.largeBoard .wire.busLanes.live,.largeBoard .wire.wireSelected,.largeBoard .busWire.live{filter:none;transition:none}
+.largeBoard .node,.largeBoard .node:hover{box-shadow:none;transition:none}

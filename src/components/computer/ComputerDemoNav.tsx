@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import {
@@ -8,6 +9,14 @@ import {
 
 const linkClass =
   "inline-flex min-h-10 min-w-0 items-center rounded border border-gray-300 px-3 text-sm font-medium text-gray-800 transition-colors hover:border-cyan-500 hover:text-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500 dark:border-gray-700 dark:text-gray-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300";
+
+// Literal, so the production build drops the review with its import.
+const DemoReviewBar =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("./DemoReviewBar").then((module) => module.DemoReviewBar), {
+        ssr: false,
+      })
+    : null;
 
 export function ComputerDemoNav({
   current,
@@ -70,6 +79,7 @@ export function ComputerDemoNav({
           )}
         </div>
       </div>
+      {DemoReviewBar && !bottom && <DemoReviewBar current={current} key={current} />}
     </nav>
   );
 }

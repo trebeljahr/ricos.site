@@ -25,6 +25,17 @@ export function decodeInteger(raw: number, width: SignedWidth, encoding: Integer
   return value - 2 ** width;
 }
 
+/**
+ * What a set bit adds to the value. Only the top bit differs between encodings.
+ * Sign + magnitude's sign bit adds nothing: it flips the sum of the others.
+ */
+export function bitWeight(bit: number, width: SignedWidth, encoding: IntegerEncoding): number {
+  if (bit !== width - 1 || encoding === "unsigned") return 2 ** bit;
+  if (encoding === "twos-complement") return -(2 ** bit);
+  if (encoding === "ones-complement") return -(2 ** bit - 1);
+  return 0;
+}
+
 export const displayInteger = (value: number) =>
   Object.is(value, -0) ? "−0" : String(value).replace("-", "−");
 

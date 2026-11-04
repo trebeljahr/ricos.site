@@ -11,7 +11,7 @@ afterEach(() => {
 it("keeps the bit pattern while changing its encoding and width, including negative zero", () => {
   render(<SignedNumberExplorer />);
   expect(screen.getByLabelText("Interpreted value").textContent).toBe("−5");
-  fireEvent.click(screen.getByRole("button", { name: /Sign \+ magnitude/ }));
+  fireEvent.click(screen.getByRole("radio", { name: "Sign + magnitude" }));
   expect(screen.getByLabelText("Interpreted value").textContent).toBe("−3");
   fireEvent.click(screen.getByRole("button", { name: "−0 · 1000" }));
   expect(screen.getByLabelText("Interpreted value").textContent).toBe("−0");
@@ -19,6 +19,22 @@ it("keeps the bit pattern while changing its encoding and width, including negat
   expect(screen.getByLabelText("Interpreted value").textContent).toBe("−1");
   fireEvent.click(screen.getByRole("button", { name: "8 BITS" }));
   expect(screen.getByLabelText("Interpreted value").textContent).toBe("9");
+});
+
+it("labels the top bit and sums the places with each encoding's real weight", () => {
+  render(<SignedNumberExplorer />);
+  const pattern = screen.getByRole("group", { name: "Stored pattern" });
+  const read = (encoding: string) => {
+    fireEvent.click(screen.getByRole("radio", { name: encoding }));
+    return [
+      pattern.querySelector("div")?.textContent,
+      screen.getByLabelText("Interpreted value").parentElement?.querySelector("code")?.textContent,
+    ];
+  };
+  expect(read("Two’s complement")).toEqual(["−23−81SIGN BIT", "−8 + 0 + 2 + 1 = −5"]);
+  expect(read("Ones’ complement")).toEqual(["−(23−1)−71SIGN BIT", "−7 + 0 + 2 + 1 = −4"]);
+  expect(read("Sign + magnitude")).toEqual(["±SIGN1SIGN BIT", "−(0 + 2 + 1) = −3"]);
+  expect(read("Unsigned")).toEqual(["2381BIT 3", "8 + 0 + 2 + 1 = 11"]);
 });
 
 it("reads its results and flags from the displayed circuit and preserves saved lab data", () => {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { initialSnapshot, step, validateCircuit } from "./logic";
 import {
   bitMask,
+  bitWeight,
   decodeInteger,
   displayInteger,
   readSignedAdder,
@@ -18,6 +19,21 @@ describe("signed representations", () => {
     expect(decodeInteger(11, 4, "twos-complement")).toBe(-5);
     expect(decodeInteger(11, 8, "twos-complement")).toBe(11);
     expect(decodeInteger(128, 8, "twos-complement")).toBe(-128);
+  });
+
+  it("adds up every pattern from its place weights", () => {
+    for (const width of [4, 8] as const) {
+      for (const encoding of ["unsigned", "ones-complement", "twos-complement"] as const) {
+        for (let raw = 0; raw < 2 ** width; raw++) {
+          let sum = 0;
+          for (let bit = 0; bit < width; bit++)
+            if (raw & (1 << bit)) sum += bitWeight(bit, width, encoding);
+          expect(sum === decodeInteger(raw, width, encoding)).toBe(true);
+        }
+      }
+    }
+    expect(bitWeight(3, 4, "ones-complement")).toBe(-7);
+    expect(bitWeight(7, 8, "twos-complement")).toBe(-128);
   });
 
   it("preserves the two zero encodings only in sign-magnitude and ones’ complement", () => {

@@ -1,9 +1,19 @@
 import clsx from "clsx";
-import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type PointerEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   bitMask,
   bitPattern,
+  bitWeight,
   decodeInteger,
   displayInteger,
   INTEGER_ENCODINGS,
@@ -40,6 +50,26 @@ function WidthControl({
   );
 }
 
+function PlaceLabel({
+  bit,
+  top,
+  encoding,
+}: {
+  bit: number;
+  top: boolean;
+  encoding: IntegerEncoding;
+}) {
+  const power = (
+    <>
+      2<sup>{bit}</sup>
+    </>
+  );
+  if (!top || encoding === "unsigned") return power;
+  if (encoding === "sign-magnitude") return "±";
+  if (encoding === "twos-complement") return <>−{power}</>;
+  return <>−({power}−1)</>;
+}
+
 function BitKeys({
   raw,
   width,
@@ -64,11 +94,13 @@ function BitKeys({
         const on = Boolean(raw & (1 << bit));
         const sign = index === 0 && encoding !== "unsigned";
         const weight =
-          sign && encoding !== "twos-complement" ? "SIGN" : `${sign ? "−" : ""}${2 ** bit}`;
+          encoding === "sign-magnitude" && sign
+            ? "SIGN"
+            : displayInteger(bitWeight(bit, width, encoding));
         return (
           <div className={clsx(styles.bit, sign && styles.sign)} key={bit}>
             <span className={styles.place}>
-              2<sup>{bit}</sup>
+              <PlaceLabel bit={bit} top={index === 0} encoding={encoding} />
             </span>
             <span className={styles.weight}>{weight}</span>
             <button
@@ -89,20 +121,54 @@ function BitKeys({
 }
 
 function contribution(raw: number, width: SignedWidth, encoding: IntegerEncoding) {
-  const negative = Boolean(raw & (1 << (width - 1))) && encoding !== "unsigned";
-  if (encoding === "unsigned" || encoding === "twos-complement") {
-    return Array.from({ length: width }, (_, index) => {
-      const bit = width - index - 1;
-      const weight = negative && bit === width - 1 ? -(2 ** bit) : 2 ** bit;
-      return raw & (1 << bit) ? displayInteger(weight) : "0";
-    }).join(" + ");
+  const places = (count: number) => Array.from({ length: count }, (_, index) => count - index - 1);
+  if (encoding === "sign-magnitude") {
+    const terms = places(width - 1).map((bit) => (raw & (1 << bit) ? String(2 ** bit) : "0"));
+    return `${raw & (1 << (width - 1)) ? "−" : "+"}(${terms.join(" + ")})`;
   }
-  const magnitude = negative && encoding === "ones-complement" ? bitMask(width) ^ raw : raw;
-  const terms = Array.from({ length: width - 1 }, (_, index) => {
-    const bit = width - index - 2;
-    return magnitude & (1 << bit) ? String(2 ** bit) : "0";
-  }).join(" + ");
-  return `${negative ? "−" : "+"}(${terms})`;
+  return places(width)
+    .map((bit) => (raw & (1 << bit) ? displayInteger(bitWeight(bit, width, encoding)) : "0"))
+    .join(" + ");
+}
+
+function EncodingToggle({
+  value,
+  onChange,
+}: {
+  value: IntegerEncoding;
+  onChange: (encoding: IntegerEncoding) => void;
+}) {
+  const name = useId();
+  const count = INTEGER_ENCODINGS.length;
+  const position = INTEGER_ENCODINGS.findIndex((item) => item.id === value);
+  const drag = (event: PointerEvent<HTMLFieldSetElement>) => {
+    if (!(event.buttons & 1)) return;
+    const track = event.currentTarget.getBoundingClientRect();
+    const slot = Math.floor(((event.clientX - track.left) / track.width) * count);
+    const next = INTEGER_ENCODINGS[Math.max(0, Math.min(count - 1, slot))].id;
+    if (next !== value) onChange(next);
+  };
+  return (
+    <fieldset
+      className={styles.encodings}
+      style={{ "--position": position, "--count": count } as CSSProperties}
+      aria-label="Interpret the same pattern"
+      onPointerMove={drag}
+    >
+      <span className={styles.thumb} aria-hidden="true" />
+      {INTEGER_ENCODINGS.map((item) => (
+        <label key={item.id} data-on={item.id === value}>
+          <input
+            type="radio"
+            name={name}
+            checked={item.id === value}
+            onChange={() => onChange(item.id)}
+          />
+          {item.label}
+        </label>
+      ))}
+    </fieldset>
+  );
 }
 
 export function SignedNumberExplorer() {
@@ -129,6 +195,7 @@ export function SignedNumberExplorer() {
         <WidthControl width={width} onChange={changeWidth} />
       </header>
       <div className={styles.plate}>
+        <EncodingToggle value={encoding} onChange={setEncoding} />
         <BitKeys
           raw={raw}
           width={width}
@@ -143,30 +210,6 @@ export function SignedNumberExplorer() {
             {contribution(raw, width, encoding)} = {displayInteger(value)}
           </code>
         </div>
-        <p className={styles.hint}>
-          {encoding === "twos-complement"
-            ? `The leftmost bit contributes −${2 ** (width - 1)}. Every other place keeps its positive weight.`
-            : encoding === "unsigned"
-              ? "Every place has a positive weight."
-              : encoding === "ones-complement"
-                ? "A leading 1 means negative. Invert every bit to read its magnitude."
-                : "The leftmost bit sets the sign. The remaining bits give the magnitude."}{" "}
-          The word width decides which bit is leftmost. Changing width keeps the low bits and fills
-          new places with 0.
-        </p>
-        <fieldset className={styles.encodings} aria-label="Interpret the same pattern">
-          {INTEGER_ENCODINGS.map((item) => (
-            <button
-              type="button"
-              key={item.id}
-              aria-pressed={encoding === item.id}
-              onClick={() => setEncoding(item.id)}
-            >
-              <span>{item.label}</span>
-              <strong>{displayInteger(decodeInteger(raw, width, item.id))}</strong>
-            </button>
-          ))}
-        </fieldset>
         <div className={styles.count}>
           <span>COUNT BIT PATTERNS</span>
           <div className={styles.controls}>
@@ -219,11 +262,6 @@ export function SignedNumberExplorer() {
               </button>
             )}
           </div>
-          <p className={styles.hint}>
-            {hasTwoZeros
-              ? "Two patterns encode zero. Their signs differ, but both have magnitude 0."
-              : "One pattern encodes zero. Every other pattern has a different value."}
-          </p>
         </div>
       </div>
     </section>

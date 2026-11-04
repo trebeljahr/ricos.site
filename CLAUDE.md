@@ -39,6 +39,13 @@
 - The public rewrite lives at `/needlestack-2` (hub, `/needlestack-2/[door]`, `/needlestack-2/archive`, in `src/pages/needlestack-2/`). `/needlestack` stays the old markdown page, rendered by `src/pages/[id].tsx` with its haystack egg, until the rewrite carries the same links; do not claim that slug from the new pages.
 - A needle is only public once it is `status: "reviewed"` with `rating >= 1`. No script may set that; only the triage UI does, one link at a time.
 
+## Desk (Obsidian plugin)
+- `src/scripts/obsidian/desk/` is the `/dev/writing` and `/dev/diary` surface as an Obsidian plugin, so it works on a phone with no server. `pnpm obsidian:install [vault]` builds and copies it into the vault, then run "Reload app without saving" in Obsidian. Obsidian Sync carries it to other devices.
+- It imports the same pure modules as the dev pages (`src/lib/computerSeries.ts`, `diary.ts`, `diaryMarks.ts`, `notesSearch.ts`), so change logic there. Obsidian's API stays behind `DeskIO` in `deskStore.ts`.
+- It makes no network calls, on purpose: its data is private notes. Meaning search and the study lists are not ported.
+- State lives in `Notes/texts/`: the shared `diary-progress.json` and `diary-marks.json`, plus one `desk-words-<device>.json` per device so Sync never has two versions of one file. `/dev/writing` still keeps its own `.writing-progress.json`.
+- Never test it against real notes with screenshots. Use a fixture vault, in a separate Obsidian instance started with `--user-data-dir`.
+
 ## AI writing destination (2026-09-30)
 
 AI-written plans, research, drafts, reports, and manual QA notes belong in `/Users/rico/projects/ai-work-notes/`; project notes normally use `projects/<project>/`. Search existing folders before adding one. This is a separate local Git repository and Obsidian vault. Keep source code and code-specific technical documentation in their project repositories. Leave Rico's human-written notes in ricos.site untouched. This destination supersedes older instructions allowing AI prose in ricos.site. Do not recreate the old generated-content folder. Stage only task-owned paths in the relevant repository. Existing running sessions must reload these instructions. Uploading personal records requires explicit approval; a private remote alone is not approval.

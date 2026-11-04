@@ -3,53 +3,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { MARK_NAME, publish, rangeAt, TERM_NAME, textNodes } from "src/lib/diaryHighlights";
 import { locateQuote, type Mark, type MarkBook } from "src/lib/diaryMarks";
 
 // Text on /dev/diary that can be marked: select words, press the button that
-// appears, and they are saved word for word. Saved marks and search terms light
-// up through the CSS Custom Highlight API, which leaves the DOM alone, so a
-// React re-render cannot lose or duplicate them.
-
-const MARK_NAME = "diary-mark";
-const TERM_NAME = "diary-term";
-
-const live: Record<string, Map<object, Range[]>> = {
-  [MARK_NAME]: new Map(),
-  [TERM_NAME]: new Map(),
-};
-
-function publish(name: string, owner: object, ranges: Range[] | null) {
-  if (typeof CSS === "undefined" || !("highlights" in CSS)) return;
-  if (ranges) live[name].set(owner, ranges);
-  else live[name].delete(owner);
-  CSS.highlights.set(name, new Highlight(...[...live[name].values()].flat()));
-}
-
-function textNodes(root: HTMLElement): Text[] {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  const nodes: Text[] = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
-  return nodes;
-}
-
-function rangeAt(nodes: Text[], start: number, end: number): Range | null {
-  const range = document.createRange();
-  let seen = 0;
-  let started = false;
-  for (const node of nodes) {
-    const next = seen + node.length;
-    if (!started && start < next) {
-      range.setStart(node, start - seen);
-      started = true;
-    }
-    if (started && end <= next) {
-      range.setEnd(node, end - seen);
-      return range;
-    }
-    seen = next;
-  }
-  return null;
-}
+// appears, and they are saved word for word.
 
 const components = {
   // Images point into Obsidian or Notion exports, not at anything this server can show.

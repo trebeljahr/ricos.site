@@ -205,6 +205,7 @@
     "mongodb": "^7.7.0",
     "next-sitemap": "^4.2.3",
     "next-transpile-modules": "^10.0.1",
+    "obsidian": "^1.14.4",
     "p-limit": "^7.3.3",
     "postcss": "^8.5.28",
     "probe-image-size": "^7.4.0",

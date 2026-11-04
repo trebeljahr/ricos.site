@@ -19,7 +19,7 @@ import { DeskApp } from "./DeskApp";
 import type { DeskIO } from "./deskStore";
 
 const VIEW_TYPE = "desk-view";
-const ICON = "layout-dashboard";
+const ICON = "lamp-desk";
 const DEVICE_KEY = "desk-device-id";
 
 type Settings = { openOnStart: boolean };

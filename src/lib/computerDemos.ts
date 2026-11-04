@@ -146,8 +146,52 @@ export const computerDemos = [
     title: "Signed arithmetic",
   },
   {
-    slug: "universal-gates",
-    title: "Build every gate from NAND or NOR",
+    slug: "universal-nand-not",
+    title: "NOT from NAND",
+  },
+  {
+    slug: "universal-nand-and",
+    title: "AND from NAND",
+  },
+  {
+    slug: "universal-nand-or",
+    title: "OR from NAND",
+  },
+  {
+    slug: "universal-nand-nor",
+    title: "NOR from NAND",
+  },
+  {
+    slug: "universal-nand-xor",
+    title: "XOR from NAND",
+  },
+  {
+    slug: "universal-nand-xnor",
+    title: "XNOR from NAND",
+  },
+  {
+    slug: "universal-nor-not",
+    title: "NOT from NOR",
+  },
+  {
+    slug: "universal-nor-and",
+    title: "AND from NOR",
+  },
+  {
+    slug: "universal-nor-or",
+    title: "OR from NOR",
+  },
+  {
+    slug: "universal-nor-nand",
+    title: "NAND from NOR",
+  },
+  {
+    slug: "universal-nor-xor",
+    title: "XOR from NOR",
+  },
+  {
+    slug: "universal-nor-xnor",
+    title: "XNOR from NOR",
   },
   {
     slug: "signal-edges",

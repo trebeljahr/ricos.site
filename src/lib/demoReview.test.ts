@@ -6,6 +6,7 @@ import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import handler from "../pages/api/dev/demo-review";
 import { getServerSideProps } from "../pages/computer/demos";
+import { UNIVERSAL_GATE_LEVELS } from "./computer/tutorial/levels/universalGates";
 import { computerDemos } from "./computerDemos";
 import {
   applyReview,
@@ -147,10 +148,16 @@ describe("demo files", () => {
     expect(crowded).toEqual([]);
   });
 
+  it("gives every universal gate challenge a page", () => {
+    const slugs = computerDemos.map(({ slug }) => slug as string);
+    const missing = UNIVERSAL_GATE_LEVELS.filter(({ id }) => !slugs.includes(id));
+    expect(missing).toEqual([]);
+  });
+
   it("gives every chapter demo a page", () => {
     const pages = computerDemos.map(({ slug }) => pageText(slug)).join("\n");
-    // Shelved, and two chapter lessons made of demos that have their own pages.
-    const exempt = ["TruthTableScale", "TransistorGateLessons", "DecoderLesson"];
+    // Shelved, and chapter lessons made of demos that have their own pages.
+    const exempt = ["TruthTableScale", "TransistorGateLessons", "DecoderLesson", "UniversalGates"];
     expect(mdxNames.filter((name) => !exempt.includes(name) && !uses(pages, name))).toEqual([]);
   });
 

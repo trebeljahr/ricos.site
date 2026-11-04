@@ -1256,6 +1256,9 @@ export type LogicBuilderChallenge = {
   overlay?: ReactNode;
 };
 
+/** Parts with nothing inside: a locked board made only of these has no block to unfold. */
+const PLAIN_PARTS = new Set(["switch", "lamp", "high", "ground", "pmos", "nmos", "junction"]);
+
 /** Clock controls of a locked builder, for the page that embeds it. */
 export type LockedClock = {
   /**
@@ -3780,7 +3783,9 @@ function LogicBuilderWorkspace({
     }
     if ("type" in placement) {
       // A narrow canvas shows little of the default grid, so a tap places the part in view.
-      addNode(placement.type, tapped ? freeSpot({ type: placement.type, ...placement.extra }) : position && {
+      // A level starts with parts on that grid, so a click there looks for free space too.
+      const inFreeSpace = tapped || (challenge && !position && !activeInlinePath);
+      addNode(placement.type, inFreeSpace ? freeSpot({ type: placement.type, ...placement.extra }) : position && {
         x: position.x - NODE_WIDTH / 2,
         y: position.y - (inlineTarget ? 148 : NODE_HEIGHT) / 2,
       }, inlineTarget, placement.extra);
@@ -4663,7 +4668,10 @@ function LogicBuilderWorkspace({
               100%
             </button>
             {locked ? (
-              <small>Click a block to unfold it to gates · Scroll to zoom · Drag to pan</small>
+              <small>
+                {circuit.nodes.some((node) => !PLAIN_PARTS.has(node.type)) && "Click a block to unfold it to gates · "}
+                Scroll to zoom · Drag to pan
+              </small>
             ) : (
               <>
                 <button

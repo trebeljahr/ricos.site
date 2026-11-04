@@ -1,8 +1,12 @@
 // Logic gates: two CMOS levels from transistors, then NOT, AND, OR and XOR from
 // NAND, as in NandGame's first section. The ladder goes from transistors up, so
 // the first level is the first thing a new reader meets. Each gate the reader
-// builds joins the parts list of the levels after it.
-import { type Circuit, initialSnapshot, step } from "../../logic";
+// builds joins the parts list of the levels after it. The other transistor gates
+// are practice off that ladder, for the transistor builder demo and its chapter.
+import { layoutCircuit } from "../../circuitLayout";
+import { evalGate } from "../../gateLogic";
+import { type Circuit, gateBlueprint, initialSnapshot, type LogicGate, step } from "../../logic";
+import { nodeHeight } from "../../nodeGeometry";
 import { allRows, CircuitKit, defaultStart } from "../kit";
 import type { Level } from "../types";
 import { gateConstructionHints } from "./gateHints";
@@ -11,23 +15,23 @@ import { A, B, CHAPTERS, OUT, once } from "./shared";
 const SECTION_CMOS = "Transistors";
 const SECTION = "Logic gates";
 
-/** Locked ports plus the VDD and GND rails, where the reference has them. */
+const RAIL_GAP = 34;
+
+/** Locked ports plus the VDD and GND rails of the reference, stacked under the inputs. */
 const withRails = (level: () => Level) => () => {
   const start = defaultStart(level());
-  const reference = level().reference!();
-  const rails = reference.nodes.filter((node) => node.id === "vdd" || node.id === "gnd");
+  const inputs = start.circuit.nodes.filter((node) => node.type === "switch");
+  let y = Math.max(...inputs.map((node) => node.y + nodeHeight(node))) + RAIL_GAP;
+  const rails = level().reference!()
+    .nodes.filter((node) => node.type === "high" || node.type === "ground")
+    .map((node) => {
+      const rail = { ...node, x: inputs[0].x, y };
+      y += nodeHeight(node) + RAIL_GAP;
+      return rail;
+    });
   return {
     circuit: { ...start.circuit, nodes: [...start.circuit.nodes, ...rails] },
     locked: [...start.locked, ...rails.map((node) => node.id)],
-  };
-};
-
-/** The whole reference on the board, with only A left to wire: one idea, not a construction. */
-const withOnlyInputsToWire = (level: () => Level) => () => {
-  const reference = level().reference!();
-  return {
-    circuit: { ...reference, wires: reference.wires.filter((wire) => wire.from !== "a") },
-    locked: withRails(level)().locked,
   };
 };
 
@@ -53,6 +57,8 @@ const cmosRules = (circuit: Circuit) => {
       const n = circuit.nodes.find((node) => node.id === id);
       if (!n) return new Set();
       if (n.type === "high" || n.type === "ground") return new Set([n.type === "high"]);
+      // An input holds its wire at one level, so it can feed a source: XOR passes A along.
+      if (n.type === "switch") return new Set([Boolean(snapshot.values[id])]);
       const pins = n.type === "junction" ? [0, 1] : n.type === "lamp" ? [0] : [1];
       if (n.type === "nmos" || n.type === "pmos") {
         const control = incoming(id, 0);
@@ -143,25 +149,23 @@ export const cmosNotLevel: Level = {
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
   goal: "Make lamp OUT the opposite of switch A.",
-  intro:
-    "A transistor is a switch, and its G dot controls it. PMOS turns on when G is 0 and connects OUT to VDD, which is always 1. NMOS turns on when G is 1 and connects OUT to GND, which is always 0. Draw wires from dot to dot, so A controls both transistors. Flip A to test. In the table, 1 means on and 0 means off.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
-  start: withOnlyInputsToWire(() => cmosNotLevel),
+  start: withRails(() => cmosNotLevel),
   reference: cmosNot,
   rules: cmosRules,
   hints: [
     {
       title: "Core idea",
-      text: "When A is 0, which transistor turns on, and what does OUT connect to? Ask the same when A is 1.",
+      text: "PMOS conducts when its G dot is 0. NMOS conducts when its G dot is 1. When A is 0, OUT must reach VDD. When A is 1, OUT must reach GND.",
     },
     {
-      title: "Wiring",
-      text: "Draw a wire from A's dot to the G dot on PMOS. Draw another from A's dot to the G dot on NMOS.",
+      title: "Parts",
+      text: "Add one PMOS and one NMOS. Wire VDD to the S dot of PMOS and GND to the S dot of NMOS. Wire A to both G dots.",
     },
     {
-      title: "What the check tests",
-      text: "OUT must connect to exactly one of VDD and GND in every row. This switch model leaves out resistance, capacitance and voltage thresholds.",
+      title: "Output",
+      text: "Wire the D dot of PMOS to OUT. Then drag the D dot of NMOS onto that wire and release at the highlighted target to join them.",
     },
   ],
 };
@@ -172,8 +176,6 @@ export const cmosNandLevel: Level = {
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
   goal: "OUT is 0 only when A and B are both 1. Once it works, use the fewest transistors.",
-  intro:
-    "The rules from the last level still hold, and now you place the transistors. In every row, OUT must connect to VDD or GND, never both and never neither. To join two wires, drag an output or a wire onto another wire. Release at the highlighted target to create a small junction knob.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a && b)] },
   palette: ["pmos", "nmos", "junction"],
   makes: { part: "nand", label: "NAND", builtIn: { gate: "nand" } },
@@ -194,10 +196,99 @@ export const cmosNandLevel: Level = {
     },
     {
       title: "Conduction paths",
-      text: "Put the PMOS pair in parallel from VDD and the NMOS pair in series from GND. Each pair has gates controlled by A and B. Join the two paths at OUT.",
+      text: "Put the PMOS pair in parallel from VDD and the NMOS pair in series from GND. Each pair has gates controlled by A and B. Join the two paths at OUT: drag an output onto a wire and release at the highlighted target.",
     },
   ],
 };
+
+const TWO_STAGES =
+  "A stage is a PMOS path up from VDD, an NMOS path down to GND, and one output node between them.";
+const SECOND_STAGE =
+  "The last stage is the NOT you built: its gates take the first stage's output.";
+
+/** Practice off the ladder: its own family keeps it out of the main levels and their locks. */
+const cmosGateLevel = (
+  gate: LogicGate,
+  goal: string,
+  hints: NonNullable<Level["hints"]>,
+): Level => {
+  const id = `cmos-${gate}`;
+  const title = `${gate.toUpperCase()} from transistors`;
+  const level: Level = {
+    id,
+    title,
+    section: SECTION_CMOS,
+    chapter: CHAPTERS.transistors,
+    practice: { family: id, label: title },
+    goal,
+    spec: {
+      kind: "truth",
+      inputs: [A, B],
+      outputs: [OUT],
+      fn: ([a, b]) => [evalGate(gate, a, b)],
+    },
+    palette: ["pmos", "nmos", "junction"],
+    start: withRails(() => level),
+    reference: once(() => {
+      const circuit = gateBlueprint(gate, "transistor");
+      return layoutCircuit({
+        ...circuit,
+        name: title,
+        nodes: circuit.nodes.map((node) => (node.id === "out" ? { ...node, label: "OUT" } : node)),
+      });
+    }),
+    rules: cmosRules,
+    hints,
+  };
+  return level;
+};
+
+const cmosAndLevel = cmosGateLevel("and", "OUT is 1 only when A and B are both 1.", [
+  { title: "Core idea", text: `Use two stages. ${TWO_STAGES}` },
+  {
+    title: "First stage",
+    text: "Its output is 0 only when A and B are both 1: PMOS A and PMOS B side by side from VDD, NMOS A and NMOS B in a chain to GND.",
+  },
+  { title: "Last stage", text: SECOND_STAGE },
+]);
+
+const cmosOrLevel = cmosGateLevel("or", "OUT is 1 when A, B or both are 1.", [
+  { title: "Core idea", text: `Use two stages. ${TWO_STAGES}` },
+  {
+    title: "First stage",
+    text: "Its output is 1 only when A and B are both 0: PMOS A and PMOS B in a chain from VDD, NMOS A and NMOS B side by side to GND.",
+  },
+  { title: "Last stage", text: SECOND_STAGE },
+]);
+
+const cmosNorLevel = cmosGateLevel("nor", "OUT is 1 only when A and B are both 0.", [
+  { title: "Core idea", text: TWO_STAGES.replace("A stage is", "This takes one stage:") },
+  {
+    title: "Conduction paths",
+    text: "Put the PMOS pair in a chain from VDD and the NMOS pair side by side to GND. A and B each drive one transistor of each pair.",
+  },
+]);
+
+const cmosXorLevel = cmosGateLevel("xor", "OUT is 1 when exactly one of A and B is 1.", [
+  {
+    title: "Core idea",
+    text: "A source does not have to be VDD or GND. B can choose which signal reaches OUT: A, or the opposite of A.",
+  },
+  { title: "First stage", text: "Build a NOT of A." },
+  {
+    title: "Selector",
+    text: "Wire A to the S dot of a PMOS and the first stage's output to the S dot of an NMOS. B drives both G dots. Join both D dots at OUT.",
+  },
+]);
+
+const cmosXnorLevel = cmosGateLevel("xnor", "OUT is 1 when A and B are equal.", [
+  { title: "Core idea", text: "XNOR is the opposite of XOR, so it ends in a NOT." },
+  {
+    title: "XOR first",
+    text: "Build a NOT of A. Then B selects between them: A into the S dot of a PMOS, the NOT of A into the S dot of an NMOS.",
+  },
+  { title: "Last stage", text: SECOND_STAGE },
+]);
 
 export const notLevel: Level = {
   id: "not",
@@ -283,6 +374,11 @@ export const norLevel: Level = {
 export const GATE_LEVELS: Level[] = [
   cmosNotLevel,
   cmosNandLevel,
+  cmosAndLevel,
+  cmosOrLevel,
+  cmosNorLevel,
+  cmosXorLevel,
+  cmosXnorLevel,
   notLevel,
   andLevel,
   orLevel,

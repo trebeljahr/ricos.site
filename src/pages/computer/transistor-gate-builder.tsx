@@ -1,14 +1,15 @@
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutorial";
+import { TRANSISTOR_GATE_LESSONS } from "src/lib/computer/cmosGates";
 
 export default function TransistorGateBuilderPage() {
   return (
     <DeviceDemoPage
       slug="transistor-gate-builder"
-      description="Wire a NOT and a NAND gate from transistors."
+      description="Wire every logic gate from transistors."
       wide
     >
-      <LazyLogicTutorial title="Build gates from transistors" levels={["cmos-not", "cmos-nand"]} />
+      <LazyLogicTutorial title="Build gates from transistors" levels={TRANSISTOR_GATE_LESSONS} />
     </DeviceDemoPage>
   );
 }

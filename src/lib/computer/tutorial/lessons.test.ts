@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { TRANSISTOR_GATE_LESSONS } from "../cmosGates";
 import { recognitionComponent } from "../recognition";
 import { requestedHints } from "./hints";
 import { levelStart } from "./kit";
@@ -10,6 +11,32 @@ describe("builder lessons", () => {
     const ids = LEARNING_LEVELS.map((level) => level.id);
     expect(ids.slice(0, 3)).toEqual(["cmos-not", "cmos-nand", "not"]);
     for (const id of ["cmos-not", "cmos-nand"]) expect(levelById(id)?.optional, id).toBeFalsy();
+  });
+
+  it("keeps the other transistor gates off the ladder, and offers them in the builder", () => {
+    const extra = ["cmos-and", "cmos-or", "cmos-nor", "cmos-xor", "cmos-xnor"];
+    const ladder = LEARNING_LEVELS.map((level) => level.id);
+    const offered = BUILDER_LESSONS.map((level) => level.id);
+    for (const id of extra) {
+      expect(ladder, id).not.toContain(id);
+      expect(offered, id).toContain(id);
+    }
+    expect(TRANSISTOR_GATE_LESSONS).toEqual([
+      "cmos-not",
+      "cmos-and",
+      "cmos-nand",
+      "cmos-or",
+      "cmos-nor",
+      "cmos-xor",
+      "cmos-xnor",
+    ]);
+    for (const id of TRANSISTOR_GATE_LESSONS) {
+      const start = levelStart(levelById(id)!).circuit;
+      expect(start.wires, id).toEqual([]);
+      expect(new Set(start.nodes.map((node) => node.type)), id).toEqual(
+        new Set(["switch", "lamp", "high", "ground"]),
+      );
+    }
   });
 
   it("makes every core lesson available in the builder", () => {

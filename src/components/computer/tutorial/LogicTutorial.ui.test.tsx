@@ -44,7 +44,7 @@ describe("first run", () => {
     fireEvent.click(b.getByRole("button", { name: "Wire from A Output" }));
     fireEvent.click(b.getByRole("button", { name: target }));
   };
-  it("opens the whole ladder on transistors, with only A left to wire", () => {
+  it("opens the whole ladder on transistors, with only the ports and rails placed", () => {
     render(<LogicTutorial sequential />);
     const [b] = builders();
     expect(b.getByRole("heading", { name: "NOT from transistors" })).toBeTruthy();
@@ -52,12 +52,16 @@ describe("first run", () => {
       b.getByRole<HTMLOptionElement>("option", { name: /^1\. NOT from transistors/ }).value,
     ).toBe("cmos-not");
     const panel = b.getByRole("complementary", { name: "Level" }).textContent;
-    expect(panel).not.toMatch(/conduct|rail|CMOS|junction|Boolean/i);
-    for (const part of ["PMOS", "NMOS"])
-      expect(b.getByRole("button", { name: `Connect to ${part} Gate (G)` })).toBeTruthy();
-    expect(b.queryAllByRole("button", { name: /^Select wire from A / })).toHaveLength(0);
+    expect(panel).not.toMatch(/conduct|rail|CMOS|junction|Boolean|A transistor is/i);
+    expect(boardParts(b)).toHaveLength(4);
+    expect(b.queryByRole("button", { name: "Connect to PMOS Gate (G)" })).toBeNull();
+    expect(b.queryAllByRole("button", { name: /^Select wire from / })).toHaveLength(0);
   });
-  it("solves the first level with two wires and offers the next without pressing Check", () => {
+  it("solves the first level on its last wire and offers the next without pressing Check", () => {
+    const reference = levelById("cmos-not")!.reference!();
+    const draft = { ...reference, wires: reference.wires.filter((wire) => wire.from !== "a") };
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { "cmos-not": draft } }));
+    progressStore.reset();
     render(<LogicTutorial sequential />);
     const [b] = builders();
     expect(b.queryByRole("button", { name: /^Next:/ })).toBeNull();
@@ -134,12 +138,16 @@ describe("independent tutorials", () => {
     expect(within(panel).getByText("Logic gates")).toBeTruthy();
     expect(panel.textContent).not.toMatch(/NandGame/i);
   });
-  it("explains automatic junction knobs without advertising a standalone junction block", () => {
+  it("keeps wire joins in the hints, without advertising a standalone junction block", () => {
     render(<LogicTutorial levels={["cmos-nand"]} />);
     expect(screen.getByText(/Available parts: PMOS, NMOS/).textContent).not.toContain("JUNCTION");
-    expect(
-      screen.getByText(/Release at the highlighted target to create a small junction knob/),
-    ).toBeTruthy();
+    for (const id of ["cmos-not", "cmos-nand"])
+      expect(
+        levelById(id)!
+          .hints!.map((hint) => hint.text)
+          .join(" "),
+        id,
+      ).toMatch(/release at the highlighted target/);
     expect(
       within(screen.getByLabelText("Gate palette")).queryByRole("button", { name: "JUNCTION" }),
     ).toBeNull();

@@ -35,9 +35,10 @@ its undo history and timeline; opening a lesson pauses it and hides it from
 keyboard and pointer interaction. Lesson drafts use the existing progress store.
 
 The ladder goes from transistors up. `cmos-not` is the first thing a new reader
-meets, so its board starts with the reference placed and only A left to wire.
-`cmos-nand` is the first full construction. Both are required: later levels open
-once they are solved or skipped. A reader with progress further up the ladder
+meets, and its board starts with only A, OUT, VDD and GND. Both it and `cmos-nand`
+are required: later levels open once they are solved or skipped. `cmos-and`,
+`cmos-or`, `cmos-nor`, `cmos-xor` and `cmos-xnor` are practice off the ladder, for
+the transistor builder demo and its chapter (`TRANSISTOR_GATE_LESSONS`). A reader with progress further up the ladder
 stays unlocked, because a sequential ladder only gates levels past the furthest
 one solved or skipped. Saved boards are restored as they are: only the two rails
 and the ports are locked.

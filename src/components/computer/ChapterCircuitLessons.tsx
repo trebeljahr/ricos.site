@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TRANSISTOR_GATE_LESSONS } from "../../lib/computer/cmosGates";
 import { DecoderDemo } from "./AddressRouting";
 import { TransistorComparison, TransistorSwitches } from "./SwitchLogic";
 import { TransistorGates } from "./TransistorGates";
@@ -27,7 +28,7 @@ export function TransistorGateLessons() {
     <section className="not-prose my-8" aria-label="Build and explore gates from transistors">
       <TransistorComparison />
       <TransistorSwitches />
-      <LazyLogicTutorial title="Build gates from transistors" levels={["cmos-not", "cmos-nand"]} />
+      <LazyLogicTutorial title="Build gates from transistors" levels={TRANSISTOR_GATE_LESSONS} />
       <details className="my-6" onToggle={(event) => setRevealed(event.currentTarget.open)}>
         <summary className="cursor-pointer py-3 text-sm underline underline-offset-4">
           Explore the wired transistor gates

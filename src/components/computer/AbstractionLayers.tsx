@@ -1,34 +1,35 @@
-import clsx from "clsx";
-import type { CSSProperties, KeyboardEvent, ReactNode, RefObject } from "react";
-import { useEffect, useId, useRef, useState } from "react";
+import type { CSSProperties, KeyboardEvent } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   ABSTRACTION_LAYERS,
   type AbstractionLayer,
-  clampDepth,
-  INNERMOST,
-  INNERMOST_NOTE,
+  dollsOut,
+  holderOf,
+  layerById,
+  OPENABLE,
+  REACHES,
 } from "src/lib/computer/abstractionLayers";
 import styles from "./AbstractionLayers.module.css";
 
 /*
  * Every doll is drawn in the same local units: 100 tall, standing on y = 0,
- * centred on x = 0. A doll sits inside its parent at SHRINK times the size.
- * When it is out, it rises RISE units (in its parent's units), so its feet
- * stay in the parent's bottom half. The camera undoes those steps one level at
- * a time. A jump of several layers opens or closes one doll after another.
+ * centred on x = 0. On the shelves they are drawn at DOLL_SCALE.
  */
-const SHRINK = 0.8;
-const RISE = 29;
+const WIDTH = 380;
+const DOLL_SCALE = 0.46;
+const DOLL_HEIGHT = 100 * DOLL_SCALE;
+const SHELF_GAP = 60;
+const FIRST_SHELF = 52;
+const shelfY = (shelf: number) => FIRST_SHELF + shelf * SHELF_GAP;
+const SHELF_THICKNESS = 11;
+
 const SEAM_Y = -40;
 const SEAM_RX = 33.6;
 const SEAM_RY = 5;
-// Where the lid of an opened doll goes: up, aside and tipped.
-const LID_ASIDE = 72;
-const LID_CENTRE = -70;
-const LID_LIFTED = -88;
-const LID_TILT = 14;
-// A jump of several layers takes one step in or out every STEP_MS.
-const STEP_MS = 210;
+// Where the lid of an opened doll goes: beside it on the shelf, tipped.
+const LID_ASIDE = 62;
+const LID_DROP = 40;
+const LID_TILT = 16;
 
 const DOLL_PATH =
   "M0 -100C14 -100 23 -91 23 -79C23 -70 20 -66 21 -62C27 -56 35 -44 35 -27C35 -10 30 0 22 0" +
@@ -37,62 +38,23 @@ const SEAM_PATH = `M${-SEAM_RX} ${SEAM_Y}A${SEAM_RX} ${SEAM_RY} 0 0 0 ${SEAM_RX}
 const TOP_CLIP = `M-60 -110H60V${SEAM_Y}H${SEAM_RX}A${SEAM_RX} ${SEAM_RY} 0 0 1 ${-SEAM_RX} ${SEAM_Y}H-60Z`;
 const BOTTOM_CLIP = `M-60 ${SEAM_Y}H${-SEAM_RX}A${SEAM_RX} ${SEAM_RY} 0 0 0 ${SEAM_RX} ${SEAM_Y}H60V10H-60Z`;
 
-/** Where the doll in view stands on the stage, and how tall it is drawn. */
-function placement(depth: number) {
-  if (depth === 0) return { x: 200, y: 244, size: 208 };
-  // Each layer in is drawn a little smaller, so the dolls visibly shrink.
-  const size = Math.max(150, 174 * 0.985 ** (depth - 1));
-  return { x: 155, y: 40 + size, size };
-}
-
-/** No animation when the reader asks for less motion, or the browser cannot say. */
-function prefersInstant() {
-  return (
-    typeof window.matchMedia !== "function" ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
-
-/** One step from `shown` toward `target`. */
-const stepToward = (shown: number, target: number) => shown + Math.sign(target - shown);
-
-function labelSize(lines: readonly string[]) {
-  const longest = Math.max(...lines.map((line) => line.length));
-  return lines.length > 1
-    ? Math.min(8.5, 40 / (longest * 0.62))
-    : Math.min(10, 42 / (longest * 0.62));
-}
-
 /** The painted doll, whole. The halves are this drawing clipped at the seam. */
-function DollArt({ layer, shade }: { layer: AbstractionLayer; shade: string }) {
-  const size = labelSize(layer.label);
-  const baselines = layer.label.length > 1 ? [-23, -13.5] : [-17];
+function DollArt({ color, shade }: { color: string; shade: string }) {
   return (
     <>
-      <path d={DOLL_PATH} fill={layer.color} />
+      <path d={DOLL_PATH} fill={color} />
       <path d={DOLL_PATH} fill={`url(#${shade})`} />
       <path d="M-21 -60Q0 -42 21 -60M-27 -51Q0 -32 27 -51" className={styles.collar} />
       <path d="M-28 -27Q-32 -16 -25 -8M28 -27Q32 -16 25 -8" className={styles.collar} />
       <ellipse cx="0" cy="-24" rx="25" ry="21" className={styles.apron} />
-      <ellipse cx="0" cy="-24" rx="22.2" ry="18.2" className={styles.stitch} stroke={layer.color} />
-      {layer.label.map((line, index) => (
-        <text
-          key={line}
-          x="0"
-          y={baselines[index]}
-          fontSize={size}
-          textAnchor="middle"
-          className={styles.paint}
-        >
-          {line}
-        </text>
-      ))}
-      <g fill={layer.color}>
-        <circle cx="-3.3" cy="-7" r="1.7" />
-        <circle cx="3.3" cy="-7" r="1.7" />
-        <circle cx="0" cy="-9.6" r="1.7" />
+      <ellipse cx="0" cy="-24" rx="22.2" ry="18.2" className={styles.stitch} stroke={color} />
+      <g fill={color}>
+        <circle cx="-6" cy="-24" r="4" />
+        <circle cx="6" cy="-24" r="4" />
+        <circle cx="0" cy="-31" r="4" />
+        <circle cx="0" cy="-17" r="4" />
       </g>
-      <circle cx="0" cy="-7.6" r="1.1" className={styles.flowerHeart} />
+      <circle cx="0" cy="-24" r="2.8" className={styles.flowerHeart} />
       <ellipse cx="0" cy="-79" rx="15.5" ry="15" className={styles.scarf} />
       <ellipse cx="0" cy="-79" rx="12.8" ry="12.4" className={styles.face} />
       <path
@@ -109,119 +71,145 @@ function DollArt({ layer, shade }: { layer: AbstractionLayer; shade: string }) {
   );
 }
 
-type StageIds = { top: string; bottom: string; shade: string };
+type Ids = { top: string; bottom: string; shade: string };
 
-/** One doll with every doll inside it. Opened dolls have their lid set aside. */
-function Doll({ index, depth, ids }: { index: number; depth: number; ids: StageIds }) {
-  const layer = ABSTRACTION_LAYERS[index];
-  const out = index <= depth;
-  const opened = index < depth;
+function Doll({
+  layer,
+  isOut,
+  isOpen,
+  from,
+  ids,
+  onToggle,
+}: {
+  layer: AbstractionLayer;
+  isOut: boolean;
+  isOpen: boolean;
+  /** The doll it goes back into when it is not out. */
+  from: AbstractionLayer | null;
+  ids: Ids;
+  onToggle: () => void;
+}) {
+  const home = isOut || !from ? layer : from;
+  const y = shelfY(home.shelf);
   const style: CSSProperties = {
-    transform: index === 0 ? undefined : `translate(0px, ${out ? -RISE : 0}px) scale(${SHRINK})`,
+    transform: `translate(${home.x}px, ${y}px) scale(${isOut ? DOLL_SCALE : DOLL_SCALE * 0.5})`,
+    opacity: isOut ? 1 : 0,
   };
-
-  if (index === INNERMOST) {
-    return (
-      <g className={styles.doll} style={style} data-layer={layer.id}>
-        <g className={clsx(depth === INNERMOST && styles.live)}>
-          <DollArt layer={layer} shade={ids.shade} />
-        </g>
-      </g>
-    );
+  const canOpen = layer.inside.length > 0;
+  function onKeyDown(event: KeyboardEvent<SVGGElement>) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    onToggle();
   }
-
+  const art = <DollArt color={layer.color} shade={ids.shade} />;
+  // A native HTML button cannot contain this drawing.
+  const control = !isOut
+    ? { "aria-hidden": true }
+    : canOpen
+      ? {
+          role: "button",
+          tabIndex: 0,
+          "aria-label": `${isOpen ? "Close" : "Open"}: ${layer.name}`,
+          "aria-expanded": isOpen,
+          onClick: onToggle,
+          onKeyDown,
+        }
+      : { role: "img", "aria-label": layer.name };
   return (
-    <g className={styles.doll} style={style} data-layer={layer.id}>
-      <ellipse cx="0" cy={SEAM_Y} rx={SEAM_RX - 0.8} ry={SEAM_RY} className={styles.hollow} />
-      <Doll index={index + 1} depth={depth} ids={ids} />
-      <g clipPath={`url(#${ids.bottom})`}>
-        <DollArt layer={layer} shade={ids.shade} />
-      </g>
-      <path d={SEAM_PATH} className={styles.seam} />
-      <g
-        className={styles.lidAside}
-        style={{
-          transform: `translate(${opened ? LID_ASIDE : 0}px, 0px)`,
-          // Only the lid of the doll just opened stays in view.
-          opacity: index < depth - 1 ? 0 : 1,
-        }}
-      >
-        <g
-          className={styles.lidLift}
-          style={{
-            transform: `translate(0px, ${opened ? LID_LIFTED : LID_CENTRE}px) rotate(${opened ? LID_TILT : 0}deg) translate(0px, ${-LID_CENTRE}px)`,
-          }}
-        >
-          <g clipPath={`url(#${ids.top})`}>
-            <DollArt layer={layer} shade={ids.shade} />
-          </g>
+    <g
+      className={styles.doll}
+      style={style}
+      data-layer={layer.id}
+      data-out={isOut}
+      data-open={isOpen}
+      {...control}
+    >
+      {canOpen ? (
+        <>
+          <ellipse cx="0" cy={SEAM_Y} rx={SEAM_RX - 0.8} ry={SEAM_RY} className={styles.hollow} />
+          <g clipPath={`url(#${ids.bottom})`}>{art}</g>
           <path d={SEAM_PATH} className={styles.seam} />
-        </g>
-      </g>
+          <g
+            className={styles.lid}
+            style={{
+              transform: isOpen
+                ? `translate(${LID_ASIDE}px, ${LID_DROP}px) rotate(${LID_TILT}deg)`
+                : "translate(0px, 0px) rotate(0deg)",
+            }}
+          >
+            <g clipPath={`url(#${ids.top})`}>{art}</g>
+            <path d={SEAM_PATH} className={styles.seam} />
+          </g>
+          {/* The whole doll takes the click, wherever its lid has gone. */}
+          <path d={DOLL_PATH} className={styles.target} />
+        </>
+      ) : (
+        art
+      )}
     </g>
   );
 }
 
-function DollStage({
-  depth,
-  from,
-  label,
-  ids,
-  onSelect,
-  stageRef,
-}: {
-  depth: number;
-  from: number;
-  label: string;
-  ids: StageIds;
-  onSelect: (depth: number) => void;
-  stageRef: RefObject<SVGSVGElement | null>;
-}) {
-  const { x, y, size } = placement(depth);
-  const parentSize = size / SHRINK;
-  const parentY = y + (RISE * parentSize) / 100;
-  function activate(event: KeyboardEvent<SVGGElement>, next: number) {
-    if (event.key !== "Enter" && event.key !== " ") return;
-    event.preventDefault();
-    onSelect(next);
+const waistOf = (layer: AbstractionLayer, side: -1 | 1) => ({
+  x: layer.x + side * 15,
+  y: shelfY(layer.shelf) - DOLL_HEIGHT * 0.3,
+});
+
+/** A slack thread from inside a doll to a doll inside it. It runs behind both of them. */
+function insideThread(parent: AbstractionLayer, child: AbstractionLayer) {
+  if (parent.shelf === child.shelf) {
+    const side = child.x > parent.x ? 1 : -1;
+    const a = waistOf(parent, side);
+    const b = waistOf(child, side === 1 ? -1 : 1);
+    return `M${a.x} ${a.y}Q${(a.x + b.x) / 2} ${a.y + 9} ${b.x} ${b.y}`;
+  }
+  const fromY = shelfY(parent.shelf) - DOLL_HEIGHT * 0.35;
+  const toY = shelfY(child.shelf) - DOLL_HEIGHT * 0.5;
+  const sag = 4;
+  return `M${parent.x} ${fromY}Q${(parent.x + child.x) / 2} ${(fromY + toY) / 2 + sag} ${child.x} ${toY}`;
+}
+
+/** Each red thread by hand: they go round the shelves rather than through the dolls. */
+const REACH_PATHS: Record<string, { d: string; label: readonly [number, number] }> = {
+  "app>operating-system": { d: "M136 36Q190 24 244 36", label: [190, 24] },
+  "compiler-assembler>app": { d: "M238 96C226 70 170 70 132 50", label: [200, 71] },
+  "app>cpu": { d: "M105 40C40 60 20 160 80 214", label: [38, 128] },
+  "input-output>operating-system": { d: "M305 214C368 170 356 60 275 40", label: [338, 128] },
+  "operating-system>ram": { d: "M252 50C300 110 270 180 200 216", label: [272, 152] },
+  "buses>ram": { d: "M148 262C160 250 174 244 183 226", label: [146, 247] },
+  "buses>input-output": { d: "M156 272C200 258 262 256 282 226", label: [196, 259] },
+};
+
+/**
+ * A computer as nesting dolls that do not nest in one line. Open a doll and what
+ * is inside steps out onto the shelves. Usable in MDX articles.
+ */
+export function AbstractionLayers() {
+  const [opened, setOpened] = useState<ReadonlySet<string>>(() => new Set());
+  const [last, setLast] = useState<string | null>(null);
+  const base = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const ids: Ids = { top: `${base}-top`, bottom: `${base}-bottom`, shade: `${base}-shade` };
+  const out = useMemo(() => dollsOut(opened), [opened]);
+  const allOpen = OPENABLE.every((id) => opened.has(id));
+  // The cabinet grows downward as dolls step out, so nothing waits on empty shelves.
+  const lowestShelf = Math.max(...[...out].map((id) => layerById(id).shelf));
+  const height = shelfY(lowestShelf) + SHELF_THICKNESS + 9;
+
+  function toggle(id: string) {
+    setOpened((current) => {
+      const next = new Set(current);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+    setLast(id);
   }
 
-  let world: ReactNode = (
-    <g>
-      <rect x="-4000" y="0" width="8000" height="7" className={styles.shelf} />
-      <rect x="-4000" y="0" width="8000" height="1.2" className={styles.shelfEdge} />
-      <ellipse cx="0" cy="0.5" rx="34" ry="3.2" className={styles.shadow} />
-      <Doll index={0} depth={depth} ids={ids} />
-    </g>
-  );
-  // The camera: the inverse of each step in, nested so it unwinds level by level.
-  for (let level = 1; level <= INNERMOST; level++) {
-    const active = level <= depth;
-    world = (
-      <g
-        className={styles.zoom}
-        style={{
-          transform: active
-            ? `scale(${1 / SHRINK}) translate(0px, ${RISE}px)`
-            : "scale(1) translate(0px, 0px)",
-        }}
-      >
-        {world}
-      </g>
-    );
-  }
+  const lastLayer = last ? layerById(last) : null;
 
   return (
-    <div className={styles.stage}>
-      {/* biome-ignore lint/a11y/useSemanticElements: The SVG group contains keyboard-accessible illustrated controls. */}
-      <svg
-        viewBox="0 0 400 280"
-        ref={stageRef}
-        role="group"
-        aria-label={label}
-        data-direction={depth >= from ? "open" : "close"}
-        data-depth={depth}
-      >
+    <section className={`not-prose ${styles.demo}`} aria-label="A computer as nesting dolls">
+      {/* biome-ignore lint/a11y/useSemanticElements: The SVG group holds the illustrated controls. */}
+      <svg viewBox={`0 0 ${WIDTH} ${height}`} role="group" aria-label="Shelves of nesting dolls">
         <defs>
           <clipPath id={ids.top} clipPathUnits="userSpaceOnUse">
             <path d={TOP_CLIP} />
@@ -236,222 +224,89 @@ function DollStage({
             <stop offset="1" stopColor="#000" stopOpacity="0.3" />
           </linearGradient>
         </defs>
-        {/* biome-ignore lint/a11y/noAriaHiddenOnFocusable: This drawing has no focusable elements; sibling hit regions provide the controls. */}
-        <g
-          aria-hidden="true"
-          className={styles.camera}
-          style={{ transform: `translate(${x}px, ${y}px) scale(${size / 100})` }}
-        >
-          {world}
-        </g>
-        {depth > 0 && (
-          // biome-ignore lint/a11y/useSemanticElements: A native HTML button cannot contain these SVG hit regions.
-          <g
-            role="button"
-            tabIndex={0}
-            aria-label={`Close doll: ${ABSTRACTION_LAYERS[depth - 1].name}`}
-            className={styles.dollControl}
-            transform={`translate(${x} ${parentY}) scale(${parentSize / 100})`}
-            onClick={() => onSelect(depth - 1)}
-            onKeyDown={(event) => activate(event, depth - 1)}
-          >
-            <g clipPath={`url(#${ids.bottom})`}>
-              <path d={DOLL_PATH} />
-            </g>
-            <g
-              transform={`translate(${LID_ASIDE} ${LID_LIFTED}) rotate(${LID_TILT}) translate(0 ${-LID_CENTRE})`}
-            >
-              <g clipPath={`url(#${ids.top})`}>
-                <path d={DOLL_PATH} />
-              </g>
-            </g>
-          </g>
-        )}
-        {depth < INNERMOST && (
-          // biome-ignore lint/a11y/useSemanticElements: A native HTML button cannot contain this SVG hit region.
-          <g
-            role="button"
-            tabIndex={0}
-            data-open="true"
-            aria-label={`Open doll: ${ABSTRACTION_LAYERS[depth].name}`}
-            className={styles.dollControl}
-            transform={`translate(${x} ${y}) scale(${size / 100})`}
-            onClick={() => onSelect(depth + 1)}
-            onKeyDown={(event) => activate(event, depth + 1)}
-          >
-            <path d={DOLL_PATH} />
-          </g>
-        )}
-      </svg>
-    </div>
-  );
-}
 
-/** A small doll for the list of layers; an opened one shows its lid lifted off. */
-function MiniDoll({ color, open, ids }: { color: string; open: boolean; ids: StageIds }) {
-  const body = (
-    <>
-      <path d={DOLL_PATH} fill={color} />
-      <ellipse cx="0" cy="-79" rx="12.8" ry="12.4" className={styles.face} />
-      <path d={DOLL_PATH} className={styles.miniOutline} />
-    </>
-  );
-  return (
-    <svg className={styles.miniDoll} viewBox="-40 -134 86 137" aria-hidden="true">
-      {open ? (
-        <>
-          <g clipPath={`url(#${ids.bottom})`}>{body}</g>
-          <g transform="translate(9 -30) rotate(18 0 -70)">
-            <g clipPath={`url(#${ids.top})`}>{body}</g>
-          </g>
-        </>
-      ) : (
-        body
-      )}
-    </svg>
-  );
-}
-
-const pad = (value: number) => String(value).padStart(2, "0");
-
-/**
- * A computer as a nesting doll. Open it layer by layer, from the app you are
- * using down to voltages on wires, or jump to any layer. Usable in MDX articles.
- */
-export function AbstractionLayers() {
-  // The explanation updates at once; the illustration opens one doll at a time.
-  const [depth, setDepth] = useState(0);
-  const [stage, setStage] = useState({ shown: 0, from: 0 });
-  const stageRef = useRef<SVGSVGElement>(null);
-  const focusDoll = useRef(false);
-  const explorer = useRef<HTMLDivElement>(null);
-  const base = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const ids: StageIds = { top: `${base}-top`, bottom: `${base}-bottom`, shade: `${base}-shade` };
-  const layer = ABSTRACTION_LAYERS[depth];
-  const inner = depth < INNERMOST ? ABSTRACTION_LAYERS[depth + 1] : null;
-  const total = ABSTRACTION_LAYERS.length;
-  const shownLayer = ABSTRACTION_LAYERS[stage.shown];
-
-  useEffect(() => {
-    if (stage.shown === depth) return;
-    const timer = window.setTimeout(
-      () => setStage(({ shown }) => ({ shown: stepToward(shown, depth), from: shown })),
-      STEP_MS,
-    );
-    return () => window.clearTimeout(timer);
-  }, [depth, stage.shown]);
-
-  useEffect(() => {
-    if (!focusDoll.current) return;
-    const control =
-      stageRef.current?.querySelector<SVGGElement>("[data-open]") ??
-      stageRef.current?.querySelector<SVGGElement>('[role="button"]');
-    control?.focus({ preventScroll: true });
-    if (stage.shown === depth) focusDoll.current = false;
-  }, [depth, stage.shown]);
-
-  function goTo(next: number, focus = false) {
-    focusDoll.current = focus;
-    const target = clampDepth(next);
-    if (target === depth) return false;
-    setDepth(target);
-    const instant = prefersInstant();
-    setStage(({ shown }) =>
-      shown === target
-        ? { shown, from: shown }
-        : { shown: instant ? target : stepToward(shown, target), from: shown },
-    );
-    return true;
-  }
-
-  return (
-    <section className={styles.demo} aria-label="A computer as a nesting doll of layers">
-      <header className={styles.header}>
-        <div>
-          <p className={styles.eyebrow}>The computer, layer by layer</p>
-          <h2 className={styles.title}>There is more inside.</h2>
-        </div>
-      </header>
-      <div ref={explorer} className={styles.explorer}>
-        <div className={styles.illustration}>
-          <div className={styles.stageHeading}>
-            <span className={styles.counter}>
-              Layer {pad(depth + 1)} <span>/ {total}</span>
-            </span>
-            {depth > 0 && (
-              <button
-                type="button"
-                className={styles.reset}
-                onClick={() => {
-                  goTo(0, true);
-                }}
-                aria-label="Close every doll and go back to the app"
-              >
-                Start again ↺
-              </button>
-            )}
-          </div>
-          <DollStage
-            depth={stage.shown}
-            from={stage.from}
-            label={
-              stage.shown === 0
-                ? `A closed nesting doll: ${shownLayer.name.toLowerCase()}.`
-                : `A nesting doll opened ${stage.shown} ${stage.shown === 1 ? "time" : "times"}. The doll in view: ${shownLayer.name}.`
-            }
-            ids={ids}
-            onSelect={(next) => goTo(next, true)}
-            stageRef={stageRef}
+        {Array.from({ length: lowestShelf + 1 }, (_, shelf) => shelf).map((shelf) => (
+          <rect
+            key={shelf}
+            x="0"
+            y={shelfY(shelf)}
+            width={WIDTH}
+            height={SHELF_THICKNESS}
+            className={styles.shelf}
           />
-          <p className={styles.stageHint}>
-            {stage.shown === 0
-              ? "Click the doll to open it."
-              : stage.shown === INNERMOST
-                ? "Click the lifted lid to close it."
-                : "Click the doll to open it. Click the lifted lid to close it."}
-          </p>
-        </div>
-        <div className={styles.explanation}>
-          <div key={layer.id} className={styles.chapter}>
-            <h3 className={styles.layerName}>{layer.name}</h3>
-            <p className={styles.description}>{layer.does}</p>
-            <p className={styles.connection}>{inner ? layer.builtFrom : INNERMOST_NOTE}</p>
-          </div>
-        </div>
-      </div>
-      <details className={styles.journey}>
-        <summary className={styles.journeyHeading}>All {total} layers</summary>
-        <ol className={styles.rail} aria-label="All layers, from the outside in">
-          {ABSTRACTION_LAYERS.map((entry, index) => {
-            const current = index === depth;
+        ))}
+
+        {ABSTRACTION_LAYERS.flatMap((parent) =>
+          parent.inside.map((childId) => {
+            const on = opened.has(parent.id) && out.has(parent.id);
             return (
-              <li key={entry.id}>
-                <button
-                  type="button"
-                  className={styles.railButton}
-                  aria-current={current ? "true" : undefined}
-                  data-state={index < depth ? "open" : current ? "current" : "inside"}
-                  onClick={() => {
-                    goTo(index, true);
-                    explorer.current?.scrollIntoView?.({
-                      block: "start",
-                      behavior: prefersInstant() ? "instant" : "smooth",
-                    });
-                  }}
-                  aria-label={`Layer ${index + 1} of ${total}: ${entry.name}, part ${entry.part} of the series.${current ? " In view." : ""}`}
-                >
-                  <span className={styles.railNumber}>{pad(index + 1)}</span>
-                  <MiniDoll color={entry.color} open={index < depth} ids={ids} />
-                  <span className={styles.railName}>{entry.name}</span>
-                </button>
-              </li>
+              <path
+                key={`${parent.id}>${childId}`}
+                className={styles.thread}
+                data-on={on}
+                data-thread={`${parent.id}>${childId}`}
+                d={insideThread(parent, layerById(childId))}
+              />
             );
-          })}
-        </ol>
-      </details>
+          }),
+        )}
+
+        {REACHES.map(({ from, to, label }) => {
+          const key = `${from}>${to}`;
+          const on = out.has(from) && out.has(to);
+          const { d, label: at } = REACH_PATHS[key];
+          return (
+            <g key={key} className={styles.reach} data-on={on} data-reach={key}>
+              <path d={d} />
+              <text x={at[0]} y={at[1]}>
+                {label}
+              </text>
+            </g>
+          );
+        })}
+
+        {ABSTRACTION_LAYERS.map((layer) => (
+          <text
+            key={layer.id}
+            className={styles.tag}
+            data-on={out.has(layer.id)}
+            x={layer.x}
+            y={shelfY(layer.shelf) + 8.5}
+          >
+            {layer.tag}
+          </text>
+        ))}
+
+        {ABSTRACTION_LAYERS.map((layer) => (
+          <Doll
+            key={layer.id}
+            layer={layer}
+            isOut={out.has(layer.id)}
+            isOpen={opened.has(layer.id)}
+            from={holderOf(layer.id, opened, out)}
+            ids={ids}
+            onToggle={() => toggle(layer.id)}
+          />
+        ))}
+      </svg>
+      <button
+        type="button"
+        className={styles.all}
+        onClick={() => {
+          setOpened(allOpen ? new Set() : new Set(OPENABLE));
+          setLast(null);
+        }}
+      >
+        {allOpen ? "Close all" : "Open all"}
+      </button>
       <p className="sr-only" aria-live="polite">
-        Layer {depth + 1} of {total}: {layer.name}. {layer.does}{" "}
-        {inner ? `Next: ${inner.name}. ${layer.builtFrom}` : INNERMOST_NOTE}
+        {lastLayer
+          ? `${lastLayer.name}. ${lastLayer.does} ${
+              opened.has(lastLayer.id)
+                ? `Inside: ${lastLayer.inside.map((id) => layerById(id).name).join(", ")}.`
+                : "Closed."
+            }`
+          : ""}
       </p>
     </section>
   );

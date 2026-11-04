@@ -55,7 +55,7 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
   return (
     <Layout
       title="How computers work"
-      description="See what happens between a key press and a pixel by building it yourself, one layer at a time."
+      description="How we got sand to think. There's no trick to it, only layer upon layer of clever abstractions, from a single on/off switch up to the internet."
       keywords={[]}
       url="computer"
       noindex={chapters.length === 0}
@@ -63,7 +63,7 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
       <PageMain>
         <Header
           title="How computers work"
-          subtitle="You use a computer all day, but what happens between a key press and a pixel stays hidden. In this series you build that path yourself, one layer at a time."
+          subtitle="How we got sand to think. There's no trick to it, only layer upon layer of clever abstractions. The series starts at a single on/off switch and climbs up to the internet, and you get to play with each layer through interactive demos as you go."
         />
 
         {chapters.length > 0 && (

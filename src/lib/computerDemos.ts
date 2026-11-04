@@ -367,29 +367,11 @@ export const publicComputerDemos: { slug: ComputerDemoSlug; blurb: string }[] = 
   },
 ];
 
-// Demos for chapters that are not written yet, shown on /computer as a preview.
-export const sneakPeekComputerDemos: { slug: ComputerDemoSlug; part: number; blurb: string }[] = [
-  { slug: "clock-scope", part: 2, blurb: "Watch a clock signal on a scope." },
-  {
-    slug: "cpu-circuit",
-    part: 3,
-    blurb: "Compile a tiny program and clock it through the toy CPU's circuit.",
-  },
-  { slug: "big-screens", part: 5, blurb: "Run the same fill on 8×8, 32×32 and 512×512 screens." },
-  {
-    slug: "lighting-lab",
-    part: 5,
-    blurb: "Change normals, lights and textures, and read one pixel's numbers.",
-  },
-];
-
 const isProduction = process.env.NODE_ENV === "production";
 
 /** The demos a reader can reach from another demo on this build. */
 export const reachableComputerDemos = isProduction
-  ? computerDemos.filter((demo) =>
-      [...publicComputerDemos, ...sneakPeekComputerDemos].some(({ slug }) => slug === demo.slug),
-    )
+  ? computerDemos.filter((demo) => publicComputerDemos.some(({ slug }) => slug === demo.slug))
   : computerDemos;
 
 /** Where a demo page links back to on this build. */

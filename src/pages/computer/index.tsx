@@ -3,12 +3,7 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
 import type { ComputerChapter } from "@velite";
 import Link from "next/link";
-import {
-  type ComputerDemoSlug,
-  computerDemos,
-  publicComputerDemos,
-  sneakPeekComputerDemos,
-} from "../../lib/computerDemos";
+import { type ComputerDemoSlug, computerDemos, publicComputerDemos } from "../../lib/computerDemos";
 
 const PARTS = [
   { part: 1, title: "The Basics", question: "How can on and off calculate?" },
@@ -83,22 +78,6 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
         <div className="not-prose border-t border-gray-300 dark:border-gray-700">
           {publicComputerDemos.map(({ slug, blurb }) => (
             <ListRow key={slug} href={`/computer/${slug}`} title={demoTitle(slug)} blurb={blurb} />
-          ))}
-        </div>
-
-        <h2>Coming later: a sneak peek</h2>
-        <p>
-          These demos belong to chapters I have not written yet. They work, but they are still
-          rough.
-        </p>
-        <div className="not-prose border-t border-gray-300 dark:border-gray-700">
-          {sneakPeekComputerDemos.map(({ slug, part, blurb }) => (
-            <ListRow
-              key={slug}
-              href={`/computer/${slug}`}
-              title={demoTitle(slug)}
-              blurb={`Part ${part}. ${blurb}`}
-            />
           ))}
         </div>
 

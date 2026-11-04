@@ -268,6 +268,28 @@ export function WritingTab({
   if (error && !data) return <Problem text={error} />;
   if (!data) return <p className="desk-muted">Counting words…</p>;
   const { next, pace, partName, chapters } = data;
+  const scopeCount = chapters.filter(
+    (c) => c.part === NEXT_DEADLINE.part && c.kind === "chapter",
+  ).length;
+  // Before Sync has delivered the chapters there is nothing to count, and nextStep's
+  // null would otherwise read as "the part is live".
+  if (scopeCount === 0) {
+    return (
+      <>
+        <header className="desk-page-head">
+          <h1>How computers work</h1>
+          <p className="desk-muted">Writing progress</p>
+        </header>
+        <div className="desk-card">
+          <p className="desk-card-title">No chapters of Part {NEXT_DEADLINE.part} found</p>
+          <p className="desk-muted">
+            They live in computer/ in this vault. If Obsidian is still syncing, they appear here
+            when it finishes.
+          </p>
+        </div>
+      </>
+    );
+  }
   const scope = chapters.filter((c) => c.part === NEXT_DEADLINE.part && c.kind === "chapter");
   const parts = [...new Set(chapters.map((c) => c.part))];
   const written = data.days.filter((d) => (d.words ?? 0) > 0).length;

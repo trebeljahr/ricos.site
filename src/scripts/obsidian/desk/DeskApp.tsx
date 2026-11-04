@@ -298,7 +298,11 @@ function DiaryTab({
             onWhole={onWhole}
           />
         ) : (
-          <p>Nothing left to read today.</p>
+          <p className="desk-muted">
+            {data.entries.length === 0
+              ? "No entries found in texts/. If Obsidian is still syncing, they appear here when it finishes."
+              : "Nothing left to read today."}
+          </p>
         ))}
       <section className="desk-stats">
         <Stat label="Read streak" value={dayCount(data.readStreak)} note="in a row" />

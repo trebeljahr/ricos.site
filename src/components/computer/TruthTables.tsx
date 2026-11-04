@@ -1,13 +1,12 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
-import { adderDemo, gateDemo } from "src/lib/computer/demoCircuits";
+import { adderDemo } from "src/lib/computer/demoCircuits";
 import {
   bit,
   evalGate,
   fullAdd,
   GATE_LABELS,
-  GATE_RULES,
   halfAdd,
   inputRows,
   TRUTH_GATES,
@@ -65,13 +64,10 @@ function CircuitPicker({ label, children }: { label: string; children: ReactNode
   );
 }
 
-const port = (name: string) => ({ id: name.toLowerCase(), label: name });
-
-/** The gate demos open on their transistors; the fold button closes them to a box. */
-const OPEN_GATE = ["gate"] as const;
+export const port = (name: string) => ({ id: name.toLowerCase(), label: name });
 
 /** Use the builder's switches and timeline as the source of the selected row. */
-function useTableCircuit(circuit: Circuit, controls?: ReactNode, unfolded?: readonly string[]) {
+export function useTableCircuit(circuit: Circuit, controls?: ReactNode) {
   const clock = useRef<LockedClock | null>(null);
   const switches = useMemo(() => circuit.nodes.filter((node) => node.type === "switch"), [circuit]);
   const [inputs, setInputs] = useState(() => switches.map((node) => Boolean(node.value)));
@@ -85,7 +81,6 @@ function useTableCircuit(circuit: Circuit, controls?: ReactNode, unfolded?: read
         locked={{
           circuit,
           clockRef: clock,
-          unfolded,
           interactiveInputs: true,
           controls,
           panel: sidebar,
@@ -109,7 +104,7 @@ function useTableCircuit(circuit: Circuit, controls?: ReactNode, unfolded?: read
   return { render, inputs, pick };
 }
 
-function withInputs(circuit: Circuit, inputs: boolean[]): Circuit {
+export function withInputs(circuit: Circuit, inputs: boolean[]): Circuit {
   let index = 0;
   return {
     ...circuit,
@@ -117,70 +112,6 @@ function withInputs(circuit: Circuit, inputs: boolean[]): Circuit {
       node.type === "switch" ? { ...node, value: inputs[index++] ?? false } : node,
     ),
   };
-}
-
-/** Pick a gate and try its inputs in the shared circuit explorer or truth table. */
-export function GateTruthTable({
-  gate: initialGate = "and",
-  fixed = false,
-}: {
-  gate?: TruthGate;
-  /** Hides the gate selector for a passage about one gate. */
-  fixed?: boolean;
-  /** Legacy article markup is accepted; every gate now uses the shared table. */
-  view?: "table" | "grid";
-}) {
-  const [gate, setGate] = useState<TruthGate>(initialGate);
-  const [circuit, setCircuit] = useState(() => gateDemo(initialGate));
-  const { render, inputs, pick } = useTableCircuit(
-    circuit,
-    !fixed && (
-      <CircuitPicker label={`Gate: ${GATE_LABELS[gate]}`}>
-        {TRUTH_GATES.map((name) => (
-          <button
-            key={name}
-            type="button"
-            aria-pressed={gate === name}
-            onClick={() => {
-              setGate(name);
-              setCircuit(withInputs(gateDemo(name), inputs));
-            }}
-          >
-            {GATE_LABELS[name]}
-          </button>
-        ))}
-      </CircuitPicker>
-    ),
-    OPEN_GATE,
-  );
-  const names = gate === "not" ? ["A"] : ["A", "B"];
-
-  return (
-    <section
-      className={clsx("not-prose", table.demo)}
-      aria-label={`Truth table of the ${GATE_LABELS[gate]} gate`}
-    >
-      {render(
-        <div className={tutorial.panel}>
-          <h3 className={tutorial.subhead}>Truth table</h3>
-          <TruthTable
-            spec={{
-              kind: "truth",
-              inputs: names.map(port),
-              outputs: [port("OUT")],
-              fn: ([a, b]) => [evalGate(gate, a, b)],
-            }}
-            current={inputs}
-            onPick={pick}
-            label={`Truth table of ${GATE_LABELS[gate]}`}
-          />
-          <p>
-            {GATE_LABELS[gate]}: {GATE_RULES[gate]}
-          </p>
-        </div>,
-      )}
-    </section>
-  );
 }
 
 /** Compare gates with the sum and carry of the shared half-adder circuit. */

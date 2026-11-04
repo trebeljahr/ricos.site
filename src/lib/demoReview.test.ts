@@ -206,7 +206,14 @@ describe("demo files", () => {
   it("gives every chapter demo a page", () => {
     const pages = computerDemos.map(({ slug }) => pageText(slug)).join("\n");
     // Shelved, and chapter lessons made of demos that have their own pages.
-    const exempt = ["TruthTableScale", "TransistorGateLessons", "DecoderLesson", "UniversalGates"];
+    const exempt = [
+      "TruthTableScale",
+      "TransistorGateLessons",
+      "DecoderLesson",
+      "UniversalGates",
+      // The chapter's name for TransistorGates.
+      "GateTruthTable",
+    ];
     expect(mdxNames.filter((name) => !exempt.includes(name) && !uses(pages, name))).toEqual([]);
   });
 });

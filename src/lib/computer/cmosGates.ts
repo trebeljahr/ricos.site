@@ -1,6 +1,8 @@
 // CMOS gate choices for the chapter demo. Wiring and simulation live in logic.ts.
-export const CMOS_GATES = ["not", "nand", "nor", "and", "or", "xor", "xnor"] as const;
+export const CMOS_GATES = ["not", "and", "nand", "or", "nor", "xor", "xnor"] as const;
 export type CmosGate = (typeof CMOS_GATES)[number];
+/** The build-it-yourself levels of the same gates, in the same order. */
+export const TRANSISTOR_GATE_LESSONS = CMOS_GATES.map((gate) => `cmos-${gate}`);
 export const GATE_LABELS: Record<CmosGate, string> = {
   not: "NOT",
   nand: "NAND",

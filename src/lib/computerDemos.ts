@@ -82,10 +82,6 @@ export const computerDemos = [
     title: "Switches controlled by electricity",
   },
   {
-    slug: "gate-truth-table",
-    title: "Gate truth tables",
-  },
-  {
     slug: "addition-table",
     title: "Addition table",
   },

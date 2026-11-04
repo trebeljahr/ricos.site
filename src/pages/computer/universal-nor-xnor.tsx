@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNorXnorPage() {
   return (
-    <DeviceDemoPage slug="universal-nor-xnor" description="Build XNOR using only NOR gates.">
+    <DeviceDemoPage wide slug="universal-nor-xnor" description="Build XNOR using only NOR gates.">
       <LazyLogicTutorial
         title="XNOR from NOR"
         levels={["universal-nor-xnor"]}

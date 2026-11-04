@@ -6,6 +6,7 @@ export default function TransistorGateBuilderPage() {
     <DeviceDemoPage
       slug="transistor-gate-builder"
       description="Wire a NOT and a NAND gate from transistors."
+      wide
     >
       <LazyLogicTutorial title="Build gates from transistors" levels={["cmos-not", "cmos-nand"]} />
     </DeviceDemoPage>

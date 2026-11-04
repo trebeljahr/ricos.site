@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNandXorPage() {
   return (
-    <DeviceDemoPage slug="universal-nand-xor" description="Build XOR using only NAND gates.">
+    <DeviceDemoPage wide slug="universal-nand-xor" description="Build XOR using only NAND gates.">
       <LazyLogicTutorial
         title="XOR from NAND"
         levels={["universal-nand-xor"]}

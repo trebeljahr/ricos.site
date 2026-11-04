@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNandOrPage() {
   return (
-    <DeviceDemoPage slug="universal-nand-or" description="Build OR using only NAND gates.">
+    <DeviceDemoPage wide slug="universal-nand-or" description="Build OR using only NAND gates.">
       <LazyLogicTutorial
         title="OR from NAND"
         levels={["universal-nand-or"]}

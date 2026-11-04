@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNandNorPage() {
   return (
-    <DeviceDemoPage slug="universal-nand-nor" description="Build NOR using only NAND gates.">
+    <DeviceDemoPage wide slug="universal-nand-nor" description="Build NOR using only NAND gates.">
       <LazyLogicTutorial
         title="NOR from NAND"
         levels={["universal-nand-nor"]}

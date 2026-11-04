@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNorOrPage() {
   return (
-    <DeviceDemoPage slug="universal-nor-or" description="Build OR using only NOR gates.">
+    <DeviceDemoPage wide slug="universal-nor-or" description="Build OR using only NOR gates.">
       <LazyLogicTutorial
         title="OR from NOR"
         levels={["universal-nor-or"]}

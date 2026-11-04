@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNorNotPage() {
   return (
-    <DeviceDemoPage slug="universal-nor-not" description="Build NOT using only NOR gates.">
+    <DeviceDemoPage wide slug="universal-nor-not" description="Build NOT using only NOR gates.">
       <LazyLogicTutorial
         title="NOT from NOR"
         levels={["universal-nor-not"]}

@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNandXnorPage() {
   return (
-    <DeviceDemoPage slug="universal-nand-xnor" description="Build XNOR using only NAND gates.">
+    <DeviceDemoPage wide slug="universal-nand-xnor" description="Build XNOR using only NAND gates.">
       <LazyLogicTutorial
         title="XNOR from NAND"
         levels={["universal-nand-xnor"]}

@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function DecoderBuilderPage() {
   return (
-    <DeviceDemoPage slug="decoder-builder" description="Wire a two-to-four decoder yourself.">
+    <DeviceDemoPage wide slug="decoder-builder" description="Wire a two-to-four decoder yourself.">
       <LazyLogicTutorial title="Build a decoder" levels={["decoder"]} />
     </DeviceDemoPage>
   );

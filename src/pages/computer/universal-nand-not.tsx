@@ -3,7 +3,7 @@ import { LazyLogicTutorial } from "@components/computer/tutorial/LazyLogicTutori
 
 export default function UniversalNandNotPage() {
   return (
-    <DeviceDemoPage slug="universal-nand-not" description="Build NOT using only NAND gates.">
+    <DeviceDemoPage wide slug="universal-nand-not" description="Build NOT using only NAND gates.">
       <LazyLogicTutorial
         title="NOT from NAND"
         levels={["universal-nand-not"]}

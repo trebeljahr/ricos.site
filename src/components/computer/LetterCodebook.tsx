@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
+import { usePanelSound } from "src/hooks/usePanelSound";
 import { flipSwitch, patternIndex } from "src/lib/codebook";
 import {
   LETTER_STATES,
@@ -16,6 +17,7 @@ import { LetterCodebookGrid } from "./LetterCodebookGrid";
 /** Five switches read through a fixed alphabet, independent of the letter typer. */
 export function LetterCodebook() {
   const [pattern, setPattern] = useState("00000");
+  const { soundEnabled, toggleSound, playButton, playToggle } = usePanelSound();
   const active = patternIndex(pattern);
   const char = SEED_LETTER_CODEBOOK[active];
 
@@ -23,6 +25,8 @@ export function LetterCodebook() {
     <DemoMachine
       title="LETTER CODEBOOK"
       label="Five switches and a fixed codebook of characters"
+      soundEnabled={soundEnabled}
+      onToggleSound={toggleSound}
       className={typer.typer}
     >
       <div className={typer.deck}>
@@ -38,6 +42,7 @@ export function LetterCodebook() {
               pattern={pattern}
               onFlip={(position) => {
                 setPattern(flipSwitch(pattern, position));
+                playToggle(pattern[position] === "0");
               }}
               label="Switches"
               large
@@ -60,7 +65,11 @@ export function LetterCodebook() {
           <LetterCodebookGrid
             codebook={SEED_LETTER_CODEBOOK}
             active={active}
-            onShow={(state) => setPattern(letterPattern(state))}
+            onShow={(state) => {
+              // A click arrives as a focus and then a click; only the first one moves anything.
+              if (state !== active) playButton();
+              setPattern(letterPattern(state));
+            }}
           />
         </div>
       </div>

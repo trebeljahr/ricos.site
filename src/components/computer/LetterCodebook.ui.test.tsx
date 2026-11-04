@@ -17,7 +17,7 @@ describe("LetterCodebook", () => {
       screen.queryByRole("button", { name: /shuffle|reset|type .* into the text/i }),
     ).toBeNull();
     expect(screen.getByText("SPACE")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /^Switch 5 of 5: off/ }));
+    fireEvent.click(screen.getByRole("switch", { name: "Switch 5 of 5" }));
     expect(
       screen.getByRole("button", { name: "State 00001: A" }).getAttribute("aria-pressed"),
     ).toBe("true");

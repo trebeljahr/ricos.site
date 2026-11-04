@@ -251,7 +251,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "sprite-tools",
     date: "2026-03-22",
-    title: "sprite-tools",
+    title: "Sprite Tools",
     subtitle: "Turns sprite sheets into assets you can drop straight into a game.",
     link: "https://sprites.trebeljahr.com",
     section: "Dev tools",

@@ -107,7 +107,7 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
     headingFont: "mono",
     invitation:
       "More time making games. Less time preparing sprite sheets. Support the tools in between.",
-    cardTitle: "Support sprite-tools",
+    cardTitle: "Support Sprite Tools",
     thanks: "Thank you for supporting the tools behind your next sprite.",
   },
   conv3d: {

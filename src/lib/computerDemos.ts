@@ -126,6 +126,10 @@ export const computerDemos = [
     title: "Signed numbers",
   },
   {
+    slug: "signed-arithmetic",
+    title: "Signed arithmetic",
+  },
+  {
     slug: "universal-nand-not",
     title: "NOT from NAND",
   },

@@ -15,6 +15,7 @@ export { BooleanCircuitDemo } from "./BooleanCircuitDemo";
 export { ButtonInterruptDemo } from "./ButtonInterruptDemo";
 export { DecoderLesson, TransistorGateLessons } from "./ChapterCircuitLessons";
 export { LogicBuilder } from "./LogicBuilder";
+export { SignedArithmetic } from "./SignedArithmetic";
 export { SignedNumberExplorer } from "./SignedNumbers";
 export { SwitchLogic, TransistorComparison, TransistorSwitches } from "./SwitchLogic";
 export { GateTruthTable, TransistorGates } from "./TransistorGates";

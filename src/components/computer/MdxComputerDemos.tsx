@@ -272,10 +272,10 @@ export const COMPUTER_MDX_DEMOS = {
     () => loadCircuitDemos().then((module) => module.SignedNumberExplorer),
     "Signed number representations",
   ),
-  // Retired demo. Chapter 3.1 still has the tag in Rico's text; this keeps the page
-  // rendering until he rewrites that passage. Remove this and the name in
-  // mdxDemoComponents.ts then.
-  SignedArithmetic: () => null,
+  SignedArithmetic: chapterDemo(
+    () => loadCircuitDemos().then((module) => module.SignedArithmetic),
+    "Signed arithmetic",
+  ),
   BooleanCircuitDemo: chapterDemo(
     () => loadCircuitDemos().then((module) => module.BooleanCircuitDemo),
     "Boolean expression and matching circuit",

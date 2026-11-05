@@ -1,0 +1,71 @@
+.plate { display: grid; gap: 16px; }
+.nudges { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.nudge { display: flex; align-items: center; gap: 6px; }
+.nudge b { font-size: 15px; }
+.nudgeKey.nudgeKey { width: 42px; height: 34px; font-size: 14px; }
+
+/* The sheet of paper. Ink colours stay the same on both site themes, like the rest of the panel. */
+.paper { padding: 8px 10px 12px; border: 2px solid #4a594d; border-radius: 4px; background: #f0f1e3; box-shadow: inset 0 2px 5px #4a594d66; color: #1b261e; }
+.sheet { --digit: 22px; --tall: 38px; --wrap: #1f6a3c; display: grid; grid-template-columns: max-content repeat(var(--columns), minmax(0, 44px)) minmax(5ch, max-content); justify-content: center; width: 100%; margin: 0; border: 0; font: 600 var(--digit)/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+.sheet thead, .sheet tbody, .row, .wrapRow { display: contents; }
+.sheet th, .sheet td { padding: 0; border: 0; background: none; color: inherit; }
+.cell, .label, .value, .place { display: flex; align-items: center; min-height: var(--tall); }
+.cell.cell, .place.place { position: relative; justify-content: center; }
+.label.label { justify-content: flex-start; padding-right: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0; }
+.value.value { justify-content: flex-end; padding-left: 8px; font-size: .8em; font-weight: 700; white-space: nowrap; }
+.place.place { min-height: 16px; color: #5d6a5e; font-size: 10px; font-weight: 500; }
+
+.carryRow .cell { min-height: 26px; font-size: 15px; }
+.carryRow .label { min-height: 26px; color: #4d5b50; }
+.carryDigit { color: #5a675b; font-weight: 500; }
+.carryDigit[data-on="true"] { color: #1b261e; font-weight: 800; }
+.spent .bit, .spent .value, .spent .label { color: #5d6a5e; }
+.spent .bit { font-weight: 500; }
+
+/* The column being worked on. Rows touch, so the cells read as one band. */
+.cell.current { background: #c7e29c; box-shadow: inset 0 0 0 1px #6f9a55; }
+.ruled .cell, .ruled .label, .ruled .value { border-top: 2px solid #1b261e; }
+.answer .cell { font-weight: 800; }
+
+.bit { display: grid; place-items: center; width: calc(100% - 4px); height: calc(100% - 6px); min-height: 30px; padding: 0; border: 1px solid #8b9789; border-radius: 3px; background: #fbfbf2; box-shadow: 0 1px 0 #8b9789; color: inherit; font: inherit; cursor: pointer; }
+.bit:hover { background: #e3edc9; }
+.current .bit { background: #e3f1c6; border-color: #6f9a55; }
+.bit:active { transform: translateY(1px); box-shadow: none; }
+.sheet .bit:focus-visible { outline: 2px solid #1f6a3c; outline-offset: -1px; }
+
+/* The fate of the carry out of the top column. */
+.dropped { position: relative; opacity: .95; }
+.dropped .carryDigit { color: #9a2f17; }
+.dropped::after { content: ""; position: absolute; inset: 50% -7px auto; height: 2px; background: #9a2f17; transform: rotate(-35deg); }
+.wrappedDigit .carryDigit { color: #1f6a3c; }
+.clash { display: inline-grid; place-items: center; min-width: 1.35em; min-height: 1.35em; border: 2px solid #9a2f17; border-radius: 50%; }
+.valueAlarm.valueAlarm { color: #9a2f17; }
+
+/* The line the end-around carry travels: down the empty left column, across, into column 0. */
+.wrapRow td { position: relative; height: 16px; padding: 0; }
+.wrapDown::after, .wrapCorner::after { content: ""; position: absolute; left: calc(50% - 1px); top: 0; bottom: 0; width: 2px; background: var(--wrap); }
+.wrapCorner::after { bottom: calc(50% - 1px); }
+.wrapCorner::before, .wrapRun::before, .wrapEnd::before { content: ""; position: absolute; top: calc(50% - 1px); height: 2px; background: var(--wrap); }
+.wrapCorner::before { left: calc(50% - 1px); right: 0; }
+.wrapRun::before { left: 0; right: 0; }
+.wrapEnd::before { left: 0; right: calc(50% - 1px); }
+.wrapEnd::after { content: ""; position: absolute; left: calc(50% - 5px); bottom: 0; border: 5px solid transparent; border-bottom-width: 0; border-top: 7px solid var(--wrap); }
+
+.walk { display: grid; grid-template-columns: 1fr 1.5fr 1.3fr 1.2fr; }
+.walk button { min-height: 40px; padding-inline: 4px; white-space: nowrap; }
+.walk .stepKey { font-size: 14px; }
+.walk button[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.readout.readout { min-height: 100px; margin-top: 0; }
+.lines { display: grid; gap: 3px; margin-top: 8px; font-size: 15px; line-height: 1.3; }
+.lines span:first-child { font-size: 17px; font-weight: 700; }
+
+@container (max-width: 480px) {
+  .paper { padding: 6px 4px 10px; }
+  .sheet { --tall: 34px; }
+  .sheet[data-bits="8"] { --digit: 17px; }
+  .sheet[data-bits="8"] .label { padding-right: 4px; font-size: 11px; }
+  .sheet[data-bits="8"] .value { padding-left: 4px; }
+  .lines { font-size: 14px; }
+  .nudges { justify-content: space-between; }
+}
+@media (prefers-reduced-motion: reduce) { .bit:active { transform: none; } }

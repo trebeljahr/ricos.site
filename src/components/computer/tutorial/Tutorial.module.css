@@ -175,15 +175,6 @@
   color: var(--tut-ink-slate-79-2);
 }
 
-.chapter {
-  margin: 0;
-  color: var(--tut-ink-slate-79-2);
-}
-
-.chapter a {
-  color: var(--tut-ink-violet-76);
-}
-
 .notice {
   margin: 0;
   padding: 8px 10px;

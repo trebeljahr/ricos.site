@@ -3,7 +3,7 @@ import { type Circuit, initialSnapshot, type Node, step } from "../../logic";
 import { busPorts, CircuitKit } from "../kit";
 import type { Level } from "../types";
 import { constructionHints } from "./constructionHints";
-import { CHAPTERS, once } from "./shared";
+import { once } from "./shared";
 
 const SECTION = "Buses and enables";
 const INPUTS = busPorts("d", "D", 8);
@@ -13,7 +13,6 @@ export const busLanesLevel: Level = {
   id: "bus-lanes",
   title: "Pack and unpack a byte",
   section: SECTION,
-  chapter: CHAPTERS.buses,
   optional: true,
   goal: "Carry D0–D7 over one eight-lane bus and recover each bit on its Q output.",
   palette: ["merger", "splitter"],
@@ -91,7 +90,6 @@ function busLesson(shared: boolean, cases: BusCase[]): Level {
     id: shared ? "shared-bus" : "bus-enable",
     title: shared ? "Share a bus between two sources" : "Enable a tri-state driver",
     section: SECTION,
-    chapter: CHAPTERS.buses,
     optional: true,
     goal: shared
       ? "Each enabled source drives SHARED BUS: none gives Z, and two different bytes give X."

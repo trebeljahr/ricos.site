@@ -767,6 +767,8 @@
 .embedded .layoutWithCoach { overflow: visible; }
 
 .challengeFeedback { flex: none; padding: 0 12px; background: var(--lb-bg-slate-28); border-bottom: 1px solid var(--lb-line-slate-45-2); }
+/* Nothing to report: no strip above the canvas. The live region stays mounted. */
+.challengeFeedback.challengeFeedback:not(:has(p)) { border-width: 0; }
 
 .lessonList{display:grid;gap:5px;padding:0 0 10px}
 .learningPanel .lessonList button{text-align:left;justify-content:flex-start;white-space:normal}

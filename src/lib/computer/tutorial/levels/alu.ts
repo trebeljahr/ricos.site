@@ -4,7 +4,7 @@
 import { bitsOf, busPorts, CircuitKit, numberOf, type Source } from "../kit";
 import type { Level } from "../types";
 import { constructionHints } from "./constructionHints";
-import { A, B, boxed, CHAPTERS, OUT, once, port } from "./shared";
+import { A, B, boxed, OUT, once, port } from "./shared";
 
 const SECTION = "Arithmetic logic unit";
 
@@ -150,7 +150,6 @@ export const logicUnitLevel: Level = {
   id: "logic-unit",
   title: "Logic unit",
   section: SECTION,
-  chapter: CHAPTERS.alu,
   goal: "OP 00 gives A AND B, 01 A OR B, 10 A XOR B and 11 NOT A.",
   spec: {
     kind: "truth",
@@ -173,7 +172,6 @@ export const aluSliceLevel: Level = {
   id: "alu-slice",
   title: "ALU slice",
   section: SECTION,
-  chapter: CHAPTERS.alu,
   goal: "OP 00 gives AND, 01 OR, 10 XOR and 11 the sum, and CARRY OUT is always the sum's carry.",
   spec: {
     kind: "truth",
@@ -208,7 +206,6 @@ export const alu8Level: Level = {
   id: "alu8",
   title: "8-bit ALU",
   section: SECTION,
-  chapter: CHAPTERS.alu,
   goal: "Do the OP on all eight bits: 00 AND, 01 OR, 10 XOR, 11 A + B + CARRY IN.",
   spec: {
     kind: "truth",
@@ -232,7 +229,6 @@ export const conditionLevel: Level = {
   id: "condition",
   title: "Condition",
   section: SECTION,
-  chapter: CHAPTERS.alu,
   goal: "JUMP is 1 when LT, EQ or GT matches X below, at or above zero.",
   spec: {
     kind: "truth",

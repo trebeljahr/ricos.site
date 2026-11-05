@@ -1,7 +1,7 @@
 import { busPorts, CircuitKit, type Source } from "../kit";
 import type { Level, LevelPort, SequenceTick } from "../types";
 import { constructionHints } from "./constructionHints";
-import { boxed, CHAPTERS, once, port } from "./shared";
+import { boxed, once, port } from "./shared";
 
 const SECTION = "Memory";
 const CLOCK: LevelPort = { id: "clock", label: "CLOCK", clock: true };
@@ -144,7 +144,6 @@ export const gatedSrLatchLevel: Level = {
   id: "gated-sr-latch",
   title: "Gated SR latch",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   optional: true,
   goal: "SET and RESET affect Q only while ENABLE is on.",
   spec: { kind: "sequence", inputs: [SET, RESET, ENABLE], outputs: [Q, NQ], ticks: gatedSrTicks },
@@ -163,7 +162,6 @@ export const jkLatchLevel: Level = {
   id: "jk-latch",
   title: "JK latch",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   optional: true,
   goal: "While ENABLE is on, J sets Q and K resets it.",
   spec: { kind: "sequence", inputs: [ENABLE, J, K], outputs: [Q, NQ], ticks: jkLatchTicks },
@@ -182,7 +180,6 @@ export const tLatchLevel: Level = {
   id: "t-latch",
   title: "T latch",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   optional: true,
   goal: "While ENABLE is on, TOGGLE on asks Q to change.",
   spec: {
@@ -253,7 +250,6 @@ export const srFlipFlopLevel: Level = {
   id: "sr-flip-flop",
   title: "SR flip-flop",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   optional: true,
   goal: "On a rising CLOCK edge, SET sets Q and RESET clears it, and SET wins.",
   spec: {
@@ -301,7 +297,6 @@ export const jkFlipFlopLevel: Level = {
   id: "jk-flip-flop",
   title: "JK flip-flop",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   optional: true,
   goal: "On a rising edge, J sets, K resets, neither holds and both toggle Q.",
   spec: {
@@ -329,7 +324,6 @@ export const tFlipFlopLevel: Level = {
   id: "t-flip-flop",
   title: "T flip-flop",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   optional: true,
   goal: "On each rising CLOCK edge, TOGGLE=1 inverts Q and TOGGLE=0 holds it.",
   spec: {
@@ -361,7 +355,6 @@ export const shiftRegisterLevel: Level = {
   id: "shift-register8",
   title: "8-bit shift register",
   section: SECTION,
-  chapter: CHAPTERS.register,
   optional: true,
   goal: "On each rising edge, SERIAL IN enters Q0 and every bit moves up one place.",
   spec: {

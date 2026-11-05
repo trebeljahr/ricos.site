@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ConfettiBurst } from "src/components/ConfettiBurst";
-import { usePanelSound } from "src/hooks/usePanelSound";
 import styles from "./TutorialSuccess.module.css";
 
 /** Inline correctness persists; the shared site celebration fills the viewport. */
@@ -16,7 +15,6 @@ export function TutorialSuccess({
   message?: string;
   celebration: number;
 }) {
-  const { soundEnabled, toggleSound, playSuccess } = usePanelSound({ defaultEnabled: false });
   const [reducedMotion, setReducedMotion] = useState(false);
   const [active, setActive] = useState(false);
   const seen = useRef(0);
@@ -33,10 +31,9 @@ export function TutorialSuccess({
   useEffect(() => {
     if (!celebration || seen.current === celebration) return;
     seen.current = celebration;
-    playSuccess();
     if (reducedMotion || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     setActive(true);
-  }, [celebration, reducedMotion, playSuccess]);
+  }, [celebration, reducedMotion]);
   useEffect(() => {
     if (!celebration || !correct) setActive(false);
   }, [celebration, correct]);
@@ -63,15 +60,6 @@ export function TutorialSuccess({
           <ConfettiBurst fullscreen onComplete={finishCelebration} />
         </div>
       )}
-      <button
-        type="button"
-        className={styles.sound}
-        aria-pressed={soundEnabled}
-        aria-label={`Success sound ${soundEnabled ? "on" : "off"}. Toggle success sound.`}
-        onClick={toggleSound}
-      >
-        Success sound {soundEnabled ? "on" : "off"}
-      </button>
     </div>
   );
 }

@@ -5,7 +5,7 @@
 import { bitsOf, busPorts, CircuitKit, type Source } from "../kit";
 import type { Level, LevelPort, SequenceTick } from "../types";
 import { constructionHints } from "./constructionHints";
-import { boxed, CHAPTERS, once, port } from "./shared";
+import { boxed, once, port } from "./shared";
 
 const SECTION = "Memory";
 
@@ -317,7 +317,6 @@ export const srLatchLevel: Level = {
   id: "sr-latch",
   title: "SR latch",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   goal: "SET turns Q on, RESET turns Q off, and otherwise Q keeps its value.",
   spec: { kind: "sequence", inputs: [SET, RESET], outputs: [Q, NQ], ticks: SR_TICKS },
   palette: ["nand", "part:not", "part:and", "part:or"],
@@ -335,7 +334,6 @@ export const dLatchLevel: Level = {
   id: "d-latch",
   title: "D latch",
   section: SECTION,
-  chapter: CHAPTERS.memory,
   goal: "Q follows DATA while ENABLE is on and keeps its value while ENABLE is off.",
   spec: { kind: "sequence", inputs: [ENABLE, DATA], outputs: [Q, NQ], ticks: D_LATCH_TICKS },
   palette: ["nand", "part:not", "part:and", "part:or", "part:sr-latch"],
@@ -353,7 +351,6 @@ export const dFlipFlopLevel: Level = {
   id: "d-flip-flop",
   title: "D flip-flop",
   section: SECTION,
-  chapter: CHAPTERS.clock,
   goal: "Q takes DATA only at the moment CLOCK rises.",
   spec: { kind: "sequence", inputs: [CLOCK, DATA], outputs: [Q, NQ], ticks: FLIP_FLOP_TICKS },
   palette: ["part:not", "part:and", "part:d-latch"],
@@ -371,7 +368,6 @@ export const register1Level: Level = {
   id: "register1",
   title: "Register bit",
   section: SECTION,
-  chapter: CHAPTERS.register,
   goal: "When CLOCK rises, Q takes DATA if LOAD is 1 and keeps its value if LOAD is 0.",
   spec: {
     kind: "sequence",
@@ -394,7 +390,6 @@ export const register8Level: Level = {
   id: "register8",
   title: "8-bit register",
   section: SECTION,
-  chapter: CHAPTERS.register,
   goal: "When CLOCK rises, Q0–Q7 take D0–D7 if LOAD is 1 and keep their values if LOAD is 0.",
   spec: {
     kind: "sequence",
@@ -421,7 +416,6 @@ export const counter8Level: Level = {
   id: "counter8",
   title: "Counter",
   section: SECTION,
-  chapter: CHAPTERS.counter,
   goal: "Q0–Q7 start at 0 and count up by one each time CLOCK rises.",
   spec: { kind: "sequence", inputs: [CLOCK], outputs: Q8, ticks: COUNTER_TICKS },
   palette: ["high", "ground", "part:register8", "part:adder8"],
@@ -440,7 +434,6 @@ export const ramCellLevel: Level = {
   optional: true,
   title: "Addressed RAM cell",
   section: SECTION,
-  chapter: CHAPTERS.ram,
   goal: "Store DATA while selected and writing, and show the bit while selected and reading.",
   spec: {
     kind: "sequence",
@@ -521,7 +514,6 @@ export const ramLevel: Level = {
   id: "ram",
   title: "RAM",
   section: SECTION,
-  chapter: CHAPTERS.ram,
   goal: "Store DATA IN at the chosen address and show that address on DATA OUT while reading.",
   spec: {
     kind: "sequence",

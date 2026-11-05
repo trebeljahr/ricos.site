@@ -34,19 +34,23 @@ describe("independent circuit construction", () => {
     const out = k.gate("nand", [inverted, inverted]);
     expect(gradePassed(grade("and", k.out("out", out).build()))).toBe(true);
   });
-  it.each([
-    { sources: [] },
-    { sources: ["a"] },
-  ])("accepts unwired NAND inputs as 0 with $sources", ({ sources }) => {
-    const level = levelById("not")!;
-    if (level.spec.kind !== "truth") throw new Error("truth spec");
-    const k = new CircuitKit("NOT with an unwired constant", level.spec.inputs, level.spec.outputs);
-    const high = k.gate("nand", sources);
-    const out = k.gate("nand", ["a", high]);
-    const result = grade("not", k.out("out", out).build());
-    expect(result.kind).toBe("truth");
-    expect(gradePassed(result)).toBe(true);
-  });
+  it.each([{ sources: [] }, { sources: ["a"] }])(
+    "accepts unwired NAND inputs as 0 with $sources",
+    ({ sources }) => {
+      const level = levelById("not")!;
+      if (level.spec.kind !== "truth") throw new Error("truth spec");
+      const k = new CircuitKit(
+        "NOT with an unwired constant",
+        level.spec.inputs,
+        level.spec.outputs,
+      );
+      const high = k.gate("nand", sources);
+      const out = k.gate("nand", ["a", high]);
+      const result = grade("not", k.out("out", out).build());
+      expect(result.kind).toBe("truth");
+      expect(gradePassed(result)).toBe(true);
+    },
+  );
   it("reports wrong truth-table outputs instead of rejecting an unwired NAND input", () => {
     const level = levelById("and")!;
     if (level.spec.kind !== "truth") throw new Error("truth spec");
@@ -140,9 +144,7 @@ describe("explicit contextual hints", () => {
     const level = levelById("and")!;
     const start = levelStart(level).circuit;
     expect(requestedHints(level, start, grade("and", start), 0)).toEqual([]);
-    expect(contextualHint(level, start, grade("and", start)).text).toMatch(
-      /input pin has no wire attached/,
-    );
+    expect(contextualHint(level, start, grade("and", start)).text).toMatch(/matches OUT/);
   });
   it("points at a correct unconnected signal instead of asking a generic question", () => {
     const level = levelById("universal-nand-and")!;
@@ -151,8 +153,7 @@ describe("explicit contextual hints", () => {
     const circuit = { ...reference, wires: reference.wires.filter((wire) => wire !== outputWire) };
     const hint = contextualHint(level, circuit, grade(level.id, circuit));
     expect(hint.anchor).toEqual({ kind: "output", node: outputWire.from, index: 0 });
-    expect(hint.text).toContain("already matches every row");
-    expect(hint.text).toContain("passing nearby does not connect");
+    expect(hint.text).toContain("already matches OUT");
   });
   it("distinguishes unfinished logic from a final wire that has not snapped to OUT", () => {
     const level = levelById("universal-nand-or")!;
@@ -166,8 +167,7 @@ describe("explicit contextual hints", () => {
       ),
     };
     const hint = contextualHint(level, circuit, grade(level.id, circuit));
-    expect(hint.text).toContain("None of the current signals matches OUT's truth table yet");
-    expect(hint.text).toContain("Finish the remaining stages");
+    expect(hint.text).toBe("Nothing on the board matches OUT yet.");
     expect(hint.anchor).toEqual({ kind: "input", node: "out", index: 0 });
   });
   it("recognizes an inverted output without prescribing a wire", () => {
@@ -179,7 +179,7 @@ describe("explicit contextual hints", () => {
       /opposite/,
     );
   });
-  it("uses first failed sequence tick to distinguish edges, levels and memory", () => {
+  it("names the first failed sequence tick", () => {
     const level = COUNTER_LEVELS[0];
     if (level.spec.kind !== "sequence") throw new Error("sequence");
     const result = {
@@ -198,6 +198,8 @@ describe("explicit contextual hints", () => {
         },
       ],
     };
-    expect(contextualHint(level, levelStart(level).circuit, result).text).toMatch(/rising edge/);
+    expect(contextualHint(level, levelStart(level).circuit, result).text).toMatch(
+      /^First mismatch: Held button repeats\./,
+    );
   });
 });

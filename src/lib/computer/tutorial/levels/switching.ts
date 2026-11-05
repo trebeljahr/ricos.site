@@ -5,7 +5,7 @@
 import { bitsOf, busPorts, CircuitKit } from "../kit";
 import type { Level, LevelPort } from "../types";
 import { constructionHints } from "./constructionHints";
-import { A, B, boxed, CHAPTERS, OUT, once, port } from "./shared";
+import { A, B, boxed, OUT, once, port } from "./shared";
 
 const SECTION = "Switching";
 
@@ -103,7 +103,6 @@ export const selectorLevel: Level = {
   id: "selector",
   title: "Selector",
   section: SECTION,
-  chapter: CHAPTERS.muxes,
   goal: "OUT copies A when SELECT is 0 and B when SELECT is 1.",
   spec: {
     kind: "truth",
@@ -126,7 +125,6 @@ export const switchLevel: Level = {
   id: "switch",
   title: "Switch",
   section: SECTION,
-  chapter: CHAPTERS.muxes,
   goal: "DATA goes to TO A when SELECT is 0 and to TO B when SELECT is 1.",
   spec: {
     kind: "truth",
@@ -149,7 +147,6 @@ export const decoderLevel: Level = {
   id: "decoder",
   title: "Decoder",
   section: SECTION,
-  chapter: CHAPTERS.muxes,
   goal: "Only the Y output numbered by A1 A0 is 1.",
   spec: {
     kind: "truth",
@@ -175,7 +172,6 @@ export const selector8Level: Level = {
   id: "selector8",
   title: "8-bit selector",
   section: SECTION,
-  chapter: CHAPTERS.muxes,
   goal: "OUT copies the A byte when SELECT is 0 and the B byte when SELECT is 1.",
   spec: {
     kind: "truth",

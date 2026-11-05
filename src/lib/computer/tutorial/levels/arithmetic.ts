@@ -4,7 +4,7 @@
 import { bitsOf, busPorts, CircuitKit, numberOf, type Source } from "../kit";
 import type { Level } from "../types";
 import { constructionHints } from "./constructionHints";
-import { A, B, boxed, CHAPTERS, once, port } from "./shared";
+import { A, B, boxed, once, port } from "./shared";
 
 const SECTION = "Arithmetic";
 
@@ -140,7 +140,6 @@ export const halfAdderLevel: Level = {
   id: "half-adder",
   title: "Half adder",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "SUM and CARRY show A + B as a two-bit number.",
   spec: {
     kind: "truth",
@@ -163,7 +162,6 @@ export const fullAdderLevel: Level = {
   id: "full-adder",
   title: "Full adder",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "SUM and CARRY show A + B + CARRY IN as a two-bit number.",
   spec: {
     kind: "truth",
@@ -189,7 +187,6 @@ export const adder4Level: Level = {
   id: "adder4",
   title: "4-bit adder",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT3 and CARRY OUT show A + B + CARRY IN.",
   spec: {
     kind: "truth",
@@ -212,7 +209,6 @@ export const adder8Level: Level = {
   id: "adder8",
   title: "8-bit adder",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT7 and CARRY OUT show A + B + CARRY IN.",
   spec: {
     kind: "truth",
@@ -236,7 +232,6 @@ export const increment4Level: Level = {
   id: "increment4",
   title: "Increment",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT3 show A + 1, and 15 wraps to 0.",
   spec: {
     kind: "truth",
@@ -259,7 +254,6 @@ export const subtract4Level: Level = {
   id: "subtract4",
   title: "Subtraction",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "OUT0–OUT3 show A − B, wrapping below 0, so 2 − 3 gives 15.",
   spec: {
     kind: "truth",
@@ -282,7 +276,6 @@ export const isZero4Level: Level = {
   id: "is-zero4",
   title: "Equal to zero",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "ZERO is 1 when all four bits of A are 0.",
   spec: {
     kind: "truth",
@@ -305,7 +298,6 @@ export const isNegative4Level: Level = {
   id: "is-negative4",
   title: "Less than zero",
   section: SECTION,
-  chapter: CHAPTERS.arithmetic,
   goal: "NEGATIVE is 1 when A, read as two's complement, is below zero.",
   spec: {
     kind: "truth",

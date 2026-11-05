@@ -14,9 +14,9 @@ import {
   withProgram,
 } from "../../cpuLevels";
 import type { Circuit } from "../../logic";
-import type { ChapterLink, CustomGrade, Level } from "../types";
+import type { CustomGrade, Level } from "../types";
 import { constructionHints } from "./constructionHints";
-import { CHAPTERS, once } from "./shared";
+import { once } from "./shared";
 
 const SECTION = "Processor";
 
@@ -86,15 +86,6 @@ export function loadProgram(circuit: Circuit, source: string) {
   return { compiled, circuit: withProgram(circuit, compiled.bytes) };
 }
 
-const CHAPTER_OF: ChapterLink[] = [
-  CHAPTERS.counter,
-  CHAPTERS.buses,
-  CHAPTERS.alu,
-  CHAPTERS.ram,
-  CHAPTERS.control,
-  CHAPTERS.together,
-];
-
 /** One line above the board; each level's full description opens its hints. */
 const SHORT_GOALS = [
   "Fetch each instruction: bring its opcode and operand out of the code ROM.",
@@ -124,7 +115,6 @@ export const PROCESSOR_LEVELS: Level[] = CPU_LEVEL_SPECS.map((spec, index): Leve
     id: `cpu-${number}`,
     title: spec.title,
     section: SECTION,
-    chapter: CHAPTER_OF[index],
     goal: SHORT_GOALS[index],
     spec: {
       kind: "custom",

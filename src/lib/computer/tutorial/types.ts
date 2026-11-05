@@ -120,8 +120,6 @@ export type LevelHint = {
   anchor?: HintAnchor;
 };
 
-export type ChapterLink = { number: string; title: string; href: string };
-
 /** The built-in version of a part: a gate type, or a preset circuit by name. */
 export type BuiltIn = { gate: GateType } | { preset: string } | { reference: true };
 
@@ -129,7 +127,6 @@ export type Level = {
   id: string;
   title: string;
   section: string;
-  chapter?: ChapterLink;
   /** One short line: what to build. Explanation belongs in the chapter or in `hints`. */
   goal: string;
   spec: LevelSpec;

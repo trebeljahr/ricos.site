@@ -1,7 +1,7 @@
 import { busPorts, CircuitKit, type Source } from "../kit";
 import type { Level, LevelPort, SequenceTick } from "../types";
 import { constructionHints } from "./constructionHints";
-import { boxed, CHAPTERS, once, port } from "./shared";
+import { boxed, once, port } from "./shared";
 
 const SECTION = "Memory";
 const SELECT = port("select", "SELECT");
@@ -331,7 +331,6 @@ export const dramCellLevel: Level = {
   id: "dram-cell",
   title: "DRAM cell and refresh",
   section: SECTION,
-  chapter: CHAPTERS.ram,
   optional: true,
   goal: "Write and read one bit that fades after four idle clocks unless refreshed.",
   spec: {
@@ -355,7 +354,6 @@ export const flashCellLevel: Level = {
   id: "flash-cell",
   title: "Flash cell: program and erase",
   section: SECTION,
-  chapter: CHAPTERS.ram,
   optional: true,
   goal: "Program a selected 0 on a clock edge, which only ERASE can turn back to 1.",
   spec: {
@@ -379,7 +377,6 @@ export const dramArrayLevel: Level = {
   id: "dram-array",
   title: "4 × 4 DRAM",
   section: SECTION,
-  chapter: CHAPTERS.ram,
   optional: true,
   goal: "Store four bits per row, read one row at a time, and refresh a row before it fades.",
   spec: {
@@ -403,7 +400,6 @@ export const flashArrayLevel: Level = {
   id: "flash-array",
   title: "4 × 4 flash memory",
   section: SECTION,
-  chapter: CHAPTERS.ram,
   optional: true,
   goal: "Program zeros into the chosen row, which only ERASE ALL can turn back to 1.",
   spec: {

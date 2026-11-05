@@ -9,7 +9,6 @@ import {
 } from "../../counterCircuits";
 import { moduleInputs, moduleOutputs } from "../../logic";
 import type { Level, SequenceTick } from "../types";
-import { CHAPTERS } from "./shared";
 
 /** A reset contract followed by full-range, hold, falling-edge and wrap checks. */
 export function counterTicks(width: CounterWidth, mode: CounterMode): SequenceTick[] {
@@ -97,7 +96,6 @@ export const COUNTER_LEVELS: Level[] = COUNTER_WIDTHS.flatMap((width) =>
         label: `${width} bits · ${mode}`,
       },
       optional: true,
-      chapter: CHAPTERS.counter,
       goal: `Count ${mode === "up-down" ? "up or down" : mode} from zero on each rising button edge, and RESET clears at once.`,
       spec: {
         kind: "sequence",

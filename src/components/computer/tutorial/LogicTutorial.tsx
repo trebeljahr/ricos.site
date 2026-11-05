@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import Link from "next/link";
 import { type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTutorialProgress } from "../../../hooks/useTutorialProgress";
 import { type Circuit, validateCircuit } from "../../../lib/computer/logic";
@@ -40,8 +39,6 @@ export type LogicTutorialProps = {
   levels?: readonly string[];
   /** A level opens only once the main levels before it are solved or skipped. */
   sequential?: boolean;
-  /** Link each level to its chapter. Off where those chapters are not out yet. */
-  chapterLinks?: boolean;
   /** A chapter workspace; undefined inherits the surrounding embed context. */
   embedded?: boolean;
   /** Called when the reader opens another level, e.g. to update the URL. */
@@ -148,7 +145,6 @@ export function LogicTutorial({
   level: requested,
   levels: ids,
   sequential = false,
-  chapterLinks = true,
   onLevelChange,
   extra,
   embedded,
@@ -370,14 +366,6 @@ export function LogicTutorial({
       ) : (
         <>
           <p className={styles.goal}>{level.goal}</p>
-          {chapterLinks && level.chapter && (
-            <p className={styles.chapter}>
-              Read:{" "}
-              <Link href={level.chapter.href}>
-                {level.chapter.number} {level.chapter.title} →
-              </Link>
-            </p>
-          )}
 
           {practiceVariants.length > 1 && (
             <label className={styles.parameter}>

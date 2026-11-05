@@ -3,7 +3,7 @@ import { evalGate } from "../../gateLogic";
 import { GATE_NAMES, gateBlueprint, type LogicGate } from "../../logic";
 import type { Level } from "../types";
 import { gateConstructionHints } from "./gateHints";
-import { A, B, CHAPTERS, OUT, once } from "./shared";
+import { A, B, OUT, once } from "./shared";
 
 export const UNIVERSAL_FAMILIES = ["nand", "nor"] as const;
 export type UniversalFamily = (typeof UNIVERSAL_FAMILIES)[number];
@@ -22,7 +22,6 @@ export const UNIVERSAL_GATE_LEVELS: Level[] = UNIVERSAL_FAMILIES.flatMap((family
       id,
       title,
       section: `Only ${family.toUpperCase()}`,
-      chapter: CHAPTERS.universal,
       optional: true,
       // A unique family keeps a chapter embed on its own target and primitive.
       practice: { family: id, label: title },

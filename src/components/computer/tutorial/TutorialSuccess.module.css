@@ -1,9 +1,6 @@
-.root { --success-line: #2f7a5c; --success-bg: #e4f6ec; --success-ink: #0f4a33; --sound-ink: #475569; --sound-hover: #0f4a33; --sound-focus: #1b7a55; position: relative; min-width: 0; margin: 12px 0; overflow: hidden; border-radius: 6px; }
-:global(.dark) .root { --success-line: #467b67; --success-bg: #173e32; --success-ink: #c6f7dd; --sound-ink: #acbace; --sound-hover: #dbfce9; --sound-focus: #99ebc3; }
-.status { min-height: 44px; margin: 0; padding: 11px 12px; border: 1px solid var(--success-line); border-radius: 6px; background: var(--success-bg); color: var(--success-ink); font-size: 13px; line-height: 1.5; }
+.root { --success-line: #2f7a5c; --success-bg: #e4f6ec; --success-ink: #0f4a33; position: relative; min-width: 0; overflow: hidden; border-radius: 6px; }
+:global(.dark) .root { --success-line: #467b67; --success-bg: #173e32; --success-ink: #c6f7dd; }
+.status { min-height: 44px; margin: 12px 0; padding: 11px 12px; border: 1px solid var(--success-line); border-radius: 6px; background: var(--success-bg); color: var(--success-ink); font-size: 13px; line-height: 1.5; }
 /* <body> carries `prose`, whose bold colour would otherwise win over this box's text colour. */
 .status strong { color: inherit; }
-.sound { display: block; margin: 7px 0 0; padding: 4px 0; border: 0; background: transparent; color: var(--sound-ink); font: inherit; font-size: 11px; cursor: pointer; }
-.sound:hover { color: var(--sound-hover); }
-.sound:focus-visible { outline: 2px solid var(--sound-focus); outline-offset: 3px; }
-@media (max-width: 640px) { [data-phone-flow] .root { margin: 4px 0; } [data-phone-flow] .sound { margin: 0; } [data-phone-flow] .status { margin-bottom: 2px; } }
+@media (max-width: 640px) { [data-phone-flow] .status { margin: 4px 0; } }

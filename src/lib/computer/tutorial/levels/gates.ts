@@ -10,7 +10,7 @@ import { nodeHeight } from "../../nodeGeometry";
 import { allRows, CircuitKit, defaultStart } from "../kit";
 import type { Level } from "../types";
 import { gateConstructionHints } from "./gateHints";
-import { A, B, CHAPTERS, OUT, once } from "./shared";
+import { A, B, OUT, once } from "./shared";
 
 const SECTION_CMOS = "Transistors";
 const SECTION = "Logic gates";
@@ -147,7 +147,6 @@ export const cmosNotLevel: Level = {
   id: "cmos-not",
   title: "NOT from transistors",
   section: SECTION_CMOS,
-  chapter: CHAPTERS.transistors,
   goal: "Make lamp OUT the opposite of switch A.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["pmos", "nmos", "junction"],
@@ -178,7 +177,6 @@ export const cmosNandLevel: Level = {
   id: "cmos-nand",
   title: "NAND from transistors",
   section: SECTION_CMOS,
-  chapter: CHAPTERS.transistors,
   goal: "OUT is 0 only when A and B are both 1.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a && b)] },
   palette: ["pmos", "nmos", "junction"],
@@ -222,7 +220,6 @@ const cmosGateLevel = (
     id,
     title,
     section: SECTION_CMOS,
-    chapter: CHAPTERS.transistors,
     practice: { family: id, label: title },
     goal,
     spec: {
@@ -304,7 +301,6 @@ export const notLevel: Level = {
   id: "not",
   title: "NOT",
   section: SECTION,
-  chapter: CHAPTERS.universal,
   goal: "OUT is the opposite of A, built from NAND.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["nand"],
@@ -327,7 +323,6 @@ export const andLevel: Level = {
   id: "and",
   title: "AND",
   section: SECTION,
-  chapter: CHAPTERS.universal,
   goal: "OUT is 1 only when A and B are both 1.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a && b] },
   palette: ["nand", "part:not"],
@@ -340,7 +335,6 @@ export const orLevel: Level = {
   id: "or",
   title: "OR",
   section: SECTION,
-  chapter: CHAPTERS.universal,
   goal: "OUT is 1 when A, B or both are 1.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a || b] },
   palette: ["nand", "part:not", "part:and"],
@@ -353,7 +347,6 @@ export const xorLevel: Level = {
   id: "xor",
   title: "XOR",
   section: SECTION,
-  chapter: CHAPTERS.universal,
   goal: "OUT is 1 when exactly one of A and B is 1.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a !== b] },
   palette: ["nand", "part:not", "part:and", "part:or"],
@@ -366,7 +359,6 @@ export const norLevel: Level = {
   id: "nor",
   title: "NOR",
   section: SECTION,
-  chapter: CHAPTERS.universal,
   goal: "OUT is 1 only when A and B are both 0.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a || b)] },
   palette: ["nand", "part:not", "part:and", "part:or"],

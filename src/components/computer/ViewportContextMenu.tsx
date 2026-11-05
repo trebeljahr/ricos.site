@@ -41,7 +41,7 @@ export function ViewportContextMenu({ x, y, menuRef, children, ...props }: Props
     };
   }, [x, y, ref]);
   return createPortal(
-    <div {...props} ref={ref} className={styles.contextMenu} role="menu"
+    <div {...props} ref={ref} className={`${styles.themeScope} ${styles.contextMenu}`} role="menu"
       style={{ position: "fixed", minWidth: 0, overflowY: "auto", overflowWrap: "anywhere", left: x, top: y }}
       onContextMenu={(event) => event.preventDefault()}>{children}</div>,
     document.body,

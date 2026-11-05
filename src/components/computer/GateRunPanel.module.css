@@ -1,12 +1,54 @@
+/* Theme tokens. The panel that runs a CPU circuit gate by gate.
+   Each name says the colour's role, hue and lightness in the dark theme, which is
+   the site's default. The site marks dark mode with a .dark class on <html>. */
+.panel {
+  color-scheme: light;
+
+  --grp-bg-slate-22: #f4f8ff;
+  --grp-bg-slate-26: #f0f4fe;
+  --grp-bg-slate-36: #dae4f8;
+  --grp-bg-slate-46: #b6bfd7;
+  --grp-ink-coral-77: #8f2929;
+  --grp-ink-coral-82: #823934;
+  --grp-ink-slate-71: #455675;
+  --grp-ink-slate-80: #35435a;
+  --grp-ink-slate-93: #1f2834;
+  --grp-ink-slate-96: #1a2029;
+  --grp-ink-slate-96-2: #19202a;
+  --grp-ink-teal-84: #095f5e;
+  --grp-line-slate-45: #bbc5d6;
+  --grp-line-slate-57: #758daf;
+  --grp-line-violet-76: #583f94;
+}
+:global(.dark) .panel {
+  color-scheme: dark;
+
+  --grp-bg-slate-22: #111b2e;
+  --grp-bg-slate-26: #18233b;
+  --grp-bg-slate-36: #2a3b5e;
+  --grp-bg-slate-46: #465784;
+  --grp-ink-coral-77: #ff8f87;
+  --grp-ink-coral-82: #ffaaa1;
+  --grp-ink-slate-71: #8ea2c4;
+  --grp-ink-slate-80: #aebfdb;
+  --grp-ink-slate-93: #dce8f8;
+  --grp-ink-slate-96: #eaf2ff;
+  --grp-ink-slate-96-2: #e8f2ff;
+  --grp-ink-teal-84: #69e2e0;
+  --grp-line-slate-45: #455677;
+  --grp-line-slate-57: #607899;
+  --grp-line-violet-76: #b7a1ff;
+}
+
 .panel {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 12px;
   padding: 7px 10px;
-  background: #18233b;
-  border-bottom: 1px solid #455677;
-  color: #dce8f8;
+  background: var(--grp-bg-slate-26);
+  border-bottom: 1px solid var(--grp-line-slate-45);
+  color: var(--grp-ink-slate-93);
   font-size: 11px;
 }
 .toggle {
@@ -19,14 +61,14 @@
 .note,
 .stats,
 .rate {
-  color: #aebfdb;
+  color: var(--grp-ink-slate-80);
   font-size: 10px;
 }
 .stats strong {
-  color: #eaf2ff;
+  color: var(--grp-ink-slate-96);
 }
 .error {
-  color: #ffaaa1;
+  color: var(--grp-ink-coral-82);
   font-size: 10px;
 }
 .controls {
@@ -38,25 +80,25 @@
 .controls button {
   min-width: 29px;
   padding: 4px 7px;
-  border: 1px solid #607899;
+  border: 1px solid var(--grp-line-slate-57);
   border-radius: 4px;
-  background: #2a3b5e;
-  color: #e8f2ff;
+  background: var(--grp-bg-slate-36);
+  color: var(--grp-ink-slate-96-2);
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
 }
 .controls button:hover:not(:disabled),
 .controls button[aria-pressed="true"] {
-  border-color: #b7a1ff;
-  background: #465784;
+  border-color: var(--grp-line-violet-76);
+  background: var(--grp-bg-slate-46);
 }
 .controls button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 .halted {
-  color: #ff8f87;
+  color: var(--grp-ink-coral-77);
 }
 .registers {
   display: flex;
@@ -69,12 +111,12 @@
   display: grid;
   min-width: 64px;
   padding: 3px 6px;
-  border: 1px solid #455677;
+  border: 1px solid var(--grp-line-slate-45);
   border-radius: 4px;
-  background: #111b2e;
+  background: var(--grp-bg-slate-22);
 }
 .register dt {
-  color: #69e2e0;
+  color: var(--grp-ink-teal-84);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -82,9 +124,9 @@
 .register dd {
   margin: 0;
   font: 700 12px ui-monospace, monospace;
-  color: #eaf2ff;
+  color: var(--grp-ink-slate-96);
 }
 .register dd span {
-  color: #8ea2c4;
+  color: var(--grp-ink-slate-71);
   font-size: 10px;
 }

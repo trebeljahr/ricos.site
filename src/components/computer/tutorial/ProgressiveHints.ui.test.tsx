@@ -30,7 +30,7 @@ it("reveals an idea, count, a note on the circuit and the last hint only on requ
   expect(clues().getByText("Your circuit:")).toBeTruthy();
   expect(clues().queryByText(/G2 = NAND/)).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Last hint" }));
-  expect(clues().getAllByRole("listitem").at(-1)?.textContent).toMatch(/^Signal plan:|^Last hint:/);
+  expect(clues().getAllByRole("listitem").at(-1)?.textContent).toMatch(/^Last hint:/);
   expect(
     (screen.getByRole("button", { name: "All hints shown" }) as HTMLButtonElement).disabled,
   ).toBe(true);

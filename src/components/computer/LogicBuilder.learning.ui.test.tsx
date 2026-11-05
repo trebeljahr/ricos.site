@@ -24,7 +24,7 @@ it("opens a RAM lesson in place, keeps hints opt-in, and preserves the bench and
   fireEvent.click(screen.getByText("Learning", { selector: "summary" }));
   fireEvent.click(screen.getByText("Memory", { selector: "summary" }));
   fireEvent.click(screen.getByRole("button", { name: "Addressed RAM cell" }));
-  await screen.findByRole("button", { name: "Check" }, { timeout: 30000 });
+  await screen.findByRole("button", { name: "Hint" }, { timeout: 30000 });
   expect(screen.getAllByRole("application", { name: "Circuit canvas" })).toHaveLength(1);
   expect(screen.queryByRole("list", { name: "Hints" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Hint" }));
@@ -35,7 +35,7 @@ it("opens a RAM lesson in place, keeps hints opt-in, and preserves the bench and
   ).toBeTruthy();
   expect(localStorage.getItem("learning-bench")).toBe(saved);
   fireEvent.click(screen.getByRole("button", { name: /Back to your circuit/ }));
-  await waitFor(() => expect(screen.queryByRole("button", { name: "Check" })).toBeNull());
+  await waitFor(() => expect(screen.queryByRole("button", { name: "Hint" })).toBeNull());
   expect(screen.getByLabelText("NAND — NAND part")).toBeTruthy();
   fireEvent.click(testButton("Undo"));
   expect(screen.queryByLabelText("NAND — NAND part")).toBeNull();
@@ -52,7 +52,7 @@ it("opens the matching DRAM construction lesson from its preset shortcut", async
   fireEvent.click(screen.getByRole("button", { name: "Build this circuit — 4 × 4 DRAM" }));
   expect(
     await screen.findByText(
-      /Store four bits per addressed row on clock edges/,
+      /Store four bits per row, read one row at a time/,
       {},
       { timeout: 30000 },
     ),

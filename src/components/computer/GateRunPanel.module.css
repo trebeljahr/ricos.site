@@ -4,21 +4,21 @@
 .panel {
   color-scheme: light;
 
-  --grp-bg-slate-22: #f4f8ff;
-  --grp-bg-slate-26: #f0f4fe;
-  --grp-bg-slate-36: #dae4f8;
-  --grp-bg-slate-46: #b6bfd7;
-  --grp-ink-coral-77: #8f2929;
-  --grp-ink-coral-82: #823934;
-  --grp-ink-slate-71: #455675;
-  --grp-ink-slate-80: #35435a;
-  --grp-ink-slate-93: #1f2834;
-  --grp-ink-slate-96: #1a2029;
-  --grp-ink-slate-96-2: #19202a;
-  --grp-ink-teal-84: #095f5e;
-  --grp-line-slate-45: #bbc5d6;
-  --grp-line-slate-57: #758daf;
-  --grp-line-violet-76: #583f94;
+  --grp-bg-slate-22: #faf7f3;
+  --grp-bg-slate-26: #f7f4ee;
+  --grp-bg-slate-36: #e8e3db;
+  --grp-bg-slate-46: #c7beae;
+  --grp-ink-coral-77: #863432;
+  --grp-ink-coral-82: #7b3f3a;
+  --grp-ink-slate-71: #504d46;
+  --grp-ink-slate-80: #3f3b35;
+  --grp-ink-slate-93: #26221c;
+  --grp-ink-slate-96: #1e1b15;
+  --grp-ink-slate-96-2: #1e1b15;
+  --grp-ink-teal-84: #235d5c;
+  --grp-line-slate-45: #a39b8b;
+  --grp-line-slate-57: #6c6456;
+  --grp-line-violet-76: #564489;
 }
 :global(.dark) .panel {
   color-scheme: dark;

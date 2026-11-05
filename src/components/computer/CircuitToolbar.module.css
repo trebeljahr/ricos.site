@@ -2,39 +2,41 @@
    Each name says the colour's role, hue and lightness in the dark theme, which is
    the site's default. The site marks dark mode with a .dark class on <html>. */
 .root {
+  --tb-shadow-pop: #4a362038;
   color-scheme: light;
 
-  --tb-bg-rose-35: #f1e1e9;
-  --tb-bg-slate-25: #f1f5fc;
-  --tb-bg-slate-29: #eaf1ff;
-  --tb-bg-slate-33: #e1ebf8;
-  --tb-bg-slate-34: #e0e8f6;
-  --tb-bg-slate-38: #d6deeb;
-  --tb-bg-slate-40: #ced6e3;
-  --tb-bg-slate-94: #1d252c;
-  --tb-bg-teal-45: #b6c9cd;
-  --tb-bg-teal-88: #00605a;
-  --tb-bg-teal-95: #056058;
-  --tb-ink-red-80: #774044;
-  --tb-ink-red-89: #4a2325;
-  --tb-ink-slate-70: #4a586d;
-  --tb-ink-slate-72: #45556c;
-  --tb-ink-slate-73: #43526d;
-  --tb-ink-slate-87: #2c3543;
-  --tb-ink-slate-92: #202933;
-  --tb-ink-slate-93: #21262d;
-  --tb-ink-slate-93-2: #1e2738;
-  --tb-ink-slate-97: #1a1c22;
-  --tb-ink-teal-29: #e7f5f6;
-  --tb-ink-teal-92: #00312b;
-  --tb-line-slate-39: #d3dbea;
-  --tb-line-slate-42: #c9d2e0;
-  --tb-line-slate-45: #bbc4d3;
-  --tb-line-slate-50: #9aafcc;
-  --tb-line-teal-65: #397475;
-  --tb-line-teal-84: #095f5a;
+  --tb-bg-rose-35: #eee3e8;
+  --tb-bg-slate-25: #f7f4ef;
+  --tb-bg-slate-29: #f4f0ea;
+  --tb-bg-slate-33: #eee9e2;
+  --tb-bg-slate-34: #ebe7df;
+  --tb-bg-slate-38: #e2ddd3;
+  --tb-bg-slate-40: #dbd5ca;
+  --tb-bg-slate-94: #24201a;
+  --tb-bg-teal-45: #bbc8cb;
+  --tb-bg-teal-88: #205e59;
+  --tb-bg-teal-95: #225e57;
+  --tb-ink-red-80: #714447;
+  --tb-ink-red-89: #462627;
+  --tb-ink-slate-70: #524e47;
+  --tb-ink-slate-72: #4f4b44;
+  --tb-ink-slate-73: #4d4942;
+  --tb-ink-slate-87: #322e28;
+  --tb-ink-slate-92: #26231d;
+  --tb-ink-slate-93: #24211b;
+  --tb-ink-slate-93-2: #25221c;
+  --tb-ink-slate-97: #1b1812;
+  --tb-ink-teal-29: #eaf4f5;
+  --tb-ink-teal-92: #0c302b;
+  --tb-line-slate-39: #dbd5ca;
+  --tb-line-slate-42: #d2ccc1;
+  --tb-line-slate-45: #a29a8a;
+  --tb-line-slate-50: #8d8476;
+  --tb-line-teal-65: #447273;
+  --tb-line-teal-84: #235d59;
 }
 :global(.dark) .root {
+  --tb-shadow-pop: #05091670;
   color-scheme: dark;
 
   --tb-bg-rose-35: #4a303e;
@@ -92,7 +94,7 @@
 .menu{position:relative;flex:none}
 .menu summary{list-style:none}
 .root summary::-webkit-details-marker{display:none}
-.menuPanel{position:absolute;top:calc(100% + 8px);left:0;z-index:100;min-width:235px;max-width:calc(100vw - 32px);padding:6px;border:1px solid var(--tb-line-slate-45);border-radius:8px;background:var(--tb-bg-slate-29);box-shadow:0 14px 36px #05091670;animation:menuIn .12s ease-out}
+.menuPanel{position:absolute;top:calc(100% + 8px);left:0;z-index:100;min-width:235px;max-width:calc(100vw - 32px);padding:6px;border:1px solid var(--tb-line-slate-45);border-radius:8px;background:var(--tb-bg-slate-29);box-shadow:0 14px 36px var(--tb-shadow-pop);animation:menuIn .12s ease-out}
 .menuActions{display:flex;flex-direction:column;gap:2px}
 .menuPanel button{width:100%;justify-content:flex-start;min-height:35px;padding:7px 9px}
 .menuPanel input[hidden]{display:none}

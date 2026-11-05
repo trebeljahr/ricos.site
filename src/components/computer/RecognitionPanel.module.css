@@ -4,13 +4,13 @@
 .panel {
   color-scheme: light;
 
-  --rec-bg-slate-18: #f9fafd;
-  --rec-bg-slate-23: #f4f7fe;
-  --rec-bg-slate-33: #e0eaf9;
-  --rec-ink-slate-95: #1f232b;
-  --rec-line-slate-51: #9aaac3;
-  --rec-line-slate-56: #7e92ae;
-  --rec-line-teal-84: #095f5e;
+  --rec-bg-slate-18: #fcfaf5;
+  --rec-bg-slate-23: #f9f7f2;
+  --rec-bg-slate-33: #ede9e1;
+  --rec-ink-slate-95: #221e18;
+  --rec-line-slate-51: #898071;
+  --rec-line-slate-56: #71695b;
+  --rec-line-teal-84: #235d5c;
 }
 :global(.dark) .panel {
   color-scheme: dark;

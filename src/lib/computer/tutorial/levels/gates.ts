@@ -188,7 +188,7 @@ export const cmosNandLevel: Level = {
       text: "Compare the three high-output rows with the one low-output row. Which conduction conditions must coincide?",
     },
     {
-      text: "A chain needs every switch to conduct. Separate branches need only one conducting route. Which rule matches each rail?",
+      text: "A chain needs every switch to conduct. Separate branches need only one conducting route. Which rule matches each rail? To join two wires, drag an output or a wire onto another wire and release at the highlighted target, which makes a small junction knob.",
     },
     {
       title: "Transistor count",

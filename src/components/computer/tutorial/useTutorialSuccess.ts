@@ -20,6 +20,7 @@ export function useTutorialSuccess({
   circuit,
   liveGrade,
   enabled,
+  solved = true,
   recordLivePass,
 }: {
   session: object;
@@ -27,6 +28,8 @@ export function useTutorialSuccess({
   circuit: Circuit;
   liveGrade?: Grade;
   enabled: boolean;
+  /** False records a restored board that passes without being on record yet, with no celebration. */
+  solved?: boolean;
   recordLivePass: (circuit: Circuit) => void;
 }) {
   const attempt = useRef<Attempt | null>(null);
@@ -69,24 +72,13 @@ export function useTutorialSuccess({
     // The old level's React state can survive until its reset effect runs.
     if (state.structure !== gateStructure(circuit)) return;
     const passing = gradePassed(liveGrade);
-    if (passing && state.edited) {
-      if (!state.passing) celebrate(state);
-      if (state.recorded !== state.structure) {
-        state.recorded = state.structure;
-        recordLivePass(circuit);
-      }
+    if (passing && state.edited && !state.passing) celebrate(state);
+    if (passing && (state.edited || !solved) && state.recorded !== state.structure) {
+      state.recorded = state.structure;
+      recordLivePass(circuit);
     }
     state.passing = passing;
-  }, [enabled, liveGrade, circuit, current, celebrate, recordLivePass]);
-
-  const noteCheck = useCallback(
-    (grade: Grade) => {
-      const state = current();
-      if (enabled && gradePassed(grade) && !state.passing) celebrate(state);
-      state.passing = gradePassed(grade);
-    },
-    [enabled, current, celebrate],
-  );
+  }, [enabled, liveGrade, circuit, solved, current, celebrate, recordLivePass]);
 
   const resetSuccess = useCallback(
     (next: Circuit) => {
@@ -106,7 +98,6 @@ export function useTutorialSuccess({
   return {
     celebration: celebration?.session === session ? celebration.id : 0,
     noteChange,
-    noteCheck,
     resetSuccess,
   };
 }

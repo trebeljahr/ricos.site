@@ -140,7 +140,7 @@ describe("independent tutorials", () => {
   });
   it("keeps wire joins in the hints, without advertising a standalone junction block", () => {
     render(<LogicTutorial levels={["cmos-nand"]} />);
-    expect(screen.getByText(/Available parts: PMOS, NMOS/).textContent).not.toContain("JUNCTION");
+    expect(screen.queryByText(/junction knob/)).toBeNull();
     for (const id of ["cmos-not", "cmos-nand"])
       expect(
         levelById(id)!
@@ -152,34 +152,32 @@ describe("independent tutorials", () => {
       within(screen.getByLabelText("Gate palette")).queryByRole("button", { name: "JUNCTION" }),
     ).toBeNull();
   });
-  it("starts with goal, context, table and available blocks; hints never edit the board", () => {
+  it("starts with one goal line and the table, no Check, and hints never edit the board", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();
     expect(b.getByText(/OUT is the opposite of A/)).toBeTruthy();
     expect(b.getByRole("heading", { name: "Truth table" })).toBeTruthy();
-    expect(b.getByText(/Available parts: NAND/)).toBeTruthy();
+    expect(b.queryByText(/Available parts/)).toBeNull();
+    expect(b.queryByRole("button", { name: "Check" })).toBeNull();
     expect(b.queryByRole("list", { name: "Steps" })).toBeNull();
     expect(b.queryByRole("button", { name: "Show me" })).toBeNull();
     expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
     const before = boardParts(b).length;
-    fireEvent.click(b.getByRole("button", { name: "Check" }));
-    expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
     const hint = b.getByRole("button", { name: "Hint" });
     hint.focus();
     fireEvent.click(hint);
     expect(hint.getAttribute("aria-expanded")).toBe("true");
     expect(b.getByRole("list", { name: "Hints" }).textContent).toMatch(/Core idea/);
-    fireEvent.click(b.getByRole("button", { name: "Another hint" }));
+    fireEvent.click(b.getByRole("button", { name: /Another hint|Last hint/ }));
     expect(boardParts(b)).toHaveLength(before);
     fireEvent.click(b.getByRole("button", { name: "Dismiss hints" }));
     expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
   });
-  it("checks a manually wired circuit, saves it, and offers a verified Yours part", () => {
+  it("recognizes a manually wired circuit, saves it, and offers a verified Yours part", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();
     buildNot(b);
-    fireEvent.click(b.getByRole("button", { name: "Check" }));
-    expect(b.getByText(/Pass: all 2 rows match/)).toBeTruthy();
+    expect(b.getByText("✓ Correct wiring.")).toBeTruthy();
     expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).solved.not.circuit.wires).toHaveLength(
       3,
     );
@@ -236,15 +234,12 @@ describe("independent tutorials", () => {
     const [nand, nor] = builders();
     expect(nand.queryByRole("combobox", { name: "Construction parameters" })).toBeNull();
     expect(nor.queryByRole("combobox", { name: "Construction parameters" })).toBeNull();
-    expect(nand.getByText("Available parts: NAND.")).toBeTruthy();
-    expect(nor.getByText("Available parts: NOR.")).toBeTruthy();
     expect(nand.queryByRole("list", { name: "Hints" })).toBeNull();
     expect(nor.queryByRole("list", { name: "Hints" })).toBeNull();
     buildNot(nand);
-    fireEvent.click(nand.getByRole("button", { name: "Check" }));
-    expect(nand.getByText(/Pass: all 2 rows match/)).toBeTruthy();
+    expect(nand.getByText("✓ Correct wiring.")).toBeTruthy();
     expect(boardParts(nor)).toHaveLength(2);
-    expect(nor.queryByText(/Pass: all 2 rows match/)).toBeNull();
+    expect(nor.queryByText("✓ Correct wiring.")).toBeNull();
     fireEvent.click(nor.getByRole("button", { name: "Hint" }));
     expect(nor.getByRole("list", { name: "Hints" })).toBeTruthy();
     expect(nand.queryByRole("list", { name: "Hints" })).toBeNull();
@@ -322,7 +317,6 @@ describe("independent tutorials", () => {
   it("keeps the passing solution when a later attempt is incomplete", () => {
     const { unmount } = render(<LogicTutorial levels={["not"]} />);
     buildNot(builders()[0]);
-    fireEvent.click(builders()[0].getByRole("button", { name: "Check" }));
     fireEvent.click(builders()[0].getAllByRole("button", { name: /^Select wire from/ })[0]);
     fireEvent.keyDown(builders()[0].getByRole("application", { name: "Circuit canvas" }), {
       key: "Delete",
@@ -337,14 +331,17 @@ describe("independent tutorials", () => {
     render(<LogicTutorial levels={["not"]} />);
     expect(boardParts(builders()[0])).toHaveLength(4);
   });
-  it("stores the full solution for levels that do not create a reusable part", () => {
+  it("recognizes a slow level once the edits pause, and stores its full solution", () => {
+    vi.useFakeTimers();
     const level = levelById("raw-seven-segment")!;
     expect(level.makes).toBeUndefined();
     const circuit = level.reference!();
     localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [level.id]: circuit } }));
     progressStore.reset();
     render(<LogicTutorial levels={[level.id]} />);
-    fireEvent.click(builders()[0].getByRole("button", { name: "Check" }));
+    expect(progressStore.get().solved[level.id]).toBeUndefined();
+    act(() => vi.advanceTimersByTime(400));
+    expect(screen.getByText("✓ Correct wiring.")).toBeTruthy();
     expect(progressStore.get().solved[level.id].circuit).toMatchObject({
       nodes: circuit.nodes,
       wires: circuit.wires,
@@ -383,7 +380,6 @@ describe("several builders", () => {
     );
     const [first, second] = builders();
     buildNot(first);
-    fireEvent.click(first.getByRole("button", { name: "Check" }));
     expect(second.getByTitle(/Your NOT, checked against every row/)).toBeTruthy();
     unmount();
     render(<LogicBuilder storageKey={null} />);

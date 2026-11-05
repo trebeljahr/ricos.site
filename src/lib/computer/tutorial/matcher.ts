@@ -250,8 +250,8 @@ export function hasWires(
   if (!target) return false;
   const node = context.circuit.nodes.find((item) => item.id === target);
   const have = new Map(
-    withoutWireSplices(context.circuit).wires
-      .filter((wire) => wire.to === target)
+    withoutWireSplices(context.circuit)
+      .wires.filter((wire) => wire.to === target)
       .map((wire) => [wire.input, `${wire.from}:${wire.output ?? 0}`] as const),
   );
   const sourceKey = (from: Source) => {
@@ -315,10 +315,3 @@ export const wireStep = (
     done: (context) => hasWires(context, to, wanted),
   };
 };
-
-/** A step: press Check. Done once every row passes. */
-export const checkStep = (text: string): TutorialStep => ({
-  text,
-  anchor: { kind: "check" },
-  done: (context) => context.passing,
-});

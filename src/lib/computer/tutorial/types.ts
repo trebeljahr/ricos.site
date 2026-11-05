@@ -71,20 +71,19 @@ export type CustomSpec = {
   kind: "custom";
   /** Nodes read by the check, including non-lamp outputs such as a bus. */
   observed?: readonly string[];
-  /** What the check runs, shown above the check button, e.g. "Two test programs". */
+  /** What the check runs, shown in the level panel, e.g. "Two test programs". */
   describe: string;
   grade: (circuit: Circuit) => CustomGrade;
 };
 
 export type LevelSpec = TruthSpec | SequenceSpec | CustomSpec;
 
-/** Where a hint points: a part, one of its ports, a palette entry, or the check button. */
+/** Where a hint points: a part, one of its ports, or a palette entry. */
 export type HintAnchor =
   | { kind: "node"; id: string }
   | { kind: "input"; node: string; index: number }
   | { kind: "output"; node: string; index?: number }
-  | { kind: "palette"; part: PaletteRef }
-  | { kind: "check" };
+  | { kind: "palette"; part: PaletteRef };
 
 /** What a step or hint can see when it decides whether it is done or shown. */
 export type TutorialContext = {

@@ -26,7 +26,7 @@ const wired: Circuit = {
 };
 const grade = (pass: boolean): Grade => ({ kind: "truth", pass, rows: [], first: pass ? -1 : 0 });
 
-it("records a genuine live solve once, without Check replays or render-driven celebration", () => {
+it("records a genuine live solve once, without render-driven celebration", () => {
   const options = {
     session: {},
     initial: blank,
@@ -46,10 +46,6 @@ it("records a genuine live solve once, without Check replays or render-driven ce
   expect(celebration).toBeGreaterThan(0);
   expect(options.recordLivePass).toHaveBeenCalledExactlyOnceWith(wired);
   rerender(passing);
-  act(() => {
-    result.current.noteCheck(grade(true));
-    result.current.noteCheck(grade(true));
-  });
   expect(result.current.celebration).toBe(celebration);
   expect(options.recordLivePass).toHaveBeenCalledTimes(1);
   act(() => result.current.noteChange(blank));
@@ -74,7 +70,6 @@ it("keeps restored correct boards, moves, reset and level changes quiet", () => 
   const moved = { ...wired, nodes: wired.nodes.map((node) => ({ ...node, x: node.x + 100 })) };
   act(() => result.current.noteChange(moved));
   rerender({ ...options, circuit: moved });
-  act(() => result.current.noteCheck(grade(true)));
   expect(result.current.celebration).toBe(0);
   expect(options.recordLivePass).not.toHaveBeenCalled();
   act(() => result.current.resetSuccess(blank));
@@ -88,8 +83,8 @@ it("keeps restored correct boards, moves, reset and level changes quiet", () => 
   expect(result.current.celebration).toBe(0);
 });
 
-it("requires an explicit successful check for lessons without live grading", () => {
-  const options = {
+it("waits for a slow level's grade before it credits the board", () => {
+  const options: Parameters<typeof useTutorialSuccess>[0] = {
     session: {},
     initial: blank,
     circuit: blank,
@@ -103,6 +98,48 @@ it("requires an explicit successful check for lessons without live grading", () 
   rerender({ ...options, circuit: wired });
   expect(result.current.celebration).toBe(0);
   expect(options.recordLivePass).not.toHaveBeenCalled();
-  act(() => result.current.noteCheck({ kind: "sequence", pass: true, ticks: [], first: -1 }));
+  rerender({
+    ...options,
+    circuit: wired,
+    liveGrade: { kind: "sequence", pass: true, ticks: [], first: -1 },
+  });
   expect(result.current.celebration).toBeGreaterThan(0);
+  expect(options.recordLivePass).toHaveBeenCalledExactlyOnceWith(wired);
+});
+
+it("records a restored passing board that is not on record yet, without celebrating", () => {
+  const options = {
+    session: {},
+    initial: wired,
+    circuit: wired,
+    liveGrade: grade(true),
+    enabled: true,
+    solved: false,
+    recordLivePass: vi.fn(),
+  };
+  const { result, rerender } = renderHook((props) => useTutorialSuccess(props), {
+    initialProps: options,
+  });
+  rerender(options);
+  expect(result.current.celebration).toBe(0);
+  expect(options.recordLivePass).toHaveBeenCalledExactlyOnceWith(wired);
+});
+
+it("credits nothing while disabled, which is how a board wired for the reader stays uncounted", () => {
+  const options = {
+    session: {},
+    initial: blank,
+    circuit: blank,
+    liveGrade: grade(false),
+    enabled: false,
+    solved: false,
+    recordLivePass: vi.fn(),
+  };
+  const { result, rerender } = renderHook((props) => useTutorialSuccess(props), {
+    initialProps: options,
+  });
+  act(() => result.current.noteChange(wired));
+  rerender({ ...options, circuit: wired, liveGrade: grade(true) });
+  expect(result.current.celebration).toBe(0);
+  expect(options.recordLivePass).not.toHaveBeenCalled();
 });

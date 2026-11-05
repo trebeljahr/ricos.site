@@ -10,7 +10,7 @@ export function TutorialSuccess({
   celebration,
 }: {
   correct: boolean;
-  message: string;
+  message?: string;
   celebration: number;
 }) {
   const { soundEnabled, toggleSound, playSuccess } = usePanelSound({ defaultEnabled: false });

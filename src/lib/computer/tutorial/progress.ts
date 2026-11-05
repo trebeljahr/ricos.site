@@ -26,6 +26,8 @@ export type Solution = {
 export type Progress = {
   solved: Readonly<Record<string, Solution>>;
   skipped: readonly string[];
+  /** Levels whose board the builder wired for the reader: a pass there is not their solve. */
+  assisted: readonly string[];
   /** Unfinished work per level, in the form the level saves it. */
   drafts: Readonly<Record<string, unknown>>;
   settings: { ownParts: OwnPartsMode };
@@ -34,6 +36,7 @@ export type Progress = {
 export const EMPTY_PROGRESS: Progress = {
   solved: {},
   skipped: [],
+  assisted: [],
   drafts: {},
   settings: { ownParts: "mine" },
 };
@@ -55,6 +58,9 @@ function parse(raw: string | null): Progress | null {
     solved,
     skipped: Array.isArray(value.skipped)
       ? value.skipped.filter((id): id is string => typeof id === "string")
+      : [],
+    assisted: Array.isArray(value.assisted)
+      ? value.assisted.filter((id): id is string => typeof id === "string")
       : [],
     drafts: value.drafts && typeof value.drafts === "object" ? value.drafts : {},
     settings: {
@@ -152,6 +158,28 @@ export const markSkipped = (level: string) =>
       : { ...progress, skipped: [...progress.skipped, level] },
   );
 
+/**
+ * The reader asked the builder to wire this level. It opens the next level like
+ * a skip does and stays off the solved list; a solve they already have is kept.
+ */
+export const markAssisted = (level: string) =>
+  progressStore.update((progress) => ({
+    ...progress,
+    assisted: progress.assisted.includes(level) ? progress.assisted : [...progress.assisted, level],
+    skipped:
+      progress.solved[level] || progress.skipped.includes(level)
+        ? progress.skipped
+        : [...progress.skipped, level],
+  }));
+
+/** A Reset makes the level the reader's own again. */
+export const clearAssisted = (level: string) =>
+  progressStore.update((progress) =>
+    progress.assisted.includes(level)
+      ? { ...progress, assisted: progress.assisted.filter((id) => id !== level) }
+      : progress,
+  );
+
 export const saveDraft = (level: string, draft: unknown) =>
   progressStore.update((progress) => ({
     ...progress,
@@ -172,5 +200,10 @@ export const forgetLevel = (level: string) =>
     const drafts = { ...progress.drafts };
     delete solved[level];
     delete drafts[level];
-    return { ...progress, solved, drafts };
+    return {
+      ...progress,
+      solved,
+      drafts,
+      assisted: progress.assisted.filter((id) => id !== level),
+    };
   });

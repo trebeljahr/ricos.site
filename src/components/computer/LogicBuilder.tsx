@@ -2017,11 +2017,12 @@ function LogicBuilderWorkspace({
   const [recognizing, setRecognizing] = useState(false);
   const [dialog, setDialog] = useState<"save" | "clear" | null>(null);
   const [saveName, setSaveName] = useState("");
-  const [message, setMessage] = useState(
+  // A tutorial level starts quiet: usage tips stay out of demos.
+  const [message, setMessage] = useState(challenge ? "" :
     "Shift-click or Shift-drag across ports to select them. Drag a selected port to connect multiple wires.",
   );
   useEffect(() => {
-    if (window.matchMedia?.("(pointer: coarse)")?.matches)
+    if (!challenge && window.matchMedia?.("(pointer: coarse)")?.matches)
       setMessage(TOUCH_HINT);
   }, []);
   const [ready, setReady] = useState(false);
@@ -4717,9 +4718,9 @@ function LogicBuilderWorkspace({
                     </button>
                   </>
                 )}
-                <small>
+                {!challenge && <small>
                   Shift-click or Shift-drag ports to select · Drag selected ports to wire · {embedded ? "Ctrl/⌘ + scroll to zoom" : "Scroll to zoom"}
-                </small>
+                </small>}
               </>
             )}
           </div>

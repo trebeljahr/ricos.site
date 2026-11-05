@@ -7,7 +7,6 @@
 .placeholder {
   color-scheme: light;
 
-  --tut-bg-amber-32: #f0ebe2;
   --tut-bg-green-37: #d0e4dc;
   --tut-bg-green-49: #81c1a6;
   --tut-bg-rose-29: #fcecf4;
@@ -18,31 +17,22 @@
   --tut-bg-slate-31: #eaedfa;
   --tut-bg-slate-33: #e1e9fd;
   --tut-bg-slate-33-2: #e1eafd;
-  --tut-bg-teal-32: #dff0eb;
   --tut-bg-teal-39: #cbdce0;
   --tut-bg-teal-88: #005f5f;
-  --tut-bg-teal-93: #0a5f5a;
-  --tut-bg-violet-33: #e6e6fe;
   --tut-ink-coral-82: #823934;
-  --tut-ink-green-56: #77968a;
-  --tut-ink-green-69: #466158;
   --tut-ink-green-88: #006245;
   --tut-ink-green-93: #235f4a;
-  --tut-ink-grey-100: #161616;
   --tut-ink-grey-94: #1f2428;
   --tut-ink-lime-88: #405d04;
   --tut-ink-slate-26: #f0f5fe;
   --tut-ink-slate-79: #444b8b;
   --tut-ink-slate-79-2: #3a4559;
-  --tut-ink-slate-84: #2d3c4f;
   --tut-ink-slate-87: #2c3449;
   --tut-ink-slate-93: #212733;
   --tut-ink-violet-76: #583f94;
   --tut-ink-violet-96: #1f1c26;
-  --tut-line-amber-62: #8d6f2c;
   --tut-line-amber-86: #6e4b00;
   --tut-line-coral-77: #8f2929;
-  --tut-line-green-59: #419171;
   --tut-line-green-64: #2d7e62;
   --tut-line-red-51: #e28c91;
   --tut-line-slate-35: #dee6f8;
@@ -58,7 +48,6 @@
 :global(.dark) .placeholder {
   color-scheme: dark;
 
-  --tut-bg-amber-32: #3a3222;
   --tut-bg-green-37: #1f4a3d;
   --tut-bg-green-49: #2f6f57;
   --tut-bg-rose-29: #3a2230;
@@ -69,31 +58,22 @@
   --tut-bg-slate-31: #2b2f45;
   --tut-bg-slate-33: #283456;
   --tut-bg-slate-33-2: #263454;
-  --tut-bg-teal-32: #183a33;
   --tut-bg-teal-39: #2b4c54;
   --tut-bg-teal-88: #8eeae8;
-  --tut-bg-teal-93: #b0faf2;
-  --tut-bg-violet-33: #33305a;
   --tut-ink-coral-82: #ffaaa1;
-  --tut-ink-green-56: #5e7d71;
-  --tut-ink-green-69: #87a49a;
   --tut-ink-green-88: #8ff0c6;
   --tut-ink-green-93: #b9f7dd;
-  --tut-ink-grey-100: #fff;
   --tut-ink-grey-94: #e7edf3;
   --tut-ink-lime-88: #b9e976;
   --tut-ink-slate-26: #17233a;
   --tut-ink-slate-79: #aab6ff;
   --tut-ink-slate-79-2: #aebbd3;
-  --tut-ink-slate-84: #b9cbe3;
   --tut-ink-slate-87: #c8d3ee;
   --tut-ink-slate-93: #dfe7f7;
   --tut-ink-violet-76: #b7a1ff;
   --tut-ink-violet-96: #f4f1ff;
-  --tut-line-amber-62: #a0813f;
   --tut-line-amber-86: #ffc76a;
   --tut-line-coral-77: #ff8f87;
-  --tut-line-green-59: #3f8f6f;
   --tut-line-green-64: #4f9d80;
   --tut-line-red-51: #9a4b52;
   --tut-line-slate-35: #2c3858;
@@ -210,32 +190,6 @@
   border-radius: 6px;
   background: var(--tut-bg-slate-33);
   color: var(--tut-ink-slate-93);
-}
-
-.steps {
-  display: grid;
-  gap: 4px;
-  margin: 0;
-  padding-left: 20px;
-  color: var(--tut-ink-slate-79-2);
-}
-
-.steps li {
-  padding: 3px 6px;
-  border-radius: 5px;
-}
-
-.stepDone {
-  color: var(--tut-ink-green-69);
-  text-decoration: line-through;
-  text-decoration-color: var(--tut-ink-green-56);
-}
-
-.stepCurrent {
-  background: var(--tut-bg-violet-33);
-  color: var(--tut-ink-grey-100);
-  font-weight: 600;
-  box-shadow: inset 2px 0 #b7a1ff;
 }
 
 .actions {
@@ -385,7 +339,7 @@
   cursor: pointer;
 }
 
-.check {
+.runButton {
   padding: 9px 14px;
   border: 0;
   border-radius: 7px;
@@ -393,10 +347,6 @@
   color: var(--tut-ink-slate-26);
   font: 800 13px ui-sans-serif, system-ui, sans-serif;
   cursor: pointer;
-}
-
-.check:hover {
-  background: var(--tut-bg-teal-93);
 }
 
 .result {
@@ -416,42 +366,9 @@
   padding-left: 18px;
 }
 
-.resultPass {
-  border-color: var(--tut-line-green-59);
-  background: var(--tut-bg-teal-32);
-}
-
 .resultFail {
   border-color: var(--tut-line-red-51);
   background: var(--tut-bg-rose-29);
-}
-
-.resultWarn {
-  border-color: var(--tut-line-amber-62);
-  background: var(--tut-bg-amber-32);
-}
-
-.stats {
-  color: var(--tut-ink-slate-84);
-  font: 600 11px ui-monospace, SFMono-Regular, monospace;
-}
-
-.result .notes {
-  display: grid;
-  gap: 5px;
-  padding: 0;
-  list-style: none;
-}
-
-.notes li > button {
-  width: 100%;
-  padding: 6px 8px;
-  text-align: left;
-  font-weight: 500;
-}
-
-.notes li > button[aria-pressed="true"] {
-  border-color: var(--tut-line-amber-86);
 }
 
 .nextButton {
@@ -515,38 +432,8 @@
   right: -6px;
 }
 
-.step.ring,
-.step.callout {
-  border-color: #b7a1ff;
-}
-
-.step.callout {
-  background: #efeaff;
-}
-
-.warn.ring {
-  border-color: var(--tut-line-coral-77);
-  box-shadow: 0 0 0 4px #ff8f8733;
-}
-
-.warn.callout {
-  background: #ffe9e7;
-}
-
 .tip.callout {
   background: #fff8e6;
-}
-
-.good.callout {
-  background: #e3fbef;
-}
-
-.notes .good {
-  color: var(--tut-ink-green-93);
-}
-
-.notes .warn > button {
-  border-color: var(--tut-line-red-51);
 }
 
 @keyframes pulse {

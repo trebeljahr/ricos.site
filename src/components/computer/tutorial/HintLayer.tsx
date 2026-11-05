@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { HintAnchor } from "../../../lib/computer/tutorial/types";
 import styles from "./Tutorial.module.css";
 
-export type Callout = { text: string; anchor?: HintAnchor; tone: "step" | "warn" | "tip" | "good" };
+export type Callout = { text: string; anchor?: HintAnchor; tone: "tip" };
 
 type Box = { left: number; top: number; width: number; height: number };
 
@@ -25,8 +25,6 @@ function anchorElement(root: HTMLElement, anchor: HintAnchor): Element | null {
       );
     case "palette":
       return root.querySelector(`[data-palette-part="${escapeValue(anchor.part)}"]`);
-    case "check":
-      return root.querySelector("[data-tutorial-check]");
   }
 }
 
@@ -81,8 +79,8 @@ const sameBox = (a: Box | null | undefined, b: Box | null | undefined) =>
   );
 
 /**
- * Callouts and rings drawn over one builder, anchored to its parts, ports,
- * palette entries and check button. It measures with the DOM once per frame,
+ * Callouts and rings drawn over one builder, anchored to its parts, ports and
+ * palette entries. It measures with the DOM once per frame,
  * and only while it has something to show and the builder is on screen.
  */
 export function HintLayer({ callout, rings }: { callout?: Callout; rings: readonly string[] }) {
@@ -194,9 +192,7 @@ export function HintLayer({ callout, rings }: { callout?: Callout; rings: readon
               <strong>
                 {callout.anchor?.kind === "palette"
                   ? "Scroll the parts list to see it. "
-                  : callout.anchor?.kind === "check"
-                    ? "Scroll the level panel to see it. "
-                    : "Scroll the board to see it. "}
+                  : "Scroll the board to see it. "}
               </strong>
             )}
             {callout.text}

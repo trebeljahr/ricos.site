@@ -1,12 +1,6 @@
 import clsx from "clsx";
 import { type ReactNode, useState } from "react";
-import {
-  describeInputs,
-  describeMiss,
-  describeTick,
-  type Grade,
-  truthRows,
-} from "../../../lib/computer/tutorial/grade";
+import { type Grade, truthRows } from "../../../lib/computer/tutorial/grade";
 import type { LevelSpec, SequenceSpec, TruthSpec } from "../../../lib/computer/tutorial/types";
 import styles from "./Tutorial.module.css";
 
@@ -195,22 +189,9 @@ function TickList({ spec, grade }: { spec: SequenceSpec; grade?: Grade }) {
   );
 }
 
-/** The level's spec: its truth table or tick list, with results once checked. */
+/** The level's spec: its truth table or tick list, with live results. */
 export function SpecView({ spec, grade }: { spec: LevelSpec; grade?: Grade }) {
   if (spec.kind === "truth") return <TruthTable spec={spec} grade={grade} />;
   if (spec.kind === "sequence") return <TickList spec={spec} grade={grade} />;
   return <p className={styles.muted}>{spec.describe}</p>;
-}
-
-/** One sentence on a failed check: the first wrong row or tick. */
-export function failureSentence(spec: LevelSpec, grade: Grade): string | undefined {
-  if (grade.kind === "truth" && spec.kind === "truth" && grade.first >= 0) {
-    const row = grade.rows[grade.first];
-    return `Row ${grade.first + 1} fails (${describeInputs(spec.inputs, row.inputs)}): ${describeMiss(spec.outputs, row)}`;
-  }
-  if (grade.kind === "sequence" && spec.kind === "sequence" && grade.first >= 0) {
-    const tick = grade.ticks[grade.first];
-    return `Tick ${grade.first + 1} fails (${tick.note}) ${describeTick(spec.outputs, tick)}`;
-  }
-  return undefined;
 }

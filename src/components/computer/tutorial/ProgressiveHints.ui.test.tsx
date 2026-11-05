@@ -10,15 +10,13 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-it("reveals an idea, count and signal plan only on request, without changing the circuit", () => {
+it("reveals an idea, count, a note on the circuit and the last hint only on request, without changing the circuit", () => {
   render(<LogicTutorial levels={["universal-nand-and"]} />);
   const board = screen.getByRole("application", { name: "Circuit canvas" });
   const initialParts = within(board)
     .getAllByRole("group")
     .map((part) => part.getAttribute("data-node-id"));
   const saved = JSON.stringify(progressStore.get());
-  expect(screen.queryByRole("list", { name: "Hints" })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Check" }));
   expect(screen.queryByRole("list", { name: "Hints" })).toBeNull();
 
   fireEvent.click(screen.getByRole("button", { name: "Hint" }));
@@ -27,13 +25,12 @@ it("reveals an idea, count and signal plan only on request, without changing the
   expect(clues().queryByText("Gate count:")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
   expect(clues().getByText(/2 NAND gates/)).toBeTruthy();
-  expect(clues().queryByText("Signal plan:")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
-  expect(clues().getByText("Signal plan:")).toBeTruthy();
-  expect(clues().getByText(/G2 = NAND\(G1, G1\)/)).toBeTruthy();
-  expect(screen.queryByText(/For this NAND-only route, place/)).toBeNull();
+  expect(clues().queryByText("Your circuit:")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
   expect(clues().getByText("Your circuit:")).toBeTruthy();
+  expect(clues().queryByText(/G2 = NAND/)).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Last hint" }));
+  expect(clues().getAllByRole("listitem").at(-1)?.textContent).toMatch(/^Signal plan:|^Last hint:/);
   expect(
     (screen.getByRole("button", { name: "All hints shown" }) as HTMLButtonElement).disabled,
   ).toBe(true);

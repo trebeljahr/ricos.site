@@ -16,7 +16,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-it("recognizes a manually wired short truth-table solve immediately and does not replay success on Check or Reset", () => {
+it("recognizes a manually wired short truth-table solve immediately and does not replay success on Reset", () => {
   vi.useFakeTimers();
   const { container } = render(<LogicTutorial levels={["not"]} />);
   fireEvent.click(screen.getByTitle("Drag NAND onto canvas or click to add"));
@@ -30,8 +30,6 @@ it("recognizes a manually wired short truth-table solve immediately and does not
   expect(progressStore.get().solved.not.circuit?.wires).toHaveLength(3);
   expect(container.querySelector("[data-tutorial-confetti]")).toBeTruthy();
   act(() => vi.advanceTimersByTime(2500));
-  fireEvent.click(screen.getByRole("button", { name: "Check" }));
-  fireEvent.click(screen.getByRole("button", { name: "Check" }));
   expect(container.querySelector("[data-tutorial-confetti]")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Reset" }));
   expect(container.querySelector("[data-tutorial-confetti]")).toBeNull();
@@ -64,7 +62,7 @@ it("shows restored correctness without celebrating or changing its saved solve",
 });
 
 it.each(["universal-nand-and", "universal-nor-and", "cmos-nand"])(
-  "%s shows the size challenge on live success and Check, then recognizes a minimum",
+  "%s shows the size challenge on live success, then recognizes a minimum",
   (id) => {
     const level = levelById(id)!;
     const reference = level.reference!();
@@ -80,12 +78,10 @@ it.each(["universal-nand-and", "universal-nor-and", "cmos-nand"])(
     expect(status().textContent).toContain(
       `Aim for ${level.sizeGoal!.minimum} ${level.sizeGoal!.unit}`,
     );
-    fireEvent.click(screen.getByRole("button", { name: "Check" }));
     expect(progressStore.get().solved[id]).toBeTruthy();
-    expect(screen.getAllByText(/Can you find the simplest solution\?/)).toHaveLength(2);
     if (id.startsWith("universal-nor")) {
-      expect(screen.getByText(/Yours:/).textContent).toContain("NOR gates");
-      expect(screen.getByText(/Yours:/).textContent).not.toContain("NAND");
+      expect(status().textContent).toContain("NOR gate");
+      expect(status().textContent).not.toContain("NAND");
     }
     unmount();
     localStorage.setItem(PROGRESS_KEY, JSON.stringify({ drafts: { [id]: reference } }));

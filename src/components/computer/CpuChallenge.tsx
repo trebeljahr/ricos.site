@@ -33,7 +33,7 @@ function ProgramRunner({ context }: { context: ExtraContext }) {
         aria-label="Program source"
         rows={7}
       />
-      <button type="button" className={styles.check} onClick={run}>
+      <button type="button" className={styles.runButton} onClick={run}>
         Compile and load into my CPU
       </button>
       {message && <p className={styles.muted}>{message}</p>}

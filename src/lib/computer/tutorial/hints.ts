@@ -59,11 +59,10 @@ export function contextualHint(level: Level, circuit: Circuit, grade?: Grade): L
                 };
             }
           }
-          if (level.hints?.some((hint) => hint.title === "Signal plan"))
-            return {
-              text: `${connection} None of the current signals matches ${port.label}'s truth table yet. Finish the remaining stages in the signal plan, then connect the final output.`,
-              anchor,
-            };
+          return {
+            text: `${connection} None of the current signals matches ${port.label}'s truth table yet. Finish the remaining stages, then connect the final output.`,
+            anchor,
+          };
         }
       }
       return { text: connection, anchor };
@@ -106,7 +105,11 @@ export function contextualHint(level: Level, circuit: Circuit, grade?: Grade): L
   };
 }
 
-/** Called only after a learner explicitly asks. Dismissal resets depth to zero. */
+/**
+ * Called only after a learner explicitly asks. Dismissal resets depth to zero.
+ * A note on the reader's own circuit comes just before the level's last hint,
+ * so the last hint stays last and the offer to wire the board can follow it.
+ */
 export function requestedHints(
   level: Level,
   circuit: Circuit,
@@ -114,9 +117,12 @@ export function requestedHints(
   depth: number,
 ): LevelHint[] {
   if (depth <= 0) return [];
-  if (depth <= (level.hints?.length ?? 0)) return level.hints!.slice(0, depth);
+  const hints = level.hints ?? [];
+  const earlier = hints.slice(0, -1);
+  if (depth <= earlier.length) return earlier.slice(0, depth);
   return [
-    ...(level.hints ?? []),
+    ...earlier,
     { ...contextualHint(level, circuit, grade), title: "Your circuit" },
+    ...hints.slice(-1),
   ].slice(0, depth);
 }

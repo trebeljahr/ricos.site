@@ -470,7 +470,7 @@
 .inlineWires .wire{pointer-events:none;filter:none;stroke-width:2.5;opacity:.8}
 .inlineWires .wireSelected{stroke-width:4;opacity:1}
 .litWires .inlineWires .wire{opacity:.55}
-.litWires .inlineWires .wire.live{opacity:1;filter:drop-shadow(0 0 5px var(--wire-color))}
+.litWires .inlineWires .wire.live{opacity:1;filter:drop-shadow(0 0 5px color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224))}
 .inlineWires .wireHit{stroke:transparent;stroke-width:14}
 .inlineWires .wirePreview{filter:none}
 .inlinePart{z-index:1;isolation:isolate;cursor:grab}
@@ -530,7 +530,7 @@
 .inputPortLabel,.outputPortLabel{position:absolute;top:0;transform:translateY(-50%);max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--lb-ink-amber-88);font:700 10px ui-monospace,SFMono-Regular,monospace;line-height:16px;pointer-events:none}
 .inputPortLabel{left:15px;text-align:left}
 .outputPortLabel{right:15px;text-align:right}
-.outputPortLabel.wirePortLabel{right:auto;left:12px;transform:translateY(-100%);color:var(--part-accent)}
+.outputPortLabel.wirePortLabel{right:auto;left:12px;transform:translateY(-100%);color:color-mix(in oklab,var(--part-accent) var(--lb-part-text-keep),#0b1224)}
 .node:has(.wirePortLabel) .decimalInput input[aria-invalid="false"]~small{display:none}
 .moduleBody{width:72px;margin:auto;padding-left:0;padding-right:0}
 .moduleBody .nodeType{max-width:72px;overflow:hidden;text-overflow:ellipsis}
@@ -838,19 +838,19 @@
 /* A lane: a hollow band for many wires, with a comb where it meets a part's ports. */
 .laneHit{fill:none;stroke:transparent;stroke-width:22;pointer-events:stroke;cursor:pointer}
 .laneHit:focus{outline:none}
-.laneRail{fill:none;stroke:var(--wire-color);stroke-width:14;stroke-linejoin:round;pointer-events:none}
-.laneCore{fill:none;stroke:#111b2e;stroke-width:9;stroke-linejoin:round;pointer-events:none}
-.laneCoreLive,[data-lane-state="high"] .laneCore{stroke:color-mix(in srgb,var(--wire-color) 45%,#111b2e)}
-[data-lane-state="floating"] .laneRail{stroke:#7d8a92}
+.laneRail{fill:none;stroke:color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224);stroke-width:14;stroke-linejoin:round;pointer-events:none}
+.laneCore{fill:none;stroke:var(--lb-bg-slate-22-2);stroke-width:9;stroke-linejoin:round;pointer-events:none}
+.laneCoreLive,[data-lane-state="high"] .laneCore{stroke:color-mix(in srgb,color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224) 45%,var(--lb-bg-slate-22-2))}
+[data-lane-state="floating"] .laneRail{stroke:var(--lb-line-sky-63)}
 [data-lane-state="floating"] .laneCore{stroke-dasharray:14 10}
-[data-lane-state="conflict"] .laneRail{stroke:#ff5a52}
-.laneStubs{fill:none;stroke:var(--wire-color);stroke-width:2.5;pointer-events:none}
-.laneBars{fill:none;stroke:var(--wire-color);stroke-width:7;stroke-linecap:round;pointer-events:none}
-.laneMark{fill:#111b2e;stroke:var(--wire-color);stroke-width:3.5;pointer-events:none}
-.laneSlash{fill:none;stroke:#e7edf3;stroke-width:3;pointer-events:none}
-.laneSelected{fill:none;stroke:#e2b971;stroke-width:4;stroke-dasharray:12 8;pointer-events:none}
-.laneName,.laneText{font:700 15px ui-monospace,SFMono-Regular,monospace;fill:var(--wire-color);paint-order:stroke;stroke:#111b2e;stroke-width:5px;pointer-events:none}
-.laneName{fill:#e7edf3}
+[data-lane-state="conflict"] .laneRail{stroke:var(--lb-line-coral-69)}
+.laneStubs{fill:none;stroke:color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224);stroke-width:2.5;pointer-events:none}
+.laneBars{fill:none;stroke:color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224);stroke-width:7;stroke-linecap:round;pointer-events:none}
+.laneMark{fill:var(--lb-bg-slate-22-2);stroke:color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224);stroke-width:3.5;pointer-events:none}
+.laneSlash{fill:none;stroke:var(--lb-ink-grey-94);stroke-width:3;pointer-events:none}
+.laneSelected{fill:none;stroke:var(--lb-line-amber-81);stroke-width:4;stroke-dasharray:12 8;pointer-events:none}
+.laneName,.laneText{font:700 15px ui-monospace,SFMono-Regular,monospace;fill:color-mix(in oklab,var(--wire-color) var(--lb-wire-keep),#0b1224);paint-order:stroke;stroke:var(--lb-bg-slate-22-2);stroke-width:5px;pointer-events:none}
+.laneName{fill:var(--lb-ink-grey-94)}
 .laneBoard .wire.busLanes{stroke-width:14;opacity:1}
 .laneBoard .wire.busLanes+.laneCore{stroke-width:9}
 .laneBoard .busWire{stroke-width:3}

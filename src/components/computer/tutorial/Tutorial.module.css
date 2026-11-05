@@ -1,10 +1,116 @@
+/* Theme tokens. Hint callouts stay pale in both themes, like a note laid on the board.
+   Each name says the colour's role, hue and lightness in the dark theme, which is
+   the site's default. The site marks dark mode with a .dark class on <html>. */
+.panel,
+.spec,
+.hintLayer,
+.placeholder {
+  color-scheme: light;
+
+  --tut-bg-amber-32: #f0ebe2;
+  --tut-bg-green-37: #d0e4dc;
+  --tut-bg-green-49: #81c1a6;
+  --tut-bg-rose-29: #fcecf4;
+  --tut-bg-rose-30: #fbebf4;
+  --tut-bg-slate-22: #f5f8ff;
+  --tut-bg-slate-24: #f2f6ff;
+  --tut-bg-slate-30: #e9efff;
+  --tut-bg-slate-31: #eaedfa;
+  --tut-bg-slate-33: #e1e9fd;
+  --tut-bg-slate-33-2: #e1eafd;
+  --tut-bg-teal-32: #dff0eb;
+  --tut-bg-teal-39: #cbdce0;
+  --tut-bg-teal-88: #005f5f;
+  --tut-bg-teal-93: #0a5f5a;
+  --tut-bg-violet-33: #e6e6fe;
+  --tut-ink-coral-82: #823934;
+  --tut-ink-green-56: #77968a;
+  --tut-ink-green-69: #466158;
+  --tut-ink-green-88: #006245;
+  --tut-ink-green-93: #235f4a;
+  --tut-ink-grey-100: #161616;
+  --tut-ink-grey-94: #1f2428;
+  --tut-ink-lime-88: #405d04;
+  --tut-ink-slate-26: #f0f5fe;
+  --tut-ink-slate-79: #444b8b;
+  --tut-ink-slate-79-2: #3a4559;
+  --tut-ink-slate-84: #2d3c4f;
+  --tut-ink-slate-87: #2c3449;
+  --tut-ink-slate-93: #212733;
+  --tut-ink-violet-76: #583f94;
+  --tut-ink-violet-96: #1f1c26;
+  --tut-line-amber-62: #8d6f2c;
+  --tut-line-amber-86: #6e4b00;
+  --tut-line-coral-77: #8f2929;
+  --tut-line-green-59: #419171;
+  --tut-line-green-64: #2d7e62;
+  --tut-line-red-51: #e28c91;
+  --tut-line-slate-35: #dee6f8;
+  --tut-line-slate-40: #ced8eb;
+  --tut-line-slate-42: #c9d1e5;
+  --tut-line-slate-47: #a6bce6;
+  --tut-line-slate-54: #869bc4;
+  --tut-line-teal-84: #095f5a;
+}
+:global(.dark) .panel,
+:global(.dark) .spec,
+:global(.dark) .hintLayer,
+:global(.dark) .placeholder {
+  color-scheme: dark;
+
+  --tut-bg-amber-32: #3a3222;
+  --tut-bg-green-37: #1f4a3d;
+  --tut-bg-green-49: #2f6f57;
+  --tut-bg-rose-29: #3a2230;
+  --tut-bg-rose-30: #3d2433;
+  --tut-bg-slate-22: #111a2d;
+  --tut-bg-slate-24: #141e34;
+  --tut-bg-slate-30: #222d4c;
+  --tut-bg-slate-31: #2b2f45;
+  --tut-bg-slate-33: #283456;
+  --tut-bg-slate-33-2: #263454;
+  --tut-bg-teal-32: #183a33;
+  --tut-bg-teal-39: #2b4c54;
+  --tut-bg-teal-88: #8eeae8;
+  --tut-bg-teal-93: #b0faf2;
+  --tut-bg-violet-33: #33305a;
+  --tut-ink-coral-82: #ffaaa1;
+  --tut-ink-green-56: #5e7d71;
+  --tut-ink-green-69: #87a49a;
+  --tut-ink-green-88: #8ff0c6;
+  --tut-ink-green-93: #b9f7dd;
+  --tut-ink-grey-100: #fff;
+  --tut-ink-grey-94: #e7edf3;
+  --tut-ink-lime-88: #b9e976;
+  --tut-ink-slate-26: #17233a;
+  --tut-ink-slate-79: #aab6ff;
+  --tut-ink-slate-79-2: #aebbd3;
+  --tut-ink-slate-84: #b9cbe3;
+  --tut-ink-slate-87: #c8d3ee;
+  --tut-ink-slate-93: #dfe7f7;
+  --tut-ink-violet-76: #b7a1ff;
+  --tut-ink-violet-96: #f4f1ff;
+  --tut-line-amber-62: #a0813f;
+  --tut-line-amber-86: #ffc76a;
+  --tut-line-coral-77: #ff8f87;
+  --tut-line-green-59: #3f8f6f;
+  --tut-line-green-64: #4f9d80;
+  --tut-line-red-51: #9a4b52;
+  --tut-line-slate-35: #2c3858;
+  --tut-line-slate-40: #36466a;
+  --tut-line-slate-42: #3c4b70;
+  --tut-line-slate-47: #485b80;
+  --tut-line-slate-54: #5b6e95;
+  --tut-line-teal-84: #86ded5;
+}
+
 .panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   gap: 10px;
   padding: 16px 16px 22px;
-  color: #dfe7f7;
+  color: var(--tut-ink-slate-93);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -15,7 +121,7 @@
 }
 
 .eyebrow {
-  color: #aab6ff;
+  color: var(--tut-ink-slate-79);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -31,7 +137,7 @@
 
 .title {
   margin: 0;
-  color: #f4f1ff;
+  color: var(--tut-ink-violet-96);
   font-size: 18px;
   line-height: 1.25;
 }
@@ -40,8 +146,8 @@
   flex: none;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #1f4a3d;
-  color: #b9f7dd;
+  background: var(--tut-bg-green-37);
+  color: var(--tut-ink-green-93);
   font-size: 11px;
   font-weight: 750;
 }
@@ -53,10 +159,10 @@
 
 .picker select,
 .picker button {
-  border: 1px solid #485b80;
+  border: 1px solid var(--tut-line-slate-47);
   border-radius: 5px;
-  background: #141e34;
-  color: #e7edf3;
+  background: var(--tut-bg-slate-24);
+  color: var(--tut-ink-grey-94);
   font: 600 12px ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -79,31 +185,31 @@
 
 .goal {
   margin: 0;
-  color: #f4f1ff;
+  color: var(--tut-ink-violet-96);
   font-size: 13px;
   font-weight: 650;
 }
 
 .muted {
   margin: 0;
-  color: #aebbd3;
+  color: var(--tut-ink-slate-79-2);
 }
 
 .chapter {
   margin: 0;
-  color: #aebbd3;
+  color: var(--tut-ink-slate-79-2);
 }
 
 .chapter a {
-  color: #b7a1ff;
+  color: var(--tut-ink-violet-76);
 }
 
 .notice {
   margin: 0;
   padding: 8px 10px;
   border-radius: 6px;
-  background: #283456;
-  color: #dfe7f7;
+  background: var(--tut-bg-slate-33);
+  color: var(--tut-ink-slate-93);
 }
 
 .steps {
@@ -111,7 +217,7 @@
   gap: 4px;
   margin: 0;
   padding-left: 20px;
-  color: #aebbd3;
+  color: var(--tut-ink-slate-79-2);
 }
 
 .steps li {
@@ -120,14 +226,14 @@
 }
 
 .stepDone {
-  color: #87a49a;
+  color: var(--tut-ink-green-69);
   text-decoration: line-through;
-  text-decoration-color: #5e7d71;
+  text-decoration-color: var(--tut-ink-green-56);
 }
 
 .stepCurrent {
-  background: #33305a;
-  color: #fff;
+  background: var(--tut-bg-violet-33);
+  color: var(--tut-ink-grey-100);
   font-weight: 600;
   box-shadow: inset 2px 0 #b7a1ff;
 }
@@ -142,17 +248,17 @@
 .result button,
 .nextButton {
   padding: 6px 10px;
-  border: 1px solid #5b6e95;
+  border: 1px solid var(--tut-line-slate-54);
   border-radius: 6px;
-  background: #263454;
-  color: #e7edf3;
+  background: var(--tut-bg-slate-33-2);
+  color: var(--tut-ink-grey-94);
   font: 650 12px ui-sans-serif, system-ui, sans-serif;
   cursor: pointer;
 }
 
 .actions button:hover,
 .result button:hover {
-  border-color: #b7a1ff;
+  border-color: var(--tut-ink-violet-76);
 }
 
 .hints {
@@ -163,16 +269,22 @@
   list-style: none;
 }
 
+/* <body> carries `prose`, whose bold colour and list margins would otherwise win here. */
+.hints strong {
+  color: inherit;
+}
+
 .hints li {
+  margin: 0;
   padding: 8px 10px;
-  border-left: 3px solid #ffc76a;
+  border-left: 3px solid var(--tut-line-amber-86);
   border-radius: 4px;
-  background: #2b2f45;
+  background: var(--tut-bg-slate-31);
 }
 
 .subhead {
   margin: 6px 0 0;
-  color: #aebbd3;
+  color: var(--tut-ink-slate-79-2);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 0.1em;
@@ -187,12 +299,13 @@
 .tableScroll {
   max-height: 320px;
   overflow: auto;
-  border: 1px solid #36466a;
+  border: 1px solid var(--tut-line-slate-40);
   border-radius: 6px;
 }
 
 .truth {
   width: 100%;
+  margin: 0;
   border-collapse: collapse;
   font: 600 12px ui-monospace, SFMono-Regular, monospace;
   text-align: center;
@@ -202,24 +315,24 @@
   position: sticky;
   top: 0;
   padding: 4px 5px;
-  background: #222d4c;
-  color: #c8d3ee;
+  background: var(--tut-bg-slate-30);
+  color: var(--tut-ink-slate-87);
   font-size: 10px;
   white-space: nowrap;
 }
 
 .truth td {
   padding: 3px 5px;
-  border-top: 1px solid #2c3858;
+  border-top: 1px solid var(--tut-line-slate-35);
 }
 
 .outputHead,
 .outputCell {
-  color: #b9e976;
+  color: var(--tut-ink-lime-88);
 }
 
 .outputHead {
-  border-left: 1px solid #3c4b70;
+  border-left: 1px solid var(--tut-line-slate-42);
 }
 
 .yours {
@@ -227,19 +340,19 @@
 }
 
 .rowPass .yours {
-  color: #8ff0c6;
+  color: var(--tut-ink-green-88);
 }
 
 .rowFail {
-  background: #3d2433;
+  background: var(--tut-bg-rose-30);
 }
 
 .rowFail .yours {
-  color: #ffaaa1;
+  color: var(--tut-ink-coral-82);
 }
 
 .rowFirst {
-  outline: 2px solid #ff8f87;
+  outline: 2px solid var(--tut-line-coral-77);
   outline-offset: -2px;
 }
 
@@ -248,7 +361,7 @@
   gap: 3px;
   margin: 0;
   padding-left: 22px;
-  color: #c8d3ee;
+  color: var(--tut-ink-slate-87);
 }
 
 .ticks li {
@@ -258,7 +371,7 @@
 
 .ticks small {
   display: block;
-  color: #b9e976;
+  color: var(--tut-ink-lime-88);
   font: 600 11px ui-monospace, SFMono-Regular, monospace;
 }
 
@@ -267,7 +380,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: #b7a1ff;
+  color: var(--tut-ink-violet-76);
   font-size: 11px;
   cursor: pointer;
 }
@@ -276,14 +389,14 @@
   padding: 9px 14px;
   border: 0;
   border-radius: 7px;
-  background: #8eeae8;
-  color: #17233a;
+  background: var(--tut-bg-teal-88);
+  color: var(--tut-ink-slate-26);
   font: 800 13px ui-sans-serif, system-ui, sans-serif;
   cursor: pointer;
 }
 
 .check:hover {
-  background: #b0faf2;
+  background: var(--tut-bg-teal-93);
 }
 
 .result {
@@ -304,22 +417,22 @@
 }
 
 .resultPass {
-  border-color: #3f8f6f;
-  background: #183a33;
+  border-color: var(--tut-line-green-59);
+  background: var(--tut-bg-teal-32);
 }
 
 .resultFail {
-  border-color: #9a4b52;
-  background: #3a2230;
+  border-color: var(--tut-line-red-51);
+  background: var(--tut-bg-rose-29);
 }
 
 .resultWarn {
-  border-color: #a0813f;
-  background: #3a3222;
+  border-color: var(--tut-line-amber-62);
+  background: var(--tut-bg-amber-32);
 }
 
 .stats {
-  color: #b9cbe3;
+  color: var(--tut-ink-slate-84);
   font: 600 11px ui-monospace, SFMono-Regular, monospace;
 }
 
@@ -338,13 +451,13 @@
 }
 
 .notes li > button[aria-pressed="true"] {
-  border-color: #ffc76a;
+  border-color: var(--tut-line-amber-86);
 }
 
 .nextButton {
   justify-self: start;
-  background: #2f6f57;
-  border-color: #4f9d80;
+  background: var(--tut-bg-green-49);
+  border-color: var(--tut-line-green-64);
 }
 
 .compare {
@@ -367,7 +480,7 @@
 
 .ring {
   position: absolute;
-  border: 2px solid #ffc76a;
+  border: 2px solid var(--tut-line-amber-86);
   border-radius: 10px;
   box-shadow: 0 0 0 4px #ffc76a33;
 }
@@ -412,7 +525,7 @@
 }
 
 .warn.ring {
-  border-color: #ff8f87;
+  border-color: var(--tut-line-coral-77);
   box-shadow: 0 0 0 4px #ff8f8733;
 }
 
@@ -429,11 +542,11 @@
 }
 
 .notes .good {
-  color: #b9f7dd;
+  color: var(--tut-ink-green-93);
 }
 
 .notes .warn > button {
-  border-color: #9a4b52;
+  border-color: var(--tut-line-red-51);
 }
 
 @keyframes pulse {
@@ -452,10 +565,10 @@
 .placeholder {
   display: grid;
   place-items: center;
-  border: 1px solid #36466a;
+  border: 1px solid var(--tut-line-slate-40);
   border-radius: 12px;
-  background: #111a2d;
-  color: #aebbd3;
+  background: var(--tut-bg-slate-22);
+  color: var(--tut-ink-slate-79-2);
   font: 600 13px ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -468,34 +581,34 @@
   width: 100%;
   box-sizing: border-box;
   padding: 8px;
-  border: 1px solid #485b80;
+  border: 1px solid var(--tut-line-slate-47);
   border-radius: 6px;
-  background: #141e34;
-  color: #e7edf3;
+  background: var(--tut-bg-slate-24);
+  color: var(--tut-ink-grey-94);
   font: 12px/1.5 ui-monospace, SFMono-Regular, monospace;
 }
 
 .parameter {
   display: grid;
   gap: 5px;
-  color: #aebbd3;
+  color: var(--tut-ink-slate-79-2);
 }
 
 .parameter select {
   min-width: 0;
   width: 100%;
   padding: 6px;
-  border: 1px solid #485b80;
+  border: 1px solid var(--tut-line-slate-47);
   border-radius: 5px;
-  background: #141e34;
-  color: #e7edf3;
+  background: var(--tut-bg-slate-24);
+  color: var(--tut-ink-grey-94);
   font: inherit;
 }
 
 /* The sidebar's table can also drive a demo's shared circuit inputs. */
 .truth[data-interactive] tbody tr { position: relative; }
-.truth tr[data-current="true"] { background: #2b4c54; }
-.truth tr:focus-within { outline: 2px solid #86ded5; outline-offset: -2px; }
+.truth tr[data-current="true"] { background: var(--tut-bg-teal-39); }
+.truth tr:focus-within { outline: 2px solid var(--tut-line-teal-84); outline-offset: -2px; }
 .rowButton { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 .rowButton::after { content: ""; position: absolute; inset: 0; }
 .rowButton:focus-visible { outline: none; }

@@ -307,146 +307,89 @@ export function triggeredWave(timebase: Timebase) {
 
 // ---------------------------------------------------------------- signal edges
 
-/** A gate reads 1 above HIGH_MIN and 0 below LOW_MAX, as a share of the supply. */
-export const LOW_MAX = 0.3;
-export const HIGH_MIN = 0.7;
-export const SIGNAL_PERIODS = 2;
-export const SAMPLE_COUNT = 16;
-export const TRACE_POINTS = 480;
-/** At full noise the wanted signal still keeps clear of both thresholds. */
-export const NOISE_MAX = 0.25;
+/** A 5 V CMOS part: anything up to 30% of the supply is a 0, anything from 70% is a 1. */
+export const SUPPLY_VOLTS = 5;
+export const LOW_MAX_VOLTS = 1.5;
+export const HIGH_MIN_VOLTS = 3.5;
+export const SIGNAL_HZ = 1;
+export const SCREEN_SECONDS = 3;
+/** Stretched so the edge is visible at 1 Hz; real chips switch in nanoseconds or less. */
+export const EDGE_SECONDS = 0.09;
+/** Always less than the margin to either threshold, so noise alone never changes a bit. */
+export const NOISE_VOLTS = 0.3;
 
-export type SignalKind = "wanted" | "unwanted";
-export type GateReading = "0" | "1" | "?";
-export type SampleVerdict = "right" | "undefined" | "wrong";
+const TRACE_STEP_SECONDS = 0.01;
+const NOISE_KNOTS_PER_SECOND = 50;
 
-export function readGate(value: number): GateReading {
-  if (value >= HIGH_MIN) return "1";
-  if (value <= LOW_MAX) return "0";
+export type Bit = "0" | "1" | "?";
+export type TracePoint = { t: number; volts: number };
+export type BitRun = { from: number; to: number; bit: Bit };
+
+export function readBit(volts: number): Bit {
+  if (volts >= HIGH_MIN_VOLTS) return "1";
+  if (volts <= LOW_MAX_VOLTS) return "0";
   return "?";
 }
 
-/** The clock as drawn by hand: rises a quarter tick in, falls at three quarters. */
-export function idealLevel(t: number): 0 | 1 {
-  const phase = fraction(t);
-  return phase >= 0.25 && phase < 0.75 ? 1 : 0;
+/** The same random number in -1 to 1 for the same knot, so a scrolling trace keeps its shape. */
+function knotNoise(knot: number) {
+  // mulberry32, one round per knot
+  let value = Math.imul(knot + 0x6d2b79f5, 0x6d2b79f5);
+  value = Math.imul(value ^ (value >>> 15), 1 | value);
+  value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value;
+  return (((value ^ (value >>> 14)) >>> 0) / 4294967296) * 2 - 1;
 }
 
-// A rising edge rings: an underdamped step with 50% overshoot. Its first dip
-// lands on the second sample after the edge.
-const RING_PERIOD = 0.1875;
-const RING_OMEGA = (2 * Math.PI) / RING_PERIOD;
-const RING_DECAY = Math.PI / -Math.log(0.5) / RING_OMEGA;
-// A falling edge crawls: a slow RC discharge.
-const FALL_TAU = 0.1;
-// A glitch: a short dip in the middle of the second high stretch.
-const GLITCH_AT = 1.5625;
-const GLITCH_WIDTH = 0.008;
-const GLITCH_DEPTH = 0.8;
-
-function rise(u: number) {
-  const decay = Math.exp(-u / RING_DECAY);
-  const omegaTau = RING_OMEGA * RING_DECAY;
-  return 1 - decay * (Math.cos(RING_OMEGA * u) + Math.sin(RING_OMEGA * u) / omegaTau);
+function noiseAt(seconds: number) {
+  const position = seconds * NOISE_KNOTS_PER_SECOND;
+  const knot = Math.floor(position);
+  const weight = position - knot;
+  return (knotNoise(knot) * (1 - weight) + knotNoise(knot + 1) * weight) * NOISE_VOLTS;
 }
 
-function fall(u: number) {
-  return Math.exp(-u / FALL_TAU);
-}
-
-// Where each edge starts: the level the previous edge reached half a tick later.
-const SETTLED_LOW = fall(0.5);
-const SETTLED_HIGH = rise(0.5);
-
-/**
- * A fixed, repeatable hiss: random knots, linearly joined, so every visit and the
- * server render draw the same picture. Seed 180 makes more noise turn more
- * unwanted samples into a "?", step by step, and never fixes the glitch.
- */
-const NOISE_KNOTS = (() => {
-  let seed = 180;
-  const random = () => {
-    // mulberry32
-    seed = (seed + 0x6d2b79f5) | 0;
-    let value = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value;
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
-  return Array.from({ length: 129 }, () => random() * 2 - 1);
-})();
-
-function noiseAt(t: number) {
-  const position = (Math.min(Math.max(t, 0), SIGNAL_PERIODS) / SIGNAL_PERIODS) * 128;
-  const index = Math.min(127, Math.floor(position));
-  const weight = position - index;
-  return NOISE_KNOTS[index] * (1 - weight) + NOISE_KNOTS[index + 1] * weight;
-}
-
-/**
- * The voltage at time t (in ticks), as a share of the supply. `noise` runs 0 to 1.
- * Wanted: two flat levels and edges that jump. Unwanted: a rising edge that
- * overshoots and rings, a falling edge that crawls, and one glitch.
- */
-export function signalAt(t: number, kind: SignalKind, noise: number) {
-  const hiss = noiseAt(t) * NOISE_MAX * Math.min(1, Math.max(0, noise));
-  if (kind === "wanted") return idealLevel(t) + hiss;
-  const phase = fraction(t);
-  const start = Math.floor(t);
-  let clean: number;
-  if (phase < 0.25) clean = SETTLED_HIGH * fall(t - (start - 0.25));
-  else if (phase < 0.75) clean = SETTLED_LOW + (1 - SETTLED_LOW) * rise(t - (start + 0.25));
-  else clean = SETTLED_HIGH * fall(t - (start + 0.75));
-  const glitch = GLITCH_DEPTH * Math.exp(-(((t - GLITCH_AT) / GLITCH_WIDTH) ** 2) / 2);
-  return clean - glitch + hiss;
-}
-
-export type SignalSample = {
-  t: number;
-  value: number;
-  reading: GateReading;
-  expected: "0" | "1";
-  verdict: SampleVerdict;
+const smoothstep = (share: number) => {
+  const clamped = Math.min(1, Math.max(0, share));
+  return clamped * clamped * (3 - 2 * clamped);
 };
 
-export type SignalReport = {
-  /** Evenly spaced across the screen, TRACE_POINTS + 1 of them. */
-  trace: number[];
-  samples: SignalSample[];
-  right: number;
-  undefined: number;
-  wrong: number;
-  /** Share of the time the signal spends between the thresholds, 0 to 1. */
-  between: number;
-};
-
-export function sampleTimes() {
-  return Array.from(
-    { length: SAMPLE_COUNT },
-    (_, index) => ((index + 0.5) / SAMPLE_COUNT) * SIGNAL_PERIODS,
-  );
+/** The clock without noise: it starts rising on each tick and starts falling half a tick later. */
+function cleanVolts(seconds: number) {
+  const phase = fraction(seconds * SIGNAL_HZ) / SIGNAL_HZ;
+  const halfTick = 0.5 / SIGNAL_HZ;
+  const level =
+    phase < halfTick
+      ? smoothstep(phase / EDGE_SECONDS)
+      : 1 - smoothstep((phase - halfTick) / EDGE_SECONDS);
+  return level * SUPPLY_VOLTS;
 }
 
-/** The trace, what a gate reads at each sample, and how long the signal sits in between. */
-export function signalReport(kind: SignalKind, noise: number): SignalReport {
-  const trace = Array.from({ length: TRACE_POINTS + 1 }, (_, index) =>
-    signalAt((index / TRACE_POINTS) * SIGNAL_PERIODS, kind, noise),
-  );
-  const samples = sampleTimes().map((t): SignalSample => {
-    const value = signalAt(t, kind, noise);
-    const reading = readGate(value);
-    const expected = idealLevel(t) === 1 ? "1" : "0";
-    const verdict = reading === "?" ? "undefined" : reading === expected ? "right" : "wrong";
-    return { t, value, reading, expected, verdict };
-  });
-  const count = (verdict: SampleVerdict) =>
-    samples.filter((sample) => sample.verdict === verdict).length;
-  const inBetween = trace.filter((value) => readGate(value) === "?").length;
-  return {
-    trace,
-    samples,
-    right: count("right"),
-    undefined: count("undefined"),
-    wrong: count("wrong"),
-    between: inBetween / trace.length,
-  };
+export function clockVolts(seconds: number) {
+  return cleanVolts(seconds) + noiseAt(seconds);
+}
+
+/** The trace up to `end`, on a fixed time grid so that scrolling does not make it shimmer. */
+export function signalTrace(end: number): TracePoint[] {
+  const first = Math.floor((end - SCREEN_SECONDS) / TRACE_STEP_SECONDS);
+  const last = Math.ceil(end / TRACE_STEP_SECONDS);
+  const points: TracePoint[] = [];
+  for (let step = first; step <= last; step++) {
+    const t = step * TRACE_STEP_SECONDS;
+    points.push({ t, volts: clockVolts(t) });
+  }
+  return points;
+}
+
+/** Joins a trace into stretches of the same bit. */
+export function bitRuns(trace: TracePoint[]): BitRun[] {
+  const runs: BitRun[] = [];
+  for (const { t, volts } of trace) {
+    const bit = readBit(volts);
+    const current = runs[runs.length - 1];
+    if (current?.bit === bit) current.to = t;
+    else {
+      if (current) current.to = t;
+      runs.push({ from: t, to: t, bit });
+    }
+  }
+  return runs;
 }

@@ -1,129 +1,211 @@
-import { type CSSProperties, useEffect, useId, useMemo, useState } from "react";
+import { type RefObject, useEffect, useId, useRef, useState } from "react";
 import {
-  HIGH_MIN,
-  LOW_MAX,
-  SAMPLE_COUNT,
-  SIGNAL_PERIODS,
-  type SignalKind,
-  type SignalReport,
-  signalReport,
-  TRACE_POINTS,
+  type BitRun,
+  bitRuns,
+  clockVolts,
+  HIGH_MIN_VOLTS,
+  LOW_MAX_VOLTS,
+  readBit,
+  SCREEN_SECONDS,
+  SIGNAL_HZ,
+  SUPPLY_VOLTS,
+  signalTrace,
+  type TracePoint,
 } from "src/lib/computer/clock";
-import panel from "./ByteExplorer.module.css";
 import shared from "./Codebook.module.css";
 import { DemoMachine } from "./CodebookParts";
 import styles from "./SignalEdges.module.css";
 
-// The screen shows -0.4 to 1.6 of the supply, so overshoot stays in view.
-const TOP = 1.6;
-const BOTTOM = -0.4;
+// The screen runs a little past both rails, so the noise stays in view.
+const TOP_VOLTS = SUPPLY_VOLTS + 1;
+const BOTTOM_VOLTS = -1;
 const WIDTH = 1000;
 const HEIGHT = 400;
-const DEFAULT_NOISE = 20;
+/** Three ticks on screen make at most 13 stretches of the same bit; the rest is headroom. */
+const RUN_SLOTS = 16;
+const VOLTS_UPDATE_SECONDS = 0.1;
+/** In percent of the screen. */
+const MIN_LABEL_WIDTH = 4;
 
-const toY = (value: number) => ((TOP - value) / (TOP - BOTTOM)) * HEIGHT;
-const toPercent = (value: number) =>
-  Math.min(100, Math.max(0, ((TOP - value) / (TOP - BOTTOM)) * 100));
-const toX = (index: number) => (index / TRACE_POINTS) * WIDTH;
-const inBetween = (value: number) => value > LOW_MAX && value < HIGH_MIN;
+const toY = (volts: number) => ((TOP_VOLTS - volts) / (TOP_VOLTS - BOTTOM_VOLTS)) * HEIGHT;
+const toPercent = (volts: number) => (toY(volts) / HEIGHT) * 100;
 
-// What a gate reads in each band, written beside the middle of the band.
-const AXIS = [
-  { reading: "1", at: (TOP + HIGH_MIN) / 2 },
-  { reading: "?", at: (HIGH_MIN + LOW_MAX) / 2 },
-  { reading: "0", at: (LOW_MAX + BOTTOM) / 2 },
+const AXIS = [SUPPLY_VOLTS, HIGH_MIN_VOLTS, LOW_MAX_VOLTS, 0];
+
+const ZONES = [
+  { label: "HIGH = 1", at: (SUPPLY_VOLTS + HIGH_MIN_VOLTS) / 2 - 0.25, kind: "level" },
+  { label: "? UNDEFINED REGION", at: (HIGH_MIN_VOLTS + LOW_MAX_VOLTS) / 2, kind: "undefined" },
+  { label: "LOW = 0", at: LOW_MAX_VOLTS / 2 + 0.25, kind: "level" },
 ] as const;
 
-const KINDS: { kind: SignalKind; name: string; detail: string }[] = [
-  { kind: "wanted", name: "WANTED", detail: "Clean levels, edges that jump" },
-  { kind: "unwanted", name: "UNWANTED", detail: "Slow, ringing edges and a glitch" },
-];
+const formatAxis = (volts: number) => `${volts} V`;
 
-/** The whole trace, and the stretches of it that sit between the thresholds. */
-function tracePaths(trace: number[]) {
-  const all = trace
-    .map((value, index) => `${index ? "L" : "M"}${toX(index).toFixed(1)} ${toY(value).toFixed(1)}`)
-    .join("");
-  let between = "";
-  for (let index = 0; index < trace.length - 1; index++) {
-    if (!inBetween(trace[index]) && !inBetween(trace[index + 1])) continue;
-    between += `M${toX(index).toFixed(1)} ${toY(trace[index]).toFixed(1)}L${toX(index + 1).toFixed(1)} ${toY(trace[index + 1]).toFixed(1)}`;
+/** "4.8 V", with a real minus sign and without "-0.0". */
+function formatVolts(volts: number) {
+  const text = Math.abs(volts).toFixed(1);
+  return `${volts < 0 && text !== "0.0" ? "−" : ""}${text} V`;
+}
+
+/** The trace as a path, and the stretches of it inside the undefined region. */
+function tracePaths(trace: TracePoint[], end: number) {
+  const start = end - SCREEN_SECONDS;
+  const point = ({ t, volts }: TracePoint) =>
+    `${(((t - start) / SCREEN_SECONDS) * WIDTH).toFixed(1)} ${toY(volts).toFixed(1)}`;
+  let all = "";
+  let undefinedPart = "";
+  for (let index = 0; index < trace.length; index++) {
+    all += `${index ? "L" : "M"}${point(trace[index])}`;
+    if (index === trace.length - 1) continue;
+    if (readBit(trace[index].volts) !== "?" && readBit(trace[index + 1].volts) !== "?") continue;
+    undefinedPart += `M${point(trace[index])}L${point(trace[index + 1])}`;
   }
-  return { all, between };
+  return { all, undefinedPart };
 }
 
-function describe(kind: SignalKind, noise: number, report: SignalReport) {
-  const percent = Math.round(report.between * 100);
-  return (
-    `${kind === "wanted" ? "Wanted" : "Unwanted"} signal, noise ${noise}%. ` +
-    `${report.right} of ${SAMPLE_COUNT} samples read right, ${report.undefined} undefined, ` +
-    `${report.wrong} wrong. The signal spends ${percent}% of the time between the thresholds.`
-  );
+function runBox(run: BitRun, end: number) {
+  const start = end - SCREEN_SECONDS;
+  const left = Math.max(0, (run.from - start) / SCREEN_SECONDS);
+  const right = Math.min(1, (run.to - start) / SCREEN_SECONDS);
+  return { left: left * 100, width: Math.max(0, right - left) * 100 };
 }
 
-/** Waits until a value stops changing, so a dragged slider is announced once. */
-function useSettled<T>(value: T, delay: number) {
-  const [settled, setSettled] = useState(value);
+/** A stretch too narrow to hold its digit, cut off at the screen edge, stays blank. */
+function runLabel(run: BitRun, width: number) {
+  return run.bit === "?" || width < MIN_LABEL_WIDTH ? "" : run.bit;
+}
+
+function useVisible(ref: RefObject<HTMLElement | null>) {
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const timer = setTimeout(() => setSettled(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-  return settled;
+    const node = ref.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      rootMargin: "80px",
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [ref]);
+  return visible;
 }
+
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!query) return;
+    const update = () => setReduced(query.matches);
+    update();
+    query.addEventListener?.("change", update);
+    return () => query.removeEventListener?.("change", update);
+  }, []);
+  return reduced;
+}
+
+// The first frame, shared by the server and the client, and the still picture
+// for readers who ask for less motion. It ends a quarter into a tick, on a high.
+const FIRST_END = SCREEN_SECONDS + 0.25 / SIGNAL_HZ;
+const FIRST_TRACE = signalTrace(FIRST_END);
+const FIRST_PATHS = tracePaths(FIRST_TRACE, FIRST_END);
+const FIRST_RUNS = bitRuns(FIRST_TRACE);
+const FIRST_VOLTS = clockVolts(FIRST_END);
 
 /**
- * A clean clock signal next to a real-world one, on a scope, with what a gate
- * reads at each sample. Usable in MDX articles.
+ * A running clock signal on a scope, in volts, with the bit each stretch of it
+ * stands for right below. Usable in MDX articles.
  */
 export function SignalEdges() {
-  const [kind, setKind] = useState<SignalKind>("wanted");
-  const [noise, setNoise] = useState(DEFAULT_NOISE);
   const hatch = `signal-hatch-${useId().replace(/:/g, "")}`;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const visible = useVisible(rootRef);
+  const reducedMotion = useReducedMotion();
 
-  const report = useMemo(() => signalReport(kind, noise / 100), [kind, noise]);
-  const paths = useMemo(() => tracePaths(report.trace), [report]);
-  const summary = useSettled(describe(kind, noise, report), 600);
-  const between = Math.round(report.between * 100);
+  const glow = useRef<SVGPathElement>(null);
+  const trace = useRef<SVGPathElement>(null);
+  const traceUndefined = useRef<SVGPathElement>(null);
+  const dot = useRef<HTMLElement>(null);
+  const runs = useRef<(HTMLElement | null)[]>([]);
+  const voltsCell = useRef<HTMLElement>(null);
+  const bitCell = useRef<HTMLElement>(null);
+  const bitMeter = useRef<HTMLDivElement>(null);
+  const lamp = useRef<HTMLElement>(null);
 
-  const bandTop = toY(HIGH_MIN);
-  const bandBottom = toY(LOW_MAX);
+  useEffect(() => {
+    if (!visible || reducedMotion || typeof requestAnimationFrame === "undefined") return;
+    let frame = 0;
+    let last = performance.now();
+    let end = FIRST_END;
+    let voltsAge = VOLTS_UPDATE_SECONDS;
+
+    const step = (now: number) => {
+      const seconds = Math.min(0.1, Math.max(0, (now - last) / 1000));
+      last = now;
+      end += seconds;
+
+      const points = signalTrace(end);
+      const paths = tracePaths(points, end);
+      glow.current?.setAttribute("d", paths.all);
+      trace.current?.setAttribute("d", paths.all);
+      traceUndefined.current?.setAttribute("d", paths.undefinedPart);
+
+      const stretches = bitRuns(points);
+      runs.current.forEach((node, index) => {
+        if (!node) return;
+        const run = stretches[index];
+        node.hidden = !run;
+        if (!run) return;
+        const box = runBox(run, end);
+        node.style.left = `${box.left}%`;
+        node.style.width = `${box.width}%`;
+        node.dataset.bit = run.bit;
+        node.textContent = runLabel(run, box.width);
+      });
+
+      const volts = clockVolts(end);
+      const bit = readBit(volts);
+      if (dot.current) {
+        dot.current.style.top = `${toPercent(volts)}%`;
+        dot.current.dataset.bit = bit;
+      }
+      if (bitCell.current) bitCell.current.textContent = bit;
+      if (bitMeter.current) bitMeter.current.dataset.alert = String(bit === "?");
+      if (lamp.current) lamp.current.dataset.on = String(bit === "1");
+      voltsAge += seconds;
+      if (voltsAge >= VOLTS_UPDATE_SECONDS && voltsCell.current) {
+        voltsAge = 0;
+        voltsCell.current.textContent = formatVolts(volts);
+      }
+
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [visible, reducedMotion]);
+
+  const bandTop = toY(HIGH_MIN_VOLTS);
+  const bandBottom = toY(LOW_MAX_VOLTS);
+  const firstBit = readBit(FIRST_VOLTS);
 
   return (
-    <DemoMachine title="SIGNAL EDGES" label="A wanted and an unwanted clock signal">
-      <div className={styles.bench}>
+    <DemoMachine title="SIGNAL EDGES" label="A clock signal in volts">
+      <div className={styles.bench} ref={rootRef}>
         <div className={shared.plate}>
-          <div className={panel.sectionHead}>
-            <span>SCOPE</span>
-            <span>
-              {SIGNAL_PERIODS} TICKS · {SAMPLE_COUNT} SAMPLES
-            </span>
-          </div>
-
-          <div className={styles.scope} data-kind={kind}>
-            <div className={styles.scopeLine} aria-hidden="true">
-              <span>CH1 CLOCK</span>
-              <span>? = UNDEFINED</span>
-            </div>
+          <div className={styles.scope}>
             <div className={styles.field}>
               <div className={styles.axis} aria-hidden="true">
-                {AXIS.map((mark) => (
-                  <span
-                    key={mark.reading}
-                    data-reading={mark.reading}
-                    style={{ top: `${toPercent(mark.at)}%` }}
-                  >
-                    {mark.reading}
+                {AXIS.map((volts) => (
+                  <span key={volts} style={{ top: `${toPercent(volts)}%` }}>
+                    {formatAxis(volts)}
                   </span>
                 ))}
               </div>
               <div
                 className={styles.plot}
                 role="img"
-                aria-label={`${kind === "wanted" ? "Wanted" : "Unwanted"} clock signal. ${
-                  kind === "wanted"
-                    ? "It sits on two flat levels and jumps straight between them."
-                    : "Its edges crawl and ring, and one glitch dips low."
-                } It spends ${between}% of the time in the middle band.`}
+                aria-label={`A clock signal ticking ${SIGNAL_HZ} time per second. It switches between 0 and ${SUPPLY_VOLTS} volts with some noise. Up to ${LOW_MAX_VOLTS} volts counts as 0, from ${HIGH_MIN_VOLTS} volts counts as 1, and the region in between is undefined. The signal only passes through that region on its edges.`}
               >
                 <svg
                   viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -147,139 +229,104 @@ export function SignalEdges() {
                     width={WIDTH}
                     height={bandBottom - bandTop}
                     fill={`url(#${hatch})`}
-                    className={styles.band}
                   />
                   <path
                     className={styles.grid}
-                    d={[1, 2, 3, 4, 5, 6, 7]
-                      .map((step) => `M${(step * WIDTH) / 8} 0V${HEIGHT}`)
-                      .join("")}
+                    d={Array.from(
+                      { length: SCREEN_SECONDS - 1 },
+                      (_, index) => `M${((index + 1) * WIDTH) / SCREEN_SECONDS} 0V${HEIGHT}`,
+                    ).join("")}
                   />
                   <path
                     className={styles.threshold}
                     d={`M0 ${bandTop}H${WIDTH}M0 ${bandBottom}H${WIDTH}`}
                   />
+                  <path ref={glow} className={styles.glow} d={FIRST_PATHS.all} />
+                  <path ref={trace} className={styles.trace} d={FIRST_PATHS.all} />
                   <path
-                    className={styles.sampleLine}
-                    d={report.samples
-                      .map((sample) => `M${(sample.t / SIGNAL_PERIODS) * WIDTH} 0V${HEIGHT}`)
-                      .join("")}
+                    ref={traceUndefined}
+                    className={styles.traceUndefined}
+                    d={FIRST_PATHS.undefinedPart}
                   />
-                  <path className={styles.glow} d={paths.all} />
-                  <path className={styles.trace} d={paths.all} />
-                  <path className={styles.traceBetween} d={paths.between} />
                 </svg>
-                {report.samples.map((sample) => (
-                  <i
-                    key={sample.t}
-                    className={styles.dot}
-                    data-verdict={sample.verdict}
-                    style={
-                      {
-                        left: `${(sample.t / SIGNAL_PERIODS) * 100}%`,
-                        top: `${toPercent(sample.value)}%`,
-                      } as CSSProperties
-                    }
+                {ZONES.map((zone) => (
+                  <span
+                    key={zone.label}
+                    className={styles.zone}
+                    data-kind={zone.kind}
+                    style={{ top: `${toPercent(zone.at)}%` }}
                     aria-hidden="true"
-                  />
-                ))}
-              </div>
-              <span className={styles.axisFoot} aria-hidden="true">
-                ▸
-              </span>
-              <ol className={styles.reads} aria-label="What a gate reads at each sample">
-                {report.samples.map((sample, index) => (
-                  <li
-                    key={sample.t}
-                    data-verdict={sample.verdict}
-                    aria-label={`Sample ${index + 1}: ${
-                      sample.reading === "?" ? "undefined" : sample.reading
-                    }${sample.verdict === "wrong" ? `, should be ${sample.expected}` : ""}`}
                   >
-                    {sample.reading}
-                  </li>
+                    {zone.label}
+                  </span>
                 ))}
-              </ol>
-            </div>
-            <div className={styles.scopeLine} aria-hidden="true">
-              <span>GATE READS</span>
-              <span>1 · 0 · ?</span>
-            </div>
-          </div>
+                <i
+                  ref={dot}
+                  className={styles.dot}
+                  data-bit={firstBit}
+                  style={{ top: `${toPercent(FIRST_VOLTS)}%` }}
+                  aria-hidden="true"
+                />
+              </div>
 
-          <div className={styles.controls}>
-            <fieldset className={styles.kinds}>
-              <legend className="sr-only">Signal</legend>
-              {KINDS.map((option) => (
-                <button
-                  key={option.kind}
-                  type="button"
-                  className={styles.kindKey}
-                  aria-pressed={kind === option.kind}
-                  aria-label={`${option.name}: ${option.detail}`}
-                  onClick={() => {
-                    if (kind === option.kind) return;
-                    setKind(option.kind);
-                  }}
-                >
-                  <i className={shared.lamp} data-on={kind === option.kind} aria-hidden="true" />
-                  {option.name}
-                </button>
-              ))}
-            </fieldset>
-            <label className={styles.noise}>
-              <span className={styles.noiseHead}>
-                <span>NOISE</span>
-                <span>{noise}%</span>
+              <span className={styles.rowLabel} aria-hidden="true">
+                BIT
               </span>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={5}
-                value={noise}
-                onChange={(event) => setNoise(Number(event.target.value))}
-                className={styles.slider}
-                aria-valuetext={`${noise}% noise`}
-              />
-            </label>
+              <div className={styles.bits} aria-hidden="true">
+                {Array.from({ length: RUN_SLOTS }, (_, index) => {
+                  const run = FIRST_RUNS[index];
+                  const box = run ? runBox(run, FIRST_END) : { left: 0, width: 0 };
+                  return (
+                    <span
+                      // The slots are a fixed pool; the loop fills them in order.
+                      // biome-ignore lint/suspicious/noArrayIndexKey: fixed pool of slots
+                      key={index}
+                      ref={(node) => {
+                        runs.current[index] = node;
+                      }}
+                      hidden={!run}
+                      data-bit={run?.bit}
+                      style={{ left: `${box.left}%`, width: `${box.width}%` }}
+                    >
+                      {run ? runLabel(run, box.width) : ""}
+                    </span>
+                  );
+                })}
+              </div>
+
+              <span aria-hidden="true" />
+              <div className={styles.scale} aria-hidden="true">
+                <span style={{ width: `${100 / (SCREEN_SECONDS * SIGNAL_HZ)}%` }}>
+                  1 TICK = 1 s
+                </span>
+              </div>
+            </div>
           </div>
 
           <dl className={styles.meters}>
             <div className={styles.meter}>
-              <dt>READ RIGHT</dt>
+              <dt>CLOCK</dt>
               <dd>
-                {report.right}
-                <small>/{SAMPLE_COUNT}</small>
+                {SIGNAL_HZ} Hz
+                <i
+                  ref={lamp}
+                  className={shared.lamp}
+                  data-on={firstBit === "1"}
+                  aria-hidden="true"
+                />
               </dd>
             </div>
-            <div className={styles.meter} data-alert={report.undefined > 0}>
-              <dt>UNDEFINED</dt>
-              <dd>{report.undefined}</dd>
+            <div className={styles.meter}>
+              <dt>VOLTAGE NOW</dt>
+              <dd ref={voltsCell}>{formatVolts(FIRST_VOLTS)}</dd>
             </div>
-            <div className={styles.meter} data-alert={report.wrong > 0}>
-              <dt>WRONG</dt>
-              <dd>{report.wrong}</dd>
-            </div>
-            <div className={styles.meter} data-alert={between > 0}>
-              <dt>IN BETWEEN</dt>
-              <dd>
-                {between}
-                <small>% OF THE TIME</small>
-              </dd>
+            <div className={styles.meter} ref={bitMeter} data-alert={firstBit === "?"}>
+              <dt>BIT NOW</dt>
+              <dd ref={bitCell}>{firstBit}</dd>
             </div>
           </dl>
-
-          <p className={styles.note}>
-            {kind === "wanted"
-              ? "The edges jump straight across the middle band. Noise stays inside the outer bands, so every sample reads a clean 1 or 0."
-              : "The edges crawl and ring. Wherever the trace sits in the middle band, a gate may read 1, 0 or neither."}
-          </p>
         </div>
       </div>
-      <p className="sr-only" aria-live="polite">
-        {summary}
-      </p>
     </DemoMachine>
   );
 }

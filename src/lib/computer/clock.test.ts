@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  bitRuns,
   CLOCK_PRESETS,
   clockFacts,
+  clockVolts,
+  EDGE_SECONDS,
   formatDistance,
   formatElapsed,
   formatHertz,
@@ -10,18 +13,20 @@ import {
   formatSeconds,
   formatTicks,
   groupDigits,
-  HIGH_MIN,
+  HIGH_MIN_VOLTS,
   hzToSlider,
-  LOW_MAX,
+  LOW_MAX_VOLTS,
   MAX_HZ,
   MIN_HZ,
-  NOISE_MAX,
+  NOISE_VOLTS,
   niceStep,
   numberName,
-  readGate,
-  SAMPLE_COUNT,
+  readBit,
+  SCREEN_SECONDS,
+  SIGNAL_HZ,
+  SUPPLY_VOLTS,
   scopeTimebase,
-  signalReport,
+  signalTrace,
   sliderToHz,
   squareWave,
   ticksSince,
@@ -174,45 +179,49 @@ describe("scope", () => {
 
 describe("signal edges", () => {
   it("reads 1 above the high threshold, 0 below the low one, ? in between", () => {
-    expect(readGate(1)).toBe("1");
-    expect(readGate(HIGH_MIN)).toBe("1");
-    expect(readGate(0.5)).toBe("?");
-    expect(readGate(LOW_MAX)).toBe("0");
-    expect(readGate(-0.1)).toBe("0");
-    expect(NOISE_MAX).toBeLessThan(LOW_MAX);
+    expect(readBit(SUPPLY_VOLTS)).toBe("1");
+    expect(readBit(HIGH_MIN_VOLTS)).toBe("1");
+    expect(readBit(2.5)).toBe("?");
+    expect(readBit(LOW_MAX_VOLTS)).toBe("0");
+    expect(readBit(-0.2)).toBe("0");
   });
 
-  it("reads the wanted signal right at every noise level", () => {
-    for (const noise of [0, 0.3, 0.6, 1]) {
-      const report = signalReport("wanted", noise);
-      expect(report.samples).toHaveLength(SAMPLE_COUNT);
-      expect(report.right).toBe(SAMPLE_COUNT);
-      expect(report.between).toBe(0);
-      expect(report.samples.map((sample) => sample.reading).join("")).toBe("0011110000111100");
+  it("ticks at the set frequency, high for the first half of each tick", () => {
+    for (let tick = 0; tick < 50; tick++) {
+      const start = tick / SIGNAL_HZ;
+      expect(readBit(clockVolts(start + 0.25 / SIGNAL_HZ))).toBe("1");
+      expect(readBit(clockVolts(start + 0.75 / SIGNAL_HZ))).toBe("0");
     }
   });
 
-  it("leaves the unwanted signal in between and gets samples wrong", () => {
-    const quiet = signalReport("unwanted", 0);
-    expect(quiet.samples.map((sample) => sample.reading).join("")).toBe("001111?0001101?0");
-    expect(quiet.undefined).toBe(2);
-    // The glitch.
-    expect(quiet.wrong).toBe(1);
-    expect(quiet.between).toBeGreaterThan(0.08);
-
-    const loud = signalReport("unwanted", 1);
-    expect(loud.undefined + loud.wrong).toBeGreaterThan(quiet.undefined + quiet.wrong);
-    expect(loud.between).toBeGreaterThan(quiet.between);
+  it("never lets noise change a bit away from the edges", () => {
+    expect(NOISE_VOLTS).toBeLessThan(LOW_MAX_VOLTS);
+    expect(NOISE_VOLTS).toBeLessThan(SUPPLY_VOLTS - HIGH_MIN_VOLTS);
+    for (let t = 0; t < 200; t += 0.003) {
+      const phase = t % 0.5;
+      if (phase < EDGE_SECONDS) continue;
+      expect(readBit(clockVolts(t))).not.toBe("?");
+    }
   });
 
-  it("gets worse step by step as the noise grows", () => {
-    let previous = -1;
-    for (let noise = 0; noise <= 1; noise += 0.1) {
-      const report = signalReport("unwanted", noise);
-      expect(report.wrong).toBeGreaterThanOrEqual(1);
-      expect(report.right + report.undefined + report.wrong).toBe(SAMPLE_COUNT);
-      expect(report.undefined + report.wrong).toBeGreaterThanOrEqual(previous);
-      previous = report.undefined + report.wrong;
+  it("draws the same signal for the same moment, and it is noisy", () => {
+    expect(clockVolts(12.345)).toBe(clockVolts(12.345));
+    expect(clockVolts(0.2)).not.toBe(clockVolts(0.3));
+  });
+
+  it("covers the screen and splits it into one, undefined, zero, undefined, ...", () => {
+    const trace = signalTrace(SCREEN_SECONDS);
+    expect(trace[0].t).toBeLessThanOrEqual(0);
+    expect(trace[trace.length - 1].t).toBeGreaterThanOrEqual(SCREEN_SECONDS);
+    const bits = bitRuns(signalTrace(SCREEN_SECONDS + 0.25)).map((run) => run.bit);
+    expect(bits.join("")).toBe("1?0?1?0?1?0?1");
+  });
+
+  it("keeps the undefined stretches short and the runs joined up", () => {
+    const runs = bitRuns(signalTrace(40.25));
+    for (const [index, run] of runs.entries()) {
+      if (run.bit === "?") expect(run.to - run.from).toBeLessThan(EDGE_SECONDS);
+      if (index) expect(run.from).toBe(runs[index - 1].to);
     }
   });
 });

@@ -6,10 +6,13 @@ import styles from "./TutorialSuccess.module.css";
 /** Inline correctness persists; the shared site celebration fills the viewport. */
 export function TutorialSuccess({
   correct,
+  assisted = false,
   message,
   celebration,
 }: {
   correct: boolean;
+  /** The builder wired this board at the reader's request. */
+  assisted?: boolean;
   message?: string;
   celebration: number;
 }) {
@@ -43,7 +46,15 @@ export function TutorialSuccess({
       <div role="status" aria-live="polite" aria-atomic="true">
         {correct && (
           <p className={styles.status}>
-            <strong>✓ Correct wiring.</strong> {message}
+            {assisted ? (
+              <>
+                <strong>Wired for you.</strong> Press Reset to wire it yourself.
+              </>
+            ) : (
+              <>
+                <strong>✓ Correct wiring.</strong> {message}
+              </>
+            )}
           </p>
         )}
       </div>

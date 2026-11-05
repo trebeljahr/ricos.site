@@ -16,6 +16,7 @@ import { CATALOG, LEARNING_LEVELS, LEVELS, levelById } from "../../../lib/comput
 import { levelRows } from "../../../lib/computer/tutorial/paletteRows";
 import {
   clearAssisted,
+  markAssisted,
   markSkipped,
   markSolved,
   type Progress,
@@ -23,12 +24,14 @@ import {
   saveDraft,
 } from "../../../lib/computer/tutorial/progress";
 import type { CustomGrade, Level } from "../../../lib/computer/tutorial/types";
+import { wiredSolution } from "../../../lib/computer/tutorial/wiredSolution";
 import { LogicBuilder, type LogicBuilderHandle } from "../LogicBuilder";
 import { type Callout, HintLayer } from "./HintLayer";
 import { SpecView } from "./SpecView";
 import styles from "./Tutorial.module.css";
 import { TutorialSuccess } from "./TutorialSuccess";
 import { useTutorialSuccess } from "./useTutorialSuccess";
+import { WireItConfirm } from "./WireItConfirm";
 
 export type LogicTutorialProps = {
   /** The level to open first. Default: the first level of `levels`. */
@@ -183,6 +186,7 @@ export function LogicTutorial({
   const circuitRef = useRef(initial);
   const handle = useRef<LogicBuilderHandle | null>(null);
   const [hints, setHints] = useState(0);
+  const [confirmingWire, setConfirmingWire] = useState(false);
   const saveTimer = useRef<number | undefined>(undefined);
   const pendingDraft = useRef<{ level: Level; circuit: Circuit } | null>(null);
   const flushDraft = useCallback(() => {
@@ -207,6 +211,7 @@ export function LogicTutorial({
     circuitRef.current = initial;
     setCircuit(initial);
     setHints(0);
+    setConfirmingWire(false);
   }, [initial]);
   useEffect(() => {
     const onVisibilityChange = () => {
@@ -277,6 +282,15 @@ export function LogicTutorial({
     markSkipped(level.id);
     if (next) openLevel(next.id);
   };
+  /** The reader's choice after the last hint: a real solution on the board, not a solve of theirs. */
+  const wireForReader = () => {
+    setConfirmingWire(false);
+    const solution = wiredSolution(level, start);
+    if (!solution) return;
+    flushDraft();
+    markAssisted(level.id);
+    handle.current?.load(solution, "Undo brings your wiring back.");
+  };
   const reset = () => {
     resetSuccess(start.circuit);
     window.clearTimeout(saveTimer.current);
@@ -287,7 +301,10 @@ export function LogicTutorial({
     handle.current?.load(start.circuit);
   };
 
-  const shownHints = hints ? requestedHints(level, circuit, shown, hints) : [];
+  // A note on "your circuit" would praise the size of a board the builder wired.
+  const shownHints = (hints ? requestedHints(level, circuit, shown, hints) : []).filter(
+    (hint) => !assisted || hint.title !== "Your circuit",
+  );
   const hintLimit = (level.hints?.length ?? 0) + 1;
   const latestHint = shownHints[shownHints.length - 1];
   const callout: Callout | undefined = latestHint?.anchor
@@ -412,7 +429,7 @@ export function LogicTutorial({
             >
               Reset
             </button>
-            {next && !solved && (
+            {next && !solved && !assisted && (
               <button type="button" onClick={skip}>
                 Skip
               </button>
@@ -428,6 +445,18 @@ export function LogicTutorial({
                   </li>
                 ))}
               </ul>
+            )}
+            {hints >= hintLimit && level.reference && !assisted && (
+              <button
+                type="button"
+                className={styles.wireButton}
+                onClick={() => setConfirmingWire(true)}
+              >
+                Wire it for me
+              </button>
+            )}
+            {confirmingWire && (
+              <WireItConfirm onConfirm={wireForReader} onCancel={() => setConfirmingWire(false)} />
             )}
           </div>
 
@@ -481,6 +510,7 @@ export function LogicTutorial({
           <TutorialSuccess
             key={`${level.id}:${opened}`}
             correct={currentCorrect}
+            assisted={assisted}
             message={
               simplification?.text ?? (live?.kind === "custom" ? live.result.summary : undefined)
             }

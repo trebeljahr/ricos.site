@@ -1236,8 +1236,8 @@ export type LogicBuilderHandle = {
   show: (circuit: Circuit, halfCycles: number) => void;
   /** Applies an edit to the top-level circuit as one undoable change, e.g. a tutorial's "Show me". */
   apply: (edit: (circuit: Circuit) => Circuit, message?: string) => void;
-  /** Loads a circuit as a fresh start, e.g. a level's reset. */
-  load: (circuit: Circuit) => void;
+  /** Loads a circuit as a fresh start, e.g. a level's reset, as one undoable change. */
+  load: (circuit: Circuit, message?: string) => void;
 };
 
 /**
@@ -2811,7 +2811,10 @@ function LogicBuilderWorkspace({
         setCircuit((current) => edit(current));
         if (note) setMessage(note);
       },
-      load: (next) => load(next),
+      load: (next, note) => {
+        load(next);
+        if (note) setMessage(note);
+      },
     };
     return () => {
       handleRef.current = null;

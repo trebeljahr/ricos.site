@@ -236,6 +236,78 @@
   background: var(--tut-bg-slate-31);
 }
 
+.wireButton {
+  justify-self: start;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--tut-line-slate-54);
+  border-radius: 6px;
+  background: var(--tut-bg-slate-33-2);
+  color: var(--tut-ink-grey-94);
+  font: 650 12px ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.wireButton:hover {
+  border-color: var(--tut-ink-violet-76);
+}
+
+.confirm {
+  box-sizing: border-box;
+  width: min(100% - 32px, 390px);
+  /* Tailwind's reset removes the margin that centres a modal dialog. */
+  margin: auto;
+  padding: 24px;
+  border: 1px solid var(--tut-line-slate-54);
+  border-radius: 10px;
+  background: var(--tut-bg-slate-22);
+  color: var(--tut-ink-grey-94);
+  font: 13px / 1.5 ui-sans-serif, system-ui, sans-serif;
+}
+
+.confirm::backdrop {
+  background: #050b19bb;
+}
+
+.confirm h2 {
+  margin: 0 0 8px;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.confirm p {
+  margin: 0;
+}
+
+.confirmActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.confirmActions button {
+  padding: 9px 13px;
+  border: 1px solid var(--tut-line-slate-54);
+  border-radius: 5px;
+  background: var(--tut-bg-slate-33-2);
+  color: var(--tut-ink-grey-94);
+  font: 700 12px ui-sans-serif, system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.confirmActions button:hover {
+  border-color: var(--tut-ink-violet-76);
+}
+
+.confirmActions .confirmPrimary {
+  border-color: var(--tut-bg-teal-88);
+  background: var(--tut-bg-teal-88);
+  color: var(--tut-ink-slate-26);
+}
+
 .subhead {
   margin: 6px 0 0;
   color: var(--tut-ink-slate-79-2);

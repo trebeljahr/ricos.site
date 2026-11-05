@@ -216,6 +216,8 @@ describe("demo files", () => {
       // The chapter's names for HalfAdder and FullAdder.
       "AdditionTable",
       "FullAdderTable",
+      // Retired. Renders nothing until chapter 3.1 drops the tag.
+      "SignedArithmetic",
     ];
     expect(mdxNames.filter((name) => !exempt.includes(name) && !uses(pages, name))).toEqual([]);
   });

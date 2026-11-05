@@ -39,12 +39,19 @@ function dffCircuit(resettable = false): Circuit {
     label: id.replaceAll("-", " ").toUpperCase(),
   }));
   const positions: Record<string, [number, number]> = {
-    data: [40, 80], clock: [40, 520],
-    "not-data": [280, 300], "not-clock": [280, 520],
-    "master-set": [520, 80], "master-reset": [520, 300],
-    "master-q": [760, 80], "master-qbar": [760, 300],
-    "slave-set": [1000, 80], "slave-reset": [1000, 300],
-    q: [1240, 80], qbar: [1240, 300], out: [1480, 80],
+    data: [40, 80],
+    clock: [40, 520],
+    "not-data": [280, 300],
+    "not-clock": [280, 520],
+    "master-set": [520, 80],
+    "master-reset": [520, 300],
+    "master-q": [760, 80],
+    "master-qbar": [760, 300],
+    "slave-set": [1000, 80],
+    "slave-reset": [1000, 300],
+    q: [1240, 80],
+    qbar: [1240, 300],
+    out: [1480, 80],
   };
   for (const node of nodes) [node.x, node.y] = positions[node.id];
   const wires: Wire[] = [];
@@ -75,10 +82,15 @@ function dffCircuit(resettable = false): Circuit {
   link("q", "qbar", 1);
   link("q", "out");
   if (resettable) {
-    nodes.push({ id: "reset", type: "switch", x: 40, y: 740, label: "RESET" },
-      { id: "not-reset", type: "not", x: 280, y: 740, label: "NOT RESET" });
+    nodes.push(
+      { id: "reset", type: "switch", x: 40, y: 740, label: "RESET" },
+      { id: "not-reset", type: "not", x: 280, y: 740, label: "NOT RESET" },
+    );
     link("reset", "not-reset");
-    for (const [prefix, x] of [["master", 520], ["slave", 1000]] as const) {
+    for (const [prefix, x] of [
+      ["master", 520],
+      ["slave", 1000],
+    ] as const) {
       const setTarget = prefix === "master" ? "master-q" : "q";
       const resetTarget = prefix === "master" ? "master-qbar" : "qbar";
       for (const [signal, target, type, control, y] of [
@@ -87,13 +99,21 @@ function dffCircuit(resettable = false): Circuit {
       ] as const) {
         const safe = `${signal}-safe`;
         nodes.push({ id: safe, type, x, y, label: `RESET PRIORITY ${type.toUpperCase()}` });
-        const index = wires.findIndex(w => w.from === signal && w.to === target && w.input === 0);
+        const index = wires.findIndex((w) => w.from === signal && w.to === target && w.input === 0);
         wires.splice(index, 1);
-        link(signal, safe); link(control, safe, 1); link(safe, target);
+        link(signal, safe);
+        link(control, safe, 1);
+        link(safe, target);
       }
     }
   }
-  return { name: resettable ? "D flip-flop with asynchronous reset" : "Positive-edge master-slave D flip-flop", nodes, wires };
+  return {
+    name: resettable
+      ? "D flip-flop with asynchronous reset"
+      : "Positive-edge master-slave D flip-flop",
+    nodes,
+    wires,
+  };
 }
 
 function srLatchCircuit(): Circuit {
@@ -140,22 +160,20 @@ function dLatchCircuit(): Circuit {
 export const storageCircuit = (type: "dff" | "srlatch" | "dlatch") =>
   type === "dff" ? dffCircuit() : type === "srlatch" ? srLatchCircuit() : dLatchCircuit();
 
-export const storageNodeCircuit = (node: Node) => node.type === "dff" ? dffCircuit(node.resettable) : storageCircuit(node.type as "srlatch" | "dlatch");
+export const storageNodeCircuit = (node: Node) =>
+  node.type === "dff"
+    ? dffCircuit(node.resettable)
+    : storageCircuit(node.type as "srlatch" | "dlatch");
 
 export function collectUnfoldableIds(circuit: Circuit, prefix = ""): string[] {
   return circuit.nodes.flatMap((item) => {
     const id = `${prefix}${item.id}`;
+    if (item.opensToSwitches) return [id];
     if (item.type === "module" && item.module)
       return [id, ...collectUnfoldableIds(item.module, `${id}/`)];
     if (["dff", "srlatch", "dlatch"].includes(item.type)) {
       if (item.type === "dff" && item.label?.startsWith("FLOATING GATE")) return [id];
-      return [
-        id,
-        ...collectUnfoldableIds(
-          storageNodeCircuit(item),
-          `${id}/`,
-        ),
-      ];
+      return [id, ...collectUnfoldableIds(storageNodeCircuit(item), `${id}/`)];
     }
     return GATE_NAMES.includes(item.type as LogicGate) || item.type === "dramcell" ? [id] : [];
   });

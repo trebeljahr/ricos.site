@@ -15,6 +15,8 @@ export type RoutingWire = {
   points?: Point[];
   /** See Wire.railBetweenParts. */
   railBetweenParts?: boolean;
+  /** See Wire.runBeforeEnd. */
+  runBeforeEnd?: number;
 };
 
 type Segment = { a: Point; b: Point; net?: string };
@@ -241,6 +243,11 @@ function railBetweenParts(start: Point, end: Point, terminals: Omit<RoutingObsta
     { x: end.x - 13, y: end.y },
     end,
   ]);
+}
+
+/** Across to a set vertical track, along it, and across to the end. */
+function trackRoute(start: Point, end: Point, x: number) {
+  return cleanPoints([start, { x, y: start.y }, { x, y: end.y }, end]);
 }
 
 function roundedPath(raw: Point[]) {
@@ -492,6 +499,7 @@ export function routeCircuitWires(
     for (const wire of orderedWires) {
       if (
         wire.points ||
+        wire.runBeforeEnd !== undefined ||
         (wire.startSide ?? "right") !== "right" ||
         (wire.endSide ?? "left") !== "left" ||
         wire.end.x - wire.start.x < 64
@@ -584,18 +592,20 @@ export function routeCircuitWires(
       endSide = wire.endSide ?? "left";
     const points = wire.railBetweenParts
       ? railBetweenParts(wire.start, wire.end, terminals)
-      : startSide === "right" && endSide === "left"
-        ? routePoints(wire.start, wire.end, relevant, occupied, wire.net, terminals)
-        : orientedRoutePoints(
-            wire.start,
-            wire.end,
-            startSide,
-            endSide,
-            relevant,
-            occupied,
-            wire.net,
-            terminals,
-          );
+      : wire.runBeforeEnd !== undefined
+        ? trackRoute(wire.start, wire.end, wire.end.x - wire.runBeforeEnd)
+        : startSide === "right" && endSide === "left"
+          ? routePoints(wire.start, wire.end, relevant, occupied, wire.net, terminals)
+          : orientedRoutePoints(
+              wire.start,
+              wire.end,
+              startSide,
+              endSide,
+              relevant,
+              occupied,
+              wire.net,
+              terminals,
+            );
     routedPoints.push(...points);
     for (const bus of buses) {
       for (const { a, b } of segments(points)) {

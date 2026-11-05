@@ -39,6 +39,8 @@
 .inlineWires{position:absolute;inset:0;overflow:visible;pointer-events:none;z-index:0}
 .inlineWires .wire{pointer-events:none;filter:none;stroke-width:2.5;opacity:.8}
 .inlineWires .wireSelected{stroke-width:4;opacity:1}
+.litWires .inlineWires .wire{opacity:.55}
+.litWires .inlineWires .wire.live{opacity:1;filter:drop-shadow(0 0 5px var(--wire-color))}
 .inlineWires .wireHit{stroke:transparent;stroke-width:14}
 .inlineWires .wirePreview{filter:none}
 .inlinePart{z-index:1;isolation:isolate;cursor:grab}
@@ -98,6 +100,8 @@
 .inputPortLabel,.outputPortLabel{position:absolute;top:0;transform:translateY(-50%);max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#f2d49b;font:700 10px ui-monospace,SFMono-Regular,monospace;line-height:16px;pointer-events:none}
 .inputPortLabel{left:15px;text-align:left}
 .outputPortLabel{right:15px;text-align:right}
+.outputPortLabel.wirePortLabel{right:auto;left:12px;transform:translateY(-100%);color:var(--part-accent)}
+.node:has(.wirePortLabel) .decimalInput input[aria-invalid="false"]~small{display:none}
 .moduleBody{width:72px;margin:auto;padding-left:0;padding-right:0}
 .moduleBody .nodeType{max-width:72px;overflow:hidden;text-overflow:ellipsis}
 .moduleBody .moduleBits{font-size:8px}

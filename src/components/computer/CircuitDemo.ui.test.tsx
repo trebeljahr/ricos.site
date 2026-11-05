@@ -61,6 +61,39 @@ it("adds two 4-bit numbers and shows the five-bit total on lamps and a display",
   expect(screen.getByLabelText("A + B — 5-BIT DISPLAY part")).toBeTruthy();
 });
 
+it("unfolds an input to its switches, display and outputs, and the switches change the sum", () => {
+  render(<FourBitAdder />);
+  expect(screen.queryByLabelText("A0 — SWITCH part")).toBeNull();
+  fireEvent.click(testButton("Unfold A in place"));
+  expect(screen.getByLabelText("4-bit input expanded circuit")).toBeTruthy();
+  for (const bit of [0, 1, 2, 3]) {
+    expect(screen.getByLabelText(`A${bit} — SWITCH part`)).toBeTruthy();
+    expect(screen.getByLabelText(`Wire to output A${bit}`)).toBeTruthy();
+  }
+  expect(screen.getByLabelText("A value").textContent).toBe("50101");
+  expect(screen.getByLabelText("A + B value").textContent).toBe("1401110");
+  fireEvent.click(testButton("ON", screen.getByLabelText("A0 — SWITCH part")));
+  expect(screen.getByLabelText("A value").textContent).toBe("40100");
+  expect(screen.getByLabelText("A + B value").textContent).toBe("1301101");
+  fireEvent.click(testButton("Refold box"));
+  expect(screen.queryByLabelText("A0 — SWITCH part")).toBeNull();
+  expect((screen.getByLabelText("A decimal input") as HTMLInputElement).value).toBe("4");
+  expect(screen.getByLabelText("A + B value").textContent).toBe("1301101");
+});
+
+it("reads 255 + 255 as 510 with the eight-bit inputs folded or open", () => {
+  render(<EightBitAdder />);
+  for (const name of ["A", "B"]) {
+    const input = screen.getByLabelText(`${name} decimal input`);
+    fireEvent.change(input, { target: { value: "255" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+  }
+  expect(screen.getByLabelText("A + B value").textContent).toBe("510111111110");
+  fireEvent.click(testButton("Unfold B in place"));
+  expect(screen.getByLabelText("A + B value").textContent).toBe("510111111110");
+  expect(screen.getByLabelText("B value").textContent).toBe("25511111111");
+});
+
 it("opens a decoder's modules down to its gates, and stops there", () => {
   render(<DecoderDemo />);
   expect(screen.getAllByLabelText(/expanded circuit$/).length).toBe(2);

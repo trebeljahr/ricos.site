@@ -1,4 +1,4 @@
-import type { Wire } from "./logic";
+import { isNumberInput, type Wire } from "./logic";
 import { type DisplayNode, nodeHeight, nodeWidth } from "./nodeGeometry";
 
 /** Reflow from authored positions so folding is reversible, including chained collisions. */
@@ -81,7 +81,12 @@ export function spaceExpandedNodes<T extends DisplayNode>(
   return nodes.map((node) => positions.get(node.id)!);
 }
 
-/** Keep a column of parts in order: everything below an unfolded part moves down, everything right of it moves right. */
+const INPUT_GAP = 36;
+
+/**
+ * Keep a column of parts in order: everything below an unfolded part moves down, everything right of it moves right.
+ * An input beside the column moves down only an input it would reach, so the column's rows stay evenly spaced.
+ */
 export function spaceColumnNodes<T extends DisplayNode>(
   nodes: readonly T[],
   originals: readonly DisplayNode[],
@@ -95,6 +100,8 @@ export function spaceColumnNodes<T extends DisplayNode>(
       ? [
           {
             original,
+            ownColumn: isNumberInput(node.type),
+            grownBottom: node.y + nodeHeight(node),
             grownWidth,
             grownHeight,
             right: node.x + nodeWidth(original),
@@ -105,15 +112,25 @@ export function spaceColumnNodes<T extends DisplayNode>(
   });
   return nodes.map((node) => {
     const pushes = (host: (typeof hosts)[number]) => host.original.id !== node.id;
-    const dx = Math.max(
-      0,
-      ...hosts
-        .filter((host) => pushes(host) && node.x >= host.right)
-        .map((host) => host.grownWidth),
-    );
+    // Each column to the left adds the width of its widest unfolded part.
+    const widest = new Map<number, number>();
+    for (const host of hosts)
+      if (pushes(host) && node.x >= host.right)
+        widest.set(host.original.x, Math.max(widest.get(host.original.x) ?? 0, host.grownWidth));
+    const dx = [...widest.values()].reduce((sum, width) => sum + Math.max(0, width), 0);
+    const middle = node.y + nodeHeight(node) / 2;
     const dy = hosts
-      .filter((host) => pushes(host) && node.x >= host.original.x && node.y >= host.bottom)
-      .reduce((sum, host) => sum + host.grownHeight, 0);
+      .filter((host) => pushes(host) && node.x >= host.original.x && middle >= host.bottom)
+      .reduce(
+        (sum, host) =>
+          sum +
+          (!host.ownColumn
+            ? host.grownHeight
+            : node.x < host.right
+              ? Math.max(0, host.grownBottom + INPUT_GAP - node.y)
+              : 0),
+        0,
+      );
     return dx || dy ? { ...node, x: node.x + dx, y: node.y + dy } : node;
   });
 }

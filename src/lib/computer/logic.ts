@@ -56,6 +56,8 @@ export type Node = {
   resettable?: boolean;
   /** Number of input pins on a display8 that reads more or fewer than eight bits. */
   bits?: number;
+  /** A number input that unfolds to its switches, display and outputs, with wires of this colour. */
+  opensToSwitches?: WireColor;
   /** Probe name on a display4/display8, read by `readProbes` (e.g. ACC, PC). */
   probe?: string;
   module?: Circuit;
@@ -84,6 +86,8 @@ export type Wire = {
   points?: { x: number; y: number }[];
   /** Routes back through the gap between a part and the part below it, also when one unfolds. */
   railBetweenParts?: boolean;
+  /** Runs its vertical stretch this far left of its end, so wires in a set keep their own tracks. */
+  runBeforeEnd?: number;
 };
 export type CircuitGroup = {
   id: string;
@@ -132,6 +136,8 @@ export type Circuit = {
   lanes?: WireLane[];
   /** "column": an unfolded part pushes what is below it down and what is right of it right. */
   reflow?: "column";
+  /** Unfolded, its parts stay where they are put and its host's pins line up with them. */
+  fixedParts?: boolean;
 };
 export type Snapshot = {
   values: Record<string, boolean>;
@@ -324,11 +330,13 @@ export const outputLabel = (node: Node, index: number) =>
     ? "Drain (D)"
     : node.type === "module"
       ? moduleOutputs(node.module!)[index]?.label || `Output ${index + 1}`
-      : isNumberInput(node.type) || node.type === "splitter"
-        ? `Bit ${index}`
-        : outputWidth(node, index) === 8
-          ? "Bus"
-          : "Output";
+      : node.opensToSwitches
+        ? `${node.label ?? ""}${index}`
+        : isNumberInput(node.type) || node.type === "splitter"
+          ? `Bit ${index}`
+          : outputWidth(node, index) === 8
+            ? "Bus"
+            : "Output";
 export const initialSnapshot = (): Snapshot => ({
   values: {},
   memory: {},
@@ -2059,6 +2067,11 @@ export function validateCircuit(
       ...(n.type === "pulse" && n.manualMode ? { manualMode: n.manualMode } : {}),
       ...(n.probe ? { probe: n.probe } : {}),
       ...(n.bits ? { bits: n.bits } : {}),
+      ...(isNumberInput(n.type) &&
+      typeof n.opensToSwitches === "string" &&
+      Object.hasOwn(WIRE_COLORS, n.opensToSwitches)
+        ? { opensToSwitches: n.opensToSwitches }
+        : {}),
       module: validatedModules.get(n.id),
       ...(behaviours.has(n.id) ? { behaviour: behaviours.get(n.id) } : {}),
       ...(n.type === "module" && typeof n.part === "string" && /^[a-z0-9-]{1,40}$/.test(n.part)
@@ -2073,6 +2086,7 @@ export function validateCircuit(
       output: w.output,
       ...(w.points ? { points: w.points.map((point) => ({ x: point.x, y: point.y })) } : {}),
       ...(w.railBetweenParts === true ? { railBetweenParts: true } : {}),
+      ...(Number.isFinite(w.runBeforeEnd) ? { runBeforeEnd: w.runBeforeEnd } : {}),
       color:
         typeof w.color === "string" && Object.hasOwn(WIRE_COLORS, w.color)
           ? (w.color as WireColor)
@@ -2088,5 +2102,6 @@ export function validateCircuit(
       ? { lanes: item.lanes.flatMap((lane) => validLane(lane, WIRE_COLORS) ?? []) }
       : {}),
     ...(item.reflow === "column" ? { reflow: "column" as const } : {}),
+    ...(item.fixedParts === true ? { fixedParts: true } : {}),
   };
 }

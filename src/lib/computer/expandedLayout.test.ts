@@ -96,4 +96,41 @@ describe("a column of parts", () => {
     expect(spaced.get("lamp")).toMatchObject({ x: 1000, y: 200 });
     expect(spaced.get("low")).toMatchObject({ x: 1000, y: 700 });
   });
+
+  describe("with number inputs beside it", () => {
+    const parts: DisplayNode[] = [
+      { id: "a", type: "input4", x: 0, y: 0 },
+      { id: "b", type: "input4", x: 0, y: 600 },
+      part("top", 300, 0),
+      part("next", 300, 300),
+      part("lamp", 600, 0),
+    ];
+    const place = (grow: Record<string, Partial<DisplayNode>>) =>
+      new Map(
+        spaceColumnNodes(
+          parts.map((node) => ({ ...node, ...grow[node.id] })),
+          parts,
+        ).map((node) => [node.id, node]),
+      );
+
+    it("keeps the column's rows where they are when an input grows taller", () => {
+      const spaced = place({ a: { displayWidth: 200, displayHeight: 400 } });
+      expect(spaced.get("top")?.y).toBe(0);
+      expect(spaced.get("next")?.y).toBe(300);
+      expect(spaced.get("b")?.y).toBe(600);
+    });
+
+    it("moves the input below only as far as it must", () => {
+      expect(place({ a: { displayWidth: 200, displayHeight: 700 } }).get("b")?.y).toBe(736);
+    });
+
+    it("adds the growth of each column to what is right of them", () => {
+      const spaced = place({
+        a: { displayWidth: 256, displayHeight: 200 },
+        top: { displayWidth: 232, displayHeight: 116 },
+      });
+      expect(spaced.get("top")?.x).toBe(400);
+      expect(spaced.get("lamp")?.x).toBe(800);
+    });
+  });
 });

@@ -81,6 +81,7 @@ import { compileProgram, SAMPLE_PROGRAMS } from "../../lib/computerStepper";
 import { duplicateProbes } from "../../lib/computer/probes";
 import { layoutCircuit } from "../../lib/computer/circuitLayout";
 import { layoutCmosBlueprint } from "../../lib/computer/cmosLayout";
+import { numberInputCircuit, switchBit } from "../../lib/computer/numberInputSwitches";
 import { spaceColumnNodes, spaceExpandedNodes } from "../../lib/computer/expandedLayout";
 import { type FoldBox, type ViewportState, foldFocus, followFold } from "../../lib/computer/foldViewport";
 import { laneComb, laneValue, NO_LANES, resolveLanes, trunkRoute, type LaneTap } from "../../lib/computer/wireLanes";
@@ -413,11 +414,11 @@ const partName = (node: Node) =>
       : LABELS[node.type];
 /** Pin names beside a folded part's side ports; top and bottom rows have no room for them. */
 function PortLabel({ node, index, kind, folded }: { node: Node; index: number; kind: "input" | "output"; folded: boolean }) {
-  const named = node.type === "module" || (kind === "input" && node.type === "sevensegment");
+  const named = node.type === "module" || (kind === "input" && node.type === "sevensegment") || node.opensToSwitches;
   const side = kind === "input" ? inputSide(node) : outputSide(node);
   if (!named || !folded || side === "top" || side === "bottom") return null;
   const label = kind === "input" ? inputLabel(node, index) : outputLabel(node, index);
-  return <span className={kind === "input" ? styles.inputPortLabel : styles.outputPortLabel} title={label}>{label}</span>;
+  return <span className={clsx(kind === "input" ? styles.inputPortLabel : styles.outputPortLabel, node.opensToSwitches && styles.wirePortLabel)} title={label}>{label}</span>;
 }
 type NodeReadoutProps = {
   node: Node;
@@ -530,7 +531,7 @@ const INLINE_X = 12;
 const INLINE_Y = 56;
 const EMPTY_SNAPSHOT = initialSnapshot();
 const intrinsicCircuits = new Map<string, Circuit>();
-const isUnfoldable = (node: Node) => node.type === "module" ||
+const isUnfoldable = (node: Node) => node.type === "module" || Boolean(node.opensToSwitches) ||
   GATE_NAMES.includes(node.type as LogicGate) || ["dff", "srlatch", "dlatch", "dramcell"].includes(node.type);
 
 const makeInnerCircuit = (node: Node): Circuit | undefined => {
@@ -565,6 +566,7 @@ const makeInnerCircuit = (node: Node): Circuit | undefined => {
 };
 const innerCircuit = (node: Node): Circuit | undefined => {
   if (node.type === "module") return node.module;
+  if (node.opensToSwitches) return numberInputCircuit(node);
   if (!isUnfoldable(node)) return undefined;
   const key = node.label?.startsWith("FLOATING GATE") ? "floating-gate" : `${node.type}:${node.resettable ? "reset" : "plain"}`;
   if (!intrinsicCircuits.has(key)) {
@@ -624,7 +626,7 @@ const layoutInlineCircuit = (
   const boundary = new Set([...inputs, ...outputs].map((node) => node.id));
   const visible = circuit.nodes.filter((node) => !boundary.has(node.id));
   // CMOS blueprints draw their own wires, so their parts must stay where those wires expect them.
-  const schematic = circuit.name.endsWith(" from CMOS transistors");
+  const schematic = circuit.fixedParts || circuit.name.endsWith(" from CMOS transistors");
   const minX = Math.min(...(schematic ? [] : [0]), ...visible.map((node) => node.x));
   const minY = Math.min(...(schematic ? [] : [0]), ...visible.map((node) => node.y));
   // An input pin sits level with its control wire's run across the schematic.
@@ -680,6 +682,8 @@ type InlineCircuitProps = {
   ownsClipboard: (target: EventTarget | null) => boolean;
   onPaste: (clip: CircuitClip, point: { x: number; y: number }, path: string) => string[] | null;
   signalView: boolean;
+  /** Set for a number input: its switches change the number, also on a locked board. */
+  onSwitch?: (id: string) => void;
 };
 
 type InlineEndpoint = {
@@ -689,7 +693,7 @@ type InlineEndpoint = {
 };
 
 const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfolded, snapshot, onToggle,
-  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path, editable, ownsClipboard, onPaste, signalView }: InlineCircuitProps) {
+  onExpandLevel, onRefoldLevel, onEnter, onEdit, onActivate, activePath, zoom, path, editable, ownsClipboard, onPaste, signalView, onSwitch }: InlineCircuitProps) {
   const root = useRef<HTMLDivElement>(null);
   const diagram = useRef<HTMLDivElement>(null);
   const [segmentBanks, setSegmentBanks] = useState<Record<string, number>>({});
@@ -1042,7 +1046,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
   const heading = host.label && host.label !== circuit.name
     ? `${host.label} — ${circuit.name}` : circuit.name;
   return (
-    <div ref={root} className={clsx(styles.inlineCircuit, activePath === path && styles.activeInlineCircuit)}
+    <div ref={root} className={clsx(styles.inlineCircuit, activePath === path && styles.activeInlineCircuit, onSwitch && styles.litWires)}
       data-inline-path={path} aria-label={`${circuit.name} expanded circuit`}
       // biome-ignore lint/a11y/noNoninteractiveTabindex: focus makes this the target for keyboard edits
       tabIndex={0}
@@ -1184,7 +1188,7 @@ const InlineCircuit = memo(function InlineCircuit({ host, circuit, layout, unfol
               <strong className={styles.nodePartName}>{partName(part)}</strong>
               <NodeReadout node={part} snapshot={snapshot} wires={circuit.wires} bank={segmentBank(part, segmentBanks)}
                 onBank={showSegmentBank}
-                onUpdate={editable ? (patch) => onEdit(path, (inner) => ({ ...inner,
+                onUpdate={onSwitch && part.type === "switch" ? () => onSwitch(part.id) : editable ? (patch) => onEdit(path, (inner) => ({ ...inner,
                   nodes: inner.nodes.map((item) => item.id === part.id ? { ...item, ...patch(item) } : item) })) : undefined} />
             </div>}
             {!part.child && part.expandable && <div className={styles.nodeActions}>
@@ -2187,6 +2191,7 @@ function LogicBuilderWorkspace({
                   net: netKeys[wire.id],
                   points: wire.points ? pathPoints(explicitWirePath(wire.points, portPoint(from, wire.output ?? 0, "output"), portPoint(to, wire.input, "input")))[0] : undefined,
                   railBetweenParts: wire.railBetweenParts,
+                  runBeforeEnd: wire.runBeforeEnd,
                 },
               ]
             : [];
@@ -5018,6 +5023,8 @@ function LogicBuilderWorkspace({
                         unfolded,
                         snapshot: boardSnapshot.modules[node.id] ?? EMPTY_SNAPSHOT,
                         ...inlineActions,
+                        onSwitch: node.opensToSwitches ? (id: string) => boardActions.current.updatePart(node, (item) =>
+                          ({ numberValue: (item.numberValue ?? 0) ^ (1 << switchBit(id)) })) : undefined,
                         onActivate: setActiveInlinePath,
                         activePath: activeInlinePath,
                         zoom,

@@ -2,14 +2,7 @@
 import { Builder, type Ref, range } from "./blockBuilder";
 import { layoutCircuit } from "./circuitLayout";
 import { addDataMemory, datapathNode } from "./datapathBlocks";
-import {
-  type Circuit,
-  gateBlueprint,
-  type LogicGate,
-  PRESETS,
-  type Wire,
-  type WireColor,
-} from "./logic";
+import { type Circuit, gateBlueprint, type LogicGate, PRESETS, type Wire } from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
 import { busPorts, CircuitKit } from "./tutorial/kit";
 import { CATALOG } from "./tutorial/levels";
@@ -26,54 +19,108 @@ function boxedFullAdder(): Circuit {
   return circuit;
 }
 
-const ROW = 200;
+const ROW = 210;
 /** Full adder ports, with the carry on top so the chain never crosses A and B. */
 const FULL_ADDER_INPUTS = ["cin", "a", "b"];
 const SUM_PIN = 42;
-const A_PIN = 92.5;
+const A_PIN = 92;
+const LAST_PIN = 143;
+/** Keeps an input's output lines off the levels of the adder pins, where they would read as one wire. */
+const PIN_CLEARANCE = 24;
+/** How far left of a lamp its wire leaves the line running past it. */
+const LAMP_TAP = 22;
+const LAMP_CLEARANCE = 20;
+const DISPLAY_TRACK = 20;
+const FIRST_OUTPUT = 40;
+const DISPLAY_MARGIN = 30;
 
-/** A column of full adders, bit 0 on top, each passing its carry down to the next. */
+/**
+ * A column of full adders, bit 0 on top, each passing its carry down to the next.
+ * A sits at the top and B at the bottom. Each bit has its own wire on its own
+ * vertical track, ordered so the wires from one input never cross each other.
+ */
 function columnAdderDemo(width: 4 | 8, a: number, b: number): Circuit {
   const adder = layoutCircuit(boxedFullAdder());
-  const stage = { ...adder, ports: { inputs: FULL_ADDER_INPUTS, outputs: ["sum", "carry"] } };
   const bits = range(width);
+  const names: Record<string, (bit: number) => string> = {
+    a: (bit) => `A${bit}`,
+    b: (bit) => `B${bit}`,
+    sum: (bit) => `SUM${bit}`,
+  };
+  // Each adder's pins carry the same names as the wires reaching them.
+  const stage = (bit: number): Circuit => ({
+    ...adder,
+    ports: { inputs: FULL_ADDER_INPUTS, outputs: ["sum", "carry"] },
+    nodes: adder.nodes.map((node) =>
+      names[node.id] ? { ...node, label: names[node.id](bit) } : node,
+    ),
+  });
   const input = width === 4 ? "input4" : "input8";
   const part = { id: "a", type: input, x: 0, y: 0 } as const;
-  const inputCentre = (nodeHeight(part) + 16) / 2;
-  const inputX = 212 - nodeWidth(part);
-  const adderX = 460;
-  const lampX = adderX + 420;
-  const displayX = lampX + 240;
+  const lastOutput = nodeHeight(part) - 24;
+  const track = width === 4 ? 20 : 18;
+  const firstTrack = 40;
+  const adderX = nodeWidth(part) + firstTrack + 2 * width * track + firstTrack;
+  const lampX = adderX + 380;
   const rowY = (bit: number) => bit * ROW;
-  const middle = rowY(width / 2) - (ROW - 126) / 2 - 21;
-  // The eight sum pins of the display line up with the gap between the middle lamps.
-  const displayPins = 40 + (((width - 1) / 2) * ((width + 1) * 24 + 92 - 64)) / width;
+  const sumLine = (bit: number) => rowY(bit) + SUM_PIN;
+  const carryLine = rowY(width - 1) + LAST_PIN;
+  const lamp = { id: "", type: "lamp", x: 0, y: 0 } as const;
+  const display = { id: "total", type: "display8", bits: width + 1, x: 0, y: 0 } as const;
+  const displayPin = (pin: number) =>
+    FIRST_OUTPUT + (pin * (nodeHeight(display) - FIRST_OUTPUT - 24)) / width;
+  const displayY = Math.round((sumLine(0) + carryLine - nodeHeight(display)) / 2);
+  const displayX =
+    lampX + nodeWidth(lamp) + 2 * DISPLAY_MARGIN + Math.ceil((width + 1) / 2) * DISPLAY_TRACK;
+  /** Lines above their pin come down and lines below it go up; each side nests, so they stay apart. */
+  const displayRun = (pin: number, line: number) =>
+    DISPLAY_MARGIN + (line < displayY + displayPin(pin) ? pin : width - pin) * DISPLAY_TRACK;
   const nodes: Circuit["nodes"] = [
-    { id: "a", type: input, label: "A", numberValue: a, x: inputX, y: A_PIN - inputCentre },
-    { id: "b", type: input, label: "B", numberValue: b, x: inputX, y: A_PIN - inputCentre + 360 },
+    {
+      id: "a",
+      type: input,
+      label: "A",
+      numberValue: a,
+      opensToSwitches: "cyan",
+      x: 0,
+      // Every output of A sits above the first adder's pins, so its wires all run down.
+      y: A_PIN - PIN_CLEARANCE - lastOutput,
+    },
+    {
+      id: "b",
+      type: input,
+      label: "B",
+      numberValue: b,
+      opensToSwitches: "amber",
+      x: 0,
+      // Every output of B sits below the last adder's pins, so its wires all run up.
+      y: rowY(width - 1) + LAST_PIN + PIN_CLEARANCE - FIRST_OUTPUT,
+    },
     ...bits.map((bit) => ({
       id: `bit${bit}`,
       type: "module" as const,
-      module: stage,
+      module: stage(bit),
       label: `FULL ADDER ${bit}`,
       x: adderX,
       y: rowY(bit),
     })),
+    // Each sum line runs under its lamp on the way to the display.
     ...bits.map((bit) => ({
       id: `out${bit}`,
       type: "lamp" as const,
       label: `SUM${bit}`,
       x: lampX,
-      y: rowY(bit) + SUM_PIN - 63,
+      y: sumLine(bit) - LAMP_CLEARANCE - nodeHeight(lamp),
     })),
-    { id: "cout", type: "lamp", label: "CARRY", x: lampX, y: rowY(width) + SUM_PIN - 63 },
+    // The carry line runs over its lamp, since the last sum lamp is above it.
+    { id: "cout", type: "lamp", label: "CARRY", x: lampX, y: carryLine + LAMP_CLEARANCE },
     {
       id: "total",
       type: "display8",
       bits: width + 1,
       label: "A + B",
       x: displayX,
-      y: middle - displayPins,
+      y: displayY,
     },
   ];
   const wires: Circuit["wires"] = [];
@@ -81,40 +128,20 @@ function columnAdderDemo(width: 4 | 8, a: number, b: number): Circuit {
     wires.push({ id: `${from}:${output}>${to}:${pin}`, from, output, to, input: pin, ...extra });
   for (const bit of bits) {
     const box = `bit${bit}`;
-    link("a", bit, box, 1);
-    link("b", bit, box, 2);
+    // Nearest the adders: A, bit 0 first. Left of those: B, last bit first.
+    link("a", bit, box, 1, { color: "cyan", runBeforeEnd: firstTrack + bit * track });
+    link("b", bit, box, 2, {
+      color: "amber",
+      runBeforeEnd: firstTrack + (2 * width - 1 - bit) * track,
+    });
     if (bit > 0) link(`bit${bit - 1}`, 1, box, 0, { color: "violet", railBetweenParts: true });
-    link(box, 0, `out${bit}`, 0, { color: "lime" });
-    link(box, 0, "total", bit);
+    link(box, 0, `out${bit}`, 0, { color: "lime", runBeforeEnd: LAMP_TAP });
+    link(box, 0, "total", bit, { color: "lime", runBeforeEnd: displayRun(bit, sumLine(bit)) });
   }
-  link(`bit${width - 1}`, 1, "cout", 0, { color: "violet" });
-  link(`bit${width - 1}`, 1, "total", width, { color: "violet" });
-  const operand = (id: "a" | "b", trunk: number, color: WireColor) => ({
-    id,
-    label: id.toUpperCase(),
-    decimal: true,
-    sources: bits.map((output) => ({ node: id, output })),
-    trunkX: [trunk],
-    color,
-  });
-  return {
-    name: `${width}-bit adder`,
-    nodes,
-    wires,
-    reflow: "column",
-    lanes: [
-      operand("a", adderX - 110, "cyan"),
-      operand("b", adderX - 190, "amber"),
-      {
-        id: "sum",
-        label: "SUM",
-        decimal: true,
-        sources: bits.map((bit) => ({ node: `bit${bit}` })),
-        skip: bits.map((bit) => `out${bit}`),
-        color: "lime",
-      },
-    ],
-  };
+  const last = `bit${width - 1}`;
+  link(last, 1, "cout", 0, { color: "violet", runBeforeEnd: LAMP_TAP });
+  link(last, 1, "total", width, { color: "violet", runBeforeEnd: displayRun(width, carryLine) });
+  return { name: `${width}-bit adder`, nodes, wires, reflow: "column" };
 }
 
 export function adderDemo(

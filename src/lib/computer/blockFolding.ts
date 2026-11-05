@@ -4,7 +4,8 @@
 // A snapshot holds exactly one of the two for each block, so whichever is there
 // is current.
 import { foldBlockState, isDatapathKind, unfoldBlockState } from "./datapathBlocks";
-import type { Circuit, Node, Snapshot } from "./logic";
+import { type Circuit, initialSnapshot, type Node, type Snapshot } from "./logic";
+import { numberInputCircuit } from "./numberInputSwitches";
 
 const simulated = new WeakMap<Circuit, Map<string, Circuit>>();
 
@@ -27,6 +28,10 @@ export function simulationCircuit(
   if (known) return known;
   let changed = false;
   const nodes = circuit.nodes.map((node) => {
+    if (node.opensToSwitches && open.has(`${prefix}${node.id}`)) {
+      changed = true;
+      return { ...node, type: "module" as const, module: numberInputCircuit(node) };
+    }
     if (node.type !== "module" || !node.module) return node;
     const path = `${prefix}${node.id}`;
     const module = simulationCircuit(node.module, open, `${path}/`);
@@ -63,6 +68,12 @@ export function syncBlockStates(
     else delete blocks![id];
   };
   for (const node of circuit.nodes) {
+    // An open number input runs as its switches; folded, it needs no inner state.
+    if (node.opensToSwitches && open.has(`${prefix}${node.id}`) !== Boolean(modules[node.id])) {
+      if (modules === snapshot.modules) modules = { ...modules };
+      if (open.has(`${prefix}${node.id}`)) modules[node.id] = initialSnapshot();
+      else delete modules[node.id];
+    }
     if (node.type !== "module" || !node.module) continue;
     const path = `${prefix}${node.id}`;
     const block = isDatapathKind(node.behaviour);

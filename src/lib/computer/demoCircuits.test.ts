@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { BigScreenCard } from "./bigScreenBlocks";
 import { toNumber } from "./blockBuilder";
+import { simulationCircuit, syncBlockStates } from "./blockFolding";
 import { screenRows } from "./datapathBlocks";
 import {
   adderDemo,
@@ -13,7 +14,17 @@ import {
   transistorDemo,
   transistorLampDemo,
 } from "./demoCircuits";
-import { type Circuit, initialSnapshot, moduleInputs, step, validateCircuit } from "./logic";
+import {
+  type Circuit,
+  initialSnapshot,
+  inputLabel,
+  moduleInputs,
+  type Node,
+  outputLabel,
+  step,
+  validateCircuit,
+} from "./logic";
+import { numberInputCircuit, switchBit } from "./numberInputSwitches";
 
 import { cmosNandLevel } from "./tutorial/levels/gates";
 
@@ -150,6 +161,55 @@ describe("chapter circuits", () => {
         expect(toNumber(snapshot.outputs.total)).toBe(a + b);
       }
     }
+  });
+
+  it("gives each input bit its own wire and track to its own full adder", () => {
+    for (const [kind, width] of [
+      ["nibble", 4],
+      ["byte", 8],
+    ] as const) {
+      const source = adderDemo(kind);
+      expect(source.lanes).toBeUndefined();
+      const tracks = new Set<number>();
+      for (let bit = 0; bit < width; bit++) {
+        for (const [input, pin, name] of [
+          ["a", 1, `A${bit}`],
+          ["b", 2, `B${bit}`],
+        ] as const) {
+          const wires = source.wires.filter((wire) => wire.from === input && wire.output === bit);
+          expect(wires).toHaveLength(1);
+          expect(wires[0]).toMatchObject({ to: `bit${bit}`, input: pin });
+          tracks.add(wires[0].runBeforeEnd as number);
+          const stage = source.nodes.find((node) => node.id === `bit${bit}`);
+          expect(inputLabel(stage as Node, pin)).toBe(name);
+          const part = source.nodes.find((node) => node.id === input);
+          expect(outputLabel(part as Node, bit)).toBe(name);
+        }
+      }
+      expect(tracks.size).toBe(2 * width);
+    }
+  });
+
+  it("keeps the number and the wires the same when an input is open as switches", () => {
+    const source = adderDemo("byte");
+    const folded = read(source, {});
+    const open = simulationCircuit(source, new Set(["a", "b"]));
+    const snapshot = step(
+      open,
+      syncBlockStates(source, initialSnapshot(), new Set(["a", "b"])),
+      false,
+    );
+    expect(toNumber(snapshot.outputs.total)).toBe(toNumber(folded.outputs.total));
+    expect(toNumber(snapshot.outputs.a)).toBe(13);
+    expect(toNumber(snapshot.modules.a.outputs.number)).toBe(13);
+    const inner = numberInputCircuit(source.nodes[0]);
+    expect(inner.ports).toEqual({
+      inputs: [],
+      outputs: Array.from({ length: 8 }, (_, bit) => `pin${bit}`),
+    });
+    expect(validateCircuit(source)?.nodes[0].opensToSwitches).toBe("cyan");
+    expect(validateCircuit(inner)?.fixedParts).toBe(true);
+    expect(switchBit("bit5")).toBe(5);
   });
 
   it("runs every CMOS gate through the editor's transistor networks", () => {

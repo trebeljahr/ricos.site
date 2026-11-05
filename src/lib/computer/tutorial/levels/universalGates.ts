@@ -1,5 +1,5 @@
 import { layoutCircuit } from "../../circuitLayout";
-import { evalGate, GATE_RULES } from "../../gateLogic";
+import { evalGate } from "../../gateLogic";
 import { GATE_NAMES, gateBlueprint, type LogicGate } from "../../logic";
 import type { Level } from "../types";
 import { gateConstructionHints } from "./gateHints";

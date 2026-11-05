@@ -294,7 +294,10 @@ const cmosXnorLevel = cmosGateLevel("xnor", "OUT is 1 when A and B are equal.", 
     text: "Build a NOT of A. Then B selects between them: A into the S dot of a PMOS, the NOT of A into the S dot of an NMOS.",
   },
   { title: "Last stage", text: SECOND_STAGE },
-  { title: "Last hint", text: "Build XOR with B choosing between A and its NOT, then feed it into a NOT stage." },
+  {
+    title: "Last hint",
+    text: "Build XOR with B choosing between A and its NOT, then feed it into a NOT stage.",
+  },
 ]);
 
 export const notLevel: Level = {

@@ -130,10 +130,8 @@ export type Level = {
   title: string;
   section: string;
   chapter?: ChapterLink;
-  /** One or two sentences: what the outputs must do. */
+  /** One short line: what to build. Explanation belongs in the chapter or in `hints`. */
   goal: string;
-  /** A short paragraph shown before the reader starts. */
-  intro?: string;
   spec: LevelSpec;
   /** Parts the palette offers. Nothing else may sit on the board. */
   palette: PaletteRef[];
@@ -144,10 +142,11 @@ export type Level = {
    * ports, laid out left and right, with nothing between them.
    */
   start?: () => { circuit: Circuit; locked: string[]; enforce?: (circuit: Circuit) => Circuit };
-  /** Internal validation asset; never exposed as an editing action. */
+  /** A working solution: validates the level, and the reader can ask for it after the last hint. */
   reference?: () => Circuit;
   /** @deprecated Internal reference-fixture steps only. Never shown in construction lessons. */
   steps?: TutorialStep[];
+  /** On request, in order. The last is titled "Last hint": the idea of the wiring in one sentence. */
   hints?: LevelHint[];
   /** Optional fewest-parts challenge, independent of functional correctness. */
   sizeGoal?: { metric: "gates" | "transistors"; minimum: number; unit: string };

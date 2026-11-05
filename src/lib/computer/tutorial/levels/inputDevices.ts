@@ -1,6 +1,6 @@
 import { SIGNALS, type Signal } from "../../../computerStepper";
 import type { Ref } from "../../blockBuilder";
-import { BUTTON_POLICY, buttonCpuCircuit, buttonInputCircuit } from "../../buttonInterrupt";
+import { buttonCpuCircuit, buttonInputCircuit } from "../../buttonInterrupt";
 import { CPU_PARTS } from "../../cpuPreset";
 import { matrixRowCircuit, sampledEventCircuit } from "../../keyboardMatrix";
 import { type Circuit, initialSnapshot, moduleInputs, moduleOutputs, step } from "../../logic";
@@ -94,8 +94,7 @@ const capture: Level = {
   title: "Remember a brief button press",
   section,
   optional: true,
-  goal: "Capture a rising button edge without waiting for the sample clock. Expose the sampled held level after two clocks and a captured request after two clocks. ACK clears the request; holding must not repeat.",
-  intro: BUTTON_POLICY,
+  goal: "Remember a rising button edge until ACK clears it, and sample it on the clock.",
   palette: ["high", "not", "and", "or", "dff"],
   reference: buttonInputCircuit,
   makes: { part: "button-request", label: "Button request capture", builtIn: { reference: true } },
@@ -114,10 +113,15 @@ const capture: Level = {
     {
       text: "Reset must work without another button edge. The D flip-flop context menu exposes an asynchronous reset input.",
     },
+    {
+      title: "Last hint",
+      text: "Clock one flip-flop from the raw button to remember each press, sample the level and the request through two more stages on the clock, and let ACK clear the memory.",
+    },
   ],
 };
 
 export { sampledEventCircuit } from "../../keyboardMatrix";
+
 function sampleTicks(): SequenceTick[] {
   const ticks: SequenceTick[] = [
     { expect: { stable: false, pressed: false, released: false }, note: "Start released." },
@@ -144,9 +148,7 @@ const samples: Level = {
   title: "Filter samples and detect transitions",
   section,
   optional: true,
-  goal: "Change STABLE only after two equal frame samples. PRESS EVENT is high for one frame when stable rises; RELEASE EVENT is high for one frame when stable falls.",
-  intro:
-    "Treat each clock edge as the end of a complete matrix scan. A held key has state, but a press event is a change of state. This digital filter models two samples, not contact physics or milliseconds.",
+  goal: "Change STABLE after two equal samples, and pulse PRESS or RELEASE once for each change.",
   palette: ["dff", "and", "or", "not", "xor"],
   reference: sampledEventCircuit,
   makes: {
@@ -158,7 +160,7 @@ const samples: Level = {
   hints: constructionHints(
     "Two equal samples accept a new stable state. Event outputs describe a change in that stable state.",
     "Remember the previous raw sample and the previous stable value with flip-flops.",
-    "AGREE = NOT(RAW XOR PREVIOUS RAW). NEXT = (AGREE AND RAW) OR (NOT AGREE AND STABLE). Store NEXT as STABLE. PRESS = STABLE AND NOT PREVIOUS STABLE; RELEASE = NOT STABLE AND PREVIOUS STABLE. Clock all three memories together.",
+    "Accept RAW as STABLE only when two samples agree, and compare STABLE with its previous value to make the two events.",
     "Apply one high sample then a low sample: STABLE must remain low. Two high samples produce one press event; holding high must not repeat it.",
   ),
 };
@@ -178,9 +180,7 @@ const rows: Level[] = Array.from({ length: 14 }, (_, i) => i + 2).map((columns) 
     section,
     optional: true,
     practice: { family: "matrix-row", core: columns === 2, label: `${columns} columns` },
-    goal: `Build ${columns} independent SENSE LOW outputs. A closed contact pulls its column low only when this row is active. Simultaneous contacts must remain independent.`,
-    intro:
-      "Logical ROW ACTIVE means an electrical 0; inactive rows are Z. SENSE LOW is 1 when a pulled-up column reads 0. Per-key COL→ROW diodes prevent reverse paths; the Boolean abstraction expresses the resulting isolated connectivity, not diode voltage.",
+    goal: `Give each of ${columns} columns its own SENSE LOW output while this row is active.`,
     palette: ["and", "not", "nand", "or"],
     reference: () => source,
     makes: {
@@ -204,7 +204,7 @@ const rows: Level[] = Array.from({ length: 14 }, (_, i) => i + 2).map((columns) 
     hints: constructionHints(
       "Each column responds independently to its own contact and the shared row-active condition.",
       "Choose one column. It reports SENSE LOW only when both the row and that contact are active.",
-      "For every column i, connect ROW ACTIVE and CONTACT i to an AND gate. Connect its output to SENSE LOW i. Share ROW ACTIVE across gates, keeping contact signals separate.",
+      "Give each column its own AND of ROW ACTIVE and that column's contact.",
       "Activate two contacts together, then deactivate the row. Both sense outputs must turn off without changing the contacts.",
     ),
   } satisfies Level;
@@ -223,9 +223,7 @@ const decoder: Level = {
   title: "Select one scan row",
   section,
   optional: true,
-  goal: "Decode the two-bit row address into exactly one active row. No two row-active outputs may be high together.",
-  intro:
-    "An active output enables that row's low driver; inactive drivers release to Z. These Boolean outputs control drivers; a zero here does not mean driving a matrix row low.",
+  goal: "Turn the two-bit row address into exactly one active row.",
   palette: ["not", "and", "nor", "nand"],
   spec: {
     kind: "truth",
@@ -244,7 +242,7 @@ const decoder: Level = {
   hints: constructionHints(
     "An address selects exactly one scan row. The outputs enable row drivers; they do not carry key data.",
     "Invert both address bits so each row can match either value of each bit.",
-    "ROW 0 = NOT A1 AND NOT A0. ROW 1 = NOT A1 AND A0. ROW 2 = A1 AND NOT A0. ROW 3 = A1 AND A0.",
+    "AND each row's true or inverted address bits, so each address turns on exactly one row.",
     "Try all four addresses. Exactly one row-active output must be high for each address.",
   ),
 };
@@ -262,9 +260,7 @@ const mapping: Level = {
   title: "Map position and Shift to a character",
   section,
   optional: true,
-  goal: "On a press event, output ASCII a/b or A/B according to POSITION and SHIFT. With no press event, output zero. Shift alone is state, not a character.",
-  intro:
-    "This is a tiny controller lookup table after scanning and event detection. The switch supplies connectivity, the scanner supplies a position, and this controller assigns a character. A full keyboard extends the table and applies a host layout.",
+  goal: "On a press event, output ASCII a/b or A/B by POSITION and SHIFT, and otherwise zero.",
   palette: ["high", "ground", "and", "not", "nand", "or"],
   spec: {
     kind: "truth",
@@ -297,7 +293,7 @@ const mapping: Level = {
   hints: constructionHints(
     "ASCII a/b and A/B differ in a few bits. The press event gates every character so a held modifier emits nothing.",
     "Write 97,98,65,66 in binary. Compare which bits depend on POSITION and which depend on SHIFT.",
-    "BIT 0 = EVENT AND NOT POSITION. BIT 1 = EVENT AND POSITION. BITS 2–4 = GROUND. BIT 5 = EVENT AND NOT SHIFT. BIT 6 = EVENT.",
+    "Write the four letter codes in binary, then let EVENT gate every 1 bit, with POSITION and SHIFT choosing the bits that differ.",
     "Try all four letter choices with EVENT high, then turn EVENT off. All character outputs must become zero.",
   ),
 };
@@ -336,9 +332,7 @@ const cpu: Level = {
   title: "Connect an interrupting input to the CPU",
   section,
   optional: true,
-  goal: "Connect the input capture to the CPU clock, raw button, reset, key port and acknowledge control. Two brief presses must each enter the handler once and update OUT to 1 then 2.",
-  intro:
-    "The existing CPU and a compiled counting handler are provided. The request interface has the same ports as your earlier construction. IN asserts KEY_OUT: use it as acknowledge. PC save, masking and RETI already belong to the CPU; inspect them while testing. Then build the CPU interrupt entry and return path in the next stage.",
+  goal: "Connect the input capture so two brief presses count OUT up to 1, then 2.",
   palette: ["junction", "and", "or", "not"],
   reference: cpuReference,
   start: () => {
@@ -370,6 +364,10 @@ const cpu: Level = {
     },
     {
       text: "A request needs the raw button edge and the sample clock for different jobs. Reversing those clocks can make short presses disappear.",
+    },
+    {
+      title: "Last hint",
+      text: "Give the capture part the raw button, the CPU clock and reset, send its request to the key port, and use KEY_OUT as its acknowledge.",
     },
   ],
 };
@@ -419,9 +417,7 @@ const interruptCpu: Level = {
   title: "Build interrupt entry and return",
   section,
   optional: true,
-  goal: "Wire KEY READY and IE into IRQ. Accept IRQ only when an instruction ends. Connect INT to the control unit, then connect its interrupt mask, vector and stack controls. Return the saved PC through the shared bus. The handler must acknowledge each request and return to the interrupted loop.",
-  intro:
-    "The input capture and compiled handler are provided. The CPU's interrupt wiring is missing. Entry saves the next PC on the stack, clears IE, and loads the handler vector. IN clears the mailbox. The handler restores ACC and carry, then RETI pops PC and sets IE. The control unit supplies those microinstructions. PC_IN already loads PC from the bus. Connect the vector driver for entry and the stack driver for return.",
+  goal: "Wire interrupt entry and return so the handler runs once per press and the loop resumes.",
   palette: ["junction", "and", "or", "not"],
   reference: cpuReference,
   start: () => {
@@ -449,6 +445,10 @@ const interruptCpu: Level = {
     {
       text: "KEY_OUT acknowledges input. RETI uses the ordinary stack-to-PC route and IE_SET. A missing return or mask wire can count a press and still corrupt background work.",
       anchor: { kind: "node", id: CPU_PARTS.pc },
+    },
+    {
+      title: "Last hint",
+      text: "Combine KEY READY and IE into IRQ, let INT take it at STEP_RESET, and connect the control unit's interrupt lines to the mask, vector and stack parts they name.",
     },
   ],
 };

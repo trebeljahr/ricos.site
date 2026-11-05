@@ -98,8 +98,7 @@ export const COUNTER_LEVELS: Level[] = COUNTER_WIDTHS.flatMap((width) =>
       },
       optional: true,
       chapter: CHAPTERS.counter,
-      goal: `Store ${width} bits on Q0–Q${width - 1}, start at zero, and count ${mode === "up-down" ? "up or down" : mode} on a rising button edge. Wrap modulo ${2 ** width}. RESET clears immediately.`,
-      intro: `Q0 is the least significant bit. Each count input is a manual button: try pulse and held modes. A held button counts once. ${mode === "up-down" ? "Both buttons high holds; release both before the next count. " : ""}RESET wins over counting. The check covers every value, wrap, holding and reset; passing this sequence is not exhaustive temporal equivalence.`,
+      goal: `Count ${mode === "up-down" ? "up or down" : mode} from zero on each rising button edge, and RESET clears at once.`,
       spec: {
         kind: "sequence",
         inputs: moduleInputs(source).map((n) => ({
@@ -120,7 +119,7 @@ export const COUNTER_LEVELS: Level[] = COUNTER_WIDTHS.flatMap((width) =>
       hints: [
         {
           title: "Core idea",
-          text: "Separate the stored value from the next value. Each output bit needs memory; counting changes that memory only on an edge.",
+          text: "Q0 is the least significant bit. Separate the stored value from the next value. Each output bit needs memory; counting changes that memory only on an edge, so a held button counts once.",
         },
         {
           text:
@@ -138,6 +137,15 @@ export const COUNTER_LEVELS: Level[] = COUNTER_WIDTHS.flatMap((width) =>
         {
           title: "Reset",
           text: "RESET must work with COUNT held high. The D flip-flop context menu offers an asynchronous RESET pin; ordinary data gating waits for a clock edge.",
+        },
+        {
+          title: "Last hint",
+          text:
+            mode === "up-down"
+              ? "Clock every flip-flop from the OR of both buttons, and let each bit toggle on its carry or borrow, but only while exactly one button is high."
+              : mode === "down"
+                ? "Clock every flip-flop from the button, and XOR each Q with a borrow that is 1 while the button is held and all lower bits are 0."
+                : "Clock every flip-flop from the button, and XOR each Q with a carry that is 1 while the button is held and all lower bits are 1.",
         },
       ],
     };

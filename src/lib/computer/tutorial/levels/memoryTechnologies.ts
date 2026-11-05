@@ -333,9 +333,7 @@ export const dramCellLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.ram,
   optional: true,
-  goal: "Write on a selected clock edge, read only while selected and enabled, refresh a stored 1, and let it fade after four idle clocks.",
-  intro:
-    "A DRAM capacitor loses charge. Reading alone does not restore it; refresh rewrites the stored value before it fades.",
+  goal: "Write and read one bit that fades after four idle clocks unless refreshed.",
   spec: {
     kind: "sequence",
     inputs: [SELECT, READ, WRITE, REFRESH, DATA, CLOCK],
@@ -348,7 +346,7 @@ export const dramCellLevel: Level = {
   hints: constructionHints(
     "The capacitor changes only on an active write or refresh clock edge. Each unrefreshed global clock ages its charge.",
     "Place one DRAM CAPACITOR. Gate its clock with SELECT and either WRITE ENABLE or REFRESH ROW.",
-    "UPDATE = SELECT AND (WRITE OR REFRESH); capacitor clock = CLOCK AND UPDATE. Its data takes DATA during writes or its own stored Q during refresh. Gate its read path with SELECT and READ ENABLE.",
+    "Clock the capacitor only on a selected write or refresh, and feed it either DATA or its own stored bit.",
     "Write 1, wait three clock pulses, refresh, then wait four more. The first three retain 1; the fourth loses it.",
   ),
 };
@@ -359,9 +357,7 @@ export const flashCellLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.ram,
   optional: true,
-  goal: "Program a selected 0 on a clock edge. Programming 1 cannot restore it; ERASE restores 1, even when not selected.",
-  intro:
-    "The stored bit represents charge, so an erased cell reads 1. Programming can add charge (read 0); erasing clears charge globally.",
+  goal: "Program a selected 0 on a clock edge, which only ERASE can turn back to 1.",
   spec: {
     kind: "sequence",
     inputs: [SELECT, READ, PROGRAM, ERASE, DATA, CLOCK],
@@ -374,7 +370,7 @@ export const flashCellLevel: Level = {
   hints: constructionHints(
     "Store charge, then invert it for the readable bit. Charge=0 means erased 1; charge=1 means programmed 0.",
     "Place a D flip-flop for charge. Let selected PROGRAM or global ERASE enable its clock edge.",
-    "PROGRAM ZERO = SELECT AND PROGRAM AND NOT DATA. NEXT CHARGE = (old charge OR PROGRAM ZERO) AND NOT ERASE. Clock the storage when PROGRAM or ERASE is active. Sense with NOT charge, then gate by SELECT and READ.",
+    "Keep charge in a D flip-flop that programming a 0 can only add to and ERASE clears, and read its inverse.",
     "Program 0, then try programming 1: it stays 0. ERASE returns it to 1. PROGRAM on another row must not affect it.",
   ),
 };
@@ -385,9 +381,7 @@ export const dramArrayLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.ram,
   optional: true,
-  goal: "Store four bits per addressed row on clock edges; read one row at a time; refresh a row before its charge fades.",
-  intro:
-    "A decoder selects one of four rows. Sixteen DRAM cells hold the bits, with shared data and clock lines but separate row selection.",
+  goal: "Store four bits per row, read one row at a time, and refresh a row before it fades.",
   spec: {
     kind: "sequence",
     inputs: [...ADDRESS, READ, CLOCK, WRITE, REFRESH, ...DATA4],
@@ -400,7 +394,7 @@ export const dramArrayLevel: Level = {
   hints: constructionHints(
     "Two address bits choose one row. Only its four cells write or refresh; four output columns combine one selected cell from each row.",
     "Connect ADDRESS 0 and 1 to a decoder. Place one DRAM CELL at each of four bit positions in four rows.",
-    "For row r and bit b, feed decoder Yr, READ, WRITE, REFRESH, DATA IN b, and CLOCK into its DRAM CELL. OR each column’s four outputs into DATA OUT b.",
+    "Let a decoder pick one row of DRAM cells, share the data and clock lines, and OR each column's outputs.",
     "Write different bit patterns to rows 0 and 1. Refresh row 0, then leave it idle for four clock pulses and watch it fade.",
   ),
 };
@@ -411,9 +405,7 @@ export const flashArrayLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.ram,
   optional: true,
-  goal: "Program zeros into a selected row on a clock edge. Only ERASE ALL can restore ones across every row.",
-  intro:
-    "A decoder chooses the row to program. Erase reaches all sixteen cells, independent of the address.",
+  goal: "Program zeros into the chosen row, which only ERASE ALL can turn back to 1.",
   spec: {
     kind: "sequence",
     inputs: [...ADDRESS, READ, CLOCK, PROGRAM, ERASE, ...DATA4],
@@ -426,7 +418,7 @@ export const flashArrayLevel: Level = {
   hints: constructionHints(
     "PROGRAM acts only on the addressed row. ERASE ALL reaches every row. Stored zeros remain zero through later attempts to program one.",
     "Connect ADDRESS 0 and 1 to a decoder. Place four FLASH CELLs in each of four rows.",
-    "For row r and bit b, feed decoder Yr, READ, PROGRAM, global ERASE ALL, PROGRAM BIT b, and CLOCK to the cell. OR each output column into DATA OUT b.",
+    "Let a decoder pick the row to program, send ERASE ALL to every cell, and OR each column's outputs.",
     "Program 0101 into row 0 and 1010 into row 1, then erase while row 0 is selected. Both rows must read 1111 afterward.",
   ),
 };

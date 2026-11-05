@@ -39,9 +39,7 @@ const rawLevel: Level = {
   title: "Wire seven independent bars",
   section: "Decimal displays",
   optional: true,
-  goal: "Connect each switch a–g to its matching bar. A high signal lights that bar only.",
-  intro:
-    "a is top, b upper right, c lower right, d bottom, e lower left, f upper left, g middle. These are active-high logical inputs. Physical common-anode hardware needs inverted drive; common-cathode hardware commonly uses active-high drive, with current-limiting resistors.",
+  goal: "Connect each switch a–g to its matching bar.",
   palette: [],
   start: () => ({ circuit: { ...raw, wires: [] }, locked: raw.nodes.map((n) => n.id) }),
   reference: rawSegmentDemo,
@@ -74,9 +72,9 @@ const rawLevel: Level = {
     },
   },
   hints: constructionHints(
-    "Each segment is an independent Boolean output. Wiring a number source directly to a bar does not decode a digit.",
+    "Each segment is an independent output: a is top, b upper right, c lower right, d bottom, e lower left, f upper left, g middle.",
     "Locate the a input on the display. Connect it to switch a, then repeat for b–g.",
-    "Connect each switch to the display pin with the same letter: a to a, b to b, through g to g.",
+    "Each switch goes straight to the bar with the same letter.",
     "Turn on a and g together. Only the top and middle bars should light.",
   ),
 };
@@ -85,9 +83,7 @@ const decoder: Level = {
   title: "Decode one BCD digit",
   section: "Decimal displays",
   optional: true,
-  goal: "Turn BCD weights 1, 2, 4, 8 into bars a–g for 0–9. Blank every bar for 10–15.",
-  intro:
-    "Four arbitrary binary bits encode 0–15. A BCD digit uses only 0–9. The outputs are the seven bars, not a binary number. All 16 rows are checked.",
+  goal: "Turn BCD weights 1, 2, 4, 8 into bars a–g for 0–9, and blank them for 10–15.",
   spec: { kind: "truth", ...ports(BCD_DECODER), fn: (bits) => segmentBits(unsigned(bits)) },
   palette: ["not", "and", "or", "high", "ground", "sevensegment"],
   reference: bcdDecoderCircuit,
@@ -99,7 +95,7 @@ const decoder: Level = {
   hints: constructionHints(
     "Each bar has its own truth table over the four BCD input bits. All bars must be off for inputs 10–15.",
     "Start with one bar. List the decimal digits that light it, and express those rows using AND, OR, and NOT.",
-    "For each bar, OR together the digit matches that need it. A digit match ANDs its four true or inverted BCD bits. Use the same input inversions across bars.",
+    "Treat each bar as its own function: detect every digit that lights it and OR those detections.",
     "Compare 1 with 8, then try 10 and 15. Eight lights every bar; invalid BCD values light none.",
   ),
 };
@@ -108,9 +104,7 @@ const correction: Level = {
   title: "Correct a decimal nibble before shifting",
   section: "Decimal displays",
   optional: true,
-  goal: "For inputs 0–4, keep the nibble. For 5–15, add three modulo 16. Output weights are 1, 2, 4, 8.",
-  intro:
-    "A binary shift doubles the value. Decimal nibbles need a correction before a bit shifts into them. This correction stage is a total four-bit function, checked on all 16 rows.",
+  goal: "Keep inputs 0–4 as they are and add three to 5–15, wrapping at 16.",
   spec: {
     kind: "truth",
     ...ports(ADD3),
@@ -125,7 +119,7 @@ const correction: Level = {
   hints: constructionHints(
     "The correction keeps 0–4 and adds three to 5–15, wrapping to four bits.",
     "Write all 16 input rows and the corrected output value beside each row. Work on one output column at a time.",
-    "For each output bit, OR together the input matches whose corrected value has that bit set. Build each match with AND gates over true or inverted input bits.",
+    "Treat each output bit as its own function of the four inputs, and OR the input values that set it.",
     "Test the boundary 4→4 and 5→8. Also test 15→2 to check the four-bit wrap.",
   ),
 };
@@ -137,9 +131,7 @@ const conversionLevels = DIGIT_COUNTS.map((digits): Level => {
     title: `${width} binary bits to ${digits} BCD digits`,
     section: "Decimal displays",
     optional: true,
-    goal: `Convert unsigned 0–${2 ** width - 1} to ${digits} BCD nibbles, units first. OVERFLOW is high at ${10 ** digits} and above; retain the low decimal digits.`,
-    intro:
-      "Shift input bits most significant first. Before every shift, correct each decimal nibble. Keep leading zeroes. The larger checks use boundary and spread samples; they do not prove exhaustive equivalence.",
+    goal: `Convert 0–${2 ** width - 1} to ${digits} BCD ${digits === 1 ? "digit" : "digits"}, units first, with OVERFLOW at ${10 ** digits} and above.`,
     spec: {
       kind: "truth",
       ...ports(reference()),
@@ -156,7 +148,7 @@ const conversionLevels = DIGIT_COUNTS.map((digits): Level => {
     hints: constructionHints(
       "Process the binary input from its most significant bit. Correct each decimal nibble before shifting the next input bit in.",
       "Start every decimal nibble at zero. Use one ADD 3 IF AT LEAST 5 block per nibble at each correction stage.",
-      "For each input bit, correct all decimal nibbles, then shift the corrected nibbles left as wires. The current input bit enters units bit 0. Each nibble’s top bit enters the next nibble’s bit 0. OR all bits shifted past the last decimal place for OVERFLOW.",
+      "From the top input bit down, correct each decimal digit and then shift the next bit in.",
       "Try 9, 10, and 99. Then test the first value too large for the display: keep its low decimal digits and light OVERFLOW.",
     ),
   };
@@ -242,7 +234,7 @@ export const DISPLAY_LEVELS: Level[] = [
       title: `Compose ${digits} decimal display digits`,
       section: "Decimal displays",
       optional: true,
-      goal: `Convert ${width}-bit binary to BCD, then decode each of ${digits} decimal places into its own a–g outputs. Keep units first in port order, units at right on the display.`,
+      goal: `Show a ${width}-bit number on ${digits} seven-segment ${digits === 1 ? "digit" : "digits"}, units first.`,
       spec: {
         kind: "truth",
         ...ports(reference()),
@@ -267,7 +259,7 @@ export const DISPLAY_LEVELS: Level[] = [
       hints: constructionHints(
         "First convert binary to BCD nibbles. Then decode each nibble independently into seven bars.",
         "Feed the binary input into the converter. Its first four outputs are the units nibble.",
-        "For decimal place i, connect converter outputs 4i through 4i+3 to a BCD decoder’s weights 1,2,4,8. Connect that decoder’s a–g outputs to the same place’s a–g lamps. Wire the converter’s last output to OVERFLOW.",
+        "Convert the binary input to decimal digits with the BCD converter, then give each digit its own seven-segment decoder.",
         "Try 12: units must show 2 and tens 1. Try zero to check leading zeroes, then a value beyond the display’s range.",
       ),
     };

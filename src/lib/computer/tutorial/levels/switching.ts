@@ -104,9 +104,7 @@ export const selectorLevel: Level = {
   title: "Selector",
   section: SECTION,
   chapter: CHAPTERS.muxes,
-  goal: "OUT copies A when SELECT is 0. OUT copies B when SELECT is 1.",
-  intro:
-    "A selector picks one of two signals and passes it on. A processor uses one wherever a value can come from two places.",
+  goal: "OUT copies A when SELECT is 0 and B when SELECT is 1.",
   spec: {
     kind: "truth",
     inputs: [SELECT, A, B],
@@ -119,7 +117,7 @@ export const selectorLevel: Level = {
   hints: constructionHints(
     "A control signal permits one data path at a time. The unselected input must have no effect.",
     "When SELECT is 0, gate A through. When SELECT is 1, gate B through.",
-    "LEFT = A AND NOT SELECT. RIGHT = B AND SELECT. OUT = LEFT OR RIGHT.",
+    "AND each input with its own select condition, then OR the two results.",
     "Use A=1 and B=0, then change SELECT. Repeat with A=0 and B=1 to check both paths.",
   ),
 };
@@ -129,8 +127,7 @@ export const switchLevel: Level = {
   title: "Switch",
   section: SECTION,
   chapter: CHAPTERS.muxes,
-  goal: "DATA goes to TO A when SELECT is 0 and to TO B when SELECT is 1. The other output stays 0.",
-  intro: "A switch is a selector turned around. It has one data input and two outputs.",
+  goal: "DATA goes to TO A when SELECT is 0 and to TO B when SELECT is 1.",
   spec: {
     kind: "truth",
     inputs: [SELECT, DATA],
@@ -143,7 +140,7 @@ export const switchLevel: Level = {
   hints: constructionHints(
     "One DATA input takes either of two paths. The inactive output must stay 0.",
     "Form two conditions: SELECT for TO B, and NOT SELECT for TO A.",
-    "TO A = DATA AND NOT SELECT. TO B = DATA AND SELECT.",
+    "AND DATA with SELECT for one output and with NOT SELECT for the other.",
     "Set DATA to 1 and switch SELECT. Then set DATA to 0: neither output should light.",
   ),
 };
@@ -153,9 +150,7 @@ export const decoderLevel: Level = {
   title: "Decoder",
   section: SECTION,
   chapter: CHAPTERS.muxes,
-  goal: "Read A1 A0 as a number from 0 to 3. The Y output with that number is 1, and the other three are 0.",
-  intro:
-    "A decoder turns an address into one select line. RAM uses one to pick the memory cell that a read or a write goes to.",
+  goal: "Only the Y output numbered by A1 A0 is 1.",
   spec: {
     kind: "truth",
     inputs: busPorts("a", "A", 2),
@@ -171,7 +166,7 @@ export const decoderLevel: Level = {
   hints: constructionHints(
     "Each output recognizes exactly one address. A1 has weight 2 and A0 has weight 1.",
     "Split the rows by A1, then use A0 to choose within each pair.",
-    "Use two SWITCH parts. Feed NOT A1 into the first DATA and A1 into the second DATA. Drive both SELECT inputs from A0. The first pair becomes Y0,Y1 and the second Y2,Y3.",
+    "Send A1 and its inverse through two switches that A0 controls, so each address reaches one output.",
     "Try 00, 01, 10, and 11. Exactly one Y output should light in every case.",
   ),
 };
@@ -181,9 +176,7 @@ export const selector8Level: Level = {
   title: "8-bit selector",
   section: SECTION,
   chapter: CHAPTERS.muxes,
-  goal: "Each OUT bit copies its A bit when SELECT is 0 and its B bit when SELECT is 1.",
-  intro:
-    "A processor moves whole bytes, so it needs selectors eight bits wide. One SELECT line drives all eight bits. The inputs come in pairs, A0 and B0 first, so each bit's two choices sit together.",
+  goal: "OUT copies the A byte when SELECT is 0 and the B byte when SELECT is 1.",
   spec: {
     kind: "truth",
     inputs: SELECTOR8_INPUTS,
@@ -202,7 +195,7 @@ export const selector8Level: Level = {
   hints: constructionHints(
     "Choosing a byte repeats the one-bit selector eight times. All lanes share one SELECT signal.",
     "Connect A0 and B0 to one selector, then use the same pattern for every remaining bit.",
-    "For each bit i, connect SELECT, Ai, and Bi to one SELECTOR, then its output to OUTi. Do not connect one bit’s output to another bit’s data input.",
+    "Use one selector per bit, with SELECT shared by all eight.",
     "Try A=85 and B=170. Flip SELECT and check that the whole output byte changes together.",
   ),
 };

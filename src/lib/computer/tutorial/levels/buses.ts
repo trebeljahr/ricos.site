@@ -15,9 +15,7 @@ export const busLanesLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.buses,
   optional: true,
-  goal: "Carry D0–D7 over one eight-lane bus, then recover each bit on its matching Q output.",
-  intro:
-    "A bus carries several bits together. Bit 0 still has weight 1. A merger packs the lanes; a splitter exposes them again.",
+  goal: "Carry D0–D7 over one eight-lane bus and recover each bit on its Q output.",
   palette: ["merger", "splitter"],
   rules: (circuit) =>
     circuit.nodes.some((node) => node.type === "merger") &&
@@ -40,7 +38,7 @@ export const busLanesLevel: Level = {
   hints: constructionHints(
     "The bus keeps eight separate lanes inside one wire. Packing must preserve each bit’s position.",
     "Connect D0 to merger input 0 and continue in order through D7.",
-    "Connect the MERGER bus output to the SPLITTER bus input. Connect splitter output i to Qi for every bit 0–7.",
+    "Pack the bits with a merger and unpack them with a splitter, keeping each bit in its own lane.",
     "Turn on only D0, then only D7. Q0 and Q7 must follow without swapping places. Then try alternating bits.",
   ),
 };
@@ -96,10 +94,8 @@ function busLesson(shared: boolean, cases: BusCase[]): Level {
     chapter: CHAPTERS.buses,
     optional: true,
     goal: shared
-      ? "Each enabled source drives SHARED BUS. Neither enabled gives Z. Different enabled bytes give X. Equal enabled bytes keep that value."
-      : "When ENABLE is on, SHARED BUS carries DATA. When ENABLE is off, it is floating (Z), even when DATA is zero.",
-    intro:
-      "A disabled driver disconnects its source. Z means no driver, 0 is a driven zero, and X means conflicting values. Read the bus itself: a splitter turns Z and X into zero bits in this simulator.",
+      ? "Each enabled source drives SHARED BUS: none gives Z, and two different bytes give X."
+      : "SHARED BUS carries DATA while ENABLE is on and floats (Z) while it is off.",
     palette: ["merger", "splitter", "busdriver", "bus"],
     start: () => ({
       circuit: { name: reference().name, nodes: busNodes(shared), wires: [] },
@@ -156,11 +152,11 @@ function busLesson(shared: boolean, cases: BusCase[]): Level {
       },
     },
     hints: constructionHints(
-      "ENABLE controls the connection, not the data value. AND-gating every bit produces a driven zero rather than Z.",
+      "ENABLE controls the connection, not the data value. Z means no driver, 0 is a driven zero, and X means conflicting values. AND-gating every bit produces a driven zero rather than Z.",
       "Pack each numeric source’s eight outputs with a MERGER, then feed that bus into a BUS DRIVER.",
       shared
-        ? "Connect ENABLE A to driver A’s ENABLE and ENABLE B to driver B’s ENABLE. Connect both driver outputs to different input pins of SHARED BUS. Keep the source bytes separate until after their drivers."
-        : "Connect the MERGER output to the driver’s Data bus input. Connect ENABLE to its ENABLE input, then the driver output to SHARED BUS.",
+        ? "Give each byte its own bus driver and enable, and let both drivers feed the shared bus."
+        : "Put a bus driver between the packed DATA byte and the bus, with ENABLE on its enable pin.",
       shared
         ? "Use A=85 and B=170. Enable A alone, B alone, neither, then both. Expect 0x55, 0xAA, Z, X."
         : "Set DATA to zero and toggle ENABLE. The bus must change between 0x00 and Z. Try 255 to check every lane.",

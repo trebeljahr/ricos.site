@@ -30,9 +30,7 @@ export const INPUT_LEVELS: Level[] = ([4, 8] as const).map((width) => {
     title: `Interpret a ${width}-bit number source`,
     section: "Inputs and events",
     optional: true,
-    goal: `Make the lamps represent the unsigned source value from 0 to ${2 ** width - 1}. Each lamp names its binary weight.`,
-    intro:
-      "A numeric source supplies several Boolean signals at once. The value is the sum of the lit lamps’ weights. Bit 0 has weight 1. Choose the correspondence, then test values with several bits set.",
+    goal: `Light the lamps that add up to the source value, from 0 to ${2 ** width - 1}.`,
     palette: ["not", "and", "or", "xor"],
     start: () => ({ circuit: { ...reference(), wires: [] }, locked: nodes.map((node) => node.id) }),
     reference,
@@ -63,7 +61,7 @@ export const INPUT_LEVELS: Level[] = ([4, 8] as const).map((width) => {
     hints: constructionHints(
       "The source value is the sum of its set bits’ weights. Output bit 0 has weight 1.",
       "Set the source to 1, then 2, then 4. Each value should light exactly one matching lamp.",
-      "Wire numeric source output i directly to the lamp with weight 2 to the power i. No logic gate is needed.",
+      "Each source output is one bit of the number, so it goes straight to the lamp with the same weight.",
       "Try 3 and 5. They share the weight-1 bit but differ in their other set bit. Then test the largest source value.",
     ),
   };

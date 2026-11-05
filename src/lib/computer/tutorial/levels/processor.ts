@@ -95,6 +95,25 @@ const CHAPTER_OF: ChapterLink[] = [
   CHAPTERS.together,
 ];
 
+/** One line above the board; each level's full description opens its hints. */
+const SHORT_GOALS = [
+  "Fetch each instruction: bring its opcode and operand out of the code ROM.",
+  "Load a number into ACC and show it on OUT.",
+  "Add and subtract: put the ALU's result on the bus and latch its carry.",
+  "Keep variables in RAM: write the bus to an address and read it back.",
+  "Loop: make JMP load PC, and JNC do so only while the carry flag is clear.",
+  "Call functions: CALL pushes the return address and RET pops it.",
+];
+
+const LAST_HINTS = [
+  "Let the PC and ROM drivers feed the bus and the bus feed CMAR, IR and OPERAND, with each control line on the part it names.",
+  "Let OPERAND and ACC drive the bus and let ACC and OUT read it, with each control line on the part it names.",
+  "Give the ALU's result its own way onto the bus, and bring ALU_SUB and FLAGS_IN to the parts they switch.",
+  "Let the bus feed DMAR and the data RAM and let the RAM drive the bus, with RAM_IN and RAM_OUT on the RAM's controls.",
+  "Let the bus load PC under PC_IN, and show the carry flag to the control unit.",
+  "Let the bus feed the stack RAM and the stack RAM drive the bus, with the SP and STACK lines on the parts they name.",
+];
+
 const WIRING_TIP =
   "The parts and the wires already in place are locked. Shift-drag across a row of ports to select them, then drag onto another row to wire all eight lanes at once.";
 
@@ -106,11 +125,7 @@ export const PROCESSOR_LEVELS: Level[] = CPU_LEVEL_SPECS.map((spec, index): Leve
     title: spec.title,
     section: SECTION,
     chapter: CHAPTER_OF[index],
-    goal: spec.goal,
-    intro:
-      number === 1
-        ? `From here you wire a whole CPU. Its blocks are the built-in versions of parts you built: registers, a counter, the ALU and RAM. ${WIRING_TIP}`
-        : WIRING_TIP,
+    goal: SHORT_GOALS[index],
     spec: {
       kind: "custom",
       describe: `Runs ${spec.tests.length} test programs (${spec.tests.map((test) => test.name).join(", ")}) tick for tick next to the program stepper.`,
@@ -128,9 +143,9 @@ export const PROCESSOR_LEVELS: Level[] = CPU_LEVEL_SPECS.map((spec, index): Leve
     reference: once(() => solvedLevel(setup())),
     hints: constructionHints(
       spec.goal,
-      "Follow one transfer from source to destination. The source’s OUT signal enables its bus driver; the destination’s IN signal loads its register on a rising edge.",
-      spec.steps.join(" "),
-      "Run Check, then use the failing tick to compare bus value, driver enable, and destination LOAD. Check the data path before changing control wiring.",
+      `Follow one transfer from source to destination. The source’s OUT signal enables its bus driver; the destination’s IN signal loads its register on a rising edge. ${WIRING_TIP}`,
+      LAST_HINTS[index],
+      "Use the failing tick to compare bus value, driver enable, and destination LOAD. Check the data path before changing control wiring.",
     ),
     save: (circuit) => saveLevel(circuit, setup()),
     restore: (saved) => restoreLevel(saved, setup()),

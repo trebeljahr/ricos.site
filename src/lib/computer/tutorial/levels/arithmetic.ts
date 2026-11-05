@@ -141,9 +141,7 @@ export const halfAdderLevel: Level = {
   title: "Half adder",
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
-  goal: "SUM and CARRY show A + B as a two-bit number. CARRY is the high bit.",
-  intro:
-    "Adding two bits can give 2, and 2 needs two bits: 1 + 1 is 10 in binary. SUM is the low bit of the answer and CARRY the high bit.",
+  goal: "SUM and CARRY show A + B as a two-bit number.",
   spec: {
     kind: "truth",
     inputs: [A, B],
@@ -156,7 +154,7 @@ export const halfAdderLevel: Level = {
   hints: constructionHints(
     "SUM is 1 when exactly one input is 1. CARRY is 1 when both inputs are 1.",
     "Build the SUM and CARRY columns separately using gates you already know.",
-    "SUM = A XOR B. CARRY = A AND B. Fan each input out to both gates.",
+    "Treat SUM and CARRY as two separate gates that both read A and B.",
     "Try 1+1: SUM must be 0 and CARRY 1. Compare with 1+0.",
   ),
 };
@@ -167,8 +165,6 @@ export const fullAdderLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
   goal: "SUM and CARRY show A + B + CARRY IN as a two-bit number.",
-  intro:
-    "A full adder adds three bits: A, B and the carry from the bit below. The answer is at most 3, so two bits still hold it. Try to build it before you read how.",
   spec: {
     kind: "truth",
     inputs: [A, B, CIN],
@@ -184,7 +180,7 @@ export const fullAdderLevel: Level = {
   hints: constructionHints(
     "Add A and B first, then add CARRY IN to that intermediate sum. Either addition can produce a carry.",
     "Use one half adder for A and B, and another for its SUM and CARRY IN.",
-    "First HALF ADDER takes A,B. Second takes the first SUM and CARRY IN. Its SUM is the final SUM. OR the two half-adder CARRY outputs for final CARRY.",
+    "Chain two half adders, and let either one's carry make the final CARRY.",
     "Try A=B=CARRY IN=1. The result is binary 11, so SUM and CARRY must both light.",
   ),
 };
@@ -194,7 +190,7 @@ export const adder4Level: Level = {
   title: "4-bit adder",
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
-  goal: "OUT0–OUT3 and CARRY OUT show A + B + CARRY IN. Bit 0 is the lowest bit of each number.",
+  goal: "OUT0–OUT3 and CARRY OUT show A + B + CARRY IN.",
   spec: {
     kind: "truth",
     inputs: [...A4, ...B4, CIN],
@@ -207,7 +203,7 @@ export const adder4Level: Level = {
   hints: constructionHints(
     "A carry moves from a lower bit into the next higher bit. Each sum stays in its own lane.",
     "Begin with a full adder for A0, B0, and CARRY IN.",
-    "For bits 0–3, wire Ai and Bi into a FULL ADDER. Chain each CARRY output into the next CARRY IN. The first takes external CARRY IN; the last drives CARRY OUT. Wire each SUM to OUTi.",
+    "Line up four full adders and pass each carry up to the next bit.",
     "Try 7+1 and 15+1. The carry must cross several stages and finally reach CARRY OUT.",
   ),
 };
@@ -217,7 +213,7 @@ export const adder8Level: Level = {
   title: "8-bit adder",
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
-  goal: "OUT0–OUT7 and CARRY OUT show A + B + CARRY IN for two 8-bit numbers.",
+  goal: "OUT0–OUT7 and CARRY OUT show A + B + CARRY IN.",
   spec: {
     kind: "truth",
     inputs: [...A8, ...B8, CIN],
@@ -231,7 +227,7 @@ export const adder8Level: Level = {
   hints: constructionHints(
     "Two four-bit adders can form one eight-bit adder by sharing a carry between them.",
     "Use one four-bit adder for A0–A3 and B0–B3, and another for A4–A7 and B4–B7.",
-    "External CARRY IN feeds the low adder. Its CARRY OUT feeds the high adder’s CARRY IN. Map the low sums to OUT0–OUT3 and high sums to OUT4–OUT7. The high carry drives CARRY OUT.",
+    "Join two 4-bit adders, with the low adder's carry feeding the high one.",
     "Try 15+1 to test the middle carry, then 255+1 to test the final carry.",
   ),
 };
@@ -241,9 +237,7 @@ export const increment4Level: Level = {
   title: "Increment",
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
-  goal: "OUT0–OUT3 show A + 1. After 15 comes 0: the carry out of bit 3 is dropped.",
-  intro:
-    "Adding 1 needs a constant 1. A HIGH part gives 1 all the time, and a GROUND part gives 0.",
+  goal: "OUT0–OUT3 show A + 1, and 15 wraps to 0.",
   spec: {
     kind: "truth",
     inputs: A4,
@@ -255,8 +249,8 @@ export const increment4Level: Level = {
   reference: increment4,
   hints: constructionHints(
     "Increment is addition with a constant operand. A four-bit result wraps after 15.",
-    "Use A as one operand of a four-bit adder. Make the other operand zero.",
-    "Wire A0–A3 to adder A0–A3, GROUND to every B input, and HIGH to CARRY IN. Connect the four sum outputs to OUT0–OUT3. Leave CARRY OUT unused.",
+    "Use A as one operand of a four-bit adder. Make the other operand zero. A HIGH part gives 1 all the time, and a GROUND part gives 0.",
+    "Use a 4-bit adder with 0 as the second number and a constant 1 on CARRY IN.",
     "Try 0, 7, and 15. Their results should be 1, 8, and 0.",
   ),
 };
@@ -266,7 +260,7 @@ export const subtract4Level: Level = {
   title: "Subtraction",
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
-  goal: "OUT0–OUT3 show A − B. Below 0 the result wraps around, so 2 − 3 gives 15.",
+  goal: "OUT0–OUT3 show A − B, wrapping below 0, so 2 − 3 gives 15.",
   spec: {
     kind: "truth",
     inputs: [...A4, ...B4],
@@ -279,7 +273,7 @@ export const subtract4Level: Level = {
   hints: constructionHints(
     "Four-bit subtraction uses two’s complement: A − B = A + NOT B + 1, keeping the low four bits.",
     "Invert each B bit, then pass A and the inverted byte into an adder.",
-    "Wire Ai to adder Ai and NOT Bi to adder Bi. Set CARRY IN to HIGH and wire the sum bits to OUT0–OUT3. Drop CARRY OUT.",
+    "Add A to the inverted bits of B, with a constant 1 on CARRY IN.",
     "Try 5−3, 3−3, and 2−3. Expect 2, 0, and 15.",
   ),
 };
@@ -302,7 +296,7 @@ export const isZero4Level: Level = {
   hints: constructionHints(
     "Zero means no input bit is 1. First detect whether any bit is 1, then invert that result.",
     "OR the first two bits and the last two bits into two intermediate signals.",
-    "LOW = A0 OR A1. HIGH BITS = A2 OR A3. ZERO = NOT(LOW OR HIGH BITS).",
+    "OR all four bits together, two at a time, and invert the answer.",
     "Test zero, then each power of two. Every single lit input must turn ZERO off.",
   ),
 };
@@ -312,9 +306,7 @@ export const isNegative4Level: Level = {
   title: "Less than zero",
   section: SECTION,
   chapter: CHAPTERS.arithmetic,
-  goal: "NEGATIVE is 1 when A, read as a two's complement number, is below zero. You get no parts, only wires.",
-  intro:
-    "Two's complement gives the top bit a negative weight. In 4 bits, A3 counts as −8 instead of 8, and A0–A2 add at most 7 back. So the top bit tells you the sign.",
+  goal: "NEGATIVE is 1 when A, read as two's complement, is below zero.",
   spec: {
     kind: "truth",
     inputs: A4,
@@ -327,7 +319,7 @@ export const isNegative4Level: Level = {
   hints: constructionHints(
     "In four-bit two’s complement, A3 has weight −8. The other bits can add back at most 7.",
     "Find the one input that distinguishes every nonnegative number from every negative number.",
-    "Wire A3 directly to NEGATIVE. No gate or connection from A0–A2 is needed.",
+    "The sign is already there, because A3 alone says whether the number is negative.",
     "Compare 7 (0111) with −8 (1000). Then vary the low three bits while keeping A3 fixed.",
   ),
 };

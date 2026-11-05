@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { evalGate } from "../../gateLogic";
 import { gateBlueprint, initialSnapshot, type LogicGate, step } from "../../logic";
 import { gateConstructionHints } from "./gateHints";
 import { andLevel, norLevel, notLevel, orLevel, xorLevel } from "./gates";
@@ -19,31 +18,12 @@ describe("requested gate construction hints", () => {
         const reference = gateBlueprint(target, family);
         const gates = reference.nodes.filter((node) => node.type === family);
         expect(gates).toHaveLength(expected);
-        expect(hints.map((hint) => hint.title)).toEqual(["Core idea", "Gate count", "Signal plan"]);
+        expect(hints.map((hint) => hint.title)).toEqual(["Core idea", "Gate count", "Last hint"]);
         expect(hints[1].text).toBe(
           `One construction uses ${expected} ${family.toUpperCase()} ${expected === 1 ? "gate" : "gates"}.`,
         );
         expect(hints.every((hint) => hint.when === undefined)).toBe(true);
         expect(hints[2].anchor).toBeUndefined();
-        // A learner following only the disclosed plan gets the right truth table.
-        const stages = [
-          ...hints[2].text.matchAll(/(G\d+) = (NAND|NOR)\((A|B|G\d+), (A|B|G\d+)\)/g),
-        ];
-        expect(stages).toHaveLength(expected);
-        const output = hints[2].text.match(/Connect (G\d+) to OUT/)![1];
-        for (const a of [false, true])
-          for (const b of [false, true]) {
-            const signals: Record<string, boolean> = { A: a, B: b };
-            for (const [, name, operation, left, right] of stages) {
-              expect(left in signals && right in signals).toBe(true);
-              signals[name] = evalGate(
-                operation.toLowerCase() as LogicGate,
-                signals[left],
-                signals[right],
-              );
-            }
-            expect(signals[output]).toBe(evalGate(target, a, b));
-          }
         expect(
           UNIVERSAL_GATE_LEVELS.find((level) => level.id === `universal-${family}-${target}`)
             ?.hints,
@@ -78,8 +58,8 @@ describe("requested gate construction hints", () => {
     }
   });
 
-  it("gives the first level plain hints that end in its full wiring", () => {
-    expect(notLevel.hints!.map((hint) => hint.title)).toEqual(["Core idea", "Wiring"]);
+  it("gives the first NAND level plain hints that end in the idea of its wiring", () => {
+    expect(notLevel.hints!.map((hint) => hint.title)).toEqual(["Core idea", "Last hint"]);
     expect(notLevel.hints![1].text).toContain("both NAND inputs");
     expect(notLevel.hints!.map((hint) => hint.text).join(" ")).not.toMatch(/G1|00|11/);
   });

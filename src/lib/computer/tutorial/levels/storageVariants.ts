@@ -146,8 +146,7 @@ export const gatedSrLatchLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.memory,
   optional: true,
-  goal: "SET and RESET affect Q only while ENABLE is on. With ENABLE off, Q holds its value.",
-  intro: "Two gates control when the basic SR latch may see SET or RESET.",
+  goal: "SET and RESET affect Q only while ENABLE is on.",
   spec: { kind: "sequence", inputs: [SET, RESET, ENABLE], outputs: [Q, NQ], ticks: gatedSrTicks },
   palette: ["part:and", "part:sr-latch"],
   makes: { part: "gated-sr-latch", label: "GATED SR LATCH", builtIn: { preset: "Gated SR latch" } },
@@ -155,7 +154,7 @@ export const gatedSrLatchLevel: Level = {
   hints: constructionHints(
     "A stored bit can ignore SET and RESET by blocking both control paths.",
     "Place an SR latch. Put one AND gate before SET and another before RESET.",
-    "Gate SET with ENABLE and RESET with ENABLE, then connect those two results to the latch. Send Q and Q̅ to the outputs.",
+    "Put an AND gate with ENABLE in front of both SET and RESET on an SR latch.",
     "Set Q to 1, turn ENABLE off, then try RESET. Q must stay 1 until ENABLE returns.",
   ),
 };
@@ -166,9 +165,7 @@ export const jkLatchLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.memory,
   optional: true,
-  goal: "While enabled, J sets Q and K resets it. With ENABLE off, Q holds its value.",
-  intro:
-    "Feedback computes the next bit from J, K and the bit already stored. Both J and K on can race in a transparent latch; use the clocked version to toggle reliably.",
+  goal: "While ENABLE is on, J sets Q and K resets it.",
   spec: { kind: "sequence", inputs: [ENABLE, J, K], outputs: [Q, NQ], ticks: jkLatchTicks },
   palette: ["part:not", "part:and", "part:or", "part:d-latch"],
   makes: { part: "jk-latch", label: "JK LATCH", builtIn: { preset: "JK latch" } },
@@ -176,7 +173,7 @@ export const jkLatchLevel: Level = {
   hints: constructionHints(
     "J asks to set; K asks to clear. Q feeds back so neither control can preserve or change the stored bit as needed.",
     "Place a D latch. Feed ENABLE directly to its enable input, then compute its DATA from J, K and Q.",
-    "D = (J AND NOT Q) OR (Q AND NOT K). Feed the latch’s Q back into both branches and take Q̅ from the latch’s second output.",
+    "Compute a D latch's DATA from J, K and the stored Q, so J can turn it on and K can turn it off.",
     "With ENABLE off, change J and K. Then enable J alone and K alone. Avoid J=K=1 while transparent: feedback may race.",
   ),
 };
@@ -187,9 +184,7 @@ export const tLatchLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.memory,
   optional: true,
-  goal: "With ENABLE off, Q holds. With ENABLE on and TOGGLE off, Q holds; TOGGLE on requests a change.",
-  intro:
-    "The XOR asks for the opposite of Q when TOGGLE is on. A transparent toggle latch can race while held open; the flip-flop lesson makes each toggle one clock edge.",
+  goal: "While ENABLE is on, TOGGLE on asks Q to change.",
   spec: {
     kind: "sequence",
     inputs: [ENABLE, T],
@@ -249,7 +244,7 @@ export const tLatchLevel: Level = {
   hints: constructionHints(
     "XOR with 0 returns Q. XOR with 1 returns NOT Q.",
     "Place a D latch and XOR. Feed the latch’s Q back into XOR.",
-    "Connect Q and TOGGLE to XOR; connect XOR to the latch’s DATA, ENABLE to its enable pin, and both stored outputs to lamps.",
+    "Feed Q and TOGGLE through an XOR into a D latch's DATA.",
     "Keep TOGGLE off while ENABLE is on. A transparent latch with TOGGLE held on may race; compare the edge-triggered T flip-flop.",
   ),
 };
@@ -260,8 +255,7 @@ export const srFlipFlopLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.memory,
   optional: true,
-  goal: "Sample SET and RESET on rising CLOCK edges. SET takes priority when both are on.",
-  intro: "Feedback computes the next bit, but the D flip-flop accepts it only at an edge.",
+  goal: "On a rising CLOCK edge, SET sets Q and RESET clears it, and SET wins.",
   spec: {
     kind: "sequence",
     inputs: [SET, RESET, CLOCK],
@@ -298,7 +292,7 @@ export const srFlipFlopLevel: Level = {
   hints: constructionHints(
     "The stored Q feeds the next DATA while neither SET nor RESET is active.",
     "Place a D flip-flop. Build a hold path from Q through NOT RESET and an AND gate.",
-    "D = SET OR (Q AND NOT RESET). Feed CLOCK to the flip-flop. Take Q and Q̅ from its outputs.",
+    "Feed a D flip-flop with SET, or with its own Q as long as RESET is off.",
     "Change SET or RESET while CLOCK stays high; Q waits for another rising edge.",
   ),
 };
@@ -309,9 +303,7 @@ export const jkFlipFlopLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.memory,
   optional: true,
-  goal: "On each rising edge: J sets, K resets, neither holds, and J=K=1 toggles Q.",
-  intro:
-    "The JK next-state expression uses Q feedback. The clock edge prevents transparent feedback from racing.",
+  goal: "On a rising edge, J sets, K resets, neither holds and both toggle Q.",
   spec: {
     kind: "sequence",
     inputs: [CLOCK, J, K],
@@ -328,7 +320,7 @@ export const jkFlipFlopLevel: Level = {
   hints: constructionHints(
     "When J and K are both on, the next value must be the opposite of stored Q.",
     "Place a D flip-flop. Use its Q and Q̅ outputs to build two branches for the next DATA.",
-    "D = (J AND NOT Q) OR (Q AND NOT K). Feed CLOCK to the flip-flop; connect D to its DATA.",
+    "Feed a D flip-flop with J while Q is off and with NOT K while Q is on.",
     "Set J=K=1 and pulse CLOCK twice. Q must change on each rising edge and hold between edges.",
   ),
 };
@@ -340,8 +332,6 @@ export const tFlipFlopLevel: Level = {
   chapter: CHAPTERS.memory,
   optional: true,
   goal: "On each rising CLOCK edge, TOGGLE=1 inverts Q and TOGGLE=0 holds it.",
-  intro:
-    "XOR computes a new bit; the edge-triggered flip-flop stores it exactly once per clock pulse.",
   spec: {
     kind: "sequence",
     inputs: [CLOCK, T],
@@ -362,7 +352,7 @@ export const tFlipFlopLevel: Level = {
   hints: constructionHints(
     "Q XOR TOGGLE equals Q when TOGGLE is 0 and NOT Q when TOGGLE is 1.",
     "Connect Q from a D flip-flop back to one XOR input; TOGGLE goes to the other.",
-    "Feed XOR into the flip-flop’s DATA and CLOCK into its clock pin. Connect Q and Q̅ to the outputs.",
+    "Feed a D flip-flop with the XOR of its own Q and TOGGLE.",
     "Leave TOGGLE high for two clock pulses: Q flips twice, only on rising edges.",
   ),
 };
@@ -373,9 +363,7 @@ export const shiftRegisterLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.register,
   optional: true,
-  goal: "On each rising edge, SERIAL IN enters Q0 and each previous Qi moves to Qi+1. Hold all bits between edges.",
-  intro:
-    "Eight flip-flops share a clock. Each stage takes the previous stage’s old value on the same edge.",
+  goal: "On each rising edge, SERIAL IN enters Q0 and every bit moves up one place.",
   spec: {
     kind: "sequence",
     inputs: [CLOCK, DATA],
@@ -429,7 +417,7 @@ export const shiftRegisterLevel: Level = {
   hints: constructionHints(
     "All eight bits sample their inputs on the same edge, so the old Q0 becomes new Q1 while SERIAL IN becomes new Q0.",
     "Place eight D flip-flops. Connect CLOCK to all of their clock inputs.",
-    "SERIAL IN → first DATA; Q0 → second DATA; continue Q6 → eighth DATA. Connect each flip-flop’s Q to its matching output.",
+    "Chain eight D flip-flops on one clock, so each takes the old value of the one before it.",
     "Send one 1 followed by zeros. Watch it move Q0, Q1, … Q7 on successive rising edges without changing between edges.",
   ),
 };

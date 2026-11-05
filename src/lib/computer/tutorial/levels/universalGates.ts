@@ -26,9 +26,7 @@ export const UNIVERSAL_GATE_LEVELS: Level[] = UNIVERSAL_FAMILIES.flatMap((family
       optional: true,
       // A unique family keeps a chapter embed on its own target and primitive.
       practice: { family: id, label: title },
-      goal: `${GATE_RULES[target]} Build this ${target.toUpperCase()} function using only ${family.toUpperCase()} gates. Once it works, find a solution with the fewest gates.`,
-      intro:
-        "Choose your own wiring. The expected truth table specifies the result. Check compares every row with your circuit. Hints appear only when requested.",
+      goal: `Build ${target.toUpperCase()} using only ${family.toUpperCase()} gates.`,
       palette: [family],
       spec: {
         kind: "truth",

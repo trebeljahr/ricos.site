@@ -160,12 +160,16 @@ export const cmosNotLevel: Level = {
       text: "PMOS conducts when its G dot is 0. NMOS conducts when its G dot is 1. When A is 0, OUT must reach VDD. When A is 1, OUT must reach GND.",
     },
     {
-      title: "Parts",
-      text: "Add one PMOS and one NMOS. Wire VDD to the S dot of PMOS and GND to the S dot of NMOS. Wire A to both G dots.",
+      title: "First step",
+      text: "Add one PMOS and one NMOS, and draw wires from dot to dot.",
     },
     {
-      title: "Output",
-      text: "Wire the D dot of PMOS to OUT. Then drag the D dot of NMOS onto that wire and release at the highlighted target to join them.",
+      title: "Joining wires",
+      text: "To bring two wires together at OUT, drag a dot onto a wire and release at the highlighted target.",
+    },
+    {
+      title: "Last hint",
+      text: "Let A control both transistors, with PMOS between VDD and OUT and NMOS between GND and OUT, so exactly one of them connects OUT to a rail.",
     },
   ],
 };
@@ -175,7 +179,7 @@ export const cmosNandLevel: Level = {
   title: "NAND from transistors",
   section: SECTION_CMOS,
   chapter: CHAPTERS.transistors,
-  goal: "OUT is 0 only when A and B are both 1. Once it works, use the fewest transistors.",
+  goal: "OUT is 0 only when A and B are both 1.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [!(a && b)] },
   palette: ["pmos", "nmos", "junction"],
   makes: { part: "nand", label: "NAND", builtIn: { gate: "nand" } },
@@ -195,8 +199,8 @@ export const cmosNandLevel: Level = {
       text: "The simplest CMOS NAND uses four transistors: two PMOS and two NMOS. Junctions and supply rails do not count.",
     },
     {
-      title: "Conduction paths",
-      text: "Put the PMOS pair in parallel from VDD and the NMOS pair in series from GND. Each pair has gates controlled by A and B. Join the two paths at OUT: drag an output onto a wire and release at the highlighted target.",
+      title: "Last hint",
+      text: "Give OUT two PMOS paths side by side up to VDD and one chain of two NMOS down to GND, with A and B controlling one of each.",
     },
   ],
 };
@@ -250,6 +254,7 @@ const cmosAndLevel = cmosGateLevel("and", "OUT is 1 only when A and B are both 1
     text: "Its output is 0 only when A and B are both 1: PMOS A and PMOS B side by side from VDD, NMOS A and NMOS B in a chain to GND.",
   },
   { title: "Last stage", text: SECOND_STAGE },
+  { title: "Last hint", text: "Build a NAND stage, then feed its output into a NOT stage." },
 ]);
 
 const cmosOrLevel = cmosGateLevel("or", "OUT is 1 when A, B or both are 1.", [
@@ -259,13 +264,14 @@ const cmosOrLevel = cmosGateLevel("or", "OUT is 1 when A, B or both are 1.", [
     text: "Its output is 1 only when A and B are both 0: PMOS A and PMOS B in a chain from VDD, NMOS A and NMOS B side by side to GND.",
   },
   { title: "Last stage", text: SECOND_STAGE },
+  { title: "Last hint", text: "Build a NOR stage, then feed its output into a NOT stage." },
 ]);
 
 const cmosNorLevel = cmosGateLevel("nor", "OUT is 1 only when A and B are both 0.", [
   { title: "Core idea", text: TWO_STAGES.replace("A stage is", "This takes one stage:") },
   {
-    title: "Conduction paths",
-    text: "Put the PMOS pair in a chain from VDD and the NMOS pair side by side to GND. A and B each drive one transistor of each pair.",
+    title: "Last hint",
+    text: "Put the PMOS pair in a chain up to VDD and the NMOS pair side by side down to GND, with A and B driving one of each.",
   },
 ]);
 
@@ -276,8 +282,8 @@ const cmosXorLevel = cmosGateLevel("xor", "OUT is 1 when exactly one of A and B 
   },
   { title: "First stage", text: "Build a NOT of A." },
   {
-    title: "Selector",
-    text: "Wire A to the S dot of a PMOS and the first stage's output to the S dot of an NMOS. B drives both G dots. Join both D dots at OUT.",
+    title: "Last hint",
+    text: "Let B choose which signal reaches OUT: A through a PMOS, or the NOT of A through an NMOS.",
   },
 ]);
 
@@ -288,6 +294,7 @@ const cmosXnorLevel = cmosGateLevel("xnor", "OUT is 1 when A and B are equal.", 
     text: "Build a NOT of A. Then B selects between them: A into the S dot of a PMOS, the NOT of A into the S dot of an NMOS.",
   },
   { title: "Last stage", text: SECOND_STAGE },
+  { title: "Last hint", text: "Build XOR with B choosing between A and its NOT, then feed it into a NOT stage." },
 ]);
 
 export const notLevel: Level = {
@@ -295,9 +302,7 @@ export const notLevel: Level = {
   title: "NOT",
   section: SECTION,
   chapter: CHAPTERS.universal,
-  goal: "OUT is the opposite of A, this time built from NAND.",
-  intro:
-    "From here on you build with NAND instead of transistors. NAND's output is 0 only when both of its inputs are 1. Add NAND to the board, then draw wires from dot to dot.",
+  goal: "OUT is the opposite of A, built from NAND.",
   spec: { kind: "truth", inputs: [A], outputs: [OUT], fn: ([a]) => [!a] },
   palette: ["nand"],
   makes: { part: "not", label: "NOT", builtIn: { gate: "not" } },
@@ -306,9 +311,12 @@ export const notLevel: Level = {
   hints: [
     {
       title: "Core idea",
-      text: "You have one signal, A, and NAND has two inputs. What does NAND do when both inputs get the same signal?",
+      text: "NAND's output is 0 only when both of its inputs are 1. You have one signal, A, and NAND has two inputs. What does NAND do when both inputs get the same signal?",
     },
-    { title: "Wiring", text: "Wire A to both NAND inputs. Then wire the NAND output to OUT." },
+    {
+      title: "Last hint",
+      text: "Feed A into both NAND inputs, so the gate only ever sees two equal bits and flips them.",
+    },
   ],
 };
 
@@ -318,8 +326,6 @@ export const andLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 only when A and B are both 1.",
-  intro:
-    "NAND's output is 0 only when both inputs are 1. Your NOT is now in the parts list. Compare NAND with this goal.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a && b] },
   palette: ["nand", "part:not"],
   makes: { part: "and", label: "AND", builtIn: { gate: "and" } },
@@ -333,8 +339,6 @@ export const orLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 when A, B or both are 1.",
-  intro:
-    "NAND's output is 1 when either input is 0. OUT must be 1 when either input is 1. What can your NOT do about that difference?",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a || b] },
   palette: ["nand", "part:not", "part:and"],
   makes: { part: "or", label: "OR", builtIn: { gate: "or" } },
@@ -348,8 +352,6 @@ export const xorLevel: Level = {
   section: SECTION,
   chapter: CHAPTERS.universal,
   goal: "OUT is 1 when exactly one of A and B is 1.",
-  intro:
-    "Equal inputs and different inputs form two useful groups of cases. Design a circuit that distinguishes those groups.",
   spec: { kind: "truth", inputs: [A, B], outputs: [OUT], fn: ([a, b]) => [a !== b] },
   palette: ["nand", "part:not", "part:and", "part:or"],
   makes: { part: "xor", label: "XOR", builtIn: { gate: "xor" } },

@@ -318,9 +318,7 @@ export const srLatchLevel: Level = {
   title: "SR latch",
   section: SECTION,
   chapter: CHAPTERS.memory,
-  goal: "SET turns Q on and RESET turns Q off. While both are off, Q keeps its value, and Q̅ is always the opposite of Q.",
-  intro:
-    "Until now, every output depended only on the inputs at that moment. A latch remembers. Its output feeds back into its own input, so it holds a value after the input that set it is gone.",
+  goal: "SET turns Q on, RESET turns Q off, and otherwise Q keeps its value.",
   spec: { kind: "sequence", inputs: [SET, RESET], outputs: [Q, NQ], ticks: SR_TICKS },
   palette: ["nand", "part:not", "part:and", "part:or"],
   makes: { part: "sr-latch", label: "SR LATCH", builtIn: { preset: "SR latch" } },
@@ -328,7 +326,7 @@ export const srLatchLevel: Level = {
   hints: constructionHints(
     "A stored bit needs feedback. With SET and RESET low, the old Q must help produce the next Q.",
     "Start with the hold condition: old Q survives only while RESET is 0. Then allow SET to force Q to 1.",
-    "KEEP = Q AND NOT RESET. Q = SET OR KEEP. Feed Q back to KEEP, and invert Q for Q̅. The check never asserts SET and RESET together.",
+    "Feed Q back through a gate that RESET can block, and let SET force Q on.",
     "Set Q to 1, release SET, then reset and release RESET. Both values must survive after their control turns off.",
   ),
 };
@@ -338,9 +336,7 @@ export const dLatchLevel: Level = {
   title: "D latch",
   section: SECTION,
   chapter: CHAPTERS.memory,
-  goal: "While ENABLE is on, Q follows DATA. While ENABLE is off, Q keeps its value. Q̅ is the opposite of Q.",
-  intro:
-    "An SR latch needs two inputs to store one bit. A D latch takes the bit itself on DATA. ENABLE says when to store it.",
+  goal: "Q follows DATA while ENABLE is on and keeps its value while ENABLE is off.",
   spec: { kind: "sequence", inputs: [ENABLE, DATA], outputs: [Q, NQ], ticks: D_LATCH_TICKS },
   palette: ["nand", "part:not", "part:and", "part:or", "part:sr-latch"],
   makes: { part: "d-latch", label: "D LATCH", builtIn: { preset: "D latch" } },
@@ -348,7 +344,7 @@ export const dLatchLevel: Level = {
   hints: constructionHints(
     "ENABLE controls when this memory is transparent. It can follow several DATA changes during one enabled interval.",
     "Use an SR latch. DATA chooses whether to set or reset, while ENABLE must gate both commands.",
-    "SET = ENABLE AND DATA. RESET = ENABLE AND NOT DATA. Connect these to the SR latch and its Q and Q̅ to the outputs.",
+    "Drive an SR latch so that, while ENABLE is on, DATA acts as SET and its opposite acts as RESET.",
     "Enable the latch, change DATA twice, then disable it. Change DATA again: Q must keep the last enabled value.",
   ),
 };
@@ -358,9 +354,7 @@ export const dFlipFlopLevel: Level = {
   title: "D flip-flop",
   section: SECTION,
   chapter: CHAPTERS.clock,
-  goal: "When CLOCK rises from 0 to 1, Q takes the value of DATA. At every other moment Q keeps its value, whatever DATA does.",
-  intro:
-    "A D latch lets DATA through for as long as ENABLE is on. A flip-flop stores only at one moment: when the clock rises. So every part of a computer that uses the same clock changes in step.",
+  goal: "Q takes DATA only at the moment CLOCK rises.",
   spec: { kind: "sequence", inputs: [CLOCK, DATA], outputs: [Q, NQ], ticks: FLIP_FLOP_TICKS },
   palette: ["part:not", "part:and", "part:d-latch"],
   makes: { part: "d-flip-flop", label: "D FLIP-FLOP", builtIn: { preset: "D flip-flop" } },
@@ -368,7 +362,7 @@ export const dFlipFlopLevel: Level = {
   hints: constructionHints(
     "Two latches can isolate the output from DATA except at the rising clock edge.",
     "Let the first latch follow DATA while CLOCK is low. Let the second follow the first while CLOCK is high.",
-    "Leader ENABLE = NOT CLOCK, leader DATA = DATA. Follower ENABLE = CLOCK, follower DATA = leader Q. Use follower Q and Q̅ as outputs.",
+    "Chain two D latches that are open on opposite clock levels, so only one is ever open.",
     "Change DATA while CLOCK is high, then while low. Q must wait for the next rising edge in both cases.",
   ),
 };
@@ -378,9 +372,7 @@ export const register1Level: Level = {
   title: "Register bit",
   section: SECTION,
   chapter: CHAPTERS.register,
-  goal: "When CLOCK rises and LOAD is 1, Q takes DATA. When CLOCK rises and LOAD is 0, Q keeps its value.",
-  intro:
-    "A flip-flop stores a new bit on every clock tick. A register bit stores only when LOAD is on, and keeps its value on the other ticks.",
+  goal: "When CLOCK rises, Q takes DATA if LOAD is 1 and keeps its value if LOAD is 0.",
   spec: {
     kind: "sequence",
     inputs: [CLOCK, LOAD, DATA],
@@ -393,7 +385,7 @@ export const register1Level: Level = {
   hints: constructionHints(
     "LOAD chooses which value the flip-flop captures. CLOCK chooses when it captures that value.",
     "When LOAD is 0, the next data input must equal the old Q. A selector can choose old Q or new DATA.",
-    "Wire LOAD to a selector, Q to its A input, and DATA to B. Feed the selector output to a D flip-flop. CLOCK drives the flip-flop, whose Q also closes the feedback path.",
+    "Put a selector in front of a D flip-flop, so LOAD chooses between new DATA and the old Q.",
     "Load 1 on a rising edge. Turn LOAD off, set DATA to 0, and pulse CLOCK again. Q must stay 1.",
   ),
 };
@@ -403,8 +395,7 @@ export const register8Level: Level = {
   title: "8-bit register",
   section: SECTION,
   chapter: CHAPTERS.register,
-  goal: "When CLOCK rises and LOAD is 1, Q0–Q7 take D0–D7. When LOAD is 0, Q0–Q7 keep their values.",
-  intro: "A register holds a whole byte. Eight register bits share one CLOCK and one LOAD.",
+  goal: "When CLOCK rises, Q0–Q7 take D0–D7 if LOAD is 1 and keep their values if LOAD is 0.",
   spec: {
     kind: "sequence",
     inputs: [CLOCK, LOAD, ...D8],
@@ -421,7 +412,7 @@ export const register8Level: Level = {
   hints: constructionHints(
     "A byte register repeats the same one-bit memory eight times. CLOCK and LOAD belong to every bit.",
     "Build bit 0 with one register bit, then repeat the same wiring for bits 1 through 7.",
-    "For each bit i, connect CLOCK, LOAD, and Di to a REGISTER BIT. Connect its Q to Qi. Share the controls, but keep each data lane separate.",
+    "Use one register bit per data lane, with CLOCK and LOAD shared by all eight.",
     "Load 90, then change D to 165 with LOAD off and pulse CLOCK. Q must keep 90 until an enabled rising edge.",
   ),
 };
@@ -432,8 +423,6 @@ export const counter8Level: Level = {
   section: SECTION,
   chapter: CHAPTERS.counter,
   goal: "Q0–Q7 start at 0 and count up by one each time CLOCK rises.",
-  intro:
-    "A counter is a register that stores its own value plus one on every clock tick. A processor's program counter works this way.",
   spec: { kind: "sequence", inputs: [CLOCK], outputs: Q8, ticks: COUNTER_TICKS },
   palette: ["high", "ground", "part:register8", "part:adder8"],
   makes: { part: "counter8", label: "COUNTER", builtIn: { preset: "8-bit binary counter" } },
@@ -441,7 +430,7 @@ export const counter8Level: Level = {
   hints: constructionHints(
     "The register stores the current count. An adder continuously computes the next count from those stored outputs.",
     "Feed Q0–Q7 into one side of the adder. Add one by grounding the other byte and setting CARRY IN high.",
-    "Register LOAD = HIGH. Connect register Qi to adder Ai, GROUND to every Bi, and HIGH to CARRY IN. Connect each sum bit back to register Di and each Qi to its output. CLOCK drives the register.",
+    "Feed a register's output through an adder that adds 1, and back into the register.",
     "Step through 3 to 4 and 7 to 8. Several bits change on each rising edge; the falling edge must preserve the count.",
   ),
 };
@@ -452,9 +441,7 @@ export const ramCellLevel: Level = {
   title: "Addressed RAM cell",
   section: SECTION,
   chapter: CHAPTERS.ram,
-  goal: "Store DATA only while SELECT and WRITE ENABLE are on. Show the stored bit only while SELECT and READ ENABLE are on. Otherwise DATA OUT is 0.",
-  intro:
-    "One RAM cell stores one bit. Row selection and separate read and write enables let many cells share data lines.",
+  goal: "Store DATA while selected and writing, and show the bit while selected and reading.",
   spec: {
     kind: "sequence",
     inputs: [port("select", "SELECT"), WRITE, READ, DATA],
@@ -525,7 +512,7 @@ export const ramCellLevel: Level = {
   hints: constructionHints(
     "SELECT chooses this cell. WRITE ENABLE permits storage to change. READ ENABLE permits its stored bit to reach DATA OUT.",
     "Use a D latch for storage. Its ENABLE must require both SELECT and WRITE ENABLE.",
-    "STORE = SELECT AND WRITE ENABLE. Feed STORE and DATA to a D LATCH. READ = SELECT AND READ ENABLE. DATA OUT = latch Q AND READ.",
+    "Store the bit in a D latch, and gate both its write and its read with SELECT.",
     "Write 1, disable writing, and hide the output by disabling reads. Read again: 1 must remain. An unselected write must do nothing.",
   ),
 };
@@ -535,9 +522,7 @@ export const ramLevel: Level = {
   title: "RAM",
   section: SECTION,
   chapter: CHAPTERS.ram,
-  goal: "While WRITE ENABLE is on, the address on ADDRESS 1 and ADDRESS 0 stores DATA IN. While READ ENABLE is on, DATA OUT shows what that address holds, and it is 0 otherwise.",
-  intro:
-    "This RAM has four addresses of four bits each, so it is a grid of sixteen latches. A decoder turns the address into one row line. Only that row is written or read.",
+  goal: "Store DATA IN at the chosen address and show that address on DATA OUT while reading.",
   spec: {
     kind: "sequence",
     inputs: [...ADDRESS, READ, WRITE, ...DATA_IN],
@@ -550,7 +535,7 @@ export const ramLevel: Level = {
   hints: constructionHints(
     "The address chooses a row. WRITE ENABLE changes its stored bits; READ ENABLE controls what you can see.",
     "Build one addressed RAM cell first. Then repeat it four times per row and use a decoder to select one row.",
-    "Connect A0 and A1 to a decoder. For row r and bit i, feed decoder Yr, WRITE ENABLE, READ ENABLE, and DATA IN i into one RAM CELL. OR the four cells’ DATA OUT signals for each bit into DATA OUT i.",
+    "Let a decoder pick one row of RAM cells, and OR each column's outputs into one data bit.",
     "Write different values at two addresses with reads disabled. Read them back, then disable reads. The output becomes 0 without erasing either address.",
   ),
 };

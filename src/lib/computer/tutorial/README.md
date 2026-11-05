@@ -1,15 +1,27 @@
 # Construction lessons
 
-A lesson supplies a behavior `goal`, short `intro`, `spec`, allowed `palette`,
-fixed ports and optional reasoning `hints`. `LogicTutorial` never renders
-reference steps or offers reference edits. `requestedHints` is the shared
+A lesson supplies one short `goal` line, a `spec`, an allowed `palette`, fixed
+ports and `hints`. Explanation belongs in the chapter, so a lesson has no intro.
+`LogicTutorial` never renders reference steps. `requestedHints` is the shared
 explicit-request API for later keyboard and interrupt lessons. Pass the current
-circuit and fresh grade; depth zero returns no hints. Dismissal, reset and level
-changes clear depth. `[data-tutorial-hint]` identifies the native keyboard button.
-`[data-tutorial-check]` identifies Check. No global hint shortcut claims another
-builder's keyboard ownership.
+circuit and grade; depth zero returns no hints. Dismissal, reset and level changes
+clear depth. `[data-tutorial-hint]` identifies the native keyboard button. No
+global hint shortcut claims another builder's keyboard ownership.
 
-References are validation, comparison and built-in part assets. Grading checks
+There is no Check button. Truth tables of up to 16 rows grade in the same render;
+every other level grades once the edits pause, and flipping a switch does not grade
+again. A pass is recorded by itself. Only a level with no table to highlight, a
+`custom` spec, shows a line saying what its test found.
+
+Every level's last hint is titled `Last hint` and gives the idea of the wiring in
+one plain sentence, without listing every connection. Once it is shown, the reader
+can ask the builder to wire the board. That loads the level's `reference` through
+the board's normal history, after a confirmation that says it replaces their
+wiring. The level then opens the next one like a skip does, and is marked
+`assisted` in the progress store: it is not a solve, it earns no part, and it makes
+no size claim, until Reset makes the level theirs again.
+
+References are validation, wiring and built-in part assets. Grading checks
 behavior and explicit allowed parts, never reference matching. Boxed learned
 parts are checked through their actual ordered ports. CMOS exercises additionally
 check rail reachability; the general simulator remains a directed Boolean switch
@@ -43,13 +55,13 @@ stays unlocked, because a sequential ladder only gates levels past the furthest
 one solved or skipped. Saved boards are restored as they are: only the two rails
 and the ports are locked.
 
-Construction hints disclose an idea, first step, signal plan, and experiment on
+Construction hints disclose an idea, first step, experiment and last hint on
 request. Primitive gate lessons retain their gate-count stage. RAM-cell and bus
 lessons are optional so existing course progress does not acquire a new lock.
 The RAM palette still accepts the earlier latch-and-gates construction.
 
 The optional storage follow-ons cover gated, JK and T latches; SR, JK and T
-flip-flops; and an eight-stage shift register. The transparent JK/T latch intros
+flip-flops; and an eight-stage shift register. The transparent JK/T latch hints
 warn about feedback races; their edge-triggered counterparts test repeated
 toggles. DRAM and flash each start with one cell before a 4 × 4 addressed array.
 The DRAM checks include refresh and four idle clock cycles to charge loss. Flash

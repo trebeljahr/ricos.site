@@ -151,9 +151,7 @@ export const logicUnitLevel: Level = {
   title: "Logic unit",
   section: SECTION,
   chapter: CHAPTERS.alu,
-  goal: "OP1 and OP0 pick what OUT shows. 00 gives A AND B, 01 gives A OR B, 10 gives A XOR B and 11 gives NOT A.",
-  intro:
-    "A processor does different jobs on the same two inputs. A two-bit op code says which job to do. Here the jobs are AND, OR, XOR and NOT A.",
+  goal: "OP 00 gives A AND B, 01 A OR B, 10 A XOR B and 11 NOT A.",
   spec: {
     kind: "truth",
     inputs: [A, B, OP0, OP1],
@@ -166,7 +164,7 @@ export const logicUnitLevel: Level = {
   hints: constructionHints(
     "Compute four possible answers in parallel, then select the answer named by OP1 OP0.",
     "Form A AND B, A OR B, A XOR B, and NOT A as separate signals.",
-    "Use OP0 to select AND versus OR and XOR versus NOT A. Use OP1 on a third SELECTOR to choose between those two results. Connect that result to OUT.",
+    "Compute all four answers at once, then let selectors driven by OP0 and OP1 pick one.",
     "Try A=1,B=1 across all four operation codes: expect 1,1,0,0.",
   ),
 };
@@ -176,9 +174,7 @@ export const aluSliceLevel: Level = {
   title: "ALU slice",
   section: SECTION,
   chapter: CHAPTERS.alu,
-  goal: "OP1 and OP0 pick RESULT: 00 gives A AND B, 01 A OR B, 10 A XOR B and 11 the sum bit of A + B + CARRY IN. CARRY OUT is always the carry of A + B + CARRY IN.",
-  intro:
-    "One ALU slice works on one bit of each number. The next level puts eight slices side by side, with the carry passed from each slice to the next.",
+  goal: "OP 00 gives AND, 01 OR, 10 XOR and 11 the sum, and CARRY OUT is always the sum's carry.",
   spec: {
     kind: "truth",
     inputs: [A, B, CIN, OP0, OP1],
@@ -203,7 +199,7 @@ export const aluSliceLevel: Level = {
   hints: constructionHints(
     "A slice computes both logic and addition. Code 11 replaces the logic answer with the sum.",
     "Feed A and B to a logic unit and a full adder. Only the adder uses CARRY IN.",
-    "Connect OP0 and OP1 to the LOGIC UNIT. ADD = OP0 AND OP1. Use ADD to select logic output when 0 or full-adder SUM when 1. Wire full-adder CARRY directly to CARRY OUT for every operation.",
+    "Run a logic unit and a full adder side by side, and let a selector pick the sum only for code 11.",
     "Try A=B=1 with CARRY IN=0. Switching from AND to ADD changes RESULT from 1 to 0, while CARRY OUT remains 1.",
   ),
 };
@@ -213,7 +209,7 @@ export const alu8Level: Level = {
   title: "8-bit ALU",
   section: SECTION,
   chapter: CHAPTERS.alu,
-  goal: "OUT0–OUT7 show the operation that OP1 and OP0 pick, done on all eight bits of A and B: 00 AND, 01 OR, 10 XOR, 11 A + B + CARRY IN. CARRY OUT is the carry out of the 8-bit sum.",
+  goal: "Do the OP on all eight bits: 00 AND, 01 OR, 10 XOR, 11 A + B + CARRY IN.",
   spec: {
     kind: "truth",
     inputs: [...A8, ...B8, CIN, OP0, OP1],
@@ -227,7 +223,7 @@ export const alu8Level: Level = {
   hints: constructionHints(
     "All eight slices share the operation code. Carry alone moves between neighboring slices.",
     "Wire bit 0 using one ALU SLICE. Connect external CARRY IN to that slice.",
-    "For each bit i, feed Ai,Bi and shared OP0,OP1 to a slice. Chain CARRY OUT into the next slice’s CARRY IN. Wire each RESULT to OUTi and the last carry to CARRY OUT.",
+    "Stack eight ALU slices, share the op code, and pass the carry from each slice to the next.",
     "Use operation 11 to add 255+1, then operation 10 on 85 and 170 to check independent XOR lanes.",
   ),
 };
@@ -237,9 +233,7 @@ export const conditionLevel: Level = {
   title: "Condition",
   section: SECTION,
   chapter: CHAPTERS.alu,
-  goal: "Read X0–X3 as a two's complement number. JUMP is 1 when LT is 1 and X is below zero, when EQ is 1 and X is zero, or when GT is 1 and X is above zero.",
-  intro:
-    "A jump instruction sets LT, EQ and GT to say when it jumps: when a result is below zero, zero, above zero, or any mix of these. The control unit uses this part to decide whether the jump happens.",
+  goal: "JUMP is 1 when LT, EQ or GT matches X below, at or above zero.",
   spec: {
     kind: "truth",
     inputs: [LT, EQ, GT, ...X4],
@@ -264,7 +258,7 @@ export const conditionLevel: Level = {
   hints: constructionHints(
     "LT, EQ, and GT enable three tests of X. Any enabled test that matches X permits the jump.",
     "Build zero and negative tests. Positive means neither zero nor negative.",
-    "Z = IS ZERO(X). N = IS NEGATIVE(X). P = NOT(Z OR N). JUMP = (LT AND N) OR (EQ AND Z) OR (GT AND P). Combine the final terms with two-input OR gates.",
+    "Test X for negative, zero and positive, AND each test with its enable, and OR the three results.",
     "Enable EQ alone and compare X=0 with X=1. Then enable LT and test a number with X3=1.",
   ),
 };

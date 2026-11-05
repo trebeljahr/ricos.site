@@ -309,14 +309,18 @@ export function LogicTutorial({
   const customHighlight = shown?.kind === "custom" ? shown.result.highlight : undefined;
   const customFailure = shown?.kind === "custom" && !shown.pass ? shown.result : undefined;
 
+  const titled = level.builder?.title !== false;
   const panel = (
     <div className={styles.panel}>
-      <header className={styles.header}>
-        <span className={styles.eyebrow}>{level.section}</span>
-        <div className={styles.titleRow}>
-          <h2 className={styles.title}>{level.title}</h2>
-          {solved && <span className={styles.badge}>Solved ✓</span>}
-        </div>
+      {!titled && <h2 className="sr-only">{level.title}</h2>}
+      <header className={styles.header} hidden={!titled && !solved && ladder.length <= 1}>
+        {titled && <span className={styles.eyebrow}>{level.section}</span>}
+        {(titled || solved) && (
+          <div className={styles.titleRow}>
+            {titled && <h2 className={styles.title}>{level.title}</h2>}
+            {solved && <span className={styles.badge}>Solved ✓</span>}
+          </div>
+        )}
         {ladder.length > 1 && (
           <div className={styles.picker}>
             <button
@@ -366,6 +370,7 @@ export function LogicTutorial({
       ) : (
         <>
           <p className={styles.goal}>{level.goal}</p>
+          {level.intro && <p className={styles.intro}>{level.intro}</p>}
 
           {practiceVariants.length > 1 && (
             <label className={styles.parameter}>
@@ -485,6 +490,7 @@ export function LogicTutorial({
       key={`${level.id}:${opened}`}
       embedded={embedded}
       storageKey={null}
+      features={level.builder}
       challenge={{
         circuit: initial,
         enforce: start.enforce,

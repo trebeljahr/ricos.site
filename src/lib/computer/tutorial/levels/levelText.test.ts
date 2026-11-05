@@ -10,6 +10,12 @@ describe.each(LEVELS.map((level) => [level.id, level] as const))("text of %s", (
     expect(level.goal).not.toMatch(/\bCheck\b|\bhint/i);
   });
 
+  it("keeps an intro to two short sentences", () => {
+    if (!level.intro) return;
+    expect(level.intro.length).toBeLessThanOrEqual(150);
+    expect(sentences(level.intro)).toBeLessThanOrEqual(2);
+  });
+
   it("ends its hints with the idea of the wiring in one plain sentence", () => {
     const last = level.hints?.at(-1);
     expect(last?.title).toBe("Last hint");

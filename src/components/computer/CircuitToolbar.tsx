@@ -14,6 +14,8 @@ type CircuitToolbarProps = {
   clockSettings: ReactNode;
   clockStatus: ReactNode;
   hasClock: boolean;
+  fileMenu?: boolean;
+  viewMenu?: boolean;
 };
 
 export function CircuitToolbar(props: CircuitToolbarProps) {
@@ -55,19 +57,23 @@ export function CircuitToolbar(props: CircuitToolbarProps) {
       <div className={styles.headerRow}>
         <div className={styles.identitySlot}>{props.identity}</div>
         <nav className={styles.menuBar} aria-label="Circuit commands">
-          <ToolbarMenu label="File">
-            <div role="group" aria-label="Circuit files" className={styles.menuActions}>
-              {props.save}
-              {props.files}
-            </div>
-            <div className={styles.menuDivider} />
-            {props.clear}
-          </ToolbarMenu>
-          <ToolbarMenu label="View">
-            <div role="group" aria-label="Circuit view" className={styles.menuActions}>
-              {props.view}
-            </div>
-          </ToolbarMenu>
+          {props.fileMenu !== false && (
+            <ToolbarMenu label="File">
+              <div role="group" aria-label="Circuit files" className={styles.menuActions}>
+                {props.save}
+                {props.files}
+              </div>
+              <div className={styles.menuDivider} />
+              {props.clear}
+            </ToolbarMenu>
+          )}
+          {props.viewMenu !== false && (
+            <ToolbarMenu label="View">
+              <div role="group" aria-label="Circuit view" className={styles.menuActions}>
+                {props.view}
+              </div>
+            </ToolbarMenu>
+          )}
           <div role="group" aria-label="Learning tools">
             {props.learning}
           </div>

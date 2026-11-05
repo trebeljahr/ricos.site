@@ -13,6 +13,15 @@ export const universalTargets = (family: UniversalFamily) =>
 export const universalGateId = (family: UniversalFamily, target: LogicGate) =>
   `universal-${family}-${target}`;
 
+/** One gate to place and a page heading that already names the task: the rest of the interface is noise. */
+const SINGLE_TASK_BUILDER = {
+  title: false,
+  fileMenu: false,
+  viewMenu: false,
+  partSearch: false,
+  ownParts: false,
+} as const;
+
 /** Isolated practice never awards replacement parts or changes the main construction ladder. */
 export const UNIVERSAL_GATE_LEVELS: Level[] = UNIVERSAL_FAMILIES.flatMap((family) =>
   universalTargets(family).map((target): Level => {
@@ -26,6 +35,8 @@ export const UNIVERSAL_GATE_LEVELS: Level[] = UNIVERSAL_FAMILIES.flatMap((family
       // A unique family keeps a chapter embed on its own target and primitive.
       practice: { family: id, label: title },
       goal: `Build ${target.toUpperCase()} using only ${family.toUpperCase()} gates.`,
+      intro: `The truth table lists every setting of the ${target === "not" ? "switch" : "switches"} and the value OUT must show. Wire the circuit so that OUT matches every row.`,
+      builder: SINGLE_TASK_BUILDER,
       palette: [family],
       spec: {
         kind: "truth",

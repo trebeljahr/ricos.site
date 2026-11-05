@@ -23,6 +23,7 @@ import { BUILDER_LESSON_IDS, LESSON_SECTIONS, lessonForCircuit } from "../../lib
 import { CATALOG } from "../../lib/computer/tutorial/levels";
 import { circuitRow, entryFor, extraOwnRows, gateRow, type PaletteRow, type Placement, partRow, rowMatches, TUTORIAL_PATH } from "../../lib/computer/tutorial/paletteRows";
 import { type OwnPartsMode, setOwnPartsMode } from "../../lib/computer/tutorial/progress";
+import type { BuilderFeatures } from "../../lib/computer/tutorial/types";
 import { type PortConnection, type PortRef, planSeriesRest, portLabelBank, type WiringPort, wiringPorts } from "../../lib/computer/portWiring";
 import { type Timeline, type TimelineFrame, createTimeline, currentFrame, push, replaceSnapshot, seek, truncate } from "../../lib/computer/timeline";
 import {
@@ -1339,6 +1340,8 @@ export type LogicBuilderProps = {
    * save. Null turns saving off.
    */
   storageKey?: string | null;
+  /** Parts of the interface to leave out, e.g. for a small one-gate task. */
+  features?: BuilderFeatures;
 };
 
 type BuilderProps = { challenge?: LogicBuilderChallenge } & LogicBuilderProps;
@@ -1851,6 +1854,7 @@ function LogicBuilderWorkspace({
   embedded: requestedEmbedded,
   locked,
   storageKey = STORAGE,
+  features,
   onLearn,
   onFrame,
   suspended,
@@ -1895,6 +1899,11 @@ function LogicBuilderWorkspace({
     wasSuspended.current = suspended;
   }, [suspended, instanceId]);
   const hasClock = circuit.nodes.some((node) => node.type === "clock" || node.type === "pulse");
+  const showTitle = features?.title !== false;
+  const showFileMenu = features?.fileMenu !== false;
+  const showViewMenu = features?.viewMenu !== false;
+  // With nothing else in the bar, undo and redo join the canvas controls.
+  const showToolbar = !locked && !(challenge && !hasClock && !showTitle && !showFileMenu && !showViewMenu);
   useEffect(() => setNameDraft(circuit.name), [circuit.name]);
   useEffect(() => {
     if (!hasClock) setRunning(false);
@@ -4263,13 +4272,37 @@ function LogicBuilderWorkspace({
     }),
   };
   const paletteList = useMemo(() => visibleSections.map((section) => [
-    <h3 key={`section:${section.title}`} className={styles.partsSection}>{section.title}</h3>,
+    // The list's own heading already says "Parts".
+    !(visibleSections.length === 1 && section.title === "Parts") &&
+      <h3 key={`section:${section.title}`} className={styles.partsSection}>{section.title}</h3>,
     ...section.rows.map((row) => (
       <PaletteRowView key={row.key} row={row} accent={rowAccent(row)} onPlace={(placement) => boardActions.current.placeRow(placement)}>
         {rowActions(row)}
       </PaletteRowView>
     )),
   ]), [visibleSections, opens]);
+  const historyButtons = (
+    <>
+      <button
+        type="button"
+        onClick={() => travel("undo")}
+        disabled={!history.canUndo}
+        aria-label="Undo"
+        title="Undo (⌘/Ctrl+Z)"
+      >
+        <ActionIcon name="undo" /> Undo
+      </button>
+      <button
+        type="button"
+        onClick={() => travel("redo")}
+        disabled={!history.canRedo}
+        aria-label="Redo"
+        title="Redo (⌘/Ctrl+Shift+Z)"
+      >
+        <ActionIcon name="redo" /> Redo
+      </button>
+    </>
+  );
   return (
     <div
       ref={shellRef}
@@ -4280,10 +4313,12 @@ function LogicBuilderWorkspace({
       onPointerDownCapture={() => activateBuilder(instanceId, shellRef.current)}
       onFocusCapture={() => activateBuilder(instanceId)}
     >
-      {!locked && <CircuitToolbar
+      {showToolbar && <CircuitToolbar
         hasClock={hasClock}
+        fileMenu={showFileMenu}
+        viewMenu={showViewMenu}
         identity={
-          <>
+          !showTitle ? null : <>
             <div className={styles.identity}>
               {!embedded && <Link className={styles.eyebrow} href="/computer">
                 ← ALL COMPUTER DEMOS
@@ -4520,28 +4555,7 @@ function LogicBuilderWorkspace({
             </ToolbarMenu>
           </>
         }
-        history={
-          <>
-            <button
-              type="button"
-              onClick={() => travel("undo")}
-              disabled={!history.canUndo}
-              aria-label="Undo"
-              title="Undo (⌘/Ctrl+Z)"
-            >
-              <ActionIcon name="undo" /> Undo
-            </button>
-            <button
-              type="button"
-              onClick={() => travel("redo")}
-              disabled={!history.canRedo}
-              aria-label="Redo"
-              title="Redo (⌘/Ctrl+Shift+Z)"
-            >
-              <ActionIcon name="redo" /> Redo
-            </button>
-          </>
-        }
+        history={historyButtons}
         clear={
           challenge ? null : <>
             <button
@@ -4635,22 +4649,22 @@ function LogicBuilderWorkspace({
         }}>
           <h2>Parts</h2>
           <p>Drag onto canvas or click to add</p>
-          <input
+          {features?.partSearch !== false && <input
             className={styles.search}
             type="search"
             placeholder="Search parts"
             aria-label="Search parts"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-          />
-          <label className={styles.ownParts} title="Parts you built pass their level’s behavior checks. Pick which version a click places.">
+          />}
+          {features?.ownParts !== false && <label className={styles.ownParts} title="Parts you built pass their level’s behavior checks. Pick which version a click places.">
             <span>My parts</span>
             <select value={ownMode} onChange={(event) => setOwnPartsMode(event.target.value as OwnPartsMode)}>
               <option value="mine">Mine when built</option>
               <option value="built-in">Built-in</option>
               <option value="only-mine">Only mine</option>
             </select>
-          </label>
+          </label>}
           {!challenge && (
             <p className={styles.ownPartsNote}>
               {ownCount ? `You built ${ownCount} part${ownCount === 1 ? "" : "s"}. ` : "Build parts yourself, from transistors up. "}
@@ -4664,69 +4678,6 @@ function LogicBuilderWorkspace({
         </aside>}
         <div ref={workspace} className={styles.workspace}>
           {challenge?.feedback && <div className={styles.challengeFeedback}>{challenge.feedback}</div>}
-          <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
-            >
-            {locked?.controls}
-            {phoneBoard && !locked && viewPath.length > 0 && (
-              <button type="button" className={styles.partBack} onClick={goBack}
-                aria-label={`Back to ${viewPath[viewPath.length - 1].parent.name}`}>←</button>
-            )}
-            <button
-              type="button"
-              onClick={() => zoomFromCenter(zoomRef.current / 1.25)}
-              aria-label="Zoom out"
-            >
-              −
-            </button>
-            <span aria-live="polite">{formatZoom(zoom)}</span>
-            <button
-              type="button"
-              onClick={() => zoomFromCenter(zoomRef.current * 1.25)}
-              aria-label="Zoom in"
-            >
-              +
-            </button>
-            <button type="button" onClick={() => frameCanvas()}>
-              Fit
-            </button>
-            <button type="button" className={styles.fullZoom} onClick={() => zoomFromCenter(1)}>
-              100%
-            </button>
-            {locked ? (
-              <small>
-                {circuit.nodes.some((node) => !PLAIN_PARTS.has(node.type)) && "Click a block to unfold it to gates · "}
-                Scroll to zoom · Drag to pan
-              </small>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  aria-pressed={selectMode}
-                  onClick={() => {
-                    setSelectMode(!selectMode);
-                    if (window.matchMedia?.("(pointer: coarse)")?.matches)
-                      setMessage(selectMode ? TOUCH_HINT
-                        : "Drag across parts to select them. Tap a part to add or remove it. Two fingers pan.");
-                  }}
-                >
-                  Select
-                </button>
-                {(selected.length > 0 || selectedWires.length > 0) && (
-                  <>
-                    <button type="button" className={styles.touchOnly} onClick={removeSelection}>
-                      Delete
-                    </button>
-                    <button type="button" className={styles.touchOnly} onClick={openSelectionMenu}>
-                      More
-                    </button>
-                  </>
-                )}
-                {!challenge && <small>
-                  Shift-click or Shift-drag ports to select · Drag selected ports to wire · {embedded ? "Ctrl/⌘ + scroll to zoom" : "Scroll to zoom"}
-                </small>}
-              </>
-            )}
-          </div>
           {!challenge && !locked && isCpuCircuit(circuit) && <GateRunPanel circuit={circuit} />}
           <div className={styles.wireFeedbackSlot}>
             {draftWireTarget && <WireJoinFeedback error={draftJoinError} />}
@@ -5069,6 +5020,70 @@ function LogicBuilderWorkspace({
                 )}
               </div>
             </div>
+          </div>
+          <div className={styles.canvasControls} role="toolbar" aria-label="Canvas view controls"
+            >
+            {locked?.controls}
+            {phoneBoard && !locked && viewPath.length > 0 && (
+              <button type="button" className={styles.partBack} onClick={goBack}
+                aria-label={`Back to ${viewPath[viewPath.length - 1].parent.name}`}>←</button>
+            )}
+            <button
+              type="button"
+              onClick={() => zoomFromCenter(zoomRef.current / 1.25)}
+              aria-label="Zoom out"
+            >
+              −
+            </button>
+            <span aria-live="polite">{formatZoom(zoom)}</span>
+            <button
+              type="button"
+              onClick={() => zoomFromCenter(zoomRef.current * 1.25)}
+              aria-label="Zoom in"
+            >
+              +
+            </button>
+            <button type="button" onClick={() => frameCanvas()}>
+              Fit
+            </button>
+            <button type="button" className={styles.fullZoom} onClick={() => zoomFromCenter(1)}>
+              100%
+            </button>
+            {locked ? (
+              <small>
+                {circuit.nodes.some((node) => !PLAIN_PARTS.has(node.type)) && "Click a block to unfold it to gates · "}
+                Scroll to zoom · Drag to pan
+              </small>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  aria-pressed={selectMode}
+                  onClick={() => {
+                    setSelectMode(!selectMode);
+                    if (window.matchMedia?.("(pointer: coarse)")?.matches)
+                      setMessage(selectMode ? TOUCH_HINT
+                        : "Drag across parts to select them. Tap a part to add or remove it. Two fingers pan.");
+                  }}
+                >
+                  Select
+                </button>
+                {(selected.length > 0 || selectedWires.length > 0) && (
+                  <>
+                    <button type="button" className={styles.touchOnly} onClick={removeSelection}>
+                      Delete
+                    </button>
+                    <button type="button" className={styles.touchOnly} onClick={openSelectionMenu}>
+                      More
+                    </button>
+                  </>
+                )}
+                {!showToolbar && <div className={styles.canvasHistory} role="group" aria-label="Edit circuit">{historyButtons}</div>}
+                {!challenge && <small>
+                  Shift-click or Shift-drag ports to select · Drag selected ports to wire · {embedded ? "Ctrl/⌘ + scroll to zoom" : "Scroll to zoom"}
+                </small>}
+              </>
+            )}
           </div>
           <div className={styles.status}>
             <span

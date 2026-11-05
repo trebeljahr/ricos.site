@@ -123,12 +123,27 @@ export type LevelHint = {
 /** The built-in version of a part: a gate type, or a preset circuit by name. */
 export type BuiltIn = { gate: GateType } | { preset: string } | { reference: true };
 
+/** Parts of the builder's interface that can be left out. Each is on unless set to false. */
+export type BuilderFeatures = {
+  /** The circuit name in the toolbar and, in a level, the title above its goal. */
+  title?: boolean;
+  fileMenu?: boolean;
+  viewMenu?: boolean;
+  partSearch?: boolean;
+  /** The "My parts" choice between built-in parts and the reader's own. */
+  ownParts?: boolean;
+};
+
 export type Level = {
   id: string;
   title: string;
   section: string;
   /** One short line: what to build. Explanation belongs in the chapter or in `hints`. */
   goal: string;
+  /** One or two plain sentences under the goal: how to read the spec and when the task is done. */
+  intro?: string;
+  /** The interface this level leaves out of the builder. */
+  builder?: BuilderFeatures;
   spec: LevelSpec;
   /** Parts the palette offers. Nothing else may sit on the board. */
   palette: PaletteRef[];

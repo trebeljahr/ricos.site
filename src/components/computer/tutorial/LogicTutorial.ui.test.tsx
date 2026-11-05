@@ -152,6 +152,25 @@ describe("independent tutorials", () => {
       within(screen.getByLabelText("Gate palette")).queryByRole("button", { name: "JUNCTION" }),
     ).toBeNull();
   });
+  it("leaves the builder's extras out of a single-gate level and explains the table", () => {
+    render(<LogicTutorial levels={["universal-nor-or"]} />);
+    expect(screen.queryByRole("region", { name: "Circuit toolbar" })).toBeNull();
+    expect(screen.queryByLabelText("Search parts")).toBeNull();
+    expect(screen.queryByText("My parts")).toBeNull();
+    expect(screen.getByText("Build OR using only NOR gates.")).toBeTruthy();
+    expect(screen.getByText(/truth table lists every setting/)).toBeTruthy();
+    const controls = screen.getByRole("toolbar", { name: "Canvas view controls" });
+    expect(within(controls).getByRole("button", { name: "Undo" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "OR from NOR" }).className).toBe("sr-only");
+  });
+
+  it("keeps the toolbar and parts controls on a level that does not turn them off", () => {
+    render(<LogicTutorial levels={["not"]} />);
+    expect(screen.getByRole("region", { name: "Circuit toolbar" })).toBeTruthy();
+    expect(screen.getByLabelText("Search parts")).toBeTruthy();
+    expect(screen.getByText("My parts")).toBeTruthy();
+  });
+
   it("starts with one goal line and the table, no Check, and hints never edit the board", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();
@@ -295,25 +314,25 @@ describe("independent tutorials", () => {
     render(<LogicTutorial levels={["universal-nand-not"]} />);
     expect(boardParts(builders()[0])).toHaveLength(2);
   });
-  it.each(["pagehide", "visibilitychange"])(
-    "saves the last edit on %s before the debounce fires",
-    (event) => {
-      vi.useFakeTimers();
-      const { unmount } = render(<LogicTutorial levels={["not"]} />);
-      fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
-      if (event === "pagehide") fireEvent(window, new Event(event));
-      else {
-        const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
-        fireEvent(document, new Event(event));
-        visibility.mockRestore();
-      }
-      expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
-      unmount();
-      progressStore.reset();
-      render(<LogicTutorial levels={["not"]} />);
-      expect(boardParts(builders()[0])).toHaveLength(3);
-    },
-  );
+  it.each([
+    "pagehide",
+    "visibilitychange",
+  ])("saves the last edit on %s before the debounce fires", (event) => {
+    vi.useFakeTimers();
+    const { unmount } = render(<LogicTutorial levels={["not"]} />);
+    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+    if (event === "pagehide") fireEvent(window, new Event(event));
+    else {
+      const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+      fireEvent(document, new Event(event));
+      visibility.mockRestore();
+    }
+    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
+    unmount();
+    progressStore.reset();
+    render(<LogicTutorial levels={["not"]} />);
+    expect(boardParts(builders()[0])).toHaveLength(3);
+  });
   it("keeps the passing solution when a later attempt is incomplete", () => {
     const { unmount } = render(<LogicTutorial levels={["not"]} />);
     buildNot(builders()[0]);

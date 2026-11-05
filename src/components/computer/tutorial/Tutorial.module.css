@@ -100,6 +100,10 @@
   gap: 6px;
 }
 
+.header[hidden] {
+  display: none;
+}
+
 .eyebrow {
   color: var(--tut-ink-slate-79);
   font-size: 10px;
@@ -168,6 +172,13 @@
   color: var(--tut-ink-violet-96);
   font-size: 13px;
   font-weight: 650;
+}
+
+.intro {
+  margin: 0;
+  color: var(--tut-ink-slate-79-2);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .muted {
@@ -576,11 +587,13 @@
 
   [data-phone-flow] .panel > .header,
   [data-phone-flow] .panel > .goal,
+  [data-phone-flow] .panel > .intro,
   [data-phone-flow] .panel > .notice {
     order: 1;
   }
 
-  [data-phone-flow] .panel > .goal {
+  [data-phone-flow] .panel > .goal:last-of-type,
+  [data-phone-flow] .panel > .intro {
     margin-bottom: 12px;
   }
 

@@ -17,7 +17,7 @@
 - **Error Handling**: Use try/catch for async operations
 - **Tailwind**: Use Tailwind CSS for styling with clsx for conditional class names
 - **Spacing**: One documented scale, read `docs/spacing.md` before adding any margin, padding or gap. Use the named steps (`mt-para`, `mb-group`, `pb-region`, …), not raw numbers, for spacing decisions. Every content page's `<main>` is `PageMain` from `@components/PostHeader`. `<body>` carries `prose`, so beat the typography plugin's margins with `.flow-*` / `.flush-top` / `not-prose` — never with an `!important` margin. There are zero `!`-important spacing utilities in the codebase; a new one is a bug.
-- **Demo text**: Explanation belongs in the chapter, not the demo. No static captions, lessons, usage instructions, model caveats or source notes in or around a demo in `src/components/computer` or on its `/computer/*` page. Keep control labels, live readouts that change with the demo's state, error messages, image credits, and existing closed-by-default fold-outs with notes and sources.
+- **Demo text**: Explanation belongs in the chapter, not the demo. No static captions, lessons, usage instructions, model caveats or source notes in or around a demo in `src/components/computer` or on its `/computer/*` page. Keep control labels, live readouts that change with the demo's state, error messages, image credits, existing closed-by-default fold-outs with notes and sources, and a builder level's short task text (`goal`, `intro`).
 - **React Hooks**: Follow React hooks best practices and create custom hooks when logic is reused
 - **Three.js/R3F**: Follow established patterns for 3D components in the /r3f directory
 

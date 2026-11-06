@@ -1,7 +1,16 @@
 {
   "name": "ricos.site",
+  "description": "Code of ricos.site: Rico Trebeljahr's essays, booknotes, travel stories, photography and interactive demos.",
   "author": "Rico Trebeljahr",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
+  "homepage": "https://ricos.site",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trebeljahr/ricos.site.git"
+  },
+  "bugs": {
+    "url": "https://github.com/trebeljahr/ricos.site/issues"
+  },
   "browserslist": [
     "chrome >= 100",
     "edge >= 100",

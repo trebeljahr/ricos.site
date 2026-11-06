@@ -7,16 +7,10 @@
 
 export const MIN_HZ = 1;
 export const MAX_HZ = 5e9;
-/** Positions of the frequency slider; it runs on a log scale from MIN_HZ to MAX_HZ. */
-export const SLIDER_STEPS = 1000;
-/** Up to here a lamp and a scrolling trace can show every tick as it happens. */
-export const REAL_TIME_MAX_HZ = 15;
 /** Metres per second, exact by the definition of the metre. */
 export const SPEED_OF_LIGHT = 299_792_458;
 /** The chapter's jet engine: the core of a turbofan at full power. */
 export const JET_CORE_RPM = 15_000;
-/** The scope screen is ten divisions wide, like a real one. */
-export const DIVISIONS = 10;
 
 const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_HOUR = 3600;
@@ -46,31 +40,31 @@ export const CLOCK_PRESETS: readonly ClockPreset[] = [
   { id: "desktop", name: "DESKTOP CPU", year: "TODAY", hz: 4_500_000_000 },
 ];
 
-const LOG_MAX = Math.log10(MAX_HZ / MIN_HZ);
-
-export function clampHz(hz: number) {
-  return Math.min(MAX_HZ, Math.max(MIN_HZ, hz));
-}
-
 /** Rounds to a number of significant figures, without float noise. */
 export function roundSignificant(value: number, digits = 3) {
   if (value === 0 || !Number.isFinite(value)) return value;
   return Number(value.toPrecision(digits));
 }
 
-/** Slider position → frequency, rounded to three figures so the readouts stay readable. */
-export function sliderToHz(position: number) {
-  const fraction = Math.min(1, Math.max(0, position / SLIDER_STEPS));
-  return clampHz(roundSignificant(MIN_HZ * 10 ** (fraction * LOG_MAX), 3));
+// ---------------------------------------------------------------- comparison
+
+export type ClockScale = "log" | "linear";
+
+/** The log scale runs from 1 Hz to 10 GHz, one step per power of ten. */
+export const LOG_DECADES = 10;
+/** The linear scale ends at the fastest clock the demos know, just past the fastest preset. */
+export const LINEAR_MAX_HZ = MAX_HZ;
+
+/** Where a frequency sits along a comparison bar, 0 to 1. */
+export function barFraction(hz: number, scale: ClockScale) {
+  if (scale === "linear") return Math.min(1, Math.max(0, hz / LINEAR_MAX_HZ));
+  return Math.min(1, Math.max(0, Math.log10(Math.max(MIN_HZ, hz)) / LOG_DECADES));
 }
 
-export function hzToSlider(hz: number) {
-  return Math.round((Math.log10(clampHz(hz) / MIN_HZ) / LOG_MAX) * SLIDER_STEPS);
-}
-
-/** Where a frequency sits along the slider, 0 to 1. */
-export function hzToFraction(hz: number) {
-  return Math.log10(clampHz(hz) / MIN_HZ) / LOG_MAX;
+/** How a clock compares to a base clock: "× 6,081", "÷ 740,000" or "=". */
+export function compareTo(hz: number, baseHz: number) {
+  if (hz === baseHz) return "=";
+  return hz > baseHz ? `× ${formatNumber(hz / baseHz, 4)}` : `÷ ${formatNumber(baseHz / hz, 4)}`;
 }
 
 // ---------------------------------------------------------------- formatting
@@ -231,81 +225,9 @@ export function formatTicks(ticks: bigint) {
   return groupDigits(ticks.toString());
 }
 
-// ---------------------------------------------------------------- the scope
-
-/** 1, 2, 5, 10, 20, 50 … the steps of a real scope's time base knob. */
-export function niceStep(value: number) {
-  const exponent = Math.floor(Math.log10(value));
-  const base = 10 ** exponent;
-  const mantissa = value / base;
-  const steps = [1, 2, 5, 10];
-  let best = steps[0];
-  for (const step of steps)
-    if (Math.abs(Math.log(mantissa / step)) < Math.abs(Math.log(mantissa / best))) best = step;
-  return roundSignificant(best * base, 1);
-}
-
-export type Timebase = {
-  secondsPerDivision: number;
-  /** Ticks across the whole screen. */
-  cycles: number;
-  realTime: boolean;
-};
-
-/**
- * About four ticks on screen. In real time the screen holds at least a second,
- * so a slow trace scrolls by at a speed the eye can follow.
- */
-export function scopeTimebase(hz: number): Timebase {
-  const realTime = hz <= REAL_TIME_MAX_HZ;
-  let secondsPerDivision = niceStep(0.4 / hz);
-  if (realTime) secondsPerDivision = Math.max(secondsPerDivision, 0.1);
-  return { secondsPerDivision, cycles: DIVISIONS * secondsPerDivision * hz, realTime };
-}
-
-export type SquareWave = {
-  /** Flat stretches: from x, to x (0 to 1 across the screen), level 0 or 1. */
-  flats: [number, number, 0 | 1][];
-  /** Where the trace jumps, 0 to 1 across the screen. */
-  edges: number[];
-};
+// ---------------------------------------------------------------- signal edges
 
 const fraction = (value: number) => ((value % 1) + 1) % 1;
-
-/** The clock's level at a phase: high for the first half of every tick. */
-export function levelAtPhase(phase: number): 0 | 1 {
-  return fraction(phase) < 0.5 ? 1 : 0;
-}
-
-/**
- * A square wave across the screen. Phase counts ticks: the signal rises at each
- * whole number and falls half a tick later.
- */
-export function squareWave(phaseAtLeft: number, cycles: number): SquareWave {
-  const flats: SquareWave["flats"] = [];
-  const edges: number[] = [];
-  let level = levelAtPhase(phaseAtLeft);
-  let from = 0;
-  let edge = Math.floor(phaseAtLeft * 2 + 1) / 2;
-  for (let guard = 0; guard < 400; guard++) {
-    const x = (edge - phaseAtLeft) / cycles;
-    if (x >= 1) break;
-    flats.push([from, x, level]);
-    edges.push(x);
-    level = level === 1 ? 0 : 1;
-    from = x;
-    edge += 0.5;
-  }
-  flats.push([from, 1, level]);
-  return { flats, edges };
-}
-
-/** The standing picture a triggered scope shows: the trace rises one division in. */
-export function triggeredWave(timebase: Timebase) {
-  return squareWave(-timebase.cycles / DIVISIONS, timebase.cycles);
-}
-
-// ---------------------------------------------------------------- signal edges
 
 /** A 5 V CMOS part: anything up to 30% of the supply is a 0, anything from 70% is a 1. */
 export const SUPPLY_VOLTS = 5;

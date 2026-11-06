@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  barFraction,
   bitRuns,
   CLOCK_PRESETS,
   clockFacts,
   clockVolts,
+  compareTo,
   EDGE_SECONDS,
   formatDistance,
   formatElapsed,
@@ -14,23 +16,17 @@ import {
   formatTicks,
   groupDigits,
   HIGH_MIN_VOLTS,
-  hzToSlider,
   LOW_MAX_VOLTS,
   MAX_HZ,
   MIN_HZ,
   NOISE_VOLTS,
-  niceStep,
   numberName,
   readBit,
   SCREEN_SECONDS,
   SIGNAL_HZ,
   SUPPLY_VOLTS,
-  scopeTimebase,
   signalTrace,
-  sliderToHz,
-  squareWave,
   ticksSince,
-  triggeredWave,
 } from "./clock";
 
 describe("number formatting", () => {
@@ -121,59 +117,26 @@ describe("clock facts", () => {
   });
 });
 
-describe("frequency slider", () => {
-  it("runs on a log scale from 1 Hz to 5 GHz", () => {
-    expect(sliderToHz(0)).toBe(1);
-    expect(sliderToHz(1000)).toBe(5e9);
-    expect(sliderToHz(-20)).toBe(1);
-    expect(sliderToHz(500)).toBe(70_700);
-    expect(hzToSlider(1)).toBe(0);
-    expect(hzToSlider(5e9)).toBe(1000);
-    for (const position of [0, 123, 456, 789, 1000])
-      expect(Math.abs(hzToSlider(sliderToHz(position)) - position)).toBeLessThanOrEqual(1);
-  });
-});
-
-describe("scope", () => {
-  it("steps the time base 1, 2, 5", () => {
-    expect(niceStep(0.4 / 4.5e9)).toBe(1e-10);
-    expect(niceStep(0.0267)).toBe(0.02);
-    expect(niceStep(0.4)).toBe(0.5);
-    expect(niceStep(0.13)).toBe(0.1);
+describe("comparison", () => {
+  it("puts each power of ten one step further along the log scale", () => {
+    expect(barFraction(1, "log")).toBe(0);
+    expect(barFraction(1e3, "log")).toBeCloseTo(0.3);
+    expect(barFraction(1e9, "log")).toBeCloseTo(0.9);
+    expect(barFraction(4.5e9, "log")).toBeLessThan(1);
+    expect(barFraction(0.5, "log")).toBe(0);
   });
 
-  it("keeps a few ticks on screen and runs in real time up to 15 Hz", () => {
-    const desktop = scopeTimebase(4.5e9);
-    expect(desktop.realTime).toBe(false);
-    expect(formatSeconds(desktop.secondsPerDivision)).toBe("0.1 ns");
-    expect(desktop.cycles).toBeCloseTo(4.5);
-
-    const slow = scopeTimebase(1);
-    expect(slow.realTime).toBe(true);
-    expect(slow.secondsPerDivision).toBe(0.5);
-    expect(scopeTimebase(15).realTime).toBe(true);
-    // At least a second on screen in real time, so the trace does not race by.
-    expect(scopeTimebase(15).secondsPerDivision).toBe(0.1);
-    expect(scopeTimebase(16).realTime).toBe(false);
-
-    for (const hz of [1, 3, 15, 16, 740_000, 4.77e6, 5e9]) {
-      const { cycles } = scopeTimebase(hz);
-      expect(cycles).toBeGreaterThanOrEqual(2);
-      expect(cycles).toBeLessThanOrEqual(15);
-    }
+  it("leaves the old machines a sliver on the linear scale", () => {
+    expect(barFraction(4.5e9, "linear")).toBeCloseTo(0.9);
+    expect(barFraction(740_000, "linear")).toBeLessThan(0.0002);
+    expect(barFraction(9e9, "linear")).toBe(1);
   });
 
-  it("draws a square wave as flat stretches joined by edges", () => {
-    const wave = squareWave(-0.5, 4);
-    expect(wave.edges).toEqual([0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875]);
-    expect(wave.flats[0]).toEqual([0, 0.125, 0]);
-    expect(wave.flats[1]).toEqual([0.125, 0.25, 1]);
-    expect(wave.flats.at(-1)).toEqual([0.875, 1, 1]);
-
-    const triggered = triggeredWave(scopeTimebase(4.5e9));
-    // The trace rises one division in.
-    expect(triggered.edges[0]).toBeCloseTo(0.1);
-    expect(triggered.flats[0][2]).toBe(0);
+  it("says how many times faster or slower a clock runs", () => {
+    expect(compareTo(4.5e9, 740_000)).toBe("× 6,081");
+    expect(compareTo(1, 740_000)).toBe("÷ 740,000");
+    expect(compareTo(1_023_000, 740_000)).toBe("× 1.382");
+    expect(compareTo(740_000, 740_000)).toBe("=");
   });
 });
 

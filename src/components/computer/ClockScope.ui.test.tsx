@@ -8,61 +8,58 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-const preset = (name: RegExp) => screen.getByRole("button", { name });
-const slider = () => screen.getByRole("slider", { name: "CLOCK SPEED" });
-const meter = (name: string) =>
-  screen.getByText(name, { selector: "dt" }).parentElement?.querySelector("dd")?.textContent;
+const machine = (name: RegExp) => screen.getByRole("button", { name });
+const row = (name: RegExp) => machine(name).closest("li") as HTMLElement;
+const factor = (name: RegExp) => row(name).querySelector("[class*=factor]")?.textContent;
+const counter = (name: RegExp) =>
+  Number(row(name).querySelector('[role="timer"]')?.textContent?.replace(/,/g, ""));
+const fillWidth = (name: RegExp) =>
+  (row(name).querySelector("[data-preset]") as HTMLElement).style.width;
 
-describe("clock scope demo", () => {
-  it("starts at one tick a second, in real time", () => {
+describe("clock comparison demo", () => {
+  it("shows every machine at once, compared with the Intel 4004", () => {
     const { container } = render(<ClockScope />);
-    expect(preset(/^1 PER SECOND: 1 hertz/).getAttribute("aria-pressed")).toBe("true");
-    expect(slider().getAttribute("aria-valuetext")).toBe("1 hertz");
-    expect(container.textContent).toContain("TICK LAMP");
-    expect(container.textContent).toContain("500 ms/DIV");
-    expect(container.textContent).toContain("REAL TIME");
-    expect(container.textContent).toContain("SLOW ENOUGH TO COUNT ALONG");
-    expect(meter("ONE TICK LASTS")).toBe("1 s");
-    expect(screen.getByRole("timer").textContent).toBe("0");
+    expect(screen.getAllByRole("listitem")).toHaveLength(6);
+    expect(screen.getAllByRole("timer")).toHaveLength(6);
+    expect(screen.queryByRole("slider")).toBeNull();
+    expect(container.textContent).not.toContain("TOO FAST TO SEE");
+    expect(
+      machine(/^Compare with INTEL 4004, 1971: 740 kilohertz/).getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(factor(/INTEL 4004/)).toBe("BASE");
+    expect(factor(/DESKTOP CPU/)).toBe("× 6,081");
+    expect(factor(/APPLE II/)).toBe("× 1.382");
+    expect(factor(/1 PER SECOND/)).toBe("÷ 740,000");
   });
 
-  it("writes out the size of a 4.5 GHz clock", () => {
-    const { container } = render(<ClockScope />);
-    fireEvent.click(preset(/^DESKTOP CPU, TODAY: 4.5 gigahertz/));
-    expect(preset(/^DESKTOP CPU/).getAttribute("aria-pressed")).toBe("true");
-    expect(preset(/^1 PER SECOND/).getAttribute("aria-pressed")).toBe("false");
-    expect(container.textContent).toContain("4,500,000,000");
-    expect(container.textContent).toContain("4.5 BILLION");
-    expect(container.textContent).toContain("TOO FAST TO SEE");
-    expect(container.textContent).toContain("0.1 ns/DIV");
-    expect(meter("ONE TICK LASTS")).toBe("0.222 ns");
-    expect(meter("LIGHT IN ONE TICK")).toBe("6.66 cm");
-    expect(meter("ONE JET ENGINE TURN")).toBe("18,000,000");
-    expect(meter("IF EACH TICK TOOK 1 s")).toBe("143 years");
+  it("compares against whichever machine is pressed", () => {
+    render(<ClockScope />);
+    fireEvent.click(machine(/DESKTOP CPU, TODAY: 4.5 gigahertz/));
+    expect(machine(/DESKTOP CPU/).getAttribute("aria-pressed")).toBe("true");
+    expect(machine(/INTEL 4004/).getAttribute("aria-pressed")).toBe("false");
+    expect(factor(/DESKTOP CPU/)).toBe("BASE");
+    expect(factor(/INTEL 4004/)).toBe("÷ 6,081");
+    expect(factor(/PENTIUM/)).toBe("÷ 75");
   });
 
-  it("holds the checked speeds of old machines", () => {
+  it("draws the bars on a log scale and switches to linear", () => {
     const { container } = render(<ClockScope />);
-    fireEvent.click(preset(/^INTEL 4004, 1971: 740 kilohertz/));
-    expect(container.textContent).toContain("740,000");
-    fireEvent.click(preset(/^APPLE II, 1977: 1.023 megahertz/));
-    expect(container.textContent).toContain("1,023,000");
-    fireEvent.click(preset(/^IBM PC, 1981: 4.77 megahertz/));
-    expect(container.textContent).toContain("4,770,000");
-    expect(meter("ONE TICK LASTS")).toBe("210 ns");
+    expect(screen.getByRole("button", { name: "LOG" }).getAttribute("aria-pressed")).toBe("true");
+    expect(fillWidth(/1 PER SECOND/)).toBe("0%");
+    expect(fillWidth(/IBM PC/)).toBe("66.79%");
+    expect(fillWidth(/DESKTOP CPU/)).toBe("96.53%");
+    expect(container.textContent).toContain("1 MHz");
+
+    fireEvent.click(screen.getByRole("button", { name: "LINEAR" }));
+    expect(screen.getByRole("button", { name: "LINEAR" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    expect(fillWidth(/DESKTOP CPU/)).toBe("90%");
+    expect(fillWidth(/INTEL 4004/)).toBe("0.0148%");
+    expect(container.textContent).toContain("5 GHz");
   });
 
-  it("sweeps from 1 Hz to 5 GHz on a log slider", () => {
-    const { container } = render(<ClockScope />);
-    fireEvent.change(slider(), { target: { value: "1000" } });
-    expect(slider().getAttribute("aria-valuetext")).toBe("5 gigahertz");
-    expect(container.textContent).toContain("5,000,000,000");
-    expect(screen.queryAllByRole("button", { pressed: true })).toHaveLength(1); // SOUND
-    fireEvent.change(slider(), { target: { value: "0" } });
-    expect(container.textContent).toContain("REAL TIME");
-  });
-
-  it("counts ticks since the page opened and announces a speed once it settles", () => {
+  it("counts every clock at its true rate since the page opened", () => {
     vi.useFakeTimers({
       toFake: [
         "setTimeout",
@@ -75,17 +72,14 @@ describe("clock scope demo", () => {
       ],
     });
     const { container } = render(<ClockScope />);
-    const live = () => container.querySelector("p[aria-live]")?.textContent;
-    fireEvent.click(preset(/^IBM PC/));
+    expect(counter(/DESKTOP CPU/)).toBe(0);
     act(() => {
       vi.advanceTimersByTime(2000);
     });
-    const ticks = Number(screen.getByRole("timer").textContent?.replace(/,/g, ""));
-    expect(ticks).toBeGreaterThan(9_000_000);
-    expect(ticks).toBeLessThanOrEqual(4_770_000 * 2.1);
-    expect(container.textContent).toMatch(/MILLION · IN 2 s/);
-    expect(live()).toBe(
-      "4.77 megahertz: 4,770,000 ticks every second. One tick lasts 210 nanoseconds.",
-    );
+    expect(counter(/1 PER SECOND/)).toBe(2);
+    expect(counter(/IBM PC/)).toBeGreaterThan(9_000_000);
+    expect(counter(/IBM PC/)).toBeLessThanOrEqual(4_770_000 * 2.1);
+    expect(counter(/DESKTOP CPU/)).toBeGreaterThan(8_900_000_000);
+    expect(container.textContent).toContain("IN 2 s");
   });
 });

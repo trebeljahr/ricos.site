@@ -3,7 +3,10 @@ import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 
 export default function ClockScopePage() {
   return (
-    <DeviceDemoPage slug="clock-scope" description="Watch a clock signal on a scope.">
+    <DeviceDemoPage
+      slug="clock-scope"
+      description="Six clock speeds side by side, each counting at its true rate."
+    >
       <div className="mx-auto max-w-prose">
         <ClockScope />
       </div>

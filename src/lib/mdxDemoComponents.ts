@@ -51,6 +51,7 @@ export const MDX_DEMO_COMPONENTS = [
   "LazyLogicTutorial",
   "SignalEdges",
   "ClockScope",
+  "ClockFacts",
   "DecoderDemo",
   "DecoderLesson",
   "MultiplexerDemo",

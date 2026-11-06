@@ -242,7 +242,11 @@ export const COMPUTER_MDX_DEMOS = {
   ),
   ClockScope: chapterDemo(
     () => import("./ClockScope").then((module) => module.ClockScope),
-    "Clock oscilloscope",
+    "Clock speeds compared",
+  ),
+  ClockFacts: chapterDemo(
+    () => import("./ClockFacts").then((module) => module.ClockFacts),
+    "One clock speed in numbers",
   ),
   DecoderDemo: chapterDemo(
     () => loadCircuitDemos().then((module) => module.DecoderDemo),

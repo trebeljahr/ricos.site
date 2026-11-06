@@ -183,7 +183,11 @@ export const computerDemos = [
   },
   {
     slug: "clock-scope",
-    title: "Clock scope",
+    title: "Clock speeds compared",
+  },
+  {
+    slug: "clock-facts",
+    title: "One clock speed in numbers",
   },
   {
     slug: "logic-builder",

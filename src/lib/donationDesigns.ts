@@ -120,14 +120,6 @@ export const DONATION_DESIGNS: Record<string, DonationDesign> = {
     cardTitle: "Support conv3D",
     thanks: "Thank you for supporting the next improvement to conv3D.",
   },
-  "gamedev-asset-library": {
-    ...night,
-    layout: "studio",
-    accent: "#ffd84d",
-    invitation: "Find the assets for your next game. Help keep the library useful.",
-    cardTitle: "Support the asset library",
-    thanks: "Thank you for supporting the library and the games people make with it.",
-  },
   hatchkit: {
     ...studio,
     accent: "#4f46e5",

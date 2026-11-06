@@ -217,17 +217,6 @@ export const PROJECTS: Project[] = [
     ),
   },
   {
-    slug: "gamedev-asset-library",
-    date: "2026-05-06",
-    title: "GameDev Asset Library",
-    subtitle:
-      "A searchable collection of free game assets. You can look at the 3D models and listen to the sounds right on the page.",
-    link: "https://gamedev.trebeljahr.com",
-    section: "Dev tools",
-    unlisted: true,
-    cover: screenshot("gamedev-asset-library", "Grid of asset packs in the GameDev Asset Library"),
-  },
-  {
     slug: "name-check",
     date: "2026-05-16",
     title: "name-check",

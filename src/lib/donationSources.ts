@@ -32,12 +32,6 @@ export const SOURCE_BRANDS: Record<string, DonationBrand> = {
   "sprite-tools": { accent: "#15803d", accentDark: "#22c55e", icon: icon("sprite-tools.svg") },
   // Landing --c3-accent #0d9488 darkened a step for white; dark as is.
   conv3d: { accent: "#0f766e", accentDark: "#5eead4", icon: icon("conv3d.svg") },
-  // Icon gold #8a7222 (src/app/icon-source.svg) on white, --accent on dark.
-  "gamedev-asset-library": {
-    accent: "#8a7222",
-    accentDark: "#ffd84d",
-    icon: icon("gamedev-asset-library.svg"),
-  },
   // Landing --hk-accent, light and dark (docs/app/(home)/page.module.css).
   hatchkit: { accent: "#4f46e5", accentDark: "#a5b4fc", icon: icon("hatchkit.svg") },
   // Primary button blue #276790 on white, link cyan #8edfff on dark (client/src/style.css).

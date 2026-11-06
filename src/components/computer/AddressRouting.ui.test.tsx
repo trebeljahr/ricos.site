@@ -9,31 +9,49 @@ afterEach(() => {
   localStorage.clear();
 });
 
-it("routes native switches through the shared decoder and supports undo", () => {
+const lit = (label: string) =>
+  Boolean(within(screen.getByLabelText(`${label} — LAMP part`)).queryByLabelText("LED on"));
+
+it("decodes the address from switches on a flat board of two NOTs and four ANDs", () => {
   render(<DecoderDemo />);
-  expect(within(screen.getByLabelText("Y0 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  expect(screen.getAllByLabelText(/ — NOT part$/)).toHaveLength(2);
+  expect(screen.getAllByLabelText(/ — AND part$/)).toHaveLength(4);
+  expect(screen.queryByLabelText(/expanded circuit$/)).toBeNull();
+  expect(lit("Y0")).toBe(true);
   fireEvent.click(testButton("OFF", screen.getByLabelText("A0 — SWITCH part")));
-  expect(within(screen.getByLabelText("Y1 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
-  fireEvent.click(testButton("Undo"));
-  expect(within(screen.getByLabelText("Y0 — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  expect([lit("Y0"), lit("Y1"), lit("Y2"), lit("Y3")]).toEqual([false, true, false, false]);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A1 — SWITCH part")));
+  expect(lit("Y3")).toBe(true);
 });
 
-it("opens on the tutorial's selector parts, which a reader can refold and reopen", () => {
+it("shows a showcase circuit without the parts list, toolbar or edit tools", () => {
+  localStorage.setItem("ricos-computer-circuits-v1", "existing saved lab");
+  render(<DecoderDemo />);
+  expect(screen.queryByTitle(/onto canvas/)).toBeNull();
+  expect(screen.queryByRole("button", { name: "Undo" })).toBeNull();
+  expect(screen.queryByTitle("Edit label")).toBeNull();
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A0 — SWITCH part")));
+  expect(localStorage.getItem("ricos-computer-circuits-v1")).toBe("existing saved lab");
+  expect(localStorage.length).toBe(1);
+});
+
+it("routes the addressed data input to OUT through plain gates, no boxes", () => {
   render(<MultiplexerDemo />);
-  const expanded = () => screen.queryAllByLabelText("SELECTOR expanded circuit").length;
-  expect(expanded()).toBe(3);
-  const part = screen.getByLabelText("LOW PAIR — SELECTOR part");
-  fireEvent.click(testButton("Refold box", part));
-  expect(expanded()).toBe(2);
-  fireEvent.click(testButton("Unfold LOW PAIR in place", part));
-  expect(expanded()).toBe(3);
+  expect(screen.queryByLabelText(/SELECTOR part$/)).toBeNull();
+  expect(screen.getAllByLabelText(/ — (NOT|AND|OR) part$/)).toHaveLength(11);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("D3 — SWITCH part")));
+  expect(lit("OUT")).toBe(false);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A0 — SWITCH part")));
+  expect(lit("OUT")).toBe(false);
+  fireEvent.click(testButton("OFF", screen.getByLabelText("A1 — SWITCH part")));
+  expect(lit("OUT")).toBe(true);
 });
 
-it("stores RAM on the native clock and keeps saved lab circuits untouched", () => {
+it("stores RAM on a clock pulse and keeps saved lab circuits untouched", () => {
   localStorage.setItem("ricos-computer-circuits-v1", "existing saved lab");
   render(<MemoryAddressDemo />);
   fireEvent.click(testButton("OFF", screen.getByLabelText("WRITE ENABLE — SWITCH part")));
-  fireEvent.click(testButton("Step ½ cycle"));
-  expect(within(screen.getByLabelText("READ — LAMP part")).getByLabelText("LED on")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Clock pulse" }));
+  expect(lit("READ")).toBe(true);
   expect(localStorage.getItem("ricos-computer-circuits-v1")).toBe("existing saved lab");
 });

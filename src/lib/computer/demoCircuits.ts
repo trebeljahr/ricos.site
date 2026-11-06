@@ -4,7 +4,6 @@ import { layoutCircuit } from "./circuitLayout";
 import { addDataMemory, datapathNode } from "./datapathBlocks";
 import { type Circuit, gateBlueprint, type LogicGate, PRESETS, type Wire } from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
-import { busPorts, CircuitKit } from "./tutorial/kit";
 import { CATALOG } from "./tutorial/levels";
 
 function builtIn(id: string): Circuit {
@@ -270,20 +269,113 @@ export function booleanSelectorDemo(): Circuit {
   return layoutCircuit(circuit);
 }
 
-export function routingDemo(kind: "decoder" | "mux" | "memory"): Circuit {
-  if (kind === "decoder") return layoutCircuit(builtIn("decoder"));
-  if (kind === "mux") {
-    const kit = new CircuitKit(
-      "4:1 multiplexer",
-      [...busPorts("a", "A", 2), ...busPorts("d", "D", 4)],
-      [{ id: "out", label: "OUT" }],
-    );
-    const selector = builtIn("selector");
-    const low = kit.part("selector", selector, ["a0", "d0", "d1"], { label: "LOW PAIR" });
-    const high = kit.part("selector", selector, ["a0", "d2", "d3"], { label: "HIGH PAIR" });
-    const selected = kit.part("selector", selector, ["a1", low, high], { label: "SELECT PAIR" });
-    return kit.out("out", selected).build();
+/** Wires for a hand-placed demo, each with its own colour and vertical track. */
+function wiring() {
+  const wires: Wire[] = [];
+  const link = (from: string, to: string, input: number, extra: Partial<Wire> = {}) =>
+    wires.push({ id: `${from}>${to}:${input}`, from, to, input, ...extra });
+  return { wires, link };
+}
+
+/** Pins of a two-input gate, measured from its top edge. */
+const GATE_PIN = [40, 92];
+const GATE_OUT = 58;
+/** A switch's output and a lamp's input, from the top edge. */
+const SWITCH_PIN = 63;
+
+/**
+ * Two NOT gates and four AND gates, flat. A0, NOT A0, A1 and NOT A1 each run down
+ * their own rail; each AND takes one A0 rail and one A1 rail, so it lights for one address.
+ */
+function flatDecoder(): Circuit {
+  const andY = (line: number) => line * 150;
+  const nodes: Circuit["nodes"] = [
+    { id: "a0", type: "switch", label: "A0", x: 0, y: 0 },
+    { id: "not0", type: "not", label: "NOT A0", x: 200, y: 130 },
+    { id: "a1", type: "switch", label: "A1", x: 0, y: 300 },
+    { id: "not1", type: "not", label: "NOT A1", x: 200, y: 430 },
+    ...range(4).flatMap((line) => [
+      { id: `and${line}`, type: "and" as const, x: 600, y: andY(line) },
+      {
+        id: `y${line}`,
+        type: "lamp" as const,
+        label: `Y${line}`,
+        x: 840,
+        y: andY(line) + GATE_OUT - SWITCH_PIN,
+      },
+    ]),
+  ];
+  const { wires, link } = wiring();
+  // Rails from left to right: NOT A0, NOT A1, A1, A0. This order crosses the fewest wires.
+  const rail = { not0: 220, not1: 170, a1: 120, a0: 70 } as const;
+  const color = { a0: "cyan", not0: "blue", a1: "amber", not1: "coral" } as const;
+  link("a0", "not0", 0, { color: "cyan", runBeforeEnd: 30 });
+  link("a1", "not1", 0, { color: "amber", runBeforeEnd: 30 });
+  for (const line of range(4)) {
+    const low = line & 1 ? "a0" : "not0";
+    const high = line & 2 ? "a1" : "not1";
+    link(low, `and${line}`, 0, { color: color[low], runBeforeEnd: rail[low] });
+    link(high, `and${line}`, 1, { color: color[high], runBeforeEnd: rail[high] });
+    link(`and${line}`, `y${line}`, 0, { color: "lime" });
   }
+  return { name: "2-to-4 decoder", nodes, wires };
+}
+
+/**
+ * Four-to-one multiplexer from plain gates, no boxes: A0 picks one signal of each
+ * pair, A1 picks between the pairs. Both NOT gates are shared, 11 gates in all.
+ */
+function flatMultiplexer(): Circuit {
+  const pickY = [0, 150, 330, 480];
+  const orY = [50, 380];
+  // Each pair's AND sits level with its OR's output, so that wire runs straight.
+  const passY = orY.map((y) => y + GATE_OUT - GATE_PIN[0]);
+  const outY = 250;
+  const nodes: Circuit["nodes"] = [
+    ...range(4).map((bit) => ({
+      id: `d${bit}`,
+      type: "switch" as const,
+      label: `D${bit}`,
+      x: 0,
+      y: pickY[bit] + GATE_PIN[0] - SWITCH_PIN,
+    })),
+    { id: "a0", type: "switch", label: "A0", x: 0, y: 640 },
+    { id: "not0", type: "not", label: "NOT A0", x: 220, y: 740 },
+    { id: "a1", type: "switch", label: "A1", x: 0, y: 900 },
+    { id: "not1", type: "not", label: "NOT A1", x: 220, y: 1000 },
+    ...range(4).map((bit) => ({ id: `pick${bit}`, type: "and" as const, x: 560, y: pickY[bit] })),
+    { id: "low", type: "or", label: "LOW PAIR", x: 800, y: orY[0] },
+    { id: "high", type: "or", label: "HIGH PAIR", x: 800, y: orY[1] },
+    { id: "lowPass", type: "and", x: 1040, y: passY[0] },
+    { id: "highPass", type: "and", x: 1040, y: passY[1] },
+    { id: "selected", type: "or", x: 1280, y: outY },
+    { id: "out", type: "lamp", label: "OUT", x: 1500, y: outY + GATE_OUT - SWITCH_PIN },
+  ];
+  const { wires, link } = wiring();
+  link("a0", "not0", 0, { color: "cyan", runBeforeEnd: 30 });
+  link("a1", "not1", 0, { color: "amber", runBeforeEnd: 30 });
+  for (const bit of range(4)) {
+    const odd = Boolean(bit & 1);
+    link(`d${bit}`, `pick${bit}`, 0, { color: "lime" });
+    link(odd ? "a0" : "not0", `pick${bit}`, 1, {
+      color: odd ? "cyan" : "blue",
+      runBeforeEnd: odd ? 80 : 40,
+    });
+    link(`pick${bit}`, bit < 2 ? "low" : "high", bit & 1, { color: "lime", runBeforeEnd: 40 });
+  }
+  link("low", "lowPass", 0, { color: "lime" });
+  link("high", "highPass", 0, { color: "lime" });
+  link("not1", "lowPass", 1, { color: "coral", runBeforeEnd: 40 });
+  link("a1", "highPass", 1, { color: "amber", runBeforeEnd: 70 });
+  link("lowPass", "selected", 0, { color: "lime", runBeforeEnd: 40 });
+  link("highPass", "selected", 1, { color: "lime", runBeforeEnd: 40 });
+  link("selected", "out", 0, { color: "lime" });
+  return { name: "4:1 multiplexer", nodes, wires };
+}
+
+export function routingDemo(kind: "decoder" | "mux" | "memory"): Circuit {
+  if (kind === "decoder") return flatDecoder();
+  if (kind === "mux") return flatMultiplexer();
   // Use bit 0 of the existing sixteen-byte RAM, tying unused data bits low.
   const b = new Builder();
   range(4).forEach((bit) => {

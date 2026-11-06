@@ -1676,14 +1676,14 @@ const BoardNodeContent = memo(function BoardNodeContent({ node, detail, inline, 
               {node.label && node.label !== partTitle && (
                 <span
                   className={styles.nodeLabel}
-                  title="Double-click to edit label"
-                  onDoubleClick={(event) => {
+                  title={editable ? "Double-click to edit label" : undefined}
+                  onDoubleClick={editable ? (event) => {
                     event.stopPropagation();
                     actions.current.editLabel(node.id, node.label || "");
-                  }}
+                  } : undefined}
                 >{node.label}</span>
               )}
-              <button
+              {editable && <button
                 type="button"
                 className={styles.editName}
                 aria-label={`Edit ${node.label || LABELS[node.type]} label`}
@@ -1694,7 +1694,7 @@ const BoardNodeContent = memo(function BoardNodeContent({ node, detail, inline, 
                   <path d="M3 11.5V5a2 2 0 0 1 2-2h6.5a2 2 0 0 1 1.4.6l8.1 8.1a2 2 0 0 1 0 2.8l-6.5 6.5a2 2 0 0 1-2.8 0l-8.1-8.1a2 2 0 0 1-.6-1.4Z" />
                   <circle cx="7.5" cy="7.5" r="1" />
                 </svg>
-              </button>
+              </button>}
             </>
           )}
         </div>

@@ -184,7 +184,12 @@ export function AluArchitectureComparison() {
           Try the teaching ALU’s reusable bit slice
         </summary>
         {sliceOpen && (
-          <CircuitDemo makeCircuit={teachingSlice} label="Teaching ALU bit slice" openModules />
+          <CircuitDemo
+            makeCircuit={teachingSlice}
+            label="Teaching ALU bit slice"
+            openModules
+            showcase
+          />
         )}
       </details>
     </section>

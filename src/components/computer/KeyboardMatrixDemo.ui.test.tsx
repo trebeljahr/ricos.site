@@ -36,7 +36,7 @@ it("runs keys, sampling, Shift mapping and rewind in the actual editable circuit
   // About 4s alone, and past 20s in a full run on a busy machine.
 }, 60000);
 
-it("uses canvas wiring for ghosting and saves edits separately from the reader's lab", () => {
+it("lights the ghost path from switches and leaves the reader's lab untouched", () => {
   localStorage.setItem("ricos-computer-circuits-v1", "saved lab");
   render(<KeyboardMatrixDemo />);
   const builder = screen.getByLabelText("Matrix ghosting circuit");

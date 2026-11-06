@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
+import { booleanSelectorDemo } from "../../lib/computer/demoCircuits";
 import { demoStorageKey } from "../../lib/computer/demoStorage";
 import type { Circuit } from "../../lib/computer/logic";
 import { EightBitAdder, FourBitAdder, FullAdder, HalfAdder } from "./Adders";
-import { DecoderDemo } from "./AddressRouting";
 import { CircuitDemo } from "./CircuitDemo";
 import { MemoryMappedScreenDemo } from "./MemoryMappedScreenDemo";
 import { testButton } from "./testButton";
@@ -94,10 +94,17 @@ it("reads 255 + 255 as 510 with the eight-bit inputs folded or open", () => {
   expect(screen.getByLabelText("B value").textContent).toBe("25511111111");
 });
 
-it("opens a decoder's modules down to its gates, and stops there", () => {
-  render(<DecoderDemo />);
-  expect(screen.getAllByLabelText(/expanded circuit$/).length).toBe(2);
+it("opens a showcase circuit's modules down to their gates, and stops there", () => {
+  const makeCircuit = (): Circuit => ({
+    name: "Boxed selector",
+    nodes: [{ id: "box", type: "module", module: booleanSelectorDemo(), x: 0, y: 0 }],
+    wires: [],
+  });
+  render(<CircuitDemo makeCircuit={makeCircuit} label="Boxed selector" openModules showcase />);
+  expect(screen.getAllByLabelText(/expanded circuit$/).length).toBe(1);
+  expect(screen.getByLabelText("Boolean selector expanded circuit")).toBeTruthy();
   expect(screen.queryByLabelText(/from CMOS transistors expanded circuit$/)).toBeNull();
+  expect(screen.queryByTitle(/onto canvas/)).toBeNull();
 });
 
 it("stores into the native screen through the CPU address decoder", () => {

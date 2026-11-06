@@ -102,7 +102,7 @@ export function KeyboardMatrixDemo() {
       </details>
       <section className="flow-para">
         <h2>Follow the ghosting path</h2>
-        <CircuitDemo makeCircuit={ghostMatrixCircuit} label="Matrix ghosting circuit" />
+        <CircuitDemo makeCircuit={ghostMatrixCircuit} label="Matrix ghosting circuit" showcase />
       </section>
       <section className="flow-para" aria-label="Build the keyboard controller">
         <h2>Build this out</h2>

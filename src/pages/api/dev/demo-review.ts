@@ -1,14 +1,27 @@
 /**
  * Dev-only endpoint behind the demo review on /computer/demos and the demo
- * pages: reads the review, sets one demo's verdict or note. The record stays in
+ * pages: reads the review, sets one demo's verdict or note, takes pasted
+ * screenshots (`{ slug, image: { type, data } }`, data in base64) and serves them
+ * back (`GET ?image=<name>`). The record stays in
  * private Notes (see demoReviewStore.ts). 404s in production and for any other
  * machine.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { computerDemos } from "src/lib/computerDemos";
-import { applyReview, parseReviewUpdate } from "src/lib/demoReview";
-import { readDemoReviews, writeDemoReviews } from "src/lib/demoReviewStore";
+import { applyReview, IMAGE_LIMIT, parseReviewUpdate, type ReviewUpdate } from "src/lib/demoReview";
+import {
+  isImageType,
+  readDemoReviews,
+  readReviewImage,
+  saveReviewImage,
+  writeDemoReviews,
+} from "src/lib/demoReviewStore";
 import { clientAddresses, servesPrivateNotes } from "src/lib/diaryStore";
+
+// Screenshots arrive as base64 in JSON; a full-screen retina PNG runs to a few MB.
+export const config = { api: { bodyParser: { sizeLimit: "25mb" } } };
+
+const IMAGE_BYTES_LIMIT = 15 * 1024 * 1024;
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (process.env.NODE_ENV !== "development") {
@@ -21,6 +34,18 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   if (req.method === "GET") {
+    const image = req.query?.image;
+    if (image !== undefined) {
+      const found = typeof image === "string" ? readReviewImage(image) : null;
+      if (!found) {
+        res.status(404).json({ error: "No such image" });
+        return;
+      }
+      res.setHeader("Content-Type", found.type);
+      res.setHeader("Cache-Control", "private, max-age=31536000, immutable");
+      res.status(200).send(found.data);
+      return;
+    }
     try {
       res.status(200).json({ reviews: readDemoReviews() });
     } catch (error) {
@@ -35,22 +60,48 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const { slug, verdict, note } = (req.body ?? {}) as Record<string, unknown>;
+  const { slug, verdict, note, images, image } = (req.body ?? {}) as Record<string, unknown>;
   if (!computerDemos.some((demo) => demo.slug === slug)) {
     res.status(400).json({ error: "Unknown demo" });
     return;
   }
-  const update = parseReviewUpdate({ verdict, note });
+  const name = slug as string;
+
+  if (image !== undefined) {
+    const { type, data } = (image ?? {}) as Record<string, unknown>;
+    const bytes = typeof data === "string" ? Buffer.from(data, "base64") : null;
+    if (!isImageType(type) || !bytes?.length || bytes.length > IMAGE_BYTES_LIMIT) {
+      res.status(400).json({ error: "Send a PNG, JPEG, WebP or GIF under 15 MB" });
+      return;
+    }
+    try {
+      const reviews = readDemoReviews();
+      const saved = reviews[name]?.images ?? [];
+      if (saved.length >= IMAGE_LIMIT) {
+        res.status(400).json({ error: `At most ${IMAGE_LIMIT} screenshots per note` });
+        return;
+      }
+      const file = saveReviewImage(name, type, bytes);
+      const next = applyReview(reviews, name, { images: [...saved, file] }, new Date());
+      writeDemoReviews(next);
+      res.status(200).json({ image: file, review: next[name] ?? null });
+    } catch (error) {
+      res.status(500).json({ error: `Could not save: ${String(error)}` });
+    }
+    return;
+  }
+
+  const update: ReviewUpdate | null = parseReviewUpdate({ verdict, note, images });
   if (!update) {
-    res.status(400).json({ error: "Send a known verdict or a note" });
+    res.status(400).json({ error: "Send a known verdict, a note or screenshots" });
     return;
   }
 
   try {
     const reviews = readDemoReviews();
-    const next = applyReview(reviews, slug as string, update, new Date());
+    const next = applyReview(reviews, name, update, new Date());
     if (next !== reviews) writeDemoReviews(next);
-    res.status(200).json({ review: next[slug as string] ?? null });
+    res.status(200).json({ review: next[name] ?? null });
   } catch (error) {
     res.status(500).json({ error: `Could not save: ${String(error)}` });
   }

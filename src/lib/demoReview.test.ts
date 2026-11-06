@@ -14,8 +14,10 @@ import {
   groupByStage,
   isReworked,
   markAddressed,
+  NOTE_LIMIT,
   nextInQueue,
   parseReviewUpdate,
+  queueCounts,
   queueInOrder,
   roundOf,
   stageOf,
@@ -105,10 +107,36 @@ describe("stages", () => {
 
   it("rejects unknown verdicts, long notes and empty updates", () => {
     expect(parseReviewUpdate({ verdict: "great" })).toBeNull();
-    expect(parseReviewUpdate({ note: "x".repeat(1001) })).toBeNull();
+    expect(parseReviewUpdate({ note: "x".repeat(NOTE_LIMIT + 1) })).toBeNull();
+    expect(parseReviewUpdate({ note: "x".repeat(5000) })).toEqual({ note: "x".repeat(5000) });
+    expect(parseReviewUpdate({ images: ["../texts/diary.png"] })).toBeNull();
+    expect(parseReviewUpdate({ images: "clock-1.png" })).toBeNull();
+    expect(parseReviewUpdate({ images: ["clock-1.png"] })).toEqual({ images: ["clock-1.png"] });
     expect(parseReviewUpdate({})).toBeNull();
     expect(parseReviewUpdate({ verdict: null })).toEqual({ verdict: null });
     expect(parseReviewUpdate({ note: "" })).toEqual({ note: "" });
+  });
+});
+
+describe("screenshots", () => {
+  it("keeps a record that holds only screenshots, and drops it once they are gone", () => {
+    const withImage = applyReview({}, "clock", { images: ["clock-1.png"] }, NOW);
+    expect(withImage.clock).toMatchObject({ note: "", images: ["clock-1.png"] });
+    expect(applyReview(withImage, "clock", { images: [] }, NOW)).toEqual({});
+  });
+
+  it("keeps screenshots through note and verdict changes", () => {
+    let reviews = applyReview(rejected(), "clock", { images: ["clock-1.png"] }, NOW);
+    reviews = applyReview(reviews, "clock", { note: "wires cross" }, NOW);
+    expect(reviews.clock.images).toEqual(["clock-1.png"]);
+    expect(applyReview(reviews, "clock", { images: ["clock-1.png"] }, LATER)).toBe(reviews);
+  });
+
+  it("moves screenshots into the round when feedback is addressed", () => {
+    const reviews = applyReview(rejected(), "clock", { images: ["clock-1.png"] }, NOW);
+    const addressed = markAddressed(reviews, "clock", { summary: "fixed" }, LATER);
+    expect(addressed.clock.images).toBeUndefined();
+    expect(addressed.clock.rounds?.[0].images).toEqual(["clock-1.png"]);
   });
 });
 
@@ -133,6 +161,23 @@ describe("order", () => {
     expect(nextInQueue(demos, { ...only, reviews: { ...only.reviews, ...reviews } }, "a")).toBe(
       undefined,
     );
+  });
+});
+
+describe("queue counts", () => {
+  it("splits the queue into new and reworked demos", () => {
+    const demos = [{ slug: "a" }, { slug: "b" }, { slug: "c" }, { slug: "d" }];
+    let reviews = applyReview({}, "a", { verdict: "accepted" }, NOW);
+    reviews = markAddressed(
+      applyReview(reviews, "b", { verdict: "rejected" }, NOW),
+      "b",
+      {
+        summary: "done",
+      },
+      NOW,
+    );
+    reviews = applyReview(reviews, "c", { verdict: "rejected" }, NOW);
+    expect(queueCounts(demos, { reviews })).toEqual({ fresh: 1, reworked: 1 });
   });
 });
 
@@ -227,10 +272,23 @@ describe("store and endpoint", () => {
   const call = (
     body: unknown,
     { method = "POST", address = "127.0.0.1" } = {},
-  ): { status: number; json: unknown } => {
-    const result = { status: 0, json: undefined as unknown };
+    query: Record<string, string> = {},
+  ): { status: number; json: unknown; sent: unknown; headers: Record<string, string> } => {
+    const result = {
+      status: 0,
+      json: undefined as unknown,
+      sent: undefined as unknown,
+      headers: {} as Record<string, string>,
+    };
     const res = {
-      setHeader: () => res,
+      setHeader(name: string, value: string) {
+        result.headers[name] = value;
+        return res;
+      },
+      send(value: unknown) {
+        result.sent = value;
+        return res;
+      },
       status(code: number) {
         result.status = code;
         return res;
@@ -241,7 +299,7 @@ describe("store and endpoint", () => {
       },
     };
     handler(
-      { method, body, headers: {}, socket: { remoteAddress: address } } as NextApiRequest,
+      { method, body, query, headers: {}, socket: { remoteAddress: address } } as NextApiRequest,
       res as unknown as NextApiResponse,
     );
     return result;
@@ -277,6 +335,29 @@ describe("store and endpoint", () => {
     const read = call(undefined, { method: "GET" });
     expect(read.status).toBe(200);
     expect(read.json).toMatchObject({ reviews: { "die-zoom": { verdict: "rejected" } } });
+  });
+
+  it("saves a pasted screenshot next to the record and serves it back", () => {
+    const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2, 3]);
+    const upload = call({
+      slug: "die-zoom",
+      image: { type: "image/png", data: png.toString("base64") },
+    });
+    expect(upload.status).toBe(200);
+    const name = (upload.json as { image: string }).image;
+    expect(name).toMatch(/^die-zoom-\d+\.png$/);
+    expect(readDemoReviews()["die-zoom"].images).toEqual([name]);
+    expect(fs.readFileSync(path.join(dir, "texts", "demo-review-images", name))).toEqual(png);
+
+    const served = call(undefined, { method: "GET" }, { image: name });
+    expect(served.status).toBe(200);
+    expect(served.headers["Content-Type"]).toBe("image/png");
+    expect(served.sent).toEqual(png);
+    expect(call(undefined, { method: "GET" }, { image: "../demo-review.json" }).status).toBe(404);
+
+    expect(call({ slug: "die-zoom", image: { type: "text/html", data: "aGk=" } }).status).toBe(400);
+    expect(call({ slug: "die-zoom", images: [] }).status).toBe(200);
+    expect(readDemoReviews()["die-zoom"]).toBeUndefined();
   });
 
   it("refuses a demo that does not exist and a verdict that does not exist", () => {

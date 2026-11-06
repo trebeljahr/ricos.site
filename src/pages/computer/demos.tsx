@@ -5,6 +5,7 @@ import {
   type DemoReview,
   groupByStage,
   isReworked,
+  queueCounts,
   queueInOrder,
   REVIEW_STAGES,
   type ReviewStage,
@@ -60,8 +61,13 @@ function DemoRow({
           )}
         </span>
         {review?.note && (
-          <span className="mt-hair block text-sm text-gray-600 dark:text-gray-400">
+          <span className="mt-hair block whitespace-pre-wrap text-sm text-gray-600 dark:text-gray-400">
             {review.note}
+          </span>
+        )}
+        {(review?.images?.length ?? 0) > 0 && (
+          <span className="mt-hair block font-mono text-xs text-gray-500 dark:text-gray-400">
+            {review?.images?.length} screenshot{review?.images?.length === 1 ? "" : "s"}
           </span>
         )}
         {reworked && (
@@ -77,6 +83,7 @@ function DemoRow({
 function ReviewedList({ state }: { state: ReviewState }) {
   const groups = groupByStage(computerDemos, (slug) => stageOf(state, slug));
   groups.queue = queueInOrder(computerDemos, state);
+  const { fresh, reworked } = queueCounts(computerDemos, state);
   return (
     <>
       {REVIEW_STAGES.map((stage) => (
@@ -84,7 +91,7 @@ function ReviewedList({ state }: { state: ReviewState }) {
           <h2 className="m-0 flex items-baseline gap-label text-lg font-semibold text-gray-950 dark:text-white">
             {STAGE_TITLES[stage]}
             <span className="font-mono text-sm font-normal text-gray-500">
-              {groups[stage].length}
+              {stage === "queue" ? `${fresh} new, ${reworked} reworked` : groups[stage].length}
             </span>
           </h2>
           <ol className="mt-label list-none border-t border-gray-300 p-0 dark:border-gray-700">

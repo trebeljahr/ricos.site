@@ -4,15 +4,16 @@ import { computerDemos } from "src/lib/computerDemos";
 import {
   type DemoReview as DemoReviewRecord,
   nextInQueue,
+  queueCounts,
   type ReviewRound,
   type ReviewState,
   roundOf,
-  stageOf,
 } from "src/lib/demoReview";
 import {
   type DemoReviewApi,
   fetchDemoReview,
   NoteField,
+  ReviewImages,
   SaveError,
   useDemoReview,
   VerdictButtons,
@@ -31,11 +32,15 @@ function Controls({
   review: DemoReviewApi;
 }) {
   const [focusNote, setFocusNote] = useState(false);
-  const { state, change } = review;
+  const { state, change, addImages } = review;
   const saved = state.reviews[current];
   const saveNote = useCallback((note: string) => change(current, { note }), [change, current]);
+  const saveImages = useCallback(
+    (files: File[]) => addImages(current, files),
+    [addImages, current],
+  );
   const next = nextInQueue(computerDemos, state, current);
-  const waiting = computerDemos.filter(({ slug }) => stageOf(state, slug) === "queue").length;
+  const { fresh, reworked } = queueCounts(computerDemos, state);
 
   return (
     <div className="mt-label rounded border border-gray-300 p-label dark:border-gray-700">
@@ -46,16 +51,8 @@ function Controls({
           slug={current}
           title={title}
         />
-        <NoteField
-          className="min-w-48 flex-1"
-          focus={focusNote}
-          initial={saved?.note ?? ""}
-          onDone={() => setFocusNote(false)}
-          onSave={saveNote}
-          title={title}
-        />
         <span className="font-mono text-xs text-gray-500 dark:text-gray-400">
-          {waiting} to look at
+          To look at: {fresh} new, {reworked} reworked
         </span>
         {next && (
           <Link
@@ -66,6 +63,22 @@ function Controls({
           </Link>
         )}
       </div>
+      {/* Its own row: notes run long, and screenshots go in here too. */}
+      <NoteField
+        className="mt-label max-h-96 overflow-y-auto"
+        focus={focusNote}
+        initial={saved?.note ?? ""}
+        onDone={() => setFocusNote(false)}
+        onImages={saveImages}
+        onSave={saveNote}
+        title={title}
+      />
+      <ReviewImages
+        images={saved?.images}
+        onRemove={(name) =>
+          change(current, { images: (saved?.images ?? []).filter((image) => image !== name) })
+        }
+      />
       <SaveError message={review.saveError} />
       <FinishedRounds review={saved} />
     </div>
@@ -77,6 +90,7 @@ function Round({ round, number }: { round: ReviewRound; number: number }) {
     <div className="mt-label text-sm text-gray-600 dark:text-gray-400">
       <p className="m-0 font-medium text-gray-800 dark:text-gray-200">Round {number}</p>
       <p className="m-0 mt-hair whitespace-pre-wrap line-through">{round.note}</p>
+      <ReviewImages images={round.images} />
       <p className="m-0 mt-hair whitespace-pre-wrap">
         Addressed: {round.summary}
         {round.commit && <span className="ml-tight font-mono text-xs">{round.commit}</span>}

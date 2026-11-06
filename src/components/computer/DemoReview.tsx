@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   applyReview,
+  IMAGE_TYPES,
   NOTE_LIMIT,
   type ReviewState,
   type ReviewUpdate,
@@ -30,8 +31,26 @@ const PRESSED = {
 export type DemoReviewApi = {
   state: ReviewState;
   change: (slug: string, update: ReviewUpdate) => void;
+  /** Uploads pasted or dropped screenshots and adds them to the note. */
+  addImages: (slug: string, files: File[]) => void;
   saveError: string | null;
 };
+
+export const imageUrl = (name: string) => `${API}?image=${encodeURIComponent(name)}`;
+
+const isPastedImage = (file: File) => file.type in IMAGE_TYPES;
+
+/** The image files in a paste or a drop. */
+export const imagesIn = (data: DataTransfer | null): File[] =>
+  Array.from(data?.files ?? []).filter(isPastedImage);
+
+const base64Of = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 
 /** The saved review and a way to change it, one save at a time. */
 export function useDemoReview(initial: ReviewState): DemoReviewApi {
@@ -61,7 +80,39 @@ export function useDemoReview(initial: ReviewState): DemoReviewApi {
     });
   }, []);
 
-  return { state, change, saveError };
+  const addImages = useCallback((slug: string, files: File[]) => {
+    for (const file of files) {
+      queue.current = queue.current.then(async () => {
+        try {
+          const response = await fetch(API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, image: { type: file.type, data: await base64Of(file) } }),
+          });
+          const body = (await response.json().catch(() => ({}))) as {
+            image?: string;
+            error?: string;
+          };
+          if (!response.ok || !body.image) throw new Error(body.error ?? `HTTP ${response.status}`);
+          const saved = body.image;
+          setState((current) => ({
+            ...current,
+            reviews: applyReview(
+              current.reviews,
+              slug,
+              { images: [...(current.reviews[slug]?.images ?? []), saved] },
+              new Date(),
+            ),
+          }));
+          setSaveError(null);
+        } catch (error) {
+          setSaveError(`${slug} screenshot: ${String(error)}`);
+        }
+      });
+    }
+  }, []);
+
+  return { state, change, addImages, saveError };
 }
 
 /** The saved review, or null where the endpoint does not answer (another machine). */
@@ -119,12 +170,15 @@ export function NoteField({
   className,
   onSave,
   onDone,
+  onImages,
 }: {
   title: string;
   initial: string;
   focus?: boolean;
   className?: string;
   onSave: (note: string) => void;
+  /** Screenshots pasted or dropped into the note. */
+  onImages?: (files: File[]) => void;
   /** The note lost focus. */
   onDone?: () => void;
 }) {
@@ -172,17 +226,70 @@ export function NoteField({
         if (timer.current) clearTimeout(timer.current);
         timer.current = setTimeout(flush, NOTE_SAVE_DELAY);
       }}
+      onDragOver={(event) => {
+        if (onImages && event.dataTransfer.types.includes("Files")) event.preventDefault();
+      }}
+      onDrop={(event) => {
+        const files = imagesIn(event.dataTransfer);
+        if (!onImages || files.length === 0) return;
+        event.preventDefault();
+        onImages(files);
+      }}
+      onPaste={(event) => {
+        const files = imagesIn(event.clipboardData);
+        if (!onImages || files.length === 0) return;
+        // A copied file can come with its name as text; keep only the picture.
+        event.preventDefault();
+        onImages(files);
+      }}
       onKeyDown={(event) => {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();
           event.currentTarget.blur();
         }
       }}
-      placeholder="Note"
+      placeholder={onImages ? "Note (paste or drop screenshots)" : "Note"}
       ref={field}
       rows={1}
       value={draft}
     />
+  );
+}
+
+/** Thumbnails of a note's screenshots, each opening full size; removable when live. */
+export function ReviewImages({
+  images,
+  onRemove,
+}: {
+  images: readonly string[] | undefined;
+  onRemove?: (name: string) => void;
+}) {
+  if (!images?.length) return null;
+  return (
+    <ul className="not-prose m-0 mt-label flex list-none flex-wrap gap-tight p-0">
+      {images.map((name, index) => (
+        <li className="relative m-0 p-0" key={name}>
+          <a href={imageUrl(name)} rel="noreferrer" target="_blank">
+            {/* biome-ignore lint/performance/noImgElement: dev-only, served from private Notes */}
+            <img
+              alt={`Screenshot ${index + 1}`}
+              className="m-0 block h-20 w-auto max-w-40 rounded border border-gray-300 object-cover dark:border-gray-700"
+              src={imageUrl(name)}
+            />
+          </a>
+          {onRemove && (
+            <button
+              aria-label={`Remove screenshot ${index + 1}`}
+              className="absolute right-1 top-1 inline-flex size-6 items-center justify-center rounded-full bg-gray-900/80 text-xs text-white hover:bg-rose-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-500"
+              onClick={() => onRemove(name)}
+              type="button"
+            >
+              ×
+            </button>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
 

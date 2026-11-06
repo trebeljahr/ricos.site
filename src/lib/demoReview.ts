@@ -19,6 +19,8 @@ export type ReviewStage = (typeof REVIEW_STAGES)[number];
 /** One finished iteration: Rico's feedback and the answer to it. */
 export type ReviewRound = {
   note: string;
+  /** Screenshots that came with the note, file names in REVIEW_IMAGE_DIR. */
+  images?: string[];
   rejectedAt?: number;
   addressedAt: number;
   summary: string;
@@ -28,6 +30,8 @@ export type ReviewRound = {
 export type DemoReview = {
   verdict?: ReviewVerdict;
   note: string;
+  /** Pasted screenshots, file names in REVIEW_IMAGE_DIR, oldest first. */
+  images?: string[];
   /** Local calendar day of the last change. */
   updated: string;
   /** Milliseconds; set on each rejection. */
@@ -39,11 +43,36 @@ export type DemoReview = {
 export type DemoReviews = Record<string, DemoReview>;
 
 /** `verdict: null` puts a demo back in the queue by hand. */
-export type ReviewUpdate = { verdict?: ReviewVerdict | null; note?: string };
+export type ReviewUpdate = {
+  verdict?: ReviewVerdict | null;
+  note?: string;
+  /** The full list of screenshots, replacing the old one. */
+  images?: string[];
+};
 
 export type ReviewState = { reviews: DemoReviews };
 
-export const NOTE_LIMIT = 1000;
+/** Only a guard against a runaway request; a note may be as long as it needs. */
+export const NOTE_LIMIT = 100_000;
+
+/** Screenshots live next to the record, in the same private Notes folder. */
+export const REVIEW_IMAGE_DIR = "demo-review-images";
+export const IMAGE_LIMIT = 30;
+
+export const IMAGE_TYPES = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+} as const;
+
+const IMAGE_NAME = /^[a-z0-9-]+-\d+(-\d+)?\.(png|jpg|webp|gif)$/;
+
+export const isImageName = (value: unknown): value is string =>
+  typeof value === "string" && IMAGE_NAME.test(value);
+
+const sameList = (a: readonly string[] = [], b: readonly string[] = []) =>
+  a.length === b.length && a.every((item, index) => item === b[index]);
 
 const isVerdict = (value: unknown): value is ReviewVerdict =>
   REVIEW_VERDICTS.includes(value as ReviewVerdict);
@@ -83,13 +112,21 @@ export function applyReview(
   const previous = reviews[slug];
   const note = (update.note ?? previous?.note ?? "").trim();
   const verdict = update.verdict === undefined ? previous?.verdict : (update.verdict ?? undefined);
-  if (update.verdict === undefined && previous?.note === note) return reviews;
+  const images = update.images ?? previous?.images ?? [];
+  if (
+    update.verdict === undefined &&
+    previous?.note === note &&
+    sameList(previous?.images, images)
+  ) {
+    return reviews;
+  }
 
   const { [slug]: _replaced, ...rest } = reviews;
   const rounds = previous?.rounds;
-  if (!verdict && !note && !rounds?.length) return rest;
+  if (!verdict && !note && !images.length && !rounds?.length) return rest;
 
   const review: DemoReview = { note, updated: localDay(now) };
+  if (images.length) review.images = images;
   if (verdict) review.verdict = verdict;
   if (verdict === "rejected") {
     review.rejectedAt = update.verdict === "rejected" ? now.getTime() : previous?.rejectedAt;
@@ -115,6 +152,7 @@ export function markAddressed(
   if (!text) throw new Error("Say what was done");
 
   const round: ReviewRound = { note: previous.note, addressedAt: now.getTime(), summary: text };
+  if (previous.images?.length) round.images = previous.images;
   if (previous.rejectedAt !== undefined) round.rejectedAt = previous.rejectedAt;
   if (commit) round.commit = commit;
   return {
@@ -127,6 +165,7 @@ export function markAddressed(
 export function parseReviewUpdate(body: {
   verdict?: unknown;
   note?: unknown;
+  images?: unknown;
 }): ReviewUpdate | null {
   const update: ReviewUpdate = {};
   if (body.verdict !== undefined) {
@@ -137,7 +176,17 @@ export function parseReviewUpdate(body: {
     if (typeof body.note !== "string" || body.note.length > NOTE_LIMIT) return null;
     update.note = body.note;
   }
-  return update.verdict === undefined && update.note === undefined ? null : update;
+  if (body.images !== undefined) {
+    if (
+      !Array.isArray(body.images) ||
+      body.images.length > IMAGE_LIMIT ||
+      !body.images.every(isImageName)
+    ) {
+      return null;
+    }
+    update.images = body.images;
+  }
+  return Object.keys(update).length === 0 ? null : update;
 }
 
 /** The demos by stage, each stage keeping the order it was given. */
@@ -178,6 +227,21 @@ const after = <Demo extends { slug: string }>(demos: readonly Demo[], current: s
   const start = demos.findIndex((demo) => demo.slug === current);
   return [...demos.slice(start + 1), ...demos.slice(0, Math.max(start, 0))];
 };
+
+/** How many demos wait for a first look, and how many for a look after rework. */
+export function queueCounts(
+  demos: readonly { slug: string }[],
+  state: ReviewState,
+): { fresh: number; reworked: number } {
+  let fresh = 0;
+  let reworked = 0;
+  for (const { slug } of demos) {
+    if (stageOf(state, slug) !== "queue") continue;
+    if (isReworked(state, slug)) reworked += 1;
+    else fresh += 1;
+  }
+  return { fresh, reworked };
+}
 
 /**
  * The next demo waiting for a look after this one, wrapping round. Never itself.

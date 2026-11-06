@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ricos.site social preview</title>
+<!-- Rendered at 1280x640 by ../scripts/render-social-preview.mjs (?v=a|b|c). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=block" rel="stylesheet">
+<style>
+  :root {
+    --navy-1: #1d3a5c;
+    --navy-2: #111827;
+    --navy-3: #0b1120;
+    --ink: #0f172a;
+    --paper: #f5f7fb;
+    --accent: #1673d1;
+    --accent-light: #93c5fd;
+    --muted: #9ca3af;
+    --flask-pink: #ff3d68;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body { font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+  .card { position: relative; width: 1280px; height: 640px; overflow: hidden; }
+  .variant { display: none; }
+  body[data-v="a"] .a, body[data-v="b"] .b, body[data-v="c"] .c { display: block; }
+
+  .flask { width: 84px; height: 84px; display: block; }
+  .name { font-weight: 800; letter-spacing: -0.035em; line-height: 1; }
+  .shot { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .frame {
+    position: absolute; overflow: hidden; border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.4);
+  }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; background: var(--accent); }
+
+  /* A: screenshot-led, dark */
+  .a { background: radial-gradient(120% 120% at 0% 0%, var(--navy-1) 0%, var(--navy-2) 55%, var(--navy-3) 100%); }
+  .a .copy { position: absolute; left: 72px; top: 0; bottom: 0; width: 520px; display: flex; flex-direction: column; justify-content: center; }
+  .a .name { color: #fff; font-size: 92px; margin-top: 30px; }
+  .a .by { color: var(--accent-light); font-size: 34px; font-weight: 500; margin-top: 18px; }
+  .a .what { color: #cbd5e1; font-size: 30px; line-height: 1.35; margin-top: 30px; }
+  .a .frame { left: 640px; top: 72px; width: 760px; height: 600px; background: #111827; }
+  /* 1600 px wide page shown at 0.75, cropped to the demo column. */
+  .a .frame img { position: absolute; left: -190px; top: 0; width: 1200px; height: 750px; }
+
+  /* B: typographic, brand-led */
+  .b { background: var(--navy-2); color: #fff; }
+  .b::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 80% at 15% 10%, rgba(29, 58, 92, 0.9), transparent 70%),
+      radial-gradient(50% 60% at 95% 100%, rgba(22, 115, 209, 0.25), transparent 70%);
+  }
+  .b .inner { position: absolute; inset: 72px; display: flex; flex-direction: column; justify-content: space-between; }
+  .b .top { display: flex; align-items: center; gap: 36px; }
+  .b .flask { width: 128px; height: 128px; }
+  .b .name { font-size: 136px; }
+  .b .sections { font-size: 38px; font-weight: 600; line-height: 1.4; color: #e5e7eb; }
+  .b .sections span { white-space: nowrap; }
+  .b .sections i { font-style: normal; color: var(--flask-pink); padding: 0 14px; }
+  .b .foot { display: flex; justify-content: space-between; align-items: baseline; font-size: 28px; color: var(--muted); }
+  .b .foot strong { color: var(--accent-light); font-weight: 500; }
+
+  /* C: light collage of four real pages */
+  .c { background: var(--paper); color: var(--ink); }
+  .c .copy { position: absolute; left: 72px; top: 72px; bottom: 72px; width: 400px; display: flex; flex-direction: column; justify-content: space-between; }
+  .c .name { font-size: 76px; margin-top: 26px; }
+  .c .what { font-size: 30px; line-height: 1.35; color: #334155; margin-top: 22px; }
+  .c .by { font-size: 26px; color: var(--accent); font-weight: 600; }
+  .c .grid { position: absolute; left: 520px; top: 48px; width: 712px; height: 544px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 16px; }
+  .c .tile { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid rgba(15, 23, 42, 0.12); box-shadow: 0 18px 40px -22px rgba(15, 23, 42, 0.55); }
+  .c .tile span { position: absolute; left: 12px; bottom: 12px; padding: 5px 11px; border-radius: 999px; background: rgba(15, 23, 42, 0.82); color: #fff; font-size: 17px; font-weight: 600; }
+</style>
+</head>
+<body>
+  <section class="card variant a">
+    <div class="copy">
+      <img class="flask" src="../../../public/favicon/android-chrome-512x512.png" alt="">
+      <h1 class="name">ricos.site</h1>
+      <p class="by">Rico Trebeljahr</p>
+      <p class="what">Essays, booknotes, travel,<br>photography and interactive demos</p>
+    </div>
+    <div class="frame"><img src="../screenshots/full-adder-dark.jpg" alt=""></div>
+    <div class="bar"></div>
+  </section>
+
+  <section class="card variant b">
+    <div class="inner">
+      <div class="top">
+        <img class="flask" src="../../../public/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="name">ricos.site</h1>
+      </div>
+      <p class="sections">
+        <span>Essays</span><i>/</i><span>Booknotes</span><i>/</i><span>Travel</span><i>/</i><span>Photography</span><br>
+        <span>How computers work</span><i>/</i><span>3D demos</span><i>/</i><span>Projects</span>
+      </p>
+      <p class="foot"><strong>Rico Trebeljahr</strong><span>Next.js · open source</span></p>
+    </div>
+  </section>
+
+  <section class="card variant c">
+    <div class="copy">
+      <div>
+        <img class="flask" src="../../../public/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="name">ricos.site</h1>
+        <p class="what">Essays, booknotes, travel,<br>photography and<br>interactive demos</p>
+      </div>
+      <p class="by">Rico Trebeljahr</p>
+    </div>
+    <div class="grid">
+      <div class="tile"><img class="shot" style="object-position: 0 18%" src="../screenshots/die-zoom-dark.jpg" alt=""><span>How computers work</span></div>
+      <div class="tile"><img class="shot" style="object-position: 0 8%" src="../screenshots/projects-dark.jpg" alt=""><span>Projects</span></div>
+      <div class="tile"><img class="shot" style="object-position: 0 30%" src="../screenshots/photography-dark.jpg" alt=""><span>Photography</span></div>
+      <div class="tile"><img class="shot" style="object-position: 0 0" src="../screenshots/home-light.jpg" alt=""><span>Writing</span></div>
+    </div>
+  </section>
+
+  <script>
+    document.body.dataset.v = new URLSearchParams(location.search).get("v") || "a";
+  </script>
+</body>
+</html>

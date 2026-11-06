@@ -1,0 +1,145 @@
+{
+  "images": [
+    {
+      "file": "screenshots/die-zoom-dark.jpg",
+      "width": 3200,
+      "height": 2000,
+      "bytes": 888273,
+      "sha256": "eb72b3c97cfdc23b438691a39660ed3f9e371af8d07e1704672e243cabaa8af5",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/computer/die-zoom",
+        "viewport": "1600x1000",
+        "deviceScaleFactor": 2,
+        "theme": "dark",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "screenshots/full-adder-dark.jpg",
+      "width": 3200,
+      "height": 2000,
+      "bytes": 244964,
+      "sha256": "5b9f36b568111aa62b03f9ef473344e6da84c7497b5d48587ee1741a04727e3e",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/computer/full-adder",
+        "viewport": "1600x1000",
+        "deviceScaleFactor": 2,
+        "theme": "dark",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "screenshots/home-dark.jpg",
+      "width": 3200,
+      "height": 2000,
+      "bytes": 271520,
+      "sha256": "0a8832d76bb89be4b12b3cab9342f069ba0b4ee9eddc01e0925d05139040071e",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/",
+        "viewport": "1600x1000",
+        "deviceScaleFactor": 2,
+        "theme": "dark",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "screenshots/home-light.jpg",
+      "width": 3200,
+      "height": 2000,
+      "bytes": 265138,
+      "sha256": "1471d66b096fac0041db5ac8f3518cefdd19e21f45730145a91e0d1f5e5c84af",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/",
+        "viewport": "1600x1000",
+        "deviceScaleFactor": 2,
+        "theme": "light",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "screenshots/home-mobile-dark.jpg",
+      "width": 780,
+      "height": 1688,
+      "bytes": 103077,
+      "sha256": "5c6ee2887f41729d723613c00b903de6a6a24a0d277a03da4d11d625ea6e3d5d",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/",
+        "viewport": "390x844",
+        "deviceScaleFactor": 2,
+        "theme": "dark",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "screenshots/photography-dark.jpg",
+      "width": 3200,
+      "height": 2000,
+      "bytes": 355044,
+      "sha256": "41d729226ee83d23c403e90e50c44e84c52e8233fbcccd3a7f146873b4929b8b",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/photography",
+        "viewport": "1600x1000",
+        "deviceScaleFactor": 2,
+        "theme": "dark",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "screenshots/projects-dark.jpg",
+      "width": 3200,
+      "height": 2000,
+      "bytes": 346539,
+      "sha256": "ea6da4901bed486e5c01a0c6bbc186d39855595f4994c5ae0dca2668fcbccc34",
+      "date": "2026-11-06",
+      "source": {
+        "url": "https://ricos.site/projects",
+        "viewport": "1600x1000",
+        "deviceScaleFactor": 2,
+        "theme": "dark",
+        "tool": "docs/marketing/scripts/capture-screenshots.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "social-preview/social-preview-a.png",
+      "width": 1280,
+      "height": 640,
+      "bytes": 276954,
+      "sha256": "34b990f0e67608729ed4083d6f48120e68fc318b85f7f71a7731389a1f63607c",
+      "date": "2026-11-06",
+      "source": {
+        "template": "social-preview/template.html?v=a",
+        "tool": "docs/marketing/scripts/render-social-preview.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "social-preview/social-preview-b.png",
+      "width": 1280,
+      "height": 640,
+      "bytes": 207075,
+      "sha256": "2c96554999c6cc0123d3f14241f27f5923b1a6f2039fc755d05230899311363a",
+      "date": "2026-11-06",
+      "source": {
+        "template": "social-preview/template.html?v=b",
+        "tool": "docs/marketing/scripts/render-social-preview.mjs (Playwright Chromium)"
+      }
+    },
+    {
+      "file": "social-preview/social-preview-c.png",
+      "width": 1280,
+      "height": 640,
+      "bytes": 357205,
+      "sha256": "531a06324c67d45a09a488d0fae1a106596a97c0826529f4e20a4c88db4134cf",
+      "date": "2026-11-06",
+      "source": {
+        "template": "social-preview/template.html?v=c",
+        "tool": "docs/marketing/scripts/render-social-preview.mjs (Playwright Chromium)"
+      }
+    }
+  ]
+}

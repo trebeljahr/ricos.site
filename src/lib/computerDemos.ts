@@ -210,8 +210,16 @@ export const computerDemos = [
     title: "Choose which signal gets through",
   },
   {
-    slug: "memory-address",
+    slug: "memory-cell",
     title: "Read and write one memory cell",
+  },
+  {
+    slug: "memory-byte",
+    title: "Store one byte at one address",
+  },
+  {
+    slug: "memory-address",
+    title: "Address bytes on a shared data bus",
   },
   {
     slug: "alu-architecture",

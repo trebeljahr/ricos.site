@@ -1,7 +1,7 @@
 // Chapter demos use the same circuits as the editor, tutorials and CPU.
 import { Builder, type Ref, range } from "./blockBuilder";
 import { layoutCircuit } from "./circuitLayout";
-import { addDataMemory, datapathNode } from "./datapathBlocks";
+import { addDataMemory } from "./datapathBlocks";
 import { type Circuit, gateBlueprint, type LogicGate, PRESETS, type Wire } from "./logic";
 import { nodeHeight, nodeWidth } from "./nodeGeometry";
 import { CATALOG } from "./tutorial/levels";
@@ -373,30 +373,8 @@ function flatMultiplexer(): Circuit {
   return { name: "4:1 multiplexer", nodes, wires };
 }
 
-export function routingDemo(kind: "decoder" | "mux" | "memory"): Circuit {
-  if (kind === "decoder") return flatDecoder();
-  if (kind === "mux") return flatMultiplexer();
-  // Use bit 0 of the existing sixteen-byte RAM, tying unused data bits low.
-  const b = new Builder();
-  range(4).forEach((bit) => {
-    b.add(`a${bit}`, "switch", 40, 40 + bit * 160, `A${bit}`);
-  });
-  b.add("data", "switch", 250, 40, "DATA", { value: true });
-  b.add("we", "switch", 250, 220, "WRITE ENABLE");
-  b.add("clock", "clock", 250, 400, "CLOCK");
-  b.add("zero", "ground", 250, 580, "0");
-  b.nodes.push(datapathNode("ram16", "memory", 500, 40));
-  range(4).forEach((bit) => {
-    b.connect(`a${bit}`, "memory", bit);
-  });
-  range(8).forEach((bit) => {
-    b.connect(bit === 0 ? "data" : "zero", "memory", 4 + bit);
-  });
-  b.connect("we", "memory", 12);
-  b.connect("clock", "memory", 13);
-  b.add("read", "lamp", 800, 40, "READ");
-  b.connect(["memory", 0], "read");
-  return layoutCircuit(b.circuit("Sixteen addressed bits"));
+export function routingDemo(kind: "decoder" | "mux"): Circuit {
+  return kind === "decoder" ? flatDecoder() : flatMultiplexer();
 }
 
 export const DEVICE_KINDS = [

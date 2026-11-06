@@ -10,7 +10,7 @@
 | Transistor gates | `gateBlueprint(gate, "transistor")` |
 | Decoder | Tutorial catalog's built-in decoder |
 | Four-way multiplexer | Three instances of the catalog's built-in selector |
-| Addressed memory | Bit 0 of the existing `ram16` block; unused write bits grounded |
+| Memory cell, byte and small RAM | `memoryDemos.ts`: a D latch unfolded to gates; eight `dlatch` parts behind one bus driver; four byte modules and a register on one `bus`, stores gated by the clock |
 | Memory-mapped screen / pixel port | `addDataMemory` and its screen, cursor registers and plotter |
 | Blitter | `addDataMemory` with its existing blitter and sprite ROM |
 | Bank window / VRAM port / big blitter | `addDataMemory` with its existing big-screen card |

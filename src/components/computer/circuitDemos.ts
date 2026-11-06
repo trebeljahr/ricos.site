@@ -9,12 +9,13 @@ export {
   FullAdderTable,
   HalfAdder,
 } from "./Adders";
-export { DecoderDemo, MemoryAddressDemo, MultiplexerDemo } from "./AddressRouting";
+export { DecoderDemo, MultiplexerDemo } from "./AddressRouting";
 export { AluArchitectureComparison, AluBitSlice } from "./AluDemos";
 export { BooleanCircuitDemo } from "./BooleanCircuitDemo";
 export { ButtonInterruptDemo } from "./ButtonInterruptDemo";
 export { DecoderLesson, TransistorGateLessons } from "./ChapterCircuitLessons";
 export { LogicBuilder } from "./LogicBuilder";
+export { MemoryAddressDemo, MemoryByteDemo, MemoryCellDemo } from "./MemoryDemos";
 export { SignedArithmetic } from "./SignedArithmetic";
 export { SignedNumberExplorer } from "./SignedNumbers";
 export { SwitchLogic, TransistorComparison, TransistorSwitches } from "./SwitchLogic";

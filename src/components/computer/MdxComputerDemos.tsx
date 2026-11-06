@@ -266,6 +266,18 @@ export const COMPUTER_MDX_DEMOS = {
     650,
     true,
   ),
+  MemoryCellDemo: chapterDemo(
+    () => loadCircuitDemos().then((module) => module.MemoryCellDemo),
+    "Memory cell circuit",
+    650,
+    true,
+  ),
+  MemoryByteDemo: chapterDemo(
+    () => loadCircuitDemos().then((module) => module.MemoryByteDemo),
+    "Memory byte circuit",
+    650,
+    true,
+  ),
   MemoryAddressDemo: chapterDemo(
     () => loadCircuitDemos().then((module) => module.MemoryAddressDemo),
     "Memory address circuit",

@@ -1,9 +1,12 @@
-import { MemoryAddressDemo } from "@components/computer/AddressRouting";
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
+import { MemoryAddressDemo } from "@components/computer/MemoryDemos";
 
 export default function MemoryAddressPage() {
   return (
-    <DeviceDemoPage slug="memory-address" description="Address, read and write one memory cell.">
+    <DeviceDemoPage
+      slug="memory-address"
+      description="Address four bytes of RAM on one data bus and copy a byte from one to another."
+    >
       <MemoryAddressDemo />
     </DeviceDemoPage>
   );

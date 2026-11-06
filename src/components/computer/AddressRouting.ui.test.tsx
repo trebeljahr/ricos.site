@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, it } from "vitest";
-import { DecoderDemo, MemoryAddressDemo, MultiplexerDemo } from "./AddressRouting";
+import { DecoderDemo, MultiplexerDemo } from "./AddressRouting";
 import { testButton } from "./testButton";
 
 afterEach(() => {
@@ -45,13 +45,4 @@ it("routes the addressed data input to OUT through plain gates, no boxes", () =>
   expect(lit("OUT")).toBe(false);
   fireEvent.click(testButton("OFF", screen.getByLabelText("A1 — SWITCH part")));
   expect(lit("OUT")).toBe(true);
-});
-
-it("stores RAM on a clock pulse and keeps saved lab circuits untouched", () => {
-  localStorage.setItem("ricos-computer-circuits-v1", "existing saved lab");
-  render(<MemoryAddressDemo />);
-  fireEvent.click(testButton("OFF", screen.getByLabelText("WRITE ENABLE — SWITCH part")));
-  fireEvent.click(screen.getByRole("button", { name: "Clock pulse" }));
-  expect(lit("READ")).toBe(true);
-  expect(localStorage.getItem("ricos-computer-circuits-v1")).toBe("existing saved lab");
 });

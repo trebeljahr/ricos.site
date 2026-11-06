@@ -322,23 +322,6 @@ describe("chapter circuits", () => {
       }
     }
   });
-
-  it("writes only the selected RAM cell, retains it on reads and supports clearing a bit", () => {
-    const circuit = routingDemo("memory");
-    let snapshot = initialSnapshot();
-    const tick = (address: number, data: boolean, we: boolean) => {
-      const inputs = { ...bits("a", address, 4), data, we };
-      snapshot = step(circuit, snapshot, false, {}, inputs);
-      snapshot = step(circuit, snapshot, true, {}, inputs);
-      snapshot = step(circuit, snapshot, false, {}, inputs);
-      return snapshot.values.read;
-    };
-    for (const address of [0, 6, 15]) tick(address, true, true);
-    for (let address = 0; address < 16; address++)
-      expect(tick(address, false, false)).toBe([0, 6, 15].includes(address));
-    expect(tick(6, false, true)).toBe(false);
-    expect(tick(15, false, false)).toBe(true);
-  });
 });
 
 describe("device demos on the CPU memory bus", () => {

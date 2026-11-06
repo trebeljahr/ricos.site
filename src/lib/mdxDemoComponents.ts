@@ -55,6 +55,8 @@ export const MDX_DEMO_COMPONENTS = [
   "DecoderDemo",
   "DecoderLesson",
   "MultiplexerDemo",
+  "MemoryCellDemo",
+  "MemoryByteDemo",
   "MemoryAddressDemo",
   "SignedNumberExplorer",
   "SignedArithmetic",

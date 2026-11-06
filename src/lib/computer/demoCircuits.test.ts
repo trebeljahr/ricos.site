@@ -191,6 +191,14 @@ describe("chapter circuits", () => {
         }
   });
 
+  it("opens the 4-bit ALU on a sum that fits either reading, so no flag is lit", () => {
+    const snapshot = read(aluCircuit(), { op0: false, op1: false });
+    expect(toNumber(snapshot.outputs.result)).toBe(7);
+    for (const flag of ["zero", "negative", "carry", "overflow"]) {
+      expect(snapshot.values[flag]).toBe(false);
+    }
+  });
+
   it("gives each input bit its own wire and track to its own full adder", () => {
     for (const [kind, width] of [
       ["nibble", 4],

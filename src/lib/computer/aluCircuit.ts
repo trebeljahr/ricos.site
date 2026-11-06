@@ -125,7 +125,7 @@ function pinY(node: Node, index: number, kind: "input" | "output") {
  * time, RESULT SELECT keeps the one the op code names, and FLAGS reads the
  * result. Every box opens to gates.
  */
-export function aluCircuit(a = 6, b = 3): Circuit {
+export function aluCircuit(a = 5, b = 2): Circuit {
   const module = (id: string, circuit: Circuit, label: string): Node => ({
     id,
     type: "module",

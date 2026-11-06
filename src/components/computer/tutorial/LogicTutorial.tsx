@@ -7,9 +7,10 @@ import {
   type Grade,
   gradeLevel,
   gradePassed,
+  shownGrade,
   wiringKey,
 } from "../../../lib/computer/tutorial/grade";
-import { requestedHints } from "../../../lib/computer/tutorial/hints";
+import { hintSteps, PARTS_HINT } from "../../../lib/computer/tutorial/hints";
 import { compactStart, levelStart } from "../../../lib/computer/tutorial/kit";
 import { CATALOG, LEARNING_LEVELS, LEVELS, levelById } from "../../../lib/computer/tutorial/levels";
 import { levelRows } from "../../../lib/computer/tutorial/paletteRows";
@@ -22,8 +23,8 @@ import {
   progressStore,
   saveDraft,
 } from "../../../lib/computer/tutorial/progress";
-import type { CustomGrade, Level } from "../../../lib/computer/tutorial/types";
-import { wiredSolution } from "../../../lib/computer/tutorial/wiredSolution";
+import type { BuilderFeatures, CustomGrade, Level } from "../../../lib/computer/tutorial/types";
+import { placedParts, wiredSolution } from "../../../lib/computer/tutorial/wiredSolution";
 import { LogicBuilder, type LogicBuilderHandle } from "../LogicBuilder";
 import { type Callout, HintLayer } from "./HintLayer";
 import { SpecView } from "./SpecView";
@@ -45,6 +46,8 @@ export type LogicTutorialProps = {
   onLevelChange?: (id: string) => void;
   /** Extra content at the end of the level panel, e.g. a program runner for the CPU. */
   extra?: (context: ExtraContext) => ReactNode;
+  /** The builder's interface for every level here. A level's own setting wins. */
+  features?: BuilderFeatures;
 };
 
 export type ExtraContext = {
@@ -148,6 +151,7 @@ export function LogicTutorial({
   onLevelChange,
   extra,
   embedded,
+  features: tutorialFeatures,
 }: LogicTutorialProps) {
   const hintId = useId();
   const ladder = useMemo(
@@ -182,7 +186,7 @@ export function LogicTutorial({
   const circuitRef = useRef(initial);
   const handle = useRef<LogicBuilderHandle | null>(null);
   const [hints, setHints] = useState(0);
-  const [confirmingWire, setConfirmingWire] = useState(false);
+  const [confirming, setConfirming] = useState<"wire" | "parts" | null>(null);
   const saveTimer = useRef<number | undefined>(undefined);
   const pendingDraft = useRef<{ level: Level; circuit: Circuit } | null>(null);
   const flushDraft = useCallback(() => {
@@ -207,7 +211,7 @@ export function LogicTutorial({
     circuitRef.current = initial;
     setCircuit(initial);
     setHints(0);
-    setConfirmingWire(false);
+    setConfirming(null);
   }, [initial]);
   useEffect(() => {
     const onVisibilityChange = () => {
@@ -226,7 +230,7 @@ export function LogicTutorial({
   const assisted = progress.assisted.includes(level.id);
   const open = !sequential || isOpen(ladder, index, progress);
   const { exact: live, shown } = useLiveGrade(circuit, level, start.locked, allowed, open);
-  const grade = shown?.kind === "structure" ? undefined : shown;
+  const grade = useMemo(() => shownGrade(shown, circuit, level), [shown, circuit, level]);
   const session = useMemo(
     () => ({ level: level.id, opened, initial }),
     [level.id, opened, initial],
@@ -280,12 +284,20 @@ export function LogicTutorial({
   };
   /** The reader's choice after the last hint: a real solution on the board, not a solve of theirs. */
   const wireForReader = () => {
-    setConfirmingWire(false);
+    setConfirming(null);
     const solution = wiredSolution(level, start);
     if (!solution) return;
     flushDraft();
     markAssisted(level.id);
     handle.current?.load(solution, "Undo brings your wiring back.");
+  };
+  const parts = useMemo(() => placedParts(level, start), [level, start]);
+  /** The hint before the last: the solution's parts on the board, for the reader to wire. */
+  const placeParts = () => {
+    setConfirming(null);
+    if (!parts) return;
+    handle.current?.load(parts, "Undo brings your board back.");
+    setHints((value) => value + 1);
   };
   const reset = () => {
     resetSuccess(start.circuit);
@@ -297,11 +309,17 @@ export function LogicTutorial({
     handle.current?.load(start.circuit);
   };
 
-  // A note on "your circuit" would praise the size of a board the builder wired.
-  const shownHints = (hints ? requestedHints(level, circuit, shown, hints) : []).filter(
-    (hint) => !assisted || hint.title !== "Your circuit",
-  );
-  const hintLimit = (level.hints?.length ?? 0) + 1;
+  const withParts = Boolean(parts) && !assisted;
+  const steps = hintSteps(level, withParts);
+  const shownHints = steps.slice(0, hints);
+  const hintLimit = steps.length;
+  const partsNext = steps[hints] === PARTS_HINT;
+  const askHint = () => {
+    if (!partsNext) setHints((value) => value + 1);
+    else if (circuit.wires.length || circuit.nodes.length > start.circuit.nodes.length)
+      setConfirming("parts");
+    else placeParts();
+  };
   const latestHint = shownHints[shownHints.length - 1];
   const callout: Callout | undefined = latestHint?.anchor
     ? { text: latestHint.text, anchor: latestHint.anchor, tone: "tip" }
@@ -309,7 +327,11 @@ export function LogicTutorial({
   const customHighlight = shown?.kind === "custom" ? shown.result.highlight : undefined;
   const customFailure = shown?.kind === "custom" && !shown.pass ? shown.result : undefined;
 
-  const titled = level.builder?.title !== false;
+  const features = useMemo(
+    () => (tutorialFeatures ? { ...tutorialFeatures, ...level.builder } : level.builder),
+    [tutorialFeatures, level.builder],
+  );
+  const titled = features?.title !== false;
   const panel = (
     <div className={styles.panel}>
       {!titled && <h2 className="sr-only">{level.title}</h2>}
@@ -397,18 +419,24 @@ export function LogicTutorial({
               type="button"
               disabled={hints >= hintLimit}
               data-tutorial-hint=""
-              title="Hints reveal one clue at a time and leave your wiring unchanged."
+              title={
+                partsNext
+                  ? "Puts the parts of a working solution on the board, without wires."
+                  : "Hints reveal one clue at a time and leave your wiring unchanged."
+              }
               aria-controls={hintId}
               aria-expanded={hints > 0}
-              onClick={() => setHints((value) => value + 1)}
+              onClick={askHint}
             >
               {hints >= hintLimit
                 ? "All hints shown"
-                : hints === hintLimit - 1
-                  ? "Last hint"
-                  : hints
-                    ? "Another hint"
-                    : "Hint"}
+                : partsNext
+                  ? "Place the parts"
+                  : hints === hintLimit - 1
+                    ? "Last hint"
+                    : hints
+                      ? "Another hint"
+                      : "Hint"}
             </button>
             {hints > 0 && (
               <button type="button" onClick={() => setHints(0)}>
@@ -443,13 +471,17 @@ export function LogicTutorial({
               <button
                 type="button"
                 className={styles.wireButton}
-                onClick={() => setConfirmingWire(true)}
+                onClick={() => setConfirming("wire")}
               >
                 Wire it for me
               </button>
             )}
-            {confirmingWire && (
-              <WireItConfirm onConfirm={wireForReader} onCancel={() => setConfirmingWire(false)} />
+            {confirming && (
+              <WireItConfirm
+                kind={confirming}
+                onConfirm={confirming === "wire" ? wireForReader : placeParts}
+                onCancel={() => setConfirming(null)}
+              />
             )}
           </div>
 
@@ -490,7 +522,7 @@ export function LogicTutorial({
       key={`${level.id}:${opened}`}
       embedded={embedded}
       storageKey={null}
-      features={level.builder}
+      features={features}
       challenge={{
         circuit: initial,
         enforce: start.enforce,

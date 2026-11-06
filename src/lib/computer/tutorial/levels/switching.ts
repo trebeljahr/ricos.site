@@ -148,6 +148,8 @@ export const decoderLevel: Level = {
   title: "Decoder",
   section: SECTION,
   goal: "Only the Y output numbered by A1 A0 is 1.",
+  intro:
+    "The truth table lists every address on A1 A0 and the one Y output that must light. Wire the circuit so that every row matches.",
   spec: {
     kind: "truth",
     inputs: busPorts("a", "A", 2),
@@ -156,6 +158,8 @@ export const decoderLevel: Level = {
       const address = (a1 ? 2 : 0) + (a0 ? 1 : 0);
       return [0, 1, 2, 3].map((line) => line === address);
     },
+    // Read as a binary number, A1 A0 counts 0 to 3 down the table.
+    columns: ["a1", "a0"],
   },
   palette: ["nand", "part:not", "part:and", "part:or", "part:xor", "part:switch"],
   makes: { part: "decoder", label: "DECODER", builtIn: { reference: true } },

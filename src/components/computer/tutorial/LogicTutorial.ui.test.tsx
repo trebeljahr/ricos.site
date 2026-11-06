@@ -8,6 +8,7 @@ import {
   progressStore,
   setOwnPartsMode,
 } from "../../../lib/computer/tutorial/progress";
+import { SINGLE_TASK_BUILDER } from "../../../lib/computer/tutorial/types";
 import { LogicBuilder } from "../LogicBuilder";
 import { LogicTutorial } from "./LogicTutorial";
 
@@ -171,7 +172,83 @@ describe("independent tutorials", () => {
     expect(screen.getByText("My parts")).toBeTruthy();
   });
 
-  it("starts with one goal line and the table, no Check, and hints never edit the board", () => {
+  it("slims every level when the page asks for a single-task builder", () => {
+    render(<LogicTutorial levels={["decoder"]} features={SINGLE_TASK_BUILDER} />);
+    expect(screen.queryByRole("region", { name: "Circuit toolbar" })).toBeNull();
+    expect(screen.queryByLabelText("Search parts")).toBeNull();
+    expect(screen.queryByText("My parts")).toBeNull();
+    expect(screen.getByRole("heading", { name: "Decoder" }).className).toBe("sr-only");
+    expect(screen.getByText(/truth table lists every address/)).toBeTruthy();
+  });
+
+  it("grades the decoder's table live as each output gets its wire, high address bit first", () => {
+    render(<LogicTutorial levels={["decoder"]} features={SINGLE_TASK_BUILDER} />);
+    const table = screen.getByRole("table", { name: "Truth table" });
+    const heads = within(table)
+      .getAllByRole("columnheader")
+      .map((cell) => cell.textContent);
+    expect(heads.slice(0, 2)).toEqual(["A1", "A0"]);
+    const firstCells = () =>
+      within(table)
+        .getAllByRole("row")
+        .slice(1)
+        .map((row) =>
+          within(row)
+            .getAllByRole("cell")
+            .slice(0, 6)
+            .map((cell) => cell.textContent)
+            .join(""),
+        );
+    // A1 A0 counts 0 to 3, and the 1 walks down the diagonal.
+    expect(firstCells()).toEqual(["001000", "010100", "100010", "110001"]);
+    expect(within(table).queryByRole("columnheader", { name: "Yours" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Wire from A0 Output" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Connect to Y1/ }));
+    expect(within(table).getByRole("columnheader", { name: "Yours" })).toBeTruthy();
+    const yours = within(table)
+      .getAllByRole("row")
+      .slice(1)
+      .map((row) => within(row).getAllByRole("cell").at(-1)?.textContent?.trim());
+    // A0 alone is right for Y1 on the rows with A1 = 0 and wrong on the others.
+    expect(yours).toEqual(["· 0 · ·", "· 1 · ·", "· 0 · ·", "· 1 · · ✗"]);
+  });
+
+  it("asks before the parts hint replaces a board with the reader's wiring", () => {
+    HTMLDialogElement.prototype.showModal = vi.fn(function (this: HTMLDialogElement) {
+      this.open = true;
+    });
+    HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+      this.open = false;
+      this.dispatchEvent(new Event("close"));
+    });
+    render(<LogicTutorial levels={["decoder"]} />);
+    const [b] = builders();
+    fireEvent.click(b.getByRole("button", { name: "Wire from A0 Output" }));
+    fireEvent.click(b.getByRole("button", { name: /^Connect to Y1/ }));
+    fireEvent.click(b.getByRole("button", { name: "Hint" }));
+    fireEvent.click(b.getByRole("button", { name: "Another hint" }));
+    fireEvent.click(b.getByRole("button", { name: "Another hint" }));
+    const before = boardParts(b).length;
+    fireEvent.click(b.getByRole("button", { name: "Place the parts" }));
+    const dialog = screen.getByRole("dialog", { name: "Replace your board?" });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Keep my board" }));
+    expect(boardParts(b)).toHaveLength(before);
+    expect(b.queryByText("Parts:")).toBeNull();
+
+    fireEvent.click(b.getByRole("button", { name: "Place the parts" }));
+    fireEvent.click(
+      within(screen.getByRole("dialog", { name: "Replace your board?" })).getByRole("button", {
+        name: "Place the parts",
+      }),
+    );
+    expect(b.getByText("Parts:")).toBeTruthy();
+    expect(boardParts(b)).toHaveLength(before + 3);
+    expect(b.queryAllByRole("button", { name: /^Select wire from / })).toHaveLength(0);
+    expect(b.getByRole("button", { name: "Last hint" })).toBeTruthy();
+  });
+
+  it("starts with one goal line and the table, no Check, and text hints never edit the board", () => {
     render(<LogicTutorial levels={["not", "and"]} />);
     const [b] = builders();
     expect(b.getByText(/OUT is the opposite of A/)).toBeTruthy();
@@ -187,8 +264,9 @@ describe("independent tutorials", () => {
     fireEvent.click(hint);
     expect(hint.getAttribute("aria-expanded")).toBe("true");
     expect(b.getByRole("list", { name: "Hints" }).textContent).toMatch(/Core idea/);
-    fireEvent.click(b.getByRole("button", { name: /Another hint|Last hint/ }));
     expect(boardParts(b)).toHaveLength(before);
+    // Only the step that says so changes the board.
+    expect(b.getByRole("button", { name: "Place the parts" })).toBeTruthy();
     fireEvent.click(b.getByRole("button", { name: "Dismiss hints" }));
     expect(b.queryByRole("list", { name: "Hints" })).toBeNull();
   });
@@ -314,25 +392,25 @@ describe("independent tutorials", () => {
     render(<LogicTutorial levels={["universal-nand-not"]} />);
     expect(boardParts(builders()[0])).toHaveLength(2);
   });
-  it.each([
-    "pagehide",
-    "visibilitychange",
-  ])("saves the last edit on %s before the debounce fires", (event) => {
-    vi.useFakeTimers();
-    const { unmount } = render(<LogicTutorial levels={["not"]} />);
-    fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
-    if (event === "pagehide") fireEvent(window, new Event(event));
-    else {
-      const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
-      fireEvent(document, new Event(event));
-      visibility.mockRestore();
-    }
-    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
-    unmount();
-    progressStore.reset();
-    render(<LogicTutorial levels={["not"]} />);
-    expect(boardParts(builders()[0])).toHaveLength(3);
-  });
+  it.each(["pagehide", "visibilitychange"])(
+    "saves the last edit on %s before the debounce fires",
+    (event) => {
+      vi.useFakeTimers();
+      const { unmount } = render(<LogicTutorial levels={["not"]} />);
+      fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
+      if (event === "pagehide") fireEvent(window, new Event(event));
+      else {
+        const visibility = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+        fireEvent(document, new Event(event));
+        visibility.mockRestore();
+      }
+      expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).drafts.not.nodes).toHaveLength(3);
+      unmount();
+      progressStore.reset();
+      render(<LogicTutorial levels={["not"]} />);
+      expect(boardParts(builders()[0])).toHaveLength(3);
+    },
+  );
   it("keeps the passing solution when a later attempt is incomplete", () => {
     const { unmount } = render(<LogicTutorial levels={["not"]} />);
     buildNot(builders()[0]);

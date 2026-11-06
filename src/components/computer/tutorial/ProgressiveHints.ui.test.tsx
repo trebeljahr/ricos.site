@@ -10,12 +10,14 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-it("reveals an idea, count, a note on the circuit and the last hint only on request, without changing the circuit", () => {
+it("reveals an idea and a count on request, then places the parts, then gives the last hint", () => {
   render(<LogicTutorial levels={["universal-nand-and"]} />);
   const board = screen.getByRole("application", { name: "Circuit canvas" });
-  const initialParts = within(board)
-    .getAllByRole("group")
-    .map((part) => part.getAttribute("data-node-id"));
+  const parts = () =>
+    within(board)
+      .getAllByRole("group")
+      .map((part) => part.getAttribute("data-node-id"));
+  const initialParts = parts();
   const saved = JSON.stringify(progressStore.get());
   expect(screen.queryByRole("list", { name: "Hints" })).toBeNull();
 
@@ -25,22 +27,23 @@ it("reveals an idea, count, a note on the circuit and the last hint only on requ
   expect(clues().queryByText("Gate count:")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
   expect(clues().getByText(/2 NAND gates/)).toBeTruthy();
-  expect(clues().queryByText("Your circuit:")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
-  expect(clues().getByText("Your circuit:")).toBeTruthy();
-  expect(clues().queryByText(/G2 = NAND/)).toBeNull();
+  expect(parts()).toEqual(initialParts);
+  expect(JSON.stringify(progressStore.get())).toBe(saved);
+  expect(screen.queryByText("Your circuit:")).toBeNull();
+
+  // An untouched board takes the parts without asking.
+  fireEvent.click(screen.getByRole("button", { name: "Place the parts" }));
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(clues().getByText("Parts:")).toBeTruthy();
+  expect(parts().length).toBe(initialParts.length + 2);
+  expect(within(board).queryAllByRole("button", { name: /^Select wire from/ })).toHaveLength(0);
+
   fireEvent.click(screen.getByRole("button", { name: "Last hint" }));
   expect(clues().getAllByRole("listitem").at(-1)?.textContent).toMatch(/^Last hint:/);
   expect(
     (screen.getByRole("button", { name: "All hints shown" }) as HTMLButtonElement).disabled,
   ).toBe(true);
-  expect(
-    within(board)
-      .getAllByRole("group")
-      .map((part) => part.getAttribute("data-node-id")),
-  ).toEqual(initialParts);
-  expect(within(board).queryAllByRole("button", { name: /^Select wire from/ })).toHaveLength(0);
-  expect(JSON.stringify(progressStore.get())).toBe(saved);
+  expect(screen.queryByText("Your circuit:")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Dismiss hints" }));
   expect(screen.queryByRole("list", { name: "Hints" })).toBeNull();
   expect(screen.getByRole("button", { name: "Hint" })).toBeTruthy();

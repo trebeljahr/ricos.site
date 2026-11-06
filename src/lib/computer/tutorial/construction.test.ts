@@ -1,13 +1,14 @@
 import { describe, expect, it } from "vitest";
 import type { Circuit, Node } from "../logic";
 import { verifiedCircuitIdentity } from "../recognition";
-import { gradeLevel, gradePassed, gradeTruth } from "./grade";
-import { contextualHint, requestedHints } from "./hints";
+import { gradeLevel, gradePassed, shownGrade } from "./grade";
+import { hintSteps, PARTS_HINT } from "./hints";
 import { CircuitKit, levelStart } from "./kit";
 import { CATALOG, LEARNING_LEVELS, LEVELS, levelById } from "./levels";
 import { COUNTER_LEVELS } from "./levels/counters";
 import { INPUT_LEVELS } from "./levels/inputs";
 import { EMPTY_PROGRESS } from "./progress";
+import { placedParts } from "./wiredSolution";
 
 const grade = (id: string, circuit: Circuit) => {
   const level = levelById(id)!;
@@ -139,67 +140,86 @@ describe("independent circuit construction", () => {
   });
 });
 
-describe("explicit contextual hints", () => {
-  it("reveals nothing at depth zero, even after failure", () => {
-    const level = levelById("and")!;
-    const start = levelStart(level).circuit;
-    expect(requestedHints(level, start, grade("and", start), 0)).toEqual([]);
-    expect(contextualHint(level, start, grade("and", start)).text).toMatch(/matches OUT/);
-  });
-  it("points at a correct unconnected signal instead of asking a generic question", () => {
+describe("hint steps", () => {
+  it("puts the parts step second to last, only when asked for", () => {
     const level = levelById("universal-nand-and")!;
-    const reference = level.reference!();
-    const outputWire = reference.wires.find((wire) => wire.to === "out")!;
-    const circuit = { ...reference, wires: reference.wires.filter((wire) => wire !== outputWire) };
-    const hint = contextualHint(level, circuit, grade(level.id, circuit));
-    expect(hint.anchor).toEqual({ kind: "output", node: outputWire.from, index: 0 });
-    expect(hint.text).toContain("already matches OUT");
+    const hints = level.hints!;
+    expect(hintSteps(level, false)).toEqual(hints);
+    const steps = hintSteps(level, true);
+    expect(steps).toHaveLength(hints.length + 1);
+    expect(steps.at(-2)).toBe(PARTS_HINT);
+    expect(steps.at(-1)).toBe(hints.at(-1));
   });
-  it("distinguishes unfinished logic from a final wire that has not snapped to OUT", () => {
-    const level = levelById("universal-nand-or")!;
-    const reference = level.reference!();
-    const outputWire = reference.wires.find((wire) => wire.to === "out")!;
+});
+
+describe("placed parts", () => {
+  it.each(LEVELS.filter((level) => level.reference).map((level) => [level.id, level] as const))(
+    "%s gets the solution's parts and only the locked wires",
+    (_, level) => {
+      const start = levelStart(level);
+      const parts = placedParts(level, start);
+      if (!parts) return;
+      const reference = level.reference!();
+      expect(parts.nodes.map((node) => node.id).sort()).toEqual(
+        reference.nodes
+          .filter((node) => !node.splice)
+          .map((node) => node.id)
+          .sort(),
+      );
+      expect(parts.wires).toEqual(start.enforce({ ...start.circuit, wires: [] }).wires);
+      expect(parts.nodes.length).toBeGreaterThan(start.circuit.nodes.length);
+    },
+  );
+
+  it("places the decoder's NOT gate and two switch parts without a single wire", () => {
+    const parts = placedParts(levelById("decoder")!)!;
+    expect(parts.nodes.filter((node) => node.type === "module")).toHaveLength(2);
+    expect(parts.nodes.filter((node) => node.type === "not")).toHaveLength(1);
+    expect(parts.wires).toEqual([]);
+  });
+});
+
+describe("the truth table while outputs are unwired", () => {
+  const level = levelById("decoder")!;
+  const reference = level.reference!();
+
+  it("shows nothing on a board without a wire to any output", () => {
+    const start = levelStart(level).circuit;
+    expect(shownGrade(grade("decoder", start), start, level)).toBeUndefined();
+  });
+
+  it("grades the wired outputs live and leaves the others open", () => {
     const circuit = {
       ...reference,
-      nodes: reference.nodes.filter((node) => node.id !== outputWire.from),
-      wires: reference.wires.filter(
-        (wire) => wire.to !== outputWire.from && wire.from !== outputWire.from,
-      ),
+      wires: reference.wires.filter((wire) => !["y2", "y3"].includes(wire.to)),
     };
-    const hint = contextualHint(level, circuit, grade(level.id, circuit));
-    expect(hint.text).toBe("Nothing on the board matches OUT yet.");
-    expect(hint.anchor).toEqual({ kind: "input", node: "out", index: 0 });
+    const result = shownGrade(grade("decoder", circuit), circuit, level);
+    if (result?.kind !== "truth") throw new Error("truth");
+    expect(result.pass).toBe(false);
+    expect(result.unwired).toEqual([false, false, true, true]);
+    expect(result.rows.every((row) => row.pending && !row.pass)).toBe(true);
+    expect(result.first).toBe(-1);
   });
-  it("recognizes an inverted output without prescribing a wire", () => {
-    const level = levelById("and")!;
-    if (level.spec.kind !== "truth") throw new Error("truth");
-    const k = new CircuitKit("opposite", level.spec.inputs, level.spec.outputs);
-    const circuit = k.out("out", k.gate("nand", ["a", "b"])).build();
-    expect(contextualHint(level, circuit, gradeTruth(circuit, level.spec)).text).toMatch(
-      /opposite/,
-    );
-  });
-  it("names the first failed sequence tick", () => {
-    const level = COUNTER_LEVELS[0];
-    if (level.spec.kind !== "sequence") throw new Error("sequence");
-    const result = {
-      kind: "sequence" as const,
-      pass: false,
-      first: 0,
-      ticks: [
-        {
-          index: 0,
-          note: "Held button repeats.",
-          inputs: {},
-          clock: false,
-          expected: { q0: false },
-          actual: { q0: true },
-          pass: false,
-        },
-      ],
+
+  it("fails a row when a wired output is wrong", () => {
+    const y1 = reference.wires.find((wire) => wire.to === "y1")!;
+    const circuit = {
+      ...reference,
+      wires: reference.wires
+        .filter((wire) => wire.to !== "y3")
+        .map((wire) => (wire.to === "y0" ? { ...y1, id: wire.id, to: "y0" } : wire)),
     };
-    expect(contextualHint(level, levelStart(level).circuit, result).text).toMatch(
-      /^First mismatch: Held button repeats\./,
-    );
+    const result = shownGrade(grade("decoder", circuit), circuit, level);
+    if (result?.kind !== "truth") throw new Error("truth");
+    expect(result.rows.some((row) => !row.pending && !row.pass)).toBe(true);
+    expect(result.first).toBeGreaterThanOrEqual(0);
+  });
+
+  it("keeps hiding the table for other problems", () => {
+    const circuit = {
+      ...reference,
+      nodes: [...reference.nodes, { id: "extra", type: "clock" as const, x: 0, y: 0 }],
+    };
+    expect(shownGrade(grade("decoder", circuit), circuit, level)).toBeUndefined();
   });
 });

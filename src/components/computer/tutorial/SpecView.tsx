@@ -27,13 +27,22 @@ export function TruthTable({
   const [all, setAll] = useState(false);
   const rows = truthRows(spec);
   const results = grade?.kind === "truth" ? grade.rows : undefined;
+  const unwired = grade?.kind === "truth" ? grade.unwired : undefined;
   const first = grade?.kind === "truth" ? grade.first : -1;
+  const columns = spec.columns
+    ? spec.columns.map((id) => spec.inputs.findIndex((port) => port.id === id))
+    : spec.inputs.map((_, column) => column);
+  // Rows count up in binary as the columns read, left to right.
+  const ordered = rows.map((_, index) => index);
+  if (spec.columns) {
+    const value = (index: number) =>
+      columns.reduce((sum, column) => sum * 2 + (rows[index][column] ? 1 : 0), 0);
+    ordered.sort((a, b) => value(a) - value(b));
+  }
   const shown =
-    rows.length <= SHORT_TABLE || all
-      ? rows.map((_, index) => index)
-      : first >= 0
-        ? [first]
-        : rows.slice(0, 4).map((_, index) => index);
+    rows.length <= SHORT_TABLE || all ? ordered : first >= 0 ? [first] : ordered.slice(0, 4);
+  const yours = (actual: readonly boolean[]) =>
+    actual.map((value, column) => (unwired?.[column] ? "·" : bit(value))).join(" ");
   return (
     <div className={styles.spec}>
       <div className={styles.tableScroll}>
@@ -44,11 +53,14 @@ export function TruthTable({
         >
           <thead>
             <tr>
-              {spec.inputs.map((port) => (
-                <th key={port.id} scope="col">
-                  {port.short ?? port.label}
-                </th>
-              ))}
+              {columns.map((column) => {
+                const port = spec.inputs[column];
+                return (
+                  <th key={port.id} scope="col">
+                    {port.short ?? port.label}
+                  </th>
+                );
+              })}
               {spec.outputs.map((port) => (
                 <th key={port.id} scope="col" className={styles.outputHead}>
                   {port.short ?? port.label}
@@ -69,19 +81,19 @@ export function TruthTable({
               const result = results?.[index];
               const selected =
                 current !== undefined && inputs.every((value, column) => value === current[column]);
-              const description = `${spec.inputs.map((port, column) => `${port.short ?? port.label} ${bit(inputs[column])}`).join(", ")} gives ${spec.outputs.map((port, column) => `${port.short ?? port.label} ${bit(expected[column])}`).join(", ")}. Set the inputs to this row.`;
+              const description = `${columns.map((column) => `${spec.inputs[column].short ?? spec.inputs[column].label} ${bit(inputs[column])}`).join(", ")} gives ${spec.outputs.map((port, column) => `${port.short ?? port.label} ${bit(expected[column])}`).join(", ")}. Set the inputs to this row.`;
               return (
                 <tr
                   key={index}
                   data-current={selected || undefined}
                   className={clsx(
-                    result && (result.pass ? styles.rowPass : styles.rowFail),
+                    result && !result.pending && (result.pass ? styles.rowPass : styles.rowFail),
                     index === first && styles.rowFirst,
                   )}
                 >
-                  {inputs.map((value, column) => (
+                  {columns.map((column, place) => (
                     <td key={spec.inputs[column].id}>
-                      {column === 0 && onPick ? (
+                      {place === 0 && onPick ? (
                         <button
                           type="button"
                           className={styles.rowButton}
@@ -89,10 +101,10 @@ export function TruthTable({
                           aria-current={selected ? "true" : undefined}
                           onClick={() => onPick(inputs)}
                         >
-                          {bit(value)}
+                          {bit(inputs[column])}
                         </button>
                       ) : (
-                        bit(value)
+                        bit(inputs[column])
                       )}
                     </td>
                   ))}
@@ -104,10 +116,12 @@ export function TruthTable({
                   {extra && <td className={styles.outputCell}>{extra.cell(inputs)}</td>}
                   {result && (
                     <td className={styles.yours}>
-                      {result.unstable ? "≈" : result.actual.map(bit).join(" ")}{" "}
-                      <span title={result.pass ? "passes" : "fails"}>
-                        {result.pass ? "✓" : "✗"}
-                      </span>
+                      {result.unstable ? "≈" : yours(result.actual)}{" "}
+                      {!result.pending && (
+                        <span title={result.pass ? "passes" : "fails"}>
+                          {result.pass ? "✓" : "✗"}
+                        </span>
+                      )}
                     </td>
                   )}
                 </tr>

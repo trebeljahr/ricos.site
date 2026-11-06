@@ -31,6 +31,11 @@ export type TruthSpec = {
   fn: (inputs: boolean[]) => boolean[];
   /** The rows to check when every row would be too many. Default: every row. */
   rows?: boolean[][];
+  /**
+   * Input ids in the order the table shows them, e.g. the high address bit
+   * first; rows then count up in that order. Default: port order.
+   */
+  columns?: readonly string[];
 };
 
 /** One tick of a sequence test: set some inputs, settle, read the lamps. */
@@ -133,6 +138,19 @@ export type BuilderFeatures = {
   /** The "My parts" choice between built-in parts and the reader's own. */
   ownParts?: boolean;
 };
+
+/**
+ * A builder for one guided task on its own page or in a chapter: the heading
+ * around it already names the task, and File, View, part search and My parts
+ * are noise next to a short palette.
+ */
+export const SINGLE_TASK_BUILDER = {
+  title: false,
+  fileMenu: false,
+  viewMenu: false,
+  partSearch: false,
+  ownParts: false,
+} as const satisfies BuilderFeatures;
 
 export type Level = {
   id: string;

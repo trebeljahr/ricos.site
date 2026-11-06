@@ -1,7 +1,7 @@
 import { layoutCircuit } from "../../circuitLayout";
 import { evalGate } from "../../gateLogic";
 import { GATE_NAMES, gateBlueprint, type LogicGate } from "../../logic";
-import type { Level } from "../types";
+import { type Level, SINGLE_TASK_BUILDER } from "../types";
 import { gateConstructionHints } from "./gateHints";
 import { A, B, OUT, once } from "./shared";
 
@@ -12,15 +12,6 @@ export const universalTargets = (family: UniversalFamily) =>
 
 export const universalGateId = (family: UniversalFamily, target: LogicGate) =>
   `universal-${family}-${target}`;
-
-/** One gate to place and a page heading that already names the task: the rest of the interface is noise. */
-const SINGLE_TASK_BUILDER = {
-  title: false,
-  fileMenu: false,
-  viewMenu: false,
-  partSearch: false,
-  ownParts: false,
-} as const;
 
 /** Isolated practice never awards replacement parts or changes the main construction ladder. */
 export const UNIVERSAL_GATE_LEVELS: Level[] = UNIVERSAL_FAMILIES.flatMap((family) =>

@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { Circuit, GateType, Node, Wire } from "../logic";
 import { feedback, simplificationNote } from "./analysis";
 import { gradeLevel, gradePassed } from "./grade";
-import { contextualHint } from "./hints";
 import { levelStart } from "./kit";
 import { CATALOG, LEVELS } from "./levels";
 
@@ -75,7 +74,6 @@ describe.each(LEVELS.filter((level) => level.sizeGoal))("$id simplification", (l
     expect(note.text).toContain(`Aim for ${level.sizeGoal!.minimum} ${level.sizeGoal!.unit}`);
     const review = feedback(larger, level, locked, { reference });
     expect(review.notes).toContainEqual(note);
-    expect(contextualHint(level, larger, result).text).toBe(note.text);
     expect(review.notes.some((item) => item.text.includes("NAND gate"))).toBe(
       level.palette[0] === "nand",
     );

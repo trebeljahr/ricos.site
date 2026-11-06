@@ -21,7 +21,7 @@ afterEach(cleanup);
 const allHints = () => {
   fireEvent.click(screen.getByRole("button", { name: "Hint" }));
   while (!screen.queryByRole("button", { name: "All hints shown" }))
-    fireEvent.click(screen.getByRole("button", { name: /Another hint|Last hint/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Another hint|Place the parts|Last hint/ }));
 };
 const boardParts = () =>
   within(screen.getByRole("application", { name: "Circuit canvas" })).queryAllByRole("group", {
@@ -34,7 +34,7 @@ it("offers wiring only after the last hint, and asks before replacing the board"
   fireEvent.click(screen.getByRole("button", { name: "Hint" }));
   expect(screen.queryByRole("button", { name: "Wire it for me" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
-  fireEvent.click(screen.getByRole("button", { name: "Another hint" }));
+  fireEvent.click(screen.getByRole("button", { name: "Place the parts" }));
   expect(screen.queryByRole("button", { name: "Wire it for me" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Last hint" }));
   expect(screen.getByText("Last hint:")).toBeTruthy();

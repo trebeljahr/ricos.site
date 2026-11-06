@@ -42,6 +42,8 @@ export type RowResult = {
   pass: boolean;
   /** The circuit kept changing instead of settling for this row. */
   unstable: boolean;
+  /** Every wired output matches, but an output has no wire yet. */
+  pending?: boolean;
 };
 
 export type TickResult = {
@@ -56,7 +58,14 @@ export type TickResult = {
 
 export type Grade =
   | { kind: "structure"; problems: Problem[] }
-  | { kind: "truth"; pass: boolean; rows: RowResult[]; first: number }
+  | {
+      kind: "truth";
+      pass: boolean;
+      rows: RowResult[];
+      first: number;
+      /** Per output, in port order: no wire reaches it yet, so its value is not shown. */
+      unwired?: readonly boolean[];
+    }
   | { kind: "sequence"; pass: boolean; ticks: TickResult[]; first: number }
   | { kind: "custom"; pass: boolean; result: CustomGrade };
 
@@ -285,6 +294,33 @@ export function gradeLevel(
 }
 
 export const gradePassed = (grade: Grade) => grade.kind !== "structure" && grade.pass;
+
+/**
+ * The grade the truth table shows. While the only thing missing is a wire to
+ * some outputs, the rows still grade live on the outputs that have one, so a
+ * board with several outputs gets feedback before the last of them is wired.
+ * It never counts as a pass.
+ */
+export function shownGrade(grade: Grade | undefined, circuit: Circuit, level: Level) {
+  if (grade?.kind !== "structure") return grade;
+  const spec = level.spec;
+  if (spec.kind !== "truth") return undefined;
+  const isOutput = (id: string) => spec.outputs.some((port) => port.id === id);
+  const onlyUnwired = grade.problems.every(
+    ({ anchor }) => anchor?.kind === "input" && isOutput(anchor.node),
+  );
+  const wired = new Set(withoutWireSplices(circuit).wires.map((wire) => wire.to));
+  const unwired = spec.outputs.map((port) => !wired.has(port.id));
+  if (!onlyUnwired || unwired.every(Boolean)) return undefined;
+  const rows = gradeTruth(circuit, spec).rows.map((row): RowResult => {
+    const miss =
+      row.unstable ||
+      row.actual.some((value, index) => !unwired[index] && value !== row.expected[index]);
+    return { ...row, pass: false, pending: !miss };
+  });
+  const first = rows.findIndex((row) => !row.pending);
+  return { kind: "truth", pass: false, rows, first, unwired } satisfies Grade;
+}
 
 const bit = (value: boolean) => (value ? "1" : "0");
 

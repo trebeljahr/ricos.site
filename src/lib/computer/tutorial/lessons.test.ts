@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { TRANSISTOR_GATE_LESSONS } from "../cmosGates";
 import { recognitionComponent } from "../recognition";
-import { requestedHints } from "./hints";
 import { levelStart } from "./kit";
 import { BUILDER_LESSONS, LESSON_SECTIONS, lessonForCircuit } from "./lessons";
 import { LEARNING_LEVELS, levelById } from "./levels";
@@ -46,7 +45,6 @@ describe("builder lessons", () => {
     expect(offered.some((level) => level.id === "universal-nor-xor")).toBe(true);
     for (const level of LEARNING_LEVELS) {
       expect(level.hints?.length, level.id).toBeGreaterThan(0);
-      expect(requestedHints(level, levelStart(level).circuit, undefined, 0), level.id).toEqual([]);
     }
   });
 

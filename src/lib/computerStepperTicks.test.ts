@@ -77,17 +77,6 @@ const PROGRAMS: Record<string, CompiledProgram> = {
     [OPCODES.ADDI, 1],
     [OPCODES.JMP, 0],
   ]),
-  // The InstructionEncoder's three-instruction programs.
-  ...Object.fromEntries(
-    (["LDI", "ADDI", "SUBI", "OUT", "HALT"] as const).map((mnemonic) => [
-      `encoder${mnemonic}`,
-      raw([
-        [OPCODES.LDI, 2],
-        [OPCODES[mnemonic], mnemonic === "OUT" || mnemonic === "HALT" ? 0 : 200],
-        [OPCODES.HALT, 0],
-      ]),
-    ]),
-  ),
 };
 
 describe("microcode table", () => {

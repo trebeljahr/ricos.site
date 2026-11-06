@@ -213,10 +213,6 @@ export const computerDemos = [
     slug: "alu-architecture",
     title: "ALU architecture comparison",
   },
-  {
-    slug: "instruction-encoder",
-    title: "From instruction to bytes",
-  },
   // The toy CPU running programs. The stepper demos (computer/stepperDemos.ts)
   // are independent: each puts one part of the same CPU in focus.
   {

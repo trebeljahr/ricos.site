@@ -60,6 +60,8 @@ export const MDX_DEMO_COMPONENTS = [
   "SignedArithmetic",
   "TruthTableScale",
   "AluArchitectureComparison",
+  "AluBitSlice",
+  "Alu74181Schematic",
   "SemiconductorDemo",
   "UnitVectorDemo",
   "ProjectArrowDemo",

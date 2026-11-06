@@ -215,7 +215,15 @@ export const computerDemos = [
   },
   {
     slug: "alu-architecture",
-    title: "ALU architecture comparison",
+    title: "A whole 4-bit ALU",
+  },
+  {
+    slug: "alu-bit-slice",
+    title: "One bit of an ALU",
+  },
+  {
+    slug: "alu-74181",
+    title: "The gates of a real ALU chip",
   },
   // The toy CPU running programs. The stepper demos (computer/stepperDemos.ts)
   // are independent: each puts one part of the same CPU in focus.

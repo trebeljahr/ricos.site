@@ -1,9 +1,13 @@
-import { AluArchitectureComparison } from "@components/computer/AluArchitectureComparison";
+import { AluArchitectureComparison } from "@components/computer/AluDemos";
 import { DeviceDemoPage } from "@components/computer/DeviceDemoPage";
 
 export default function AluArchitecturePage() {
   return (
-    <DeviceDemoPage slug="alu-architecture" description="Compare ways to build an ALU.">
+    <DeviceDemoPage
+      slug="alu-architecture"
+      description="A whole 4-bit ALU: an adder, AND, OR, a result selector and flags."
+      wide
+    >
       <AluArchitectureComparison />
     </DeviceDemoPage>
   );

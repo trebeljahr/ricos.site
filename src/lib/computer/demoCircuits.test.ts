@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { aluCircuit } from "./aluCircuit";
 import type { BigScreenCard } from "./bigScreenBlocks";
 import { toNumber } from "./blockBuilder";
 import { simulationCircuit, syncBlockStates } from "./blockFolding";
@@ -161,6 +162,33 @@ describe("chapter circuits", () => {
         expect(toNumber(snapshot.outputs.total)).toBe(a + b);
       }
     }
+  });
+
+  it("runs ADD, SUB, AND and OR through the 4-bit ALU, with its flags", () => {
+    const source = aluCircuit();
+    expect(validateCircuit(source)).toBeTruthy();
+    const signed = (value: number) => (value & 8 ? value - 16 : value);
+    for (let op = 0; op < 4; op++)
+      for (let a = 0; a < 16; a++)
+        for (let b = 0; b < 16; b++) {
+          const circuit = {
+            ...source,
+            nodes: source.nodes.map((node) =>
+              node.id === "a" || node.id === "b"
+                ? { ...node, numberValue: node.id === "a" ? a : b }
+                : node,
+            ),
+          };
+          const snapshot = read(circuit, { op0: Boolean(op & 1), op1: Boolean(op & 2) });
+          const raw = [a + b, a + 15 - b + 1, a & b, a | b][op];
+          const result = raw & 15;
+          const exact = op === 0 ? signed(a) + signed(b) : signed(a) - signed(b);
+          expect(toNumber(snapshot.outputs.result)).toBe(result);
+          expect(snapshot.values.zero).toBe(result === 0);
+          expect(snapshot.values.negative).toBe(result >= 8);
+          expect(snapshot.values.carry).toBe(op < 2 && raw > 15);
+          expect(snapshot.values.overflow).toBe(op < 2 && signed(result) !== exact);
+        }
   });
 
   it("gives each input bit its own wire and track to its own full adder", () => {

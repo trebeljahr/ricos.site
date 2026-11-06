@@ -290,9 +290,19 @@ export const COMPUTER_MDX_DEMOS = {
   TruthTableScale: () => null,
   AluArchitectureComparison: chapterDemo(
     () => loadCircuitDemos().then((module) => module.AluArchitectureComparison),
-    "ALU architecture comparison",
+    "4-bit ALU",
     650,
     true,
+  ),
+  AluBitSlice: chapterDemo(
+    () => loadCircuitDemos().then((module) => module.AluBitSlice),
+    "ALU bit slice",
+    650,
+    true,
+  ),
+  Alu74181Schematic: chapterDemo(
+    () => import("./Alu74181Schematic").then((module) => module.Alu74181Schematic),
+    "74181 ALU schematic",
   ),
   SemiconductorDemo: chapterDemo(
     () => import("./SemiconductorDemo").then((module) => module.SemiconductorDemo),

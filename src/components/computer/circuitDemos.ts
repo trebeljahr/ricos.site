@@ -10,7 +10,7 @@ export {
   HalfAdder,
 } from "./Adders";
 export { DecoderDemo, MemoryAddressDemo, MultiplexerDemo } from "./AddressRouting";
-export { AluArchitectureComparison } from "./AluArchitectureComparison";
+export { AluArchitectureComparison, AluBitSlice } from "./AluDemos";
 export { BooleanCircuitDemo } from "./BooleanCircuitDemo";
 export { ButtonInterruptDemo } from "./ButtonInterruptDemo";
 export { DecoderLesson, TransistorGateLessons } from "./ChapterCircuitLessons";

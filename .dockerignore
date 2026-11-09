@@ -1,0 +1,31 @@
+# Build context for the Dockerfile. Everything here is rebuilt in the image
+# or must never reach it.
+.git
+**/.git
+node_modules
+**/node_modules
+.next
+.velite
+.vercel
+.turbo
+coverage
+tmp
+
+# Private writing: diaries, morning pages and the review records only
+# `next dev` reads. Keep it out of the build entirely.
+src/content/Notes/texts
+# Not in git and served from the image CDN; 16 GB in a full checkout.
+src/content/Notes/assets
+src/content/Notes/Assets
+src/content/Notes/.obsidian*
+
+# Local env files. The encrypted .env.production is the only one the image
+# reads; the private key arrives as a BuildKit secret, never in the context.
+.env
+.env.*
+!.env.production
+.env.keys
+
+.DS_Store
+*.log
+.claude

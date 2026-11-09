@@ -85,6 +85,8 @@ venv/
 .env.staging
 .env.test
 .envrc.local
+# dotenvx private keys. hatchkit keeps them in the OS keychain.
+.env.keys
 .vercel/
 
 # link checker cache + external link report

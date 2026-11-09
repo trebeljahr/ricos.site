@@ -88,6 +88,12 @@ const PLAUSIBLE_SCRIPT =
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  // The Docker image (see Dockerfile) runs `.next/standalone/server.js`: the
+  // traced server files only, with this config serialised into it. Plain
+  // `next start` would load this file at runtime, and with it
+  // src/scripts/createRedirects.js, velite and the whole node_modules tree.
+  // Vercel ignores the setting.
+  output: "standalone",
   // Notes/texts holds diaries and other private writing that only /dev/diary
   // reads, under `next dev`. Keep it out of every deployed function bundle,
   // whatever a trace of the server code finds.

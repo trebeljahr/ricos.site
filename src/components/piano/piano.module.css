@@ -1,0 +1,224 @@
+/* Shared look of the /piano demos: warm paper panels, an ebony-and-ivory
+   keyboard on a black case with a red felt strip. */
+
+.tokens,
+.panel {
+  --paper: #fbf8f2;
+  --ink: #23201b;
+  --muted: #776d60;
+  --line: #e3dbcd;
+  --track: #efe8dc;
+  --accent: #c2582f;
+  --accent-ink: #fff;
+  color: var(--ink);
+}
+:global(.dark) .tokens,
+:global(.dark) .panel {
+  --paper: #1b1915;
+  --ink: #f1ebe0;
+  --muted: #a59a8b;
+  --line: #39332b;
+  --track: #2b2720;
+  --accent: #f0895c;
+  --accent-ink: #1b1915;
+}
+
+.panel {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  padding: 12px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+@media (min-width: 640px) {
+  .panel { padding: 20px; }
+}
+
+.muted { color: var(--muted); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+
+/* Readouts: a big value with a small caption. */
+.readout { display: flex; flex-direction: column; min-width: 0; }
+.readout dt { order: 2; font-size: 12px; color: var(--muted); }
+.readout dd { order: 1; margin: 0; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (min-width: 640px) {
+  .readout dd { font-size: 24px; }
+}
+
+/* Buttons and toggles. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.button:disabled { opacity: 0.45; cursor: default; }
+.button[aria-pressed="true"], .primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.button[aria-pressed="true"]:hover:not(:disabled), .primary:hover:not(:disabled) {
+  color: var(--accent-ink);
+  filter: brightness(1.06);
+}
+.small { min-height: 32px; padding: 0 10px; font-size: 13px; }
+
+.segmented { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+
+/* Range sliders. */
+.slider { width: 100%; accent-color: var(--accent); }
+
+/* Drawing surfaces. */
+.canvas {
+  display: block;
+  width: 100%;
+  border-radius: 10px;
+  background: var(--track);
+  touch-action: none;
+}
+.svg { display: block; width: 100%; height: auto; overflow: visible; }
+.svg text { fill: var(--ink); font-size: 12px; }
+.svg .faint { stroke: var(--line); }
+
+/* ── Keyboard ─────────────────────────────────────────────────────────── */
+
+.case {
+  position: relative;
+  padding: 10px 6px 6px;
+  border-radius: 10px;
+  background: linear-gradient(#26211d, #120f0d);
+  box-shadow: inset 0 1px 0 #3a332d, 0 6px 16px #0003;
+}
+.case::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 7px;
+  height: 3px;
+  border-radius: 2px;
+  background: #8d2a2c;
+}
+
+.keys {
+  position: relative;
+  height: 132px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  outline: none;
+}
+.keys:focus-visible { box-shadow: 0 0 0 2px var(--accent); border-radius: 4px; }
+@media (min-width: 640px) {
+  .keys { height: 168px; }
+}
+.short { height: 96px; }
+@media (min-width: 640px) {
+  .short { height: 120px; }
+}
+
+.key {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  padding-bottom: 7px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.white {
+  bottom: 0;
+  z-index: 1;
+  border: 1px solid #c9bfae;
+  border-top: 0;
+  border-radius: 0 0 5px 5px;
+  background: linear-gradient(#f7f2e7, #fffdf8 20%, #f4eee2);
+  box-shadow: inset 0 -5px 0 #e2d9c8;
+  color: #5b5247;
+}
+.white.down {
+  background: linear-gradient(color-mix(in oklch, var(--key-color) 55%, #fff), color-mix(in oklch, var(--key-color) 35%, #fff));
+  box-shadow: inset 0 -2px 0 #d2c7b3;
+}
+.black {
+  z-index: 2;
+  height: 62%;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, #0d0b0a, #2c2724 45%, #0d0b0a);
+  box-shadow: inset 0 -6px 0 #3b3531, 0 2px 3px #0008;
+  color: #d8cfc2;
+  padding-bottom: 9px;
+}
+.black.down {
+  background: linear-gradient(color-mix(in oklch, var(--key-color) 75%, #000), color-mix(in oklch, var(--key-color) 45%, #000));
+  box-shadow: inset 0 -2px 0 #0006, 0 1px 2px #0008;
+}
+
+.keyLabel {
+  font: 600 10px/1 ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .keyLabel { font-size: 11px; }
+}
+.hint {
+  font: 600 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  opacity: 0.55;
+  pointer-events: none;
+}
+@media not ((hover: hover) and (pointer: fine)) {
+  .hint { display: none; }
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--mark-color);
+  color: #fff;
+  font: 700 10px/1 ui-sans-serif, system-ui, sans-serif;
+  text-shadow: 0 1px 1px #0005;
+  box-shadow: 0 1px 2px #0004;
+  pointer-events: none;
+}
+.black .mark { min-width: 16px; height: 16px; font-size: 9px; padding: 0 3px; }
+.markRing { box-shadow: 0 0 0 2px #fff, 0 1px 3px #0006; }
+
+/* The bar under a playable piano. */
+.pianoBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-top: 10px;
+}
+.held { min-height: 24px; font-size: 15px; }
+.credit { font-size: 12px; color: var(--muted); }
+.credit a { color: inherit; }

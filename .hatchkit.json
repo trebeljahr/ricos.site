@@ -3,7 +3,7 @@
   "cliVersion": "0.3.1",
   "name": "ricos.site",
   "domain": "next.ricos.site",
-  "features": ["analytics", "s3"],
+  "features": ["analytics"],
   "surfaces": "fullstack",
   "email": {
     "transactional": "none",

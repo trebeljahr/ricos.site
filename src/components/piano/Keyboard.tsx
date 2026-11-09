@@ -9,6 +9,8 @@ export type KeyMark = {
   /** Defaults to the key's pitch colour. */
   color?: string;
   ring?: boolean;
+  /** An outline instead of a filled dot: a note left out or outside the key. */
+  ghost?: boolean;
 };
 
 export type KeyboardProps = {
@@ -52,6 +54,7 @@ export function Keyboard({
   tabIndex,
 }: KeyboardProps) {
   const keys = useMemo(() => layoutKeys(from, to), [from, to]);
+  const whites = keys.filter((key) => !key.black).length;
   const pointers = useRef(new Map<number, number>());
   const playable = Boolean(onKeyDown);
 
@@ -107,6 +110,7 @@ export function Keyboard({
     <div className={clsx(styles.case, "not-prose", className)}>
       <div
         className={clsx(styles.keys, short && styles.short)}
+        style={{ "--whites": whites } as CSSProperties}
         role="group"
         aria-label={label}
         tabIndex={tabIndex}
@@ -149,7 +153,11 @@ export function Keyboard({
             >
               {mark && (
                 <span
-                  className={clsx(styles.mark, mark.ring && styles.markRing)}
+                  className={clsx(
+                    styles.mark,
+                    mark.ring && styles.markRing,
+                    mark.ghost && styles.markGhost,
+                  )}
                   style={
                     { "--mark-color": mark.color ?? pitchColor(pc, 0.6, 0.17) } as CSSProperties
                   }

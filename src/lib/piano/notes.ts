@@ -178,9 +178,17 @@ export type StackedNote = {
   spelled: string;
 };
 
-/** The notes of a chord built by stacking thirds (each 3 or 4 half steps) on a root. */
-export function stackThirds(rootMidi: number, thirds: number[], flats = true): StackedNote[] {
-  const rootLetter = defaultLetter(rootMidi, flats);
+/**
+ * The notes of a chord built by stacking thirds (each 3 or 4 half steps) on a
+ * root. `rootLetter` spells the root with a given letter (F♯ rather than G♭
+ * in D major); by default black keys are spelled with flats.
+ */
+export function stackThirds(
+  rootMidi: number,
+  thirds: number[],
+  flats = true,
+  rootLetter = defaultLetter(rootMidi, flats),
+): StackedNote[] {
   const notes: StackedNote[] = [];
   let semitones = 0;
   for (let i = 0; i <= thirds.length && i < DEGREES.length; i++) {

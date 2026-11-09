@@ -47,6 +47,8 @@
 @media (min-width: 640px) {
   .readout dd { font-size: 24px; }
 }
+/* A readout whose value is words, not a number. */
+.readout.wordy dd { font-size: 17px; }
 
 /* Buttons and toggles. */
 .button {
@@ -208,7 +210,52 @@
   pointer-events: none;
 }
 .black .mark { min-width: 16px; height: 16px; font-size: 9px; padding: 0 3px; }
+/* On a narrow keyboard a mark shrinks to its key's width, so marks on
+   neighbouring keys do not overlap. `--whites` is set by Keyboard. */
+.keys { container-type: inline-size; }
+.mark {
+  --mark-size: clamp(12px, calc(100cqw / var(--whites, 14) - 2px), 20px);
+  min-width: var(--mark-size);
+  height: var(--mark-size);
+  font-size: clamp(8px, calc(var(--mark-size) / 2), 10px);
+  padding: 0 clamp(2px, calc(var(--mark-size) / 5), 4px);
+}
+.black .mark {
+  min-width: calc(var(--mark-size) * 0.8);
+  height: calc(var(--mark-size) * 0.8);
+  font-size: clamp(7px, calc(var(--mark-size) * 0.45), 9px);
+  padding: 0 2px;
+}
 .markRing { box-shadow: 0 0 0 2px #fff, 0 1px 3px #0006; }
+/* A key a demo crosses out: a note left out, or one outside the key. */
+.markGhost { background: transparent; box-shadow: inset 0 0 0 1.5px var(--mark-color); color: var(--mark-color); text-shadow: none; }
+
+/* A native select dressed as a button. */
+.selectWrap { position: relative; display: inline-flex; min-width: 0; }
+.selectWrap::after {
+  content: "▾";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+.select {
+  appearance: none;
+  min-height: 40px;
+  max-width: 100%;
+  padding: 0 32px 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.select:hover { border-color: var(--accent); }
+.select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* The bar under a playable piano. */
 .pianoBar {
@@ -222,3 +269,86 @@
 .held { min-height: 24px; font-size: 15px; }
 .credit { font-size: 12px; color: var(--muted); }
 .credit a { color: inherit; }
+
+/* A slot in a row of seven (degrees of a scale), coloured once filled. */
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 0;
+  padding: 6px 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 -4px 0 var(--slot-color, var(--line));
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.slot:hover { border-color: var(--accent); }
+.slot[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--slot-color, var(--line)), 0 0 0 1px var(--accent); }
+.slot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.slotChord { font-size: 16px; font-weight: 700; line-height: 1.2; }
+@media (min-width: 640px) {
+  .slotChord { font-size: 20px; }
+}
+
+/* A strip of half steps from a tonic to its octave. */
+.stripCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--track);
+  font-size: 11px;
+  line-height: 1.15;
+  overflow: hidden;
+}
+@media (min-width: 640px) {
+  .stripCell { height: 52px; font-size: 13px; }
+}
+.stripOn { background: var(--cell-color); color: #fff; text-shadow: 0 1px 1px #0005; }
+.stripLeft {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--cell-color);
+  color: var(--cell-color);
+  text-decoration: line-through;
+}
+
+/* Chord pads, tinted by the chord's function. */
+.pad {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 0;
+  min-height: 76px;
+  padding: 8px 4px;
+  border: 1.5px solid var(--pad-color);
+  border-radius: 14px;
+  background: color-mix(in oklch, var(--pad-color) 16%, var(--paper));
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.08s, background 0.12s;
+}
+.pad:hover { background: color-mix(in oklch, var(--pad-color) 28%, var(--paper)); }
+.pad:active { transform: scale(0.97); }
+.pad[aria-pressed="true"] { background: var(--pad-color); color: #1b1915; }
+.pad:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pad .hint { position: absolute; top: 5px; right: 8px; }
+.padRoman { font-size: 20px; font-weight: 700; line-height: 1.1; }
+.padSymbol { font-size: 13px; font-weight: 600; }
+.padFunction { font-size: 10px; color: var(--muted); }
+.pad[aria-pressed="true"] .padFunction { color: inherit; opacity: 0.8; }
+
+/* Rows of an SVG that act as buttons. */
+.svgRow:focus-visible rect { stroke: var(--accent); stroke-width: 2.5; }

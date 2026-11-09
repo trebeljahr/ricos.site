@@ -12,6 +12,13 @@ export const pianoDemos = [
   { slug: "stack-fifths", title: "Stack fifths until they close" },
   { slug: "intervals", title: "Hear the distance between two notes" },
   { slug: "chord-builder", title: "Stack another third" },
+  // Next: chords and scales (Rico's picks, 2026-11-09; order not settled).
+  { slug: "chord-inversions", title: "Same notes, new order" },
+  { slug: "chord-family", title: "Find the chords inside a scale" },
+  { slug: "pentatonic-blues", title: "Five notes, then a blue one" },
+  { slug: "mode-rotator", title: "Seven modes, bright to dark" },
+  { slug: "circle-of-fifths", title: "Turn the circle of fifths" },
+  { slug: "chord-pad", title: "Play the chords of a key" },
 ] as const;
 
 export type PianoDemoSlug = (typeof pianoDemos)[number]["slug"];

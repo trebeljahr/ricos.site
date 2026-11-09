@@ -1,0 +1,419 @@
+# Build → push → deploy pipeline scaffolded by hatchkit.
+#
+#   1. verify  — install deps, build, run unit + client tests.
+#   2. e2e     — full Playwright E2E run against Docker services.
+#   3. build   — build the project's Dockerfile, push to GHCR as
+#                 `ghcr.io/<owner>/<repo>:<branch>` + `:<sha>`.
+#   4. deploy  — point `:live` at the `:<sha>` image, signal Coolify with
+#                 the app's own signed webhook, verify the deployed
+#                 artefact reports that same sha, then record it as a
+#                 GitHub Deployment (.github/actions/record-ship).
+#
+# ONE image, because `hatchkit adopt` scaffolds one Dockerfile and one
+# compose service. (`hatchkit create` scaffolds a two-package project
+# and its workflow has a build job per half.) If you split this project
+# into separate server/client images later, add the second build job
+# here, give the compose a second service reading `${SERVER_IMAGE:-…}` /
+# `${CLIENT_IMAGE:-…}`, and promote both in the deploy job below.
+#
+# Required repo secrets (hatchkit sets these via `gh secret set`
+# during adopt / create / sync; `hatchkit secrets isolate --rotate`
+# mints new deploy secrets):
+#   COOLIFY_BASE_URL              — base URL of the Coolify install
+#                                   (e.g. https://coolify.example.com)
+#   COOLIFY_RESOURCE_UUID         — uuid of the Coolify application
+#   COOLIFY_DEPLOY_SECRET         — that application's webhook secret.
+#                                   Deploys that one app and nothing
+#                                   else; this repo holds no Coolify
+#                                   API token.
+#   COOLIFY_DEPLOY_REPOSITORY     — the repo + branch the application's
+#   COOLIFY_DEPLOY_BRANCH           webhook matches on, as Coolify
+#                                   stores them
+#   DOTENV_PRIVATE_KEY_PRODUCTION — dotenvx private key; passed to the
+#                                   docker build as a BuildKit secret
+#                                   (mounted as tmpfs, never written
+#                                   to a layer or `docker history`).
+#                                   The Dockerfile uses it to decrypt
+#                                   .env.production in memory and bake
+#                                   build-time values (NEXT_PUBLIC_*
+#                                   etc.) into the output. Stored in
+#                                   your OS keychain under
+#                                   `dotenvx:<project>:production-private-key`
+#                                   — `hatchkit keys show <project>` to retrieve.
+#
+# GHCR auth uses the workflow's built-in GITHUB_TOKEN. For Coolify
+# to pull a private package, SSH into the Coolify host once and run
+# `docker login ghcr.io` — Coolify reads ~/.docker/config.json
+# automatically. See:
+# https://coolify.io/docs/knowledge-base/custom-docker-registry
+name: build-and-deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run test:unit
+      - run: pnpm run test:client
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [verify]
+    services:
+      mongo-e2e:
+        image: mongo:7
+        ports:
+          - 27018:27017
+      redis-e2e:
+        image: redis:7-alpine
+        ports:
+          - 6380:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+
+      # Local S3 for the app's storage client. `S3_BUCKET` creates the
+      # bucket on startup, and with no credentials configured SeaweedFS
+      # accepts any signature, so the AWS_* values below are placeholders.
+      - name: Start SeaweedFS
+        run: |
+          docker run -d --name e2e-seaweedfs -p 9002:8333 \
+            -e S3_BUCKET=starter-e2e \
+            --tmpfs /data chrislusf/seaweedfs:4.47
+          for i in $(seq 1 60); do
+            curl -sf -o /dev/null http://127.0.0.1:9002/starter-e2e && exit 0
+            sleep 1
+          done
+          echo "SeaweedFS did not serve bucket starter-e2e within 60s" >&2
+          docker logs e2e-seaweedfs >&2
+          exit 1
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npx playwright test
+        env:
+          CI: "true"
+          MONGODB_URI: mongodb://127.0.0.1:27018/starter-e2e
+          REDIS_URL: redis://127.0.0.1:6380
+          BETTER_AUTH_SECRET: e2e-test-secret
+          BETTER_AUTH_URL: http://127.0.0.1:5006
+          FRONTEND_URL: http://127.0.0.1:3001
+          S3_ENDPOINT: http://127.0.0.1:9002
+          S3_FORCE_PATH_STYLE: "true"
+          S3_BUCKET_NAME: starter-e2e
+          S3_PUBLIC_URL: http://127.0.0.1:9002/starter-e2e
+          AWS_ACCESS_KEY_ID: hatchkit-dev
+          AWS_SECRET_ACCESS_KEY: hatchkit-dev
+          AWS_REGION: us-east-1
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [verify]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          # Build context — points at the project's deployable directory.
+          # `.` for single-package-at-root projects; the repo-relative
+          # subdir (e.g. `site` or `apps/web`) when the deployable
+          # lives inside a larger repo. hatchkit's adopt flow
+          # substitutes the right value at scaffold time.
+          context: .
+          # Workspace-relative, NOT context-relative — so this carries
+          # the subdir prefix when `context:` does. It is the Dockerfile
+          # hatchkit scaffolds next to the compose file.
+          file: Dockerfile
+          push: true
+          # Bakes the commit into the image so the deployed artefact can
+          # be asked what it is. The verify step below polls for exactly
+          # this sha — an HTTP 200 from the deploy POST only proves
+          # Coolify accepted the request, not that the new image is what
+          # ends up running.
+          build-args: |
+            COMMIT_SHA=${{ github.sha }}
+          # Both tags on every build: the branch tag is what the compose
+          # defaults to (and what a hand-run `docker compose up` gets),
+          # the sha tag is the immutable one the deploy job pins.
+          tags: |
+            ghcr.io/${{ github.repository }}:main
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          # BuildKit secret for decrypting .env.production at build
+          # time. Mounted as tmpfs inside the Dockerfile's RUN step,
+          # never written to a layer or `docker history`. The Dockerfile
+          # exposes it as the DOTENV_PRIVATE_KEY_PRODUCTION env var for
+          # `dotenvx run -- pnpm build`, which decrypts in memory and
+          # bakes NEXT_PUBLIC_* / VITE_* values into the bundle.
+          secrets: |
+            dotenvx_private_key=${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions:
+      contents: read
+      packages: write
+      deployments: write
+    steps:
+      # Point `:live` at the images this run built. Every Coolify app
+      # pulls `:live` (hatchkit sets that when it wires the app), so
+      # this is what decides which build the deploy below starts — the
+      # immutable `:<sha>` tag, re-published under the name the apps
+      # read. It uses this job's own GITHUB_TOKEN (`packages: write`),
+      # which can write this repository's packages and nothing else; no
+      # Coolify credential is involved.
+      #
+      # A rollback is the same step with an older sha.
+      - name: Promote this commit's images to :live
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: env.COOLIFY_BASE_URL != ''
+        run: |
+          set -euo pipefail
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          image="ghcr.io/${{ github.repository }}"
+          docker buildx imagetools create --tag "$image:live" "$image:${{ github.sha }}"
+          echo "promoted $image:${{ github.sha }} to :live"
+
+      # Tell Coolify to deploy. There is no Coolify API token here: each
+      # app has its own webhook secret (hatchkit mints it), and a `push`
+      # payload signed with it queues a deploy of that one app — it can
+      # read nothing and touch no other app. The payload names
+      # `.hatchkit/deploy-webhook`, the app's only watch path, so an ordinary
+      # push that reaches Coolify through its GitHub App never deploys a
+      # build that does not exist yet; only this step does.
+      #
+      # Which apps: COOLIFY_RESOURCE_UUID for a single-app project, or
+      # COOLIFY_SERVER_/COOLIFY_CLIENT_RESOURCE_UUID for a split one.
+      # hatchkit sets one set and clears the other.
+      - name: Deploy via signed Coolify webhook
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          COOLIFY_RESOURCE_UUID: ${{ secrets.COOLIFY_RESOURCE_UUID }}
+          COOLIFY_DEPLOY_SECRET: ${{ secrets.COOLIFY_DEPLOY_SECRET }}
+          COOLIFY_DEPLOY_REPOSITORY: ${{ secrets.COOLIFY_DEPLOY_REPOSITORY }}
+          COOLIFY_DEPLOY_BRANCH: ${{ secrets.COOLIFY_DEPLOY_BRANCH }}
+          COOLIFY_SERVER_RESOURCE_UUID: ${{ secrets.COOLIFY_SERVER_RESOURCE_UUID }}
+          COOLIFY_SERVER_DEPLOY_SECRET: ${{ secrets.COOLIFY_SERVER_DEPLOY_SECRET }}
+          COOLIFY_SERVER_DEPLOY_REPOSITORY: ${{ secrets.COOLIFY_SERVER_DEPLOY_REPOSITORY }}
+          COOLIFY_SERVER_DEPLOY_BRANCH: ${{ secrets.COOLIFY_SERVER_DEPLOY_BRANCH }}
+          COOLIFY_CLIENT_RESOURCE_UUID: ${{ secrets.COOLIFY_CLIENT_RESOURCE_UUID }}
+          COOLIFY_CLIENT_DEPLOY_SECRET: ${{ secrets.COOLIFY_CLIENT_DEPLOY_SECRET }}
+          COOLIFY_CLIENT_DEPLOY_REPOSITORY: ${{ secrets.COOLIFY_CLIENT_DEPLOY_REPOSITORY }}
+          COOLIFY_CLIENT_DEPLOY_BRANCH: ${{ secrets.COOLIFY_CLIENT_DEPLOY_BRANCH }}
+        if: env.COOLIFY_BASE_URL != ''
+        run: |
+          set -euo pipefail
+          deployed=0
+          deploy() { # label, secret-name prefix
+            local uuid_var="${2}RESOURCE_UUID" secret_var="${2}DEPLOY_SECRET"
+            local repo_var="${2}DEPLOY_REPOSITORY" branch_var="${2}DEPLOY_BRANCH"
+            local uuid="${!uuid_var:-}" secret="${!secret_var:-}"
+            local repo="${!repo_var:-}" branch="${!branch_var:-}"
+            [ -n "$uuid" ] || return 0
+            if [ -z "$secret" ] || [ -z "$repo" ] || [ -z "$branch" ]; then
+              echo "::error::${2}DEPLOY_SECRET/_REPOSITORY/_BRANCH are not set — run \`hatchkit sync\` or \`hatchkit secrets isolate\`."
+              exit 1
+            fi
+            local body sig answer
+            body=$(jq -cn --arg ref "refs/heads/$branch" --arg sha "$GITHUB_SHA" --arg repo "$repo" \
+              '{ref: $ref, after: $sha, repository: {full_name: $repo}, commits: [{id: $sha, added: [], removed: [], modified: [".hatchkit/deploy-webhook"]}]}')
+            sig=$(printf '%s' "$body" | HOOK_SECRET="$secret" node -e \
+              'process.stdout.write(require("node:crypto").createHmac("sha256", process.env.HOOK_SECRET).update(require("node:fs").readFileSync(0)).digest("hex"))')
+            answer=$(curl -fsS -X POST "$COOLIFY_BASE_URL/webhooks/source/github/events/manual" \
+              -H 'Content-Type: application/json' -H 'X-GitHub-Event: push' \
+              -H "X-Hub-Signature-256: sha256=$sig" --data-binary "$body")
+            if printf '%s' "$answer" | jq -e --arg uuid "$uuid" \
+              'type == "array" and any(.[]; .application_uuid == $uuid and .status == "success")' \
+              >/dev/null 2>&1; then
+              echo "deploy queued for the $1 app ($uuid)"
+              deployed=$((deployed + 1))
+            else
+              # Other apps on the same repo answer "Invalid signature.";
+              # they are left out so a public log names only this one.
+              detail=$(printf '%s' "$answer" | jq -c '[.[]? | select(.message != "Invalid signature.") | {status, message}]' 2>/dev/null || printf '%s' "$answer" | head -c 200)
+              echo "::error::Coolify did not queue a deploy of the $1 app: $detail"
+              exit 1
+            fi
+          }
+          deploy app COOLIFY_
+          deploy server COOLIFY_SERVER_
+          deploy client COOLIFY_CLIENT_
+          if [ "$deployed" -eq 0 ]; then
+            echo "::error::COOLIFY_BASE_URL is set but no COOLIFY_*RESOURCE_UUID is — nothing was deployed."
+            exit 1
+          fi
+
+      # Everything above only proves Coolify ACCEPTED a request. This
+      # proves the deployed artefacts are the ones this run built.
+      #
+      # Until this existed, the pipeline's final assertion was an HTTP 200
+      # from a POST. A deploy that kept the old container, an image built
+      # with an empty API URL, a container crash-looping behind a proxy
+      # that answers 503 — all three shipped green, and none of them was
+      # visible from CI, from ghcr, or from the Coolify dashboard.
+      #
+      # Deliberately polls: a Coolify deploy is asynchronous, the POST
+      # returns as soon as the deployment is QUEUED.
+      #
+      # Guarded on a deploy having been TRIGGERED, not on the URLs being
+      # set. A per-URL `if:` would let this step skip while the deploy
+      # steps above ran — a job that reports green having verified
+      # nothing, which is the exact failure mode this step exists to
+      # remove. When a deploy fired and there is no URL to check, the
+      # script fails and says so.
+      #
+      # HATCHKIT_WEB_URL / HATCHKIT_API_URL are written here as literals
+      # by hatchkit from the manifest's domain + topology (and kept
+      # current by `hatchkit rename-domain` / `hatchkit regen-infra`).
+      # The `vars.` reference is the fallback for a hand-managed repo.
+      # Leave one empty to skip that half: a backend-only project has no
+      # web URL, a static one has no API. When the two are equal the
+      # project is single-origin and the CORS check is skipped, because
+      # there is no cross-origin request to make.
+      - name: Verify the deployment is actually live
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          HATCHKIT_WEB_URL: https://next.ricos.site
+          HATCHKIT_API_URL: ""
+        if: env.COOLIFY_BASE_URL != ''
+        run: |
+          set -uo pipefail
+          SHA='${{ github.sha }}'
+          # `:-` so a workflow whose env block was edited fails with the
+          # gate's own message rather than a bare "unbound variable".
+          WEB="${HATCHKIT_WEB_URL:-}"
+          API="${HATCHKIT_API_URL:-}"
+          WEB="${WEB%/}"
+          API="${API%/}"
+          checked=0
+
+          # `?hatchkit_cb=` on every request: the point is what the ORIGIN
+          # now serves, and a CDN hit would answer with exactly the stale
+          # copy being tested for.
+          poll() { # label url jq-expression
+            got=""
+            for i in $(seq 1 40); do
+              got=$(curl -fsSL --max-time 10 "$2?hatchkit_cb=$i$RANDOM" 2>/dev/null \
+                      | jq -r "$3" 2>/dev/null || true)
+              if [ "$got" = "$SHA" ]; then echo "✓ $1 reports $SHA"; return 0; fi
+              echo "  $1: ${got:-<no response>} — waiting ($i/40)"
+              sleep 15
+            done
+            echo "::error::$1 never reported $SHA — the deploy did not land."
+            echo "::error::last seen: ${got:-<no response>}"
+            echo "::error::an empty/null reading on the first run after upgrading means the"
+            echo "::error::artefact does not report a version yet: the server needs"
+            echo "::error::\`version: env.COMMIT_SHA\` on /api/health, the client needs"
+            echo "::error::version.json written by its Dockerfile. Both come from COMMIT_SHA."
+            return 1
+          }
+
+          if [ -n "$API" ]; then
+            poll "api $API/api/health" "$API/api/health" '.version' || exit 1
+            checked=$((checked + 1))
+          fi
+
+          if [ -n "$WEB" ]; then
+            poll "web $WEB/version.json" "$WEB/version.json" '.commit' || exit 1
+            checked=$((checked + 1))
+
+            # The client bakes its API origin in at build time, so a
+            # correct commit can still carry the wrong URL. Assert the
+            # pairing — this is the check that catches an image built
+            # against an unset repo variable.
+            if [ -n "$API" ]; then
+              baked=$(curl -fsSL --max-time 10 "$WEB/version.json?hatchkit_cb=$RANDOM" | jq -r '.apiUrl')
+              if [ "$baked" != "$API" ]; then
+                echo "::error::client was built against '${baked:-<empty>}', expected '$API'"
+                exit 1
+              fi
+              echo "✓ client is built against $baked"
+            fi
+          fi
+
+          # Cross-origin only. Under single-origin the API is same-origin
+          # with the web app, so CORS never enters the picture; under
+          # split it is load-bearing and nothing else exercises it — the
+          # e2e suite runs both halves on localhost.
+          if [ -n "$WEB" ] && [ -n "$API" ] && [ "$WEB" != "$API" ]; then
+            allow=$(curl -fsS --max-time 10 -o /dev/null -D - -X OPTIONS \
+                      -H "Origin: $WEB" \
+                      -H 'Access-Control-Request-Method: POST' \
+                      -H 'Access-Control-Request-Headers: content-type' \
+                      "$API/api/health" \
+                    | tr -d '\r' | awk -F': ' 'tolower($1)=="access-control-allow-origin"{print $2}')
+            if [ "$allow" != "$WEB" ]; then
+              echo "::error::CORS preflight returned '${allow:-<none>}', expected '$WEB'"
+              echo "::error::the server's FRONTEND_URL / TRUSTED_ORIGINS do not cover the web origin"
+              exit 1
+            fi
+            echo "✓ CORS allows $WEB"
+            checked=$((checked + 1))
+          fi
+
+          if [ "$checked" -eq 0 ]; then
+            echo "::error::a deploy was triggered and nothing was verified."
+            echo "::error::set HATCHKIT_WEB_URL / HATCHKIT_API_URL in this workflow"
+            echo "::error::(or as repo variables), or run \`hatchkit regen-infra\`."
+            exit 1
+          fi
+
+      # Leave a GitHub Deployment for this commit on the `web` channel, so
+      # HQ's Shipped view and the Environments page show what is
+      # live. Last, and under the deploy steps' own gate: a run that deployed
+      # nothing, or whose deploy was not proven live, records nothing. This
+      # job has no checkout, so the action is fetched on its own.
+      - name: Check out the record-ship action
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+        if: env.COOLIFY_BASE_URL != ''
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions/record-ship
+          persist-credentials: false
+
+      - name: Record the web deploy
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          HATCHKIT_WEB_URL: https://next.ricos.site
+        if: env.COOLIFY_BASE_URL != ''
+        uses: ./.github/actions/record-ship
+        with:
+          environment: web
+          url: ${{ env.HATCHKIT_WEB_URL }}

@@ -1,0 +1,49 @@
+name: Record ship
+description: >-
+  Records an upload as a GitHub Deployment (task "ship") with a success
+  status, so HQ's Shipped view and the repository's Environments page
+  show which version each channel has. The calling job needs
+  `deployments: write`. Run it right after the upload step, under the same
+  `if:`, so a skipped upload records nothing.
+inputs:
+  environment:
+    description: The channel, e.g. web, itch, testflight, google-play
+    required: true
+  branch:
+    description: Optional sub-channel, e.g. an itch.io channel or a Play track
+    required: false
+    default: ""
+  url:
+    description: Optional https page where the build can be seen
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SHIP_ENVIRONMENT: ${{ inputs.environment }}
+        SHIP_BRANCH: ${{ inputs.branch }}
+        SHIP_URL: ${{ inputs.url }}
+      run: |
+        set -euo pipefail
+        # A tag push ships that tag's version; anything else ships a commit,
+        # and the reader takes the version from the commit.
+        version=""
+        if [ "$GITHUB_REF_TYPE" = tag ]; then version="$GITHUB_REF_NAME"; fi
+        # Older ships keep their success status (auto_inactive off): channels
+        # share an environment, and the newest per channel is what is out.
+        id=$(jq -n --arg ref "$GITHUB_SHA" --arg env "$SHIP_ENVIRONMENT" --arg branch "$SHIP_BRANCH" \
+            --arg version "$version" --arg run "$GITHUB_RUN_ID" '{
+              ref: $ref, task: "ship", environment: $env, auto_merge: false,
+              required_contexts: [], transient_environment: false, production_environment: false,
+              payload: ({schemaVersion: 1, runId: $run}
+                + (if $version == "" then {} else {version: $version} end)
+                + (if $branch == "" then {} else {branch: $branch} end))
+            }' | gh api "repos/$GITHUB_REPOSITORY/deployments" --input - --jq .id)
+        jq -n --arg log "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --arg url "$SHIP_URL" '
+            {state: "success", log_url: $log, auto_inactive: false}
+            + (if $url == "" then {} else {environment_url: $url} end)' |
+          gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" --input - >/dev/null
+        echo "Recorded $SHIP_ENVIRONMENT ${SHIP_BRANCH:+($SHIP_BRANCH) }${version:-$GITHUB_SHA} as deployment $id"

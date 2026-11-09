@@ -100,3 +100,10 @@ venv/
 
 # Which study resources are done, for /dev/writing
 .study-progress.json
+
+# hatchkit: secret files (NEVER commit)
+.env.me
+*.keystore
+*.jks
+*.p12
+*.p8

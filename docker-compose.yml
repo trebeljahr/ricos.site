@@ -1,0 +1,77 @@
+# Coolify reads this file (build pack: dockercompose) to deploy
+# ricos.site. The image is built by .github/workflows/deploy.yml and
+# pushed to GHCR; Coolify pulls it and (re)starts the service when
+# the workflow's deploy step fires.
+services:
+  app:
+    # `${APP_IMAGE:-…}` rather than a literal ref, so the pipeline can
+    # pin what actually runs. The deploy job sets APP_IMAGE on the
+    # Coolify app to the IMMUTABLE `ghcr.io/<repo>:<sha>` tag before it
+    # triggers the deploy, which makes "is the running container this
+    # commit's build?" answerable and makes rollback "set APP_IMAGE to
+    # an older sha". hatchkit seeds the variable with the default below
+    # when it provisions the app — Coolify's env API only UPDATES an
+    # existing key, so a pin naming a key that was never created is
+    # accepted with a 200 and silently does nothing.
+    #
+    # The default is what a plain `docker compose up` (or a Coolify app
+    # that never got the variable) resolves to: the branch tag CI also
+    # pushes on every build.
+    #
+    # Rendered whole from one variable rather than assembled from a repo
+    # and a tag here: a template expression immediately followed by the
+    # shell default's closing brace reads as a Handlebars
+    # unescaped-close and fails to compile. build-pipeline.ts builds the
+    # string.
+    image: ${APP_IMAGE:-ghcr.io/trebeljahr/ricos.site:main}
+    # Force a registry pull on every `docker compose up`. Without this,
+    # Compose happily reuses whichever digest the local engine cached the
+    # last time it saw the `:main` tag, so Coolify's redeploy
+    # fires after each CI build but the running container keeps serving
+    # stale code. `always` makes the floating tag actually float. The
+    # APP_IMAGE pin removes the ambiguity for CI deploys; this covers the
+    # mutable default that everything else uses.
+    pull_policy: always
+    restart: unless-stopped
+    # Bound process/thread exhaustion; review measured peaks before raising it.
+    pids_limit: 512
+    # Coolify's Traefik reverse-proxy already owns host ports 80/443 and
+    # routes to this container via its internal Docker network. Use
+    # `expose` (not `ports`) so we declare the container port without
+    # trying to bind it on the host — binding the host port collides with
+    # Traefik and the deploy fails with
+    # "Bind for 0.0.0.0:3000 failed: port is already allocated".
+    expose:
+      - "3000"
+    environment:
+      - NODE_ENV=production
+      # Forwarded from Coolify's app env. dotenvx inside the
+      # container uses this to decrypt .env.production at runtime.
+      - DOTENV_PRIVATE_KEY_PRODUCTION
+      # The image drains on SIGTERM so a rolling update can take it out
+      # of Traefik first. A compose deploy stops this container BEFORE
+      # starting its replacement, and kills it 10 s into the stop, so
+      # here the drain would only delay the restart.
+      - SHUTDOWN_DRAIN_SECONDS=0
+    # Coolify reads this and gates Traefik/Caddy routing on it.
+    # Without a healthcheck Coolify shows "No health check configured"
+    # and routes blind — traffic can hit the container before it's
+    # ready.
+    #
+    # If your app's `/` legitimately returns a non-2xx (common for
+    # API-only servers that 404 the root), point this at a known-good
+    # path instead — e.g. replace `/` with `/health` or whatever your
+    # framework exposes.
+    # node-based probe: the Next.js runtime image is node:slim, which
+    # ships neither wget nor curl. `node -e` is the universal fallback
+    # — exits 0 on <400 responses, 1 otherwise.
+    healthcheck:
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "require('http').get('http://127.0.0.1:3000/',r=>{process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s

@@ -1,0 +1,23 @@
+{
+  "version": 5,
+  "cliVersion": "0.3.1",
+  "name": "ricos.site",
+  "domain": "next.ricos.site",
+  "features": ["analytics", "s3"],
+  "surfaces": "fullstack",
+  "email": {
+    "transactional": "none",
+    "mailingList": "none"
+  },
+  "deploymentMode": "coolify",
+  "publicService": "client",
+  "topology": "single-origin",
+  "scaffoldedAt": "2026-11-09T23:29:36.099Z",
+  "ports": {
+    "server": 3000,
+    "client": 3001
+  },
+  "s3Provider": "existing",
+  "deployTarget": "existing",
+  "mlServices": []
+}

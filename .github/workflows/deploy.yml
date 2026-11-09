@@ -1,56 +1,32 @@
-# Build → push → deploy pipeline scaffolded by hatchkit.
+# Build → push → deploy pipeline for ricos.site on Coolify. Scaffolded by
+# `hatchkit adopt`, then cut down to this repo:
 #
-#   1. verify  — install deps, build, run unit + client tests.
-#   2. e2e     — full Playwright E2E run against Docker services.
-#   3. build   — build the project's Dockerfile, push to GHCR as
-#                 `ghcr.io/<owner>/<repo>:<branch>` + `:<sha>`.
-#   4. deploy  — point `:live` at the `:<sha>` image, signal Coolify with
-#                 the app's own signed webhook, verify the deployed
-#                 artefact reports that same sha, then record it as a
-#                 GitHub Deployment (.github/actions/record-ship).
+#   1. build  — check out the private Notes repo (the content), build the
+#               Dockerfile, push it to GHCR as `:<sha>` and `:main`. The image
+#               build runs the full `pnpm build`, including the link and alt
+#               checks, so there is no separate verify job.
+#   2. deploy — point `:live` at the `:<sha>` image, signal Coolify with the
+#               app's own signed webhook, verify the deployed artefact
+#               reports that same sha, record a GitHub Deployment.
 #
-# ONE image, because `hatchkit adopt` scaffolds one Dockerfile and one
-# compose service. (`hatchkit create` scaffolds a two-package project
-# and its workflow has a build job per half.) If you split this project
-# into separate server/client images later, add the second build job
-# here, give the compose a second service reading `${SERVER_IMAGE:-…}` /
-# `${CLIENT_IMAGE:-…}`, and promote both in the deploy job below.
+# Notes is checked out at its `main`, not at the submodule pin, the same as
+# the Vercel build did (vercel-submodule-workaround.sh): push Notes first,
+# then a ricos.site commit, and the site carries both.
 #
-# Required repo secrets (hatchkit sets these via `gh secret set`
-# during adopt / create / sync; `hatchkit secrets isolate --rotate`
-# mints new deploy secrets):
-#   COOLIFY_BASE_URL              — base URL of the Coolify install
-#                                   (e.g. https://coolify.example.com)
-#   COOLIFY_RESOURCE_UUID         — uuid of the Coolify application
-#   COOLIFY_DEPLOY_SECRET         — that application's webhook secret.
-#                                   Deploys that one app and nothing
-#                                   else; this repo holds no Coolify
-#                                   API token.
-#   COOLIFY_DEPLOY_REPOSITORY     — the repo + branch the application's
-#   COOLIFY_DEPLOY_BRANCH           webhook matches on, as Coolify
-#                                   stores them
-#   DOTENV_PRIVATE_KEY_PRODUCTION — dotenvx private key; passed to the
-#                                   docker build as a BuildKit secret
-#                                   (mounted as tmpfs, never written
-#                                   to a layer or `docker history`).
-#                                   The Dockerfile uses it to decrypt
-#                                   .env.production in memory and bake
-#                                   build-time values (NEXT_PUBLIC_*
-#                                   etc.) into the output. Stored in
-#                                   your OS keychain under
-#                                   `dotenvx:<project>:production-private-key`
-#                                   — `hatchkit keys show <project>` to retrieve.
-#
-# GHCR auth uses the workflow's built-in GITHUB_TOKEN. For Coolify
-# to pull a private package, SSH into the Coolify host once and run
-# `docker login ghcr.io` — Coolify reads ~/.docker/config.json
-# automatically. See:
-# https://coolify.io/docs/knowledge-base/custom-docker-registry
+# Repo secrets (hatchkit sets the Coolify ones during adopt / sync):
+#   COOLIFY_BASE_URL, COOLIFY_RESOURCE_UUID, COOLIFY_DEPLOY_SECRET,
+#   COOLIFY_DEPLOY_REPOSITORY, COOLIFY_DEPLOY_BRANCH — the app's own webhook;
+#                                   this repo holds no Coolify API token.
+#   DOTENV_PRIVATE_KEY_PRODUCTION — decrypts .env.production inside the
+#                                   build (BuildKit secret, never in a layer).
+#   NOTES_DEPLOY_KEY              — read-only deploy key of trebeljahr/Notes.
 name: build-and-deploy
 
 on:
   push:
-    branches: [main]
+    # The migration branch deploys to next.ricos.site until the cutover;
+    # drop it from this list then.
+    branches: [main, ricos-hatchkit-cloudflare-migration-90123c]
   workflow_dispatch:
 
 permissions:
@@ -58,89 +34,23 @@ permissions:
   packages: write
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: deploy
   cancel-in-progress: false
 
 jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-      - uses: pnpm/action-setup@v4
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
-      - run: pnpm run test:unit
-      - run: pnpm run test:client
-
-  e2e:
-    runs-on: ubuntu-latest
-    needs: [verify]
-    services:
-      mongo-e2e:
-        image: mongo:7
-        ports:
-          - 27018:27017
-      redis-e2e:
-        image: redis:7-alpine
-        ports:
-          - 6380:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-      - uses: pnpm/action-setup@v4
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
-
-      # Local S3 for the app's storage client. `S3_BUCKET` creates the
-      # bucket on startup, and with no credentials configured SeaweedFS
-      # accepts any signature, so the AWS_* values below are placeholders.
-      - name: Start SeaweedFS
-        run: |
-          docker run -d --name e2e-seaweedfs -p 9002:8333 \
-            -e S3_BUCKET=starter-e2e \
-            --tmpfs /data chrislusf/seaweedfs:4.47
-          for i in $(seq 1 60); do
-            curl -sf -o /dev/null http://127.0.0.1:9002/starter-e2e && exit 0
-            sleep 1
-          done
-          echo "SeaweedFS did not serve bucket starter-e2e within 60s" >&2
-          docker logs e2e-seaweedfs >&2
-          exit 1
-
-      - run: npx playwright install --with-deps chromium
-
-      - name: Run E2E tests
-        run: npx playwright test
-        env:
-          CI: "true"
-          MONGODB_URI: mongodb://127.0.0.1:27018/starter-e2e
-          REDIS_URL: redis://127.0.0.1:6380
-          BETTER_AUTH_SECRET: e2e-test-secret
-          BETTER_AUTH_URL: http://127.0.0.1:5006
-          FRONTEND_URL: http://127.0.0.1:3001
-          S3_ENDPOINT: http://127.0.0.1:9002
-          S3_FORCE_PATH_STYLE: "true"
-          S3_BUCKET_NAME: starter-e2e
-          S3_PUBLIC_URL: http://127.0.0.1:9002/starter-e2e
-          AWS_ACCESS_KEY_ID: hatchkit-dev
-          AWS_SECRET_ACCESS_KEY: hatchkit-dev
-          AWS_REGION: us-east-1
-
   build:
     runs-on: ubuntu-latest
-    needs: [verify]
     steps:
       - uses: actions/checkout@v4
+      - name: Check out the Notes content
+        uses: actions/checkout@v4
+        with:
+          repository: trebeljahr/Notes
+          ref: main
+          path: src/content/Notes
+          ssh-key: ${{ secrets.NOTES_DEPLOY_KEY }}
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -148,36 +58,19 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
-          # Build context — points at the project's deployable directory.
-          # `.` for single-package-at-root projects; the repo-relative
-          # subdir (e.g. `site` or `apps/web`) when the deployable
-          # lives inside a larger repo. hatchkit's adopt flow
-          # substitutes the right value at scaffold time.
           context: .
-          # Workspace-relative, NOT context-relative — so this carries
-          # the subdir prefix when `context:` does. It is the Dockerfile
-          # hatchkit scaffolds next to the compose file.
           file: Dockerfile
           push: true
-          # Bakes the commit into the image so the deployed artefact can
-          # be asked what it is. The verify step below polls for exactly
-          # this sha — an HTTP 200 from the deploy POST only proves
-          # Coolify accepted the request, not that the new image is what
-          # ends up running.
+          # Bakes the commit into /version.json, which the deploy job polls.
           build-args: |
             COMMIT_SHA=${{ github.sha }}
-          # Both tags on every build: the branch tag is what the compose
-          # defaults to (and what a hand-run `docker compose up` gets),
-          # the sha tag is the immutable one the deploy job pins.
           tags: |
             ghcr.io/${{ github.repository }}:main
             ghcr.io/${{ github.repository }}:${{ github.sha }}
-          # BuildKit secret for decrypting .env.production at build
-          # time. Mounted as tmpfs inside the Dockerfile's RUN step,
-          # never written to a layer or `docker history`. The Dockerfile
-          # exposes it as the DOTENV_PRIVATE_KEY_PRODUCTION env var for
-          # `dotenvx run -- pnpm build`, which decrypts in memory and
-          # bakes NEXT_PUBLIC_* / VITE_* values into the bundle.
+          # Reuses the dependency install layer while package.json and the
+          # lockfile are unchanged.
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
           secrets: |
             dotenvx_private_key=${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
 

@@ -8,9 +8,9 @@ const UnderwaterShaderDemo = lazy(
 );
 
 const defaultSeoInfo = {
-  title: "Underwater Shader",
+  title: "Ocean & Underwater Shader",
   description:
-    "A reusable underwater background shader with caustics, god rays, depth fog, and smooth water surface transitions",
+    "Interactive first-person ocean and underwater shader with volumetric god rays, Snell's window, Gerstner waves, Beer-Lambert depth absorption, chromatic caustics, and waterline meniscus",
   url: "/r3f/scenes/underwater-shader",
   keywords: [
     "threejs",
@@ -18,13 +18,16 @@ const defaultSeoInfo = {
     "r3f",
     "shader",
     "underwater",
+    "ocean",
     "caustics",
     "god rays",
+    "snells window",
+    "beer-lambert",
     "webgl",
     "postprocessing",
   ],
   image: "/assets/pages/ocean.png",
-  imageAlt: "Underwater scene with caustics and god rays",
+  imageAlt: "Underwater coral reef scene with volumetric god rays, caustics, and Snell's window",
 };
 
 export default function Page({ seo }: { seo: SeoInfo | null }) {
@@ -40,7 +43,11 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
   };
 
   return (
-    <ThreeFiberLayout seoInfo={seoInfo}>
+    <ThreeFiberLayout
+      seoInfo={seoInfo}
+      shadows
+      camera={{ fov: 62, near: 0.1, far: 800, position: [-6, 35.5, 20] }}
+    >
       <UnderwaterContextProvider>
         <UnderwaterShaderDemo />
       </UnderwaterContextProvider>

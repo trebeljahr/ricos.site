@@ -1,8 +1,8 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { createContext, type PropsWithChildren, useContext, useState } from "react";
+import { evaluateWaveHeight, WATER_LEVEL } from "src/canvas/Scenes/UnderwaterShader/waterPresets";
 
-export const waterHeight = 45;
-
+export const waterHeight = WATER_LEVEL;
 export const surfaceLevel = waterHeight;
 export const farUnderwater = 50;
 export const farOverwater = 100;
@@ -21,8 +21,11 @@ export const UnderwaterContextProvider = ({ children }: PropsWithChildren) => {
   const { camera } = useThree();
   const [underwater, setUnderwater] = useState(true);
 
-  useFrame(() => {
-    if (camera.position.y > waterHeight) {
+  useFrame((state) => {
+    const waveY =
+      waterHeight +
+      evaluateWaveHeight(camera.position.x, camera.position.z, state.clock.elapsedTime);
+    if (camera.position.y > waveY) {
       if (underwater) {
         setUnderwater(false);
       }

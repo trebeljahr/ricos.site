@@ -34,10 +34,14 @@ export function PlaygroundDemoArrows({ currentPath }: { currentPath: string }) {
 // controllers + dungeon scenes were organized under /assets/pages/r3f/.
 // Pick the folder based on the route so previews don't 404.
 const NESTED_PREFIXES = ["/r3f/controllers/", "/r3f/dungeon/"];
+const PREVIEW_OVERRIDES: Record<string, string> = {
+  "/r3f/scenes/underwater-shader": "/assets/pages/ocean.png",
+};
 const previewSrc = ({ name, url }: Scene) =>
-  NESTED_PREFIXES.some((p) => url.startsWith(p))
+  PREVIEW_OVERRIDES[url] ??
+  (NESTED_PREFIXES.some((p) => url.startsWith(p))
     ? `/assets/pages/r3f/${name}.png`
-    : `/assets/pages/${name}.png`;
+    : `/assets/pages/${name}.png`);
 
 const pathWithoutQuery = (asPath: string) => asPath.split(/[?#]/)[0];
 

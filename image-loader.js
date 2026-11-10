@@ -30,9 +30,13 @@ function normalizePosix(p) {
 
 // In local-dev mode, images go through the in-process /api/local-image route (which
 // reads from MinIO, transforms via sharp, caches to the local resized bucket).
-// In prod/cloud mode, they come from CloudFront.
+// In prod/cloud mode, they come from the image CDN: NEXT_PUBLIC_IMAGE_CDN_URL
+// when set, else CloudFront. Same choice as src/lib/mapToImageProps.ts.
 const CLOUDFRONT_ID = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
-const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || !CLOUDFRONT_ID;
+const IMAGE_CDN_URL =
+  process.env.NEXT_PUBLIC_IMAGE_CDN_URL?.replace(/\/$/, "") ||
+  (CLOUDFRONT_ID ? `https://${CLOUDFRONT_ID}.cloudfront.net` : "");
+const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || !IMAGE_CDN_URL;
 
 export default function myLoader({ src, width }) {
   if (!src) return src;
@@ -54,5 +58,5 @@ export default function myLoader({ src, width }) {
     return `/api/local-image?slug=${encodeURIComponent(`${fixedSlash.slice(1)}/${width}.webp`)}`;
   }
 
-  return `https://${CLOUDFRONT_ID}.cloudfront.net${encodeURI(fixedSlash)}/${width}.webp`;
+  return `${IMAGE_CDN_URL}${encodeURI(fixedSlash)}/${width}.webp`;
 }

@@ -34,11 +34,16 @@ export const imageSizes = [
 
 // In local-dev mode, images are served from the in-process /api/local-image route
 // (which reads from the local S3 mock, transforms via sharp, caches to the local
-// resized bucket). In prod/cloud mode, they come from CloudFront.
+// resized bucket). In prod/cloud mode, they come from the image CDN:
+// NEXT_PUBLIC_IMAGE_CDN_URL (the R2 bucket behind assets.ricos.site) when set,
+// else CloudFront. image-loader.js picks the same origin.
 const CLOUDFRONT_ID = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
-const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || !CLOUDFRONT_ID;
+const IMAGE_CDN_URL =
+  process.env.NEXT_PUBLIC_IMAGE_CDN_URL?.replace(/\/$/, "") ||
+  (CLOUDFRONT_ID ? `https://${CLOUDFRONT_ID}.cloudfront.net` : "");
+const IS_LOCAL_BACKEND = process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || !IMAGE_CDN_URL;
 
-export const cloudFrontUrl = IS_LOCAL_BACKEND ? "" : `https://${CLOUDFRONT_ID}.cloudfront.net`;
+export const cloudFrontUrl = IS_LOCAL_BACKEND ? "" : IMAGE_CDN_URL;
 
 /** Prefix that `nextImageUrl` prepends to logical image paths. */
 export const imageBaseUrl = IS_LOCAL_BACKEND ? "/api/local-image" : cloudFrontUrl;

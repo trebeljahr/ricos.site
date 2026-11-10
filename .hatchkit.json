@@ -23,5 +23,24 @@
   "coolifyRuntime": "image",
   "containerPorts": {
     "app": 3000
+  },
+  "s3Buckets": {
+    "assets": {
+      "name": "ricos-site-assets",
+      "publicUrl": "https://assets.ricos.site",
+      "cors": {
+        "origins": [
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "https://next.ricos.site",
+          "https://ricos.site"
+        ],
+        "methods": ["GET", "HEAD"],
+        "maxAgeSeconds": 86400,
+        "extraOrigins": ["https://next.ricos.site", "https://ricos.site"]
+      }
+    },
+    "tokenId": "9f32dce598cb84c867519ccbca2a5a97",
+    "accountId": "236db6b7957ea3079844334856fc162e"
   }
 }

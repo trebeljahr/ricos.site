@@ -33,83 +33,83 @@ export interface WaterPreset {
 export const WATER_PRESETS: Record<WaterPresetKey, WaterPreset> = {
   tropical: {
     label: "Tropical Lagoon",
-    absorption: [0.22, 0.032, 0.018],
-    scatterShallow: "#18c4d4",
-    scatterDeep: "#042c54",
-    sunScatterColor: "#4affdc",
-    fogDensity: 0.015,
-    causticsIntensity: 1.65,
-    godRayIntensity: 1.4,
-    waveHeight: 0.9,
-    waveChoppiness: 1.0,
-    waterClarity: 1.0,
-    sunElevation: 48,
+    absorption: [0.24, 0.036, 0.022],
+    scatterShallow: "#15b8c8",
+    scatterDeep: "#032648",
+    sunScatterColor: "#42ffd8",
+    fogDensity: 0.018,
+    causticsIntensity: 1.75,
+    godRayIntensity: 1.95,
+    waveHeight: 1.05,
+    waveChoppiness: 1.1,
+    waterClarity: 0.85,
+    sunElevation: 46,
     sunAzimuth: 35,
-    bloomIntensity: 0.85,
+    bloomIntensity: 0.72,
   },
   shallow: {
     label: "Shallow Reef",
-    absorption: [0.26, 0.044, 0.03],
-    scatterShallow: "#14b5a6",
-    scatterDeep: "#053447",
-    sunScatterColor: "#66ffd2",
-    fogDensity: 0.021,
-    causticsIntensity: 1.55,
-    godRayIntensity: 1.55,
-    waveHeight: 0.8,
-    waveChoppiness: 0.9,
-    waterClarity: 0.9,
-    sunElevation: 42,
+    absorption: [0.28, 0.048, 0.032],
+    scatterShallow: "#12a89d",
+    scatterDeep: "#042c3d",
+    sunScatterColor: "#5effcb",
+    fogDensity: 0.024,
+    causticsIntensity: 1.65,
+    godRayIntensity: 2.1,
+    waveHeight: 0.9,
+    waveChoppiness: 1.0,
+    waterClarity: 0.8,
+    sunElevation: 40,
     sunAzimuth: 28,
-    bloomIntensity: 0.95,
+    bloomIntensity: 0.78,
   },
   deep: {
     label: "Deep Pelagic",
-    absorption: [0.36, 0.082, 0.02],
-    scatterShallow: "#0b649c",
-    scatterDeep: "#020e26",
-    sunScatterColor: "#2eb0ff",
-    fogDensity: 0.026,
-    causticsIntensity: 1.15,
-    godRayIntensity: 1.5,
-    waveHeight: 1.35,
-    waveChoppiness: 1.25,
-    waterClarity: 0.85,
-    sunElevation: 38,
+    absorption: [0.38, 0.088, 0.024],
+    scatterShallow: "#0a5c8f",
+    scatterDeep: "#020d22",
+    sunScatterColor: "#28a8ff",
+    fogDensity: 0.028,
+    causticsIntensity: 1.25,
+    godRayIntensity: 2.0,
+    waveHeight: 1.5,
+    waveChoppiness: 1.35,
+    waterClarity: 0.65,
+    sunElevation: 36,
     sunAzimuth: 40,
-    bloomIntensity: 0.9,
+    bloomIntensity: 0.75,
   },
   murky: {
     label: "Kelp Forest (Murky)",
-    absorption: [0.34, 0.052, 0.135],
-    scatterShallow: "#2b8058",
-    scatterDeep: "#062116",
-    sunScatterColor: "#8ef068",
-    fogDensity: 0.042,
-    causticsIntensity: 1.0,
-    godRayIntensity: 1.85,
-    waveHeight: 1.05,
-    waveChoppiness: 1.05,
-    waterClarity: 0.55,
-    sunElevation: 34,
+    absorption: [0.35, 0.055, 0.14],
+    scatterShallow: "#267450",
+    scatterDeep: "#051c12",
+    sunScatterColor: "#86eb62",
+    fogDensity: 0.044,
+    causticsIntensity: 1.1,
+    godRayIntensity: 2.35,
+    waveHeight: 1.15,
+    waveChoppiness: 1.15,
+    waterClarity: 0.45,
+    sunElevation: 32,
     sunAzimuth: 25,
-    bloomIntensity: 1.0,
+    bloomIntensity: 0.82,
   },
   abyssal: {
     label: "Abyssal Twilight",
-    absorption: [0.44, 0.125, 0.042],
-    scatterShallow: "#09325c",
-    scatterDeep: "#010614",
-    sunScatterColor: "#1d75cc",
-    fogDensity: 0.034,
-    causticsIntensity: 0.8,
-    godRayIntensity: 1.2,
-    waveHeight: 1.15,
-    waveChoppiness: 1.1,
-    waterClarity: 0.75,
+    absorption: [0.46, 0.13, 0.046],
+    scatterShallow: "#082d52",
+    scatterDeep: "#010510",
+    sunScatterColor: "#1b6ec2",
+    fogDensity: 0.036,
+    causticsIntensity: 0.9,
+    godRayIntensity: 1.65,
+    waveHeight: 1.3,
+    waveChoppiness: 1.2,
+    waterClarity: 0.6,
     sunElevation: 24,
     sunAzimuth: 45,
-    bloomIntensity: 1.25,
+    bloomIntensity: 1.05,
   },
 };
 
@@ -163,8 +163,8 @@ export const CAMERA_VIEWPOINTS: CameraViewpoint[] = [
 ];
 
 /**
- * Exact CPU mirror of the shader's `waveHeightGeometric(vec2 p, float time, float amp, float chop)`
- * so camera waterline state, floating objects, and UnderwaterContext match the GPU wave surface.
+ * Exact CPU mirror of the shader's `waveHeightGeometric(vec2 p, float t)`
+ * so camera waterline state, wave spray bursts, and UnderwaterContext match the GPU wave surface.
  */
 export function evaluateWaveHeight(
   x: number,
@@ -174,31 +174,28 @@ export function evaluateWaveHeight(
   choppiness = 1.0,
 ): number {
   let h = 0.0;
-  const c = 0.28 * choppiness;
+  const c = Math.min(0.58, Math.max(0.05, 0.32 * choppiness));
 
-  // Swell 1
-  const p1 = x * 0.075 + z * 0.045 + time * 0.85;
-  h += Math.sin(p1 + c * Math.cos(p1)) * 0.48;
+  // 1. Primary rolling ocean swells
+  const p1 = (x * 0.86 + z * 0.51) * 0.085 + time * 0.92;
+  h += Math.sin(p1 + c * Math.cos(p1)) * 0.52;
 
-  // Swell 2
-  const p2 = -x * 0.055 + z * 0.082 - time * 0.72;
-  h += Math.sin(p2 + c * Math.cos(p2)) * 0.36;
+  const p2 = (-x * 0.58 + z * 0.81) * 0.095 - time * 0.78;
+  h += Math.sin(p2 + c * Math.cos(p2)) * 0.38;
 
-  // Cross wave 3
-  const p3 = x * 0.19 + z * 0.14 + time * 1.35;
-  h += Math.sin(p3 + c * 0.8 * Math.cos(p3)) * 0.2;
+  // 2. Cross-swells
+  const p3 = (x * 0.76 - z * 0.65) * 0.21 + time * 1.42;
+  h += Math.sin(p3 + c * 0.85 * Math.cos(p3)) * 0.22;
 
-  // Cross wave 4
-  const p4 = x * 0.15 - z * 0.23 - time * 1.15;
-  h += Math.sin(p4 + c * 0.8 * Math.cos(p4)) * 0.15;
+  const p4 = (x * 0.42 + z * 0.91) * 0.26 - time * 1.25;
+  h += Math.sin(p4 + c * 0.85 * Math.cos(p4)) * 0.16;
 
-  // Medium chop 5
-  const p5 = (x + z) * 0.42 + time * 2.05;
-  h += Math.sin(p5) * 0.08;
+  // 3. Wind-driven chop
+  const p5 = (x * 0.93 + z * 0.37) * 0.52 + time * 2.15;
+  h += Math.sin(p5 + c * 0.6 * Math.cos(p5)) * 0.09;
 
-  // Medium chop 6
-  const p6 = (x - z * 1.2) * 0.55 - time * 1.85;
-  h += Math.sin(p6) * 0.06;
+  const p6 = (x * 0.64 - z * 0.77) * 0.68 - time * 1.95;
+  h += Math.sin(p6 + c * 0.6 * Math.cos(p6)) * 0.065;
 
   return h * waveHeight;
 }

@@ -4,7 +4,7 @@
   "name": "ricos.site",
   "domain": "next.ricos.site",
   "features": ["analytics"],
-  "surfaces": "fullstack",
+  "surfaces": "static",
   "email": {
     "transactional": "none",
     "mailingList": "none"
@@ -19,5 +19,9 @@
   },
   "s3Provider": "existing",
   "deployTarget": "existing",
-  "mlServices": []
+  "mlServices": [],
+  "coolifyRuntime": "image",
+  "containerPorts": {
+    "app": 3000
+  }
 }

@@ -19,12 +19,15 @@ type RssContent = {
 
 function buildImageUrl(coverSrc: string): string | undefined {
   const cloudfrontId = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
-  if (!cloudfrontId) return undefined;
+  const origin =
+    process.env.NEXT_PUBLIC_IMAGE_CDN_URL?.replace(/\/$/, "") ||
+    (cloudfrontId ? `https://${cloudfrontId}.cloudfront.net` : "");
+  if (!origin) return undefined;
 
   const parsedPath = path.parse(coverSrc);
   const noExt = path.join(parsedPath.dir, parsedPath.name);
   const fixedSource = noExt.startsWith("/") ? noExt : `/${noExt}`;
-  return `https://${cloudfrontId}.cloudfront.net${fixedSource}/1080.webp`;
+  return `${origin}${fixedSource}/1080.webp`;
 }
 
 async function generateRssFeed() {

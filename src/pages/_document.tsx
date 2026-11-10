@@ -1,7 +1,9 @@
 import Document, { Head, Html, Main, NextScript } from "next/document";
 
 const cloudfrontId = process.env.NEXT_PUBLIC_CLOUDFRONT_ID;
-const cloudfrontOrigin = cloudfrontId ? `https://${cloudfrontId}.cloudfront.net` : null;
+const cloudfrontOrigin =
+  process.env.NEXT_PUBLIC_IMAGE_CDN_URL?.replace(/\/$/, "") ||
+  (cloudfrontId ? `https://${cloudfrontId}.cloudfront.net` : null);
 
 export default class MyDocument extends Document {
   render() {

@@ -1,11 +1,15 @@
+import { DemoReviewList } from "@components/demoReview/DemoReviewList";
 import Layout from "@components/Layout";
 import Header, { PageMain } from "@components/PostHeader";
-import Link from "next/link";
-import { pianoDemos } from "src/lib/pianoDemos";
+import type { GetServerSideProps } from "next";
+import type { ReviewState } from "src/lib/demoReview";
+import { readDemoReviews } from "src/lib/demoReviewStore";
+import { clientAddresses, servesPrivateNotes } from "src/lib/diaryStore";
 
-// Every piano demo, in curriculum order. Development only, like the demos.
+// Every piano demo, sorted by Rico's review (DemoReviewList). Development only,
+// like the demos.
 
-export default function PianoDemos() {
+export default function PianoDemos({ review }: { review: ReviewState | null }) {
   return (
     <Layout
       title="Piano demos"
@@ -16,29 +20,20 @@ export default function PianoDemos() {
     >
       <PageMain>
         <Header title="Piano demos" subtitle="Development only." />
-        <ol className="not-prose list-none border-t border-gray-300 p-0 dark:border-gray-700">
-          {pianoDemos.map((demo, i) => (
-            <li key={demo.slug} className="border-b border-gray-300 dark:border-gray-700">
-              <Link
-                className="group flex items-baseline gap-stack py-stack transition-colors hover:text-orange-700 dark:hover:text-orange-300"
-                href={`/piano/${demo.slug}`}
-              >
-                <span className="font-mono text-sm text-gray-500">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <strong className="text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
-                  {demo.title}
-                </strong>
-              </Link>
-            </li>
-          ))}
-        </ol>
+        <div className="not-prose">
+          <DemoReviewList review={review} series="piano" />
+        </div>
       </PageMain>
     </Layout>
   );
 }
 
-export async function getStaticProps() {
-  if (process.env.NODE_ENV === "production") return { notFound: true } as const;
-  return { props: {} };
-}
+export const getServerSideProps: GetServerSideProps<{
+  review: ReviewState | null;
+}> = async ({ req }) => {
+  // First and literal: the production build inlines NODE_ENV, so everything
+  // below is dead code there and the deployed route is a plain 404.
+  if (process.env.NODE_ENV !== "development") return { notFound: true };
+  if (!servesPrivateNotes(process.env, clientAddresses(req))) return { props: { review: null } };
+  return { props: { review: { reviews: readDemoReviews("piano") } } };
+};

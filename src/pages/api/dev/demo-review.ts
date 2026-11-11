@@ -1,14 +1,15 @@
 /**
- * Dev-only endpoint behind the demo review on /computer/demos and the demo
- * pages: reads the review, sets one demo's verdict or note, takes pasted
- * screenshots (`{ slug, image: { type, data } }`, data in base64) and serves them
- * back (`GET ?image=<name>`). The record stays in
+ * Dev-only endpoint behind the demo review on /computer/demos, /piano/demos and
+ * the demo pages. Every request names its series (`?series=piano`; computer when
+ * left out, see demoReviewSeries.ts). It reads the review, sets one demo's
+ * verdict or note, takes pasted screenshots (`{ slug, image: { type, data } }`,
+ * data in base64) and serves them back (`GET ?image=<name>`). The records stay in
  * private Notes (see demoReviewStore.ts). 404s in production and for any other
  * machine.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { computerDemos } from "src/lib/computerDemos";
 import { applyReview, IMAGE_LIMIT, parseReviewUpdate, type ReviewUpdate } from "src/lib/demoReview";
+import { isReviewSeries, seriesDemos } from "src/lib/demoReviewSeries";
 import {
   isImageType,
   readDemoReviews,
@@ -33,10 +34,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
+  const series = req.query?.series ?? "computer";
+  if (!isReviewSeries(series)) {
+    res.status(400).json({ error: "Unknown series" });
+    return;
+  }
+
   if (req.method === "GET") {
     const image = req.query?.image;
     if (image !== undefined) {
-      const found = typeof image === "string" ? readReviewImage(image) : null;
+      const found = typeof image === "string" ? readReviewImage(series, image) : null;
       if (!found) {
         res.status(404).json({ error: "No such image" });
         return;
@@ -47,7 +54,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
     try {
-      res.status(200).json({ reviews: readDemoReviews() });
+      res.status(200).json({ reviews: readDemoReviews(series) });
     } catch (error) {
       res.status(500).json({ error: `Could not read: ${String(error)}` });
     }
@@ -61,7 +68,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const { slug, verdict, note, images, image } = (req.body ?? {}) as Record<string, unknown>;
-  if (!computerDemos.some((demo) => demo.slug === slug)) {
+  if (!seriesDemos(series).some((demo) => demo.slug === slug)) {
     res.status(400).json({ error: "Unknown demo" });
     return;
   }
@@ -75,15 +82,15 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       return;
     }
     try {
-      const reviews = readDemoReviews();
+      const reviews = readDemoReviews(series);
       const saved = reviews[name]?.images ?? [];
       if (saved.length >= IMAGE_LIMIT) {
         res.status(400).json({ error: `At most ${IMAGE_LIMIT} screenshots per note` });
         return;
       }
-      const file = saveReviewImage(name, type, bytes);
+      const file = saveReviewImage(series, name, type, bytes);
       const next = applyReview(reviews, name, { images: [...saved, file] }, new Date());
-      writeDemoReviews(next);
+      writeDemoReviews(series, next);
       res.status(200).json({ image: file, review: next[name] ?? null });
     } catch (error) {
       res.status(500).json({ error: `Could not save: ${String(error)}` });
@@ -98,9 +105,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const reviews = readDemoReviews();
+    const reviews = readDemoReviews(series);
     const next = applyReview(reviews, name, update, new Date());
-    if (next !== reviews) writeDemoReviews(next);
+    if (next !== reviews) writeDemoReviews(series, next);
     res.status(200).json({ review: next[name] ?? null });
   } catch (error) {
     res.status(500).json({ error: `Could not save: ${String(error)}` });

@@ -1,11 +1,20 @@
 import Layout from "@components/Layout";
 import { PageMain } from "@components/PostHeader";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { type PianoDemoSlug, pianoDemos, pianoDemosHome } from "src/lib/pianoDemos";
 
 const linkClass =
   "inline-flex min-h-10 min-w-0 items-center rounded border border-gray-300 px-3 text-sm font-medium text-gray-800 transition-colors hover:border-orange-500 hover:text-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 dark:border-gray-700 dark:text-gray-200 dark:hover:border-orange-400 dark:hover:text-orange-300";
+
+// Literal, so the production build drops the review with its import.
+const DemoReviewBar =
+  process.env.NODE_ENV === "development"
+    ? dynamic(() => import("../demoReview/DemoReviewBar").then((module) => module.DemoReviewBar), {
+        ssr: false,
+      })
+    : null;
 
 function PianoDemoNav({ current, bottom = false }: { current: PianoDemoSlug; bottom?: boolean }) {
   const index = pianoDemos.findIndex((demo) => demo.slug === current);
@@ -61,6 +70,7 @@ function PianoDemoNav({ current, bottom = false }: { current: PianoDemoSlug; bot
           )}
         </div>
       </div>
+      {DemoReviewBar && !bottom && <DemoReviewBar current={current} key={current} series="piano" />}
     </nav>
   );
 }

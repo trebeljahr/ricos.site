@@ -1,6 +1,7 @@
-// Rico's review of the computer-series demos. Pure logic, shared by
-// /computer/demos, the bar on each demo page, the endpoint and
-// `pnpm demo:addressed`; the file itself is handled in demoReviewStore.ts.
+// Rico's review of the demos, one queue per series (demoReviewSeries.ts). Pure
+// logic, shared by /computer/demos and /piano/demos, the bar on each demo page,
+// the endpoint and `pnpm demo:addressed`; the files are handled in
+// demoReviewStore.ts.
 //
 // A demo has one of three stages, and the demo list is sorted by them:
 //   queue     never looked at, or its feedback was addressed
@@ -19,7 +20,7 @@ export type ReviewStage = (typeof REVIEW_STAGES)[number];
 /** One finished iteration: Rico's feedback and the answer to it. */
 export type ReviewRound = {
   note: string;
-  /** Screenshots that came with the note, file names in REVIEW_IMAGE_DIR. */
+  /** Screenshots that came with the note, file names in the series' image folder. */
   images?: string[];
   rejectedAt?: number;
   addressedAt: number;
@@ -30,7 +31,7 @@ export type ReviewRound = {
 export type DemoReview = {
   verdict?: ReviewVerdict;
   note: string;
-  /** Pasted screenshots, file names in REVIEW_IMAGE_DIR, oldest first. */
+  /** Pasted screenshots, file names in the series' image folder, oldest first. */
   images?: string[];
   /** Local calendar day of the last change. */
   updated: string;
@@ -56,7 +57,6 @@ export type ReviewState = { reviews: DemoReviews };
 export const NOTE_LIMIT = 100_000;
 
 /** Screenshots live next to the record, in the same private Notes folder. */
-export const REVIEW_IMAGE_DIR = "demo-review-images";
 export const IMAGE_LIMIT = 30;
 
 export const IMAGE_TYPES = {

@@ -13,7 +13,7 @@ const linkClass =
 // Literal, so the production build drops the review with its import.
 const DemoReviewBar =
   process.env.NODE_ENV === "development"
-    ? dynamic(() => import("./DemoReviewBar").then((module) => module.DemoReviewBar), {
+    ? dynamic(() => import("../demoReview/DemoReviewBar").then((module) => module.DemoReviewBar), {
         ssr: false,
       })
     : null;
@@ -79,7 +79,9 @@ export function ComputerDemoNav({
           )}
         </div>
       </div>
-      {DemoReviewBar && !bottom && <DemoReviewBar current={current} key={current} />}
+      {DemoReviewBar && !bottom && (
+        <DemoReviewBar current={current} key={current} series="computer" />
+      )}
     </nav>
   );
 }

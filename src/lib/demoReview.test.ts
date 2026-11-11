@@ -6,6 +6,7 @@ import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import handler from "../pages/api/dev/demo-review";
 import { getServerSideProps } from "../pages/computer/demos";
+import { getServerSideProps as getPianoServerSideProps } from "../pages/piano/demos";
 import { UNIVERSAL_GATE_LEVELS } from "./computer/tutorial/levels/universalGates";
 import { computerDemos } from "./computerDemos";
 import {
@@ -22,7 +23,11 @@ import {
   roundOf,
   stageOf,
 } from "./demoReview";
-import { REVIEW_FILE, readDemoReviews, writeDemoReviews } from "./demoReviewStore";
+import { REVIEW_SERIES } from "./demoReviewSeries";
+import { readDemoReviews, writeDemoReviews } from "./demoReviewStore";
+import { pianoDemos } from "./pianoDemos";
+
+const REVIEW_FILE = REVIEW_SERIES.computer.file;
 
 const NOW = new Date(2026, 10, 4, 12);
 const LATER = new Date(2026, 10, 5, 12);
@@ -266,6 +271,18 @@ describe("demo files", () => {
   });
 });
 
+describe("piano demo files", () => {
+  // The list is pianoDemos, so a demo page missing there is never reviewed.
+  it("holds every demo page", () => {
+    const pages = fs
+      .readdirSync(path.join("src", "pages", "piano"))
+      .filter((file) => file.endsWith(".tsx") && !file.startsWith("["))
+      .map((file) => file.replace(".tsx", ""))
+      .filter((page) => page !== "index" && page !== "demos");
+    expect(pages.sort()).toEqual(pianoDemos.map((demo) => demo.slug).sort());
+  });
+});
+
 describe("store and endpoint", () => {
   let dir: string;
 
@@ -318,17 +335,17 @@ describe("store and endpoint", () => {
   });
 
   it("starts empty and reads back what it wrote, creating the folder", () => {
-    expect(readDemoReviews()).toEqual({});
+    expect(readDemoReviews("computer")).toEqual({});
     const reviews = rejected();
-    writeDemoReviews(reviews);
-    expect(readDemoReviews()).toEqual(reviews);
+    writeDemoReviews("computer", reviews);
+    expect(readDemoReviews("computer")).toEqual(reviews);
     expect(fs.readdirSync(path.join(dir, "texts"))).toEqual([REVIEW_FILE]);
   });
 
   it("saves a verdict and then a note, and serves them back", () => {
     expect(call({ slug: "die-zoom", verdict: "rejected" }).status).toBe(200);
     expect(call({ slug: "die-zoom", note: "labels overlap" }).status).toBe(200);
-    expect(readDemoReviews()["die-zoom"]).toMatchObject({
+    expect(readDemoReviews("computer")["die-zoom"]).toMatchObject({
       verdict: "rejected",
       note: "labels overlap",
     });
@@ -346,7 +363,7 @@ describe("store and endpoint", () => {
     expect(upload.status).toBe(200);
     const name = (upload.json as { image: string }).image;
     expect(name).toMatch(/^die-zoom-\d+\.png$/);
-    expect(readDemoReviews()["die-zoom"].images).toEqual([name]);
+    expect(readDemoReviews("computer")["die-zoom"].images).toEqual([name]);
     expect(fs.readFileSync(path.join(dir, "texts", "demo-review-images", name))).toEqual(png);
 
     const served = call(undefined, { method: "GET" }, { image: name });
@@ -357,13 +374,13 @@ describe("store and endpoint", () => {
 
     expect(call({ slug: "die-zoom", image: { type: "text/html", data: "aGk=" } }).status).toBe(400);
     expect(call({ slug: "die-zoom", images: [] }).status).toBe(200);
-    expect(readDemoReviews()["die-zoom"]).toBeUndefined();
+    expect(readDemoReviews("computer")["die-zoom"]).toBeUndefined();
   });
 
   it("refuses a demo that does not exist and a verdict that does not exist", () => {
     expect(call({ slug: "nope", verdict: "accepted" }).status).toBe(400);
     expect(call({ slug: "clock-scope", verdict: "great" }).status).toBe(400);
-    expect(readDemoReviews()).toEqual({});
+    expect(readDemoReviews("computer")).toEqual({});
   });
 
   it("does not overwrite a file it cannot read", () => {
@@ -387,14 +404,53 @@ describe("store and endpoint", () => {
   });
 
   it("serves the demo list only under next dev, with the review only to this machine", async () => {
-    const page = (address = "127.0.0.1") =>
-      getServerSideProps({
-        req: { headers: {}, socket: { remoteAddress: address } },
-      } as unknown as GetServerSidePropsContext);
+    for (const props of [getServerSideProps, getPianoServerSideProps]) {
+      vi.stubEnv("NODE_ENV", "development");
+      const page = (address = "127.0.0.1") =>
+        props({
+          req: { headers: {}, socket: { remoteAddress: address } },
+        } as unknown as GetServerSidePropsContext);
 
-    expect(await page()).toEqual({ props: { review: { reviews: {} } } });
-    expect(await page("192.168.1.20")).toEqual({ props: { review: null } });
-    vi.stubEnv("NODE_ENV", "production");
-    expect(await page()).toEqual({ notFound: true });
+      expect(await page()).toEqual({ props: { review: { reviews: {} } } });
+      expect(await page("192.168.1.20")).toEqual({ props: { review: null } });
+      vi.stubEnv("NODE_ENV", "production");
+      expect(await page()).toEqual({ notFound: true });
+    }
+  });
+
+  it("keeps the piano review in its own file, with its own demos and screenshots", () => {
+    const piano = { series: "piano" };
+    expect(call({ slug: "chord-builder", verdict: "rejected" }, {}, piano).status).toBe(200);
+    expect(call({ slug: "chord-builder", note: "too quiet" }, {}, piano).status).toBe(200);
+    expect(readDemoReviews("piano")["chord-builder"]).toMatchObject({
+      verdict: "rejected",
+      note: "too quiet",
+    });
+    expect(readDemoReviews("computer")).toEqual({});
+    expect(fs.readdirSync(path.join(dir, "texts"))).toEqual([REVIEW_SERIES.piano.file]);
+    expect(call(undefined, { method: "GET" }, piano).json).toMatchObject({
+      reviews: { "chord-builder": { verdict: "rejected" } },
+    });
+    expect(call(undefined, { method: "GET" }).json).toEqual({ reviews: {} });
+
+    // A computer demo is not a piano demo, and the other way round.
+    expect(call({ slug: "die-zoom", verdict: "accepted" }, {}, piano).status).toBe(400);
+    expect(call({ slug: "chord-builder", verdict: "accepted" }).status).toBe(400);
+    expect(call({ slug: "chord-builder", verdict: "accepted" }, {}, { series: "x" }).status).toBe(
+      400,
+    );
+
+    const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 4, 5, 6]);
+    const upload = call(
+      { slug: "chord-builder", image: { type: "image/png", data: png.toString("base64") } },
+      {},
+      piano,
+    );
+    const name = (upload.json as { image: string }).image;
+    expect(fs.readFileSync(path.join(dir, "texts", REVIEW_SERIES.piano.imageDir, name))).toEqual(
+      png,
+    );
+    expect(call(undefined, { method: "GET" }, { ...piano, image: name }).sent).toEqual(png);
+    expect(call(undefined, { method: "GET" }, { image: name }).status).toBe(404);
   });
 });

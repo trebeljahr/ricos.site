@@ -9,8 +9,11 @@ const defaultSeoInfo = {
     "Welcome to my R3F Playground! It's where I experiment with all things Three.js and React Three Fibre to learn those technologies, building out little demos, trying to improve my understanding",
   url: "/r3f",
   keywords: ["threejs", "react-three-fiber", "r3f", "3D", "programming", "graphics", "webgl"],
-  image: "/assets/pages/r3f.png",
-  imageAlt: "image of a 3D playground",
+  image: "/og/interactive-3d-demos.jpg",
+  imageAlt:
+    "Interactive 3D Demos title over a plasma ball, a shader pattern, a glowing sword, a snow forest, lightning and a soldier",
+  imageWidth: 1200,
+  imageHeight: 630,
 };
 
 // Index page intentionally avoids ThreeFiberLayout: there's no scene to
@@ -26,6 +29,8 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
       description: seo.metaDescription,
       image: seo.ogImage,
       imageAlt: seo.ogImageAlt,
+      imageWidth: seo.ogImageWidth,
+      imageHeight: seo.ogImageHeight,
       keywords: seo.keywords,
     }),
   };

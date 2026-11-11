@@ -2,8 +2,10 @@
   "/r3f": {
     "metaTitle": "R3F Playground - 3D Demos with React Three Fiber",
     "metaDescription": "Explore interactive 3D demos built with React Three Fiber and Three.js. Scenes, models, particles, controllers, and experiments in the browser.",
-    "ogImage": "/assets/pages/r3f.png",
-    "ogImageAlt": "image of a 3D playground",
+    "ogImage": "/og/interactive-3d-demos.jpg",
+    "ogImageWidth": 1200,
+    "ogImageHeight": 630,
+    "ogImageAlt": "Interactive 3D Demos title over a plasma ball, a shader pattern, a glowing sword, a snow forest, lightning and a soldier",
     "keywords": [
       "react three fiber",
       "three.js",

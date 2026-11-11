@@ -5,6 +5,9 @@ export type SeoInfo = {
   metaDescription: string;
   ogImage: string;
   ogImageAlt: string;
+  /** Size of `ogImage` when it is a file in public/, which skips the image pipeline. */
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   keywords: string[];
 };
 

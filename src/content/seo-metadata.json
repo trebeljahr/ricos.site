@@ -4695,8 +4695,10 @@
   "/r3f": {
     "metaTitle": "R3F Playground - 3D Demos with React Three Fiber",
     "metaDescription": "Interactive 3D demos built with React Three Fiber and Three.js. Scenes, models, particles, controllers and experiments.",
-    "ogImage": "/assets/pages/r3f.png",
-    "ogImageAlt": "image of a 3D playground",
+    "ogImage": "/og/interactive-3d-demos.jpg",
+    "ogImageWidth": 1200,
+    "ogImageHeight": 630,
+    "ogImageAlt": "Interactive 3D Demos title over a plasma ball, a shader pattern, a glowing sword, a snow forest, lightning and a soldier",
     "keywords": [
       "react three fiber",
       "three.js",
@@ -9391,14 +9393,7 @@
     "metaDescription": "Browse writing and notes on programming, design, art and creative work. Read about creative coding, visual experiments and how things are built.",
     "ogImage": "/assets/blog/fractal-garden.png",
     "ogImageAlt": "a colorful procedural fractal garden",
-    "keywords": [
-      "programming",
-      "engineering",
-      "design",
-      "art",
-      "music",
-      "beauty"
-    ]
+    "keywords": ["programming", "engineering", "design", "art", "music", "beauty"]
   },
   "/themes/on-the-road": {
     "metaTitle": "On the Road – Rico Trebeljahr",
@@ -9441,13 +9436,7 @@
     "metaDescription": "Browse writing and notes on mathematics, computation, physics and engineering. Explore the ideas that underpin programming and technology.",
     "ogImage": "/assets/blog/vector-demo.png",
     "ogImageAlt": "an animated diagram of vector arithmetic",
-    "keywords": [
-      "mathematics",
-      "programming",
-      "computation",
-      "physics",
-      "engineering"
-    ]
+    "keywords": ["mathematics", "programming", "computation", "physics", "engineering"]
   },
   "/themes/science-and-nature": {
     "metaTitle": "Science & Nature – Rico Trebeljahr",
@@ -9492,21 +9481,13 @@
     "metaDescription": "Browse personal essays by Rico Trebeljahr about flow, decisions and being alive. Follow reflections on personal growth and everyday experience.",
     "ogImage": "/assets/blog/keyboard.jpg",
     "ogImageAlt": "a worn keyboard ready for writing",
-    "keywords": [
-      "personal development"
-    ]
+    "keywords": ["personal development"]
   },
   "/timeline": {
     "metaTitle": "Writing, Photos and Projects Timeline – Rico Trebeljahr",
     "metaDescription": "Everything published on ricos.site in one chronological stream: writing, notes, travel, photography, projects, and R3F demos.",
     "ogImage": "/assets/blog/network.jpg",
     "ogImageAlt": "a network of connected dots",
-    "keywords": [
-      "timeline",
-      "writing",
-      "photography",
-      "projects",
-      "r3f"
-    ]
+    "keywords": ["timeline", "writing", "photography", "projects", "r3f"]
   }
 }

@@ -18,7 +18,12 @@
 // AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME (source),
 // R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, NEXT_PUBLIC_CLOUDFRONT_ID.
 // R2_BUCKET defaults to ricos-site-assets. Exits 1 if any source fails.
-import { GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import sharp from "sharp";
 
 const WIDTHS = [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];

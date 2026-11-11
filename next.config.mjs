@@ -222,6 +222,13 @@ const nextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      {
+        // The Coolify test host, live until the DNS cutover: keep it out of
+        // search results so it never competes with ricos.site.
+        source: "/:path*",
+        has: [{ type: "host", value: "next.ricos.site" }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
     ];
   },
   webpack: (config, { isServer }) => {

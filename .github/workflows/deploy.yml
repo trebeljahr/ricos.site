@@ -12,8 +12,12 @@
 #               reports that same sha, record a GitHub Deployment.
 #
 # Notes is checked out at its `main`, not at the submodule pin, the same as
-# the Vercel build did (vercel-submodule-workaround.sh): push Notes first,
-# then a ricos.site commit, and the site carries both.
+# the Vercel build did (vercel-submodule-workaround.sh). A push to Notes
+# `main` starts this workflow through workflow_dispatch (the Notes repo's
+# .github/workflows/main.yaml, token secret RICOS_SITE_DEPLOY_TOKEN there),
+# so a vault-only change deploys without a ricos.site commit. Such a run
+# rebuilds the same ricos.site sha; /version.json's `notes` field tells the
+# two builds apart.
 #
 # Repo secrets (hatchkit sets the Coolify ones during adopt / sync):
 #   COOLIFY_BASE_URL, COOLIFY_RESOURCE_UUID, COOLIFY_DEPLOY_SECRET,
@@ -40,6 +44,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      notes_sha: ${{ steps.notes.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
       - name: Check out the Notes content
@@ -50,6 +56,9 @@ jobs:
           path: src/content/Notes
           ssh-key: ${{ secrets.NOTES_DEPLOY_KEY }}
           persist-credentials: false
+      - name: Read the Notes commit
+        id: notes
+        run: echo "sha=$(git -C src/content/Notes rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -61,9 +70,10 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          # Bakes the commit into /version.json, which the deploy job polls.
+          # Bakes both commits into /version.json, which the deploy job polls.
           build-args: |
             COMMIT_SHA=${{ github.sha }}
+            NOTES_SHA=${{ steps.notes.outputs.sha }}
           tags: |
             ghcr.io/${{ github.repository }}:main
             ghcr.io/${{ github.repository }}:${{ github.sha }}
@@ -312,6 +322,31 @@ jobs:
             echo "::error::(or as repo variables), or run \`hatchkit regen-infra\`."
             exit 1
           fi
+
+      # A run started by a Notes push rebuilds the ricos.site commit that is
+      # already live, so the check above passes against the old container.
+      # This one waits until the site serves the Notes commit this run built.
+      - name: Verify the deployed Notes content
+        env:
+          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
+          NOTES_SHA: ${{ needs.build.outputs.notes_sha }}
+        if: env.COOLIFY_BASE_URL != ''
+        run: |
+          set -uo pipefail
+          if [ -z "$NOTES_SHA" ]; then
+            echo "::error::the build job reported no Notes commit."
+            exit 1
+          fi
+          got=""
+          for i in $(seq 1 40); do
+            got=$(curl -fsSL --max-time 10 "https://ricos.site/version.json?notes_cb=$i$RANDOM" 2>/dev/null \
+                    | jq -r '.notes' 2>/dev/null || true)
+            if [ "$got" = "$NOTES_SHA" ]; then echo "✓ ricos.site serves Notes $NOTES_SHA"; exit 0; fi
+            echo "  notes: ${got:-<no response>} — waiting ($i/40)"
+            sleep 15
+          done
+          echo "::error::ricos.site never reported Notes $NOTES_SHA (last seen: ${got:-<no response>})."
+          exit 1
 
       # Leave a GitHub Deployment for this commit on the `web` channel, so
       # HQ's Shipped view and the Environments page show what is

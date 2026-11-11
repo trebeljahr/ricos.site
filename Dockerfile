@@ -56,9 +56,11 @@ RUN --mount=type=secret,id=dotenvx_private_key,env=DOTENV_PRIVATE_KEY_PRODUCTION
 
 # One id per build. Next compares it on every client navigation, so a tab
 # still running the previous deploy does a full reload instead of mixing
-# chunks from two builds.
+# chunks from two builds. A Notes-only push rebuilds the same site commit
+# with new content, so the Notes commit is part of the id.
 ARG COMMIT_SHA
-ENV NEXT_DEPLOYMENT_ID=${COMMIT_SHA}
+ARG NOTES_SHA
+ENV NEXT_DEPLOYMENT_ID=${COMMIT_SHA}-${NOTES_SHA}
 ENV NEXT_TELEMETRY_DISABLED=1
 # The site build peaks well above Node's default heap.
 ENV NODE_OPTIONS=--max-old-space-size=6144
@@ -66,8 +68,9 @@ RUN --mount=type=secret,id=dotenvx_private_key,env=DOTENV_PRIVATE_KEY_PRODUCTION
     pnpm dlx @dotenvx/dotenvx@1.64.0 run -f .env.production -- pnpm build
 
 # /version.json lets the deploy job ask the running container which commit it
-# serves, instead of trusting that Coolify swapped it.
-RUN printf '{"commit":"%s"}\n' "$COMMIT_SHA" > public/version.json
+# serves, instead of trusting that Coolify swapped it. `notes` is the content
+# commit, so a vault-only deploy can be checked too.
+RUN printf '{"commit":"%s","notes":"%s"}\n' "$COMMIT_SHA" "$NOTES_SHA" > public/version.json
 
 # ---------------------------------------------------------------------------
 # Runtime: node .next/standalone/server.js on PORT=3000

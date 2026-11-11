@@ -199,6 +199,9 @@ export const useCustomLightbox = ({ photos }: { photos: (ImageProps & { id: stri
     placeholderImg.style.zIndex = "100";
 
     document.body.appendChild(placeholderImg);
+    // The slot stays empty until the clone lands in it, so the photo slides
+    // back into place instead of flying onto a copy of itself.
+    galleryImg.style.visibility = "hidden";
 
     placeholderImg.getBoundingClientRect();
     galleryImg.getBoundingClientRect();
@@ -208,9 +211,17 @@ export const useCustomLightbox = ({ photos }: { photos: (ImageProps & { id: stri
     placeholderImg.style.width = `${galleryRect.width}px`;
     placeholderImg.style.height = `${galleryRect.height}px`;
 
-    placeholderImg.addEventListener("transitionend", () => {
+    let landed = false;
+    const land = () => {
+      if (landed) return;
+      landed = true;
+      galleryImg.style.removeProperty("visibility");
       placeholderImg.remove();
-    });
+    };
+    placeholderImg.addEventListener("transitionend", land);
+    // No transitionend when nothing moved, or in a backgrounded tab: never
+    // leave the slot hidden.
+    window.setTimeout(land, ANIMATION_MS + 100);
   };
 
   const openModal = (index: number, event?: MouseEvent) => {

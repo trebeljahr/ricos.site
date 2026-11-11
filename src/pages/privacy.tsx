@@ -10,6 +10,7 @@ import Link from "next/link";
 function ContactEmail() {
   return (
     <span
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: a fixed string; React cannot emit the HTML comments Cloudflare reads.
       dangerouslySetInnerHTML={{
         __html:
           '<!--email_off--><a href="mailto:imprint+ricos.site@trebeljahr.com" class="text-accent hover:underline">imprint+ricos.site@trebeljahr.com</a><!--/email_off-->',
@@ -47,16 +48,12 @@ export default function PrivacyPage() {
 
           <h2>Hosting</h2>
           <p>
-            This site is hosted by Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA.
-            When you visit the site, Vercel automatically processes server-log data (IP address,
-            user agent, timestamp, referrer) to deliver the site and protect against abuse. Legal
-            basis: Art. 6 (1) (f) GDPR (legitimate interest in operating the site securely).
-          </p>
-          <p>
-            Before a request reaches Vercel, it passes through the network of Cloudflare, Inc., 101
-            Townsend St, San Francisco, CA 94107, USA. Cloudflare receives the IP address, user
-            agent and referrer of each request to deliver the site and protect it against abuse. The
-            same legal basis applies.
+            This site is hosted by Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA,
+            on its Workers platform. When you visit the site, Cloudflare automatically processes
+            server-log data (IP address, user agent, timestamp, referrer) to deliver the site and
+            protect it against abuse. The forms on this site (newsletter signup and confirmation)
+            are answered by code that also runs at Cloudflare. Legal basis: Art. 6 (1) (f) GDPR
+            (legitimate interest in operating the site securely).
           </p>
 
           <h2>Performance measurement: Cloudflare Web Analytics</h2>
@@ -90,12 +87,10 @@ export default function PrivacyPage() {
             parties.
           </p>
           <p>
-            Your browser loads the Plausible script from this site (<code>ricos.site</code>) and
-            sends its events here too, not to <code>plausible.trebeljahr.com</code> directly. The
-            site server forwards each event to my Plausible instance together with your IP address
-            and user agent, so that Plausible can count visitors and derive the country as described
-            below. The forwarding keeps no copy of the data; the server-log processing described
-            under "Hosting" still applies.
+            Your browser loads the Plausible script from <code>plausible.trebeljahr.com</code> and
+            sends its events there directly. Plausible receives your IP address and user agent with
+            each event, so that it can count visitors and derive the country as described below. If
+            your browser or a content blocker blocks that host, no visit is recorded.
           </p>
           <p>
             Plausible does <strong>not use cookies</strong> and does not store anything on your
@@ -151,9 +146,8 @@ export default function PrivacyPage() {
           </p>
           <p>
             You can unsubscribe at any time via the link in every email or by emailing{" "}
-            <ContactEmail />
-            . After you unsubscribe, your address stays on record as unsubscribed so that you get no
-            more emails. Ask me and I delete it completely.
+            <ContactEmail />. After you unsubscribe, your address stays on record as unsubscribed so
+            that you get no more emails. Ask me and I delete it completely.
           </p>
 
           <h2>RSS feeds</h2>
@@ -179,9 +173,7 @@ export default function PrivacyPage() {
             </li>
           </ul>
           <p>
-            To exercise any of these rights, contact{" "}
-            <ContactEmail />
-            .
+            To exercise any of these rights, contact <ContactEmail />.
           </p>
         </article>
 

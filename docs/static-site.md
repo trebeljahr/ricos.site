@@ -1,13 +1,13 @@
 # ricos.site on Cloudflare Workers
 
 Production is a static export of the Next.js site, served by two Workers on
-the `ricos.site` zone. No server and no container run for the site.
+the `ricos.site` zone. Plausible loads straight from `plausible.trebeljahr.com`
+(no first-party proxy; old `/kestrel/*` paths answer 404). No server and no container run for the site.
 
 | Route | Worker | What |
 | --- | --- | --- |
 | `ricos.site/*` | `ricos-site-client` (`wrangler.jsonc`) | the files in `out/`, with `_redirects` and `_headers`; no Worker code runs, so these requests are free and unmetered |
-| `ricos.site/api/*` | `ricos-site-api` (`workers/api`) | signup, announce signup (CORS for Rico's other sites), confirm link, `/api/quote`, `/api/random-photo`, `/api/emergency`, `/api/kestrel`, old `/api/img/*` links (301 to `assets.ricos.site`) |
-| `ricos.site/kestrel/*` | `ricos-site-api` | the first-party Plausible script and events |
+| `ricos.site/api/*` | `ricos-site-api` (`workers/api`) | signup, announce signup (CORS for Rico's other sites), confirm link, `/api/quote`, `/api/random-photo`, `/api/emergency`, old `/api/img/*` links (301 to `assets.ricos.site`) |
 
 Routes are made once with the Cloudflare API, not in the wrangler configs, so
 a deploy never changes them and the CI token needs no zone permission.
@@ -45,13 +45,12 @@ pnpm build && pnpm api:data && pnpm preview
 ```
 
 `pnpm preview` (`src/scripts/static/preview.mjs`) runs both Workers under
-`wrangler dev --local` behind one port that routes `/api/*` and `/kestrel/*`
-like the zone. Secrets for the API Worker come from `workers/api/.dev.vars`
+`wrangler dev --local` behind one port that routes `/api/*` like the zone. Secrets for the API Worker come from `workers/api/.dev.vars`
 (gitignored).
 
 `node src/scripts/static/parity.mjs <A> <B>` compares two hosts: every sitemap
 path plus extras by status, redirect target, title and content type, then the
-API answers (validation, CORS, confirm redirect, kestrel, quote, photo).
+API answers (validation, CORS, confirm redirect, quote, photo).
 
 ## Deploy
 

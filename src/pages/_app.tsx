@@ -6,6 +6,10 @@ import { useEffect } from "react";
 import { installHistoryTracking } from "src/lib/historyState";
 import "../styles/globals.css";
 
+/** Plausible script with the extensions this site uses (file downloads, outbound links, tagged events…). */
+const PLAUSIBLE_SCRIPT =
+  "script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js";
+
 // next/font/google previously loaded Inter and passed `inter.className` as
 // a prop to page components, but no page component actually applies that
 // prop — so the 49KB woff2 was preloaded at high priority on every page
@@ -51,13 +55,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       <PlausibleProvider
-        // First-party proxy of plausible.trebeljahr.com, see rewrites in next.config.mjs.
-        src="/kestrel/k.js"
+        // Straight from the self-hosted instance, which also takes the events.
+        // No first-party proxy: a visitor who blocks it is not counted.
+        src={`https://plausible.trebeljahr.com/js/${PLAUSIBLE_SCRIPT}`}
         scriptProps={
-          {
-            "data-domain": "ricos.site",
-            "data-api": "/kestrel/k",
-          } as React.ScriptHTMLAttributes<HTMLScriptElement>
+          { "data-domain": "ricos.site" } as React.ScriptHTMLAttributes<HTMLScriptElement>
         }
         enabled={process.env.NODE_ENV === "production"}
       >

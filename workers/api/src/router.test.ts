@@ -46,7 +46,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.unstubAllGlobals();
   delete process.env.SITE_URL;
 });
 
@@ -192,54 +191,6 @@ describe("random picks and secrets", () => {
   });
 });
 
-describe("kestrel (first-party Plausible)", () => {
-  it("forwards events with the visitor's address", async () => {
-    const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) =>
-      Response.json({ ok: true }, { status: 202 }),
-    );
-    vi.stubGlobal("fetch", fetchMock);
-    const res = await call(
-      req("/kestrel/k", {
-        method: "POST",
-        ip: "198.51.100.7",
-        headers: { "content-type": "text/plain", "user-agent": "UA" },
-        body: '{"n":"pageview"}',
-      }),
-    );
-    expect(res.status).toBe(202);
-    expect(res.headers.get("cache-control")).toBe("no-store");
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe("https://plausible.trebeljahr.com/api/event");
-    expect(init?.headers).toMatchObject({
-      "X-Plausible-IP": "198.51.100.7",
-      "User-Agent": "UA",
-      "Content-Type": "text/plain",
-    });
-    expect(new TextDecoder().decode(init?.body as ArrayBuffer)).toBe('{"n":"pageview"}');
-  });
-
-  it("serves the script from Plausible", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(
-        async () =>
-          new Response("!function(){}", {
-            headers: { "content-type": "application/javascript", "set-cookie": "x=1" },
-          }),
-      ),
-    );
-    const res = await call(req("/kestrel/k.js"));
-    expect(res.status).toBe(200);
-    expect(res.headers.get("content-type")).toBe("application/javascript");
-    expect(res.headers.get("set-cookie")).toBeNull();
-    expect(await res.text()).toBe("!function(){}");
-  });
-
-  it("only accepts POST for events", async () => {
-    expect((await call(req("/api/kestrel"))).status).toBe(405);
-  });
-});
-
 describe("other paths", () => {
   it("sends old /api/img links to the same key on the image CDN", async () => {
     const res = await call(req("/api/img/assets/blog/photography/640.webp"));
@@ -250,7 +201,7 @@ describe("other paths", () => {
   });
 
   it("answers 404 for anything else", async () => {
-    for (const path of ["/api/random-quote", "/api/dev/diary", "/kestrel/x"]) {
+    for (const path of ["/api/random-quote", "/api/dev/diary", "/api/kestrel"]) {
       expect((await call(req(path))).status, path).toBe(404);
     }
   });

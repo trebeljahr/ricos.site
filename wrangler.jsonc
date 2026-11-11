@@ -6,7 +6,7 @@
 // No `routes` either. Routes are made once through the Cloudflare API
 // (docs/static-site.md), so a deploy never touches them:
 //   ricos.site/*                            → this Worker
-//   ricos.site/api/*, ricos.site/kestrel/*  → ricos-site-api (workers/api)
+//   ricos.site/api/*  → ricos-site-api (workers/api)
 //
 // Deploys upload a version first and activate it after
 // (.github/workflows/deploy.yml): a one-step deploy left seconds of 404s on

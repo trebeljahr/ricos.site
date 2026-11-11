@@ -4,8 +4,8 @@
  * (wrangler.jsonc, out/) and the API Worker (workers/api) under local
  * `wrangler dev`, behind one port that routes like the zone does:
  *
- *   /api/*, /kestrel/*  → ricos-site-api
- *   everything else     → ricos-site-client (files, _redirects, _headers)
+ *   /api/*           → ricos-site-api
+ *   everything else  → ricos-site-client (files, _redirects, _headers)
  *
  *   pnpm build && pnpm preview          # PORT=58731 by default
  *
@@ -19,7 +19,7 @@ import http from "node:http";
 import net from "node:net";
 
 const PORT = Number(process.env.PORT || 58731);
-const API_PREFIXES = ["/api/", "/kestrel/"];
+const API_PREFIXES = ["/api/"];
 
 if (!existsSync("out/index.html")) {
   console.error("out/ holds no export: run `pnpm build` first.");

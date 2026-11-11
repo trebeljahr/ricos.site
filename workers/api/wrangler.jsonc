@@ -1,11 +1,10 @@
 // ricos-site-api: newsletter signup and confirm, /api/quote,
-// /api/random-photo, /api/emergency and first-party Plausible for
-// ricos.site (see docs/static-site.md).
+// /api/random-photo and /api/emergency for ricos.site (see
+// docs/static-site.md).
 //
 // Routes are made once through the Cloudflare API, not here, so a deploy
 // never touches them and the CI token needs no route permission:
-//   ricos.site/api/*      → this Worker
-//   ricos.site/kestrel/*  → this Worker
+//   ricos.site/api/*  → this Worker
 //
 // Secrets, set once with `wrangler secret put <NAME>` from .env.production,
 // never in this file: LISTMONK_URL, LISTMONK_API_USER, LISTMONK_API_TOKEN,

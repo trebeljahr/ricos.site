@@ -82,10 +82,6 @@ function offeredNewsletterLists() {
   return keys.join(",");
 }
 
-/** Plausible script with the extensions this site uses (see the provider in _app.tsx). */
-const PLAUSIBLE_SCRIPT =
-  "script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js";
-
 /**
  * Pages that read the request (`getServerSideProps`) and exist only under
  * `next dev`: private notes behind a local-address check. A static export
@@ -109,13 +105,6 @@ function devServerRouting() {
         beforeFiles: [
           // Images from the local Notes checkout (src/pages/api/local-image.ts).
           { source: "/api/img/:slug*", destination: "/api/local-image?slug=:slug*" },
-          // Plausible, served first-party: in production the API Worker
-          // answers both paths (workers/api/src/kestrel.ts).
-          {
-            source: "/kestrel/k.js",
-            destination: `https://plausible.trebeljahr.com/js/${PLAUSIBLE_SCRIPT}`,
-          },
-          { source: "/kestrel/k", destination: "/api/kestrel" },
           // The export writes this feed as a file (finishExport.ts).
           { source: "/projects/rss.xml", destination: "/api/announcements-rss" },
         ],

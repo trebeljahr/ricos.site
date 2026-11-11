@@ -3,7 +3,7 @@
  * Compare two hosts of ricos.site page by page: every sitemap path of the
  * reference (A) plus extras, by status, redirect target and <title>; then the
  * API answers that must not change (validation, CORS, confirm redirect,
- * kestrel, quote, random photo) and the content type of non-HTML files.
+ * quote, random photo) and the content type of non-HTML files.
  *
  *   node src/scripts/static/parity.mjs [A=https://ricos.site] [B=http://127.0.0.1:58731]
  *
@@ -165,8 +165,6 @@ const apiChecks = [
     { headers: { "x-emergency-password": "wrong" } },
     true,
   ],
-  ["kestrel event: GET", "/kestrel/k", {}, true],
-  ["kestrel script", "/kestrel/k.js", {}, false],
   ["quote", "/api/quote", {}, false],
   ["random photo", "/api/random-photo", {}, false],
 ];
@@ -211,4 +209,15 @@ for (const [label, path, init, compareBody] of apiChecks) {
   );
 }
 console.log(`api: ${apiChecks.length} checks, ${apiDiffs} differ`);
-process.exit(diffs.length + apiDiffs > 0 ? 1 : 0);
+
+// Paths B must answer differently from today on purpose: the first-party
+// Plausible proxy is gone (Rico, 2026-11-12), so its old paths 404.
+let expectedDiffs = 0;
+for (const path of ["/kestrel/k.js", "/kestrel/k", "/api/kestrel"]) {
+  const r = await fetch(B + path, { redirect: "manual", headers: UA });
+  await r.body?.cancel();
+  const ok = r.status === 404;
+  if (!ok) expectedDiffs++;
+  console.log(`${ok ? "✓" : "✗"} gone: ${path} ${r.status}`);
+}
+process.exit(diffs.length + apiDiffs + expectedDiffs > 0 ? 1 : 0);

@@ -1,10 +1,9 @@
 // ricos-site-api: the part of ricos.site that is not a static file.
-// Cloudflare sends it two path prefixes, by route:
+// Cloudflare sends it one path prefix, by route:
 //
-//   ricos.site/api/*      newsletter signup and confirm, /api/quote,
-//                         /api/random-photo, /api/emergency, /api/kestrel,
-//                         and old /api/img links (redirected to the CDN)
-//   ricos.site/kestrel/*  the first-party Plausible script and events
+//   ricos.site/api/*  newsletter signup and confirm, /api/quote,
+//                     /api/random-photo, /api/emergency, and old /api/img
+//                     links (redirected to the CDN)
 //
 // Everything else on the host is the static export, served by the assets
 // Worker `ricos-site-client` without running any code. Each request here
@@ -43,10 +42,6 @@ export interface Env {
   // shared code through process.env (nodejs_compat).
 }
 
-const PLAUSIBLE = "https://plausible.trebeljahr.com";
-/** The Plausible script with the extensions the site uses (next.config.mjs PLAUSIBLE_SCRIPT). */
-export const PLAUSIBLE_SCRIPT =
-  "script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js";
 /** Where old /api/img/<key> links now live. */
 const IMAGE_CDN = "https://assets.ricos.site";
 
@@ -202,60 +197,6 @@ function randomItem<T>(request: Request, items: readonly T[], none: string): Res
   return json(item, 200, { "Cache-Control": "no-store" });
 }
 
-/**
- * First-party Plausible events (see src/pages/api/kestrel.ts): the
- * visitor's address goes to Plausible as X-Plausible-IP, or every visit
- * would count as one visitor from this Worker's location.
- */
-async function kestrelEvent(request: Request): Promise<Response> {
-  if (request.method !== "POST") return methodNotAllowed("POST", { message: "Method not allowed" });
-  const headers: Record<string, string> = {
-    "Content-Type": request.headers.get("content-type") ?? "text/plain",
-  };
-  const userAgent = request.headers.get("user-agent");
-  if (userAgent) headers["User-Agent"] = userAgent;
-  const ip = request.headers.get("cf-connecting-ip")?.trim();
-  if (ip) headers["X-Plausible-IP"] = ip;
-  try {
-    const upstream = await fetch(`${PLAUSIBLE}/api/event`, {
-      method: "POST",
-      headers,
-      body: await request.arrayBuffer(),
-    });
-    const out = new Headers({ "Cache-Control": "no-store" });
-    const type = upstream.headers.get("content-type");
-    if (type) out.set("Content-Type", type);
-    return new Response(await upstream.text(), { status: upstream.status, headers: out });
-  } catch (error) {
-    console.error("Plausible event proxy failed", error);
-    return json({ message: "Analytics upstream unavailable" }, 502);
-  }
-}
-
-/** The Plausible script, as the Next rewrite proxied it. */
-async function kestrelScript(request: Request): Promise<Response> {
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    return new Response("Method not allowed", { status: 405, headers: { Allow: "GET" } });
-  }
-  const upstream = await fetch(`${PLAUSIBLE}/js/${PLAUSIBLE_SCRIPT}`, {
-    method: request.method,
-    // Plausible's own edge answers in milliseconds; let Cloudflare keep it too.
-    cf: { cacheTtl: 3600, cacheEverything: true },
-  } as RequestInit);
-  const headers = new Headers();
-  for (const name of [
-    "content-type",
-    "cache-control",
-    "etag",
-    "last-modified",
-    "access-control-allow-origin",
-  ]) {
-    const value = upstream.headers.get(name);
-    if (value) headers.set(name, value);
-  }
-  return new Response(upstream.body, { status: upstream.status, headers });
-}
-
 export async function handleRequest(request: Request, env: Env, data: ApiData): Promise<Response> {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/, "") || "/";
@@ -273,11 +214,6 @@ export async function handleRequest(request: Request, env: Env, data: ApiData): 
       return randomItem(request, data.quotes, "No quotes");
     case "/api/random-photo":
       return randomItem(request, data.photos, "No photos");
-    case "/api/kestrel":
-    case "/kestrel/k":
-      return kestrelEvent(request);
-    case "/kestrel/k.js":
-      return kestrelScript(request);
   }
 
   // The site's pages linked resized images as /api/img/<key>/<width>.webp

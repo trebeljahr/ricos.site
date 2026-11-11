@@ -68,6 +68,37 @@ export async function getAllStorageObjectKeys(Bucket: string, Prefix = "") {
 
 export const photographyFolder = "assets/photography/";
 
+/**
+ * The images moved from S3 to Cloudflare R2 on 2026-11-11. Scripts and the
+ * local mock still name the two S3 buckets; with the R2 keys set
+ * (IMAGES_R2_ACCESS_KEY_ID, IMAGES_R2_SECRET_ACCESS_KEY, R2_ENDPOINT) every
+ * request goes to the R2 bucket that replaced it.
+ */
+export const R2_BUCKET_FOR: Record<string, string> = {
+  "images.trebeljahr.com": "ricos-site-originals", // private: originals, GPS kept
+  "images.trebeljahr.com.resized": "ricos-site-assets", // public: assets.ricos.site variants
+};
+
+function createR2ImagesClient() {
+  const client = new S3Client({
+    region: "auto",
+    endpoint: process.env.R2_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.IMAGES_R2_ACCESS_KEY_ID ?? "",
+      secretAccessKey: process.env.IMAGES_R2_SECRET_ACCESS_KEY ?? "",
+    },
+  });
+  client.middlewareStack.add(
+    (next) => async (args) => {
+      const input = args.input as { Bucket?: string };
+      if (input.Bucket && R2_BUCKET_FOR[input.Bucket]) input.Bucket = R2_BUCKET_FOR[input.Bucket];
+      return next(args);
+    },
+    { step: "initialize", name: "r2BucketNames" },
+  );
+  return client;
+}
+
 export function createS3Client() {
   // Dual-mode: cloud (real AWS) or local mock. NEXT_PUBLIC_IMAGE_BACKEND=local
   // uses a file-backed AWS SDK v3 mock. S3_ENDPOINT remains supported for
@@ -77,6 +108,9 @@ export function createS3Client() {
     !endpoint &&
     (process.env.NEXT_PUBLIC_IMAGE_BACKEND === "local" || process.env.IMAGE_BACKEND === "local");
   if (useLocalMock) return createLocalS3Client();
+  if (!endpoint && process.env.IMAGES_R2_ACCESS_KEY_ID && process.env.R2_ENDPOINT) {
+    return createR2ImagesClient();
+  }
 
   const isEndpointLocal = Boolean(endpoint);
 
@@ -104,21 +138,10 @@ export function createS3Client() {
 }
 
 export async function getS3Folders(prefix: string): Promise<string[]> {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.AWS_REGION;
-
-  if (!accessKeyId || !secretAccessKey || !awsRegion) {
-    throw new Error("No AWS credentials provided");
-  }
-
   const bucketName = process.env.AWS_BUCKET_NAME;
   if (!bucketName) throw new Error("Bucket has to be specified");
 
-  const s3Client = new S3Client({
-    region: awsRegion,
-    credentials: { accessKeyId, secretAccessKey },
-  });
+  const s3Client = createS3Client();
 
   const data = await s3Client.send(
     new ListObjectsV2Command({
@@ -152,19 +175,10 @@ interface OptionsForS3 {
 }
 
 export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.AWS_REGION;
   const bucketName = process.env.AWS_BUCKET_NAME;
+  if (!bucketName) throw new Error("AWS_BUCKET_NAME has to be set");
 
-  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
-    throw new Error("No AWS credentials provided");
-  }
-
-  const s3Client = new S3Client({
-    region: awsRegion,
-    credentials: { accessKeyId, secretAccessKey },
-  });
+  const s3Client = createS3Client();
 
   let isTruncated = true;
   let continuationToken: string | undefined;
@@ -213,19 +227,10 @@ export const getDataFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
 };
 
 export const getFirstImageFromS3 = async ({ prefix = "" }: OptionsForS3 = {}) => {
-  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-  const awsRegion = process.env.AWS_REGION;
   const bucketName = process.env.AWS_BUCKET_NAME;
+  if (!bucketName) throw new Error("AWS_BUCKET_NAME has to be set");
 
-  if (!accessKeyId || !secretAccessKey || !awsRegion || !bucketName) {
-    throw new Error("No AWS credentials provided");
-  }
-
-  const s3Client = new S3Client({
-    region: awsRegion,
-    credentials: { accessKeyId, secretAccessKey },
-  });
+  const s3Client = createS3Client();
 
   const data = await s3Client.send(
     new ListObjectsV2Command({

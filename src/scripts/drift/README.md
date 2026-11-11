@@ -1,5 +1,8 @@
 # Drift tooling
 
+> Since 2026-11-11 the buckets live on Cloudflare R2: `images.trebeljahr.com` is `ricos-site-originals` (private) and `images.trebeljahr.com.resized` is `ricos-site-assets` (served at assets.ricos.site). The scripts keep the old names; `createS3Client` in `src/lib/aws.ts` maps them when the `IMAGES_R2_*` keys are set.
+
+
 Three stores need to agree for the image pipeline to behave:
 
 1. **Local Obsidian assets** — `src/content/Notes/assets/**` (filesystem,

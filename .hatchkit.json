@@ -41,7 +41,16 @@
       }
     },
     "tokenId": "9f32dce598cb84c867519ccbca2a5a97",
-    "accountId": "236db6b7957ea3079844334856fc162e"
+    "accountId": "236db6b7957ea3079844334856fc162e",
+    "originals": {
+      "name": "ricos-site-originals",
+      "accountId": "236db6b7957ea3079844334856fc162e"
+    },
+    "imageTools": {
+      "buckets": ["ricos-site-originals", "ricos-site-assets"],
+      "tokenId": "ef98822c73958ed90217e1aab5cb6798",
+      "accountId": "236db6b7957ea3079844334856fc162e"
+    }
   },
   "aliases": ["www.ricos.site", "next.ricos.site"]
 }

@@ -69,7 +69,6 @@
     "renameFiles": "tsx src/scripts/renameFiles.ts",
     "addDatesToNewsletters": "tsx src/scripts/addDatesToNewsletters.ts",
     "uploadWithMetadataToS3": "tsx src/scripts/aws/uploadWithMetadataToS3.ts",
-    "warmupS3Cache": "tsx src/scripts/aws/warmupS3Cache.ts",
     "createImageMetadataJson": "tsx src/scripts/createImageMetadataJson.ts",
     "syncMetadata": "tsx src/scripts/syncMetadata.ts",
     "backfillLocalMetadata": "tsx src/scripts/backfillLocalMetadata.ts",
@@ -164,7 +163,6 @@
     "yuka": "^0.7.8"
   },
   "devDependencies": {
-    "@aws-sdk/client-lambda": "^3.1143.0",
     "@biomejs/biome": "^2.5.14",
     "@r4ai/remark-callout": "^0.6.2",
     "@rehype-pretty/transformers": "^0.13.2",

@@ -3,7 +3,8 @@
 //
 // CloudFront made variants on demand (a Lambda on 404); R2 cannot, so every
 // deploy runs this first (.github/workflows/deploy.yml, job `images`). It
-// lists the originals in the S3 source bucket and the variants in R2, and
+// lists the originals in the private R2 bucket and the variants in the
+// public one, and
 // writes `<key without extension>/<width>.webp` for each source that does not
 // have all 16 widths yet. Usually nothing is missing and it finishes in about
 // a minute of listing.
@@ -11,13 +12,12 @@
 // Same pipeline as the image Lambda and src/pages/api/img:
 //   sharp(src, { animated: true }).resize(w, undefined, { withoutEnlargement: true }).webp({ quality: 82 })
 // Widths at or above the original's width encode once and reuse the bytes.
-// When sharp cannot read a source (some AVIF files), the variants are copied
-// from CloudFront instead, which still serves them.
+// A source sharp cannot read fails the run; add its variants by hand.
 //
-// Env (from .env.production via dotenvx): AWS_ACCESS_KEY_ID,
-// AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME (source),
-// R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, NEXT_PUBLIC_CLOUDFRONT_ID.
-// R2_BUCKET defaults to ricos-site-assets. Exits 1 if any source fails.
+// Env (from .env.production via dotenvx): R2_ENDPOINT, IMAGES_R2_ACCESS_KEY_ID,
+// IMAGES_R2_SECRET_ACCESS_KEY (one key for both buckets). Bucket names
+// default to ricos-site-originals and ricos-site-assets. Exits 1 if any
+// source fails.
 import {
   GetObjectCommand,
   ListObjectsV2Command,
@@ -29,19 +29,15 @@ import sharp from "sharp";
 const WIDTHS = [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];
 const EXTS = /\.(jpe?g|png|webp|gif|avif)$/i;
 const CACHE_CONTROL = "public, max-age=31536000, immutable";
-const SOURCE_BUCKET = process.env.AWS_BUCKET_NAME;
-const R2_BUCKET = process.env.R2_BUCKET || "ricos-site-assets";
-const CLOUDFRONT = process.env.NEXT_PUBLIC_CLOUDFRONT_ID
-  ? `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net`
-  : "";
+const SOURCE_BUCKET = process.env.ORIGINALS_BUCKET || "ricos-site-originals";
+const R2_BUCKET = process.env.VARIANTS_BUCKET || "ricos-site-assets";
 
-const src = new S3Client({ region: process.env.AWS_REGION });
-const dst = new S3Client({
+const r2 = new S3Client({
   region: "auto",
   endpoint: process.env.R2_ENDPOINT,
   credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.IMAGES_R2_ACCESS_KEY_ID,
+    secretAccessKey: process.env.IMAGES_R2_SECRET_ACCESS_KEY,
   },
 });
 sharp.concurrency(1);
@@ -58,7 +54,7 @@ async function listAll(client, Bucket, Prefix) {
 }
 
 function put(key, body) {
-  return dst.send(
+  return r2.send(
     new PutObjectCommand({
       Bucket: R2_BUCKET,
       Key: key,
@@ -70,7 +66,7 @@ function put(key, body) {
 }
 
 async function encode(key, base) {
-  const r = await src.send(new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: key }));
+  const r = await r2.send(new GetObjectCommand({ Bucket: SOURCE_BUCKET, Key: key }));
   const input = Buffer.from(await r.Body.transformToByteArray());
   const origW = (await sharp(input, { animated: true }).metadata()).width ?? 0;
   let capped;
@@ -88,23 +84,14 @@ async function encode(key, base) {
   }
 }
 
-async function copyFromCloudFront(base) {
-  if (!CLOUDFRONT) throw new Error("no NEXT_PUBLIC_CLOUDFRONT_ID to copy from");
-  for (const w of WIDTHS) {
-    const r = await fetch(`${CLOUDFRONT}${encodeURI(`/${base}/${w}.webp`)}`);
-    if (!r.ok) throw new Error(`CloudFront answered ${r.status} for width ${w}`);
-    await put(`${base}/${w}.webp`, Buffer.from(await r.arrayBuffer()));
-  }
-}
-
-if (!SOURCE_BUCKET || !process.env.R2_ENDPOINT) {
-  console.error("AWS_BUCKET_NAME and R2_ENDPOINT must be set (run through dotenvx).");
+if (!process.env.R2_ENDPOINT || !process.env.IMAGES_R2_ACCESS_KEY_ID) {
+  console.error("R2_ENDPOINT and IMAGES_R2_* must be set (run through dotenvx).");
   process.exit(1);
 }
 
-const sources = (await listAll(src, SOURCE_BUCKET, "assets/")).filter((k) => EXTS.test(k));
+const sources = (await listAll(r2, SOURCE_BUCKET, "assets/")).filter((k) => EXTS.test(k));
 const have = new Map();
-for (const k of await listAll(dst, R2_BUCKET, "assets/")) {
+for (const k of await listAll(r2, R2_BUCKET, "assets/")) {
   const base = k.slice(0, k.lastIndexOf("/"));
   have.set(base, (have.get(base) ?? 0) + 1);
 }
@@ -119,12 +106,7 @@ await Promise.all(
       const key = queue.shift();
       const base = key.replace(EXTS, "");
       try {
-        try {
-          await encode(key, base);
-        } catch (e) {
-          console.log(`sharp failed on ${key} (${e.message}), copying from CloudFront`);
-          await copyFromCloudFront(base);
-        }
+        await encode(key, base);
         console.log(`ok ${key}`);
       } catch (e) {
         failed++;

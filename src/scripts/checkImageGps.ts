@@ -23,6 +23,8 @@ import { imageHasGps, WEBP_HEADER_BYTES, webpMayCarryMetadata } from "src/lib/im
 import { listAllObjects } from "src/scripts/drift/lib/buckets";
 
 const RESIZED_BUCKET = "images.trebeljahr.com.resized";
+const VARIANTS_URL =
+  process.env.NEXT_PUBLIC_IMAGE_CDN_URL?.replace(/\/$/, "") || "https://assets.ricos.site";
 const IMAGE_RE = /\.(jpe?g|png|webp|gif|avif|heic|heif|tiff?|dng)$/i;
 const NEWEST_VARIANTS = 2000;
 
@@ -42,21 +44,18 @@ async function checkFiles(files: string[]): Promise<string[]> {
 
 async function variantMayCarryMetadata(key: string): Promise<boolean> {
   const path = key.split("/").map(encodeURIComponent).join("/");
-  const response = await fetch(
-    `https://${process.env.NEXT_PUBLIC_CLOUDFRONT_ID}.cloudfront.net/${path}`,
-    { headers: { Range: `bytes=0-${WEBP_HEADER_BYTES - 1}` } },
-  );
+  const response = await fetch(`${VARIANTS_URL}/${path}`, {
+    headers: { Range: `bytes=0-${WEBP_HEADER_BYTES - 1}` },
+  });
   if (!response.ok) throw new Error(`HTTP ${response.status} for ${key}`);
   return webpMayCarryMetadata(new Uint8Array(await response.arrayBuffer()));
 }
 
 async function checkServed(all: boolean): Promise<string[]> {
-  if (!process.env.NEXT_PUBLIC_CLOUDFRONT_ID) throw new Error("NEXT_PUBLIC_CLOUDFRONT_ID not set");
-
   const objects = await listAllObjects(RESIZED_BUCKET);
   objects.sort((a, b) => (b.LastModified?.getTime() ?? 0) - (a.LastModified?.getTime() ?? 0));
   const keys = objects.slice(0, all ? undefined : NEWEST_VARIANTS).map(({ Key }) => Key);
-  console.log(`Checking ${keys.length} of ${objects.length} variants through CloudFront...`);
+  console.log(`Checking ${keys.length} of ${objects.length} variants through ${VARIANTS_URL}...`);
 
   const limit = pLimit(32);
   const hits = await Promise.all(keys.map((key) => limit(() => variantMayCarryMetadata(key))));

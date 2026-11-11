@@ -26,9 +26,7 @@ name: build-and-deploy
 
 on:
   push:
-    # The migration branch deploys to next.ricos.site until the cutover;
-    # drop it from this list then.
-    branches: [main, ricos-hatchkit-cloudflare-migration-90123c]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -230,7 +228,7 @@ jobs:
       - name: Verify the deployment is actually live
         env:
           COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          HATCHKIT_WEB_URL: https://next.ricos.site
+          HATCHKIT_WEB_URL: https://ricos.site
           HATCHKIT_API_URL: ""
         if: env.COOLIFY_BASE_URL != ''
         run: |
@@ -332,7 +330,7 @@ jobs:
       - name: Record the web deploy
         env:
           COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          HATCHKIT_WEB_URL: https://next.ricos.site
+          HATCHKIT_WEB_URL: https://ricos.site
         if: env.COOLIFY_BASE_URL != ''
         uses: ./.github/actions/record-ship
         with:

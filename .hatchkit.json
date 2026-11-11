@@ -2,7 +2,7 @@
   "version": 5,
   "cliVersion": "0.3.1",
   "name": "ricos.site",
-  "domain": "next.ricos.site",
+  "domain": "ricos.site",
   "features": ["analytics"],
   "surfaces": "static",
   "email": {
@@ -42,5 +42,6 @@
     },
     "tokenId": "9f32dce598cb84c867519ccbca2a5a97",
     "accountId": "236db6b7957ea3079844334856fc162e"
-  }
+  },
+  "aliases": ["www.ricos.site", "next.ricos.site"]
 }

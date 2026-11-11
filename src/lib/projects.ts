@@ -238,7 +238,7 @@ export const PROJECTS: Project[] = [
     ),
     wordmarkCover: wordmark(
       "quaternius-showcase",
-      "Four low-poly Quaternius models above the line See each free Quaternius model in 3D before you download it",
+      "Quaternius Showcase title and the line Fan-made. Not affiliated with Quaternius, over a T-rex, a cow, a spaceship and a mech",
     ),
   },
   {
@@ -257,7 +257,7 @@ export const PROJECTS: Project[] = [
     section: "Art & 3D",
     cover: screenshot(
       "fractal-garden",
-      "Eight fractals, among them the Mandelbrot set, a Barnsley fern and a Menger sponge",
+      "Six fractals: the Mandelbrot set, a Barnsley fern, a Menger sponge, a twindragon, a Julia set and a Pythagoras tree",
     ),
     wordmarkCover: wordmark(
       "fractal-garden",
@@ -351,11 +351,11 @@ export const PROJECTS: Project[] = [
     section: "Dev tools",
     cover: screenshot(
       "conv3d",
-      "A mage model turned flat yellow by FBX2glTF, next to 18 textured models converted by conv3D",
+      "A mage model turned flat yellow by FBX2glTF, marked with a red cross, next to 18 textured models converted by conv3d, marked with a green check",
     ),
     wordmarkCover: wordmark(
       "conv3d",
-      "conv3d logo and FBX packs in, textured GLBs out, beside 18 converted models",
+      "conv3d logo and FBX packs in, textured GLBs out, with a red cross on the FBX2glTF result and a green check on 18 converted models",
     ),
   },
 

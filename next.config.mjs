@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import bundleAnalyzer from "@next/bundle-analyzer";
 import { generateRedirects } from "./src/scripts/createRedirects.js";
+import { NOINDEX_HOSTS, SECURITY_HEADERS } from "./src/scripts/static/routing.mjs";
 
 const isDev = process.argv.includes("dev") || process.env.NODE_ENV === "development";
 const isBuild = process.argv.includes("build");
@@ -85,29 +86,76 @@ function offeredNewsletterLists() {
 const PLAUSIBLE_SCRIPT =
   "script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js";
 
+/**
+ * Pages that read the request (`getServerSideProps`) and exist only under
+ * `next dev`: private notes behind a local-address check. A static export
+ * cannot hold such a page, so the export leaves them out (exportPathMap);
+ * every other dev-only page returns `notFound` from getStaticProps in
+ * production, which the export skips by itself.
+ */
+const DEV_ONLY_SERVER_PAGES = [
+  "/computer/demos",
+  "/piano/demos",
+  "/dev/diary",
+  "/dev/diary/desk",
+  "/dev/diary/text",
+];
+
+/** Rewrites, redirects and headers for `next dev`; the export has its own. */
+function devServerRouting() {
+  return {
+    async rewrites() {
+      return {
+        beforeFiles: [
+          // Images from the local Notes checkout (src/pages/api/local-image.ts).
+          { source: "/api/img/:slug*", destination: "/api/local-image?slug=:slug*" },
+          // Plausible, served first-party: in production the API Worker
+          // answers both paths (workers/api/src/kestrel.ts).
+          {
+            source: "/kestrel/k.js",
+            destination: `https://plausible.trebeljahr.com/js/${PLAUSIBLE_SCRIPT}`,
+          },
+          { source: "/kestrel/k", destination: "/api/kestrel" },
+          // The export writes this feed as a file (finishExport.ts).
+          { source: "/projects/rss.xml", destination: "/api/announcements-rss" },
+        ],
+      };
+    },
+    redirects: generateRedirects,
+    async headers() {
+      return [
+        {
+          // Everything except Next's dev-only asset directory. Next 16 serves
+          // /_next/static/development/_clientMiddlewareManifest.js as
+          // `application/json` while loading it in a <script> tag, so a blanket
+          // `nosniff` makes the browser refuse to execute it.
+          source: "/((?!_next/static/development).*)",
+          headers: SECURITY_HEADERS,
+        },
+        ...NOINDEX_HOSTS.map((host) => ({
+          source: "/:path*",
+          has: [{ type: "host", value: host }],
+          headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+        })),
+      ];
+    },
+  };
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
-  // The Docker image (see Dockerfile) runs `.next/standalone/server.js`: the
-  // traced server files only, with this config serialised into it. Plain
-  // `next start` would load this file at runtime, and with it
-  // src/scripts/createRedirects.js, velite and the whole node_modules tree.
-  // Vercel ignores the setting.
-  output: "standalone",
-  // Notes/texts holds diaries and other private writing that only /dev/diary
-  // reads, under `next dev`. Keep it out of every deployed function bundle,
-  // whatever a trace of the server code finds.
-  outputFileTracingExcludes: {
-    // Browsers fetch public/3d-assets directly; no function reads them.
-    "*": ["src/content/Notes/texts/**", "public/3d-assets/**"],
-    // Their whole-Notes search only runs under `next dev`.
-    "/api/dev/diary/*": ["src/content/Notes/**"],
-    "/dev/diary/*": ["src/content/Notes/**"],
-    // Dev-only too. demoWork reads source files by computed paths, so the trace
-    // pulls in the whole project, and public/ alone is near Vercel's 250 MB
-    // limit for one function.
-    "/computer/demos": ["public/**", "src/**"],
-    "/api/dev/demo-review": ["public/**", "src/**"],
+  // Production is a static export (out/), served by the assets-only
+  // Cloudflare Worker `ricos-site` (wrangler.jsonc). What still needs code
+  // runs in the API Worker (workers/api). Redirects and headers go to
+  // out/_redirects and out/_headers (src/scripts/static/finishExport.ts);
+  // the rewrites, redirects and headers below are for `next dev` only.
+  // See docs/static-site.md.
+  output: isDev ? undefined : "export",
+  exportPathMap: async (defaultPathMap) => {
+    const pages = { ...defaultPathMap };
+    for (const path of DEV_ONLY_SERVER_PAGES) delete pages[path];
+    return pages;
   },
   env: {
     NEWSLETTER_OFFERED_LISTS: offeredNewsletterLists(),
@@ -175,62 +223,7 @@ const nextConfig = {
     loader: "custom",
     loaderFile: "./image-loader.js",
   },
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: "/api/img/:slug*",
-          destination: "/api/local-image?slug=:slug*",
-        },
-        // Plausible, served first-party so content blockers that block
-        // plausible.trebeljahr.com still let visits through. The paths avoid
-        // /js/script.js and /api/event, which filter lists match. Events go
-        // through an API route (not a plain rewrite) to pass the visitor's IP
-        // on, see src/pages/api/kestrel.ts.
-        {
-          source: "/kestrel/k.js",
-          destination: `https://plausible.trebeljahr.com/js/${PLAUSIBLE_SCRIPT}`,
-        },
-        {
-          source: "/kestrel/k",
-          destination: "/api/kestrel",
-        },
-        // The announcements feed on the projects hub, see src/lib/announcements.ts.
-        {
-          source: "/projects/rss.xml",
-          destination: "/api/announcements-rss",
-        },
-      ],
-    };
-  },
-  redirects: generateRedirects,
-  async headers() {
-    return [
-      {
-        // Everything except Next's dev-only asset directory. Next 16 serves
-        // /_next/static/development/_clientMiddlewareManifest.js as
-        // `application/json` while loading it in a <script> tag, so a blanket
-        // `nosniff` makes the browser refuse to execute it:
-        //   Refused to execute script from '…/_clientMiddlewareManifest.js'
-        //   because its MIME type ('application/json') is not executable.
-        // Production responses are unaffected — that path only exists in dev.
-        source: "/((?!_next/static/development).*)",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-        ],
-      },
-      {
-        // The Coolify test host, live until the DNS cutover: keep it out of
-        // search results so it never competes with ricos.site.
-        source: "/:path*",
-        has: [{ type: "host", value: "next.ricos.site" }],
-        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
-      },
-    ];
-  },
+  ...(isDev ? devServerRouting() : {}),
   webpack: (config, { isServer }) => {
     config.infrastructureLogging = {
       level: "error",

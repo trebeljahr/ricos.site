@@ -1,4 +1,10 @@
-import { type DonationSource, isFreshSource, type StoredDonationSource } from "./donation";
+import {
+  type DonationSource,
+  FROM_QUERY_KEY,
+  isFreshSource,
+  type StoredDonationSource,
+  THANKS_QUERY_KEY,
+} from "./donation";
 import { getDonationSource } from "./donationSources";
 import { PROJECTS } from "./projects";
 
@@ -80,4 +86,36 @@ export function donationSourceFromCookie(cookie: string | undefined) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Where a visit to plain /donate belongs. A visit that names a project, a
+ * checkout return that the cookie ties to one, or a click from a project's
+ * own site goes to that project's /donate/<slug> page; everything else
+ * stays (`null`). The page runs this in the browser after hydration: the
+ * site is a static export, so nothing reads the request on a server.
+ */
+export function donationRedirect({
+  query,
+  cookie,
+  referrer,
+}: {
+  query: Record<string, unknown>;
+  cookie: string | undefined;
+  referrer: string | undefined;
+}): string | null {
+  const from = query[FROM_QUERY_KEY];
+  const thanks = query[THANKS_QUERY_KEY] !== undefined;
+  const source =
+    getDonationSource(from) ??
+    (thanks ? donationSourceFromCookie(cookie) : null) ??
+    (from === undefined && !thanks ? sourceFromReferrer(referrer || undefined) : null);
+  if (!source) return null;
+  const params = new URLSearchParams();
+  const returnTo =
+    validateDonationReturn(source, query[RETURN_QUERY_KEY]) ??
+    validateDonationReturn(source, referrer || undefined);
+  if (returnTo) params.set(RETURN_QUERY_KEY, returnTo);
+  if (thanks) params.set(THANKS_QUERY_KEY, "1");
+  return `${donationPath(source.slug)}${params.size ? `?${params}` : ""}`;
 }

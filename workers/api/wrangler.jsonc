@@ -1,0 +1,43 @@
+// ricos-site-api: newsletter signup and confirm, /api/quote,
+// /api/random-photo, /api/emergency and first-party Plausible for
+// ricos.site (see docs/static-site.md).
+//
+// Routes are made once through the Cloudflare API, not here, so a deploy
+// never touches them and the CI token needs no route permission:
+//   ricos.site/api/*      → this Worker
+//   ricos.site/kestrel/*  → this Worker
+//
+// Secrets, set once with `wrangler secret put <NAME>` from .env.production,
+// never in this file: LISTMONK_URL, LISTMONK_API_USER, LISTMONK_API_TOKEN,
+// LISTMONK_LIST_ID, LISTMONK_COMPUTER_LIST_ID, LISTMONK_ANNOUNCE_LIST_ID,
+// LISTMONK_TX_TEMPLATE_ID, LISTMONK_FROM, LISTMONK_REPLY_TO,
+// NEWSLETTER_TOKEN_SECRET, EMERGENCY_PASSWORD, MARCS_PHONE_NUMBER,
+// KATRINS_PHONE_NUMBER, HOLGERS_PHONE_NUMBER. The token secret must stay the
+// one the site uses, or confirm links already mailed stop working.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "ricos-site-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  // process.env (filled from vars and secrets), node:crypto and Buffer for
+  // the shared newsletter code in src/lib/newsletter.
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "SITE_URL": "https://ricos.site"
+  },
+  // Five signup posts per minute per client address, across isolates. The
+  // in-memory limiter in src/lib/newsletter/subscribe.ts still runs first.
+  "ratelimits": [
+    {
+      "name": "SIGNUP_LIMITER",
+      "namespace_id": "52817",
+      "simple": { "limit": 5, "period": 60 }
+    }
+  ],
+  // Keep our own JSON log lines (no address, no IP) but not Cloudflare's
+  // per-request invocation logs, which would store client IPs and the
+  // confirm links.
+  "observability": { "enabled": true, "logs": { "invocation_logs": false } }
+}

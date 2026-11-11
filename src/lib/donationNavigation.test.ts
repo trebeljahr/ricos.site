@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { SOURCE_TTL_MS, supportedUrl } from "./donation";
 import {
   donationPath,
+  donationRedirect,
   donationReturnForVisit,
   donationSourceFromCookie,
   sourceFromReferrer,
@@ -114,6 +115,51 @@ describe("project donation navigation", () => {
         getDonationSource("interactive-3d-demos")!,
         "https://ricos.site/donate/fractal-garden",
       ),
+    ).toBeNull();
+  });
+});
+
+describe("donationRedirect (the old getServerSideProps of /donate)", () => {
+  const none = { cookie: undefined, referrer: undefined };
+
+  it("sends ?from=<slug> to the project page and keeps a valid returnTo", () => {
+    expect(donationRedirect({ query: { from: "fractal-garden" }, ...none })).toBe(
+      "/donate/fractal-garden",
+    );
+    expect(
+      donationRedirect({ query: { from: "collection-of-beauty", returnTo: artwork }, ...none }),
+    ).toBe(`/donate/collection-of-beauty?returnTo=${encodeURIComponent(artwork)}`);
+    expect(
+      donationRedirect({
+        query: { from: "collection-of-beauty", returnTo: "https://evil.test/" },
+        ...none,
+      }),
+    ).toBe("/donate/collection-of-beauty");
+  });
+
+  it("stays on /donate for an unknown slug or a plain visit", () => {
+    expect(donationRedirect({ query: { from: "nope" }, ...none })).toBeNull();
+    expect(donationRedirect({ query: {}, ...none })).toBeNull();
+    expect(donationRedirect({ query: { thanks: "1" }, ...none })).toBeNull();
+  });
+
+  it("ties a checkout return to the project in the cookie", () => {
+    expect(
+      donationRedirect({
+        query: { thanks: "1" },
+        cookie: "a=b; donation-project=fractal-garden",
+        referrer: undefined,
+      }),
+    ).toBe("/donate/fractal-garden?thanks=1");
+  });
+
+  it("follows a click from a project's own site, with the page as returnTo", () => {
+    expect(donationRedirect({ query: {}, cookie: undefined, referrer: artwork })).toBe(
+      `/donate/collection-of-beauty?returnTo=${encodeURIComponent(artwork)}`,
+    );
+    // An explicit ?from= wins over the referrer; a checkout return ignores it.
+    expect(
+      donationRedirect({ query: { thanks: "1" }, cookie: undefined, referrer: artwork }),
     ).toBeNull();
   });
 });

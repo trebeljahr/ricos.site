@@ -31,7 +31,7 @@
       "@sounds/*": ["src/sounds/*"]
     }
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "workers", "out"],
   "include": [
     "next-env.d.ts",
     "**/*.d.ts",

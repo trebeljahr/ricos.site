@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { availableListKeys } from "src/lib/newsletter/lists";
 import { isRicoOrigin } from "src/lib/newsletter/ricoOrigins";
-import { processSignup } from "src/lib/newsletter/signupRequest";
+import { clientIp, processSignup } from "src/lib/newsletter/signupRequest";
 
 /**
  * Signup for the announce list only, open to Rico's other sites. Post
@@ -40,6 +40,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  const { status, body } = await processSignup(req, ["announce"]);
+  const { status, body } = await processSignup({ ip: clientIp(req), body: req.body }, ["announce"]);
   res.status(status).json(body);
 }

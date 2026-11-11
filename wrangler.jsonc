@@ -1,0 +1,26 @@
+// ricos-site-client: the static export in out/, served without any Worker
+// code. Requests to it are free and do not count toward the Workers quota.
+// Do not add `main`, `run_worker_first` or `cache`: each one makes requests
+// billable.
+//
+// No `routes` either. Routes are made once through the Cloudflare API
+// (docs/static-site.md), so a deploy never touches them:
+//   ricos.site/*                            → this Worker
+//   ricos.site/api/*, ricos.site/kestrel/*  → ricos-site-api (workers/api)
+//
+// Deploys upload a version first and activate it after
+// (.github/workflows/deploy.yml): a one-step deploy left seconds of 404s on
+// new chunks on the hatchkit canary.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ricos-site-client",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./out",
+    // `/posts/x` is out/posts/x.html; `/posts/x/` redirects to it.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

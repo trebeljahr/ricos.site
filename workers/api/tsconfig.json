@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "tsBuildInfoFile": "../../node_modules/.cache/tsconfig.workers-api.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts", "../../src/**/*.d.ts"],
+  "exclude": ["src/**/*.test.ts"]
+}

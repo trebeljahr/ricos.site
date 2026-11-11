@@ -6,9 +6,8 @@ import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
 import { ProjectDonationPage } from "@components/ProjectDonationPage";
 import { ToTopButton } from "@components/ToTopButton";
-import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   DONATION_SOURCE_STORAGE_KEY,
   FROM_QUERY_KEY,
@@ -19,11 +18,9 @@ import {
 } from "src/lib/donation";
 import {
   DONATION_SOURCE_COOKIE,
-  donationPath,
+  donationRedirect,
   donationReturnForVisit,
-  donationSourceFromCookie,
   RETURN_QUERY_KEY,
-  sourceFromReferrer,
   validateDonationReturn,
 } from "src/lib/donationNavigation";
 import { getDonationSource } from "src/lib/donationSources";
@@ -35,14 +32,31 @@ export type DonatePageProps = {
   initialReturnTo: string | null;
 };
 
+/** `document.referrer`, read once after hydration (empty on the server). */
+function useReferrer() {
+  const [referrer, setReferrer] = useState<string>();
+  useEffect(() => setReferrer(document.referrer || undefined), []);
+  return referrer;
+}
+
+// /donate is a static page: the site is exported as files (no server reads
+// the request). A visit that belongs to a project's page is sent there after
+// hydration, by the same rules the server redirect used (donationRedirect).
 export default function DonatePage({
-  initialSourceSlug,
-  initialThanks,
-  initialReturnTo,
-}: DonatePageProps) {
+  initialSourceSlug = null,
+  initialThanks = false,
+  initialReturnTo = null,
+}: Partial<DonatePageProps>) {
   // Stripe sends donors back here with ?thanks=1 (set per Payment Link in the
   // dashboard). Remember the moment so the inline asks stay quiet for a while.
   const router = useRouter();
+  const referrer = useReferrer();
+  const onProjectPage = typeof router.query.project === "string";
+  // Plain /donate only, once the router has read the query in the browser.
+  const redirectTo =
+    router.isReady && !onProjectPage && typeof document !== "undefined"
+      ? donationRedirect({ query: router.query, cookie: document.cookie, referrer })
+      : null;
   const justDonated = router.isReady ? router.query[THANKS_QUERY_KEY] !== undefined : initialThanks;
   const [, setSupportedAt] = useDonationSupportedAt();
 
@@ -54,8 +68,12 @@ export default function DonatePage({
       : initialSourceSlug,
   );
   const sourceSlug = source?.slug;
+  // A project page opened straight from the project's own site returns there,
+  // as the server-rendered page did with the Referer header.
   const returnCandidate =
-    (router.isReady ? router.query[RETURN_QUERY_KEY] : null) ?? initialReturnTo;
+    (router.isReady ? router.query[RETURN_QUERY_KEY] : null) ??
+    initialReturnTo ??
+    (onProjectPage && source ? validateDonationReturn(source, referrer) : null);
   const validatedReturn = source ? validateDonationReturn(source, returnCandidate) : null;
   const [storedSource, setStoredSource] = useLocalStorageState<StoredDonationSource | null>(
     DONATION_SOURCE_STORAGE_KEY,
@@ -63,7 +81,11 @@ export default function DonatePage({
   );
 
   useEffect(() => {
-    if (!router.isReady) return;
+    if (redirectTo) void router.replace(redirectTo);
+  }, [redirectTo, router]);
+
+  useEffect(() => {
+    if (!router.isReady || redirectTo) return;
     if (justDonated) {
       setSupportedAt(Date.now());
       return;
@@ -81,7 +103,15 @@ export default function DonatePage({
         ? { slug: sourceSlug, at: Date.now(), returnTo: validatedReturn ?? undefined }
         : null,
     );
-  }, [router.isReady, justDonated, sourceSlug, validatedReturn, setSupportedAt, setStoredSource]);
+  }, [
+    router.isReady,
+    redirectTo,
+    justDonated,
+    sourceSlug,
+    validatedReturn,
+    setSupportedAt,
+    setStoredSource,
+  ]);
 
   const cameFrom = justDonated
     ? (source ?? (isFreshSource(storedSource) ? getDonationSource(storedSource?.slug) : null))
@@ -175,35 +205,3 @@ export default function DonatePage({
     </Layout>
   );
 }
-
-// Resolve explicit referrals on the server so the first paint already belongs
-// to the project. Checkout returns without a slug recover it after hydration.
-export const getServerSideProps: GetServerSideProps<DonatePageProps> = async ({ query, req }) => {
-  const source =
-    getDonationSource(query[FROM_QUERY_KEY]) ??
-    (query[THANKS_QUERY_KEY] !== undefined ? donationSourceFromCookie(req.headers.cookie) : null) ??
-    (query[FROM_QUERY_KEY] === undefined && query[THANKS_QUERY_KEY] === undefined
-      ? sourceFromReferrer(req.headers.referer)
-      : null);
-  if (source) {
-    const params = new URLSearchParams();
-    const returnTo =
-      validateDonationReturn(source, query[RETURN_QUERY_KEY]) ??
-      validateDonationReturn(source, req.headers.referer);
-    if (returnTo) params.set(RETURN_QUERY_KEY, returnTo);
-    if (query[THANKS_QUERY_KEY] !== undefined) params.set(THANKS_QUERY_KEY, "1");
-    return {
-      redirect: {
-        destination: `${donationPath(source.slug)}${params.size ? `?${params}` : ""}`,
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {
-      initialSourceSlug: null,
-      initialThanks: query[THANKS_QUERY_KEY] !== undefined,
-      initialReturnTo: null,
-    },
-  };
-};

@@ -73,7 +73,7 @@ export async function getStaticPaths() {
     paths: shaderFiles.map((shaderName) => ({
       params: { shaderName },
     })),
-    fallback: true,
+    fallback: false,
   };
 }
 

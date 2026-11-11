@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import Handlebars from "handlebars";
+import { renderConfirmEmail } from "./confirmEmail";
 import { confirmLink } from "./confirmLink";
 import {
   confirmSubscription,
@@ -8,7 +8,7 @@ import {
   isConfirmedOnList,
   sendTransactional,
 } from "./listmonk";
-import { DEFAULT_LIST, type ListKey, listIdFor, listNames, NEWSLETTER_LISTS } from "./lists";
+import { DEFAULT_LIST, type ListKey, listIdFor } from "./lists";
 
 /**
  * Double opt-in for the site's mailing lists (see `./lists`). One signup can
@@ -52,42 +52,18 @@ export async function listsToConfirm(email: string, lists: readonly ListKey[]): 
   return lists.filter((_, i) => !already[i]);
 }
 
-function confirmCopy(lists: readonly ListKey[]) {
-  if (lists.length === 1 && lists[0] === DEFAULT_LIST) {
-    return {
-      subject: "Confirm Signup to the Live and Learn Newsletter",
-      heading: "Welcome to Live and Learn.",
-      intro:
-        "Well almost... You still need to click the button below. Only then, you will get my newsletter regularly. Double Opt-In is a thing these days, you know. 😉",
-    };
-  }
-  const names = listNames(lists);
-  return {
-    subject: `Confirm your signup to ${names}`,
-    heading: `Welcome to ${names}.`,
-    intro: `Well almost... You still need to click the button below. Only then, you will get ${lists
-      .map((list) => {
-        const promise = NEWSLETTER_LISTS[list].promise.replace(/\.$/, "");
-        return promise[0].toLowerCase() + promise.slice(1);
-      })
-      .join(", and ")}. 😉`,
-  };
-}
-
-async function renderConfirmEmail(link: string, lists: readonly ListKey[]) {
-  const source = await readFile(
+/** The confirm email's template, read from the checkout (`next dev`, scripts). */
+export function readConfirmTemplate(): Promise<string> {
+  return readFile(
     path.join(process.cwd(), "src", "content", "email-templates", "confirmSubscription.hbs"),
     "utf-8",
   );
-  const { subject, heading, intro } = confirmCopy(lists);
-  return {
-    subject,
-    html: Handlebars.compile(source)({ confirmLink: link, heading, intro }),
-  };
 }
 
 /**
- * Mail the confirm link. A blocklisted address (a hard bounce, a spam
+ * Mail the confirm link. `template` is the email template's source; the
+ * API Worker passes the copy bundled at build time, everything else reads
+ * the file. A blocklisted address (a hard bounce, a spam
  * complaint, or a reader who blocklisted themselves on the unsubscribe
  * page) gets nothing, and the form answers as usual so it does not tell
  * a stranger which addresses are blocklisted.
@@ -95,6 +71,7 @@ async function renderConfirmEmail(link: string, lists: readonly ListKey[]) {
 export async function sendConfirmationEmail(
   email: string,
   lists: readonly ListKey[] = [DEFAULT_LIST],
+  template?: string,
 ): Promise<void> {
   if ((await findSubscriber(email))?.status === "blocklisted") {
     console.info(
@@ -102,7 +79,11 @@ export async function sendConfirmationEmail(
     );
     return;
   }
-  const { subject, html } = await renderConfirmEmail(confirmLink(email, lists), lists);
+  const { subject, html } = renderConfirmEmail(
+    template ?? (await readConfirmTemplate()),
+    confirmLink(email, lists),
+    lists,
+  );
   await sendTransactional({ to: email, subject, html });
 }
 

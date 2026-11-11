@@ -107,3 +107,6 @@ venv/
 *.jks
 *.p12
 *.p8
+# API Worker: data bundled at build time, local secrets for `pnpm preview`
+workers/api/generated/
+workers/api/.dev.vars

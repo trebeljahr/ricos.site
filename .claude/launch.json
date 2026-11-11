@@ -7,6 +7,13 @@
       "runtimeArgs": [],
       "port": 3713,
       "autoPort": true
+    },
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["src/scripts/static/preview.mjs"],
+      "port": 58731,
+      "autoPort": true
     }
   ]
 }

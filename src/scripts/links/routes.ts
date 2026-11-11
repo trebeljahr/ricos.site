@@ -6,7 +6,8 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { RedirectRule } from "./redirects";
+import { newsletterRedirects, STATIC_REDIRECTS } from "../createRedirects.js";
+import { compileRedirect, type RedirectRule } from "./redirects";
 import { ROOT } from "./references";
 
 export const NEXT_DIR = resolve(ROOT, ".next");
@@ -55,7 +56,22 @@ export function collectRoutes(): Routes | undefined {
     patterns.push(new RegExp(regex));
   }
 
-  return { exact, patterns, redirects: routesManifest.redirects ?? [] };
+  // A static export (`output: "export"`) has no redirects in the manifest
+  // apart from Next's own trailing-slash rule: the table is served from
+  // out/_redirects instead (src/scripts/static/finishExport.ts). Compile the
+  // same table here, as the markdown build does.
+  const redirects = routesManifest.redirects ?? [];
+  if (!redirects.some((rule) => !rule.internal)) redirects.push(...configuredRedirects());
+
+  return { exact, patterns, redirects };
+}
+
+function configuredRedirects(): RedirectRule[] {
+  const newsletters =
+    readJson<{ number: string; slugTitle: string }[]>(
+      resolve(ROOT, ".velite", "newsletters.json"),
+    ) ?? [];
+  return [...newsletterRedirects(newsletters), ...STATIC_REDIRECTS].map(compileRedirect);
 }
 
 export function isServable(path: string, routes: Routes): boolean {

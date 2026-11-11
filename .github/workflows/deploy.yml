@@ -1,31 +1,38 @@
-# Build → push → deploy pipeline for ricos.site on Coolify. Scaffolded by
-# `hatchkit adopt`, then cut down to this repo:
+# Build → upload → activate pipeline for ricos.site on Cloudflare Workers.
+# The site is a static export served by the assets-only Worker
+# `ricos-site-client` (wrangler.jsonc); the few routes that need code run in
+# the API Worker `ricos-site-api` (workers/api). No server, no image.
+# See docs/static-site.md.
 #
-#   1. build  — check out the private Notes repo (the content), build the
-#               Dockerfile, push it to GHCR as `:<sha>` and `:main`. The image
-#               build runs the full `pnpm build`, including the link and alt
-#               checks, so there is no separate verify job.
+#   1. build  — check out the private Notes repo (the content), run the full
+#               `pnpm build` (export, link and alt checks, _redirects,
+#               _headers, version.json), carry the hashed chunks of the two
+#               releases before this one, bundle the API Worker's data, and
+#               upload a version of both Workers. An upload is not live.
 #   images — in parallel: write R2 variants for images added since the last
 #            run (src/scripts/aws/syncR2Variants.mjs).
-#   2. deploy — point `:live` at the `:<sha>` image, signal Coolify with the
-#               app's own signed webhook, verify the deployed artefact
-#               reports that same sha, record a GitHub Deployment.
+#   2. deploy — activate the API version, then the site version, verify that
+#               ricos.site serves this run's commit and Notes commit, record a
+#               GitHub Deployment.
 #
-# Notes is checked out at its `main`, not at the submodule pin, the same as
-# the Vercel build did (vercel-submodule-workaround.sh). A push to Notes
-# `main` starts this workflow through workflow_dispatch (the Notes repo's
-# .github/workflows/main.yaml, token secret RICOS_SITE_DEPLOY_TOKEN there),
-# so a vault-only change deploys without a ricos.site commit. Such a run
-# rebuilds the same ricos.site sha; /version.json's `notes` field tells the
-# two builds apart.
+# Notes is checked out at its `main`, not at the submodule pin. A push to
+# Notes `main` starts this workflow through workflow_dispatch (the Notes
+# repo's .github/workflows/main.yaml, token secret RICOS_SITE_DEPLOY_TOKEN
+# there), so a vault-only change deploys without a ricos.site commit. Such a
+# run rebuilds the same ricos.site sha; /version.json's `notes` field tells
+# the two builds apart.
 #
-# Repo secrets (hatchkit sets the Coolify ones during adopt / sync):
-#   COOLIFY_BASE_URL, COOLIFY_RESOURCE_UUID, COOLIFY_DEPLOY_SECRET,
-#   COOLIFY_DEPLOY_REPOSITORY, COOLIFY_DEPLOY_BRANCH — the app's own webhook;
-#                                   this repo holds no Coolify API token.
-#   DOTENV_PRIVATE_KEY_PRODUCTION — decrypts .env.production inside the
-#                                   build (BuildKit secret, never in a layer).
+# Repo secrets:
+#   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID — Workers Scripts: Edit on the
+#                                   account; no route or DNS permission. Without
+#                                   them the build still runs and nothing is
+#                                   uploaded.
+#   DOTENV_PRIVATE_KEY_PRODUCTION — decrypts .env.production for the build
+#                                   (NEXT_PUBLIC_* values, offered lists) and
+#                                   for the images job.
 #   NOTES_DEPLOY_KEY              — read-only deploy key of trebeljahr/Notes.
+# The API Worker's own secrets (ListMonk, token secret, emergency) live on
+# the Worker, set once with `wrangler secret put` (workers/api/wrangler.jsonc).
 name: build-and-deploy
 
 on:
@@ -35,21 +42,28 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: deploy
   cancel-in-progress: false
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  WRANGLER_SEND_METRICS: "false"
+  SITE: https://ricos.site
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     outputs:
       notes_sha: ${{ steps.notes.outputs.sha }}
+      client_version: ${{ steps.upload.outputs.client_version }}
+      api_version: ${{ steps.upload.outputs.api_version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Check out the Notes content
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: trebeljahr/Notes
           ref: main
@@ -59,30 +73,79 @@ jobs:
       - name: Read the Notes commit
         id: notes
         run: echo "sha=$(git -C src/content/Notes rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
+      # Private writing that only `next dev` reads. The export never touches
+      # it; removing it keeps it out of every step below.
+      - name: Drop Notes/texts
+        run: rm -rf src/content/Notes/texts
+
+      # The version comes from packageManager in package.json.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          # Bakes both commits into /version.json, which the deploy job polls.
-          build-args: |
-            COMMIT_SHA=${{ github.sha }}
-            NOTES_SHA=${{ steps.notes.outputs.sha }}
-          tags: |
-            ghcr.io/${{ github.repository }}:main
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
-          # Reuses the dependency install layer while package.json and the
-          # lockfile are unchanged.
-          cache-from: type=gha
-          cache-to: type=gha,mode=min
-          secrets: |
-            dotenvx_private_key=${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: "0"
+
+      - name: Build the static export
+        env:
+          DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+          # Written to out/version.json by src/scripts/static/finishExport.ts.
+          COMMIT_SHA: ${{ github.sha }}
+          NOTES_SHA: ${{ steps.notes.outputs.sha }}
+          # One id per build. Next compares it on every client navigation, so
+          # a tab still running the previous deploy does a full reload
+          # instead of mixing builds. A Notes-only push rebuilds the same
+          # site commit with new content, so the Notes commit is part of it.
+          NEXT_DEPLOYMENT_ID: ${{ github.sha }}-${{ steps.notes.outputs.sha }}
+          NEXT_TELEMETRY_DISABLED: "1"
+          # The site build peaks well above Node's default heap.
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          set -euo pipefail
+          test -n "$DOTENV_PRIVATE_KEY_PRODUCTION" || {
+            echo "::error::DOTENV_PRIVATE_KEY_PRODUCTION is not set."; exit 1; }
+          pnpm dlx @dotenvx/dotenvx@1.64.0 run -f .env.production -- pnpm build
+
+      - name: Check the API Worker
+        run: |
+          pnpm api:typecheck
+          pnpm exec vitest run workers
+
+      # A Worker version serves only its own files. Tabs opened before this
+      # release still ask for the hashed chunks of the releases before it.
+      - name: Carry the hashed files of the two releases before this one
+        env:
+          NOTES_SHA: ${{ steps.notes.outputs.sha }}
+        run: >-
+          node src/scripts/static/carry-static.mjs --site "$SITE" --out out
+          --release "${GITHUB_SHA}-${NOTES_SHA:0:12}"
+
+      - name: Upload a version of both Workers (not live yet)
+        id: upload
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NOTES_SHA: ${{ steps.notes.outputs.sha }}
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: |
+          set -euo pipefail
+          upload() { # config, output name
+            local log="$RUNNER_TEMP/wrangler-$2.ndjson" id
+            WRANGLER_OUTPUT_FILE_PATH="$log" pnpm exec wrangler versions upload \
+              --config "$1" --tag "$GITHUB_SHA" --message "Commit $GITHUB_SHA, Notes $NOTES_SHA"
+            id=$(node -e '
+              const lines = require("fs").readFileSync(process.argv[1], "utf8").split("\n").filter(Boolean);
+              const upload = lines.map((l) => JSON.parse(l)).find((e) => e.type === "version-upload");
+              if (!/^[0-9a-f-]{36}$/.test(upload?.version_id ?? "")) process.exit(1);
+              console.log(upload.version_id);
+            ' "$log")
+            echo "$2=$id" >> "$GITHUB_OUTPUT"
+            echo "Uploaded $1 as version $id (not live)." >> "$GITHUB_STEP_SUMMARY"
+          }
+          upload workers/api/wrangler.jsonc api_version
+          upload wrangler.jsonc client_version
 
   # R2 has no on-demand variants the way CloudFront's Lambda did: write the
   # ones new images are missing before the build that references them goes
@@ -90,13 +153,13 @@ jobs:
   images:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             src/scripts/aws/syncR2Variants.mjs
             .env.production
           sparse-checkout-cone-mode: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
       - name: Write missing image variants to R2
@@ -110,264 +173,79 @@ jobs:
           npm install --no-audit --no-fund --no-save @aws-sdk/client-s3@3 sharp@0.35.5 @dotenvx/dotenvx@1.64.0
           npx dotenvx run -q -f .env.production -- node syncR2Variants.mjs
 
+  # Runs when the build uploaded both versions. The API goes first: the new
+  # pages may call it, the old pages work with either API version.
   deploy:
     runs-on: ubuntu-latest
     needs: [build, images]
+    if: needs.build.outputs.client_version != '' && needs.build.outputs.api_version != ''
+    timeout-minutes: 20
     permissions:
       contents: read
-      packages: write
       deployments: write
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NOTES_SHA: ${{ needs.build.outputs.notes_sha }}
     steps:
-      # Point `:live` at the images this run built. Every Coolify app
-      # pulls `:live` (hatchkit sets that when it wires the app), so
-      # this is what decides which build the deploy below starts — the
-      # immutable `:<sha>` tag, re-published under the name the apps
-      # read. It uses this job's own GITHUB_TOKEN (`packages: write`),
-      # which can write this repository's packages and nothing else; no
-      # Coolify credential is involved.
-      #
-      # A rollback is the same step with an older sha.
-      - name: Promote this commit's images to :live
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
         env:
-          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: env.COOLIFY_BASE_URL != ''
+          HUSKY: "0"
+
+      - name: Activate the API version, then the site version
+        env:
+          API_VERSION: ${{ needs.build.outputs.api_version }}
+          CLIENT_VERSION: ${{ needs.build.outputs.client_version }}
         run: |
           set -euo pipefail
-          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          image="ghcr.io/${{ github.repository }}"
-          docker buildx imagetools create --tag "$image:live" "$image:${{ github.sha }}"
-          echo "promoted $image:${{ github.sha }} to :live"
+          message="Release $GITHUB_SHA, Notes $NOTES_SHA"
+          pnpm exec wrangler versions deploy "$API_VERSION@100%" \
+            --config workers/api/wrangler.jsonc --yes --message "$message"
+          pnpm exec wrangler versions deploy "$CLIENT_VERSION@100%" \
+            --config wrangler.jsonc --yes --message "$message"
+          {
+            echo "Activated ricos-site-api $API_VERSION and ricos-site-client $CLIENT_VERSION."
+            echo "Rollback: \`wrangler versions deploy <older id>@100%\` with the same config."
+          } >> "$GITHUB_STEP_SUMMARY"
 
-      # Tell Coolify to deploy. There is no Coolify API token here: each
-      # app has its own webhook secret (hatchkit mints it), and a `push`
-      # payload signed with it queues a deploy of that one app — it can
-      # read nothing and touch no other app. The payload names
-      # `.hatchkit/deploy-webhook`, the app's only watch path, so an ordinary
-      # push that reaches Coolify through its GitHub App never deploys a
-      # build that does not exist yet; only this step does.
-      #
-      # Which apps: COOLIFY_RESOURCE_UUID for a single-app project, or
-      # COOLIFY_SERVER_/COOLIFY_CLIENT_RESOURCE_UUID for a split one.
-      # hatchkit sets one set and clears the other.
-      - name: Deploy via signed Coolify webhook
-        env:
-          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          COOLIFY_RESOURCE_UUID: ${{ secrets.COOLIFY_RESOURCE_UUID }}
-          COOLIFY_DEPLOY_SECRET: ${{ secrets.COOLIFY_DEPLOY_SECRET }}
-          COOLIFY_DEPLOY_REPOSITORY: ${{ secrets.COOLIFY_DEPLOY_REPOSITORY }}
-          COOLIFY_DEPLOY_BRANCH: ${{ secrets.COOLIFY_DEPLOY_BRANCH }}
-          COOLIFY_SERVER_RESOURCE_UUID: ${{ secrets.COOLIFY_SERVER_RESOURCE_UUID }}
-          COOLIFY_SERVER_DEPLOY_SECRET: ${{ secrets.COOLIFY_SERVER_DEPLOY_SECRET }}
-          COOLIFY_SERVER_DEPLOY_REPOSITORY: ${{ secrets.COOLIFY_SERVER_DEPLOY_REPOSITORY }}
-          COOLIFY_SERVER_DEPLOY_BRANCH: ${{ secrets.COOLIFY_SERVER_DEPLOY_BRANCH }}
-          COOLIFY_CLIENT_RESOURCE_UUID: ${{ secrets.COOLIFY_CLIENT_RESOURCE_UUID }}
-          COOLIFY_CLIENT_DEPLOY_SECRET: ${{ secrets.COOLIFY_CLIENT_DEPLOY_SECRET }}
-          COOLIFY_CLIENT_DEPLOY_REPOSITORY: ${{ secrets.COOLIFY_CLIENT_DEPLOY_REPOSITORY }}
-          COOLIFY_CLIENT_DEPLOY_BRANCH: ${{ secrets.COOLIFY_CLIENT_DEPLOY_BRANCH }}
-        if: env.COOLIFY_BASE_URL != ''
-        run: |
-          set -euo pipefail
-          deployed=0
-          deploy() { # label, secret-name prefix
-            local uuid_var="${2}RESOURCE_UUID" secret_var="${2}DEPLOY_SECRET"
-            local repo_var="${2}DEPLOY_REPOSITORY" branch_var="${2}DEPLOY_BRANCH"
-            local uuid="${!uuid_var:-}" secret="${!secret_var:-}"
-            local repo="${!repo_var:-}" branch="${!branch_var:-}"
-            [ -n "$uuid" ] || return 0
-            if [ -z "$secret" ] || [ -z "$repo" ] || [ -z "$branch" ]; then
-              echo "::error::${2}DEPLOY_SECRET/_REPOSITORY/_BRANCH are not set — run \`hatchkit sync\` or \`hatchkit secrets isolate\`."
-              exit 1
-            fi
-            local body sig answer
-            body=$(jq -cn --arg ref "refs/heads/$branch" --arg sha "$GITHUB_SHA" --arg repo "$repo" \
-              '{ref: $ref, after: $sha, repository: {full_name: $repo}, commits: [{id: $sha, added: [], removed: [], modified: [".hatchkit/deploy-webhook"]}]}')
-            sig=$(printf '%s' "$body" | HOOK_SECRET="$secret" node -e \
-              'process.stdout.write(require("node:crypto").createHmac("sha256", process.env.HOOK_SECRET).update(require("node:fs").readFileSync(0)).digest("hex"))')
-            answer=$(curl -fsS -X POST "$COOLIFY_BASE_URL/webhooks/source/github/events/manual" \
-              -H 'Content-Type: application/json' -H 'X-GitHub-Event: push' \
-              -H "X-Hub-Signature-256: sha256=$sig" --data-binary "$body")
-            if printf '%s' "$answer" | jq -e --arg uuid "$uuid" \
-              'type == "array" and any(.[]; .application_uuid == $uuid and .status == "success")' \
-              >/dev/null 2>&1; then
-              echo "deploy queued for the $1 app ($uuid)"
-              deployed=$((deployed + 1))
-            else
-              # Other apps on the same repo answer "Invalid signature.";
-              # they are left out so a public log names only this one.
-              detail=$(printf '%s' "$answer" | jq -c '[.[]? | select(.message != "Invalid signature.") | {status, message}]' 2>/dev/null || printf '%s' "$answer" | head -c 200)
-              echo "::error::Coolify did not queue a deploy of the $1 app: $detail"
-              exit 1
-            fi
-          }
-          deploy app COOLIFY_
-          deploy server COOLIFY_SERVER_
-          deploy client COOLIFY_CLIENT_
-          if [ "$deployed" -eq 0 ]; then
-            echo "::error::COOLIFY_BASE_URL is set but no COOLIFY_*RESOURCE_UUID is — nothing was deployed."
-            exit 1
-          fi
-
-      # Everything above only proves Coolify ACCEPTED a request. This
-      # proves the deployed artefacts are the ones this run built.
-      #
-      # Until this existed, the pipeline's final assertion was an HTTP 200
-      # from a POST. A deploy that kept the old container, an image built
-      # with an empty API URL, a container crash-looping behind a proxy
-      # that answers 503 — all three shipped green, and none of them was
-      # visible from CI, from ghcr, or from the Coolify dashboard.
-      #
-      # Deliberately polls: a Coolify deploy is asynchronous, the POST
-      # returns as soon as the deployment is QUEUED.
-      #
-      # Guarded on a deploy having been TRIGGERED, not on the URLs being
-      # set. A per-URL `if:` would let this step skip while the deploy
-      # steps above ran — a job that reports green having verified
-      # nothing, which is the exact failure mode this step exists to
-      # remove. When a deploy fired and there is no URL to check, the
-      # script fails and says so.
-      #
-      # HATCHKIT_WEB_URL / HATCHKIT_API_URL are written here as literals
-      # by hatchkit from the manifest's domain + topology (and kept
-      # current by `hatchkit rename-domain` / `hatchkit regen-infra`).
-      # The `vars.` reference is the fallback for a hand-managed repo.
-      # Leave one empty to skip that half: a backend-only project has no
-      # web URL, a static one has no API. When the two are equal the
-      # project is single-origin and the CORS check is skipped, because
-      # there is no cross-origin request to make.
-      - name: Verify the deployment is actually live
-        env:
-          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          HATCHKIT_WEB_URL: https://ricos.site
-          HATCHKIT_API_URL: ""
-        if: env.COOLIFY_BASE_URL != ''
+      # The activation only proves Cloudflare accepted it. This proves the
+      # public host serves this run's commit and Notes commit, and that the
+      # API Worker answers on its route. Polls with a cache-busting query:
+      # the point is what the Worker serves, not a cached copy.
+      - name: Verify ricos.site serves this release
         run: |
           set -uo pipefail
-          SHA='${{ github.sha }}'
-          # `:-` so a workflow whose env block was edited fails with the
-          # gate's own message rather than a bare "unbound variable".
-          WEB="${HATCHKIT_WEB_URL:-}"
-          API="${HATCHKIT_API_URL:-}"
-          WEB="${WEB%/}"
-          API="${API%/}"
-          checked=0
-
-          # `?hatchkit_cb=` on every request: the point is what the ORIGIN
-          # now serves, and a CDN hit would answer with exactly the stale
-          # copy being tested for.
-          poll() { # label url jq-expression
-            got=""
-            for i in $(seq 1 40); do
-              got=$(curl -fsSL --max-time 10 "$2?hatchkit_cb=$i$RANDOM" 2>/dev/null \
-                      | jq -r "$3" 2>/dev/null || true)
-              if [ "$got" = "$SHA" ]; then echo "✓ $1 reports $SHA"; return 0; fi
-              echo "  $1: ${got:-<no response>} — waiting ($i/40)"
-              sleep 15
-            done
-            echo "::error::$1 never reported $SHA — the deploy did not land."
-            echo "::error::last seen: ${got:-<no response>}"
-            echo "::error::an empty/null reading on the first run after upgrading means the"
-            echo "::error::artefact does not report a version yet: the server needs"
-            echo "::error::\`version: env.COMMIT_SHA\` on /api/health, the client needs"
-            echo "::error::version.json written by its Dockerfile. Both come from COMMIT_SHA."
-            return 1
-          }
-
-          if [ -n "$API" ]; then
-            poll "api $API/api/health" "$API/api/health" '.version' || exit 1
-            checked=$((checked + 1))
-          fi
-
-          if [ -n "$WEB" ]; then
-            poll "web $WEB/version.json" "$WEB/version.json" '.commit' || exit 1
-            checked=$((checked + 1))
-
-            # The client bakes its API origin in at build time, so a
-            # correct commit can still carry the wrong URL. Assert the
-            # pairing — this is the check that catches an image built
-            # against an unset repo variable.
-            if [ -n "$API" ]; then
-              baked=$(curl -fsSL --max-time 10 "$WEB/version.json?hatchkit_cb=$RANDOM" | jq -r '.apiUrl')
-              if [ "$baked" != "$API" ]; then
-                echo "::error::client was built against '${baked:-<empty>}', expected '$API'"
-                exit 1
-              fi
-              echo "✓ client is built against $baked"
-            fi
-          fi
-
-          # Cross-origin only. Under single-origin the API is same-origin
-          # with the web app, so CORS never enters the picture; under
-          # split it is load-bearing and nothing else exercises it — the
-          # e2e suite runs both halves on localhost.
-          if [ -n "$WEB" ] && [ -n "$API" ] && [ "$WEB" != "$API" ]; then
-            allow=$(curl -fsS --max-time 10 -o /dev/null -D - -X OPTIONS \
-                      -H "Origin: $WEB" \
-                      -H 'Access-Control-Request-Method: POST' \
-                      -H 'Access-Control-Request-Headers: content-type' \
-                      "$API/api/health" \
-                    | tr -d '\r' | awk -F': ' 'tolower($1)=="access-control-allow-origin"{print $2}')
-            if [ "$allow" != "$WEB" ]; then
-              echo "::error::CORS preflight returned '${allow:-<none>}', expected '$WEB'"
-              echo "::error::the server's FRONTEND_URL / TRUSTED_ORIGINS do not cover the web origin"
-              exit 1
-            fi
-            echo "✓ CORS allows $WEB"
-            checked=$((checked + 1))
-          fi
-
-          if [ "$checked" -eq 0 ]; then
-            echo "::error::a deploy was triggered and nothing was verified."
-            echo "::error::set HATCHKIT_WEB_URL / HATCHKIT_API_URL in this workflow"
-            echo "::error::(or as repo variables), or run \`hatchkit regen-infra\`."
-            exit 1
-          fi
-
-      # A run started by a Notes push rebuilds the ricos.site commit that is
-      # already live, so the check above passes against the old container.
-      # This one waits until the site serves the Notes commit this run built.
-      - name: Verify the deployed Notes content
-        env:
-          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          NOTES_SHA: ${{ needs.build.outputs.notes_sha }}
-        if: env.COOLIFY_BASE_URL != ''
-        run: |
-          set -uo pipefail
-          if [ -z "$NOTES_SHA" ]; then
-            echo "::error::the build job reported no Notes commit."
-            exit 1
-          fi
           got=""
           for i in $(seq 1 40); do
-            got=$(curl -fsSL --max-time 10 "https://ricos.site/version.json?notes_cb=$i$RANDOM" 2>/dev/null \
-                    | jq -r '.notes' 2>/dev/null || true)
-            if [ "$got" = "$NOTES_SHA" ]; then echo "✓ ricos.site serves Notes $NOTES_SHA"; exit 0; fi
-            echo "  notes: ${got:-<no response>} — waiting ($i/40)"
+            got=$(curl -fsSL --max-time 10 "$SITE/version.json?release_cb=$i$RANDOM" 2>/dev/null \
+                    | jq -r '"\(.commit) \(.notes)"' 2>/dev/null || true)
+            if [ "$got" = "$GITHUB_SHA $NOTES_SHA" ]; then
+              echo "✓ $SITE serves $GITHUB_SHA with Notes $NOTES_SHA"; break
+            fi
+            echo "  version.json: ${got:-<no response>} — waiting ($i/40)"
             sleep 15
           done
-          echo "::error::ricos.site never reported Notes $NOTES_SHA (last seen: ${got:-<no response>})."
-          exit 1
+          if [ "$got" != "$GITHUB_SHA $NOTES_SHA" ]; then
+            echo "::error::$SITE never reported $GITHUB_SHA $NOTES_SHA (last seen: ${got:-<no response>})."
+            exit 1
+          fi
+          quote=$(curl -fsS --max-time 10 "$SITE/api/quote" | jq -r '.content // empty' || true)
+          if [ -z "$quote" ]; then
+            echo "::error::$SITE/api/quote did not answer with a quote: the API Worker route is broken."
+            exit 1
+          fi
+          echo "✓ $SITE/api/quote answers"
 
       # Leave a GitHub Deployment for this commit on the `web` channel, so
-      # HQ's Shipped view and the Environments page show what is
-      # live. Last, and under the deploy steps' own gate: a run that deployed
-      # nothing, or whose deploy was not proven live, records nothing. This
-      # job has no checkout, so the action is fetched on its own.
-      - name: Check out the record-ship action
-        env:
-          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-        if: env.COOLIFY_BASE_URL != ''
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: .github/actions/record-ship
-          persist-credentials: false
-
+      # HQ's Shipped view and the Environments page show what is live.
       - name: Record the web deploy
-        env:
-          COOLIFY_BASE_URL: ${{ secrets.COOLIFY_BASE_URL }}
-          HATCHKIT_WEB_URL: https://ricos.site
-        if: env.COOLIFY_BASE_URL != ''
         uses: ./.github/actions/record-ship
         with:
           environment: web
-          url: ${{ env.HATCHKIT_WEB_URL }}
+          url: ${{ env.SITE }}

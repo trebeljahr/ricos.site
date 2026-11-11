@@ -80,6 +80,12 @@ const nextSitemapConfig = {
     "/dev/alt-review",
     "/dev/needlestack",
     "/dev/diary",
+    "/dev/diary/*",
+    "/computer/demos",
+    "/piano/demos",
+    // One page per project that sends donors here: a landing for that
+    // project's link, not something to find through search.
+    "/donate/*",
   ],
   changefreq: null,
   priority: null,

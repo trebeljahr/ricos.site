@@ -10,11 +10,16 @@ import { DEFAULT_LIST, isListKey, type ListKey } from "./lists";
  */
 
 /**
- * Links are built from configuration, never from the request's origin. In
- * development they follow `PORT`, which `next dev` sets to its own port, so
- * a dev server on another port than 2222 gets links back to itself.
+ * Links are built from configuration, never from the request's origin:
+ * `SITE_URL` when set (the API Worker). In development they follow `PORT`,
+ * which `next dev` sets to its own port, so a dev server on another port
+ * than 2222 gets links back to itself.
  */
 export function siteUrl(): string {
+  // The API Worker sets SITE_URL (workers/api/wrangler.jsonc), so its
+  // links never depend on how a bundler defines NODE_ENV.
+  const configured = process.env.SITE_URL?.trim().replace(/\/+$/, "");
+  if (configured) return configured;
   if (process.env.NODE_ENV === "development") {
     return `http://localhost:${process.env.PORT || 2222}`;
   }

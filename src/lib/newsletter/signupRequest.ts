@@ -12,12 +12,31 @@ import { checkRateLimit, listsToConfirm, normalizeEmail, sendConfirmationEmail }
  * Nothing about the request is kept: no page, site or referrer goes into
  * the confirm token or onto the subscriber. The IP only feeds the
  * in-memory rate limiter.
+ *
+ * Runtime-neutral: the Next routes (under `next dev`) and the API Worker
+ * (workers/api, production) both call it with what they read off the
+ * request.
  */
 
 export type SignupResult = { status: number; body: Record<string, string> };
 
+export type SignupInput = {
+  /** The client's address, for the rate limiter only. */
+  ip: string;
+  /** The parsed request body (JSON or form fields). */
+  body: unknown;
+  /** The confirm email template; read from the checkout when absent. */
+  confirmTemplate?: string;
+  /**
+   * Extra limiter in front of the in-memory one (the Worker's rate-limit
+   * binding, which holds across isolates). `false` means over the limit.
+   */
+  rateLimit?: (ip: string) => Promise<boolean>;
+};
+
 export const CHECK_YOUR_MAIL = "Now check your mail to confirm your subscription!";
 
+/** The client's address on a Node request (the Next routes). */
 export function clientIp(req: NextApiRequest): string {
   const forwarded = req.headers["x-forwarded-for"];
   const first = Array.isArray(forwarded) ? forwarded[0] : forwarded;
@@ -29,10 +48,14 @@ export function clientIp(req: NextApiRequest): string {
 
 /** `lists` is what the route parsed; `null` means the request named none it may join. */
 export async function processSignup(
-  req: NextApiRequest,
+  input: SignupInput,
   lists: ListKey[] | null,
 ): Promise<SignupResult> {
-  if (!checkRateLimit(clientIp(req))) {
+  const body = (input.body && typeof input.body === "object" ? input.body : {}) as Record<
+    string,
+    unknown
+  >;
+  if (!checkRateLimit(input.ip) || (input.rateLimit && !(await input.rateLimit(input.ip)))) {
     return {
       status: 429,
       body: {
@@ -44,11 +67,11 @@ export async function processSignup(
 
   // Honeypot: people never fill the hidden field, bots do. Answer like a
   // success so they learn nothing, and send nothing.
-  if (typeof req.body?.website === "string" && req.body.website.trim()) {
+  if (typeof body.website === "string" && body.website.trim()) {
     return { status: 200, body: { success: CHECK_YOUR_MAIL } };
   }
 
-  const email = normalizeEmail(req.body?.email);
+  const email = normalizeEmail(body.email);
   if (!email) {
     return {
       status: 400,
@@ -78,7 +101,7 @@ export async function processSignup(
       };
     }
 
-    await sendConfirmationEmail(email, pending);
+    await sendConfirmationEmail(email, pending, input.confirmTemplate);
     return { status: 200, body: { success: CHECK_YOUR_MAIL } };
   } catch (err) {
     console.error(err);

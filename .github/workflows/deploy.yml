@@ -5,6 +5,8 @@
 #               Dockerfile, push it to GHCR as `:<sha>` and `:main`. The image
 #               build runs the full `pnpm build`, including the link and alt
 #               checks, so there is no separate verify job.
+#   images — in parallel: write R2 variants for images added since the last
+#            run (src/scripts/aws/syncR2Variants.mjs).
 #   2. deploy — point `:live` at the `:<sha>` image, signal Coolify with the
 #               app's own signed webhook, verify the deployed artefact
 #               reports that same sha, record a GitHub Deployment.
@@ -74,9 +76,35 @@ jobs:
           secrets: |
             dotenvx_private_key=${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
 
+  # R2 has no on-demand variants the way CloudFront's Lambda did: write the
+  # ones new images are missing before the build that references them goes
+  # live. Usually there are none, and this only lists the two buckets.
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            src/scripts/aws/syncR2Variants.mjs
+            .env.production
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Write missing image variants to R2
+        env:
+          DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/r2sync
+          cp src/scripts/aws/syncR2Variants.mjs .env.production /tmp/r2sync/
+          cd /tmp/r2sync
+          npm install --no-audit --no-fund --no-save @aws-sdk/client-s3@3 sharp@0.35.5 @dotenvx/dotenvx@1.64.0
+          npx dotenvx run -q -f .env.production -- node syncR2Variants.mjs
+
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build, images]
     permissions:
       contents: read
       packages: write

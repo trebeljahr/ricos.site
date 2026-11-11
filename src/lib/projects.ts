@@ -81,11 +81,11 @@ export const PROJECTS: Project[] = [
     section: "Games",
     cover: screenshot(
       "mesozoic-protocol",
-      "Mesozoic Protocol art: a mech and turrets holding off dinosaurs on a burning shore",
+      "A velociraptor in a sunlit forest beside an orange turret",
     ),
     wordmarkCover: wordmark(
       "mesozoic-protocol",
-      "Mesozoic Protocol logo over art of a mech and turrets holding off dinosaurs",
+      "Mesozoic Protocol logo beside a velociraptor in a sunlit forest and an orange turret",
     ),
   },
   {
@@ -99,7 +99,7 @@ export const PROJECTS: Project[] = [
     cover: screenshot("tiao", "Tiao board at an angle with black and white stones"),
     wordmarkCover: wordmark(
       "tiao",
-      "Tiao logo and the line Place a stone, or jump one, beside a board with stones",
+      "Tiao logo beside a board at an angle with black and white stones",
     ),
     featured: true,
   },
@@ -217,7 +217,11 @@ export const PROJECTS: Project[] = [
     section: "Art & 3D",
     cover: screenshot(
       "interactive-3d-demos",
-      "Colourful concentric shader pattern from the 3D playground",
+      "Six 3D demos: a plasma ball, a shader pattern, a glowing sword, a snow forest, a lightning strike and an animated soldier",
+    ),
+    wordmarkCover: wordmark(
+      "interactive-3d-demos",
+      "Interactive 3D Demos title over a plasma ball, a shader pattern, a glowing sword, a snow forest, lightning and a soldier",
     ),
   },
   {
@@ -257,7 +261,7 @@ export const PROJECTS: Project[] = [
     ),
     wordmarkCover: wordmark(
       "fractal-garden",
-      "Fractal Garden title above the Mandelbrot set, a Julia set and the Burning Ship",
+      "Fractal Garden title and the line An Exhibition Of Mathematical Beauty over six fractals",
     ),
     featured: true,
   },
@@ -290,7 +294,14 @@ export const PROJECTS: Project[] = [
     link: "https://names.trebeljahr.com",
     section: "Dev tools",
     unlisted: true,
-    cover: screenshot("name-check", "name-check landing page with a search box for a product name"),
+    cover: screenshot(
+      "name-check",
+      "name-check results for one name: trademarks, domains and social handles marked available or taken",
+    ),
+    wordmarkCover: wordmark(
+      "name-check",
+      "name-check logo, the headline Don't ship a name you'll have to rebrand, and a search box",
+    ),
   },
   {
     slug: "hatchkit",
@@ -305,7 +316,7 @@ export const PROJECTS: Project[] = [
     ),
     wordmarkCover: wordmark(
       "hatchkit",
-      "hatchkit logo and the line Automates the drudgery of starting a new project, beside the services one command sets up",
+      "hatchkit logo and the line Automates the drudgery of starting a new project, beside the nine services hatchkit create sets up",
     ),
     featured: true,
   },
@@ -358,7 +369,14 @@ export const PROJECTS: Project[] = [
     link: "https://streaks.trebeljahr.com",
     section: "Everyday apps",
     unlisted: true,
-    cover: screenshot("streaks", "Streaks landing page headed Two minutes counts"),
+    cover: screenshot(
+      "streaks",
+      "Streaks Today screen on a phone with four practices and their streak rings",
+    ),
+    wordmarkCover: wordmark(
+      "streaks",
+      "Streaks wordmark and the line Two minutes counts, beside the Today screen on a phone",
+    ),
   },
   {
     slug: "track-your-time",
@@ -389,7 +407,11 @@ export const PROJECTS: Project[] = [
     unlisted: true,
     cover: screenshot(
       "mood-magic",
-      "Mood Magic landing page next to a phone showing a Restless check-in",
+      "A phone showing a Restless mood check-in over soft blue bands",
+    ),
+    wordmarkCover: wordmark(
+      "mood-magic",
+      "Mood Magic title next to a phone showing a Restless mood check-in",
     ),
   },
   {
@@ -436,7 +458,11 @@ export const PROJECTS: Project[] = [
     unlisted: true,
     cover: screenshot(
       "chemistry-sketcher",
-      "Hydroxyl landing page with acetic acid drawn as skeletal, Lewis and formula views",
+      "Acetic acid drawn as four panels: skeletal, explicit H, Lewis and condensed formula",
+    ),
+    wordmarkCover: wordmark(
+      "chemistry-sketcher",
+      "Hydroxyl headline Draw the molecule once beside acetic acid in four views",
     ),
   },
 ];

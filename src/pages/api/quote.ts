@@ -23,7 +23,7 @@ function loadShortQuotes() {
   return shortQuotes;
 }
 
-/** One random quote from /quotes, for the booknotes easter egg. Read-only, unlike /api/random-quote. */
+/** One random quote from /quotes, for the booknotes easter egg. */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");

@@ -41,12 +41,13 @@ export type CardCover = {
 export type CardLayout = "vertical" | "horizontal";
 
 // "tall" crops photos into a fixed-height banner. "video" keeps the whole
-// image at 16:9, which suits screenshots (e.g. the /projects cards); in the
-// horizontal layout the frame matches every other card and the whole image
+// image at 16:9, which suits screenshots; "og" does the same at 1200:630, the
+// link-preview (og:image) shape of the /projects covers. In the
+// horizontal layout both frame like every other card and the whole image
 // sits inside it over a blurred copy, so mixed lists keep one card shape.
 // "portrait" is for book covers: in the horizontal layout it narrows the cover
 // column and keeps at least a 2:3 frame, so the whole cover stays visible.
-export type CoverAspect = "tall" | "video" | "portrait";
+export type CoverAspect = "tall" | "video" | "og" | "portrait";
 
 export type CardProps = {
   link: string;
@@ -70,6 +71,12 @@ export type CardProps = {
   prefetch?: boolean;
   /** Point the card off-site: a new tab, and no prefetching of another domain. */
   external?: boolean;
+  /**
+   * The card sits in a grid that gives it four rows (see CardGallery): cover,
+   * title, blurb and footer then line up with the cards beside it through
+   * subgrid, so a title takes two lines only when one in its row needs them.
+   */
+  rowAligned?: boolean;
   className?: string;
   // Extra body content rendered below the excerpt, above the metadata.
   children?: ReactNode;
@@ -102,6 +109,7 @@ export function Card({
   sizes,
   prefetch,
   external = false,
+  rowAligned = false,
   className,
   children,
 }: CardProps) {
@@ -110,14 +118,30 @@ export function Card({
   // Without a cover there is no image column to lay a horizontal card out
   // against, so the text simply fills the card and keeps the row shape.
   const hasCover = cover !== undefined;
+  // Subgrid rows need the cover in row 1; a coverless card keeps the flex layout.
+  const aligned = rowAligned && !horizontal && hasCover;
   const hasMetadata = Boolean(date || readingTime || amountOfStories);
   const portrait = coverAspect === "portrait";
   const video = coverAspect === "video";
-  const letterboxed = horizontal && video;
+  const og = coverAspect === "og";
+  const letterboxed = horizontal && (video || og);
   const hasDimensions = cover?.width !== undefined && cover?.height !== undefined;
   const hasExcerpt = Boolean(excerptHtml || excerpt);
 
   const Anchor = external ? ExternalAnchor : Link;
+
+  const metadata = (
+    // Pinned to the bottom so metadata lines up across a row of cards.
+    <div className="mt-auto pt-stack [&>div]:text-gray-500 dark:[&>div]:text-gray-400">
+      <MetadataDisplay
+        date={date}
+        readingTime={readingTime}
+        amountOfStories={amountOfStories}
+        withAuthorInfo={false}
+        longFormDate={false}
+      />
+    </div>
+  );
 
   return (
     <Anchor
@@ -141,7 +165,9 @@ export function Card({
               hasCover && "md:grid",
               hasCover && (portrait ? "md:grid-cols-[10rem_1fr]" : "md:grid-cols-[15rem_1fr]"),
             )
-          : "flex flex-col self-stretch",
+          : aligned
+            ? "row-span-4 grid grid-rows-subgrid gap-y-0"
+            : "flex flex-col self-stretch",
         className,
       )}
     >
@@ -149,11 +175,14 @@ export function Card({
         <div
           className={clsx(
             "relative w-full shrink-0 overflow-hidden bg-gray-200 dark:bg-gray-700",
+            aligned && "row-start-1",
             horizontal
               ? clsx("h-64 md:h-auto", portrait ? "md:min-h-60" : "md:min-h-52")
               : video
                 ? "aspect-video"
-                : "h-64",
+                : og
+                  ? "aspect-[1200/630]"
+                  : "h-64",
           )}
         >
           {/* Absolutely positioned so the cover never sets the card's height: in
@@ -192,11 +221,14 @@ export function Card({
 
       <div
         className={clsx(
-          "flex min-w-0 grow flex-col",
+          "min-w-0",
+          aligned ? "row-span-3 row-start-2 grid grid-rows-subgrid gap-y-0" : "flex grow flex-col",
           compact ? "px-label py-label" : "p-stack md:p-para",
         )}
       >
-        <div className="flex items-start justify-between gap-label">
+        <div
+          className={clsx("flex items-start justify-between gap-label", aligned && "row-start-1")}
+        >
           <Heading
             className={clsx(
               "m-0 grow leading-snug tracking-tight transition-colors duration-300 ease-out group-hover:text-accent",
@@ -205,9 +237,10 @@ export function Card({
                 : horizontal
                   ? "text-xl font-bold md:text-2xl"
                   : // Narrow grid columns: one step smaller so long titles wrap
-                    // less, and room for two lines so the text below starts at
-                    // the same height across a row.
-                    "min-h-[2lh] text-xl font-bold",
+                    // less. Outside a row-aligned grid, room for two lines so the
+                    // text below starts at the same height across a row; inside
+                    // one, subgrid does that and a one-line row stays one line.
+                    clsx("text-xl font-bold", !aligned && "min-h-[2lh]"),
             )}
           >
             {title}
@@ -229,7 +262,12 @@ export function Card({
           // Vertical cards sit side by side in grids, so every one shows a single
           // blurb in the same style: the subtitle when there is one (it already
           // says what the piece is about), otherwise the excerpt.
-          <div className="mt-tight line-clamp-3 text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300 [&_p]:my-0">
+          <div
+            className={clsx(
+              "mt-tight line-clamp-3 text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300 [&_p]:my-0",
+              aligned && "row-start-2",
+            )}
+          >
             {subtitle ? <p>{subtitle}</p> : <Excerpt excerpt={excerpt} excerptHtml={excerptHtml} />}
           </div>
         )}
@@ -244,19 +282,18 @@ export function Card({
           </div>
         )}
 
-        {children}
-
-        {hasMetadata && (
-          // Pinned to the bottom so metadata lines up across a row of cards.
-          <div className="mt-auto pt-stack [&>div]:text-gray-500 dark:[&>div]:text-gray-400">
-            <MetadataDisplay
-              date={date}
-              readingTime={readingTime}
-              amountOfStories={amountOfStories}
-              withAuthorInfo={false}
-              longFormDate={false}
-            />
-          </div>
+        {aligned ? (
+          (children || hasMetadata) && (
+            <div className="row-start-3 flex flex-col">
+              {children}
+              {hasMetadata && metadata}
+            </div>
+          )
+        ) : (
+          <>
+            {children}
+            {hasMetadata && metadata}
+          </>
         )}
       </div>
     </Anchor>

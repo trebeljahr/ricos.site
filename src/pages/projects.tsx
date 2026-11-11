@@ -87,7 +87,7 @@ export default function ProjectsPage() {
           <section key={title} id={toAnchor(title)} className="mb-section">
             <h2 className="text-3xl">{title}</h2>
             <p className="max-w-prose mb-group">{intro}</p>
-            <CardGallery content={projectsInSection(title)} withSubtitle coverAspect="video" />
+            <CardGallery content={projectsInSection(title)} withSubtitle coverAspect="og" />
           </section>
         ))}
 

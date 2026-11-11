@@ -1,7 +1,23 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { FEATURED_PROJECTS, PROJECT_SECTIONS, PROJECTS, projectsInSection } from "./projects";
+
+// Pixel size from a WebP header (lossy VP8, lossless VP8L or extended VP8X).
+function webpSize(bytes: Buffer): { width: number; height: number } {
+  const chunk = bytes.toString("ascii", 12, 16);
+  if (chunk === "VP8 ") {
+    return { width: bytes.readUInt16LE(26) & 0x3fff, height: bytes.readUInt16LE(28) & 0x3fff };
+  }
+  if (chunk === "VP8L") {
+    const bits = bytes.readUInt32LE(21);
+    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+  }
+  if (chunk === "VP8X") {
+    return { width: bytes.readUIntLE(24, 3) + 1, height: bytes.readUIntLE(27, 3) + 1 };
+  }
+  throw new Error(`Not a WebP file (${chunk})`);
+}
 
 const INTERNAL_ROUTES = ["/r3f", "/1-month-projects", "/achievements", "/midjourney"];
 
@@ -11,10 +27,25 @@ describe("projects catalogue", () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  it("points every cover at an existing file in public/", () => {
-    for (const { cover, slug } of PROJECTS) {
-      expect(existsSync(resolve("public", `.${cover.src}`)), slug).toBe(true);
-      expect(cover.alt.trim(), slug).not.toBe("");
+  it("points every cover and wordmark card at an existing 1200x630 file in public/", () => {
+    for (const { cover, wordmarkCover, slug } of PROJECTS) {
+      for (const image of wordmarkCover ? [cover, wordmarkCover] : [cover]) {
+        const path = resolve("public", `.${image.src}`);
+        expect(existsSync(path), image.src).toBe(true);
+        expect(webpSize(readFileSync(path)), image.src).toEqual({
+          width: image.width,
+          height: image.height,
+        });
+        expect(image.alt.trim(), slug).not.toBe("");
+      }
+    }
+  });
+
+  it("keeps the text-free cover and the wordmark card as two files", () => {
+    for (const { cover, wordmarkCover, slug } of PROJECTS) {
+      if (!wordmarkCover) continue;
+      expect(cover.src, slug).toBe(`/projects/${slug}.webp`);
+      expect(wordmarkCover.src, slug).toBe(`/projects/${slug}-wordmark.webp`);
     }
   });
 

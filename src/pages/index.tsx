@@ -219,7 +219,7 @@ const IndexPage = ({ seo, ...props }: Props) => {
             cardGalleryProps={{
               content: FEATURED_PROJECTS,
               withSubtitle: true,
-              coverAspect: "video",
+              coverAspect: "og",
             }}
             title={<ProjectsEgg />}
             linkElem={<FancyLink href="/projects" text="See All Projects" />}

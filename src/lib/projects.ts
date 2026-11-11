@@ -16,6 +16,10 @@ export type Project = Pick<CommonMetadata, "slug" | "title" | "link" | "cover"> 
   // Later development sprints, each listed on /timeline as its own entry.
   sprints?: ProjectSprint[];
   section: ProjectSection;
+  // The same picture with the project's name and tagline set on it: the
+  // og:image shape, for link previews and anywhere the HTML title is absent.
+  // `cover` is the text-free twin that sits above a card's own title.
+  wordmarkCover?: CommonMetadata["cover"];
   featured?: boolean;
   // Still in the works: left off /projects, the home page and /timeline, while
   // the project's own donation link keeps working.
@@ -44,15 +48,24 @@ export const PROJECT_SECTIONS: { title: ProjectSection; intro: string }[] = [
   },
 ];
 
-// 16:9 webp files committed under public/projects/ (1280x720, text-free art
-// from each project's own store and press assets where it has some), shown
-// with coverAspect="video". They are
-// served straight from public/ (the image loader passes non-/assets/ paths
-// through), so they behave the same in dev and production.
+// 1200x630 webp files (the og:image shape) committed under public/projects/,
+// shown with coverAspect="og". Each project has a text-free <slug>.webp and,
+// where one exists, <slug>-wordmark.webp: the project's GitHub social-preview
+// or store card with its name and tagline on it, re-rendered at 1200x630.
+// Both come from the project's own marketing assets. They are served straight
+// from public/ (the image loader passes non-/assets/ paths through), so they
+// behave the same in dev and production.
 const screenshot = (slug: string, alt: string): Project["cover"] => ({
   src: `/projects/${slug}.webp`,
-  width: 1280,
-  height: 720,
+  width: 1200,
+  height: 630,
+  alt,
+});
+
+const wordmark = (slug: string, alt: string): Project["cover"] => ({
+  src: `/projects/${slug}-wordmark.webp`,
+  width: 1200,
+  height: 630,
   alt,
 });
 
@@ -70,6 +83,10 @@ export const PROJECTS: Project[] = [
       "mesozoic-protocol",
       "Mesozoic Protocol art: a mech and turrets holding off dinosaurs on a burning shore",
     ),
+    wordmarkCover: wordmark(
+      "mesozoic-protocol",
+      "Mesozoic Protocol logo over art of a mech and turrets holding off dinosaurs",
+    ),
   },
   {
     slug: "tiao",
@@ -80,6 +97,10 @@ export const PROJECTS: Project[] = [
     link: "https://playtiao.com",
     section: "Games",
     cover: screenshot("tiao", "Tiao board at an angle with black and white stones"),
+    wordmarkCover: wordmark(
+      "tiao",
+      "Tiao logo and the line Place a stone, or jump one, beside a board with stones",
+    ),
     featured: true,
   },
   {
@@ -100,6 +121,10 @@ export const PROJECTS: Project[] = [
       "raptor-runner",
       "Raptor Runner art: a raptor in a cowboy hat runs across desert dunes",
     ),
+    wordmarkCover: wordmark(
+      "raptor-runner",
+      "Raptor Runner logo above a raptor in a cowboy hat running across desert dunes",
+    ),
     featured: true,
   },
   {
@@ -116,7 +141,11 @@ export const PROJECTS: Project[] = [
       "My take on Minecraft in the browser, with generated landscapes, caves and blocks you can place.",
     link: "https://mc.trebeljahr.com",
     section: "Games",
-    cover: screenshot("minecraft-clone", "Stack of grass, dirt and stone blocks over a blue sky"),
+    cover: screenshot("minecraft-clone", "Grassy voxel hill with a stone path under a blue sky"),
+    wordmarkCover: wordmark(
+      "minecraft-clone",
+      "A voxel world in a browser tab: the headline over generated terrain",
+    ),
   },
   {
     slug: "asteroids",
@@ -132,7 +161,14 @@ export const PROJECTS: Project[] = [
     subtitle: "The classic asteroid shooter. Play on your own or against other people online.",
     link: "https://asteroids.trebeljahr.com",
     section: "Games",
-    cover: screenshot("asteroids", "Orange spaceship flying between asteroids in deep blue space"),
+    cover: screenshot(
+      "asteroids",
+      "Spaceship trailing sparks between asteroids and heart pickups in deep space",
+    ),
+    wordmarkCover: wordmark(
+      "asteroids",
+      "Asteroids title beside a spaceship flying between asteroids",
+    ),
   },
   {
     slug: "online-chess",
@@ -144,7 +180,14 @@ export const PROJECTS: Project[] = [
     subtitle: "Play chess online with a friend, with a lobby and a chat.",
     link: "https://chess.trebeljahr.com",
     section: "Games",
-    cover: screenshot("online-chess", "Chess board in its starting position"),
+    cover: screenshot(
+      "online-chess",
+      "Online Chess game screen with the board, match status and move list",
+    ),
+    wordmarkCover: wordmark(
+      "online-chess",
+      "Online Chess title beside the game screen with its board and move list",
+    ),
   },
 
   // Art & 3D
@@ -158,6 +201,10 @@ export const PROJECTS: Project[] = [
     cover: screenshot(
       "collection-of-beauty",
       "Collage of classic paintings, including The Great Wave and Girl with a Pearl Earring",
+    ),
+    wordmarkCover: wordmark(
+      "collection-of-beauty",
+      "Collection of Beauty title beside a collage of paintings by Caravaggio, Botticelli, Vermeer and Monet",
     ),
     featured: true,
   },
@@ -181,7 +228,14 @@ export const PROJECTS: Project[] = [
       "Browse the free 3D model packs by Quaternius and look at every model before you download it.",
     link: "https://quaternius.trebeljahr.com",
     section: "Art & 3D",
-    cover: screenshot("quaternius-showcase", "Low-poly stegosaurus model in the 3D viewer"),
+    cover: screenshot(
+      "quaternius-showcase",
+      "Four low-poly models: a T-rex, a cow, a spaceship and a mech",
+    ),
+    wordmarkCover: wordmark(
+      "quaternius-showcase",
+      "Four low-poly Quaternius models above the line See each free Quaternius model in 3D before you download it",
+    ),
   },
   {
     slug: "fractal-garden",
@@ -197,7 +251,14 @@ export const PROJECTS: Project[] = [
       "A garden of fractals you can explore, each with a short explanation of how it works.",
     link: "https://fractal.garden",
     section: "Art & 3D",
-    cover: screenshot("fractal-garden", "Mandelbrot set rendered in blue on a black background"),
+    cover: screenshot(
+      "fractal-garden",
+      "Eight fractals, among them the Mandelbrot set, a Barnsley fern and a Menger sponge",
+    ),
+    wordmarkCover: wordmark(
+      "fractal-garden",
+      "Fractal Garden title above the Mandelbrot set, a Julia set and the Burning Ship",
+    ),
     featured: true,
   },
 
@@ -213,7 +274,11 @@ export const PROJECTS: Project[] = [
     unlisted: true,
     cover: screenshot(
       "vibestats",
-      "vibestats landing page: your Claude Code and Codex usage in one dashboard",
+      "vibestats dashboard with usage totals and a year-long activity heatmap",
+    ),
+    wordmarkCover: wordmark(
+      "vibestats",
+      "vibestats logo and the line Your AI coding history, day by day, above an activity heatmap",
     ),
   },
   {
@@ -234,7 +299,14 @@ export const PROJECTS: Project[] = [
     subtitle: "One command sets up a full-stack TypeScript app and puts it on your own server.",
     link: "https://hatchkit.trebeljahr.com",
     section: "Dev tools",
-    cover: screenshot("hatchkit", "Hatchkit logo on a dark background"),
+    cover: screenshot(
+      "hatchkit",
+      "hatchkit create fanning out to a repo, DNS, server, app, error tracking, analytics, email, backups and secrets",
+    ),
+    wordmarkCover: wordmark(
+      "hatchkit",
+      "hatchkit logo and the line Automates the drudgery of starting a new project, beside the services one command sets up",
+    ),
     featured: true,
   },
   {
@@ -244,7 +316,14 @@ export const PROJECTS: Project[] = [
     subtitle: "Turns sprite sheets into assets you can drop straight into a game.",
     link: "https://sprites.trebeljahr.com",
     section: "Dev tools",
-    cover: screenshot("sprite-tools", "Pixel art character sprite on a transparency grid"),
+    cover: screenshot(
+      "sprite-tools",
+      "Mouse swordsman sprite outlined by its collision polygon on a dark grid",
+    ),
+    wordmarkCover: wordmark(
+      "sprite-tools",
+      "Sprite Tools title beside a mouse sprite outlined by its collision polygon",
+    ),
   },
   {
     slug: "conv3d",
@@ -259,7 +338,14 @@ export const PROJECTS: Project[] = [
     subtitle: "Turns 3D models into small GLB files and ready-to-use React components.",
     link: "https://conv3d.trebeljahr.com",
     section: "Dev tools",
-    cover: screenshot("conv3d", "Textured low-poly barbarian model converted by conv3D"),
+    cover: screenshot(
+      "conv3d",
+      "A mage model turned flat yellow by FBX2glTF, next to 18 textured models converted by conv3D",
+    ),
+    wordmarkCover: wordmark(
+      "conv3d",
+      "conv3d logo and FBX packs in, textured GLBs out, beside 18 converted models",
+    ),
   },
 
   // Everyday apps
@@ -282,7 +368,14 @@ export const PROJECTS: Project[] = [
       "A simple time tracker for freelancers. It turns your hours into reports and invoices, and you can host it yourself.",
     link: "https://trackyourtime.dev",
     section: "Everyday apps",
-    cover: screenshot("track-your-time", "Track Your Time logo on a dark purple background"),
+    cover: screenshot(
+      "track-your-time",
+      "Track Your Time reports screen on a laptop, with the phone timer in front",
+    ),
+    wordmarkCover: wordmark(
+      "track-your-time",
+      "Track Your Time logo and the headline Time tracking on your own server",
+    ),
     featured: true,
   },
   {
@@ -315,7 +408,14 @@ export const PROJECTS: Project[] = [
     link: "https://bookmarks.trebeljahr.com",
     section: "Everyday apps",
     unlisted: true,
-    cover: screenshot("better-bookmarks", "Better Bookmarks landing page on a dark background"),
+    cover: screenshot(
+      "better-bookmarks",
+      "Better Bookmarks overview with folders, tags and rated bookmarks",
+    ),
+    wordmarkCover: wordmark(
+      "better-bookmarks",
+      "Better Bookmarks logo and the headline Same page, one bookmark, over three tracking links reduced to one",
+    ),
   },
   {
     // Hydroxyl was called Chemistry Sketcher. The slug stays, because the

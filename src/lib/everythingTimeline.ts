@@ -138,8 +138,8 @@ export function getProjectTimelineEntries(): TimelineEntry[] {
       title: project.title,
       datePrecision: "month" as const,
       cover: project.cover,
-      // Screenshots are 16:9; the default cropped frame cuts off their sides.
-      coverAspect: "video" as const,
+      // Covers are 1200x630; the default cropped frame cuts off their sides.
+      coverAspect: "og" as const,
     };
     return [
       {

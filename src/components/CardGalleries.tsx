@@ -25,7 +25,11 @@ export const CardGallery = ({
   coverAspect,
 }: CardGalleryProps) => {
   return (
-    <div className="grid gap-para grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center pb-para">
+    // Each card spans four rows (cover, title, blurb, footer) and lays its parts
+    // on them through subgrid, so titles and blurbs line up across a row. The
+    // space between rows of cards is the cards' own bottom margin rather than
+    // a row gap, which would otherwise also open up inside every card.
+    <div className="grid gap-x-para grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max justify-items-center">
       {content.map((singlePiece) => (
         <Card
           key={singlePiece.slug}
@@ -34,6 +38,8 @@ export const CardGallery = ({
           coverAspect={coverAspect}
           excerptHtml={withExcerpt ? singlePiece.excerptHtml : undefined}
           subtitle={withSubtitle ? singlePiece.subtitle : undefined}
+          rowAligned
+          className="mb-para"
         />
       ))}
     </div>

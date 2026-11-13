@@ -230,22 +230,14 @@
 /* A key a demo crosses out: a note left out, or one outside the key. */
 .markGhost { background: transparent; box-shadow: inset 0 0 0 1.5px var(--mark-color); color: var(--mark-color); text-shadow: none; }
 
-/* A native select dressed as a button. */
-.selectWrap { position: relative; display: inline-flex; min-width: 0; }
-.selectWrap::after {
-  content: "▾";
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--muted);
-  pointer-events: none;
-}
-.select {
-  appearance: none;
+/* A pick-one list: a pill that opens a panel of choices. */
+.pickerButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-height: 40px;
   max-width: 100%;
-  padding: 0 32px 0 14px;
+  padding: 0 14px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--paper);
@@ -253,9 +245,150 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  touch-action: manipulation;
 }
-.select:hover { border-color: var(--accent); }
-.select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pickerButton:hover { border-color: var(--accent); }
+.pickerButton:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pickerCaret { color: var(--muted); font-size: 12px; }
+.pickerPanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+  max-width: min(92vw, 420px);
+  margin-top: 6px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: 0 10px 30px #0003;
+}
+.pickerGroup { display: flex; flex-direction: column; gap: 4px; }
+.pickerGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 4px; min-width: min(80vw, 380px); }
+.pickerOption {
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.pickerOption:hover { border-color: var(--line); }
+.pickerOption:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.pickerOption[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); }
+
+/* A switch between modes: a track with a thumb that slides to the chosen one. */
+.switch {
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--track);
+  isolation: isolate;
+}
+.switchThumb {
+  position: absolute;
+  z-index: -1;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--count));
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 1px 3px #0003;
+  transform: translateX(calc(100% * var(--at)));
+  transition: transform 0.2s ease;
+}
+.switchOption {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 0.2s;
+}
+.switchOption[aria-checked="true"] { color: var(--accent-ink); }
+.switchOption:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .switchThumb { transition: none; }
+}
+
+/* One setting on or off on its own. */
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.check:disabled { opacity: 0.45; cursor: default; }
+.check:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.checkTrack {
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--line);
+  transition: background 0.15s;
+}
+.checkKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px #0004;
+  transition: transform 0.15s;
+}
+.check[aria-checked="true"] .checkTrack { background: var(--check-color, var(--accent)); }
+.check[aria-checked="true"] .checkKnob { transform: translateX(14px); }
+
+/* Notes a demo plays above or below the keys that are shown. */
+.beyond {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #23201bE6;
+  color: #fff;
+  font: 700 11px/1 ui-sans-serif, system-ui, sans-serif;
+  transform: translateY(-50%);
+  pointer-events: none;
+  box-shadow: 0 1px 4px #0006;
+}
+.beyondAbove { right: 2px; }
+.beyondBelow { left: 2px; }
+.beyondDot { width: 8px; height: 8px; border-radius: 999px; background: var(--mark-color); }
 
 /* The bar under a playable piano. */
 .pianoBar {

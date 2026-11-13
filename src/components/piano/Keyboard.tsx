@@ -58,6 +58,23 @@ export function Keyboard({
   const pointers = useRef(new Map<number, number>());
   const playable = Boolean(onKeyDown);
 
+  // Notes a demo marks or plays past either end: they still sound, and an
+  // arrow at that end shows how many there are.
+  const beyond = useMemo(() => {
+    const outside = new Map<number, string>();
+    for (const [m, mark] of Object.entries(marks ?? {})) {
+      const midi = Number(m);
+      if ((midi < from || midi > to) && mark && !mark.ghost)
+        outside.set(midi, mark.color ?? pitchColor(pitchClass(midi), 0.6, 0.17));
+    }
+    for (const midi of down ?? []) {
+      if ((midi < from || midi > to) && !outside.has(midi))
+        outside.set(midi, pitchColor(pitchClass(midi), 0.6, 0.17));
+    }
+    const sorted = [...outside].sort((a, b) => a[0] - b[0]);
+    return { below: sorted.filter(([m]) => m < from), above: sorted.filter(([m]) => m > to) };
+  }, [marks, down, from, to]);
+
   const keyAt = (x: number, y: number) => {
     const element = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-midi]");
     return element ? Number(element.dataset.midi) : null;
@@ -170,6 +187,29 @@ export function Keyboard({
             </div>
           );
         })}
+        {(["below", "above"] as const).map((side) =>
+          beyond[side].length === 0 ? null : (
+            <span
+              key={side}
+              className={clsx(
+                styles.beyond,
+                side === "above" ? styles.beyondAbove : styles.beyondBelow,
+              )}
+              role="img"
+              aria-label={`${beyond[side].length} more ${beyond[side].length === 1 ? "note" : "notes"} ${side === "above" ? "higher" : "lower"}: ${beyond[side].map(([m]) => noteName(m)).join(", ")}`}
+            >
+              {side === "below" && "←"}
+              {beyond[side].map(([m, color]) => (
+                <span
+                  key={m}
+                  className={styles.beyondDot}
+                  style={{ "--mark-color": color } as CSSProperties}
+                />
+              ))}
+              {side === "above" && "→"}
+            </span>
+          ),
+        )}
       </div>
     </div>
   );

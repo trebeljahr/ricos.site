@@ -93,6 +93,36 @@ export function frequencyColor(hz: number, lightness = 0.68, chroma = 0.16) {
   return pitchColor(pitchClass(hzToMidi(hz)), lightness, chroma);
 }
 
+// ── Role colours ───────────────────────────────────────────────────────────
+//
+// One colour per job a note does above a root, the same in every demo: the
+// root, the third, the fifth, the seventh, and the notes stacked past it. A
+// smaller ("minor", flattened) version of an interval is a darker shade of the
+// same hue. Notes that do no such job keep their pitch colour.
+
+/** Interval numbers 1–7: unison, second … seventh. Compound intervals fold onto them (9th → 2nd). */
+const ROLE_HUES: Record<number, number> = { 1: 28, 2: 330, 3: 150, 4: 290, 5: 235, 6: 95, 7: 55 };
+
+/** The interval number of a distance in half steps, folded into one octave: 1 (unison) … 7 (seventh). */
+export function intervalNumber(semitones: number) {
+  const s = ((Math.round(semitones) % 12) + 12) % 12;
+  return INTERVALS[s].letterSteps + 1;
+}
+
+/** A darker shade for the smaller of two versions of an interval: m2, m3, m6, m7, the tritone. */
+const isSmaller = (semitones: number) =>
+  [1, 3, 6, 8, 10].includes(((Math.round(semitones) % 12) + 12) % 12);
+
+/**
+ * The colour of a note `semitones` above a root: the root (and its octaves),
+ * thirds, fifths and sevenths always get the same hue, in every demo.
+ */
+export function roleColor(semitones: number, lightness = 0.64, chroma = 0.15) {
+  const hue = ROLE_HUES[intervalNumber(semitones)];
+  const l = isSmaller(semitones) ? lightness - 0.1 : lightness;
+  return `oklch(${l.toFixed(2)} ${chroma} ${hue})`;
+}
+
 // ── Intervals ──────────────────────────────────────────────────────────────
 
 export type Interval = {

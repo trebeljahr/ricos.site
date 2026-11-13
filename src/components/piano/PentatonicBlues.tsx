@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import { type CSSProperties, useState } from "react";
-import { stepWhite, whiteAtOrBelow } from "src/lib/piano/keys";
-import { pitchClass, pitchColor } from "src/lib/piano/notes";
+import { pitchClass, roleColor } from "src/lib/piano/notes";
 import {
   atOrAbove,
   bluesScale,
   type Key,
   keyName,
   keyOn,
+  MAJOR,
   MINOR,
   pentatonic,
   relativeKey,
@@ -15,17 +15,17 @@ import {
   scaleNotes,
   stepSizes,
 } from "src/lib/piano/scales";
-import { PianoSelect, usePianoPlayer } from "./controls";
+import { PianoSelect, PianoSwitch, usePianoPlayer } from "./controls";
 import type { KeyMark } from "./Keyboard";
 import { PlayablePiano } from "./PlayablePiano";
 import styles from "./piano.module.css";
 
 type Shape = "scale" | "pentatonic" | "blues";
-const SHAPES: { id: Shape; label: string }[] = [
-  { id: "scale", label: "7 notes" },
-  { id: "pentatonic", label: "Pentatonic" },
-  { id: "blues", label: "Blues" },
-];
+const SHAPES = [
+  { value: "scale", label: "7 notes" },
+  { value: "pentatonic", label: "Pentatonic" },
+  { value: "blues", label: "Blues" },
+] as const satisfies readonly { value: Shape; label: string }[];
 const SHAPE_NAMES: Record<Shape, string> = {
   scale: "",
   pentatonic: " pentatonic",
@@ -33,98 +33,102 @@ const SHAPE_NAMES: Record<Shape, string> = {
 };
 export const BLUE_NOTE = "oklch(0.56 0.18 258)";
 
+/** E3–G5: room for any major tonic from G3 and its relative minor below it. */
+const RANGE: [number, number] = [52, 79];
+/** A picked major key's tonic sits in G3–F♯4, its relative minor a minor third lower. */
+const MAJOR_LOW = 55;
+/** Seconds between the notes of a run. */
+const GAP = 0.2;
+
+const notesOf = (key: Key, tonic: number, shape: Shape) =>
+  shape === "scale"
+    ? scaleNotes(key, tonic)
+    : shape === "pentatonic"
+      ? pentatonic(key, tonic)
+      : bluesScale(key, tonic);
+
 /**
  * A major scale, the five of its notes without half steps, the same five from
  * the relative minor, and the blue note added on top.
  */
 export function PentatonicBlues() {
-  const [key, setKey] = useState<Key>(() => keyOn(0));
+  const [tonic, setTonic] = useState(60);
+  const [minor, setMinor] = useState(false);
   const [shape, setShape] = useState<Shape>("scale");
-  const { play } = usePianoPlayer();
+  const { playChords, sounding } = usePianoPlayer();
 
-  const major = key.mode === MINOR ? relativeKey(key) : key;
-  const minor = relativeKey(major);
-  // The major tonic sits in A3–G♯4 and its relative minor a minor third
-  // lower, so switching between them keeps the same keys on screen.
-  const majorTonic = atOrAbove(major.tonicPc, 57);
-  const tonicOf = (k: Key) => (k.mode === MINOR ? majorTonic - 3 : majorTonic);
-  const notesOf = (k: Key, s: Shape) =>
-    s === "scale"
-      ? scaleNotes(k, tonicOf(k))
-      : s === "pentatonic"
-        ? pentatonic(k, tonicOf(k))
-        : bluesScale(k, tonicOf(k));
-
-  const tonic = tonicOf(key);
-  const active = notesOf(key, shape);
+  const mode = minor ? MINOR : MAJOR;
+  const key = keyOn(pitchClass(tonic), mode);
+  const majorKey = minor ? relativeKey(key) : key;
+  const minorKey = minor ? key : relativeKey(key);
+  const active = notesOf(key, tonic, shape);
   const activePcs = new Set(active.map((n) => n.pc));
   const leftOut =
     shape === "scale" ? [] : scaleNotes(key, tonic).filter((n) => !activePcs.has(n.pc));
-  const from = whiteAtOrBelow(majorTonic - 3);
-  const to = stepWhite(from, 14);
 
-  const run = (notes: ScaleNote[]) =>
-    play([...notes.map((n) => n.midi), notes[0].midi + 12], { spread: 0.17, duration: 0.5 });
-
-  const update = (k: Key, s: Shape) => {
-    setKey(k);
-    setShape(s);
-    run(notesOf(k, s));
+  /** Up to the octave once, then back down to the tonic, one note at a time. */
+  const run = (notes: ScaleNote[]) => {
+    const up = [...notes.map((n) => n.midi), notes[0].midi + 12];
+    const there = [...up, ...up.slice(0, -1).reverse()];
+    playChords(
+      there.map((m) => [m]),
+      GAP,
+    );
   };
 
-  const colorOf = (note: ScaleNote, lightness = 0.62) =>
-    note.blue ? BLUE_NOTE : pitchColor(note.pc, lightness, 0.16);
+  const update = (next: { tonic?: number; minor?: boolean; shape?: Shape }) => {
+    const t = next.tonic ?? tonic;
+    const m = next.minor ?? minor;
+    const s = next.shape ?? shape;
+    setTonic(t);
+    setMinor(m);
+    setShape(s);
+    run(notesOf(keyOn(pitchClass(t), m ? MINOR : MAJOR), t, s));
+  };
 
+  const colorOf = (note: ScaleNote) => (note.blue ? BLUE_NOTE : roleColor(note.midi - tonic));
+
+  // Only the scale itself, tonic to octave: no copies of its notes to either side.
   const marks: Record<number, KeyMark> = {};
-  for (let m = from; m <= to; m++) {
-    const pc = pitchClass(m);
-    const note = active.find((n) => n.pc === pc);
-    const left = leftOut.find((n) => n.pc === pc);
-    if (note) marks[m] = { label: note.label, ring: pc === key.tonicPc, color: colorOf(note) };
-    else if (left) marks[m] = { label: left.label, ghost: true, color: colorOf(left) };
-  }
+  for (const note of leftOut)
+    marks[note.midi] = { label: note.label, ghost: true, color: colorOf(note) };
+  for (const note of active)
+    marks[note.midi] = { label: note.label, ring: note.degree === 0, color: colorOf(note) };
+  marks[tonic + 12] = { label: "1", ring: true, color: roleColor(0) };
 
   return (
     <section className={clsx(styles.panel, "not-prose")} aria-label="Pentatonic and blues scales">
       <div className="flex flex-wrap items-end gap-tight">
         <PianoSelect
           label="keys"
-          value={String(major.tonicPc)}
+          value={String(majorKey.tonicPc)}
           options={Array.from({ length: 12 }, (_, pc) => ({
             value: String(pc),
             label: `${keyName(keyOn(pc))} / ${keyName(relativeKey(keyOn(pc)))}`,
           }))}
           onChange={(v) => {
-            const next = keyOn(Number(v));
-            update(key.mode === MINOR ? relativeKey(next) : next, shape);
+            const majorTonic = atOrAbove(Number(v), MAJOR_LOW);
+            update({ tonic: minor ? majorTonic - 3 : majorTonic });
           }}
         />
-        <span className={styles.segmented} role="group" aria-label="Major or relative minor">
-          {[major, minor].map((k) => (
-            <button
-              key={k.mode.name}
-              type="button"
-              className={styles.button}
-              aria-pressed={k.mode === key.mode}
-              onClick={() => update(k, shape)}
-            >
-              {keyName(k)}
-            </button>
-          ))}
-        </span>
-        <span className={styles.segmented} role="group" aria-label="Notes">
-          {SHAPES.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={styles.button}
-              aria-pressed={s.id === shape}
-              onClick={() => update(key, s.id)}
-            >
-              {s.label}
-            </button>
-          ))}
-        </span>
+        <PianoSwitch
+          label="Major or relative minor"
+          value={minor ? "minor" : "major"}
+          options={[
+            { value: "major", label: keyName(majorKey) },
+            { value: "minor", label: keyName(minorKey) },
+          ]}
+          onChange={(v) => {
+            if ((v === "minor") === minor) return;
+            update({ minor: v === "minor", tonic: v === "minor" ? tonic - 3 : tonic + 3 });
+          }}
+        />
+        <PianoSwitch
+          label="Notes"
+          value={shape}
+          options={SHAPES}
+          onChange={(s) => update({ shape: s })}
+        />
       </div>
 
       <div className="mt-para flex flex-wrap items-end justify-between gap-tight">
@@ -148,7 +152,16 @@ export function PentatonicBlues() {
 
       <ChromaticStrip tonic={tonic} active={active} leftOut={leftOut} colorOf={colorOf} />
 
-      <PlayablePiano className="mt-para" range={[from, to]} marks={marks} short bar={false} />
+      <PlayablePiano
+        className="mt-para"
+        range={RANGE}
+        marks={marks}
+        down={sounding}
+        sound={false}
+        onNoteOn={(m) => update({ tonic: m })}
+        short
+        bar={false}
+      />
     </section>
   );
 }
@@ -163,7 +176,7 @@ function ChromaticStrip({
   tonic: number;
   active: ScaleNote[];
   leftOut: ScaleNote[];
-  colorOf: (note: ScaleNote, lightness?: number) => string;
+  colorOf: (note: ScaleNote) => string;
 }) {
   const steps = stepSizes(active);
   const at = (k: number) => {

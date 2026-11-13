@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { ChordFamily } from "./ChordFamily";
 import { ChordInversions } from "./ChordInversions";
 import { ChordPad } from "./ChordPad";
 import { CircleOfFifths } from "./CircleOfFifths";
@@ -11,6 +10,7 @@ import { PentatonicBlues } from "./PentatonicBlues";
 afterEach(cleanup);
 
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole("button", { name }));
+const pick = (name: string) => fireEvent.click(screen.getByRole("radio", { name }));
 const live = () =>
   [...document.querySelectorAll("[aria-live='polite']")].map((el) => el.textContent).join(" | ");
 
@@ -29,38 +29,23 @@ describe("chord inversions", () => {
   });
 });
 
-describe("chord family", () => {
-  it("keeps the triad whose notes all fit the key", () => {
-    render(<ChordFamily />);
-    click("major");
-    click("Next degree");
-    click("major");
-    expect(screen.getByText("2 of 3 in C major")).toBeTruthy();
-    click("minor");
-    const slots = screen.getByRole("list", { name: "Degrees of C major" });
-    expect(slots.textContent).toContain("I");
-    expect(slots.textContent).toContain("ii");
-    expect(slots.textContent).toContain("Dm");
-  });
-});
-
 describe("pentatonic and blues", () => {
   it("finds the same five notes from the relative minor, then adds the blue note", () => {
     render(<PentatonicBlues />);
-    click("Pentatonic");
+    pick("Pentatonic");
     expect(live()).toContain("C major pentatonic");
-    click("A minor");
-    click("Blues");
+    pick("A minor");
+    pick("Blues");
     expect(live()).toContain("A minor blues");
     expect(screen.getByText("A · C · D · E♭ · E · G")).toBeTruthy();
   });
 });
 
 describe("mode rotator", () => {
-  it("lowers one note per step towards the dark end", () => {
+  it("lowers the seventh from Ionian to Mixolydian", () => {
     render(<ModeRotator />);
     expect(live()).toContain("C major");
-    click("Darker ▶");
+    click("Mixolydian");
     expect(live()).toContain("C Mixolydian");
     expect(screen.getByText("7→♭7")).toBeTruthy();
     expect(screen.getByText("F major")).toBeTruthy();

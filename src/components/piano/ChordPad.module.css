@@ -1,0 +1,37 @@
+/* A pad that moves the fewest fingers from the chord held now. */
+.suggested {
+  box-shadow:
+    0 0 0 2px var(--paper),
+    0 0 0 4px var(--pad-color);
+}
+
+/* One dot per finger that moves to reach the pad's chord. */
+.fingers {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  display: inline-flex;
+  gap: 2px;
+}
+.finger {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+/* A progression preset: its name over its Roman numerals. */
+.preset {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 3px 0;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.presetRoman {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}

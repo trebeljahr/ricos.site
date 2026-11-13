@@ -29,6 +29,21 @@ describe("chord builder", () => {
       fireEvent.click(screen.getByRole("button", { name: "+ minor third" }));
     expect(screen.getByRole("button", { name: "+ minor third" })).toHaveProperty("disabled", true);
   });
+
+  it("switches one third in the stack between major and minor", () => {
+    render(<ChordBuilder />);
+    fireEvent.click(screen.getByRole("button", { name: /^major third from C to E/ }));
+    expect(symbol()).toBe("C°");
+    fireEvent.click(screen.getByRole("button", { name: /^minor third from E♭ to G♭/ }));
+    expect(symbol()).toBe("Cm");
+  });
+
+  it("alternates major and minor thirds up to the thirteenth", () => {
+    render(<ChordBuilder />);
+    fireEvent.click(screen.getByRole("button", { name: "Alternate up to the 13th" }));
+    expect(symbol()).toBe("Cmaj13(♯11)");
+    expect(screen.getByText(/alternating thirds/)).toBeTruthy();
+  });
 });
 
 describe("keyboard", () => {

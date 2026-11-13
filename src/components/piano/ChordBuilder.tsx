@@ -5,57 +5,83 @@ import {
   landsOnRoot,
   MAJOR_THIRD,
   MINOR_THIRD,
-  pitchClass,
-  pitchColor,
+  roleColor,
+  type StackedNote,
   stackThirds,
 } from "src/lib/piano/notes";
-import { playPianoChord } from "src/lib/piano/sampler";
+import { PianoSwitch, PLAY_STYLES, type PlayStyle, usePianoPlayer } from "./controls";
 import type { KeyMark } from "./Keyboard";
 import { PlayablePiano } from "./PlayablePiano";
 import styles from "./piano.module.css";
 
-const LOW = 48; // C3: roots live in this octave, so a 13th chord still fits
-const HIGH = LOW + 33;
+const LOW = 48; // C3
+const HIGH = LOW + 35;
 const MAX_THIRDS = 6;
+
+const thirdName = (size: number) => (size === MAJOR_THIRD ? "major third" : "minor third");
+const flip = (size: number) => (size === MAJOR_THIRD ? MINOR_THIRD : MAJOR_THIRD);
+
+/** True when the stack goes major, minor, major … (or minor, major …) all the way up. */
+const alternates = (thirds: number[]) =>
+  thirds.length >= 2 && thirds.every((size, i) => i === 0 || size !== thirds[i - 1]);
 
 /** Build a chord one third at a time on any root, and hear each new stack. */
 export function ChordBuilder() {
   const [root, setRoot] = useState(LOW);
   const [thirds, setThirds] = useState<number[]>([MAJOR_THIRD, MINOR_THIRD]);
+  const [style, setStyle] = useState<PlayStyle>("together");
+  const player = usePianoPlayer();
+  const { play } = player;
   const notes = stackThirds(root, thirds);
   const symbol = chordSymbol(notes[0].spelled, thirds);
   const doubled = landsOnRoot(notes);
+  const alternating = alternates(thirds);
 
-  const strum = useCallback((r: number, t: number[], spread = 0.03) => {
-    playPianoChord(
-      stackThirds(r, t).map((n) => n.midi),
-      { spread, duration: 1.8, velocity: 0.62 },
-    );
-  }, []);
+  const strum = useCallback(
+    (r: number, t: number[], how: PlayStyle = style) => {
+      play(
+        stackThirds(r, t).map((n) => n.midi),
+        { spread: how === "apart" ? 0.32 : 0.03, duration: 1.8, velocity: 0.62 },
+      );
+    },
+    [play, style],
+  );
 
-  const add = (size: number) => {
-    if (thirds.length >= MAX_THIRDS) return;
-    const next = [...thirds, size];
+  const change = (next: number[]) => {
     setThirds(next);
     strum(root, next);
   };
 
+  const add = (size: number) => {
+    if (thirds.length < MAX_THIRDS) change([...thirds, size]);
+  };
+
+  const alternate = () => {
+    const first = thirds[0] ?? MAJOR_THIRD;
+    change(Array.from({ length: MAX_THIRDS }, (_, i) => (i % 2 === 0 ? first : flip(first))));
+  };
+
   const onNoteOn = useCallback(
     (m: number) => {
-      const r = LOW + pitchClass(m);
-      setRoot(r);
-      strum(r, thirds);
+      setRoot(m);
+      strum(m, thirds);
     },
     [thirds, strum],
   );
 
   const marks: Record<number, KeyMark> = {};
-  for (const n of notes) marks[n.midi] = { label: n.label, ring: n.degree === 1 };
+  for (const n of notes)
+    marks[n.midi] = { label: n.label, ring: n.degree === 1, color: roleColor(n.semitones) };
 
   return (
     <section className={clsx(styles.panel, "not-prose")} aria-label="Chord builder">
       <div className="grid gap-para sm:grid-cols-[minmax(0,220px)_1fr] sm:items-end">
-        <ThirdsTower notes={notes} thirds={thirds} />
+        <ThirdsTower
+          notes={notes}
+          thirds={thirds}
+          alternating={alternating}
+          onFlip={(i) => change(thirds.map((size, k) => (k === i ? flip(size) : size)))}
+        />
         <div className="min-w-0">
           <p className={clsx(styles.muted, "text-xs")}>chord symbol</p>
           <p className="text-4xl font-semibold tracking-tight sm:text-5xl" aria-live="polite">
@@ -64,7 +90,11 @@ export function ChordBuilder() {
           <p className={clsx(styles.mono, "mt-tight text-sm")}>
             {notes.map((n) => n.spelled).join(" · ")}
           </p>
-          {doubled && <p className={clsx(styles.muted, "mt-hair text-sm")}>back on the root</p>}
+          <p className={clsx(styles.muted, "mt-hair min-h-[1.25rem] text-sm")} aria-live="polite">
+            {[alternating && "alternating thirds", doubled && "back on the root"]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
           <div className="mt-para flex flex-wrap gap-tight">
             <button
               type="button"
@@ -81,6 +111,9 @@ export function ChordBuilder() {
               disabled={thirds.length >= MAX_THIRDS}
             >
               + major third
+            </button>
+            <button type="button" className={styles.button} onClick={alternate}>
+              Alternate up to the 13th
             </button>
           </div>
           <div className="mt-tight flex flex-wrap gap-tight">
@@ -100,20 +133,21 @@ export function ChordBuilder() {
             >
               Clear
             </button>
+          </div>
+          <div className="mt-tight flex flex-wrap items-center gap-tight">
             <button
               type="button"
               className={clsx(styles.button, styles.small)}
-              onClick={() => strum(root, thirds, 0.02)}
+              onClick={() => strum(root, thirds)}
             >
-              Play together
+              Play
             </button>
-            <button
-              type="button"
-              className={clsx(styles.button, styles.small)}
-              onClick={() => strum(root, thirds, 0.32)}
-            >
-              Play one by one
-            </button>
+            <PianoSwitch
+              label="How the chord plays"
+              value={style}
+              options={PLAY_STYLES}
+              onChange={setStyle}
+            />
           </div>
         </div>
       </div>
@@ -121,6 +155,7 @@ export function ChordBuilder() {
         className="mt-para"
         range={[LOW, HIGH]}
         marks={marks}
+        down={player.sounding}
         sound={false}
         onNoteOn={onNoteOn}
         short
@@ -130,78 +165,94 @@ export function ChordBuilder() {
   );
 }
 
-/** The chord as a tower: each block a third, its height the number of half steps. */
+/**
+ * The chord as a tower: each block a third, its height the number of half
+ * steps. Clicking a block makes that third major or minor; the notes above
+ * move with it.
+ */
 function ThirdsTower({
   notes,
   thirds,
+  alternating,
+  onFlip,
 }: {
-  notes: ReturnType<typeof stackThirds>;
+  notes: StackedNote[];
   thirds: number[];
+  alternating: boolean;
+  onFlip: (index: number) => void;
 }) {
   const unit = 9;
   // Tall enough for the stack plus one more third, so it grows as you build.
   const top = notes[notes.length - 1].semitones;
-  const total = Math.max(10, Math.min(21, top + 4)) * unit + 24;
+  const total = Math.max(10, Math.min(25, top + 4)) * unit + 24;
   const chip = 22;
+  const yOf = (semitones: number) => total - 12 - semitones * unit;
   return (
-    <svg
-      viewBox={`0 0 220 ${total}`}
-      className={clsx(styles.svg, "mx-auto max-w-[220px]")}
-      role="img"
+    <fieldset
+      className="relative mx-auto my-0 w-[220px] min-w-0 max-w-full border-0 p-0"
+      style={{ height: total }}
       aria-label={`Stacked thirds: ${notes.map((n) => n.spelled).join(", ")}`}
     >
       {thirds.map((size, i) => {
-        const top = total - 12 - notes[i + 1].semitones * unit;
-        const height = size * unit;
+        const y = yOf(notes[i + 1].semitones);
+        const major = size === MAJOR_THIRD;
+        const name = thirdName(size);
         return (
-          <g key={`${i}-${size}`}>
-            <rect
-              x={70}
-              y={top}
-              width={80}
-              height={height - 2}
-              rx={5}
-              fill={size === MAJOR_THIRD ? "var(--accent)" : "var(--muted)"}
-              opacity={size === MAJOR_THIRD ? 0.75 : 0.45}
-            />
-            <text
-              x={110}
-              y={top + height / 2 + 3}
-              textAnchor="middle"
-              style={{ fontSize: 12, fontWeight: 700, fill: "var(--paper)" }}
-            >
-              {size === MAJOR_THIRD ? "M3" : "m3"}
-            </text>
-          </g>
+          <button
+            // biome-ignore lint/suspicious/noArrayIndexKey: one block per place in the stack
+            key={i}
+            type="button"
+            className={clsx(
+              "absolute flex items-center justify-center rounded-[5px] text-[11px] font-bold leading-none transition-[top,height,background-color]",
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
+              alternating && "ring-2 ring-[var(--ink)] ring-inset",
+            )}
+            style={{
+              left: 70,
+              width: 80,
+              top: y,
+              height: size * unit - 2,
+              background: major ? "var(--accent)" : "var(--muted)",
+              color: "var(--paper)",
+              opacity: major ? 0.85 : 0.7,
+            }}
+            aria-label={`${name} from ${notes[i].spelled} to ${notes[i + 1].spelled}: make it a ${thirdName(flip(size))}`}
+            title={`Make it a ${thirdName(flip(size))}`}
+            onClick={() => onFlip(i)}
+          >
+            {name}
+          </button>
         );
       })}
       {notes.map((n) => {
-        const y = total - 12 - n.semitones * unit;
+        const y = yOf(n.semitones);
         return (
-          <g key={n.degree}>
-            <line x1={58} x2={162} y1={y} y2={y} stroke="var(--ink)" strokeWidth={1.5} />
-            <rect
-              x={6}
-              y={y - chip / 2}
-              width={50}
-              height={chip}
-              rx={chip / 2}
-              fill={pitchColor(pitchClass(n.midi), 0.62, 0.16)}
+          <div key={n.degree} aria-hidden="true">
+            <div
+              className="absolute h-[1.5px] bg-[var(--ink)]"
+              style={{ left: 58, width: 104, top: y - 0.75 }}
             />
-            <text
-              x={31}
-              y={y + 4}
-              textAnchor="middle"
-              style={{ fontSize: 12, fontWeight: 700, fill: "#fff" }}
+            <div
+              className="absolute flex items-center justify-center rounded-full text-xs font-bold text-white"
+              style={{
+                left: 6,
+                width: 50,
+                top: y - chip / 2,
+                height: chip,
+                background: roleColor(n.semitones),
+              }}
             >
               {n.spelled}
-            </text>
-            <text x={170} y={y + 4} style={{ fontSize: 12, fontWeight: 600 }}>
+            </div>
+            <div
+              className="absolute text-xs font-semibold leading-none"
+              style={{ left: 170, top: y - 6 }}
+            >
               {n.label}
-            </text>
-          </g>
+            </div>
+          </div>
         );
       })}
-    </svg>
+    </fieldset>
   );
 }

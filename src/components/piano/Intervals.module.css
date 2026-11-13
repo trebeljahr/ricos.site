@@ -1,0 +1,56 @@
+/* The arrow over the keyboard, from the lower note to the upper one. */
+.strip {
+  position: relative;
+  height: 30px;
+  /* The keyboard case's side padding, so percentages line up with the keys. */
+  margin: 0 6px;
+  pointer-events: none;
+}
+
+.arc {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  animation: reveal var(--draw, 0.5s) ease-in-out both;
+}
+.arc svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.head {
+  position: absolute;
+  bottom: -2px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--arrow);
+  transform: translateX(-50%);
+  animation: appear 0.12s linear both;
+  animation-delay: calc(var(--draw, 0.5s) - 0.06s);
+}
+.headOff {
+  bottom: 50%;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--arrow);
+  border-right: 0;
+  transform: translate(-2px, 50%);
+}
+
+@keyframes reveal {
+  from { clip-path: inset(-4px 100% -4px -4px); }
+  to { clip-path: inset(-4px -4px -4px -4px); }
+}
+@keyframes appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arc,
+  .head { animation: none; }
+}

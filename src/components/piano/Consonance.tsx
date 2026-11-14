@@ -1,270 +1,381 @@
 import clsx from "clsx";
 import { type PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useWidth } from "src/hooks/usePianoInput";
-import { formatCents, INTERVALS, midiToHz } from "src/lib/piano/notes";
+import { formatHz, midiToHz } from "src/lib/piano/notes";
 import {
-  curveDips,
-  intervalRoughness,
+  classifyPair,
+  DIPS,
+  dipsAt,
+  HARMONIC_COUNT,
+  harmonics,
   roughnessCurve,
-  SPECTRA,
-  simpleRatio,
-} from "src/lib/piano/physics";
+  snapCents,
+  TONE_HARMONICS,
+  tickStates,
+  toneRoughness,
+} from "src/lib/piano/roughness";
 import { type HeldTone, holdTone } from "src/lib/piano/synth";
+import { PianoCheck } from "./controls";
 import styles from "./piano.module.css";
+import { r2, r3 } from "./svgNumbers";
 
 const BASE_HZ = midiToHz(60);
-const MAX_CENTS = 1250;
-const H = 240;
+const RED = "oklch(0.62 0.21 27)";
+const GREEN = "oklch(0.66 0.17 150)";
+const LEVEL = 0.16;
+
+// Tick plot: the upper note's harmonics stand up from one line, the lower
+// note's hang down from the next, on one frequency axis.
+const TICKS_H = 128;
+const UPPER_BASE = 64;
+const LOWER_BASE = 78;
+const TICK_LEN = 40;
+const AXIS_MAX = (2 * HARMONIC_COUNT + 0.6) * BASE_HZ;
+
+// Curve plot.
+const CURVE_H = 170;
+const PLOT_TOP = 12;
+const PLOT_BOTTOM = 150;
+const LABEL_ROW = 15;
+const LABEL_TOP = CURVE_H + 8;
+
+const labelWidth = (text: string) => text.length * 6.3 + 6;
+
+/** Rows for the dip labels under the curve, fixed for all six, so a label never moves when another appears. */
+function labelRows(xOf: (cents: number) => number, width: number) {
+  const ends: number[] = [];
+  return DIPS.map((dip) => {
+    const w = labelWidth(dip.name);
+    const centre = Math.min(width - w / 2, Math.max(w / 2, xOf(dip.cents)));
+    const left = centre - w / 2;
+    let row = ends.findIndex((end) => end < left);
+    if (row === -1) row = ends.length;
+    ends[row] = left + w;
+    return { ...dip, centre: r2(centre), row };
+  });
+}
 
 /**
- * How rough two tones sound together, for every interval up to an octave:
- * drag along the curve to hear it. The dips depend on the tones' harmonics.
+ * Two notes, the upper one dragged over an octave. Their harmonics show as
+ * two rows of ticks that rub or line up, and the curve below adds up the rubbing.
  */
 export function Consonance() {
-  // Drawn at the real width, so labels keep their size on a phone.
   const box = useRef<HTMLDivElement>(null);
   const W = Math.max(300, Math.round(useWidth(box, 640)));
-  const PLOT = { left: 8, right: W - 8, top: 28, bottom: H - 46 };
-  const xOf = (c: number) => PLOT.left + (c / MAX_CENTS) * (PLOT.right - PLOT.left);
-  const centsOf = (x: number) => ((x - PLOT.left) / (PLOT.right - PLOT.left)) * MAX_CENTS;
-  const minLabelCents = (30 / (PLOT.right - PLOT.left)) * MAX_CENTS;
-  const [spectrumId, setSpectrumId] = useState("saw");
-  const [cents, setCents] = useState(702);
-  const [snap, setSnap] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const tones = useRef<[HeldTone, HeldTone] | null>(null);
-  const dragging = useRef(false);
-  const spectrum = SPECTRA.find((s) => s.id === spectrumId)?.amplitudes ?? [1];
-  const ratio = 2 ** (cents / 1200);
+  const left = 10;
+  const right = W - 10;
+  const xOf = (c: number) => r2(left + (c / 1200) * (right - left));
+  const centsOf = (x: number) => ((x - left) / (right - left)) * 1200;
+  const xOfHz = (hz: number) => r2(left + (hz / AXIS_MAX) * (right - left));
 
-  const curve = useMemo(() => roughnessCurve(BASE_HZ, spectrum, MAX_CENTS, 2), [spectrum]);
+  const [cents, setCents] = useState(120);
+  const [snap, setSnap] = useState(false);
+  const [latched, setLatched] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [visited, setVisited] = useState<ReadonlySet<string>>(new Set());
+  const tones = useRef<[HeldTone, HeldTone] | null>(null);
+  const ratio = 2 ** (cents / 1200);
+  const sounding = latched || dragging;
+
+  const curve = useMemo(() => roughnessCurve(BASE_HZ), []);
   const peak = useMemo(() => Math.max(...curve.map((p) => p.roughness)), [curve]);
-  const dips = useMemo(
-    () =>
-      curveDips(curve)
-        .filter((d) => d.depth > peak * 0.015)
-        .map((d) => ({ ...d, ratio: simpleRatio(2 ** (d.cents / 1200), 15, 9) }))
-        .filter((d) => d.ratio)
-        // Deepest first: a shallower dip right next to a labelled one stays unlabelled.
-        .filter((d, i, all) =>
-          all.slice(0, i).every((e) => Math.abs(e.cents - d.cents) > Math.max(45, minLabelCents)),
-        ),
-    [curve, peak, minLabelCents],
-  );
-  const yOf = (r: number) => PLOT.bottom - (r / peak) * (PLOT.bottom - PLOT.top);
+  const yOf = (r: number) => r2(PLOT_BOTTOM - (r / peak) * (PLOT_BOTTOM - PLOT_TOP));
+  const rows = labelRows(xOf, W);
+  const rowCount = Math.max(...rows.map((r) => r.row)) + 1;
+  const height = LABEL_TOP + rowCount * LABEL_ROW + 4;
 
   useEffect(() => {
     tones.current?.[1].setFrequency(BASE_HZ * ratio, 0.01);
-  }, [ratio]);
+    const reached = dipsAt(cents);
+    if (reached.length)
+      setVisited((v) =>
+        reached.every((d) => v.has(d.name)) ? v : new Set([...v, ...reached.map((d) => d.name)]),
+      );
+  }, [cents, ratio]);
+
   useEffect(() => {
-    tones.current?.forEach((tone) => {
-      tone.setHarmonics(spectrum);
-    });
-  }, [spectrum]);
+    if (sounding && !tones.current) {
+      tones.current = [
+        holdTone(BASE_HZ, TONE_HARMONICS, LEVEL),
+        holdTone(BASE_HZ * 2 ** (cents / 1200), TONE_HARMONICS, LEVEL),
+      ];
+    } else if (!sounding && tones.current) {
+      for (const tone of tones.current) tone.stop();
+      tones.current = null;
+    }
+  }, [sounding, cents]);
+
   useEffect(
     () => () => {
       tones.current?.forEach((tone) => {
         tone.stop();
       });
+      tones.current = null;
     },
     [],
   );
 
-  const start = () => {
-    if (tones.current) return;
-    tones.current = [holdTone(BASE_HZ, spectrum, 0.2), holdTone(BASE_HZ * ratio, spectrum, 0.2)];
-    setPlaying(true);
-  };
-  const stop = () => {
-    tones.current?.forEach((tone) => {
-      tone.stop();
-    });
-    tones.current = null;
-    setPlaying(false);
+  const toggleSnap = (on: boolean) => {
+    setSnap(on);
+    if (on) setCents((c) => snapCents(c, true));
   };
 
   const pick = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * W;
-    let c = Math.min(MAX_CENTS, Math.max(0, centsOf(x)));
-    if (snap) c = Math.round(c / 100) * 100;
-    setCents(Math.round(c * 2) / 2);
+    setCents(Math.round(snapCents(centsOf(x), snap) * 2) / 2);
   };
 
-  const roughness = intervalRoughness(BASE_HZ, ratio, spectrum) / peak;
-  const nearest = INTERVALS[Math.min(12, Math.round(cents / 100))];
-  const fraction = simpleRatio(ratio, 10, 16);
+  const ticks = tickStates(BASE_HZ, ratio);
+  const lowerHz = harmonics(BASE_HZ);
+  const upperHz = harmonics(BASE_HZ * ratio);
+  const links: {
+    key: string;
+    x1: number;
+    x2: number;
+    state: "together" | "rubbing";
+    strength: number;
+  }[] = [];
+  lowerHz.forEach((lo, i) => {
+    upperHz.forEach((up, j) => {
+      const pair = classifyPair(lo, up);
+      const { state, strength } = pair;
+      if (state === "apart") return;
+      links.push({ key: `${i}-${j}`, x1: xOfHz(lo), x2: xOfHz(up), state, strength });
+    });
+  });
+  const together = ticks.upper.filter((t) => t.state === "together").length;
+  const rubbing = links.filter((l) => l.state === "rubbing").length;
+
+  const tickColor = (state: string) =>
+    state === "together" ? GREEN : state === "rubbing" ? RED : "var(--ink)";
+
   const path = curve
     .map(
       (p, i) => `${i === 0 ? "M" : "L"}${xOf(p.cents).toFixed(1)} ${yOf(p.roughness).toFixed(1)}`,
     )
     .join(" ");
+  const here = toneRoughness(BASE_HZ, ratio);
 
   return (
-    <section className={clsx(styles.panel, "not-prose")} aria-label="Roughness of two tones">
+    <section className={clsx(styles.panel, "not-prose")} aria-label="Why two notes clash">
+      <div ref={box} className="min-w-0">
+        <svg
+          viewBox={`0 0 ${W} ${TICKS_H}`}
+          className={styles.svg}
+          role="img"
+          aria-label={`Harmonics of both notes: ${together} land together, ${rubbing} pairs rub.`}
+        >
+          <text x={left} y={12} style={{ fontSize: 11, fill: "var(--muted)" }}>
+            upper note
+          </text>
+          <text x={left} y={TICKS_H - 4} style={{ fontSize: 11, fill: "var(--muted)" }}>
+            lower note
+          </text>
+          <line
+            x1={left}
+            x2={right}
+            y1={UPPER_BASE}
+            y2={UPPER_BASE}
+            className={styles.faint}
+            strokeWidth={1}
+          />
+          <line
+            x1={left}
+            x2={right}
+            y1={LOWER_BASE}
+            y2={LOWER_BASE}
+            className={styles.faint}
+            strokeWidth={1}
+          />
+          {links.map((link) =>
+            link.state === "together" ? (
+              <line
+                key={link.key}
+                x1={link.x1}
+                x2={link.x2}
+                y1={LOWER_BASE}
+                y2={UPPER_BASE}
+                stroke={GREEN}
+                strokeWidth={3}
+              />
+            ) : (
+              <polygon
+                key={link.key}
+                points={`${link.x1 - 2},${LOWER_BASE} ${link.x1 + 2},${LOWER_BASE} ${link.x2 + 2},${UPPER_BASE} ${link.x2 - 2},${UPPER_BASE}`}
+                fill={RED}
+                opacity={r3(0.25 + 0.6 * link.strength)}
+              />
+            ),
+          )}
+          {(
+            [
+              [ticks.upper, UPPER_BASE, -1],
+              [ticks.lower, LOWER_BASE, 1],
+            ] as const
+          ).map(([row, base, dir]) =>
+            row.map((tick) => {
+              const x = xOfHz(tick.hz);
+              if (x > right + 1) return null;
+              const len = r2(TICK_LEN * (0.35 + 0.65 * TONE_HARMONICS[tick.harmonic - 1]));
+              const color = tickColor(tick.state);
+              return (
+                <g key={`${dir}-${tick.harmonic}`}>
+                  {tick.state !== "apart" && (
+                    <line
+                      x1={x}
+                      x2={x}
+                      y1={base}
+                      y2={r2(base + dir * len)}
+                      stroke={color}
+                      strokeWidth={9}
+                      strokeLinecap="round"
+                      opacity={tick.state === "together" ? 0.3 : r3(0.15 + 0.35 * tick.strength)}
+                    />
+                  )}
+                  <line
+                    x1={x}
+                    x2={x}
+                    y1={base}
+                    y2={r2(base + dir * len)}
+                    stroke={color}
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                  />
+                </g>
+              );
+            }),
+          )}
+        </svg>
+      </div>
+
       <div
-        ref={box}
-        className="min-w-0 cursor-ew-resize"
-        style={{ touchAction: "none" }}
+        className="mt-label min-w-0 cursor-ew-resize touch-none select-none"
         role="slider"
         tabIndex={0}
-        aria-label="Interval between the two tones"
-        aria-valuemin={0}
-        aria-valuemax={MAX_CENTS}
-        aria-valuenow={cents}
-        aria-valuetext={`${Math.round(cents)} cents, near ${nearest.name}`}
+        aria-label="Upper note"
+        aria-valuemin={BASE_HZ}
+        aria-valuemax={BASE_HZ * 2}
+        aria-valuenow={Math.round(BASE_HZ * ratio)}
+        aria-valuetext={[formatHz(BASE_HZ * ratio), ...dipsAt(cents).map((d) => d.name)].join(", ")}
         onPointerDown={(event) => {
           event.currentTarget.setPointerCapture?.(event.pointerId);
-          dragging.current = true;
+          setDragging(true);
           pick(event);
-          start();
         }}
-        onPointerMove={(event) => dragging.current && pick(event)}
-        onPointerUp={() => {
-          dragging.current = false;
+        onPointerMove={(event) => {
+          if (dragging) pick(event);
         }}
-        onPointerCancel={() => {
-          dragging.current = false;
-        }}
+        onPointerUp={() => setDragging(false)}
+        onPointerCancel={() => setDragging(false)}
+        onLostPointerCapture={() => setDragging(false)}
         onKeyDown={(event) => {
-          const step = snap || event.shiftKey ? 100 : 5;
-          if (event.key === "ArrowRight" || event.key === "ArrowUp")
-            setCents((c) => Math.min(MAX_CENTS, c + step));
-          else if (event.key === "ArrowLeft" || event.key === "ArrowDown")
-            setCents((c) => Math.max(0, c - step));
+          const step = snap ? 100 : event.shiftKey ? 1 : 10;
+          let next: number;
+          if (event.key === "ArrowRight" || event.key === "ArrowUp") next = cents + step;
+          else if (event.key === "ArrowLeft" || event.key === "ArrowDown") next = cents - step;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = 1200;
           else return;
           event.preventDefault();
+          setCents(snapCents(next, snap));
         }}
       >
-        <svg viewBox={`0 0 ${W} ${H}`} className={styles.svg} aria-hidden="true">
+        <svg viewBox={`0 0 ${W} ${height}`} className={styles.svg} aria-hidden="true">
           <rect
-            x={PLOT.left}
-            y={PLOT.top}
-            width={PLOT.right - PLOT.left}
-            height={PLOT.bottom - PLOT.top}
+            x={left}
+            y={PLOT_TOP}
+            width={right - left}
+            height={PLOT_BOTTOM - PLOT_TOP}
             rx={8}
             fill="var(--track)"
           />
-          {INTERVALS.map((interval) => (
-            <g key={interval.short}>
-              <line
-                x1={xOf(interval.semitones * 100)}
-                x2={xOf(interval.semitones * 100)}
-                y1={PLOT.top}
-                y2={PLOT.bottom + 6}
-                stroke="var(--line)"
-                strokeWidth={1.5}
-              />
-              <text
-                x={xOf(interval.semitones * 100)}
-                y={PLOT.bottom + 20}
-                textAnchor="middle"
-                style={{ fontSize: 11, fill: "var(--muted)" }}
-              >
-                {interval.short}
-              </text>
-            </g>
-          ))}
+          <text x={left + 6} y={PLOT_TOP + 14} style={{ fontSize: 11, fill: "var(--muted)" }}>
+            rough
+          </text>
+          <text x={left + 6} y={PLOT_BOTTOM - 6} style={{ fontSize: 11, fill: "var(--muted)" }}>
+            smooth
+          </text>
+          {snap &&
+            Array.from({ length: 13 }, (_, k) => {
+              const c = k * 100;
+              const y = yOf(toneRoughness(BASE_HZ, 2 ** (c / 1200)));
+              return (
+                <g key={c}>
+                  <line
+                    x1={xOf(c)}
+                    x2={xOf(c)}
+                    y1={PLOT_BOTTOM}
+                    y2={PLOT_BOTTOM + 8}
+                    stroke="var(--muted)"
+                    strokeWidth={1.5}
+                  />
+                  <circle cx={xOf(c)} cy={y} r={3} fill="var(--muted)" />
+                </g>
+              );
+            })}
           <path d={path} fill="none" stroke="var(--ink)" strokeWidth={2.5} strokeLinejoin="round" />
-          {dips.map((dip) => (
-            <g key={dip.cents}>
-              <circle cx={xOf(dip.cents)} cy={yOf(dip.roughness)} r={3.5} fill="var(--accent)" />
-              <text
-                x={xOf(dip.cents)}
-                y={yOf(dip.roughness) - 9}
-                textAnchor="middle"
-                style={{ fontSize: 11, fontWeight: 700, fill: "var(--accent)" }}
-              >
-                {dip.ratio?.[0]}:{dip.ratio?.[1]}
-              </text>
-            </g>
-          ))}
+          {rows
+            .filter((dip) => visited.has(dip.name))
+            .map((dip) => {
+              const x = xOf(dip.cents);
+              const y = LABEL_TOP + dip.row * LABEL_ROW;
+              return (
+                <g key={dip.name}>
+                  <line
+                    x1={x}
+                    x2={x}
+                    y1={yOf(toneRoughness(BASE_HZ, dip.ratio[0] / dip.ratio[1])) + 4}
+                    y2={y - 4}
+                    stroke="var(--accent)"
+                    strokeWidth={1}
+                    strokeDasharray="2 3"
+                  />
+                  <text
+                    x={dip.centre}
+                    y={y + 6}
+                    textAnchor="middle"
+                    style={{ fontSize: 11, fontWeight: 700, fill: "var(--accent)" }}
+                  >
+                    {dip.name}
+                  </text>
+                </g>
+              );
+            })}
           <line
             x1={xOf(cents)}
             x2={xOf(cents)}
-            y1={PLOT.top - 10}
-            y2={PLOT.bottom}
+            y1={PLOT_TOP}
+            y2={PLOT_BOTTOM}
             stroke="var(--accent)"
             strokeWidth={2}
           />
           <circle
             cx={xOf(cents)}
-            cy={yOf(roughness * peak)}
-            r={7}
+            cy={yOf(here)}
+            r={dragging ? 11 : 9}
             fill="var(--accent)"
             stroke="var(--paper)"
-            strokeWidth={2}
+            strokeWidth={2.5}
           />
-          <text x={PLOT.left + 6} y={PLOT.top - 10} style={{ fontSize: 11, fill: "var(--muted)" }}>
-            rough
-          </text>
-          <text x={PLOT.left + 6} y={H - 6} style={{ fontSize: 11, fill: "var(--muted)" }}>
-            unison
-          </text>
-          <text
-            x={PLOT.right - 6}
-            y={H - 6}
-            textAnchor="end"
-            style={{ fontSize: 11, fill: "var(--muted)" }}
-          >
-            octave
-          </text>
         </svg>
       </div>
 
-      <dl className="mt-label grid grid-cols-2 gap-label sm:grid-cols-4">
-        <div className={styles.readout}>
-          <dt>interval</dt>
-          <dd>{Math.round(cents)}¢</dd>
-        </div>
-        <div className={styles.readout}>
-          <dt>nearest piano interval</dt>
-          <dd>
-            {nearest.short} {formatCents(cents - nearest.semitones * 100)}
-          </dd>
-        </div>
-        <div className={styles.readout}>
-          <dt>ratio</dt>
-          <dd>{fraction ? `${fraction[0]} : ${fraction[1]}` : ratio.toFixed(3)}</dd>
-        </div>
-        <div className={styles.readout}>
-          <dt>roughness</dt>
-          <dd>{Math.round(roughness * 100)}</dd>
-        </div>
-      </dl>
-
-      <div className="mt-para flex flex-wrap items-center gap-tight">
+      <div className="mt-para flex flex-wrap items-center gap-label">
         <button
           type="button"
           className={clsx(styles.button, styles.primary)}
-          aria-pressed={playing}
-          onClick={playing ? stop : start}
+          aria-pressed={sounding}
+          onClick={() => {
+            if (sounding) {
+              setLatched(false);
+              setDragging(false);
+            } else setLatched(true);
+          }}
         >
-          {playing ? "Stop" : "Play both"}
+          {sounding ? "Stop" : "Play both"}
         </button>
-        <button
-          type="button"
-          className={styles.button}
-          aria-pressed={snap}
-          onClick={() => setSnap((s) => !s)}
-        >
-          Snap to piano keys
-        </button>
-      </div>
-      <div className="mt-tight">
-        <span className={styles.segmented} role="group" aria-label="Harmonics of both tones">
-          {SPECTRA.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={clsx(styles.button, styles.small)}
-              aria-pressed={spectrumId === s.id}
-              onClick={() => setSpectrumId(s.id)}
-            >
-              {s.label}
-            </button>
-          ))}
-        </span>
+        <PianoCheck label="Snap to the piano keys" checked={snap} onChange={toggleSnap} />
       </div>
     </section>
   );

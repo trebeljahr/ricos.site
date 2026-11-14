@@ -6,7 +6,7 @@ export default function PluckAStringPage() {
     <PianoDemoPage
       slug="pluck-a-string"
       samples={false}
-      description="Pull a string, let go, and watch and hear it vibrate at any frequency you can hear."
+      description="Change a string's length and tension, pluck it, and see the standing waves it vibrates in."
     >
       <PluckString />
     </PianoDemoPage>

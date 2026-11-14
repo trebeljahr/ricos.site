@@ -2,6 +2,8 @@
 // make sound after a click, tap or key press, so `audio()` is called from those
 // handlers; it creates the context the first time and resumes it after that.
 
+import { audioSilenced } from "src/lib/silentAudio";
+
 type Audio = { ctx: AudioContext; out: AudioNode };
 
 let shared: Audio | null = null;
@@ -24,7 +26,8 @@ export function audio(): Audio | null {
     limiter.attack.value = 0.003;
     limiter.release.value = 0.2;
     const master = ctx.createGain();
-    master.gain.value = 0.8;
+    // Silent in agent-driven previews and with ?mute (see silentAudio.ts).
+    master.gain.value = audioSilenced() ? 0 : 0.8;
     master.connect(limiter).connect(ctx.destination);
     shared = { ctx, out: master };
   }

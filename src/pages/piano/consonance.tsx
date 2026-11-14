@@ -6,7 +6,7 @@ export default function ConsonancePage() {
     <PianoDemoPage
       slug="consonance"
       samples={false}
-      description="Drag along a curve of how rough two tones sound together, for every interval up to an octave."
+      description="Drag one note over an octave and see where the harmonics of two notes rub or line up."
     >
       <Consonance />
     </PianoDemoPage>

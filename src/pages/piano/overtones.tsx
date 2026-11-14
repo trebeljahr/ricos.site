@@ -6,7 +6,7 @@ export default function OvertonesPage() {
     <PianoDemoPage
       slug="overtones"
       samples={false}
-      description="Turn the harmonics of one note up and down, and hear and see what each one adds."
+      description="Add harmonics up into one wave, or draw a wave and see which harmonics it holds."
     >
       <Overtones />
     </PianoDemoPage>

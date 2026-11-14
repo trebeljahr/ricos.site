@@ -5,7 +5,8 @@ export default function OctaveDoublingPage() {
   return (
     <PianoDemoPage
       slug="octave-doubling"
-      description="Slide one tone up to twice the frequency of another and see where both land on a pitch spiral."
+      samples={false}
+      description="Slide one tone up to twice the frequency of another: the sum stops moving, and both land on the same spoke of a pitch spiral."
     >
       <OctaveDoubling />
     </PianoDemoPage>

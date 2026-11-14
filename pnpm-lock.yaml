@@ -465,8 +465,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       remark-mdx-frontmatter:
-        specifier: ^5.2.0
-        version: 5.2.0
+        specifier: ^6.0.0
+        version: 6.0.0
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
@@ -4910,8 +4910,8 @@ packages:
   remark-mdx-frontmatter@4.0.0:
     resolution: {integrity: sha512-PZzAiDGOEfv1Ua7exQ8S5kKxkD8CDaSb4nM+1Mprs6u8dyvQifakh+kCj6NovfGXW+bTvrhjaR3srzjS2qJHKg==}
 
-  remark-mdx-frontmatter@5.2.0:
-    resolution: {integrity: sha512-U/hjUYTkQqNjjMRYyilJgLXSPF65qbLPdoESOkXyrwz2tVyhAnm4GUKhfXqOOS9W34M3545xEMq+aMpHgVjEeQ==}
+  remark-mdx-frontmatter@6.0.0:
+    resolution: {integrity: sha512-Rz7oaxWwaKpWn/c+iqWOq5wQWPt8TdPyfUIZWBCGqwSqNZ7X8heHkPviy7/UHUXjtd8QTnEV6LXb+CKn9A+ZFA==}
 
   remark-mdx@3.1.1:
     resolution: {integrity: sha512-Pjj2IYlUY3+D8x00UJsIOg5BEvfMyeI+2uLPn9VO9Wg4MEtN/VTIq2NEJQfde9PnX15KgtHyl9S0BcTnWrIuWg==}
@@ -5060,6 +5060,10 @@ packages:
   slugify@1.6.9:
     resolution: {integrity: sha512-vZ7rfeehZui7wQs438JXBckYLkIIdfHOXsaVEUMyS5fHo1483l1bMdo0EDSWYclY0yZKFOipDy4KHuKs6ssvdg==}
     engines: {node: '>=8.0.0'}
+
+  smol-toml@1.9.1:
+    resolution: {integrity: sha512-j7WyPdf0CJoutMzMoPLF/bVXHtKZIT9Rb4eGeEbWw8X2t5oirjPgpL+OpaENZrILYaXqYwnVH+qgUwVbl+pUJQ==}
+    engines: {node: '>= 18'}
 
   source-map-js@1.2.2:
     resolution: {integrity: sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw==}
@@ -10754,11 +10758,11 @@ snapshots:
       unified: 11.0.5
       yaml: 2.9.1
 
-  remark-mdx-frontmatter@5.2.0:
+  remark-mdx-frontmatter@6.0.0:
     dependencies:
       '@types/mdast': 4.0.4
       estree-util-value-to-estree: 3.5.0
-      toml: 5.0.1
+      smol-toml: 1.9.1
       unified: 11.0.5
       unist-util-mdx-define: 1.1.2
       yaml: 2.9.1
@@ -10972,6 +10976,8 @@ snapshots:
       totalist: 3.0.1
 
   slugify@1.6.9: {}
+
+  smol-toml@1.9.1: {}
 
   source-map-js@1.2.2: {}
 

@@ -7,7 +7,7 @@ import clsx from "clsx";
 import { type KeyboardEvent, useEffect, useRef } from "react";
 import { feltStrike } from "src/lib/piano/hammerHead";
 import { pluckedString, type StringVoice } from "src/lib/piano/harmonicSound";
-import { Scene, type View } from "./actionScene";
+import { drawPaper, Scene, type View } from "./actionScene";
 import { fitCanvas, type PanelColors } from "./canvas";
 import { PianoSwitch } from "./controls";
 import styles from "./piano.module.css";
@@ -310,6 +310,7 @@ export function sceneOn(
   const fitted = canvas && fitCanvas(canvas);
   if (!fitted) return null;
   const dark = document.documentElement.classList.contains("dark");
+  drawPaper(fitted.ctx, fitted.width, fitted.height, colors, dark);
   return new Scene(fitted.ctx, view, fitted.width, fitted.height, colors, dark, fresh, hovered);
 }
 

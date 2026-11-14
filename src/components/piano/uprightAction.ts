@@ -5,9 +5,9 @@
 
 import { type ActionState, checkHeight, LET_OFF, RATIO } from "src/lib/piano/action";
 import { arc, type Pose, type Pt, place, rect, type Scene, spring, type View } from "./actionScene";
-import type { GrandLook } from "./grandAction";
+import { type GrandLook, ringMarks } from "./grandAction";
 
-export const UPRIGHT_VIEW: View = { x0: -12, x1: 572, y0: -24, y1: 404 };
+export const UPRIGHT_VIEW: View = { x0: 96, x1: 560, y0: -24, y1: 404 };
 
 const KEY_PIVOT: Pt = [210, 0];
 const KEY_END = 430;
@@ -79,26 +79,53 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
     ],
     { material: "rail" },
   );
-  scene.shape("plate", rect(STRING_X + 4, -24, STRING_X + 34, 404), { material: "frame" });
+  scene.shape("plate", rect(STRING_X + 6, -30, STRING_X + 40, 410), { material: "brass" });
+  scene.shape("soundboard", rect(STRING_X + 40, -30, STRING_X + 70, 410), { material: "wood" });
   scene.shape("pressure bar", rect(STRING_X - 8, PRESSURE_BAR_Y, STRING_X + 4, 398), {
     material: "metal",
   });
 
   // Key and capstan.
-  scene.shape("key", rect(0, 0, KEY_END, 22), { material: "wood" }, kPose);
   scene.shape(
     "key",
     [
-      [-2, 18],
-      [150, 18],
-      [150, 25],
-      [0, 25],
-      [-2, 22],
+      [0, 2],
+      [2, 0],
+      [KEY_END - 2, 0],
+      [KEY_END, 2],
+      [KEY_END, 21],
+      [KEY_END - 2, 22],
+      [0, 22],
     ],
-    { material: "ivory" },
+    { material: "wood" },
     kPose,
   );
-  scene.shape("capstan", rect(CAPSTAN_X - 5, 22, CAPSTAN_X + 5, 36), { material: "brass" }, kPose);
+  scene.shape(
+    "key",
+    [
+      [-3, 15],
+      [-1, 13],
+      [148, 22],
+      [150, 27],
+      [0, 27],
+      [-3, 25],
+    ],
+    { material: "ivory", plain: true },
+    kPose,
+  );
+  scene.shape(
+    "key lead",
+    arc([118, 9], 5.2, 0, 2 * Math.PI, 16),
+    { material: "metal", plain: true },
+    kPose,
+  );
+  scene.shape("balance pin", rect(208.5, -1, 211.5, 16), { material: "metal", plain: true });
+  scene.shape(
+    "capstan",
+    [[CAPSTAN_X - 5, 22], [CAPSTAN_X + 5, 22], ...arc([CAPSTAN_X, 31.5], 5, 0, Math.PI, 8)],
+    { material: "brass", plain: true },
+    kPose,
+  );
 
   // The main rail the action hangs on.
   scene.shape("main rail", rect(458, 150, 488, 176), { material: "rail" });
@@ -114,7 +141,7 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
     { material: "wood" },
     dPose,
   );
-  scene.shape(null, arc(DAMPER_PIVOT, 2), { material: "metal" });
+  scene.pin(DAMPER_PIVOT, undefined, 2);
   const dHead: Pt[] = rect(STRING_X - 26, DAMPER_Y - 14, STRING_X - 6, DAMPER_Y + 14);
   scene.line(
     "damper wire",
@@ -163,7 +190,7 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
     { material: "redFelt" },
     wPose,
   );
-  scene.shape(null, arc(WIPPEN_PIVOT, 2.2), { material: "metal" });
+  scene.pin(WIPPEN_PIVOT, undefined, 2.2);
   scene.line(
     "damper spoon",
     [
@@ -214,7 +241,7 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
     { material: "wood" },
     jPose,
   );
-  scene.shape(null, arc(JACK_PIVOT, 2, 0, 2 * Math.PI, 12), { material: "metal" }, wPose);
+  scene.pin(JACK_PIVOT, wPose, 1.8);
   spring(
     scene,
     place([JACK_PIVOT[0] + 4, 80], jPose),
@@ -266,7 +293,7 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
     { material: "wood" },
     hPose,
   );
-  scene.shape(null, arc(BUTT_PIVOT, 2), { material: "metal" });
+  scene.pin(BUTT_PIVOT, undefined, 2);
   spring(
     scene,
     place([BUTT_PIVOT[0] - 4, BUTT_PIVOT[1] + 14], hPose),
@@ -299,30 +326,28 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
   );
   scene.shape(
     "hammer head",
-    rect(HEAD[0] - 16, HEAD[1] - 20, HEAD[0] + 4, HEAD[1] + 20),
+    [
+      [HEAD[0] - 15, HEAD[1] - 19],
+      [HEAD[0] + 6, HEAD[1] - 15],
+      [HEAD[0] + 6, HEAD[1] + 15],
+      [HEAD[0] - 15, HEAD[1] + 19],
+    ],
     { material: "wood" },
     hPose,
   );
   scene.shape(
     "hammer head",
-    [
-      [HEAD[0] + 2, HEAD[1] - 16],
-      ...arc([FACE_X - 9, HEAD[1]], 9, -Math.PI / 2, Math.PI / 2, 12),
-      [HEAD[0] + 2, HEAD[1] + 16],
-    ],
-    { material: "redFelt" },
+    sideCrown(HEAD[1], 15, HEAD[0] + 1, FACE_X - 3),
+    { material: "redFelt", plain: true },
     hPose,
   );
   scene.shape(
     "hammer head",
-    [
-      [HEAD[0] + 6, HEAD[1] - 11],
-      ...arc([FACE_X - 6.5, HEAD[1]], 6.5, -Math.PI / 2, Math.PI / 2, 12),
-      [HEAD[0] + 6, HEAD[1] + 11],
-    ],
+    sideCrown(HEAD[1], 13, HEAD[0] + 4, FACE_X),
     { material: "hammerFelt" },
     hPose,
   );
+  scene.pin([HEAD[0] - 5, HEAD[1] - 6], hPose, 1.3);
 
   // The string, standing up from the bridge far below to the pressure bar.
   const string: Pt[] = [];
@@ -332,5 +357,18 @@ export function drawUpright(scene: Scene, s: ActionState, look: GrandLook) {
       y,
     ]);
   }
-  scene.line("string", string, scene.dark ? "#c9ced3" : "#6d747b", 2.4);
+  scene.line("string", string, scene.dark ? "#c9ced3" : "#9aa1a8", 2.6);
+  ringMarks(scene, [STRING_X + 30, HEAD[1] - 60], look.ring ?? 0);
+}
+
+/** A felt crown lying on its side, its flat base at x = `base`, its tip at `tip`. */
+function sideCrown(cy: number, hw: number, base: number, tip: number, steps = 18): Pt[] {
+  const points: Pt[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = Math.PI / 2 - (Math.PI * i) / steps;
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    points.push([base + (tip - base) * c ** 0.62, cy + hw * s * (1 - 0.18 * c * c)]);
+  }
+  return points;
 }

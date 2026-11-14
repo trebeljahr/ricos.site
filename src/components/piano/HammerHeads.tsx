@@ -14,7 +14,7 @@ import { PianoSwitch } from "./controls";
 import { sceneOn, useRingingString } from "./mechanism";
 import styles from "./piano.module.css";
 
-const VIEW: View = { x0: -60, x1: 60, y0: -42, y1: 28 };
+const VIEW: View = { x0: -64, x1: 64, y0: -66, y1: 22 };
 const HZ = 262; // middle C
 const BARS = 16;
 const MAX_PULSE_MS = 4;
@@ -109,7 +109,7 @@ export function HammerHeads() {
         style={{
           aspectRatio: `${VIEW.x1 - VIEW.x0} / ${VIEW.y1 - VIEW.y0}`,
           height: "auto",
-          maxHeight: 260,
+          maxHeight: 320,
         }}
         role="img"
         aria-label={`A ${covering.label.toLowerCase()} hammer head under a string, cut through.`}
@@ -196,7 +196,7 @@ function drawHead(
   // The head keeps moving up while its covering squeezes flat against the string.
   const face = -(1 - lift) * 14 + squeeze * SQUEEZE_ZOOM;
   const coreTop = face - total;
-  scene.shape("hammer shank", rect(-3, -42, 3, coreTop - 28), { material: "wood" });
+  scene.shape("hammer shank", rect(-3.5, -80, 3.5, coreTop - 30), { material: "wood" });
   // Coverings from the outside in, so each inner one is drawn over the next.
   const tops: number[] = [];
   let reach = coreTop;
@@ -206,20 +206,25 @@ function drawHead(
   }
   for (let i = covering.layers.length - 1; i >= 0; i--) {
     const layer = covering.layers[i];
-    const hw = 8 + 0.9 * (tops[i] - coreTop);
-    scene.shape(layer.mm >= 3 ? "felt" : "leather", cap(hw, tops[i], coreTop - 22), {
+    const hw = 9 + 0.9 * (tops[i] - coreTop);
+    scene.shape(layer.mm >= 3 ? "felt" : "leather", cap(hw, tops[i], coreTop - 24), {
       fill: layer.color,
     });
   }
-  scene.shape("wooden core", cap(8, coreTop, coreTop - 30), { material: "wood" });
+  scene.shape(
+    "wooden core",
+    [[11, coreTop - 40], ...cap(9, coreTop, coreTop - 30).slice(1, -1), [-11, coreTop - 40]],
+    { material: "wood" },
+  );
+  scene.pin([0, coreTop - 33], undefined, 1.6);
   // The string along its length; it rings once the head has left it.
-  const metal = scene.dark ? "#c9ced3" : "#6d747b";
+  const metal = scene.dark ? "#c9ced3" : "#9aa1a8";
   const line: Pt[] = [];
-  for (let x = -60; x <= 60; x += 2) {
+  for (let x = -64; x <= 64; x += 2) {
     const u = STRIKE_POINT + (x / 120) * 0.2;
     line.push([x, 1 + stringAt(u) * 10]);
   }
-  scene.line("string", line, metal, 2.2);
+  scene.line("string", line, metal, 2.6);
 }
 
 function drawCharts(

@@ -14,7 +14,7 @@ import {
 } from "src/lib/piano/action";
 import { arc, type Pose, type Pt, place, rect, type Scene, spring, type View } from "./actionScene";
 
-export const GRAND_VIEW: View = { x0: -12, x1: 700, y0: -24, y1: 252 };
+export const GRAND_VIEW: View = { x0: -12, x1: 700, y0: -24, y1: 240 };
 
 const KEY_PIVOT: Pt = [210, 0];
 const KEY_END = 540;
@@ -89,7 +89,22 @@ export type GrandLook = {
   fixedJack?: boolean;
   /** Displacement of the string at u (0 at the agraffe, 1 at the bridge), in millimetres. */
   stringAt: (u: number) => number;
+  /** How hard the string rings, 0 silent … 1 just struck hard. */
+  ring?: number;
 };
+
+/** A felt hammer crown: flat base `hw` wide each side at `base`, rounded up to `top`. */
+function crown(cx: number, hw: number, base: number, top: number, steps = 18): Pt[] {
+  const points: Pt[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const a = (Math.PI * i) / steps;
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    // A bullet: straight-ish flanks, a full round crown.
+    points.push([cx + hw * c * (1 - 0.18 * s * s), base + (top - base) * s ** 0.62]);
+  }
+  return points;
+}
 
 /** Draws the whole action for `state` into `scene`. */
 export function drawGrand(scene: Scene, s: ActionState, look: GrandLook) {
@@ -100,97 +115,129 @@ export function drawGrand(scene: Scene, s: ActionState, look: GrandLook) {
   const theta = hammerAngle(s.h);
   const hPose: Pose = [{ pivot: SHANK_PIVOT, angle: theta }];
 
-  // The case: keybed, rails and the frame the action hangs from.
+  // The case: keybed, front rail and balance rail.
   scene.shape("keybed", rect(-12, -24, 700, -14), { material: "frame" });
-  scene.shape("front rail", rect(4, -14, 26, -10), { material: "rail" });
-  scene.shape(null, rect(8, -10.5, 22, -10), { material: "redFelt", bare: true });
+  scene.shape("front rail", rect(4, -14, 30, -9), { material: "rail" });
+  scene.shape(null, rect(9, -9, 25, -7), { material: "redFelt", bare: true });
   scene.shape(
     "balance rail",
     [
-      [182, -14],
-      [238, -14],
-      [214, -1],
-      [206, -1],
+      [178, -14],
+      [242, -14],
+      [218, -2],
+      [202, -2],
     ],
     { material: "rail" },
   );
-  scene.shape("balance pin", rect(208.5, -1, 211.5, 14), { material: "metal" });
+  scene.shape(null, rect(203, -2, 217, 0), { material: "redFelt", bare: true });
 
   // Damper underlever and its rail, behind the key's back end.
   if (parts.damper) drawDamper(scene, s);
 
-  // The key, with its ivory top and the capstan screw.
-  scene.shape("key", rect(0, 0, KEY_END, 22), { material: "wood" }, kPose);
+  // The key: wood, an ivory top, two lead weights, the capstan screw.
   scene.shape(
     "key",
     [
-      [-2, 18],
-      [150, 18],
-      [150, 25],
-      [0, 25],
-      [-2, 22],
+      [0, 2],
+      [2, 0],
+      [KEY_END - 2, 0],
+      [KEY_END, 2],
+      [KEY_END, 21],
+      [KEY_END - 2, 22],
+      [0, 22],
     ],
-    { material: "ivory" },
+    { material: "wood" },
     kPose,
   );
-  scene.shape("capstan", rect(CAPSTAN_X - 5, 22, CAPSTAN_X + 5, 36), { material: "brass" }, kPose);
-  scene.shape(null, rect(CAPSTAN_X - 6, 34, CAPSTAN_X + 6, 36), { material: "brass" }, kPose);
+  scene.shape(
+    "key",
+    [
+      [-3, 15],
+      [-1, 13],
+      [148, 22],
+      [150, 27],
+      [0, 27],
+      [-3, 25],
+    ],
+    { material: "ivory", plain: true },
+    kPose,
+  );
+  for (const x of [58, 92]) {
+    scene.shape(
+      "key lead",
+      arc([x, 9], 5.2, 0, 2 * Math.PI, 16),
+      { material: "metal", plain: true },
+      kPose,
+    );
+  }
+  scene.shape("balance pin", rect(208.5, -2, 211.5, 16), { material: "metal", plain: true });
+  scene.shape(
+    "capstan",
+    [[CAPSTAN_X - 5, 22], [CAPSTAN_X + 5, 22], ...arc([CAPSTAN_X, 31.5], 5, 0, Math.PI, 8)],
+    { material: "brass", plain: true },
+    kPose,
+  );
 
   // Backcheck: a wire on the key's back end with a felt-faced block.
   if (parts.check) {
     const base = place([CHECK_X, 22], kPose);
     const catchY = tailCorner(hammerAngle(checkHeight(s.k)))[1];
-    scene.line("backcheck", [base, [base[0] + 2, catchY - 10]], m.metal, 2);
+    scene.line("backcheck", [base, [base[0] + 2, catchY - 12]], m.metal, 2.2);
     scene.shape(
       "backcheck",
       [
-        [base[0] - 3, catchY - 14],
-        [base[0] + 9, catchY - 14],
-        [base[0] + 11, catchY + 6],
-        [base[0] - 1, catchY - 1],
+        [base[0] - 4, catchY - 16],
+        [base[0] + 9, catchY - 16],
+        [base[0] + 12, catchY + 7],
+        [base[0] - 2, catchY - 1],
       ],
       { material: "wood" },
     );
     scene.shape(
-      null,
+      "backcheck",
       [
-        [base[0] - 3, catchY - 2],
-        [base[0] - 1, catchY - 1],
-        [base[0] + 11, catchY + 6],
-        [base[0] + 10, catchY + 7],
+        [base[0] - 3, catchY - 3],
+        [base[0] - 1, catchY - 0.5],
+        [base[0] + 12, catchY + 7],
+        [base[0] + 10, catchY + 8.5],
       ],
       { material: "leather", bare: true },
     );
   }
 
-  // Frame parts the action hangs from.
-  scene.shape("wippen rail", rect(378, 58, 420, 76), { material: "rail" });
-  scene.shape("hammer flange rail", rect(214, 96, 244, 120), { material: "rail" });
-  scene.shape("hammer rest rail", rect(360, 96, 400, 104), { material: "rail" });
-  scene.shape(null, rect(362, 104, 398, 106.5), { material: "felt", bare: true });
+  scene.shape("wippen rail", rect(380, 58, 426, 76), { material: "rail" });
+  scene.shape("hammer flange rail", rect(208, 100, 244, 126), { material: "rail" });
+  scene.shape("hammer rest rail", rect(356, 94, 402, 103), { material: "rail" });
+  scene.shape(null, rect(358, 103, 400, 106.5), { material: "felt", bare: true });
 
-  // The wippen, its flange, heel cushion and the jack.
+  // The wippen, its heel cushion and flange, then the jack.
   scene.shape(
     "wippen",
     [
-      [246, 40],
-      [395, 47],
-      [397, 58],
-      [380, 58],
-      [300, 52],
-      [250, 52],
-      [246, 48],
+      [244, 46],
+      [254, 40],
+      [300, 39],
+      [350, 42],
+      [388, 47],
+      [398, 51],
+      [398, 58],
+      [384, 60],
+      [350, 55],
+      [300, 53],
+      [254, 53],
+      [245, 50],
     ],
     { material: "wood" },
     wPose,
   );
   scene.shape(
     "wippen",
-    rect(CAPSTAN_X - 9, 36.5, CAPSTAN_X + 9, 40),
-    { material: "redFelt" },
+    rect(CAPSTAN_X - 10, 35.8, CAPSTAN_X + 10, 39.5),
+    { material: "redFelt", plain: true },
     wPose,
   );
-  scene.shape(null, arc(WIPPEN_PIVOT, 2.2), { material: "metal" });
+  scene.shape("wippen flange", rect(386, 48, 399, 62), { material: "wood", plain: true });
+  scene.pin(WIPPEN_PIVOT, undefined, 2.4);
   if (parts.repetition) drawRepetition(scene, s, wPose, theta);
   drawJack(scene, s, look, wPose);
 
@@ -204,76 +251,158 @@ export function drawGrand(scene: Scene, s: ActionState, look: GrandLook) {
         [toe[0], 92],
       ],
       m.metal,
-      1.6,
+      1.8,
     );
-    scene.shape("let-off button", rect(toe[0] - 6, toe[1], toe[0] + 6, toe[1] + 4), {
-      material: "redFelt",
-    });
-    scene.shape("let-off rail", rect(toe[0] - 12, 86, toe[0] + 12, 94), { material: "rail" });
+    scene.shape(
+      "let-off button",
+      [
+        [toe[0] - 6, toe[1] + 7],
+        [toe[0] + 6, toe[1] + 7],
+        ...arc([toe[0], toe[1] + 6], 6, 0, -Math.PI, 8).slice(1, -1),
+      ],
+      { material: "redFelt", plain: true },
+    );
+    scene.shape("let-off rail", rect(toe[0] - 13, 86, toe[0] + 13, 95), { material: "rail" });
   }
 
-  // The hammer: shank, knuckle, molding, felt and tail.
+  // The hammer: tail, shank, flange, knuckle, molding and felt.
+  scene.shape(
+    "hammer head",
+    [
+      [HEAD_X - 6, 112],
+      [HEAD_X + 6, 113],
+      [HEAD_X + 16, 109],
+      [CHECK_X - 2, 103],
+      [CHECK_X - 6, 97],
+      [HEAD_X + 6, 98],
+      [HEAD_X - 4, 102],
+    ],
+    { material: "wood" },
+    hPose,
+  );
   scene.shape(
     "hammer shank",
-    rect(SHANK_PIVOT[0] - 4, 107.5, HEAD_X - 6, 112.5),
-    { material: "wood" },
-    hPose,
-  );
-  scene.shape("hammer flange", rect(236, 104, 256, 116), { material: "wood" });
-  scene.shape(null, arc(SHANK_PIVOT, 2), { material: "metal" });
-  scene.shape("knuckle", arc(KNUCKLE, KNUCKLE_R), { material: "leather" }, hPose);
-  // Molding, then a hard underfelt, then the white top felt that meets the string.
-  scene.shape(
-    "hammer head",
-    [[HEAD_X - 12, 132], [HEAD_X + 12, 132], ...arc([HEAD_X, 148], 12, 0, Math.PI, 16)],
-    { material: "hammerFelt" },
-    headPose(theta),
-  );
-  scene.shape(
-    "hammer head",
-    [[HEAD_X - 8.5, 132], [HEAD_X + 8.5, 132], ...arc([HEAD_X, 143], 8.5, 0, Math.PI, 14)],
-    { material: "redFelt" },
-    headPose(theta),
-  );
-  scene.shape(
-    "hammer head",
     [
-      [HEAD_X - 7, 112],
-      [HEAD_X + 7, 112],
-      [HEAD_X + 6, 134],
-      ...arc([HEAD_X, 134], 6, 0, Math.PI, 8),
-      [HEAD_X - 6, 134],
-    ],
-    { material: "wood" },
-    headPose(theta),
-  );
-  scene.shape(
-    "hammer head",
-    [
-      [HEAD_X - 4, 98],
-      [CHECK_X - 6, 97],
-      [CHECK_X - 4, 104],
-      [HEAD_X + 8, 112],
-      [HEAD_X - 4, 112],
+      [SHANK_PIVOT[0] - 3, 107],
+      [HEAD_X - 4, 107.8],
+      [HEAD_X - 4, 112.6],
+      [SHANK_PIVOT[0] - 3, 113.2],
     ],
     { material: "wood" },
     hPose,
+  );
+  scene.shape(
+    "hammer flange",
+    [
+      [234, 113],
+      [234, 101],
+      [244, 100],
+      [258, 104],
+      [258, 116],
+      [244, 116],
+    ],
+    { material: "wood" },
+  );
+  scene.pin(SHANK_PIVOT, undefined, 2.2);
+  scene.shape(
+    "knuckle",
+    [
+      ...arc([KNUCKLE[0], KNUCKLE[1]], KNUCKLE_R, Math.PI, 2 * Math.PI, 12),
+      [KNUCKLE[0] + KNUCKLE_R, 108],
+      [KNUCKLE[0] - KNUCKLE_R, 108],
+    ],
+    { material: "leather" },
+    hPose,
+  );
+  const head = headPose(theta);
+  scene.shape(
+    "hammer head",
+    [
+      [HEAD_X - 8, 104],
+      [HEAD_X + 8, 104],
+      [HEAD_X + 6.5, 132],
+      [HEAD_X - 6.5, 132],
+    ],
+    { material: "wood" },
+    head,
+  );
+  scene.shape(
+    "hammer head",
+    crown(HEAD_X, 14.5, 124, 156),
+    { material: "redFelt", plain: true },
+    head,
+  );
+  scene.shape("hammer head", crown(HEAD_X, 12.5, 127, HEAD_TOP), { material: "hammerFelt" }, head);
+  scene.pin([HEAD_X, 110], head, 1.4);
+
+  // Pinblock, plate, tuning pin and agraffe: the string's short end, toward the
+  // player. The plate lies on the pinblock; the string runs over both.
+  const pinX = AGRAFFE_X - 140;
+  const left = AGRAFFE_X - 200;
+  scene.shape("pinblock", rect(left, STRING_Y - 46, AGRAFFE_X - 4, STRING_Y - 15), {
+    material: "rail",
+  });
+  scene.shape(
+    "plate",
+    [
+      [left, STRING_Y - 15],
+      [AGRAFFE_X + 2, STRING_Y - 15],
+      [AGRAFFE_X + 8, STRING_Y - 26],
+      [AGRAFFE_X + 16, STRING_Y - 26],
+      [AGRAFFE_X + 12, STRING_Y - 6],
+      [left, STRING_Y - 6],
+    ],
+    { material: "brass" },
+  );
+  for (const x of [left + 40, AGRAFFE_X - 60]) scene.pin([x, STRING_Y - 10.5], undefined, 2.4);
+  scene.shape("tuning pin", rect(pinX - 3.2, STRING_Y - 34, pinX + 3.2, STRING_Y + 14), {
+    material: "metal",
+    plain: true,
+  });
+  scene.shape(
+    "agraffe",
+    [
+      [AGRAFFE_X - 5, STRING_Y - 6],
+      [AGRAFFE_X + 5, STRING_Y - 6],
+      [AGRAFFE_X + 4, STRING_Y + 5],
+      [AGRAFFE_X - 4, STRING_Y + 5],
+    ],
+    { material: "brass", plain: true },
   );
 
-  // The string, from the agraffe to a bridge far off to the right.
-  scene.shape("agraffe", rect(AGRAFFE_X - 6, STRING_Y - 1, AGRAFFE_X + 2, STRING_Y + 18), {
-    material: "brass",
-  });
-  scene.shape("plate", rect(AGRAFFE_X - 30, STRING_Y + 14, 506, STRING_Y + 30), {
-    material: "frame",
-  });
-  const string: Pt[] = [];
+  // The string: wound on the tuning pin, through the agraffe, out to a bridge far off to the right.
+  const string: Pt[] = [[pinX, STRING_Y + 3]];
   for (let x = AGRAFFE_X; x <= 704; x += 2) {
     string.push([x, STRING_Y + 1.2 + look.stringAt((x - AGRAFFE_X) / (BRIDGE_X - AGRAFFE_X))]);
   }
-  scene.line("string", string, scene.dark ? "#c9ced3" : "#6d747b", 2.4);
+  scene.line("string", string, scene.dark ? "#c9ced3" : "#9aa1a8", 2.6);
+  scene.shape(null, rect(pinX - 4.4, STRING_Y - 1, pinX + 4.4, STRING_Y + 6), {
+    material: "metal",
+    plain: true,
+  });
 
   if (parts.damper) drawDamperHead(scene, s);
+  ringMarks(scene, [STRIKE[0] + 70, STRING_Y + 8], look.ring ?? 0);
+}
+
+/** Little curved strokes beside a ringing string, as an ink drawing shows sound. */
+export function ringMarks(scene: Scene, at: Pt, ring: number) {
+  const level = Math.min(1, ring * 1.6);
+  if (level < 0.08) return;
+  const { ctx } = scene;
+  const [x, y] = scene.px(at);
+  ctx.save();
+  ctx.strokeStyle = scene.outline;
+  ctx.lineCap = "round";
+  ctx.lineWidth = Math.max(1.2, scene.ink * 0.8);
+  ctx.globalAlpha = 0.3 + 0.6 * level;
+  for (let i = 0; i < 3; i++) {
+    const r = 8 + i * 6 + level * 3;
+    ctx.beginPath();
+    ctx.arc(x, y, r, -Math.PI / 2 - 0.5, -Math.PI / 2 + 0.5);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
 /** The bottom corner of the hammer tail, where the backcheck catches it. */
@@ -296,18 +425,19 @@ function drawJack(scene: Scene, s: ActionState, look: GrandLook, wPose: Pose) {
   scene.shape(
     "jack",
     [
-      [JACK_PIVOT[0] - 28, 60],
-      [JACK_PIVOT[0] - 2, 58],
+      [JACK_PIVOT[0] - 30, 59],
+      [JACK_PIVOT[0] - 27, 61],
+      [JACK_PIVOT[0] - 2, 59],
       [JACK_PIVOT[0] - 2, JACK_TOP - 1],
       [JACK_PIVOT[0] + 6, JACK_TOP],
       [JACK_PIVOT[0] + 6, 52],
-      [JACK_PIVOT[0] - 4, 50],
-      [JACK_PIVOT[0] - 28, 56],
+      [JACK_PIVOT[0] - 4, 49],
+      [JACK_PIVOT[0] - 28, 55],
     ],
     { material: "wood" },
     pose,
   );
-  scene.shape(null, arc(JACK_PIVOT, 2, 0, 2 * Math.PI, 12), { material: "metal" }, wPose);
+  scene.pin(JACK_PIVOT, wPose, 1.8);
   // The jack spring pulls the jack back under the hammer.
   spring(
     scene,
@@ -331,14 +461,19 @@ function drawRepetition(scene: Scene, s: ActionState, wPose: Pose, theta: number
   const pose: Pose = [...wPose, { pivot, angle }];
   scene.shape(
     "repetition flange",
-    rect(REP_PIVOT[0] - 4, 49, REP_PIVOT[0] + 4, REP_PIVOT[1]),
-    { material: "wood" },
+    [
+      [REP_PIVOT[0] - 6, 50],
+      [REP_PIVOT[0] + 6, 50],
+      [REP_PIVOT[0] + 4, REP_PIVOT[1] + 2],
+      [REP_PIVOT[0] - 4, REP_PIVOT[1] + 2],
+    ],
+    { material: "wood", plain: true },
     wPose,
   );
   spring(
     scene,
     place([REP_TIP_X + 22, REP_PIVOT[1] - 3], pose),
-    place([REP_TIP_X + 22, 51], wPose),
+    place([REP_TIP_X + 22, 52], wPose),
     4,
     2.5,
   );
@@ -346,14 +481,17 @@ function drawRepetition(scene: Scene, s: ActionState, wPose: Pose, theta: number
     "repetition lever",
     [
       [REP_TIP_X, REP_PIVOT[1] + 4],
-      [REP_PIVOT[0] + 26, REP_PIVOT[1] + 3],
-      [REP_PIVOT[0] + 26, REP_PIVOT[1] - 3],
-      [REP_TIP_X + 6, REP_PIVOT[1] - 3],
+      [REP_TIP_X + 30, REP_PIVOT[1] + 4.5],
+      [REP_PIVOT[0] + 28, REP_PIVOT[1] + 3],
+      [REP_PIVOT[0] + 30, REP_PIVOT[1]],
+      [REP_PIVOT[0] + 28, REP_PIVOT[1] - 3],
+      [REP_TIP_X + 8, REP_PIVOT[1] - 3.5],
+      [REP_TIP_X + 2, REP_PIVOT[1] - 1],
     ],
     { material: "wood" },
     pose,
   );
-  scene.shape(null, arc(REP_PIVOT, 2, 0, 2 * Math.PI, 12), { material: "metal" }, wPose);
+  scene.pin(REP_PIVOT, wPose, 1.8);
 }
 
 function underleverAngle(lift: number) {
@@ -365,21 +503,28 @@ function drawDamper(scene: Scene, s: ActionState) {
   const pose: Pose = [{ pivot: UNDERLEVER_PIVOT, angle: underleverAngle(s.damper) }];
   scene.shape(
     "damper underlever",
-    rect(PAD_X - 14, 34, UNDERLEVER_PIVOT[0] + 6, 42),
+    [
+      [PAD_X - 16, 36],
+      [PAD_X - 12, 33],
+      [UNDERLEVER_PIVOT[0] + 4, 33],
+      [UNDERLEVER_PIVOT[0] + 8, 37],
+      [UNDERLEVER_PIVOT[0] + 4, 42],
+      [PAD_X - 12, 43],
+    ],
     { material: "wood" },
     pose,
   );
   scene.shape(
     "damper underlever",
-    rect(PAD_X - 8, 28, PAD_X + 8, 34),
-    { material: "redFelt" },
+    rect(PAD_X - 9, 28, PAD_X + 9, 33.2),
+    { material: "redFelt", plain: true },
     pose,
   );
-  scene.shape("damper rail", rect(UNDERLEVER_PIVOT[0] - 4, 22, 700, 32), { material: "rail" });
-  scene.shape(null, arc(UNDERLEVER_PIVOT, 2.2), { material: "metal" });
+  scene.shape("damper rail", rect(UNDERLEVER_PIVOT[0] - 4, 20, 700, 30), { material: "rail" });
+  scene.pin(UNDERLEVER_PIVOT, undefined, 2.2);
   // The pedal tray lifts every underlever at once.
   const tray = s.pedal ? 6 : 0;
-  scene.shape("pedal tray", rect(586, 22 + tray, 620, 27 + tray), { material: "metal" });
+  scene.shape("pedal tray", rect(584, 22 + tray, 622, 27 + tray), { material: "metal" });
 }
 
 function drawDamperHead(scene: Scene, s: ActionState) {
@@ -388,16 +533,33 @@ function drawDamperHead(scene: Scene, s: ActionState) {
     [DAMPER_X, 42],
     [{ pivot: UNDERLEVER_PIVOT, angle: underleverAngle(s.damper) }],
   );
-  scene.line("damper wire", [base, [DAMPER_X, STRING_Y + 6 + lift]], scene.material.metal, 1.8);
+  // The guide rail keeps the wire straight on its way up past the hammers.
+  scene.line("damper wire", [base, [DAMPER_X, STRING_Y + 8 + lift]], scene.material.metal, 2);
+  scene.shape("damper guide rail", rect(DAMPER_X - 16, 128, DAMPER_X + 16, 138), {
+    material: "rail",
+  });
+  scene.shape(null, rect(DAMPER_X - 3, 129, DAMPER_X + 3, 137), {
+    material: "redFelt",
+    bare: true,
+  });
   const y = STRING_Y + 2.4 + lift;
-  scene.shape("damper", rect(DAMPER_X - 20, y + 4, DAMPER_X + 20, y + 26), { material: "wood" });
   scene.shape(
     "damper",
     [
-      [DAMPER_X - 18, y + 4],
-      [DAMPER_X + 18, y + 4],
-      [DAMPER_X + 12, y],
-      [DAMPER_X - 12, y],
+      [DAMPER_X - 22, y + 6],
+      [DAMPER_X + 22, y + 6],
+      [DAMPER_X + 20, y + 26],
+      [DAMPER_X - 20, y + 26],
+    ],
+    { material: "wood" },
+  );
+  scene.shape(
+    "damper",
+    [
+      [DAMPER_X - 19, y + 6],
+      [DAMPER_X + 19, y + 6],
+      [DAMPER_X + 13, y],
+      [DAMPER_X - 13, y],
     ],
     { material: "damperFelt" },
   );

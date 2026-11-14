@@ -193,9 +193,11 @@ export function ActionDemo({ stage }: { stage: ActionStage }) {
         parts: partsRef.current,
         fixedJack: setup.fixedJack,
         stringAt: (u: number) => string.at01(u) * STRING_SWING_MM,
+        ring: string.amplitude,
       };
       if (upright) drawUpright(sc, s, look);
       else drawGrand(sc, s, look);
+      sc.finish();
       scene.current = sc;
     }
 
@@ -272,7 +274,7 @@ export function ActionDemo({ stage }: { stage: ActionStage }) {
             ? `${UPRIGHT_VIEW.x1 - UPRIGHT_VIEW.x0} / ${UPRIGHT_VIEW.y1 - UPRIGHT_VIEW.y0}`
             : `${GRAND_VIEW.x1 - GRAND_VIEW.x0} / ${GRAND_VIEW.y1 - GRAND_VIEW.y0}`,
           height: "auto",
-          maxHeight: upright ? 520 : undefined,
+          maxHeight: upright ? 620 : undefined,
           cursor: hovered === "key" ? "pointer" : "default",
           touchAction: "manipulation",
         }}

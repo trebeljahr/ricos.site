@@ -32,14 +32,14 @@ import {
 import styles from "./piano.module.css";
 
 // Left: the key and jack from the side, to scale. Right: the top of the jack
-// from the front, five times larger, where the quill meets the string.
+// from the front, seven times larger, where the quill meets the string.
 const VIEW: View = { x0: -8, x1: 612, y0: -24, y1: 214 };
 const KEY_PIVOT: Pt = [130, 0];
 const KEY_END = 262;
 const JACK_X = 244;
 const STRING_Y = 150;
-const ZOOM = 5;
-const ZOOM_AT: Pt = [470, 84]; // where the string sits in the enlarged view
+const ZOOM = 7;
+const ZOOM_AT: Pt = [478, 70]; // where the string sits in the enlarged view
 const PLUCK_AT = 0.12;
 const HZ = 262;
 
@@ -109,6 +109,7 @@ export function QuillJack() {
     const sc = sceneOn(canvas.current, VIEW, colors, fresh, hovered);
     if (sc) {
       drawJack(sc, s, (u) => string.at01(u));
+      sc.finish();
       scene.current = sc;
     }
     trace.current.push(time, [s.k, Math.min(1, jackLift(s.k) / 8)]);
@@ -225,53 +226,99 @@ function drawJack(scene: Scene, s: JackState, stringAt: (u: number) => number) {
   const ring = stringAt(PLUCK_AT);
 
   // ── Side view ──
-  scene.shape("keybed", rect(-8, -24, 300, -14), { material: "frame" });
+  scene.shape("keybed", rect(-8, -24, 312, -14), { material: "frame" });
   scene.shape(
     "balance rail",
     [
-      [110, -14],
-      [150, -14],
-      [134, -1],
-      [126, -1],
+      [106, -14],
+      [154, -14],
+      [136, -2],
+      [124, -2],
     ],
     { material: "rail" },
   );
-  scene.shape("key", rect(0, 0, KEY_END, 18), { material: "wood" }, keyPose);
+  scene.shape("balance pin", rect(128.5, -2, 131.5, 14), { material: "metal", plain: true });
   scene.shape(
     "key",
     [
-      [-2, 14],
-      [110, 14],
-      [110, 21],
-      [0, 21],
-      [-2, 18],
+      [0, 2],
+      [2, 0],
+      [KEY_END - 2, 0],
+      [KEY_END, 2],
+      [KEY_END, 17],
+      [KEY_END - 2, 18],
+      [0, 18],
+    ],
+    { material: "wood" },
+    keyPose,
+  );
+  scene.shape(
+    "key",
+    [
+      [-3, 12],
+      [-1, 10],
+      [108, 18],
+      [110, 23],
+      [0, 23],
+      [-3, 21],
     ],
     { material: "ebony" },
     keyPose,
   );
   const keyTop = place([JACK_X, 18], keyPose)[1];
-  scene.shape("jack", rect(JACK_X - 5, keyTop, JACK_X + 5, keyTop + 150), { material: "wood" });
-  scene.shape("jack guide", rect(JACK_X - 20, 112, JACK_X + 20, 122), { material: "rail" });
-  scene.shape("jack rail", rect(JACK_X - 20, 192, JACK_X + 20, 204), { material: "rail" });
-  scene.shape(null, rect(JACK_X - 20, 188, JACK_X + 20, 192), { material: "redFelt", bare: true });
+  // The jack stands on the key's far end and slides up through two guides.
+  scene.shape(
+    "jack",
+    [
+      [JACK_X - 5, keyTop],
+      [JACK_X + 5, keyTop],
+      [JACK_X + 5, keyTop + 146],
+      [JACK_X + 3, keyTop + 150],
+      [JACK_X - 5, keyTop + 150],
+    ],
+    { material: "wood" },
+  );
+  scene.shape("damper cloth", rect(JACK_X + 5, keyTop + 138, JACK_X + 11, keyTop + 147), {
+    material: "damperFelt",
+  });
+  scene.shape("jack guide", rect(JACK_X - 22, 110, JACK_X - 6, 122), { material: "rail" });
+  scene.shape(null, rect(JACK_X + 6, 110, JACK_X + 22, 122), { material: "rail" });
+  scene.shape("jack rail", rect(JACK_X - 22, 194, JACK_X + 22, 206), { material: "rail" });
+  scene.shape(null, rect(JACK_X - 20, 190, JACK_X + 20, 194), { material: "redFelt", bare: true });
   // The string runs along the key; at the jack it is lifted or ringing.
   const side: Pt[] = [];
-  for (let x = 180; x <= 304; x += 2) {
+  for (let x = 180; x <= 312; x += 2) {
     const u = (x - 180) / 124;
     const bump = lift * (u < PLUCK_AT * 4 ? u / (PLUCK_AT * 4) : (1 - u) / (1 - PLUCK_AT * 4));
     side.push([x, STRING_Y + bump + stringAt(u / 4) * 3]);
   }
-  scene.shape("nut", rect(174, STRING_Y - 8, 182, STRING_Y), { material: "rail" });
-  scene.line("string", side, scene.dark ? "#c9ced3" : "#6d747b", 1.8);
+  scene.shape(
+    "nut",
+    [
+      [170, STRING_Y - 14],
+      [186, STRING_Y - 14],
+      [180, STRING_Y],
+      [176, STRING_Y],
+    ],
+    { material: "wood" },
+  );
+  scene.line("string", side, scene.dark ? "#c9ced3" : "#9aa1a8", 2.2);
 
   // ── Front view of the jack's top, enlarged ──
-  scene.shape(null, rect(330, -20, 612, 212), { fill: scene.colors.track, bare: true });
+  const box = rect(336, -14, 604, 210);
+  scene.inset(box, [JACK_X, STRING_Y]);
+  scene.clip(box);
   const jy = (y: number) => y + j; // jack-local height
   // Jack body with its slot, and the damper cloth on top.
   scene.shape(
     "jack",
     [zoom([-9, jy(-20)]), zoom([5, jy(-20)]), zoom([5, jy(12)]), zoom([-9, jy(12)])],
     { material: "wood" },
+  );
+  scene.shape(
+    null,
+    [zoom([-5, jy(-17)]), zoom([3, jy(-17)]), zoom([3, jy(8)]), zoom([-5, jy(8)])],
+    { material: "rail", plain: true },
   );
   scene.shape(
     "damper cloth",
@@ -296,7 +343,7 @@ function drawJack(scene: Scene, s: JackState, stringAt: (u: number) => number) {
       material: "wood",
     },
   );
-  scene.shape(null, arc(zoom(axle), 4), { material: "metal" });
+  scene.pin(zoom(axle), undefined, 3);
   // The quill bends down a little while it holds the string up.
   const top = jy(-QUILL_GAP_MM);
   const bend = Math.min(0.6, lift * 0.45);
@@ -317,6 +364,8 @@ function drawJack(scene: Scene, s: JackState, stringAt: (u: number) => number) {
   // The string, end-on.
   const sy = lift - bend * (6 / 11) ** 2 + ring * PLUCK_MM;
   scene.shape("string", arc(zoom([8, sy + 0.5]), 0.5 * ZOOM), {
-    fill: scene.dark ? "#c9ced3" : "#6d747b",
+    fill: scene.dark ? "#c9ced3" : "#9aa1a8",
+    plain: true,
   });
+  scene.unclip();
 }

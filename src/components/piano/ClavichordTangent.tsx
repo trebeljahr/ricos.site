@@ -103,6 +103,7 @@ export function ClavichordTangent() {
     const sc = sceneOn(canvas.current, VIEW, colors, fresh, hovered);
     if (sc) {
       drawClavichord(sc, s, (u) => string.at01(u));
+      sc.finish();
       scene.current = sc;
     }
     trace.current.push(time, [s.k, Math.min(1, tangentLift(s.k) / TANGENT_RISE_MM)]);
@@ -248,50 +249,79 @@ function drawClavichord(scene: Scene, s: TangentState, stringAt: (u: number) => 
   const keyPose = [{ pivot: KEY_PIVOT, angle: Math.atan2(KEY_DIP_MM, KEY_PIVOT[0]) * s.k }];
   const lift = tangentLift(s.k);
   const push = Math.max(0, lift - TANGENT_GAP_MM); // how far the tangent pushes the string up
-  const metal = scene.dark ? "#c9ced3" : "#6d747b";
+  const metal = scene.dark ? "#c9ced3" : "#9aa1a8";
 
   // ── Side view ──
   scene.shape("keybed", rect(-8, -24, 300, -14), { material: "frame" });
   scene.shape(
     "balance rail",
     [
-      [100, -14],
-      [140, -14],
-      [124, -1],
-      [116, -1],
+      [96, -14],
+      [144, -14],
+      [126, -2],
+      [114, -2],
     ],
     { material: "rail" },
   );
-  scene.shape("key", rect(0, 0, KEY_END, 18), { material: "wood" }, keyPose);
+  scene.shape("balance pin", rect(118.5, -2, 121.5, 14), { material: "metal", plain: true });
   scene.shape(
     "key",
     [
-      [-2, 14],
-      [100, 14],
-      [100, 21],
-      [0, 21],
-      [-2, 18],
+      [0, 2],
+      [2, 0],
+      [KEY_END - 2, 0],
+      [KEY_END, 2],
+      [KEY_END, 17],
+      [KEY_END - 2, 18],
+      [0, 18],
     ],
-    { material: "ivory" },
+    { material: "wood" },
+    keyPose,
+  );
+  scene.shape(
+    "key",
+    [
+      [-3, 12],
+      [-1, 10],
+      [98, 18],
+      [100, 23],
+      [0, 23],
+      [-3, 21],
+    ],
+    { material: "ivory", plain: true },
     keyPose,
   );
   scene.shape(
     "tangent",
     [
-      [TANGENT_X - 1.5, 18],
-      [TANGENT_X + 1.5, 18],
-      [TANGENT_X + 1.5, TANGENT_TOP],
-      [TANGENT_X - 1.5, TANGENT_TOP],
+      [TANGENT_X - 2.5, 14],
+      [TANGENT_X + 2.5, 14],
+      [TANGENT_X + 2.5, TANGENT_TOP - 6],
+      [TANGENT_X + 4, TANGENT_TOP],
+      [TANGENT_X - 4, TANGENT_TOP],
+      [TANGENT_X - 2.5, TANGENT_TOP - 6],
     ],
     { material: "brass" },
     keyPose,
   );
-  scene.shape("key guide", rect(KEY_END - 2, -14, KEY_END + 6, 10), { material: "rail" });
+  scene.shape(
+    "key guide",
+    [
+      [KEY_END - 1, -14],
+      [KEY_END + 8, -14],
+      [KEY_END + 8, 12],
+      [KEY_END + 3, 14],
+      [KEY_END - 1, 12],
+    ],
+    { material: "rail" },
+  );
   const tip = place([TANGENT_X, TANGENT_TOP], keyPose);
-  scene.shape("string", circle([tip[0], STRING_Y + push + 1]), { fill: metal });
+  scene.shape("string", circle([tip[0], STRING_Y + push + 1.6], 2), { fill: metal, plain: true });
 
   // ── Front view of the string, heights enlarged ──
-  scene.shape(null, rect(320, -20, 612, 148), { fill: scene.colors.track, bare: true });
+  const box = rect(320, -16, 606, 148);
+  scene.inset(box, [tip[0], STRING_Y + push + 1.6]);
+  scene.clip(box);
   const pushed = push * LIFT_ZOOM;
   const yAt = (x: number) => {
     if (x <= FRONT_TANGENT_X)
@@ -299,12 +329,15 @@ function drawClavichord(scene: Scene, s: TangentState, stringAt: (u: number) => 
     const u = (x - FRONT_TANGENT_X) / (BRIDGE_X - FRONT_TANGENT_X);
     return FRONT_Y + pushed * (1 - u) + stringAt(u) * 10;
   };
-  scene.shape("hitch pin", circle([HITCH_X, FRONT_Y], 4), { material: "metal" });
+  // The soundboard under the speaking length, the case wall under the hitch pin.
+  scene.shape("soundboard", rect(FRONT_TANGENT_X + 30, -20, 610, 6), { material: "wood" });
+  scene.shape("case", rect(316, -20, HITCH_X + 14, FRONT_Y - 6), { material: "rail" });
+  scene.shape("hitch pin", circle([HITCH_X, FRONT_Y - 2], 4), { material: "metal", plain: true });
   scene.shape(
     "bridge",
     [
-      [BRIDGE_X - 8, FRONT_Y - 30],
-      [BRIDGE_X + 8, FRONT_Y - 30],
+      [BRIDGE_X - 12, 6],
+      [BRIDGE_X + 12, 6],
       [BRIDGE_X + 4, FRONT_Y],
       [BRIDGE_X - 4, FRONT_Y],
     ],
@@ -312,26 +345,25 @@ function drawClavichord(scene: Scene, s: TangentState, stringAt: (u: number) => 
   );
   const line: Pt[] = [];
   for (let x = HITCH_X; x <= BRIDGE_X; x += 2) line.push([x, yAt(x)]);
-  scene.line("string", line, metal, 2.2);
+  scene.line("string", line, metal, 2.4);
   // The listing cloth, woven between the strings, keeps the short end quiet.
-  for (let x = CLOTH[0]; x < CLOTH[1]; x += 8) {
+  for (let x = CLOTH[0]; x < CLOTH[1]; x += 9) {
     const y = yAt(x + 3);
-    scene.shape("listing cloth", rect(x, y - 5, x + 6, y + 5), { material: "cloth" });
+    scene.shape("listing cloth", rect(x, y - 6, x + 7, y + 6), { material: "cloth" });
   }
-  // The tangent seen edge-on from the front.
+  // The tangent seen edge-on from the front: a thin brass blade.
   const front = FRONT_Y - (TANGENT_GAP_MM - lift) * LIFT_ZOOM;
   scene.shape(
     "tangent",
     rect(
-      FRONT_TANGENT_X - 9,
-      front - 60,
-      FRONT_TANGENT_X + 9,
-      Math.min(front, FRONT_Y + pushed) - 1,
+      FRONT_TANGENT_X - 4,
+      front - 80,
+      FRONT_TANGENT_X + 4,
+      Math.min(front, FRONT_Y + pushed) - 1.2,
     ),
-    {
-      material: "brass",
-    },
+    { material: "brass" },
   );
+  scene.unclip();
 }
 
 const circle = (c: Pt, r = 1.6): Pt[] =>

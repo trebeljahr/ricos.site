@@ -81,9 +81,12 @@ describe("inline circuit unfolding", () => {
     };
     const expectCamera = (expected: ReturnType<typeof camera>) => {
       const actual = camera();
-      expect(actual.zoom).toBeCloseTo(expected.zoom, 8);
-      expect(actual.left).toBeCloseTo(expected.left, 6);
-      expect(actual.top).toBeCloseTo(expected.top, 6);
+      // camera() reads the inline style strings, which jsdom (like browsers)
+      // serializes to 6 significant digits, so a restored camera matches to
+      // that precision: about 1e-6 in zoom, a few millipixels in position.
+      expect(actual.zoom).toBeCloseTo(expected.zoom, 5);
+      expect(actual.left).toBeCloseTo(expected.left, 2);
+      expect(actual.top).toBeCloseTo(expected.top, 2);
     };
     return { board, viewport, camera, expectCamera };
   };

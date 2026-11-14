@@ -1,8 +1,6 @@
-diff --git a/dist/chunk-4HFW4XPZ.js b/dist/chunk-4HFW4XPZ.js
-index 68120c9..06130a3 100644
---- a/dist/chunk-4HFW4XPZ.js
-+++ b/dist/chunk-4HFW4XPZ.js
-@@ -38094,8 +38094,33 @@ var watch = async (config) => {
+--- a/dist/chunk-ODT43ZBV.js
++++ b/dist/chunk-ODT43ZBV.js
+@@ -38160,8 +38160,33 @@
    const { root: root4, collections, configImports } = config;
    logger.info(`watching for changes in '${root4}'`);
    const patterns = Object.values(collections).flatMap(({ pattern }) => pattern);

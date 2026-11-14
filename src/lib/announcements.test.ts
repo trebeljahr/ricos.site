@@ -50,7 +50,8 @@ describe("announcementsFeed", () => {
     expect(xml).toContain('<atom:link href="https://ricos.site/projects/rss.xml" rel="self"');
     expect(xml).toContain("<link>https://ricos.site/projects</link>");
     expect(xml.match(/<item>/g)).toHaveLength(1);
-    expect(xml).toContain(`<link>${conv3d?.link}</link>`);
+    // feed writes links in WHATWG-normalized form (a bare origin gains "/").
+    expect(xml).toContain(`<link>${new URL(conv3d?.link ?? "").href}</link>`);
     expect(xml).toContain("<pubDate>Tue, 27 Oct 2026 16:00:00 GMT</pubDate>");
   });
 

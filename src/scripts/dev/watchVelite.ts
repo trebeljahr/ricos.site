@@ -29,7 +29,10 @@ if (await veliteOutputExists()) {
 async function buildAndWatch(): Promise<void> {
   const begin = performance.now();
   try {
-    await build({ watch: true, clean: false, logLevel: "error" });
+    // "warn", not "error": Velite reports schema issues as a warning, and a
+    // file that fails validation is left out of .velite without any other
+    // sign. reportSchemaIssues trims that report to the files just saved.
+    await build({ watch: true, clean: false, logLevel: "warn" });
   } catch (err) {
     console.error(err instanceof Error ? err.message : err);
     console.error("  [velite] build failed; fix the file above and save to retry");
@@ -41,6 +44,59 @@ async function buildAndWatch(): Promise<void> {
     `  [velite] content built in ${((performance.now() - begin) / 1000).toFixed(1)}s, watching for changes`,
   );
 }
+
+// Velite prints every issue in every file after each rebuild, including dozens
+// of known stubs and drafts. Only the files saved since the last rebuild are
+// news: a new newsletter without a cover, say, is otherwise dropped silently
+// and its page 404s. The first build prints a one-line count instead.
+const CONTENT_ROOT = "src/content/Notes";
+const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+const savedSinceRebuild = new Set<string>();
+let firstReport = true;
+
+watch(CONTENT_ROOT, { recursive: true }, (_event, file) => {
+  if (file && /\.mdx?$/.test(file)) savedSinceRebuild.add(`${CONTENT_ROOT}/${file}`);
+});
+
+function reportSchemaIssues(report: string) {
+  const blocks = report
+    .replace(ANSI, "")
+    .split(/\n\s*\n/)
+    .map((block) => block.trim().split("\n"))
+    .filter(([file, ...lines]) => file && lines.some((line) => /^\s*error\b/.test(line)));
+
+  if (firstReport) {
+    firstReport = false;
+    if (blocks.length > 0) {
+      console.warn(
+        `  [velite] ${blocks.length} files fail the schema and are left out (stubs and drafts); saving one prints why`,
+      );
+    }
+    return;
+  }
+
+  for (const [file, ...lines] of blocks) {
+    if (!savedSinceRebuild.has(file)) continue;
+    const reasons = lines
+      .filter((line) => /^\s*error\b/.test(line))
+      .map((line) => line.replace(/^\s*error\s+/, "").replace(/\s{2,}/g, ": "));
+    console.warn(`  [velite] ${file} is left out until fixed:\n    ${reasons.join("\n    ")}`);
+  }
+  savedSinceRebuild.clear();
+}
+
+const velitePrefix = "[VELITE]";
+const consoleWarn = console.warn.bind(console);
+console.warn = (...args: unknown[]) => {
+  const [prefix, message] = args;
+  if (typeof prefix === "string" && prefix.includes(velitePrefix) && typeof message === "string") {
+    if (message.startsWith("issues:")) {
+      reportSchemaIssues(message.slice("issues:".length));
+      return;
+    }
+  }
+  consoleWarn(...args);
+};
 
 function nextContentEdit(): Promise<void> {
   return new Promise((resolve) => {

@@ -239,8 +239,8 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2(@types/react@19.3.0)(react@19.3.1)
       use-local-storage-state:
-        specifier: ^19.5.0
-        version: 19.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: ^20.0.0
+        version: 20.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       use-sound:
         specifier: ^5.0.0
         version: 5.0.0(react@19.3.1)
@@ -5483,8 +5483,8 @@ packages:
       file-loader:
         optional: true
 
-  use-local-storage-state@19.5.0:
-    resolution: {integrity: sha512-sUJAyFvsmqMpBhdwaRr7GTKkkoxb6PWeNVvpBDrLuwQF1PpbJRKIbOYeLLeqJI7B3wdfFlLLCBbmOdopiSTBOw==}
+  use-local-storage-state@20.0.0:
+    resolution: {integrity: sha512-PSaIAivHEv1+XtOr7FwyCYRx5fVf+3uW0d2rr/pbc7zWarHu7U4JQZs5KPaHxAaUVTwPYVJyL0ysdChVV0GR2Q==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=18'
@@ -11391,7 +11391,7 @@ snapshots:
     optionalDependencies:
       file-loader: 6.2.0(webpack@5.105.4(esbuild@0.28.1)(postcss@8.5.32))
 
-  use-local-storage-state@19.5.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+  use-local-storage-state@20.0.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)

@@ -162,7 +162,7 @@
     "three-custom-shader-material": "^6.4.0",
     "three-stdlib": "^2.36.1",
     "tunnel-rat": "^0.1.2",
-    "use-local-storage-state": "^19.5.0",
+    "use-local-storage-state": "^20.0.0",
     "use-sound": "^5.0.0",
     "yet-another-react-lightbox": "^3.32.2",
     "yuka": "^0.7.8"

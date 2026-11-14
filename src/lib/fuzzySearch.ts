@@ -4,4 +4,4 @@ import fuzzysort from "fuzzysort";
 export const fuzzySearch = <T>(all: T[], term: string, keys: string[], threshold = 0.1): T[] =>
   term.trim() === ""
     ? all
-    : fuzzysort.go(term, all, { keys, threshold }).map((result) => result.obj);
+    : fuzzysort.go(term, all, { keys, threshold, limit: 0 }).map((result) => result.obj);

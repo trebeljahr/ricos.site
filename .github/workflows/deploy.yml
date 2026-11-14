@@ -61,9 +61,9 @@ jobs:
       client_version: ${{ steps.upload.outputs.client_version }}
       api_version: ${{ steps.upload.outputs.api_version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Check out the Notes content
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           repository: trebeljahr/Notes
           ref: main
@@ -79,8 +79,8 @@ jobs:
         run: rm -rf src/content/Notes/texts
 
       # The version comes from packageManager in package.json.
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: pnpm
@@ -153,13 +153,13 @@ jobs:
   images:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             src/scripts/aws/syncR2Variants.mjs
             .env.production
           sparse-checkout-cone-mode: false
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
       - name: Write missing image variants to R2
@@ -188,9 +188,9 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       NOTES_SHA: ${{ needs.build.outputs.notes_sha }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: pnpm

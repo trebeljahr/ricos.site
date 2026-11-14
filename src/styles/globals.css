@@ -863,6 +863,13 @@ html:root {
   --leva-colors-highlight2: #a6acbc;
 }
 
+/* The floating Leva panel (its `fill: false` variant) sits 10px from the top
+   by default, under the navbar on arrival and the pill on phones. Start it
+   below the bar instead: the 60px header plus the panel's own gap. */
+[class*="leva-c-"][class*="-fill-false"] {
+  top: 68px;
+}
+
 h1,
 h2,
 h3,

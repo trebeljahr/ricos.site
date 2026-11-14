@@ -1,3 +1,51 @@
+diff --git a/dist/leva.cjs.dev.js b/dist/leva.cjs.dev.js
+index 532ba4bb352ec94a06a707972a1a3570016cac46..9717fa29692e14a498dfc3eeba48c5a91db87659 100644
+--- a/dist/leva.cjs.dev.js
++++ b/dist/leva.cjs.dev.js
+@@ -2031,6 +2031,11 @@ function LevaRoot(_ref) {
+     props = vectorPlugin._objectWithoutProperties(_ref, _excluded$2);
+   const themeContext = useDeepMemo(() => vectorPlugin.mergeTheme(theme), [theme]);
+   const [toggled, setToggle] = React.useState(!collapsed);
++  // ricos.site: start the panel folded on phones, where it would cover
++  // much of the scene. After mount, so server and client render alike.
++  React.useEffect(() => {
++    if (typeof collapsed !== 'object' && window.matchMedia('(max-width: 639px)').matches) setToggle(false);
++  }, []);
+   const computedToggled = typeof collapsed === 'object' ? !collapsed.collapsed : toggled;
+   const computedSetToggle = React.useMemo(() => {
+     if (typeof collapsed === 'object') {
+diff --git a/dist/leva.cjs.prod.js b/dist/leva.cjs.prod.js
+index a2f20049c5ec12f2a6a31f5aafe774879a18b7fa..dcff7ea3da68f2f7b031a7b9a8f129d8286984c5 100644
+--- a/dist/leva.cjs.prod.js
++++ b/dist/leva.cjs.prod.js
+@@ -2025,6 +2025,11 @@ function LevaRoot(_ref) {
+     props = vectorPlugin._objectWithoutProperties(_ref, _excluded$2);
+   const themeContext = useDeepMemo(() => vectorPlugin.mergeTheme(theme), [theme]);
+   const [toggled, setToggle] = React.useState(!collapsed);
++  // ricos.site: start the panel folded on phones, where it would cover
++  // much of the scene. After mount, so server and client render alike.
++  React.useEffect(() => {
++    if (typeof collapsed !== 'object' && window.matchMedia('(max-width: 639px)').matches) setToggle(false);
++  }, []);
+   const computedToggled = typeof collapsed === 'object' ? !collapsed.collapsed : toggled;
+   const computedSetToggle = React.useMemo(() => {
+     if (typeof collapsed === 'object') {
+diff --git a/dist/leva.esm.js b/dist/leva.esm.js
+index 808aab75772d04a09fe2c55065ff2975d5297f77..60026654059f58d8cb97b006920e38dda8fad0b1 100644
+--- a/dist/leva.esm.js
++++ b/dist/leva.esm.js
+@@ -2000,6 +2000,11 @@ function LevaRoot(_ref) {
+     props = _objectWithoutProperties(_ref, _excluded$2);
+   const themeContext = useDeepMemo(() => mergeTheme(theme), [theme]);
+   const [toggled, setToggle] = useState(!collapsed);
++  // ricos.site: start the panel folded on phones, where it would cover
++  // much of the scene. After mount, so server and client render alike.
++  useEffect(() => {
++    if (typeof collapsed !== 'object' && window.matchMedia('(max-width: 639px)').matches) setToggle(false);
++  }, []);
+   const computedToggled = typeof collapsed === 'object' ? !collapsed.collapsed : toggled;
+   const computedSetToggle = useMemo(() => {
+     if (typeof collapsed === 'object') {
 diff --git a/dist/vector-plugin-5e122f40.esm.js b/dist/vector-plugin-5e122f40.esm.js
 index be0bbfbf2bde37ac38cc0f166b2c07d614faacce..48f4ae80fdeff7bf0770aaa987efa3e89fa7ffa6 100644
 --- a/dist/vector-plugin-5e122f40.esm.js

@@ -13,7 +13,7 @@ overrides:
   ws@7: 7.5.11
   fflate@0.8: 0.8.3
   fflate@0.6: 0.6.11
-  toml@3: 4.2.0
+  toml@<5.0.1: ^5.0.1
   colord@2: 2.9.4
   baseline-browser-mapping@2: 2.11.0
   underscore@1: 1.13.8
@@ -5384,8 +5384,8 @@ packages:
   to-vfile@8.0.0:
     resolution: {integrity: sha512-IcmH1xB5576MJc9qcfEC/m/nQCFt3fzMHz45sSlgJyTWjRbKW1HAkJpuf3DgE57YzIlZcwcBZA5ENQbBo4aLkg==}
 
-  toml@4.2.0:
-    resolution: {integrity: sha512-TvAJjbHZlYmI323+srtqHQFyJsoWy6mI09ppkuj9+iRsqsVKG9fvTcOP7FHF2UCb0QSYtjEavffrKzdd0XgClg==}
+  toml@5.0.1:
+    resolution: {integrity: sha512-EqYNA/YvUNndrA2B3O2ojzLQoTQrBxeZ9UIjQwk8t10oe6n7dwclBwd9IdZQTOKwe6vWX+AXtl6IntXRbepdxQ==}
     engines: {node: '>=20'}
 
   totalist@3.0.1:
@@ -10950,7 +10950,7 @@ snapshots:
       '@types/mdast': 4.0.4
       estree-util-is-identifier-name: 3.0.0
       estree-util-value-to-estree: 3.5.0
-      toml: 4.2.0
+      toml: 5.0.1
       unified: 11.0.5
       yaml: 2.9.1
 
@@ -10958,7 +10958,7 @@ snapshots:
     dependencies:
       '@types/mdast': 4.0.4
       estree-util-value-to-estree: 3.5.0
-      toml: 4.2.0
+      toml: 5.0.1
       unified: 11.0.5
       unist-util-mdx-define: 1.1.2
       yaml: 2.9.1
@@ -11395,7 +11395,7 @@ snapshots:
     dependencies:
       vfile: 6.0.3
 
-  toml@4.2.0: {}
+  toml@5.0.1: {}
 
   totalist@3.0.1: {}
 

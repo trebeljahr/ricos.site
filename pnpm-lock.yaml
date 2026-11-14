@@ -134,8 +134,8 @@ importers:
         specifier: ^7.5.0
         version: 7.5.0
       fuzzysort:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^4.0.2
+        version: 4.0.2
       gl-matrix:
         specifier: ^3.4.4
         version: 3.4.4
@@ -3534,8 +3534,8 @@ packages:
     resolution: {integrity: sha512-sQtrEfA+ez/3G0cCZecF70oqpCRttCexYUG4mUrtWL49ULUzUyxokt5kyqwtKzj1270RaKih+hcP3qLcumccow==}
     engines: {node: '>=10'}
 
-  fuzzysort@3.1.0:
-    resolution: {integrity: sha512-sR9BNCjBg6LNgwvxlBd0sBABvQitkLzoVY9MYYROQVX/FvfJ4Mai9LsGhDgd8qYdds0bY77VzYd5iuB+v5rwQQ==}
+  fuzzysort@4.0.2:
+    resolution: {integrity: sha512-3c7yD6rK1EXIsqpcu1ZVzXJugODWNMzvUij6yTiziaAHrpNS8kzFOI9mJLE8pmG4K9JOaVgzQRgklfOEk8f4Tg==}
 
   gemoji@4.2.1:
     resolution: {integrity: sha512-V9lUpRSn+KQGavZx8Pk+6mxG3kaz21ae2kTCXuT36KaRPNgYU8eHtj/RcUCNFVvmwppsYYz3nnNS9lmcP5kTsg==}
@@ -8688,7 +8688,7 @@ snapshots:
 
   fuse.js@7.5.0: {}
 
-  fuzzysort@3.1.0: {}
+  fuzzysort@4.0.2: {}
 
   gemoji@4.2.1: {}
 

@@ -132,7 +132,7 @@
     "glsl-curl-noise2": "^0.0.4",
     "glsl-noise": "^0.0.0",
     "handlebars": "^4.7.9",
-    "joystick-controller": "^1.1.1",
+    "joystick-controller": "^2.0.0",
     "lamina": "^1.2.2",
     "leva": "^0.10.1",
     "mdx-bundler": "^10.1.1",

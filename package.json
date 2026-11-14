@@ -199,7 +199,7 @@
     "cli-progress": "^3.12.0",
     "concurrently": "^10.0.7",
     "critters": "^0.0.25",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.9",
     "esbuild": "0.28.1",
     "feed": "^5.2.1",
     "file-loader": "^6.2.0",

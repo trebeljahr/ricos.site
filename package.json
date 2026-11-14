@@ -289,6 +289,7 @@
       "fflate@0.8": "0.8.3",
       "fflate@0.6": "0.6.11",
       "toml@<5.0.1": "^5.0.1",
+      "katex@<0.18.2": "^0.18.2",
       "colord@2": "2.9.4",
       "baseline-browser-mapping@2": "2.11.0",
       "underscore@1": "1.13.8",

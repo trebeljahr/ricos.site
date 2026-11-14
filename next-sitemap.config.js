@@ -58,8 +58,24 @@ function loadContentDates() {
   return dateMap;
 }
 
+// /workshop 404s in production until Rico's log file says `published: true`
+// (see src/pages/workshop.tsx), but the route is in the manifest either way.
+function isWorkshopPublished() {
+  try {
+    const source = readFileSync(
+      resolve("src", "content", "Notes", "texts", "workshop.md"),
+      "utf-8",
+    );
+    const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? "";
+    return /^published:\s*true\s*$/m.test(frontmatter);
+  } catch {
+    return false;
+  }
+}
+
 const contentDates = loadContentDates();
 const hiddenR3fRoutes = loadHiddenR3fRoutes();
+const workshopPublished = isWorkshopPublished();
 
 /** @type {import('next-sitemap').IConfig} */
 const nextSitemapConfig = {
@@ -97,6 +113,8 @@ const nextSitemapConfig = {
 
     // Exclude unfinished R3F demos (see src/content/r3f-hidden-routes.json)
     if (hiddenR3fRoutes.has(url)) return null;
+
+    if (url === "/workshop" && !workshopPublished) return null;
 
     const contentDate = contentDates[url];
     const lastmod = contentDate ? new Date(contentDate).toISOString() : new Date().toISOString();

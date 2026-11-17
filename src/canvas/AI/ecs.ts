@@ -1,6 +1,6 @@
 import { createReactAPI } from "@arancini/react";
+import type { CustomEcctrlRigidBody } from "@r3f/Controllers/CustomEcctrlController/Controller";
 import { type QueryBuilder, World } from "arancini";
-import type { CustomEcctrlRigidBody } from "ecctrl";
 import type { NavMesh, NavMeshQuery } from "recast-navigation";
 import type { Object3D, Vector3 } from "three";
 

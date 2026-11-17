@@ -8,8 +8,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import slugify from "@sindresorhus/slugify";
 import matter from "gray-matter";
+import { slugify } from "src/lib/slugify";
 import { formatQuote, QUOTES_JSON, type Quote, REVIEW_DIR } from "./quoteReviewFormat";
 
 const BOOKNOTES_DIR = "src/content/Notes/booknotes";

@@ -1,7 +1,6 @@
 import path from "node:path";
 import remarkCallout from "@r4ai/remark-callout";
 import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
-import slugify from "@sindresorhus/slugify";
 import type { Element, Root } from "hast";
 import { interactive } from "hast-util-interactive";
 import { whitespace } from "hast-util-whitespace";
@@ -29,6 +28,7 @@ import { rehypeBooknoteHeadings } from "src/lib/rehypeBooknoteHeadings";
 import { rehypeHeadingOrder } from "src/lib/rehypeHeadingOrder";
 import { rehypeTocSpy } from "src/lib/rehypeTocSpy";
 import { remarkResolveRedirects } from "src/lib/remarkResolveRedirects";
+import { slugify } from "src/lib/slugify";
 import type { Pluggable } from "unified";
 import type { Node } from "unist";
 import { SKIP, visit } from "unist-util-visit";

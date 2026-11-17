@@ -8,7 +8,7 @@
  * Creates a ListMonk campaign on LISTMONK_TEST_LIST_ID or, in production,
  * LISTMONK_LIVE_LIST_ID, and starts it; ListMonk then sends through SES.
  */
-import slugify from "@sindresorhus/slugify";
+import { slugify } from "src/lib/slugify";
 import "dotenv/config";
 import { readFile } from "node:fs/promises";
 import path from "node:path";

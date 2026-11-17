@@ -1,8 +1,8 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, parse } from "node:path";
-import slugify from "@sindresorhus/slugify";
 import matter from "gray-matter";
 import type { Definition, Link, Root } from "mdast";
+import { slugify } from "src/lib/slugify";
 import { visit } from "unist-util-visit";
 import { newsletterRedirects, STATIC_REDIRECTS } from "../scripts/createRedirects.js";
 import {

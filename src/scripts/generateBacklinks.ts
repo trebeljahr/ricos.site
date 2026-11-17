@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join, parse, resolve } from "node:path";
-import slugify from "@sindresorhus/slugify";
+import { slugify } from "src/lib/slugify";
 
 type BacklinkEntry = {
   title: string;

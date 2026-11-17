@@ -40,6 +40,19 @@ function buildNot(b: ReturnType<typeof within>) {
   fireEvent.click(b.getByRole("button", { name: /^Connect to OUT/ }));
 }
 
+/** Switches the tutorial between the NAND and NOR families, remounting it each time. */
+function Families() {
+  const [family, setFamily] = useState("nand");
+  return (
+    <>
+      <button type="button" onClick={() => setFamily(family === "nand" ? "nor" : "nand")}>
+        Switch family
+      </button>
+      <LogicTutorial key={family} levels={[`universal-${family}-not`]} />
+    </>
+  );
+}
+
 describe("first run", () => {
   const wireATo = (b: ReturnType<typeof within>, target: string) => {
     fireEvent.click(b.getByRole("button", { name: "Wire from A Output" }));
@@ -343,17 +356,6 @@ describe("independent tutorials", () => {
   });
   it("flushes the latest draft on an immediate family unmount and restores it after a reload", () => {
     vi.useFakeTimers();
-    function Families() {
-      const [family, setFamily] = useState("nand");
-      return (
-        <>
-          <button type="button" onClick={() => setFamily(family === "nand" ? "nor" : "nand")}>
-            Switch family
-          </button>
-          <LogicTutorial key={family} levels={[`universal-${family}-not`]} />
-        </>
-      );
-    }
     const { unmount } = render(<Families />);
     fireEvent.click(builders()[0].getByTitle("Drag NAND onto canvas or click to add"));
     fireEvent.click(screen.getByRole("button", { name: "Switch family" }));

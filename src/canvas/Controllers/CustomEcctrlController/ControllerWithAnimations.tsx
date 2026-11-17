@@ -180,7 +180,7 @@ export const MixamoEcctrlControllerWithAnimations = ({
     const player = playerQuery.first;
     if (!player?.rigidBody) return;
     // biome-ignore lint/suspicious/noExplicitAny: explicit any acknowledged
-    const userData = (player?.rigidBody as any).userData as userDataType;
+    const userData = (player.rigidBody as any).userData as userDataType;
 
     if (
       !userData.canJump ||

@@ -81,7 +81,7 @@ describe("findSubscriber", () => {
     expect(url.origin + url.pathname).toBe("https://listmonk.test/api/subscribers");
     expect(url.searchParams.get("search")).toBe("^reader@example\\.com$");
     expect(url.searchParams.get("per_page")).toBe("all");
-    expect((init?.headers as Record<string, string>).Authorization).toBe(
+    expect((init?.headers as Record<string, string> | undefined)?.Authorization).toBe(
       "token api-user:api-token",
     );
   });

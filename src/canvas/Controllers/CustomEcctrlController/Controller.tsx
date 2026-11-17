@@ -37,6 +37,18 @@ const getMovingDirection = (
   return null;
 };
 
+/**
+ * Check if inside keyboardcontrols
+ */
+function useIsInsideKeyboardControls() {
+  try {
+    // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
+    return !!useKeyboardControls();
+  } catch {
+    return false;
+  }
+}
+
 const Ecctrl = ({
   children,
   debug = false,
@@ -194,17 +206,6 @@ const Ecctrl = ({
   const slopeRayOriginUpdatePosition: Vector3 = useMemo(() => new Vector3(), []);
   const camBasedMoveCrossVecOnY: Vector3 = useMemo(() => new Vector3(), []);
 
-  /**
-   * Check if inside keyboardcontrols
-   */
-  function useIsInsideKeyboardControls() {
-    try {
-      // biome-ignore lint/correctness/useHookAtTopLevel: conditional hook by design — refactor deferred
-      return !!useKeyboardControls();
-    } catch {
-      return false;
-    }
-  }
   const isInsideKeyboardControls = useIsInsideKeyboardControls();
 
   const [_subscribeKeys, getKeys] = useKeyboardControls();
@@ -759,7 +760,7 @@ const Ecctrl = ({
       rb,
       (collider: Collider) =>
         (collider.parent()?.userData as boolean) &&
-        !(collider.parent()?.userData as userDataType).excludeEcctrlRay,
+        !(collider.parent()?.userData as userDataType | undefined)?.excludeEcctrlRay,
     );
 
     if (potentialHit) rayHit = potentialHit;
@@ -871,7 +872,7 @@ const Ecctrl = ({
       rb,
       (collider: Collider) =>
         (collider.parent()?.userData as boolean) &&
-        !(collider.parent()?.userData as userDataType).excludeEcctrlRay,
+        !(collider.parent()?.userData as userDataType | undefined)?.excludeEcctrlRay,
     );
 
     if (potentialSlopeRayHit) slopeRayHit = potentialSlopeRayHit;

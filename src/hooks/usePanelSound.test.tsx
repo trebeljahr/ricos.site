@@ -23,7 +23,7 @@ it("keeps other panels enabled by default and leaves an opt-in tutorial silent u
     type: "sine",
   };
   const close = vi.fn();
-  const audio = vi.fn(function Audio() {
+  const audio = vi.fn(function fakeAudioContext() {
     return {
       currentTime: 0,
       state: "running",

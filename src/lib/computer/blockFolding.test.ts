@@ -76,7 +76,7 @@ describe("block folding", () => {
     tick(drive(3, 0, false));
     expect(read(snapshot)).toBe(0x81);
     expect(snapshot.modules.ram).toBeUndefined();
-    expect((snapshot.blocks?.ram as { bytes: number[] }).bytes.slice(0, 8)).toEqual([
+    expect((snapshot.blocks?.ram as { bytes: number[] } | undefined)?.bytes.slice(0, 8)).toEqual([
       0, 0, 0, 0x81, 0, 0, 0, 0xc3,
     ]);
   });

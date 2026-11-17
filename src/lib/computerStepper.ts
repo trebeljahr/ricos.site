@@ -1489,8 +1489,7 @@ export function compileProgram(
     emit(OPCODES.JMP, INTERRUPT_VECTOR + 2, "SKIP VECTOR", handler.line);
     const vector = emit(OPCODES.JMP, 0, "INTERRUPT VECTOR", handler.line);
     callPatches.push({ address: vector, name: KEY_HANDLER, line: handler.line });
-    if (options.autoEnableInterrupts !== false)
-      emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
+    if (options.autoEnableInterrupts !== false) emit(OPCODES.EI, 0, "INTERRUPTS ON", handler.line);
   }
   compileStatements(ast.main, globals, "main");
   // HALT stops GCLK, and the blitters with it: let a running command finish first.
@@ -2239,20 +2238,34 @@ export function traceTicks(
       : subtract
         ? registers.acc - registers.opr
         : registers.acc + registers.opr;
-    const busValues: Record<BusDriver, () => number> = {
-      PC: () => registers.pc,
-      ROM: () => rom[registers.cmar],
-      OPR: () => registers.opr,
-      RAM: () => readData(registers.dmar, registers.pixelY),
-      ACC: () => registers.acc,
-      ALU: () => sum & 255,
-      STACK: () => stackMemory[registers.sp],
-      SP: () => registers.sp,
-      FRAME: () => (registers.sp + registers.opr) & 255,
-      VECTOR: () => INTERRUPT_VECTOR,
-      KEY: () => registers.key,
+    // Only the driving source is read, so RAM is touched only when it drives.
+    const readBus = (driver: BusDriver): number => {
+      switch (driver) {
+        case "PC":
+          return registers.pc;
+        case "ROM":
+          return rom[registers.cmar];
+        case "OPR":
+          return registers.opr;
+        case "RAM":
+          return readData(registers.dmar, registers.pixelY);
+        case "ACC":
+          return registers.acc;
+        case "ALU":
+          return sum & 255;
+        case "STACK":
+          return stackMemory[registers.sp];
+        case "SP":
+          return registers.sp;
+        case "FRAME":
+          return (registers.sp + registers.opr) & 255;
+        case "VECTOR":
+          return INTERRUPT_VECTOR;
+        case "KEY":
+          return registers.key;
+      }
     };
-    const bus = busDriver ? busValues[busDriver]() : null;
+    const bus = busDriver ? readBus(busDriver) : null;
     if (bus === null && control.some((signal) => BUS_READERS.includes(signal)))
       throw new Error(`Nothing drives the bus at T${t}.`);
     const fault = inRam

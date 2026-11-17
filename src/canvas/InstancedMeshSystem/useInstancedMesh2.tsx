@@ -73,6 +73,7 @@ export const useInstancedMesh2 = ({
     instancedMesh2.removeInstances(...indicesToRemove);
   };
 
+  // biome-ignore lint/correctness/noComponentHookFactories: callers rely on a fresh mesh per render (their effects re-add every position through the new addPositions); a stable component would duplicate instances. Needs a tested refactor of the dungeon and chunk scenes.
   const InstancedMesh = () => {
     // biome-ignore lint/correctness/useExhaustiveDependencies: verify dependency list manually
     useEffect(() => {

@@ -23,6 +23,7 @@ function chapterDemo<Props extends object>(
     </div>
   );
   const Component = dynamic<Props>(load, { ssr: false, loading: () => placeholder });
+  // biome-ignore lint/correctness/noComponentHookFactories: chapterDemo only runs at module level, once per entry of COMPUTER_MDX_DEMOS, so each ChapterDemo keeps one identity.
   return function ChapterDemo(props: Props) {
     return (
       <div className="not-prose" data-computer-embed={wide ? "wide" : "inline"}>

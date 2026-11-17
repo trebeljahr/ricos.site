@@ -101,6 +101,11 @@ const FollowCamera = ({
 
 const oneShot = new Set<AnimationName>([animationSet.jump, animationSet.jumpLand]);
 
+// Jump_Land opens with 0.4 s of the fall itself, with the hips about 2 m away
+// from where Fall_Idle holds them. Started at 0, the body swings out and back
+// on touchdown. Start it where the feet reach the ground.
+const startTime: Partial<Record<AnimationName, number>> = { [animationSet.jumpLand]: 0.4 };
+
 /**
  * The 1.x animation rules. ecctrl 2.x's own resolver shows JUMP_START and
  * JUMP_LAND for a single frame; 1.x played them through once.
@@ -155,6 +160,7 @@ const CharacterAnimation = ({
 
     if (oneShot.has(current)) {
       action.reset().fadeIn(0.2).setLoop(LoopOnce, 0).play();
+      action.time = startTime[current] ?? 0;
       action.clampWhenFinished = true;
     } else {
       action.reset().fadeIn(0.2).play();

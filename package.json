@@ -168,7 +168,7 @@
     "yuka": "^0.7.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.14",
+    "@biomejs/biome": "^2.6.6",
     "@r4ai/remark-callout": "^0.6.2",
     "@rehype-pretty/transformers": "^0.13.2",
     "@shikijs/transformers": "^4.4.3",

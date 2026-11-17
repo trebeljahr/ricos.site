@@ -124,7 +124,7 @@
     "date-fns": "4.1.0",
     "delaunator": "^5.1.0",
     "diff": "^9.0.0",
-    "ecctrl": "^1.0.97",
+    "ecctrl": "^2.0.2",
     "fast-2d-poisson-disk-sampling": "^1.0.3",
     "fuse.js": "^7.5.0",
     "fuzzysort": "^4.0.2",

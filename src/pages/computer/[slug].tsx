@@ -1,6 +1,7 @@
 import Layout from "@components/Layout";
 import { MDXContent } from "@components/MDXContent";
 import Header, { PageMain } from "@components/PostHeader";
+import { useReadingPosition } from "@hooks/useReadingPosition";
 import type { ComputerChapter } from "@velite";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -55,6 +56,7 @@ function NeighbourLink({ neighbour, label }: { neighbour: Neighbour | null; labe
 
 export default function ComputerChapterPage({ chapter, prev, next }: Props) {
   const Content = chapter.hasDemos ? ChapterMdxContent : MDXContent;
+  useReadingPosition(chapter.slug);
   return (
     <Layout
       title={chapter.title}

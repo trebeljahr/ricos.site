@@ -1,6 +1,7 @@
 import Layout from "@components/Layout";
 import { NewsletterForm } from "@components/NewsletterForm";
 import Header, { PageMain } from "@components/PostHeader";
+import { useReadingState } from "@hooks/useReadingPosition";
 import type { ComputerChapter } from "@velite";
 import Link from "next/link";
 import { type ComputerDemoSlug, computerDemos, publicComputerDemos } from "../../lib/computerDemos";
@@ -16,14 +17,24 @@ const PARTS = [
   { part: 8, title: "Manufacturing", question: "How does all of this get built?" },
 ];
 
-type PublishedChapter = Pick<ComputerChapter, "number" | "title" | "link" | "part"> & {
+type PublishedChapter = Pick<ComputerChapter, "slug" | "number" | "title" | "link" | "part"> & {
   summary: string | null;
 };
 
 const demoTitle = (slug: ComputerDemoSlug) =>
   computerDemos.find((demo) => demo.slug === slug)?.title ?? slug;
 
-function ListRow({ href, title, blurb }: { href: string; title: string; blurb: string | null }) {
+function ListRow({
+  href,
+  title,
+  blurb,
+  visited = false,
+}: {
+  href: string;
+  title: string;
+  blurb: string | null;
+  visited?: boolean;
+}) {
   return (
     <Link
       href={href}
@@ -32,6 +43,11 @@ function ListRow({ href, title, blurb }: { href: string; title: string; blurb: s
       <span>
         <strong className="block text-xl font-semibold text-gray-950 group-hover:text-inherit dark:text-white">
           {title}
+          {visited && (
+            <span className="ml-tight text-base font-normal text-gray-500 group-hover:text-inherit">
+              ✓<span className="sr-only"> visited</span>
+            </span>
+          )}
         </strong>
         {blurb && (
           <span className="mt-hair block text-gray-600 group-hover:text-inherit dark:text-gray-400">
@@ -47,6 +63,8 @@ function ListRow({ href, title, blurb }: { href: string; title: string; blurb: s
 }
 
 export default function ComputerSeriesHome({ chapters }: { chapters: PublishedChapter[] }) {
+  const reading = useReadingState();
+  const lastChapter = chapters.find((chapter) => chapter.slug === reading.last);
   return (
     <Layout
       title="How computers work"
@@ -69,9 +87,22 @@ export default function ComputerSeriesHome({ chapters }: { chapters: PublishedCh
           <>
             <h2>Read the first chapter</h2>
             <p>This is an early version, and I am still revising it.</p>
+            {lastChapter && (
+              <p>
+                <Link href={lastChapter.link}>
+                  Continue: {lastChapter.number} {lastChapter.title}
+                </Link>
+              </p>
+            )}
             <div className="not-prose border-t border-gray-300 dark:border-gray-700">
-              {chapters.map(({ link, number, title, summary }) => (
-                <ListRow key={link} href={link} title={`${number} ${title}`} blurb={summary} />
+              {chapters.map(({ slug, link, number, title, summary }) => (
+                <ListRow
+                  key={link}
+                  href={link}
+                  title={`${number} ${title}`}
+                  blurb={summary}
+                  visited={slug in reading.chapters}
+                />
               ))}
             </div>
           </>
@@ -130,7 +161,8 @@ export async function getStaticProps() {
   const chapters: PublishedChapter[] = loadVeliteData<ComputerChapter[]>("computerChapters.json")
     .filter((chapter) => chapter.published)
     .sort((a, b) => a.order - b.order)
-    .map(({ number, title, link, part, summary }) => ({
+    .map(({ slug, number, title, link, part, summary }) => ({
+      slug,
       number,
       title,
       link,

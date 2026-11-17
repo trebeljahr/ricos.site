@@ -30,7 +30,7 @@ export default function Page({ seo }: { seo: SeoInfo | null }) {
   };
   return (
     <ThreeFiberLayout seoInfo={seoInfo}>
-      <Physics debug timeStep="vary">
+      <Physics debug>
         <Lights />
         <Sky />
         <EcctrlController position={[0, 10, 5]} />

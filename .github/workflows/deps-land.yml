@@ -1,0 +1,166 @@
+# Dependency autopilot: lands the branches that Claude on the hq box pushes.
+# The box scans GitHub's main every morning, a Claude session applies the
+# updates on deps/<date> and pushes the branch. This workflow runs the repo's
+# checks on it, then fast-forwards main (never a merge, never a force push) and
+# starts build-and-deploy, because a push made with GITHUB_TOKEN starts no push
+# workflows. When main moved meanwhile it rebases onto main, pushes the result
+# as a new deps/ branch and runs itself again on it, so nothing lands untested.
+# deps/<date>-major branches only run the checks; they land when Rico says so
+# (hq: `deps-state land <repo> <date>`, which dispatches this with land=true).
+# No pull requests. The box reads the outcome from this workflow's runs.
+name: deps-land
+run-name: deps-land ${{ inputs.branch || github.ref_name }}
+
+on:
+  push:
+    branches: ["deps/**"]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: deps/ branch to check (and land)
+        required: true
+      land:
+        description: land it after the checks
+        type: boolean
+        default: true
+
+concurrency:
+  group: deps-land-${{ inputs.branch || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  target:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.t.outputs.branch }}
+      sha: ${{ steps.t.outputs.sha }}
+      land: ${{ steps.t.outputs.land }}
+    steps:
+      - id: t
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          IN_BRANCH: ${{ inputs.branch }}
+          IN_LAND: ${{ inputs.land }}
+          REF_NAME: ${{ github.ref_name }}
+          PUSH_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = push ]; then
+            branch=$REF_NAME; sha=$PUSH_SHA
+            case "$branch" in *-major) land=false ;; *) land=true ;; esac
+          else
+            branch=$IN_BRANCH; land=$IN_LAND
+            sha=$(gh api "repos/$REPO/git/ref/heads/$branch" --jq .object.sha)
+          fi
+          case "$branch" in deps/*) ;; *) echo "only deps/ branches"; exit 1 ;; esac
+          { echo "branch=$branch"; echo "sha=$sha"; echo "land=$land"; } >> "$GITHUB_OUTPUT"
+          echo "$branch at $sha, land=$land"
+
+  # Checks: what build-and-deploy.yml runs before it uploads, plus lint.
+  # The build needs the private Notes content and the production env key,
+  # so it runs here with the repo's secrets, like the deploy does.
+  build:
+    needs: [target]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out the branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+
+      - name: Check out the Notes content
+        uses: actions/checkout@v7
+        with:
+          repository: trebeljahr/Notes
+          ref: main
+          path: src/content/Notes
+          ssh-key: ${{ secrets.NOTES_DEPLOY_KEY }}
+          persist-credentials: false
+
+      # Private writing that only `next dev` reads.
+      - name: Drop Notes/texts
+        run: rm -rf src/content/Notes/texts
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: "0"
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Build the static export
+        env:
+          DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+          COMMIT_SHA: ${{ needs.target.outputs.sha }}
+          NEXT_TELEMETRY_DISABLED: "1"
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          set -euo pipefail
+          test -n "$DOTENV_PRIVATE_KEY_PRODUCTION" || {
+            echo "::error::DOTENV_PRIVATE_KEY_PRODUCTION is not set."; exit 1; }
+          pnpm dlx @dotenvx/dotenvx@1.64.0 run -f .env.production -- pnpm build
+
+      - name: Check the API Worker
+        run: |
+          pnpm api:typecheck
+          pnpm exec vitest run workers
+
+  land:
+    needs: [target, build]
+    if: needs.target.outputs.land == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Fast-forward main, or rebase and test again
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ needs.target.outputs.branch }}
+          SHA: ${{ needs.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch -q origin main "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH"
+          if [ "$(git rev-parse "origin/$BRANCH")" != "$SHA" ]; then
+            echo "$BRANCH moved after the checks; the run for the new tip lands it"; exit 0
+          fi
+          if git merge-base --is-ancestor origin/main "$SHA"; then
+            # Plain push: GitHub refuses it unless it is a fast-forward.
+            git push origin "$SHA:refs/heads/main"
+            echo "main -> $SHA"
+            gh workflow run deploy.yml --ref main
+            git push -q origin --delete "$BRANCH" || true
+            exit 0
+          fi
+          base=${BRANCH%-rebased*}
+          n=$(( $(git ls-remote --heads origin "$base-rebased*" | wc -l) + 1 ))
+          next="$base-rebased$n"
+          git checkout -q -B land "$SHA"
+          if ! git rebase -q origin/main; then
+            git rebase --abort || true
+            echo "::error::$BRANCH does not rebase onto main cleanly"; exit 1
+          fi
+          git push -q origin "HEAD:refs/heads/$next"
+          gh workflow run deps-land.yml --ref main -f branch="$next" -f land=true
+          git push -q origin --delete "$BRANCH" || true
+          echo "main moved: rebased onto $(git rev-parse --short origin/main) as $next, checks run again"

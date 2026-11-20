@@ -61,9 +61,10 @@ jobs:
           { echo "branch=$branch"; echo "sha=$sha"; echo "land=$land"; } >> "$GITHUB_OUTPUT"
           echo "$branch at $sha, land=$land"
 
-  # Checks: what build-and-deploy.yml runs before it uploads, plus lint.
-  # The build needs the private Notes content and the production env key,
-  # so it runs here with the repo's secrets, like the deploy does.
+  # Checks without secrets: the branch runs package versions the box just pulled in,
+  # so no repo secret (Notes deploy key, production env key) may reach it. The full
+  # build with Notes and the production key runs in build-and-deploy after landing;
+  # if it fails there, nothing goes live.
   build:
     needs: [target]
     runs-on: ubuntu-latest
@@ -74,19 +75,6 @@ jobs:
         with:
           ref: ${{ needs.target.outputs.sha }}
           persist-credentials: false
-
-      - name: Check out the Notes content
-        uses: actions/checkout@v7
-        with:
-          repository: trebeljahr/Notes
-          ref: main
-          path: src/content/Notes
-          ssh-key: ${{ secrets.NOTES_DEPLOY_KEY }}
-          persist-credentials: false
-
-      # Private writing that only `next dev` reads.
-      - name: Drop Notes/texts
-        run: rm -rf src/content/Notes/texts
 
       - uses: pnpm/action-setup@v6
 
@@ -101,18 +89,6 @@ jobs:
 
       - name: Lint
         run: pnpm run lint
-
-      - name: Build the static export
-        env:
-          DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
-          COMMIT_SHA: ${{ needs.target.outputs.sha }}
-          NEXT_TELEMETRY_DISABLED: "1"
-          NODE_OPTIONS: --max-old-space-size=6144
-        run: |
-          set -euo pipefail
-          test -n "$DOTENV_PRIVATE_KEY_PRODUCTION" || {
-            echo "::error::DOTENV_PRIVATE_KEY_PRODUCTION is not set."; exit 1; }
-          pnpm dlx @dotenvx/dotenvx@1.64.0 run -f .env.production -- pnpm build
 
       - name: Check the API Worker
         run: |

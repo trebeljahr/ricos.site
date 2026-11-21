@@ -95,10 +95,10 @@ venv/
 # needlestack classification prompts, answered by agents and thrown away
 .needles-batches/
 
-# Daily word totals for /dev/writing
+# Daily word totals from the old /dev/writing page
 .writing-progress.json
 
-# Which study resources are done, for /dev/writing
+# Study ticks from the old /dev/writing page (Desk's vault:install copies them)
 .study-progress.json
 
 # hatchkit: secret files (NEVER commit)

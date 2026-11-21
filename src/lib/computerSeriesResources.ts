@@ -3,8 +3,8 @@
 // catalog of resources (title, address, kind, author, length, where it came
 // from) and, per chapter slug, which of them to study first and which go
 // deeper. Chapters are keyed by slug, so renumbering a chapter changes nothing
-// here. Pure functions only; /dev/writing and pnpm computer:resources read the
-// file.
+// here. Pure functions only; pnpm computer:resources and the chapter pages read
+// the file, and Desk's `pnpm vault:install` copies it into the Notes vault.
 //
 // A resource's own fields are plain metadata, fit for a "further reading" list
 // on a chapter page. The notes on a link and the questions are study aids for
@@ -87,8 +87,8 @@ function resolve(links: StudyLink[], catalog: Catalog): StudyItem[] {
   });
 }
 
-/** The same plan with today's ticks: which items are done, and what is left of the core. */
-export function withDone(plan: StudyPlan, done: StudyDone): StudyPlan {
+/** The same plan with ticks: which items are done, and what is left of the core. */
+function withDone(plan: StudyPlan, done: StudyDone): StudyPlan {
   const mark = ({ done: _was, ...item }: StudyItem): StudyItem =>
     done[item.id] ? { ...item, done: done[item.id] } : item;
   const core = plan.core.map(mark);
@@ -140,14 +140,6 @@ export function furtherReading(slug: string, catalog: Catalog): (Resource & { id
     seen.add(id);
     return [{ ...resource, id }];
   });
-}
-
-/** Marks a resource studied today, or clears the mark. Returns a new record. */
-export function setStudied(done: StudyDone, id: string, studied: boolean, today: string) {
-  const next = { ...done };
-  if (studied) next[id] = next[id] ?? today;
-  else delete next[id];
-  return next;
 }
 
 /** "1 h 05 min", "16 min". */

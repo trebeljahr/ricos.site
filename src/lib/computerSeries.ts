@@ -1,6 +1,7 @@
 // Writing progress for the "how computers work" series: one Markdown file per
 // chapter or aside in src/content/Notes/computer/, one idea per heading. Pure
-// functions only; the dev page at /dev/writing does the file reading.
+// functions only. The writing dashboard that used them is Desk's Writing tab
+// now (~/projects/obsidian-desk-plugin, which keeps its own copy of this file).
 
 import { SECTION_ESTIMATES } from "./computerSeriesEstimates";
 import { stripNav } from "./computerSeriesLinks";

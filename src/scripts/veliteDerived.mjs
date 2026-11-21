@@ -83,23 +83,18 @@ export async function generateSearchIndexAndBacklinks() {
   );
 }
 
-// Dev live reload stamps: stamp.json is imported by src/lib/loadVeliteData.ts,
-// writing.json by src/pages/dev/writing.tsx. They must exist before Turbopack
-// first compiles a page that imports one; after that
-// src/scripts/dev/watchVeliteHmr.ts rewrites the first on every Velite rebuild
-// and the second when a chapter file changes.
-const VELITE_HMR_STAMPS = [".velite/hmr/stamp.json", ".velite/hmr/writing.json"].map((file) =>
-  resolve(file),
-);
+// Dev live reload stamp, imported by src/lib/loadVeliteData.ts. It must exist
+// before Turbopack first compiles a page that imports it; after that
+// src/scripts/dev/watchVeliteHmr.ts rewrites it on every Velite rebuild.
+const VELITE_HMR_STAMP = resolve(".velite/hmr/stamp.json");
 
 export async function writeVeliteHmrStamp() {
-  await mkdir(dirname(VELITE_HMR_STAMPS[0]), { recursive: true });
-  const stamp = JSON.stringify({ updatedAt: Date.now() });
-  await Promise.all(VELITE_HMR_STAMPS.map((file) => writeFile(file, stamp)));
+  await mkdir(dirname(VELITE_HMR_STAMP), { recursive: true });
+  await writeFile(VELITE_HMR_STAMP, JSON.stringify({ updatedAt: Date.now() }));
 }
 
 export async function veliteHmrStampExists() {
-  return Promise.all(VELITE_HMR_STAMPS.map((file) => access(file))).then(
+  return access(VELITE_HMR_STAMP).then(
     () => true,
     () => false,
   );

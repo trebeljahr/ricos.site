@@ -5,10 +5,8 @@ import {
   checkCatalog,
   formatMinutes,
   furtherReading,
-  setStudied,
   studyMarkdown,
   studyPlan,
-  withDone,
 } from "./computerSeriesResources";
 
 const catalog: Catalog = {
@@ -74,30 +72,11 @@ describe("studyPlan", () => {
   });
 });
 
-describe("withDone", () => {
-  it("applies new ticks to a plan and drops the ones taken back", () => {
-    const plan = studyPlan("memory", catalog, { "yt-a": "2026-10-13" });
-    if (!plan) throw new Error("no plan");
-    const later = withDone(plan, { "yt-b": "2026-10-14" });
-    expect(later.core.map((item) => item.done)).toEqual([undefined, "2026-10-14", undefined]);
-    expect(later).toMatchObject({ coreDone: 1, minutesLeft: 12 });
-  });
-});
-
 describe("furtherReading", () => {
   it("lists a chapter's resources without study notes, only those with an address", () => {
     const list = furtherReading("memory", catalog);
     expect(list.map((r) => r.id)).toEqual(["yt-a", "yt-b", "code"]);
     expect(list.every((r) => !("note" in r) && !("done" in r))).toBe(true);
-  });
-});
-
-describe("setStudied", () => {
-  it("marks, keeps the first date, and clears", () => {
-    const once = setStudied({}, "yt-a", true, "2026-10-13");
-    expect(once).toEqual({ "yt-a": "2026-10-13" });
-    expect(setStudied(once, "yt-a", true, "2026-10-20")).toEqual({ "yt-a": "2026-10-13" });
-    expect(setStudied(once, "yt-a", false, "2026-10-20")).toEqual({});
   });
 });
 

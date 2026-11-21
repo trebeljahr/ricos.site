@@ -70,7 +70,7 @@ export function indexNote(entries: IndexEntry[]): string {
     "# How computers work",
     "",
     "Written by `pnpm computer:links` in reading order (`order` in each file); edits here get overwritten.",
-    "The outline is [[introduction]]. Progress is at /dev/writing on the dev server.",
+    "The outline is [[introduction]]. Progress is in Desk's Writing tab.",
   ];
   let folder = "";
   for (const entry of entries) {

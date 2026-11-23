@@ -6,7 +6,7 @@ import MantaRayModel from "@r3f/AllModels/fish_pack/Ray";
 import Whale from "@r3f/AllModels/fish_pack/Whale";
 import { useKelp } from "@r3f/AllModels/Kelp4";
 import { PointerLockControls, Sky, useKeyboardControls } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
+import { type RootState, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { folder, Leva, useControls } from "leva";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -30,6 +30,7 @@ import {
 import CustomShaderMaterial from "three-custom-shader-material";
 import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
 import { mergeBufferGeometries } from "three-stdlib";
+import { type SpriteBuffers, SpriteParticles } from "./SpriteParticles";
 import { UnderwaterEffect, type UnderwaterEffectParams } from "./UnderwaterEffect";
 import {
   CAMERA_VIEWPOINTS,
@@ -570,89 +571,92 @@ const SPRAY_ANCHORS = [
   { x: 0.0, z: -32.0, r: 1.8 }, // Pillar 5
 ] as const;
 
-function ObstacleWaveSpray({ waveHeight }: { waveHeight: number }) {
-  const sprayMeshRef = useRef<InstancedMesh>(null!);
-  const dummy = useMemo(() => new Object3D(), []);
-  const sprayCount = 240;
+function ObstacleWaveSpray({
+  waveHeight,
+  sunDirection,
+}: {
+  waveHeight: number;
+  sunDirection: Vector3;
+}) {
+  const sprayCount = 720;
 
-  const particles = useMemo(
-    () =>
-      Array.from({ length: sprayCount }, (_, i) => {
-        const anchor = SPRAY_ANCHORS[i % SPRAY_ANCHORS.length];
-        const angle = ((i * 1.6180339) % 1) * Math.PI * 2;
-        return {
-          anchor,
-          angle,
-          phaseOffset: (i / sprayCount) * 3.5,
-          cycleDuration: 1.25 + (i % 7) * 0.16,
-          outSpeed: 1.4 + (i % 5) * 0.45,
-          upSpeed: 3.2 + (i % 6) * 0.65,
-          baseSize: 0.14 + (i % 5) * 0.06,
-        };
-      }),
-    [],
+  const particles = useMemo(() => {
+    // Small deterministic hash so the spray looks the same on every load
+    const rand = (i: number, salt: number) => {
+      const v = Math.sin(i * 127.1 + salt * 311.7) * 43758.5453;
+      return v - Math.floor(v);
+    };
+    return Array.from({ length: sprayCount }, (_, i) => {
+      const anchor = SPRAY_ANCHORS[i % SPRAY_ANCHORS.length];
+      // Each anchor throws a few bursts; particles of one burst share timing and a side of the rock
+      const burst = Math.floor(rand(i, 1) * 5);
+      const burstAngle = rand(anchor.x * 3.1 + burst, 2) * Math.PI * 2;
+      const mist = rand(i, 3) > 0.62;
+      return {
+        anchor,
+        angle: burstAngle + (rand(i, 4) - 0.5) * 1.9,
+        phaseOffset: rand(anchor.z * 1.7 + burst, 5) * 6 + rand(i, 6) * 0.35,
+        cycleDuration: 2.1 + rand(anchor.x + burst, 7) * 1.6,
+        airTime: mist ? 1.5 + rand(i, 8) * 0.7 : 0.75 + rand(i, 8) * 0.75,
+        outSpeed: mist ? 0.5 + rand(i, 9) * 0.9 : 0.9 + rand(i, 9) * 2.6,
+        upSpeed: mist ? 1.6 + rand(i, 10) * 1.6 : 2.6 + rand(i, 10) * 4.2,
+        gravity: mist ? 2.4 : 9.0,
+        size: mist ? 0.26 + rand(i, 11) * 0.4 : 0.045 + rand(i, 11) * 0.085,
+        mist,
+      };
+    });
+  }, []);
+
+  const update = useCallback(
+    ({ positions, sizes, fades }: SpriteBuffers, state: RootState) => {
+      const t = state.clock.elapsedTime;
+      const waveScale = Math.max(0.3, waveHeight);
+
+      for (let i = 0; i < sprayCount; i++) {
+        const p = particles[i];
+        const localTime = (t + p.phaseOffset) % p.cycleDuration;
+        if (localTime > p.airTime) {
+          sizes[i] = 0;
+          continue;
+        }
+        const life = localTime / p.airTime; // 0..1
+
+        const nx = Math.cos(p.angle);
+        const nz = Math.sin(p.angle);
+        const baseX = p.anchor.x + nx * p.anchor.r;
+        const baseZ = p.anchor.z + nz * p.anchor.r;
+
+        // Wave height at the rock when this burst left the water: a crest throws spray, a trough none
+        const launchWave = evaluateWaveHeight(baseX, baseZ, t - localTime, waveScale);
+        const surge = Math.min(1.5, Math.max(0, launchWave / waveScale + 0.35));
+        if (surge < 0.12) {
+          sizes[i] = 0;
+          continue;
+        }
+        const power = surge * Math.min(1.4, 0.55 + 0.45 * waveScale);
+
+        const radialDist = p.outSpeed * localTime * power;
+        const rise = (p.upSpeed * power - 0.5 * p.gravity * localTime) * localTime;
+
+        positions[i * 3] = baseX + nx * radialDist;
+        positions[i * 3 + 1] = WATER_LEVEL + launchWave - 0.05 + rise;
+        positions[i * 3 + 2] = baseZ + nz * radialDist;
+
+        if (p.mist) {
+          // Mist swells as it drifts, then thins out
+          sizes[i] = p.size * (0.45 + 1.1 * life) * (0.6 + 0.4 * power);
+          fades[i] = Math.min(1, life * 8) * (1 - life) ** 0.7;
+        } else {
+          sizes[i] = p.size * (1 - 0.35 * life);
+          fades[i] = Math.min(1, life * 12) * Math.min(1, (1 - life) * 3);
+        }
+      }
+    },
+    [particles, waveHeight],
   );
 
-  useFrame((state) => {
-    if (!sprayMeshRef.current) return;
-    const t = state.clock.elapsedTime;
-    const waveScale = Math.max(0.3, waveHeight);
-
-    for (let i = 0; i < sprayCount; i++) {
-      const p = particles[i];
-      const localTime = (t + p.phaseOffset) % p.cycleDuration;
-      const life = localTime / p.cycleDuration; // 0..1
-
-      const nx = Math.cos(p.angle);
-      const nz = Math.sin(p.angle);
-      const baseX = p.anchor.x + nx * p.anchor.r;
-      const baseZ = p.anchor.z + nz * p.anchor.r;
-
-      // Evaluate wave crest height at the obstacle impact point
-      const waveY = WATER_LEVEL + evaluateWaveHeight(baseX, baseZ, t - localTime * 0.4, waveScale);
-      const waveSurge = Math.max(0.25, (waveY - WATER_LEVEL) / waveScale + 0.65);
-
-      // Ballistic splash trajectory: x(t) = r + v_out * dt, y(t) = waveY + v_up * dt - 0.5 * g * dt^2
-      const radialDist = p.outSpeed * localTime * waveSurge;
-      const px = baseX + nx * radialDist;
-      const pz = baseZ + nz * radialDist;
-      const py =
-        waveY -
-        0.15 +
-        (p.upSpeed * localTime - 4.9 * localTime * localTime) *
-          waveSurge *
-          Math.min(1.4, waveScale);
-
-      // Expand into mist plume then dissolve back into the surf
-      const sizeEnv = Math.sin(life * Math.PI) * waveSurge * Math.min(1.3, waveScale);
-      const sc = Math.max(0.001, p.baseSize * sizeEnv * (1.0 + life * 1.4));
-
-      dummy.position.set(px, py, pz);
-      dummy.scale.set(sc * 1.25, sc * 0.9, sc * 1.25);
-      dummy.rotation.set(life * 2.0, p.angle, life * 1.5);
-      dummy.updateMatrix();
-      sprayMeshRef.current.setMatrixAt(i, dummy.matrix);
-    }
-
-    sprayMeshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
   return (
-    <instancedMesh
-      ref={sprayMeshRef}
-      args={[undefined, undefined, sprayCount]}
-      frustumCulled={false}
-    >
-      <dodecahedronGeometry args={[1, 1]} />
-      <meshStandardMaterial
-        color="#f2fbff"
-        emissive="#c4ecff"
-        emissiveIntensity={0.35}
-        roughness={0.35}
-        transparent
-        opacity={0.78}
-      />
-    </instancedMesh>
+    <SpriteParticles count={sprayCount} kind="spray" sunDirection={sunDirection} update={update} />
   );
 }
 
@@ -854,26 +858,28 @@ function SwimmingMarineLife() {
 // ─── Rising Bubbles & Marine Snow Plankton ──────────────────────
 
 function BubblesAndMarineSnow() {
-  const bubblesRef = useRef<InstancedMesh>(null!);
-  const snowRef = useRef<InstancedMesh>(null!);
-  const dummy = useMemo(() => new Object3D(), []);
-
-  const bubbleCount = 65;
-  const snowCount = 160;
+  const bubbleCount = 150;
+  const snowCount = 260;
 
   const bubbles = useMemo(
     () =>
       Array.from({ length: bubbleCount }, (_, i) => {
-        const x = (((i * 37) % 100) - 50) * 0.65;
-        const z = (((i * 53) % 100) - 50) * 0.65;
+        // Bubbles rise in loose columns from vents on the seabed
+        const vent = i % 14;
+        const ventX = (((vent * 37) % 100) - 50) * 0.65;
+        const ventZ = (((vent * 53) % 100) - 50) * 0.65;
+        const x = ventX + (((i * 29) % 17) - 8) * 0.09;
+        const z = ventZ + (((i * 43) % 19) - 9) * 0.09;
         const floorY = sampleSeabedHeight(x, z);
+        const size = 0.035 + ((i * 7) % 11) * 0.011;
         return {
           x,
           z,
           floorY,
-          y: Math.max(floorY + 1.0, 14 + ((i * 19) % 28)),
-          speed: 1.4 + (i % 7) * 0.35,
-          size: 0.045 + (i % 5) * 0.024,
+          y: floorY + ((i * 19) % 97) * 0.01 * Math.max(1, WATER_LEVEL - floorY),
+          // Bigger bubbles rise faster
+          speed: 0.9 + size * 14,
+          size,
           phase: i * 1.1,
         };
       }),
@@ -890,73 +896,54 @@ function BubblesAndMarineSnow() {
           x,
           z,
           y: Math.min(WATER_LEVEL - 1.5, Math.max(floorY + 1.2, 8 + ((i * 17) % 35))),
-          size: 0.025 + (i % 4) * 0.012,
+          size: 0.03 + (i % 4) * 0.012,
           phase: i * 0.7,
         };
       }),
     [],
   );
 
-  useFrame((state, delta) => {
-    const t = state.clock.elapsedTime;
-    const dt = Math.min(delta, 0.1);
-
-    if (bubblesRef.current) {
+  const updateBubbles = useCallback(
+    ({ positions, sizes, fades }: SpriteBuffers, state: RootState, delta: number) => {
+      const t = state.clock.elapsedTime;
+      const dt = Math.min(delta, 0.1);
       for (let i = 0; i < bubbleCount; i++) {
         const b = bubbles[i];
         b.y += b.speed * dt;
-        if (b.y > WATER_LEVEL - 0.4) {
-          b.y = Math.min(WATER_LEVEL - 2.0, b.floorY + 0.8);
-        }
-        dummy.position.set(
-          b.x + Math.sin(t * 2.4 + b.phase) * 0.3,
-          b.y,
-          b.z + Math.cos(t * 1.9 + b.phase) * 0.3,
-        );
-        dummy.scale.setScalar(b.size);
-        dummy.updateMatrix();
-        bubblesRef.current.setMatrixAt(i, dummy.matrix);
+        const surfaceY = WATER_LEVEL - 0.6;
+        if (b.y > surfaceY) b.y = b.floorY + 0.3;
+        const climbed = b.y - b.floorY;
+        // The wobble widens as the bubble climbs
+        const wobble = 0.08 + Math.min(0.3, climbed * 0.02);
+        positions[i * 3] = b.x + Math.sin(t * 2.4 + b.phase) * wobble;
+        positions[i * 3 + 1] = b.y;
+        positions[i * 3 + 2] = b.z + Math.cos(t * 1.9 + b.phase) * wobble;
+        // Pressure drops on the way up, so the bubble grows
+        sizes[i] = b.size * 2 * (1 + Math.min(0.6, climbed * 0.03));
+        fades[i] = Math.min(1, climbed * 1.5) * Math.min(1, (surfaceY - b.y) * 1.2);
       }
-      bubblesRef.current.instanceMatrix.needsUpdate = true;
-    }
+    },
+    [bubbles],
+  );
 
-    if (snowRef.current) {
+  const updateSnow = useCallback(
+    ({ positions, sizes }: SpriteBuffers, state: RootState) => {
+      const t = state.clock.elapsedTime;
       for (let i = 0; i < snowCount; i++) {
         const s = snow[i];
-        dummy.position.set(
-          s.x + Math.sin(t * 0.45 + s.phase) * 0.7,
-          s.y + Math.cos(t * 0.35 + s.phase) * 0.4,
-          s.z + Math.sin(t * 0.4 + s.phase * 1.3) * 0.7,
-        );
-        dummy.scale.setScalar(s.size);
-        dummy.updateMatrix();
-        snowRef.current.setMatrixAt(i, dummy.matrix);
+        positions[i * 3] = s.x + Math.sin(t * 0.45 + s.phase) * 0.7;
+        positions[i * 3 + 1] = s.y + Math.cos(t * 0.35 + s.phase) * 0.4;
+        positions[i * 3 + 2] = s.z + Math.sin(t * 0.4 + s.phase * 1.3) * 0.7;
+        sizes[i] = s.size * 2;
       }
-      snowRef.current.instanceMatrix.needsUpdate = true;
-    }
-  });
+    },
+    [snow],
+  );
 
   return (
     <group>
-      <instancedMesh ref={bubblesRef} args={[undefined, undefined, bubbleCount]}>
-        <sphereGeometry args={[1, 10, 10]} />
-        <meshStandardMaterial
-          color="#d8f6ff"
-          emissive="#62d4f5"
-          emissiveIntensity={0.45}
-          roughness={0.08}
-          metalness={0.1}
-        />
-      </instancedMesh>
-      <instancedMesh ref={snowRef} args={[undefined, undefined, snowCount]}>
-        <sphereGeometry args={[1, 6, 6]} />
-        <meshStandardMaterial
-          color="#a8fff0"
-          emissive="#48dbb8"
-          emissiveIntensity={0.55}
-          roughness={0.25}
-        />
-      </instancedMesh>
+      <SpriteParticles count={bubbleCount} kind="bubble" update={updateBubbles} />
+      <SpriteParticles count={snowCount} kind="snow" update={updateSnow} />
     </group>
   );
 }
@@ -1279,11 +1266,14 @@ export default function UnderwaterShaderDemo() {
       />
 
       <SeabedAndArchitecture />
-      <ObstacleWaveSpray waveHeight={controls.waveHeight} />
+      <ObstacleWaveSpray waveHeight={controls.waveHeight} sunDirection={sunDirection} />
       <SwimmingMarineLife />
       <BubblesAndMarineSnow />
 
-      <EffectComposer multisampling={0} depthBuffer>
+      {/* mergeMode "none": Bloom must read the water shader's output. Merged into one pass it
+          reads the raw render instead, and the bright sky behind open water blooms the
+          underwater horizon to white. */}
+      <EffectComposer multisampling={0} depthBuffer mergeMode="none">
         <UnderwaterEffect params={effectParams} />
         <Bloom
           mipmapBlur

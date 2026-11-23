@@ -3,7 +3,7 @@
 // Features:
 // - Analytical 10-wave Gerstner/Trochoidal wave spectrum with exact band-limited derivatives (zero pixelation)
 // - Sea of Thieves translucent jade/turquoise wave-crest subsurface scattering (SSS) & deep trough contrast
-// - Lacy cellular bubble-web foam on wave crests + shoaling surf & breaking splash rings around obstacles
+// - Wind-streaked noise foam with eroding holes on wave crests + shoaling surf & breaking splash rings around obstacles
 // - Wave-height-dependent water opacity / turbidity from above the surface
 // - Energy-conserving Beer-Lambert absorption + Henyey-Greenstein in-scattering (no horizon whiteout)
 // - High-contrast volumetric god-ray light shafts + Snell's window with dispersion & TIR
@@ -84,58 +84,60 @@ float fbmSmooth(vec2 p) {
   return v;
 }
 
-// Sea of Thieves-style lacy cellular bubble web for ocean foam
-// Combines Voronoi bubble ridges at two scales with smooth erosion
-float cellularBubbleWeb(vec2 p) {
+// Round holes of mixed size on a jittered grid: the gaps that open in thinning sea foam.
+// Returns 1 inside a hole. Distance to the nearest point (not cell edges), so there are
+// no straight honeycomb walls.
+float foamHoles(vec2 p) {
   vec2 n = floor(p);
   vec2 f = fract(p);
-  float f1 = 8.0;
-  float f2 = 8.0;
+  float hole = 0.0;
   for (int j = -1; j <= 1; j++) {
     for (int i = -1; i <= 1; i++) {
       vec2 g = vec2(float(i), float(j));
       vec2 o = hash22(n + g);
-      vec2 r = g - f + (0.15 + 0.7 * o);
-      float d = dot(r, r);
-      if (d < f1) {
-        f2 = f1;
-        f1 = d;
-      } else if (d < f2) {
-        f2 = d;
-      }
+      float radius = 0.16 + 0.36 * hash21(n + g + 7.7);
+      float d = length(g + o - f);
+      hole = max(hole, 1.0 - smoothstep(radius * 0.7, radius, d));
     }
   }
-  float edge = sqrt(f2) - sqrt(f1);
-  // Crisp bubble cell walls + soft foam interior
-  return smoothstep(0.28, 0.02, edge);
+  return hole;
 }
 
+// Foam coverage for a given whitecap energy. Noise patches stretched along the wind are
+// eroded by a threshold: little energy leaves torn streaks full of holes, a lot fills in
+// solid whitewater. A domain warp keeps the pattern from repeating or lining up.
 float evaluateLacyFoam(vec2 xz, float rawIntensity, float distToCam, float t) {
   if (rawIntensity <= 0.01) return 0.0;
-  float mipFade = exp(-distToCam * 0.008);
-  vec2 windDrift = vec2(t * 0.45, t * 0.25);
+  float detailFade = exp(-distToCam * 0.012);
+  vec2 drift = vec2(t * 0.32, t * 0.18);
 
-  // Stretch slightly along primary swell direction
-  mat2 stretch = mat2(1.15, -0.25, 0.25, 0.9);
-  vec2 pLarge = stretch * (xz * 0.85 + windDrift);
-  vec2 pSmall = stretch * (xz * 2.6 - windDrift * 0.7);
+  vec2 warp = vec2(
+    smoothNoise(xz * 0.19 + vec2(3.1, t * 0.07)) + 0.5 * smoothNoise(xz * 0.47 + vec2(t * 0.09, 1.7)),
+    smoothNoise(xz * 0.19 + vec2(t * 0.06, 8.7)) + 0.5 * smoothNoise(xz * 0.47 + vec2(6.3, -t * 0.08))
+  ) - 0.75;
+  vec2 p = xz + warp * 3.4;
 
-  float webLarge = cellularBubbleWeb(pLarge);
-  float webSmall = cellularBubbleWeb(pSmall);
-  float streaks = fbmSmooth(xz * vec2(0.45, 1.35) + windDrift * 0.5);
+  // Wind frame: x runs along the primary swell, so patches trail downwind
+  vec2 w = mat2(0.86, -0.51, 0.51, 0.86) * p;
+  float patches = fbmSmooth(w * vec2(0.2, 0.55) + drift * 0.35);
+  float streaks = fbmSmooth(w * vec2(0.45, 1.9) - drift * 0.2 + 11.0);
+  float density = mix(patches, patches * 0.62 + streaks * 0.38, detailFade);
 
-  float combinedWeb = mix(
-    streaks * 0.75,
-    webLarge * 0.65 + webSmall * 0.45 * mipFade,
-    clamp(mipFade * 0.85, 0.2, 0.9)
+  float cover = density + (rawIntensity - 0.36) * 0.9;
+  float foam = smoothstep(0.5, 0.68, cover);
+  if (foam <= 0.001) return 0.0;
+
+  // Holes eat thin foam first; thick foam stays closed
+  float holes = max(
+    foamHoles(p * 1.6 + drift),
+    foamHoles(p * 4.1 - drift * 1.3 + 5.0) * 0.85
   );
+  float thick = smoothstep(0.66, 1.05, cover);
+  foam *= 1.0 - holes * (1.0 - thick) * 0.92 * detailFade;
+  // Far away the holes are smaller than a pixel: keep their average darkening instead
+  foam *= mix(0.62 + 0.38 * thick, 1.0, detailFade);
 
-  // Progressive erosion: low intensity shows only thin lacy bubble rims;
-  // high intensity fills in solid whitewater surf
-  float threshold = clamp(1.05 - rawIntensity, 0.05, 0.98);
-  float lacy = smoothstep(threshold, threshold + 0.28, combinedWeb + rawIntensity * 0.42);
-  float denseCore = smoothstep(0.75, 1.35, rawIntensity);
-  return clamp(mix(lacy, 1.0, denseCore * 0.65), 0.0, 1.0);
+  return clamp(foam, 0.0, 1.0);
 }
 
 // ─── World Position Reconstruction ──────────────────────────────
@@ -843,8 +845,10 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 
   vec3 worldPos = worldPosFromDepth(uv, rawDepth);
   vec3 toWorld = worldPos - cameraPos;
+  // Normalize by the real length: a sky pixel reconstructs to the far plane, not to 1000 m,
+  // and a short view vector inflates the Fresnel term into a pale mirror band.
+  vec3 rd = normalize(toWorld);
   float sceneDist = isSky ? 1000.0 : length(toWorld);
-  vec3 rd = toWorld / max(sceneDist, 1e-4);
 
   vec3 refractedSunDir = normalize(vec3(uSunDir.x * 0.75, max(uSunDir.y, 0.35), uSunDir.z * 0.75));
 
@@ -884,8 +888,8 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     isSky = rawDepth > 0.9995;
     worldPos = worldPosFromDepth(workingUV, rawDepth);
     toWorld = worldPos - cameraPos;
+    rd = normalize(toWorld);
     sceneDist = isSky ? 1000.0 : length(toWorld);
-    rd = toWorld / max(sceneDist, 1e-4);
   }
 
   vec3 baseSceneColor = texture(inputBuffer, workingUV).rgb;

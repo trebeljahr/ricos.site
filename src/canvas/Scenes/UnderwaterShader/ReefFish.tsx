@@ -13,20 +13,103 @@ import { createRng, type SwarmBounds, type SwarmSpecies } from "../Particles/Boi
 import { preloadFishModels, useFishGeometries } from "../Particles/BoidSwarm/useFishGeometry";
 import { CORAL_PATCHES, type CoralPatch } from "./lagoonTerrain";
 
-const FOLDER = "reef_fish";
-
-/** Who lives on the reefs. `share` is the part of all reef fish; `patch` picks the reef. */
+/**
+ * Who lives on the reefs: the three slender fish of the fish pack, repainted.
+ * `colors` goes by the model's material names; `share` is the part of all
+ * reef fish; `patch` picks the reef.
+ */
 const RESIDENTS = [
-  { model: "bluetang", share: 0.2, patch: 0, size: 0.8, speed: 1.5, school: 0.9, roam: 6 },
-  { model: "yellowtang", share: 0.2, patch: 0, size: 0.7, speed: 1.4, school: 0.9, roam: 5.5 },
-  { model: "butterflyfish", share: 0.14, patch: 0, size: 0.6, speed: 1.1, school: 0.4, roam: 5 },
-  { model: "clownfish", share: 0.12, patch: 0, size: 0.5, speed: 0.8, school: 0.3, roam: 3 },
-  { model: "parrotfish", share: 0.06, patch: 0, size: 1.1, speed: 1.2, school: 0.3, roam: 6.5 },
-  { model: "moorishidol", share: 0.1, patch: 1, size: 0.75, speed: 1.2, school: 0.6, roam: 4.5 },
-  { model: "royalgramma", share: 0.1, patch: 1, size: 0.45, speed: 0.9, school: 0.3, roam: 3.5 },
-  { model: "mandarinfish", share: 0.08, patch: 1, size: 0.45, speed: 0.7, school: 0.2, roam: 3 },
+  {
+    name: "blue tang",
+    model: "Fish2",
+    colors: { Body: "#1f5fd0", Front: "#16357f", Fins: "#ffd23f" },
+    share: 0.2,
+    patch: 0,
+    size: 0.8,
+    speed: 1.5,
+    school: 0.9,
+    roam: 6,
+  },
+  {
+    name: "yellow tang",
+    model: "Fish2",
+    colors: { Body: "#ffd632", Front: "#fff0a0", Fins: "#ffbe0b" },
+    share: 0.2,
+    patch: 0,
+    size: 0.7,
+    speed: 1.4,
+    school: 0.9,
+    roam: 5.5,
+  },
+  {
+    name: "butterflyfish",
+    model: "Fish3",
+    colors: { Body: "#ffd84a", Stripes: "#f7f3e3", Outline: "#1d1d1d" },
+    share: 0.14,
+    patch: 0,
+    size: 0.6,
+    speed: 1.1,
+    school: 0.4,
+    roam: 5,
+  },
+  {
+    name: "clownfish",
+    model: "Fish3",
+    colors: { Body: "#ff7a1a", Stripes: "#fff6ea", Outline: "#161616" },
+    share: 0.12,
+    patch: 0,
+    size: 0.5,
+    speed: 0.8,
+    school: 0.3,
+    roam: 3,
+  },
+  {
+    name: "parrotfish",
+    model: "Fish1",
+    colors: { Top: "#1fb8a6", Bottom: "#ff8fb3", Fins: "#2f7bff" },
+    share: 0.06,
+    patch: 0,
+    size: 1.1,
+    speed: 1.2,
+    school: 0.3,
+    roam: 6.5,
+  },
+  {
+    name: "moorish idol",
+    model: "Fish2",
+    colors: { Body: "#f7f1d5", Front: "#1b1b1b", Fins: "#ffd23f" },
+    share: 0.1,
+    patch: 1,
+    size: 0.75,
+    speed: 1.2,
+    school: 0.6,
+    roam: 4.5,
+  },
+  {
+    name: "royal gramma",
+    model: "Fish1",
+    colors: { Top: "#8a3fd1", Bottom: "#ffd23f", Fins: "#c86bff" },
+    share: 0.1,
+    patch: 1,
+    size: 0.45,
+    speed: 0.9,
+    school: 0.3,
+    roam: 3.5,
+  },
+  {
+    name: "mandarinfish",
+    model: "Fish3",
+    colors: { Body: "#ff7a1a", Stripes: "#1e6fd9", Outline: "#2bd4a0" },
+    share: 0.08,
+    patch: 1,
+    size: 0.45,
+    speed: 0.7,
+    school: 0.2,
+    roam: 3,
+  },
 ] as const;
 const MODELS = RESIDENTS.map((r) => r.model);
+const COLORS = RESIDENTS.map((r) => r.colors);
 
 /** Part of a threat's fear radius that reef fish respect. */
 const BOLDNESS = 0.45;
@@ -35,7 +118,7 @@ const PERCEPTION = 1.5;
 
 function residents(total: number): SwarmSpecies[] {
   return RESIDENTS.map((r) => ({
-    name: r.model,
+    name: r.name,
     count: Math.max(1, Math.round(total * r.share)),
     size: r.size,
     cruiseSpeed: r.speed,
@@ -88,7 +171,7 @@ export function ReefFish({ field, threats }: { field: ObstacleField; threats: Re
   const { reefFish } = useControls("Marine Life", {
     reefFish: { label: "Reef fish", value: 500, options: [150, 500, 1500, 4000] },
   });
-  const geometries = useFishGeometries(MODELS, FOLDER);
+  const geometries = useFishGeometries(MODELS, COLORS);
 
   const sim = useMemo(() => {
     const species = residents(reefFish);
@@ -183,4 +266,4 @@ export function ReefFish({ field, threats }: { field: ObstacleField; threats: Re
   );
 }
 
-preloadFishModels(MODELS, FOLDER);
+preloadFishModels(MODELS);

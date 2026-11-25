@@ -1007,6 +1007,7 @@ export default function UnderwaterShaderDemo() {
         shadow-camera-right={70}
         shadow-camera-top={70}
         shadow-camera-bottom={-70}
+        shadow-normalBias={0.25}
       />
 
       <Sky

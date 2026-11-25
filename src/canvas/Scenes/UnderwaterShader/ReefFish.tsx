@@ -28,6 +28,8 @@ const RESIDENTS = [
 ] as const;
 const MODELS = RESIDENTS.map((r) => r.model);
 
+/** Part of a threat's fear radius that reef fish respect. */
+const BOLDNESS = 0.45;
 /** Smaller than the open-water fish, so a smaller neighbourhood. */
 const PERCEPTION = 1.5;
 
@@ -137,6 +139,7 @@ export function ReefFish({ field, threats }: { field: ObstacleField; threats: Re
     [schools],
   );
 
+  const scratch = useMemo(() => [] as SwarmPredator[], []);
   useFrame((state, delta) => {
     const { swarm, leaders, rng } = sim;
     const dt = Math.min(delta, 1 / 20);
@@ -145,7 +148,13 @@ export function ReefFish({ field, threats }: { field: ObstacleField; threats: Re
       if (stepAgent(agent, field, home, dt)) retarget(agent, field, home, rng);
       swarm.setGoal(i, agent.position[0], agent.position[1], agent.position[2]);
     }
-    swarm.setPredators(threats.predators);
+    // Reef fish are bold: they let a threat come close, then dart into the coral.
+    const predators = scratch;
+    predators.length = 0;
+    for (const threat of threats.predators) {
+      predators.push({ ...threat, fearRadius: threat.fearRadius * BOLDNESS });
+    }
+    swarm.setPredators(predators);
     swarm.setDynamicObstacles(threats.spheres);
     swarm.step(state.gl, dt);
   });

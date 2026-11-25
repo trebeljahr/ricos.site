@@ -32,7 +32,10 @@ const PERCEPTION = 2.4;
 const HOME_BOUNDS: SwarmBounds = { min: [-30, 30, -30], max: [30, WATER_LEVEL - 2, 34] };
 const SHARK = { size: 6.5, cruiseSpeed: 5, turnRate: 1, clearance: 4, fearRadius: 7 };
 /** Fish keep this far from the diver, and flow around the whale's body. */
-const DIVER_FEAR_RADIUS = 3;
+const DIVER_FEAR_RADIUS = 8;
+/** A fast diver is seen from further off: extra radius per unit of speed, up to a cap. */
+const DIVER_FEAR_PER_SPEED = 0.45;
+const DIVER_FEAR_EXTRA = 9;
 const WHALE_RADIUS = 5;
 
 /**
@@ -43,7 +46,7 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
   const controls = useControls("Marine Life", {
     fish: { label: "Fish", value: 4000, options: [1000, 2000, 4000, 8000, 16000] },
     sharks: { label: "Sharks", value: 2, min: 0, max: MAX_SHARKS, step: 1 },
-    shyFish: { label: "Fish avoid you", value: true },
+    shyFish: { label: "Fish flee you", value: true },
   });
   const live = useRef(controls);
   live.current = controls;
@@ -153,7 +156,15 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
   );
 
   const scratch = useMemo(
-    () => ({ predators: [] as SwarmPredator[], spheres: [] as SwarmSphere[] }),
+    () => ({
+      predators: [] as SwarmPredator[],
+      spheres: [] as SwarmSphere[],
+      diver: {
+        seen: false,
+        last: [0, 0, 0] as [number, number, number],
+        velocity: [0, 0, 0] as [number, number, number],
+      },
+    }),
     [],
   );
 
@@ -197,9 +208,31 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
     writeAgentState(sharks.agents, sharks.pos, sharks.vel, sharks.pose);
     for (let i = 0; i < 3; i++) sharks.textures[i].needsUpdate = true;
 
+    // The diver is a predator too. Its velocity lets fish sidestep out of
+    // its path instead of fleeing straight ahead of it.
     const eye = state.camera.position;
+    const diver = scratch.diver;
+    if (diver.seen && delta > 1e-4) {
+      const blend = 1 - Math.exp(-delta * 6);
+      diver.velocity[0] += ((eye.x - diver.last[0]) / delta - diver.velocity[0]) * blend;
+      diver.velocity[1] += ((eye.y - diver.last[1]) / delta - diver.velocity[1]) * blend;
+      diver.velocity[2] += ((eye.z - diver.last[2]) / delta - diver.velocity[2]) * blend;
+    }
+    // A jump between viewpoints is not a swim.
+    const speed = Math.hypot(diver.velocity[0], diver.velocity[1], diver.velocity[2]);
+    if (speed > 80) diver.velocity.fill(0);
+    diver.last[0] = eye.x;
+    diver.last[1] = eye.y;
+    diver.last[2] = eye.z;
+    diver.seen = true;
     if (c.shyFish && eye.y < WATER_LEVEL) {
-      predators.push({ position: [eye.x, eye.y, eye.z], fearRadius: DIVER_FEAR_RADIUS });
+      predators.push({
+        position: diver.last,
+        velocity: diver.velocity,
+        fearRadius:
+          DIVER_FEAR_RADIUS +
+          Math.min(DIVER_FEAR_EXTRA, Math.min(speed, 80) * DIVER_FEAR_PER_SPEED),
+      });
     }
     const spheres = scratch.spheres;
     spheres.length = 0;

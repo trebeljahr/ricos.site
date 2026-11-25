@@ -18,13 +18,19 @@ import {
   type SwarmSphere,
 } from "../Particles/BoidSwarm/GpuBoidSwarm";
 import { REEF_MODELS, reefSpecies } from "../Particles/BoidSwarm/reefWorld";
-import { createRng } from "../Particles/BoidSwarm/swarmConfig";
+import { createRng, type SwarmBounds } from "../Particles/BoidSwarm/swarmConfig";
 import { preloadFishModels, useFishGeometry } from "../Particles/BoidSwarm/useFishGeometry";
 import { createLagoonField, LAGOON_BOUNDS } from "./lagoonTerrain";
 import { WATER_LEVEL } from "./waterPresets";
 
 const MAX_SHARKS = 4;
-const SHARK = { size: 4.6, cruiseSpeed: 4.4, turnRate: 1.1, clearance: 3, fearRadius: 5.5 };
+/** Bodies twice the reef demo's: the lagoon is seen through fog, from further off. */
+const FISH_SCALE = 2;
+/** Neighbour search radius, grown with the bodies. */
+const PERCEPTION = 2.4;
+/** Schools stay over the lagoon shelf, where the viewpoints are; sharks roam everywhere. */
+const HOME_BOUNDS: SwarmBounds = { min: [-30, 30, -30], max: [30, WATER_LEVEL - 2, 34] };
+const SHARK = { size: 6.5, cruiseSpeed: 5, turnRate: 1, clearance: 4, fearRadius: 7 };
 /** Fish keep this far from the diver, and flow around the whale's body. */
 const DIVER_FEAR_RADIUS = 3;
 const WHALE_RADIUS = 5;
@@ -35,7 +41,7 @@ const WHALE_RADIUS = 5;
  */
 export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> }) {
   const controls = useControls("Marine Life", {
-    fish: { label: "Fish", value: 8000, options: [2000, 4000, 8000, 16000, 32000] },
+    fish: { label: "Fish", value: 4000, options: [1000, 2000, 4000, 8000, 16000] },
     sharks: { label: "Sharks", value: 2, min: 0, max: MAX_SHARKS, step: 1 },
     shyFish: { label: "Fish avoid you", value: true },
   });
@@ -56,8 +62,13 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
 
   // The swarm, its school leaders and one instanced mesh per species.
   const sim = useMemo(() => {
-    const species = reefSpecies(controls.fish);
-    const swarm = new GpuBoidSwarm({ species, bounds: LAGOON_BOUNDS, field });
+    const species = reefSpecies(controls.fish, FISH_SCALE);
+    const swarm = new GpuBoidSwarm({
+      species,
+      bounds: LAGOON_BOUNDS,
+      field,
+      behavior: { perception: PERCEPTION },
+    });
     const rng = createRng(11);
     const leaders = species.map((s) =>
       createAgent(
@@ -68,7 +79,7 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
           clearance: Math.min(4, s.schoolRadius * 0.5),
         },
         field,
-        LAGOON_BOUNDS,
+        HOME_BOUNDS,
         rng,
       ),
     );
@@ -154,7 +165,7 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
 
     for (let i = 0; i < leaders.length; i++) {
       const leader = leaders[i];
-      if (stepAgent(leader, field, LAGOON_BOUNDS, dt)) retarget(leader, field, LAGOON_BOUNDS, rng);
+      if (stepAgent(leader, field, HOME_BOUNDS, dt)) retarget(leader, field, HOME_BOUNDS, rng);
       swarm.setGoal(i, leader.position[0], leader.position[1], leader.position[2]);
     }
 

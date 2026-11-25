@@ -77,12 +77,15 @@ function schoolRadius(count: number, size: number): number {
   return Math.min(12, Math.max(3.5, Math.cbrt(count) * size * 1.1));
 }
 
-/** Three schools of small fish and two kinds of large swimmers. */
-export function reefSpecies(fishCount: number): SwarmSpecies[] {
+/**
+ * Three schools of small fish and two kinds of large swimmers. `scale` makes
+ * every body that much longer, for a scene seen through more water.
+ */
+export function reefSpecies(fishCount: number, scale = 1): SwarmSpecies[] {
   const a = Math.round(fishCount * 0.4);
   const b = Math.round(fishCount * 0.33);
   const c = Math.max(0, fishCount - a - b);
-  return [
+  const species: SwarmSpecies[] = [
     {
       name: "Fish1",
       count: a,
@@ -150,4 +153,14 @@ export function reefSpecies(fishCount: number): SwarmSpecies[] {
       bend: 0.5,
     },
   ];
+  if (scale === 1) return species;
+  // A longer body swims faster, and its school needs more room.
+  const pace = Math.sqrt(scale);
+  return species.map((s) => ({
+    ...s,
+    size: s.size * scale,
+    cruiseSpeed: s.cruiseSpeed * pace,
+    maxSpeed: s.maxSpeed * pace,
+    schoolRadius: s.schoolRadius * scale,
+  }));
 }

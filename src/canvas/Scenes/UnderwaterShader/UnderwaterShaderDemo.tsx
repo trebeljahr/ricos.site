@@ -1,18 +1,14 @@
 import { In } from "@components/dom/ThreeFiberLayout";
 import { useUnderwaterContext } from "@contexts/UnderwaterContext";
-import DolphinModel from "@r3f/AllModels/fish_pack/Dolphin";
-import { useFish1 } from "@r3f/AllModels/fish_pack/Fish1";
-import MantaRayModel from "@r3f/AllModels/fish_pack/Ray";
 import Whale from "@r3f/AllModels/fish_pack/Whale";
 import { useKelp } from "@r3f/AllModels/Kelp4";
 import { PointerLockControls, Sky, useKeyboardControls } from "@react-three/drei";
 import { type RootState, useFrame, useThree } from "@react-three/fiber";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { folder, Leva, useControls } from "leva";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BufferAttribute,
-  type BufferGeometry,
   Color,
   CylinderGeometry,
   DodecahedronGeometry,
@@ -29,7 +25,8 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
-import { mergeBufferGeometries } from "three-stdlib";
+import { LagoonSwarm } from "./LagoonSwarm";
+import { ARCH, PILLAR_FOOT, PILLARS, REEF_FORMATIONS, sampleSeabedHeight } from "./lagoonTerrain";
 import { type SpriteBuffers, SpriteParticles } from "./SpriteParticles";
 import { UnderwaterEffect, type UnderwaterEffectParams } from "./UnderwaterEffect";
 import {
@@ -55,37 +52,6 @@ const OBSTACLE_COLUMNS = [
   { x: 0.0, z: -32.0, r: 2.5 },
   { x: -8.0, z: -36.0, r: 1.8 },
 ] as const;
-
-function sampleSeabedHeight(x: number, z: number): number {
-  const distCenter = Math.hypot(x * 0.85, (z - 8) * 0.9);
-  const lagoonShelf = 31.2 - Math.min(18.5, Math.max(0.0, (distCenter - 16.0) * 0.32));
-
-  const trenchCoord = (x + 28) * 0.55 + (z + 25) * 0.75;
-  const trenchDrop = -15.5 * (1.0 - 1.0 / (1.0 + Math.exp(-trenchCoord * 0.08)));
-
-  const ridge1 = Math.sin(x * 0.065 + Math.cos(z * 0.055) * 1.4) * 2.2;
-  const ridge2 = Math.cos(z * 0.08 - x * 0.045) * 1.6;
-  const ripples = Math.sin(x * 0.38 + z * 0.22) * 0.18 + Math.cos(z * 0.52 - x * 0.3) * 0.14;
-
-  // Emergent sea-stack mounds at (-22, -16) and (24, -20)
-  const dSpire1 = Math.hypot(x + 22, z + 16);
-  const spire1 = 28.5 * Math.exp(-(dSpire1 * dSpire1) / 50.0);
-
-  const dSpire2 = Math.hypot(x - 24, z + 20);
-  const spire2 = 30.5 * Math.exp(-(dSpire2 * dSpire2) / 58.0);
-
-  // Smooth reef knolls
-  const dKnoll1 = Math.hypot(x - 14, z - 10);
-  const knoll1 = 5.0 * Math.exp(-(dKnoll1 * dKnoll1) / 55.0);
-
-  const dKnoll2 = Math.hypot(x + 15, z - 12);
-  const knoll2 = 4.5 * Math.exp(-(dKnoll2 * dKnoll2) / 48.0);
-
-  return Math.max(
-    2.0,
-    lagoonShelf + trenchDrop + ridge1 + ridge2 + ripples + spire1 + spire2 + knoll1 + knoll2,
-  );
-}
 
 /**
  * Push any swimming creature away from pillars/sea-stacks/arch legs and keep it
@@ -395,74 +361,11 @@ function SeabedAndArchitecture() {
     return geom;
   }, []);
 
-  // Temple colonnade pillars piercing the water surface and descending into the reef
-  const pillars = useMemo(
-    () => [
-      { pos: [-11, 29, 4] as const, rTop: 1.15, h: 38 },
-      { pos: [11, 28, 4] as const, rTop: 1.15, h: 38 },
-      { pos: [-14, 24, -22] as const, rTop: 1.35, h: 48 },
-      { pos: [15, 25, -24] as const, rTop: 1.25, h: 46 },
-      { pos: [0, 32, -32] as const, rTop: 1.65, h: 40 },
-      { pos: [-8, 16, -36] as const, rTop: 1.25, h: 26 },
-    ],
+  const archGeometry = useMemo(
+    () => new TorusGeometry(ARCH.majorRadius, ARCH.tubeRadius, 20, 56, Math.PI),
     [],
   );
-
-  // Sculpted organic reef boulders & table/branch coral formations (no smooth jellybean spheres!)
-  const reefFormations = useMemo(() => {
-    const list: {
-      id: string;
-      kind: "boulder" | "table" | "crown";
-      pos: [number, number, number];
-      rot: [number, number, number];
-      scale: [number, number, number];
-      color: string;
-      emissive: string;
-      emissiveIntensity: number;
-    }[] = [];
-
-    const palette = [
-      { color: "#d96b78", emissive: "#b82840", glow: 0.25 },
-      { color: "#e09f5a", emissive: "#b5651d", glow: 0.2 },
-      { color: "#48b890", emissive: "#168060", glow: 0.3 },
-      { color: "#4f8fc9", emissive: "#1c5a99", glow: 0.35 },
-      { color: "#9c6ade", emissive: "#6236a8", glow: 0.32 },
-    ];
-
-    for (let i = 0; i < 44; i++) {
-      const a = i * 2.39996;
-      const r = 6 + Math.sqrt(i / 44) * 44;
-      const x = Math.cos(a) * r;
-      const z = Math.sin(a) * r + 3;
-      const y = sampleSeabedHeight(x, z);
-      if (y < 38.5) {
-        const pal = palette[i % palette.length];
-        // Subtle bioluminescence only in the deep abyssal trench (y < 20)
-        const depthGlowBoost = y < 20 ? 1.1 : 0.22;
-        const sz = 0.65 + (i % 5) * 0.28;
-        const kind = i % 3 === 0 ? "table" : i % 3 === 1 ? "crown" : "boulder";
-        list.push({
-          id: `reef-${i}`,
-          kind,
-          pos: [x, y + sz * 0.22, z],
-          rot: [(i % 5) * 0.08 - 0.16, (i * 1.3) % (Math.PI * 2), ((i + 2) % 5) * 0.06 - 0.12],
-          scale:
-            kind === "table"
-              ? [sz * 1.6, sz * 0.38, sz * 1.5]
-              : kind === "crown"
-                ? [sz * 0.95, sz * 0.85, sz * 0.95]
-                : [sz * 1.35, sz * 0.75, sz * 1.15],
-          color: kind === "boulder" ? "#6c7a76" : pal.color,
-          emissive: kind === "boulder" ? "#000000" : pal.emissive,
-          emissiveIntensity: kind === "boulder" ? 0 : pal.glow * depthGlowBoost,
-        });
-      }
-    }
-    return list;
-  }, []);
-
-  const archGeometry = useMemo(() => new TorusGeometry(12.2, 2.45, 20, 56, Math.PI), []);
-  const columnGeometry = useMemo(() => new CylinderGeometry(1, 1.22, 1, 16), []);
+  const columnGeometry = useMemo(() => new CylinderGeometry(1, PILLAR_FOOT, 1, 16), []);
   const craggyBoulderGeometry = useMemo(() => {
     const geom = new DodecahedronGeometry(1, 2);
     const pos = geom.attributes.position;
@@ -507,8 +410,8 @@ function SeabedAndArchitecture() {
       {/* Grand Submerged / Surface-Piercing Stone Arch (z = -8) */}
       <mesh
         geometry={archGeometry}
-        position={[0, 25.5, -8]}
-        scale={[1.0, 1.22, 0.95]}
+        position={ARCH.position}
+        scale={ARCH.scale}
         castShadow
         receiveShadow
       >
@@ -516,7 +419,7 @@ function SeabedAndArchitecture() {
       </mesh>
 
       {/* Temple Colonnade Pillars */}
-      {pillars.map((p) => (
+      {PILLARS.map((p) => (
         <mesh
           key={p.pos.join(",")}
           geometry={columnGeometry}
@@ -530,7 +433,7 @@ function SeabedAndArchitecture() {
       ))}
 
       {/* Sculpted Craggy Boulders, Table Corals & Fluted Reef Crowns */}
-      {reefFormations.map((c) => (
+      {REEF_FORMATIONS.map((c) => (
         <mesh
           key={c.id}
           geometry={c.kind === "crown" ? coralCrownGeometry : craggyBoulderGeometry}
@@ -660,197 +563,44 @@ function ObstacleWaveSpray({
   );
 }
 
-// ─── Marine Life (Terrain-Aware Whale, Manta, Dolphin & 3D Fish Schools) ─
+// ─── Whale (the fish swarm lives in LagoonSwarm) ────────────────
 
-const fishSwimVertexShader = /* glsl */ `
-  uniform float uTime;
-  void main() {
-    vec3 pos = position;
-    // Lateral tail-fin swim oscillation along the fish body length (Z axis)
-    float bodyCoord = pos.z;
-    float wiggle = sin(uTime * 8.5 + bodyCoord * 2.2 + instanceMatrix[3][0] * 1.5) * 0.14;
-    pos.x += wiggle * smoothstep(0.2, -1.2, bodyCoord);
-    csm_Position = pos;
-  }
-`;
-
-function SwimmingMarineLife() {
-  const whaleGroupRef = useRef<Group>(null!);
-  const manta1Ref = useRef<Group>(null!);
-  const dolphinRef = useRef<Group>(null!);
-  const schoolMeshRef = useRef<InstancedMesh>(null!);
-  const fishMatRef = useRef<CustomShaderMaterialType | undefined>(undefined);
-
-  const { nodes: fishNodes } = useFish1();
-
-  // Merge real 3D Fish1 submeshes into a single instanced geometry
-  const mergedFishGeometry = useMemo(() => {
-    const geos = [
-      fishNodes.Fish_1.geometry.clone(),
-      fishNodes.Fish_2.geometry.clone(),
-      fishNodes.Fish_3.geometry.clone(),
-    ];
-    const merged = mergeBufferGeometries(geos) as BufferGeometry;
-    merged.rotateX(-Math.PI / 2);
-    merged.scale(1.8, 1.8, 1.8);
-    merged.computeVertexNormals();
-    return merged;
-  }, [fishNodes]);
-
-  const fishUniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
-  const fishCount = 150;
-  const fishDummy = useMemo(() => new Object3D(), []);
-  const fishColor = useMemo(() => new Color(), []);
-
-  const fishData = useMemo(
-    () =>
-      Array.from({ length: fishCount }, (_, i) => ({
-        school: i % 3,
-        angleOffset: (i / fishCount) * Math.PI * 2 * 3,
-        radiusOffset: 1.5 + ((i * 13) % 17) * 0.28,
-        yOffset: (((i * 7) % 11) - 5) * 0.35,
-        speed: 0.48 + ((i * 5) % 7) * 0.035,
-        scale: 0.26 + (i % 4) * 0.05,
-      })),
-    [],
-  );
-
-  useEffect(() => {
-    if (!schoolMeshRef.current) return;
-    const palette = ["#ff9f1c", "#2ec4b6", "#ffbf69", "#38b6ff", "#ff6b8b"];
-    for (let i = 0; i < fishCount; i++) {
-      fishColor.set(palette[i % palette.length]);
-      schoolMeshRef.current.setColorAt(i, fishColor);
-    }
-    if (schoolMeshRef.current.instanceColor) {
-      schoolMeshRef.current.instanceColor.needsUpdate = true;
-    }
-  }, [fishColor]);
-
+function GlidingWhale({ whaleRef }: { whaleRef: RefObject<Group | null> }) {
   useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (fishMatRef.current) {
-      fishMatRef.current.uniforms.uTime.value = t;
-    }
+    const whale = whaleRef.current;
+    if (!whale) return;
+    // Glides in the open water column with strict seabed & obstacle clearance
+    const wAngle = state.clock.elapsedTime * 0.13;
+    const rawX = Math.sin(wAngle) * 30;
+    const rawZ = Math.sin(wAngle * 2) * 16 - 12;
+    const rawY = 34.5 + Math.cos(wAngle * 2) * 2.5;
 
-    // 1. Whale glides in the open water column with strict seabed & obstacle clearance
-    if (whaleGroupRef.current) {
-      const wAngle = t * 0.13;
-      const rawX = Math.sin(wAngle) * 30;
-      const rawZ = Math.sin(wAngle * 2) * 16 - 12;
-      const rawY = 34.5 + Math.cos(wAngle * 2) * 2.5;
+    const [wx, wy, wz] = resolveSwimmerPosition(rawX, rawY, rawZ, 5.2, 4.2);
+    const nextAngle = wAngle + 0.05;
+    const [nx, ny, nz] = resolveSwimmerPosition(
+      Math.sin(nextAngle) * 30,
+      34.5 + Math.cos(nextAngle * 2) * 2.5,
+      Math.sin(nextAngle * 2) * 16 - 12,
+      5.2,
+      4.2,
+    );
 
-      const [wx, wy, wz] = resolveSwimmerPosition(rawX, rawY, rawZ, 5.2, 4.2);
-      const nextAngle = wAngle + 0.05;
-      const [nx, ny, nz] = resolveSwimmerPosition(
-        Math.sin(nextAngle) * 30,
-        34.5 + Math.cos(nextAngle * 2) * 2.5,
-        Math.sin(nextAngle * 2) * 16 - 12,
-        5.2,
-        4.2,
-      );
+    const dx = nx - wx;
+    const dy = ny - wy;
+    const dz = nz - wz;
+    const horizDist = Math.hypot(dx, dz) || 1e-4;
 
-      const dx = nx - wx;
-      const dy = ny - wy;
-      const dz = nz - wz;
-      const horizDist = Math.hypot(dx, dz) || 1e-4;
-
-      whaleGroupRef.current.position.set(wx, wy, wz);
-      whaleGroupRef.current.rotation.set(
-        -Math.atan2(dy, horizDist) * 0.6,
-        Math.atan2(dx, dz),
-        -Math.sin(wAngle) * 0.1,
-      );
-    }
-
-    // 2. Manta Ray banking above the reef shelf with terrain clearance
-    if (manta1Ref.current) {
-      const m1 = t * 0.28;
-      const rawX = Math.cos(m1) * 15 - 3;
-      const rawZ = Math.sin(m1) * 13 + 8;
-      const rawY = 37.5 + Math.sin(m1 * 2) * 1.4;
-      const [mx, my, mz] = resolveSwimmerPosition(rawX, rawY, rawZ, 3.2, 2.5);
-
-      manta1Ref.current.position.set(mx, my, mz);
-      manta1Ref.current.rotation.set(
-        Math.cos(m1 * 2) * 0.1,
-        Math.atan2(-Math.sin(m1) * 15, Math.cos(m1) * 13),
-        0.16,
-      );
-    }
-
-    // 3. Dolphin cruising through the lagoon
-    if (dolphinRef.current) {
-      const m2 = -t * 0.24 + 2.2;
-      const rawX = Math.cos(m2) * 18 + 5;
-      const rawZ = Math.sin(m2) * 16 - 2;
-      const rawY = 36.0 + Math.cos(m2 * 2) * 1.6;
-      const [dx, dy, dz] = resolveSwimmerPosition(rawX, rawY, rawZ, 3.0, 2.5);
-
-      dolphinRef.current.position.set(dx, dy, dz);
-      dolphinRef.current.rotation.set(
-        -Math.sin(m2 * 2) * 0.1,
-        Math.atan2(Math.sin(m2) * 18, -Math.cos(m2) * 16),
-        -0.14,
-      );
-    }
-
-    // 4. Swirling schools of 3D reef fish with per-fish seabed & pillar avoidance
-    if (schoolMeshRef.current) {
-      const centers = [
-        { x: -5, y: 36.0, z: 10, r: 6.5 },
-        { x: 8, y: 35.5, z: 0, r: 7.5 },
-        { x: -12, y: 29.0, z: -14, r: 8.0 },
-      ];
-
-      for (let i = 0; i < fishCount; i++) {
-        const f = fishData[i];
-        const c = centers[f.school];
-        const a = t * f.speed + f.angleOffset;
-        const r = c.r + Math.sin(t * 1.1 + i) * 1.0 + (f.radiusOffset - 3.5);
-        const rawX = c.x + Math.cos(a) * r;
-        const rawZ = c.z + Math.sin(a) * r;
-        const rawY = c.y + f.yOffset + Math.sin(t * 1.9 + f.angleOffset) * 0.5;
-
-        const [fx, fy, fz] = resolveSwimmerPosition(rawX, rawY, rawZ, 1.8, 1.8);
-
-        const yaw = Math.atan2(-Math.sin(a), Math.cos(a));
-        fishDummy.position.set(fx, fy, fz);
-        fishDummy.rotation.set(0, yaw, 0);
-        fishDummy.scale.setScalar(f.scale);
-        fishDummy.updateMatrix();
-        schoolMeshRef.current.setMatrixAt(i, fishDummy.matrix);
-      }
-      schoolMeshRef.current.instanceMatrix.needsUpdate = true;
-    }
+    whale.position.set(wx, wy, wz);
+    whale.rotation.set(
+      -Math.atan2(dy, horizDist) * 0.6,
+      Math.atan2(dx, dz),
+      -Math.sin(wAngle) * 0.1,
+    );
   });
 
   return (
-    <group>
-      <group ref={whaleGroupRef}>
-        <Whale scale={2.2} />
-      </group>
-      <group ref={manta1Ref}>
-        <MantaRayModel scale={1.4} />
-      </group>
-      <group ref={dolphinRef}>
-        <DolphinModel scale={1.25} />
-      </group>
-      <instancedMesh
-        ref={schoolMeshRef}
-        args={[mergedFishGeometry, undefined, fishCount]}
-        castShadow
-        frustumCulled={false}
-      >
-        <CustomShaderMaterial
-          ref={fishMatRef}
-          baseMaterial={MeshStandardMaterial}
-          vertexShader={fishSwimVertexShader}
-          uniforms={fishUniforms}
-          roughness={0.3}
-          metalness={0.15}
-        />
-      </instancedMesh>
+    <group ref={whaleRef}>
+      <Whale scale={2.2} />
     </group>
   );
 }
@@ -958,6 +708,7 @@ export default function UnderwaterShaderDemo() {
   const [signedAltitude, setSignedAltitude] = useState<number>(-9.5);
 
   const activePreset = WATER_PRESETS[presetKey];
+  const whaleRef = useRef<Group>(null);
 
   const [controls, setControls] = useControls(() => ({
     "Water Type": folder({
@@ -1267,7 +1018,8 @@ export default function UnderwaterShaderDemo() {
 
       <SeabedAndArchitecture />
       <ObstacleWaveSpray waveHeight={controls.waveHeight} sunDirection={sunDirection} />
-      <SwimmingMarineLife />
+      <GlidingWhale whaleRef={whaleRef} />
+      <LagoonSwarm whaleRef={whaleRef} />
       <BubblesAndMarineSnow />
 
       {/* mergeMode "none": Bloom must read the water shader's output. Merged into one pass it

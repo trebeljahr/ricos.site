@@ -21,6 +21,8 @@ export interface FieldAgent {
   config: AgentConfig;
   position: [number, number, number];
   heading: [number, number, number];
+  /** Where the agent wants to head, smoothed so the nose does not twitch. */
+  want: [number, number, number];
   /** Heading that trails behind, for the bend of the body. */
   lag: [number, number, number];
   speed: number;
@@ -43,6 +45,7 @@ export function createAgent(
     config,
     position: [0, 0, 0],
     heading: [1, 0, 0],
+    want: [1, 0, 0],
     lag: [1, 0, 0],
     speed: config.cruiseSpeed,
     phase: rng() * Math.PI * 2,
@@ -176,6 +179,18 @@ export function stepAgent(
   dx *= keep;
   dz *= keep;
 
+  // Probes near a surface disagree from frame to frame. Follow their
+  // average, faster when a wall is close, so the nose turns one way.
+  const want = agent.want;
+  const settle = 1 - Math.exp(-dt * (2.5 + 5 * avoid));
+  want[0] += (dx - want[0]) * settle;
+  want[1] += (dy - want[1]) * settle;
+  want[2] += (dz - want[2]) * settle;
+  const wl = Math.hypot(want[0], want[1], want[2]) || 1;
+  dx = want[0] / wl;
+  dy = want[1] / wl;
+  dz = want[2] / wl;
+
   // Turn within the body's limit.
   const dot = Math.max(-1, Math.min(1, h[0] * dx + h[1] * dy + h[2] * dz));
   const angle = Math.acos(dot);
@@ -207,7 +222,8 @@ export function stepAgent(
   p[2] += h[2] * agent.speed * dt;
   field.sample(p[0], p[1], p[2], scratch);
   if (scratch.distance < body) {
-    const out = body - scratch.distance;
+    // Ease out of a surface instead of snapping: a snap shows as a stutter.
+    const out = (body - scratch.distance) * Math.min(1, dt * 10);
     p[0] += scratch.nx * out;
     p[1] += scratch.ny * out;
     p[2] += scratch.nz * out;

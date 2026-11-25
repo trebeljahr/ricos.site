@@ -1,4 +1,3 @@
-import { useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
@@ -12,12 +11,7 @@ import {
   Vector3,
 } from "three";
 import { createAgent, type FieldAgent, retarget, stepAgent, writeAgentState } from "./fieldAgents";
-import {
-  createFishGeometry,
-  createFishInstances,
-  createFishMaterial,
-  type FishPart,
-} from "./fishMesh";
+import { createFishInstances, createFishMaterial } from "./fishMesh";
 import {
   type FishTextureUniforms,
   floatTexture,
@@ -34,25 +28,12 @@ import {
   reefSpecies,
 } from "./reefWorld";
 import { createRng, MAX_PREDATORS } from "./swarmConfig";
+import { preloadFishModels, useFishGeometry } from "./useFishGeometry";
 
-const MODEL_PATH = "/3d-assets/glb/fish_pack/";
 const WATER = "#06304a";
 const MAX_SHARKS = 4;
 const SHARK = { size: 4.6, cruiseSpeed: 4.4, turnRate: 1.1, clearance: 3, fearRadius: 5.5 };
 const POINTER_MODES = ["predator", "bait", "rock", "off"] as const;
-
-/** One model of the fish pack as a swim-ready geometry. */
-function useFishGeometry(name: string): BufferGeometry {
-  const { scene } = useGLTF(`${MODEL_PATH}${name}.glb`);
-  return useMemo(() => {
-    const parts: FishPart[] = [];
-    scene.traverse((object) => {
-      const mesh = object as Mesh<BufferGeometry, MeshStandardMaterial>;
-      if (mesh.isMesh) parts.push({ geometry: mesh.geometry, color: mesh.material.color });
-    });
-    return createFishGeometry(parts);
-  }, [scene]);
-}
 
 function Reef({ world }: { world: ReturnType<typeof createReefWorld> }) {
   const floor = useMemo(() => {
@@ -368,4 +349,4 @@ export function BoidSwarmDemo() {
   );
 }
 
-for (const name of [...REEF_MODELS, "Shark"]) useGLTF.preload(`${MODEL_PATH}${name}.glb`);
+preloadFishModels([...REEF_MODELS, "Shark"]);

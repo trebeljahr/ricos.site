@@ -6,7 +6,8 @@
 // - Wind-streaked noise foam with eroding holes on wave crests + shoaling surf & breaking splash rings around obstacles
 // - Wave-height-dependent water opacity / turbidity from above the surface
 // - Energy-conserving Beer-Lambert absorption + Henyey-Greenstein in-scattering (no horizon whiteout)
-// - High-contrast volumetric god-ray light shafts + Snell's window with dispersion & TIR
+// - Volumetric god-ray light shafts integrated along the view ray, sharing one sunlight pattern with
+//   the underside of the surface and the caustics + Snell's window with dispersion & TIR
 // - Smooth camera dome waterline meniscus
 
 uniform vec3 cameraPos;
@@ -148,6 +149,10 @@ vec3 worldPosFromDepth(vec2 uv, float depth) {
   viewPos /= viewPos.w;
   vec4 worldPos = uInvView * viewPos;
   return worldPos.xyz;
+}
+
+float linearViewDepth(float depth) {
+  return uCameraNear * uCameraFar / (uCameraFar - depth * (uCameraFar - uCameraNear));
 }
 
 // ─── Analytical Multi-Wave Trochoidal / Gerstner Ocean Spectrum ─
@@ -492,6 +497,47 @@ vec3 chromaticCaustics(vec2 worldXZ, float depthBelowSurface, vec3 refractedSunD
   return vec3(cR, cG, cB) * focusRamp * depthTransmittance * uCausticsIntensity;
 }
 
+// ─── Sunlight Pattern Below the Surface ─────────────────────────
+// One field, indexed by the point where a sun ray crossed the surface. The underside of the
+// surface, the light shafts and the light on submerged geometry all read it, so a shaft
+// starts at a bright patch of the surface and ends on a bright patch of the floor.
+
+vec2 sunEntryXZ(vec3 pos, vec3 refractedSunDir) {
+  float depth = max(uWaterLevel - pos.y, -2.0);
+  return pos.xz + refractedSunDir.xz * (depth / max(refractedSunDir.y, 0.22));
+}
+
+// The four swells of waveHeightGeometric, scaled to about -1..1: crests gather light.
+float swellLens(vec2 p, float t) {
+  float c = clamp(0.32 * uWaveChoppiness, 0.05, 0.58);
+  float p1 = (p.x * 0.86 + p.y * 0.51) * 0.085 + t * 0.92;
+  float p2 = (-p.x * 0.58 + p.y * 0.81) * 0.095 - t * 0.78;
+  float p3 = (p.x * 0.76 - p.y * 0.65) * 0.21 + t * 1.42;
+  float p4 = (p.x * 0.42 + p.y * 0.91) * 0.26 - t * 1.25;
+  return (sin(p1 + c * cos(p1)) * 0.52 + sin(p2 + c * cos(p2)) * 0.38
+        + sin(p3 + c * 0.85 * cos(p3)) * 0.22 + sin(p4 + c * 0.85 * cos(p4)) * 0.16) / 0.9;
+}
+
+// Thin bright lines of a warped grid: the net of light seen on the underside of the surface.
+float lightNet(vec2 p, float t) {
+  vec2 warp = vec2(sin(p.y * 0.75 + t * 0.65), cos(p.x * 0.80 - t * 0.55)) * 0.38;
+  vec2 q = mat2(0.84, -0.54, 0.54, 0.84) * (p + warp) * 1.15 + vec2(t * 0.42, -t * 0.31);
+  float a = 1.0 - abs(sin(q.x + sin(q.y * 1.3 + t * 0.5) * 0.85));
+  float b = 1.0 - abs(sin(q.y - cos(q.x * 1.2 - t * 0.4) * 0.85));
+  return pow(max(a, b), 7.0);
+}
+
+// `fine` fades the narrow shafts out where the caller cannot resolve them (far march steps).
+float sunShaftPattern(vec2 surfXZ, float t, float fine) {
+  float f1 = causticFilaments(surfXZ * 0.28, t * 0.48);
+  float f2 = causticFilaments(surfXZ * 0.72 + vec2(7.4, 3.2), t * 0.62);
+  // High-power contrast curve separates bright beams from dark intervals
+  float beam1 = pow(clamp(f1 * 0.58, 0.0, 1.2), 3.2);
+  float beam2 = pow(clamp(f2 * 0.55, 0.0, 1.2), 3.6);
+  float lens = smoothstep(-0.9, 0.9, swellLens(surfXZ, t));
+  return (beam1 * 1.35 + beam2 * 1.15 * fine) * (0.45 + 0.85 * lens);
+}
+
 // ─── Analytical Scene Blocker Occlusion for Volumetric God Rays ─
 
 float sampleSunBlockerOcclusion(vec3 pos, vec3 sunRayDir) {
@@ -538,52 +584,44 @@ vec3 computeVolumetricGodRays(
 ) {
   if (uGodRayIntensity <= 0.001) return vec3(0.0);
 
-  float marchDist = min(maxRayDist, 58.0);
-  const int NUM_STEPS = 28;
-  float stepLen = marchDist / float(NUM_STEPS);
-  float jitter = ign(gl_FragCoord.xy);
+  // Integrate in-scattered sunlight along the view ray: a fish two metres away has two
+  // metres of lit water in front of it, not the average brightness of a long ray. Steps grow
+  // with distance, and the view extinction fades far shafts out instead of cutting them off.
+  float marchDist = min(maxRayDist, 70.0);
+  const int NUM_STEPS = 26;
+  // White noise: without temporal filtering, interleaved gradient noise shows as hatching
+  float jitter = hash21(gl_FragCoord.xy + 0.5);
+  vec3 sigmaView = (uAbsorption * 0.65 + vec3(uFogDensity * 1.65 + 0.012)) * 0.55;
 
   vec3 accumVolumetric = vec3(0.0);
-  float sunInvY = 1.0 / max(refractedSunDir.y, 0.22);
 
   for (int i = 0; i < NUM_STEPS; i++) {
-    float marchT = (float(i) + jitter) * stepLen;
+    float u = (float(i) + jitter) / float(NUM_STEPS);
+    float marchT = marchDist * u * (0.3 + 0.7 * u);
+    float stepLen = marchDist * (0.3 + 1.4 * u) / float(NUM_STEPS);
     vec3 samplePos = ro + rd * marchT;
     float depthBelow = uWaterLevel - samplePos.y;
 
     if (depthBelow > -1.0 && depthBelow < 55.0) {
       float effDepth = max(0.0, depthBelow);
-      // Project sample point to the wave surface along the refracted sun vector
-      // Points along the same sun ray share identical surfXZ -> crisp parallel shafts!
-      vec2 surfXZ = samplePos.xz + refractedSunDir.xz * (effDepth * sunInvY);
-
-      // Sharp wave-crest lens focusing across three scales for distinct shafts
-      float f1 = causticFilaments(surfXZ * 0.28, t * 0.48);
-      float f2 = causticFilaments(surfXZ * 0.72 + vec2(7.4, 3.2), t * 0.62);
-      float f3 = sin(surfXZ.x * 0.55 + surfXZ.y * 0.35 + t * 0.9) * 0.5 + 0.5;
-
-      // High-power contrast curve separates bright beams from dark intervals
-      float beam1 = pow(clamp(f1 * 0.58, 0.0, 1.2), 3.2);
-      float beam2 = pow(clamp(f2 * 0.55, 0.0, 1.2), 3.6);
-      float shaftFocus = (beam1 * 1.35 + beam2 * 1.15) * (0.55 + 0.65 * pow(f3, 2.0));
-
+      // Points along the same sun ray share one entry point -> crisp parallel shafts
+      // Narrow shafts only where the steps are short enough to resolve them
+      float shaftFocus = sunShaftPattern(sunEntryXZ(samplePos, refractedSunDir), t, smoothstep(2.6, 0.9, stepLen));
       float blocker = sampleSunBlockerOcclusion(samplePos, refractedSunDir);
 
       // Spectral attenuation from surface + view distance
-      vec3 sunAtten = exp(-uAbsorption * (effDepth * 0.22)) * exp(-marchT * 0.024);
+      vec3 sunAtten = exp(-uAbsorption * (effDepth * 0.22)) * exp(-sigmaView * marchT);
       float depthEnvelope = smoothstep(52.0, 0.0, effDepth);
 
-      accumVolumetric += sunAtten * (shaftFocus * blocker * depthEnvelope);
+      accumVolumetric += sunAtten * (shaftFocus * blocker * depthEnvelope * stepLen);
     }
   }
 
-  accumVolumetric /= float(NUM_STEPS);
-
   // Directional scattering boost: strong forward scatter toward sun, clear visibility from side angles
   float cosSun = dot(rd, refractedSunDir);
-  float phaseBoost = 0.65 + 1.45 * pow(max(0.0, cosSun), 2.2) + 0.55 * smoothstep(-0.25, 0.75, rd.y);
+  float phaseBoost = 0.65 + 1.1 * pow(max(0.0, cosSun), 2.2) + 0.55 * smoothstep(-0.25, 0.75, rd.y);
   vec3 shaftColor = mix(uScatterShallow, uSunScatter, 0.65) + vec3(0.18, 0.24, 0.16);
-  vec3 worldShafts = accumVolumetric * shaftColor * phaseBoost * 3.2;
+  vec3 worldShafts = accumVolumetric * shaftColor * phaseBoost * 0.075;
 
   // Screen-Space Radial Crepuscular Shafts when looking toward the sun / Snell's window
   vec3 radialShafts = vec3(0.0);
@@ -606,7 +644,8 @@ vec3 computeVolumetricGodRays(
       }
       radialAccum /= 12.0;
       float radialFalloff = exp(-screenDist * 1.4) * pow(max(0.0, cosSun), 1.6);
-      radialShafts = shaftColor * radialAccum * radialFalloff * 1.15;
+      // Glow builds up with the water in front of the pixel, so near objects stay clear of it
+      radialShafts = shaftColor * radialAccum * radialFalloff * 0.6 * (1.0 - exp(-maxRayDist * 0.08));
     }
   }
 
@@ -651,10 +690,20 @@ vec3 shadeUndersideWaterSurface(
 
   // 3D wave relief & reflected caustic shimmer on the underside of the waves
   float distDetail = exp(-tHit * 0.025);
-  float tirCaust = causticFilaments((hitPos.xz + reflDir.xz * 6.0) * 0.55, t * 0.55);
+  // Sunlight entering here: a net of wave-focused light over the whole surface, brightest
+  // where a shaft starts. Far away the net is finer than a pixel, so it fades to its mean.
+  float netWide = lightNet(hitPos.xz * 0.8 + vec2(9.2, 1.4), t * 0.7);
+  float netFine = lightNet(hitPos.xz * 2.3 + vec2(2.1, 5.3), t * 0.9) * distDetail;
+  float lens = smoothstep(-0.9, 0.9, swellLens(hitPos.xz, t));
+  float shaftHere = min(sunShaftPattern(sunEntryXZ(hitPos, refractedSunDir), t, 1.0), 2.6);
+  float surfLight = mix(
+    0.45,
+    shaftHere * (0.6 + 0.9 * netWide) + (netWide * 0.75 + netFine * 0.4) * (0.35 + 0.65 * lens),
+    distDetail
+  );
   float waveShade = mix(1.0, 0.72 + 0.42 * clamp(crestFactor, 0.0, 1.2), distDetail);
   tirColor = tirColor * waveShade
-           + mix(uScatterShallow, uSunScatter, 0.5) * tirCaust * 0.18 * distDetail * (1.0 - camDepth01 * 0.6);
+           + mix(uScatterShallow, uSunScatter, 0.5) * surfLight * 0.16 * (1.0 - camDepth01 * 0.6);
 
   // Fade TIR relief seamlessly into baseWaterScatter at far grazing distances so horizon has zero seam
   tirColor = mix(baseWaterScatter, tirColor, distDetail);
@@ -700,6 +749,12 @@ vec3 shadeUndersideWaterSurface(
   float rPerp = (etaG * cosI - cosT) / max(etaG * cosI + cosT, 0.001);
   float rPar = (cosI - etaG * cosT) / max(cosI + etaG * cosT, 0.001);
   float fresnel = clamp(0.5 * (rPerp * rPerp + rPar * rPar), 0.0, 1.0);
+
+  // Bright patches where the waves focus the sun downward, strongest around the sun itself.
+  // The light shafts hang from these patches.
+  float towardSun = pow(max(0.0, dot(rd, refractedSunDir)), 3.0);
+  transmittedSky = transmittedSky * (0.52 + 0.5 * surfLight)
+                 + vec3(1.0, 0.97, 0.88) * surfLight * (0.18 + 0.5 * towardSun);
 
   // Overhead wave foam silhouettes visible inside Snell's window
   transmittedSky = mix(transmittedSky, vec3(0.82, 0.92, 0.98), foamCoverage * 0.5);
@@ -977,9 +1032,23 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
       smoothNoise(workingUV * 6.5 + vec2(-t * 0.25, t * 0.38) + 31.4) - 0.5
     ) * 0.0024;
     vec2 uwUV = clamp(workingUV + uwDistort, 0.001, 0.999);
-    float uwDepthCheck = texture(depthBuffer, uwUV).x;
-    if (abs(uwDepthCheck - rawDepth) < 0.025) {
-      baseSceneColor = texture(inputBuffer, uwUV).rgb;
+    // Take the shifted colour only where its whole bilinear footprint lies on the same surface.
+    // Raw depth is too flat to tell kelp 30 m away from the sky behind it, and the raw render
+    // has a bright sky there: one stray sample puts a pale rim on every thin silhouette.
+    if (!isSky) {
+      float zHere = linearViewDepth(rawDepth);
+      vec2 h = texelSize * 0.75;
+      float zMin = zHere;
+      float zMax = zHere;
+      for (int k = 0; k < 4; k++) {
+        vec2 o = vec2(k == 0 || k == 3 ? -h.x : h.x, k < 2 ? -h.y : h.y);
+        float z = linearViewDepth(texture(depthBuffer, uwUV + o).x);
+        zMin = min(zMin, z);
+        zMax = max(zMax, z);
+      }
+      if (zMax - zMin < 0.04 * zHere + 0.05) {
+        baseSceneColor = texture(inputBuffer, uwUV).rgb;
+      }
     }
 
     vec3 waterScatter = computeWaterScatterColor(rd, camDepth01, refractedSunDir);
@@ -1027,7 +1096,13 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
       // Smooth 3D caustics projected onto submerged surfaces without 2x2 dFdx facet artifacts
       vec3 caust = chromaticCaustics(worldPos.xz, geomDepthBelow, refractedSunDir, t);
       float distCaustFade = exp(-sceneDist * 0.028);
-      vec3 sunlitGeom = baseSceneColor * (1.0 + caust * distCaustFade * 1.45);
+      // Caustics move sunlight around, they do not add any: dim between the filaments,
+      // about twice as bright on them, a little more inside a light shaft. Never past
+      // white, or kelp and fish in a shaft blow out and bloom.
+      float shaft = min(sunShaftPattern(sunEntryXZ(worldPos, refractedSunDir), t, distCaustFade), 2.5);
+      vec3 focus = 1.25 * (1.0 - exp(-caust * 0.55)) + shaft * 0.22 * smoothstep(0.05, 1.2, geomDepthBelow);
+      vec3 sunGain = mix(vec3(1.0), vec3(0.76) + focus, distCaustFade);
+      vec3 sunlitGeom = min(baseSceneColor * sunGain, max(baseSceneColor, vec3(0.9)));
 
       // Vertical depth Beer-Lambert ambient attenuation on the object itself
       vec3 verticalAtten = exp(-uAbsorption * (geomDepthBelow * 0.26));

@@ -308,3 +308,30 @@ describe("agent steering", () => {
     expect(deepest).toBeGreaterThan(0.5);
   });
 });
+
+describe("coral reef", () => {
+  it("stands on the seabed, below the surface, and is solid in the field", async () => {
+    const { CORAL_PATCHES, createLagoonField, sampleSeabedHeight } = await import(
+      "../../../UnderwaterShader/lagoonTerrain"
+    );
+    const field = createLagoonField();
+    const out = { distance: 0, nx: 0, ny: 0, nz: 0 };
+    for (const patch of CORAL_PATCHES) {
+      expect(patch.colonies.length).toBeGreaterThan(20);
+      // Room for fish between the coral tops and the waves.
+      expect(patch.top).toBeLessThan(43);
+      for (const colony of patch.colonies) {
+        const [x, y, z] = colony.pos;
+        expect(y).toBeGreaterThan(sampleSeabedHeight(x, z) - 2.5);
+      }
+      const rock = patch.colonies.find((c) => c.kind === "rock" && c.scale > 2);
+      if (rock) {
+        expect(
+          field.sample(rock.pos[0], rock.pos[1] + 0.3 * rock.scale, rock.pos[2], out).distance,
+        ).toBeLessThan(0);
+      }
+      // Open water a little above the reef.
+      expect(field.sample(patch.x, patch.top + 1.5, patch.z, out).distance).toBeGreaterThan(0.5);
+    }
+  });
+});

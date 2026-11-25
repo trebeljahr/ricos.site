@@ -6,7 +6,7 @@ import {
   ObstacleField,
   obstacleDistance,
 } from "../Particles/BoidSwarm/obstacleField";
-import type { SwarmBounds } from "../Particles/BoidSwarm/swarmConfig";
+import { createRng, type SwarmBounds } from "../Particles/BoidSwarm/swarmConfig";
 import { WATER_LEVEL } from "./waterPresets";
 
 export function sampleSeabedHeight(x: number, z: number): number {
@@ -153,36 +153,239 @@ function formationRadii(f: ReefFormation): [number, number, number] {
   return [f.scale[0] * kx, f.scale[1] * ky, f.scale[2] * kz];
 }
 
+interface Ellipsoid {
+  x: number;
+  y: number;
+  z: number;
+  rx: number;
+  ry: number;
+  rz: number;
+  reach: number;
+}
+
+function ellipsoid(x: number, y: number, z: number, rx: number, ry: number, rz: number): Ellipsoid {
+  return { x, y, z, rx, ry, rz, reach: Math.max(rx, ry, rz) };
+}
+
+// ─── Coral reef ─────────────────────────────────────────────────
+
+export type CoralKind = "rock" | "staghorn" | "brain" | "tube" | "fan" | "table" | "anemone";
+
+export interface CoralColony {
+  kind: CoralKind;
+  /** Foot of the colony. Its mesh grows up from here. */
+  pos: [number, number, number];
+  yaw: number;
+  scale: number;
+  color: string;
+}
+
+export interface CoralPatch {
+  x: number;
+  z: number;
+  radius: number;
+  /** Seabed height at the centre. */
+  floor: number;
+  /** Highest point of any colony. */
+  top: number;
+  colonies: CoralColony[];
+}
+
+/**
+ * The room a unit colony takes, for the fish: half-axes of an ellipsoid and
+ * how far above the foot its centre sits. The meshes in CoralReef.tsx are
+ * built to fit.
+ */
+const CORAL_SHAPE: Record<CoralKind, { r: [number, number, number]; lift: number }> = {
+  rock: { r: [1.1, 0.75, 1.1], lift: 0.2 },
+  staghorn: { r: [0.75, 0.6, 0.75], lift: 0.6 },
+  brain: { r: [1.0, 0.65, 1.0], lift: 0.25 },
+  tube: { r: [0.5, 0.65, 0.5], lift: 0.6 },
+  fan: { r: [0.6, 0.6, 0.6], lift: 0.65 },
+  table: { r: [1.0, 0.4, 1.0], lift: 0.7 },
+  anemone: { r: [0.6, 0.4, 0.6], lift: 0.2 },
+};
+
+const CORAL_COLORS: Record<Exclude<CoralKind, "rock">, readonly string[]> = {
+  staghorn: ["#ff8a5c", "#ffd166", "#f4a6c0", "#c9a7ff"],
+  brain: ["#e2b04a", "#9fd18b", "#d98a6a"],
+  tube: ["#ffcf40", "#ff7eb6", "#b28dff", "#ff9d4d"],
+  fan: ["#ff5d8f", "#c86bff", "#ff9a3d"],
+  table: ["#6fd3c1", "#7fb6ff", "#f0b27a"],
+  anemone: ["#ff7aa8", "#9be564", "#ffb347"],
+};
+
+function createCoralPatch(
+  cx: number,
+  cz: number,
+  radius: number,
+  rockCount: number,
+  coralCount: number,
+  seed: number,
+): CoralPatch {
+  const rng = createRng(seed);
+  const colonies: CoralColony[] = [];
+  const rocks: Ellipsoid[] = [];
+
+  // A heap of rocks gives the reef its body: big in the middle, small at the rim.
+  for (let i = 0; i < rockCount; i++) {
+    const a = i * 2.39996 + rng() * 0.6;
+    const d = Math.sqrt((i + 0.5) / rockCount) * radius * 0.8;
+    const x = cx + Math.cos(a) * d;
+    const z = cz + Math.sin(a) * d;
+    const scale = (1.5 + 2.1 * rng()) * (1.15 - 0.6 * (d / radius));
+    const y = sampleSeabedHeight(x, z) - 0.25 * scale;
+    colonies.push({
+      kind: "rock",
+      pos: [x, y, z],
+      yaw: rng() * Math.PI * 2,
+      scale,
+      color: "#7c857c",
+    });
+    const shape = CORAL_SHAPE.rock;
+    rocks.push(
+      ellipsoid(
+        x,
+        y + shape.lift * scale,
+        z,
+        shape.r[0] * scale,
+        shape.r[1] * scale,
+        shape.r[2] * scale,
+      ),
+    );
+  }
+
+  /** The ground a colony stands on: the seabed or the top of a rock. */
+  const ground = (x: number, z: number) => {
+    let y = sampleSeabedHeight(x, z);
+    for (const rock of rocks) {
+      const u = (x - rock.x) / rock.rx;
+      const w = (z - rock.z) / rock.rz;
+      const inside = 1 - u * u - w * w;
+      // Only well inside the outline: the rock's edge is too steep to stand on.
+      if (inside > 0.3) y = Math.max(y, rock.y + rock.ry * Math.sqrt(inside) * 0.92);
+    }
+    return y;
+  };
+
+  const kinds: readonly Exclude<CoralKind, "rock">[] = [
+    "staghorn",
+    "staghorn",
+    "brain",
+    "tube",
+    "tube",
+    "fan",
+    "fan",
+    "table",
+    "anemone",
+  ];
+  for (let i = 0; i < coralCount; i++) {
+    const a = i * 2.39996 + 1.1;
+    const d = Math.sqrt((i + 0.5) / coralCount) * radius;
+    const x = cx + Math.cos(a) * d + (rng() - 0.5) * 0.9;
+    const z = cz + Math.sin(a) * d + (rng() - 0.5) * 0.9;
+    const kind = kinds[Math.floor(rng() * kinds.length)];
+    const palette = CORAL_COLORS[kind];
+    colonies.push({
+      kind,
+      pos: [x, ground(x, z) - 0.06, z],
+      yaw: rng() * Math.PI * 2,
+      scale: (kind === "table" || kind === "brain" ? 0.8 : 0.6) + rng() * 0.9,
+      color: palette[Math.floor(rng() * palette.length)],
+    });
+  }
+
+  let top = Number.NEGATIVE_INFINITY;
+  for (const c of colonies) {
+    const shape = CORAL_SHAPE[c.kind];
+    top = Math.max(top, c.pos[1] + (shape.lift + shape.r[1]) * c.scale);
+  }
+  return { x: cx, z: cz, radius, floor: sampleSeabedHeight(cx, cz), top, colonies };
+}
+
+/**
+ * A large reef between the two front pillars, before the arch, and a small
+ * one on the western knoll. Both have several metres of water above them.
+ */
+export const CORAL_PATCHES: readonly CoralPatch[] = [
+  createCoralPatch(0, 7, 9, 12, 95, 3),
+  createCoralPatch(-15, 13, 6, 6, 45, 8),
+];
+
+/** Solid shapes of the reef, grouped so a far voxel skips a whole group. */
+const REEF_GROUPS = [
+  REEF_FORMATIONS.map((f) => {
+    const [rx, ry, rz] = formationRadii(f);
+    return ellipsoid(f.pos[0], f.pos[1], f.pos[2], rx, ry, rz);
+  }),
+  ...CORAL_PATCHES.map((patch) =>
+    patch.colonies.map((c) => {
+      const shape = CORAL_SHAPE[c.kind];
+      return ellipsoid(
+        c.pos[0],
+        c.pos[1] + shape.lift * c.scale,
+        c.pos[2],
+        shape.r[0] * c.scale,
+        shape.r[1] * c.scale,
+        shape.r[2] * c.scale,
+      );
+    }),
+  ),
+].map((items) => {
+  // A sphere around the group.
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  for (const e of items) {
+    x += e.x / items.length;
+    y += e.y / items.length;
+    z += e.z / items.length;
+  }
+  let reach = 0;
+  for (const e of items) {
+    reach = Math.max(reach, Math.sqrt((e.x - x) ** 2 + (e.y - y) ** 2 + (e.z - z) ** 2) + e.reach);
+  }
+  return { x, y, z, reach, items };
+});
+
 function reefDistance(x: number, y: number, z: number): number {
-  // Math.sqrt, not Math.hypot: this runs 44 times per voxel of the bake.
+  // Math.sqrt, not Math.hypot: this runs for every voxel of the bake.
   let best = Number.POSITIVE_INFINITY;
-  for (let i = 0; i < REEF_ELLIPSOIDS.length; i++) {
-    const e = REEF_ELLIPSOIDS[i];
-    const dx = x - e.x;
-    const dy = y - e.y;
-    const dz = z - e.z;
-    const far = Math.sqrt(dx * dx + dy * dy + dz * dz) - e.reach;
-    if (far > best) continue;
-    if (far > 4) {
-      best = far;
+  for (let g = 0; g < REEF_GROUPS.length; g++) {
+    const group = REEF_GROUPS[g];
+    const gx = x - group.x;
+    const gy = y - group.y;
+    const gz = z - group.z;
+    const outside = Math.sqrt(gx * gx + gy * gy + gz * gz) - group.reach;
+    if (outside > best) continue;
+    if (outside > 4) {
+      best = outside;
       continue;
     }
-    // Ellipsoid distance after Quilez: good near the surface, where it counts.
-    const ux = dx / e.rx;
-    const uy = dy / e.ry;
-    const uz = dz / e.rz;
-    const k0 = Math.sqrt(ux * ux + uy * uy + uz * uz);
-    const k1 = Math.sqrt((ux / e.rx) ** 2 + (uy / e.ry) ** 2 + (uz / e.rz) ** 2);
-    const d = k1 > 1e-9 ? (k0 * (k0 - 1)) / k1 : -Math.min(e.rx, e.ry, e.rz);
-    if (d < best) best = d;
+    const items = group.items;
+    for (let i = 0; i < items.length; i++) {
+      const e = items[i];
+      const dx = x - e.x;
+      const dy = y - e.y;
+      const dz = z - e.z;
+      const far = Math.sqrt(dx * dx + dy * dy + dz * dz) - e.reach;
+      if (far > best) continue;
+      if (far > 4) {
+        best = far;
+        continue;
+      }
+      // Ellipsoid distance after Quilez: good near the surface, where it counts.
+      const ux = dx / e.rx;
+      const uy = dy / e.ry;
+      const uz = dz / e.rz;
+      const k0 = Math.sqrt(ux * ux + uy * uy + uz * uz);
+      const k1 = Math.sqrt((ux / e.rx) ** 2 + (uy / e.ry) ** 2 + (uz / e.rz) ** 2);
+      const d = k1 > 1e-9 ? (k0 * (k0 - 1)) / k1 : -Math.min(e.rx, e.ry, e.rz);
+      if (d < best) best = d;
+    }
   }
   return best;
 }
-
-const REEF_ELLIPSOIDS = REEF_FORMATIONS.map((f) => {
-  const [rx, ry, rz] = formationRadii(f);
-  return { x: f.pos[0], y: f.pos[1], z: f.pos[2], rx, ry, rz, reach: Math.max(rx, ry, rz) };
-});
 
 export const LAGOON_OBSTACLES: readonly FieldObstacle[] = PILLARS.map((p) => ({
   kind: "cylinder",

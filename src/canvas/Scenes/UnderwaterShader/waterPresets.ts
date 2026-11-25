@@ -160,6 +160,13 @@ export const CAMERA_VIEWPOINTS: CameraViewpoint[] = [
     position: [-24, WATER_LEVEL - 26.0, -18],
     rotation: [0.32, -0.55],
   },
+  {
+    id: "coral",
+    label: "Coral Reef",
+    shortcut: "6",
+    position: [5.5, WATER_LEVEL - 7.4, 18.5],
+    rotation: [-0.12, 0.43],
+  },
 ];
 
 /**

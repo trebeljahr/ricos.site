@@ -21,6 +21,7 @@ import { REEF_MODELS, reefSpecies } from "../Particles/BoidSwarm/reefWorld";
 import { createRng, type SwarmBounds } from "../Particles/BoidSwarm/swarmConfig";
 import { preloadFishModels, useFishGeometry } from "../Particles/BoidSwarm/useFishGeometry";
 import { createLagoonField, LAGOON_BOUNDS } from "./lagoonTerrain";
+import { ReefFish } from "./ReefFish";
 import { WATER_LEVEL } from "./waterPresets";
 
 const MAX_SHARKS = 4;
@@ -269,6 +270,7 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
         />
       ))}
       <mesh geometry={sharks.geometry} material={sharks.material} frustumCulled={false} />
+      <ReefFish field={field} threats={scratch} />
     </>
   );
 }

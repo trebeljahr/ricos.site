@@ -25,6 +25,7 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
+import { CoralReef } from "./CoralReef";
 import { LagoonSwarm } from "./LagoonSwarm";
 import { ARCH, PILLAR_FOOT, PILLARS, REEF_FORMATIONS, sampleSeabedHeight } from "./lagoonTerrain";
 import { type SpriteBuffers, SpriteParticles } from "./SpriteParticles";
@@ -1017,6 +1018,7 @@ export default function UnderwaterShaderDemo() {
       />
 
       <SeabedAndArchitecture />
+      <CoralReef />
       <ObstacleWaveSpray waveHeight={controls.waveHeight} sunDirection={sunDirection} />
       <GlidingWhale whaleRef={whaleRef} />
       <LagoonSwarm whaleRef={whaleRef} />

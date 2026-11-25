@@ -166,17 +166,72 @@ export class ObstacleField {
         }
       }
     }
-    // Normals from central differences of the baked distances.
+    this.computeNormals(0, nx - 1, 0, ny - 1, 0, nz - 1);
+    this.version++;
+  }
+
+  /**
+   * Adds one more solid to a baked field without baking it again: only the
+   * voxels in and around `bounds` are touched. For shapes that arrive late,
+   * such as a model that had to load first.
+   */
+  add(distance: DistanceFunction, bounds: SwarmBounds, margin = 3): void {
+    const [nx, ny, nz] = this.dim;
+    const data = this.data;
+    const range = [0, 1, 2].map((a) => {
+      const step = this.size[a] / (this.dim[a] - 1);
+      const lo = Math.floor((bounds.min[a] - margin - this.min[a]) / step);
+      const hi = Math.ceil((bounds.max[a] + margin - this.min[a]) / step);
+      return [Math.max(0, lo), Math.min(this.dim[a] - 1, hi), step] as const;
+    });
+    const [[i0, i1, sx], [j0, j1, sy], [k0, k1, sz]] = range;
+    if (i0 > i1 || j0 > j1 || k0 > k1) return;
+    for (let k = k0; k <= k1; k++) {
+      const z = this.min[2] + k * sz;
+      for (let j = j0; j <= j1; j++) {
+        const y = this.min[1] + j * sy;
+        let o = ((k * ny + j) * nx + i0) * 4 + 3;
+        for (let i = i0; i <= i1; i++, o += 4) {
+          const d = distance(this.min[0] + i * sx, y, z);
+          if (d < data[o]) data[o] = d;
+        }
+      }
+    }
+    this.computeNormals(
+      Math.max(0, i0 - 1),
+      Math.min(nx - 1, i1 + 1),
+      Math.max(0, j0 - 1),
+      Math.min(ny - 1, j1 + 1),
+      Math.max(0, k0 - 1),
+      Math.min(nz - 1, k1 + 1),
+    );
+    this.version++;
+  }
+
+  /** Normals from central differences of the baked distances, for a block of voxels. */
+  private computeNormals(
+    i0: number,
+    i1: number,
+    j0: number,
+    j1: number,
+    k0: number,
+    k1: number,
+  ): void {
+    const [nx, ny, nz] = this.dim;
+    const data = this.data;
+    const sx = this.size[0] / (nx - 1);
+    const sy = this.size[1] / (ny - 1);
+    const sz = this.size[2] / (nz - 1);
     const at = (i: number, j: number, k: number) =>
       data[
         ((k < 0 ? 0 : k >= nz ? nz - 1 : k) * ny + (j < 0 ? 0 : j >= ny ? ny - 1 : j)) * nx * 4 +
           (i < 0 ? 0 : i >= nx ? nx - 1 : i) * 4 +
           3
       ];
-    for (let k = 0; k < nz; k++) {
-      for (let j = 0; j < ny; j++) {
-        let o = (k * ny + j) * nx * 4;
-        for (let i = 0; i < nx; i++, o += 4) {
+    for (let k = k0; k <= k1; k++) {
+      for (let j = j0; j <= j1; j++) {
+        let o = ((k * ny + j) * nx + i0) * 4;
+        for (let i = i0; i <= i1; i++, o += 4) {
           const gx = (at(i + 1, j, k) - at(i - 1, j, k)) / sx;
           const gy = (at(i, j + 1, k) - at(i, j - 1, k)) / sy;
           const gz = (at(i, j, k + 1) - at(i, j, k - 1)) / sz;
@@ -193,7 +248,6 @@ export class ObstacleField {
         }
       }
     }
-    this.version++;
   }
 
   /** Trilinear read, clamped to the volume like the texture is. */

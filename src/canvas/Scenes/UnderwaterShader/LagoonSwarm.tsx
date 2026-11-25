@@ -17,10 +17,11 @@ import {
   type SwarmPredator,
   type SwarmSphere,
 } from "../Particles/BoidSwarm/GpuBoidSwarm";
+import type { ObstacleField } from "../Particles/BoidSwarm/obstacleField";
 import { REEF_MODELS, reefSpecies } from "../Particles/BoidSwarm/reefWorld";
 import { createRng, type SwarmBounds } from "../Particles/BoidSwarm/swarmConfig";
 import { preloadFishModels, useFishGeometry } from "../Particles/BoidSwarm/useFishGeometry";
-import { createLagoonField, LAGOON_BOUNDS } from "./lagoonTerrain";
+import { LAGOON_BOUNDS } from "./lagoonTerrain";
 import { ReefFish } from "./ReefFish";
 import { WATER_LEVEL } from "./waterPresets";
 
@@ -43,7 +44,13 @@ const WHALE_RADIUS = 5;
  * Schools of fish, dolphins, mantas and sharks that steer around the seabed,
  * the sea stacks, the pillars, the arch, the reef, the whale and the diver.
  */
-export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> }) {
+export function LagoonSwarm({
+  field,
+  whaleRef,
+}: {
+  field: ObstacleField;
+  whaleRef: RefObject<Group | null>;
+}) {
   const controls = useControls("Marine Life", {
     fish: { label: "Fish", value: 4000, options: [1000, 2000, 4000, 8000, 16000] },
     sharks: { label: "Sharks", value: 2, min: 0, max: MAX_SHARKS, step: 1 },
@@ -52,7 +59,6 @@ export function LagoonSwarm({ whaleRef }: { whaleRef: RefObject<Group | null> })
   const live = useRef(controls);
   live.current = controls;
 
-  const field = useMemo(() => createLagoonField(), []);
   const fish1 = useFishGeometry(REEF_MODELS[0]);
   const fish2 = useFishGeometry(REEF_MODELS[1]);
   const fish3 = useFishGeometry(REEF_MODELS[2]);

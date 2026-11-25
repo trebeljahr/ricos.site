@@ -335,3 +335,37 @@ describe("coral reef", () => {
     }
   });
 });
+
+describe("open meshes in the field", () => {
+  it("adds a late shape to a baked field, around its faces only", async () => {
+    const { pointsDistance, surfacePoints } = await import("../pointDistance");
+    // An open box: four walls, no lid, no floor. A fish may swim down into it.
+    const wall = (x0: number, z0: number, x1: number, z1: number) => [
+      [x0, 0, z0, x1, 0, z1, x1, 6, z1],
+      [x0, 0, z0, x1, 6, z1, x0, 6, z0],
+    ];
+    const positions = new Float32Array(
+      [wall(-3, -3, 3, -3), wall(3, -3, 3, 3), wall(3, 3, -3, 3), wall(-3, 3, -3, -3)].flat(2),
+    );
+    const points = surfacePoints([{ positions }], 0.4);
+    expect(points.length / 3).toBeGreaterThan(500);
+    const solid = pointsDistance(points, 0.3);
+    expect(solid.distance(3, 3, 0)).toBeCloseTo(-0.3, 1);
+    expect(solid.distance(0, 3, 0)).toBeGreaterThan(2.5);
+    expect(solid.distance(40, 3, 0)).toBeGreaterThan(2.5);
+
+    const field = new ObstacleField({ min: [-12, -4, -12], max: [12, 12, 12] }, 0.5);
+    field.bake({ floor: () => -3 });
+    const version = field.version;
+    const out: FieldSample = { distance: 0, nx: 0, ny: 0, nz: 0 };
+    expect(field.sample(3, 3, 0, out).distance).toBeGreaterThan(5);
+    field.add(solid.distance, solid.bounds);
+    expect(field.version).toBeGreaterThan(version);
+    // On a wall it is solid, and the way out is away from the wall.
+    expect(field.sample(3, 3, 0, out).distance).toBeLessThan(0);
+    expect(field.sample(3.8, 3, 0, out).nx).toBeGreaterThan(0.8);
+    // Inside the open box there is water, and the seabed far away is untouched.
+    expect(field.sample(0, 3, 0, out).distance).toBeGreaterThan(1.5);
+    expect(field.sample(-10, -2, 9, out).distance).toBeCloseTo(1, 1);
+  });
+});

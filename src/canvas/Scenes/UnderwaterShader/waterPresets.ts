@@ -167,6 +167,13 @@ export const CAMERA_VIEWPOINTS: CameraViewpoint[] = [
     position: [5.5, WATER_LEVEL - 7.4, 18.5],
     rotation: [-0.12, 0.43],
   },
+  {
+    id: "wreck",
+    label: "Shipwreck",
+    shortcut: "7",
+    position: [5, WATER_LEVEL - 8.5, 37],
+    rotation: [-0.06, -0.9],
+  },
 ];
 
 /**

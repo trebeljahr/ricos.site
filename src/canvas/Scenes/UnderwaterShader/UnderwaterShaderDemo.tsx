@@ -27,7 +27,15 @@ import CustomShaderMaterial from "three-custom-shader-material";
 import type CustomShaderMaterialType from "three-custom-shader-material/vanilla";
 import { CoralReef } from "./CoralReef";
 import { LagoonSwarm } from "./LagoonSwarm";
-import { ARCH, PILLAR_FOOT, PILLARS, REEF_FORMATIONS, sampleSeabedHeight } from "./lagoonTerrain";
+import {
+  ARCH,
+  createLagoonField,
+  PILLAR_FOOT,
+  PILLARS,
+  REEF_FORMATIONS,
+  sampleSeabedHeight,
+} from "./lagoonTerrain";
+import { Shipwreck } from "./Shipwreck";
 import { type SpriteBuffers, SpriteParticles } from "./SpriteParticles";
 import { UnderwaterEffect, type UnderwaterEffectParams } from "./UnderwaterEffect";
 import {
@@ -710,6 +718,8 @@ export default function UnderwaterShaderDemo() {
 
   const activePreset = WATER_PRESETS[presetKey];
   const whaleRef = useRef<Group>(null);
+  // Everything the fish steer around. The wreck adds itself once its models are loaded.
+  const field = useMemo(() => createLagoonField(), []);
 
   const [controls, setControls] = useControls(() => ({
     "Water Type": folder({
@@ -1022,7 +1032,8 @@ export default function UnderwaterShaderDemo() {
       <CoralReef />
       <ObstacleWaveSpray waveHeight={controls.waveHeight} sunDirection={sunDirection} />
       <GlidingWhale whaleRef={whaleRef} />
-      <LagoonSwarm whaleRef={whaleRef} />
+      <Shipwreck field={field} />
+      <LagoonSwarm field={field} whaleRef={whaleRef} />
       <BubblesAndMarineSnow />
 
       {/* mergeMode "none": Bloom must read the water shader's output. Merged into one pass it
